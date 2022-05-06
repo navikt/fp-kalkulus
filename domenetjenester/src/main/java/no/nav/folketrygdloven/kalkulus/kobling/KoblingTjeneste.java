@@ -96,6 +96,10 @@ public class KoblingTjeneste {
         return repository.hentRelasjonerFor(koblingIder);
     }
 
+    public Optional<AktørId> hentAktørIdForSak(Saksnummer saksnummer) {
+        return repository.hentSisteKoblingForSaksnummer(saksnummer).map(KoblingEntitet::getAktørId);
+    }
+
     // Burde ta i bruk skrivelås?
     public KoblingLås taSkrivesLås(KoblingReferanse referanse) {
         return taSkrivesLås(repository.hentKoblingIdForKoblingReferanse(referanse));

@@ -286,7 +286,7 @@ public class OperereKalkulusRestTjeneste {
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-    public class HåndterBeregningListeRequestAbacDto extends HåndterBeregningListeRequest implements AbacDto {
+    public static class HåndterBeregningListeRequestAbacDto extends HåndterBeregningListeRequest implements AbacDto {
 
         public HåndterBeregningListeRequestAbacDto() {
             // Jackson
@@ -297,17 +297,9 @@ public class OperereKalkulusRestTjeneste {
             final var abacDataAttributter = AbacDataAttributter.opprett();
             abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getBehandlingUuid());
             abacDataAttributter.leggTil(StandardAbacAttributtType.SAKSNUMMER, getSaksnummer());
-            var aktørIder = getAktørIder();
-            aktørIder.forEach(id -> abacDataAttributter.leggTil(StandardAbacAttributtType.AKTØR_ID, id));
             return abacDataAttributter;
         }
 
-        private Set<AktørId> getAktørIder() {
-            return koblingTjeneste.hentKoblinger(getHåndterBeregningListe().stream().map(HåndterBeregningRequest::getEksternReferanse).map(KoblingReferanse::new).collect(Collectors.toSet()))
-                    .stream()
-                    .map(KoblingEntitet::getAktørId)
-                    .collect(Collectors.toSet());
-        }
     }
 
 }
