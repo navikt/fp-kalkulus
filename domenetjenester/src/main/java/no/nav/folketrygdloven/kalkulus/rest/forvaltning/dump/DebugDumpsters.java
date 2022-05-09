@@ -21,8 +21,7 @@ public class DebugDumpsters {
 
     private static final Logger log = LoggerFactory.getLogger(DebugDumpsters.class);
 
-    private @Any
-    Instance<DebugDumpSak> dumpere;
+    private @Any Instance<DebugDumpSak> dumpere;
 
     protected DebugDumpsters() {
         //

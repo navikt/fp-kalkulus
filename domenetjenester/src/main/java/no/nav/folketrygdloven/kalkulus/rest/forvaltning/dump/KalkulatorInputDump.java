@@ -28,7 +28,7 @@ public class KalkulatorInputDump implements DebugDumpSak {
                 select k.kobling_referanse, ki.input, ki.opprettet_tid, ki.aktiv from kobling k
                 inner join kalkulator_input ki on k.id = ki.kobling_id
                     where k.saksnummer = :saksnummer
-                    order by b.opprettet_tid asc ;
+                    order by ki.opprettet_tid asc ;
                    """;
 
         var query = entityManager.createNativeQuery(sql, Tuple.class)
