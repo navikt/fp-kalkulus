@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.Alternative;
+import jakarta.inject.Inject;
 import no.nav.k9.felles.sikkerhet.abac.PdpRequest;
 import no.nav.k9.felles.sikkerhet.pdp.XacmlRequestBuilderTjeneste;
 import no.nav.k9.felles.sikkerhet.pdp.xacml.XacmlAttributeSet;
@@ -24,6 +25,7 @@ public class XacmlRequestBuilderTjenesteImpl implements XacmlRequestBuilderTjene
 
     private DomeneAbacAttributter domeneAbacAttributter;
 
+    @Inject
     public XacmlRequestBuilderTjenesteImpl(DomeneAbacAttributter domeneAbacAttributter) {
         this.domeneAbacAttributter = domeneAbacAttributter;
     }

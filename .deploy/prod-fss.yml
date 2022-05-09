@@ -69,7 +69,7 @@ spec:
       value: "no.nav.abac.attributter.k9.beregningsgrunnlag"
     - name: ABAC_ATTRIBUTT_FAGSAK
       value: "no.nav.abac.attributter.k9.fagsak"
-    - name: ABAC_ATTRIBUTT_AKSJONSPUNKT_TYPE
+    - name: ABAC_ATTRIBUTT_AKSJONSPUNKTTYPE
       value: "no.nav.abac.attributter.resource.k9.sak.aksjonspunkt_type"
     - name: ABAC_ATTRIBUTT_BEHANDLINGSTATUS
       value: "no.nav.abac.attributter.resource.k9.sak.behandlingsstatus"

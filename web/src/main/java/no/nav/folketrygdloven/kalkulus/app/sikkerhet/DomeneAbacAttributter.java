@@ -18,7 +18,7 @@ public class DomeneAbacAttributter {
     public DomeneAbacAttributter(@KonfigVerdi(value = "abac.attributt.aksjonspunkttype") String attributtnøkkelAksjonspunktType,
                                  @KonfigVerdi(value = "abac.attributt.behandlingstatus") String attributtnøkkelBehandlingstatus,
                                  @KonfigVerdi(value = "abac.attributt.sakstatus") String attributtSakstatus
-                             ) {
+    ) {
         this.attributtnøkkelAksjonspunktType = attributtnøkkelAksjonspunktType;
         this.attributtnøkkelBehandlingstatus = attributtnøkkelBehandlingstatus;
         this.attributtnøkkelSakstatus = attributtSakstatus;
