@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.app.sikkerhet;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -21,17 +22,23 @@ public class XacmlRequestBuilderTjenesteImpl implements XacmlRequestBuilderTjene
     public XacmlRequestBuilderTjenesteImpl() {
     }
 
+    private DomeneAbacAttributter domeneAbacAttributter;
+
+    public XacmlRequestBuilderTjenesteImpl(DomeneAbacAttributter domeneAbacAttributter) {
+        this.domeneAbacAttributter = domeneAbacAttributter;
+    }
+
     @Override
     public XacmlRequestBuilder lagXacmlRequestBuilder(PdpRequest pdpRequest) {
         XacmlRequestBuilder xacmlBuilder = new XacmlRequestBuilder();
 
         XacmlAttributeSet actionAttributeSet = new XacmlAttributeSet();
-        actionAttributeSet.addAttribute(AbacAttributter.XACML_1_0_ACTION_ACTION_ID, pdpRequest.getString(AbacAttributter.XACML_1_0_ACTION_ACTION_ID));
+        actionAttributeSet.addAttribute(FellesAbacAttributter.XACML_1_0_ACTION_ACTION_ID, pdpRequest.getString(FellesAbacAttributter.XACML_1_0_ACTION_ACTION_ID));
         xacmlBuilder.addActionAttributeSet(actionAttributeSet);
 
         Set<Tuple<String, String>> identer = hentIdenter(pdpRequest,
-            AbacAttributter.RESOURCE_FELLES_PERSON_AKTOERID_RESOURCE,
-            AbacAttributter.RESOURCE_FELLES_PERSON_FNR);
+                FellesAbacAttributter.RESOURCE_FELLES_PERSON_AKTOERID_RESOURCE,
+                FellesAbacAttributter.RESOURCE_FELLES_PERSON_FNR);
 
         if (identer.isEmpty()) {
             populerResources(xacmlBuilder, pdpRequest, null);
@@ -45,19 +52,33 @@ public class XacmlRequestBuilderTjenesteImpl implements XacmlRequestBuilderTjene
     }
 
     private void populerResources(XacmlRequestBuilder xacmlBuilder, PdpRequest pdpRequest, Tuple<String, String> ident) {
-        xacmlBuilder.addResourceAttributeSet(byggRessursAttributter(pdpRequest, ident));
+        List<String> aksjonspunktTyper = pdpRequest.getListOfString(domeneAbacAttributter.getAttributtnøkkelAksjonspunktType());
+        if (aksjonspunktTyper.isEmpty()) {
+            xacmlBuilder.addResourceAttributeSet(byggRessursAttributter(pdpRequest, ident, null));
+        } else {
+            for (String aksjonspunktType : aksjonspunktTyper) {
+                xacmlBuilder.addResourceAttributeSet(byggRessursAttributter(pdpRequest, ident, aksjonspunktType));
+            }
+        }
     }
 
-    private XacmlAttributeSet byggRessursAttributter(PdpRequest pdpRequest, Tuple<String, String> ident) {
+    private XacmlAttributeSet byggRessursAttributter(PdpRequest pdpRequest, Tuple<String, String> ident, String aksjonspunktType) {
         XacmlAttributeSet resourceAttributeSet = new XacmlAttributeSet();
-        resourceAttributeSet.addAttribute(AbacAttributter.RESOURCE_FELLES_DOMENE, pdpRequest.getString(AbacAttributter.RESOURCE_FELLES_DOMENE));
-        resourceAttributeSet.addAttribute(AbacAttributter.RESOURCE_FELLES_RESOURCE_TYPE, pdpRequest.getString(AbacAttributter.RESOURCE_FELLES_RESOURCE_TYPE));
+        resourceAttributeSet.addAttribute(FellesAbacAttributter.RESOURCE_FELLES_DOMENE, pdpRequest.getString(FellesAbacAttributter.RESOURCE_FELLES_DOMENE));
+        resourceAttributeSet.addAttribute(FellesAbacAttributter.RESOURCE_FELLES_RESOURCE_TYPE, pdpRequest.getString(FellesAbacAttributter.RESOURCE_FELLES_RESOURCE_TYPE));
+        setOptionalValueinAttributeSet(resourceAttributeSet, pdpRequest, domeneAbacAttributter.getAttributtnøkkelBehandlingstatus());
+        setOptionalValueinAttributeSet(resourceAttributeSet, pdpRequest, domeneAbacAttributter.getAttributtnøkkelSakstatus());
         if (ident != null) {
             resourceAttributeSet.addAttribute(ident.getElement1(), ident.getElement2());
         }
 
         return resourceAttributeSet;
     }
+
+    private void setOptionalValueinAttributeSet(XacmlAttributeSet resourceAttributeSet, PdpRequest pdpRequest, String key) {
+        pdpRequest.getOptional(key).ifPresent(s -> resourceAttributeSet.addAttribute(key, s));
+    }
+
 
     private Set<Tuple<String, String>> hentIdenter(PdpRequest pdpRequest, String... identNøkler) {
         Set<Tuple<String, String>> identer = new HashSet<>();

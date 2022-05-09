@@ -35,29 +35,33 @@ public class PdpRequestBuilderImpl implements PdpRequestBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(PdpRequestBuilderImpl.class);
     private String abacDomain;
     private KoblingTjeneste koblingTjeneste;
+    private DomeneAbacAttributter domeneAbacAttributter;
 
     public PdpRequestBuilderImpl() {
     }
 
     @Inject
-    public PdpRequestBuilderImpl(@KonfigVerdi(value = "abac.domain") String abacDomain, KoblingTjeneste koblingTjeneste) {
+    public PdpRequestBuilderImpl(@KonfigVerdi(value = "abac.domain") String abacDomain,
+                                 KoblingTjeneste koblingTjeneste,
+                                 DomeneAbacAttributter domeneAbacAttributter) {
         this.abacDomain = abacDomain;
         this.koblingTjeneste = koblingTjeneste;
+        this.domeneAbacAttributter = domeneAbacAttributter;
     }
 
     @Override
     public PdpRequest lagPdpRequest(AbacAttributtSamling attributter) {
         PdpRequest pdpRequest = new PdpRequest();
         pdpRequest.put(PdpKlient.ENVIRONMENT_AUTH_TOKEN, attributter.getIdToken());
-        pdpRequest.put(AbacAttributter.XACML_1_0_ACTION_ACTION_ID, attributter.getActionType().getEksternKode());
-        pdpRequest.put(AbacAttributter.RESOURCE_FELLES_DOMENE, abacDomain);
-        pdpRequest.put(AbacAttributter.RESOURCE_FELLES_RESOURCE_TYPE, attributter.getResource());
+        pdpRequest.put(FellesAbacAttributter.XACML_1_0_ACTION_ACTION_ID, attributter.getActionType().getEksternKode());
+        pdpRequest.put(FellesAbacAttributter.RESOURCE_FELLES_DOMENE, abacDomain);
+        pdpRequest.put(FellesAbacAttributter.RESOURCE_FELLES_RESOURCE_TYPE, attributter.getResource());
 
         if (attributter.getVerdier(StandardAbacAttributtType.AKTØR_ID).isEmpty()) {
             Optional<AktørId> aktørId = utledAktørId(attributter);
-            aktørId.map(AktørId::getAktørId).map(List::of).ifPresent(id -> pdpRequest.put(AbacAttributter.RESOURCE_FELLES_PERSON_AKTOERID_RESOURCE, id));
+            aktørId.map(AktørId::getAktørId).map(List::of).ifPresent(id -> pdpRequest.put(FellesAbacAttributter.RESOURCE_FELLES_PERSON_AKTOERID_RESOURCE, id));
         } else {
-            pdpRequest.put(AbacAttributter.RESOURCE_FELLES_PERSON_AKTOERID_RESOURCE, attributter.getVerdier(StandardAbacAttributtType.AKTØR_ID));
+            pdpRequest.put(FellesAbacAttributter.RESOURCE_FELLES_PERSON_AKTOERID_RESOURCE, attributter.getVerdier(StandardAbacAttributtType.AKTØR_ID));
         }
 
         var aksjonspunktTyper = attributter.getVerdier(StandardAbacAttributtType.AKSJONSPUNKT_KODE).stream()
@@ -68,13 +72,13 @@ public class PdpRequestBuilderImpl implements PdpRequestBuilder {
 
         if (!aksjonspunktTyper.isEmpty()) {
             LOG.info(aksjonspunktTyper.toString());
-            pdpRequest.put(AbacAttributter.RESOURCE_K9_SAK_AKSJONSPUNKT_TYPE, aksjonspunktTyper);
+            pdpRequest.put(domeneAbacAttributter.getAttributtnøkkelAksjonspunktType(), aksjonspunktTyper);
         }
 
 
         // TODO: Gå over til å hente fra pip-tjenesten når alle kall inkluderer behandlinguuid?
-        pdpRequest.put(AbacAttributter.RESOURCE_FORELDREPENGER_SAK_BEHANDLINGSSTATUS, AbacBehandlingStatus.UTREDES.getEksternKode());
-        pdpRequest.put(AbacAttributter.RESOURCE_FORELDREPENGER_SAK_SAKSSTATUS, AbacFagsakStatus.UNDER_BEHANDLING.getEksternKode());
+        pdpRequest.put(domeneAbacAttributter.getAttributtnøkkelBehandlingstatus(), AbacBehandlingStatus.UTREDES.getEksternKode());
+        pdpRequest.put(domeneAbacAttributter.getAttributtnøkkelSakstatus(), AbacFagsakStatus.UNDER_BEHANDLING.getEksternKode());
         return pdpRequest;
     }
 
