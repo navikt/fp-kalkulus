@@ -73,6 +73,7 @@ public class BeregningsgrunnlagDump implements DebugDumpSak {
         List<Tuple> results = query.getResultList();
 
         if (results.isEmpty()) {
+            log.info("Fant ingen innhold for BeregningsgrunnlagDump for saksnummer " + saksnummer);
             return List.of();
         }
 
