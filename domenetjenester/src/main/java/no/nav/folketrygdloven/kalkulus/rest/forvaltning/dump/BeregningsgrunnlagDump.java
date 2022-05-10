@@ -31,6 +31,7 @@ public class BeregningsgrunnlagDump implements DebugDumpSak {
     public List<DumpOutput> dump(Saksnummer saksnummer) {
         var sql = """
                 select     cast(k.kobling_referanse as varchar)                                         koblingreferanse,
+                            k.id kobling_id,
                             gr.opprettet_tid                                            grunnlag_opprettet_tid,
                             gr.endret_tid                                               grunnlag_endret_tid,
                             gr.aktiv                                                    grunnlag_er_aktiv,
@@ -52,17 +53,17 @@ public class BeregningsgrunnlagDump implements DebugDumpSak {
                             andel.overstyrt_pr_aar,
                             andel.fordelt_pr_aar,
                             coalesce(arb.arbeidsgiver_orgnr, arb.arbeidsgiver_aktor_id) arbeidsgiverident,
-                            arbeidsforhold_intern_id,
+                            cast(arbeidsforhold_intern_id as varchar) intern_arbeidsforhold_id,
                             coalesce(manuelt_fordelt_refusjon_pr_aar, saksbehandlet_refusjon_pr_aar, fordelt_refusjon_pr_aar, refusjonskrav_pr_aar) refusjon_pr_aar
                      from kobling k
                               inner join gr_beregningsgrunnlag gr on gr.kobling_id = k.id
-                              inner join beregningsgrunnlag b on gr.beregningsgrunnlag_id = b.id
-                              inner join bg_aktivitet_status status on b.id = status.beregningsgrunnlag_id
+                              left join beregningsgrunnlag b on gr.beregningsgrunnlag_id = b.id
+                              left join bg_aktivitet_status status on b.id = status.beregningsgrunnlag_id
                               inner join beregningsgrunnlag_periode periode on b.id = periode.beregningsgrunnlag_id
                               inner join bg_pr_status_og_andel andel on periode.id = andel.bg_periode_id
                               left join bg_andel_arbeidsforhold arb on andel.id = arb.bg_andel_id
                     where k.saksnummer = :saksnummer
-                    order by b.opprettet_tid asc ;
+                    order by gr.opprettet_tid asc ;
                    """;
 
         var query = entityManager.createNativeQuery(sql, Tuple.class)
