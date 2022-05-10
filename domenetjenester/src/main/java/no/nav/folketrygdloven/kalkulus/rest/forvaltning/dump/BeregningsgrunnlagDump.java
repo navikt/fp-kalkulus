@@ -30,7 +30,7 @@ public class BeregningsgrunnlagDump implements DebugDumpSak {
     @Override
     public List<DumpOutput> dump(Saksnummer saksnummer) {
         var sql = """
-                select     k.kobling_referanse                                         koblingreferanse,
+                select     cast(k.kobling_referanse as varchar)                                         koblingreferanse,
                             gr.opprettet_tid                                            grunnlag_opprettet_tid,
                             gr.endret_tid                                               grunnlag_endret_tid,
                             gr.aktiv                                                    grunnlag_er_aktiv,
