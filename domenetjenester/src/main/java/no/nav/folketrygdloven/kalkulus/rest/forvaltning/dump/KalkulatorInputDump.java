@@ -37,7 +37,7 @@ public class KalkulatorInputDump implements DebugDumpSak {
     public List<DumpOutput> dump(Saksnummer saksnummer) {
         var koblinger = koblingRepository.hentAlleKoblingerForSaksnummer(saksnummer);
         var koblingIder = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
-        TypedQuery<Tuple> query = entityManager.createQuery("from KalkulatorInput where koblingId =:koblingId",
+        TypedQuery<Tuple> query = entityManager.createQuery("from KalkulatorInput where koblingId in :koblingId",
                         Tuple.class)
                 .setParameter("koblingId", koblingIder);
 
