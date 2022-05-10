@@ -13,22 +13,23 @@ import jakarta.persistence.Tuple;
 import jakarta.persistence.TypedQuery;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 
 @ApplicationScoped
-public class KalkulatorInputDump implements DebugDumpSak {
+public class AvklaringsbehovDump implements DebugDumpSak {
 
-    private static final Logger log = LoggerFactory.getLogger(KalkulatorInputDump.class);
+    private static final Logger log = LoggerFactory.getLogger(AvklaringsbehovDump.class);
 
     private EntityManager entityManager;
     private KoblingRepository koblingRepository;
 
-    public KalkulatorInputDump() {
+    public AvklaringsbehovDump() {
         // for proxys
     }
 
     @Inject
-    public KalkulatorInputDump(EntityManager entityManager, KoblingRepository koblingRepository) {
+    public AvklaringsbehovDump(EntityManager entityManager, KoblingRepository koblingRepository) {
         this.entityManager = entityManager;
         this.koblingRepository = koblingRepository;
     }
@@ -38,19 +39,21 @@ public class KalkulatorInputDump implements DebugDumpSak {
         var sql = """
                 select cast(k.kobling_referanse as varchar)  ekstern_referanse,
                         k.id kobling_id,
-                        cast(ki.input as varchar),
-                        ki.aktiv
+                        ab.avklaringsbehov_def,
+                        ab.avklaringsbehov_status,
+                        ab.begrunnelse
                      from KOBLING k
-                              inner join KALKULATOR_INPUT ki on ki.kobling_id = k.id
+                              inner join AVKLARINGSBEHOV ab on ab.kobling_id = k.id
                     where k.saksnummer = :saksnummer
-                    order by ki.opprettet_tid asc ;
+                    order by ab.opprettet_tid asc ;
                    """;
 
 
         var query = entityManager.createNativeQuery(sql, Tuple.class)
                 .setParameter("saksnummer", saksnummer.getVerdi());
 
-        String path = "kalkulatorinput.csv";
+
+        String path = "avklaringsbehov.csv";
 
         @SuppressWarnings("unchecked")
         List<Tuple> results = query.getResultList();

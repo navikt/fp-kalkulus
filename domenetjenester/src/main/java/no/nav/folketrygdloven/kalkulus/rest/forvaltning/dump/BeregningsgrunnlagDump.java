@@ -74,11 +74,8 @@ public class BeregningsgrunnlagDump implements DebugDumpSak {
         List<Tuple> results = query.getResultList();
 
         if (results.isEmpty()) {
-            log.info("Fant ingen innhold for BeregningsgrunnlagDump for saksnummer " + saksnummer);
             return List.of();
         }
-
-        log.info("Fant innhold for BeregningsgrunnlagDump for saksnummer " + saksnummer);
 
         return CsvOutput.dumpResultSetToCsv(path, results)
                 .map(List::of).orElse(List.of());
