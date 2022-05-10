@@ -62,6 +62,6 @@ public class Saksnummer implements SakId, IndexKey {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "<" + saksnummer + ">";
+        return saksnummer;
     }
 }
