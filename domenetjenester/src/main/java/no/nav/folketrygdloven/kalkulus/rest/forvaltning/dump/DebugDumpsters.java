@@ -50,6 +50,7 @@ public class DebugDumpsters {
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
                 PrintWriter pw = new PrintWriter(sw);
+                log.warn(e.getMessage());
                 e.printStackTrace(pw);
                 return Stream.of(new DumpOutput(ddp.getClass().getSimpleName() + "-ERROR.txt", sw.toString()));
             }
