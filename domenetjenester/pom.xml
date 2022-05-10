@@ -14,6 +14,19 @@
     <packaging>jar</packaging>
     <name>Kalkulus :: Domenetjenester</name>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.glassfish.jersey</groupId>
+                <artifactId>jersey-bom</artifactId>
+                <version>3.0.4</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+
     <dependencies>
         <!-- Interne avhengigheter  -->
         <dependency>
@@ -68,6 +81,10 @@
             <artifactId>weld-servlet-core</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+        </dependency>
 
         <!-- test avhengigheter-->
         <dependency>
@@ -82,6 +99,8 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+
 
     <build>
         <plugins>

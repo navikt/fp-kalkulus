@@ -2,25 +2,22 @@ package no.nav.folketrygdloven.kalkulus.rest.forvaltning.dump;
 
 import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import jakarta.persistence.EntityManager;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningRefusjonPeriodeEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
@@ -43,28 +40,44 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontr
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.extensions.JpaExtension;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
+import no.nav.k9.felles.testutilities.cdi.UnitTestLookupInstanceImpl;
 import no.nav.k9.felles.testutilities.db.EntityManagerAwareTest;
 
 @ExtendWith(JpaExtension.class)
-class BeregningsgrunnlagDumpTest extends EntityManagerAwareTest {
+class DebugDumpstersTest extends EntityManagerAwareTest {
 
     private BeregningsgrunnlagDump beregningsgrunnlagDump;
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
+    private DebugDumpsters debugDumpsters;
 
     @BeforeEach
     void setUp() {
         this.beregningsgrunnlagRepository = new BeregningsgrunnlagRepository(getEntityManager());
         this.beregningsgrunnlagDump = new BeregningsgrunnlagDump(getEntityManager());
+        this.debugDumpsters = new DebugDumpsters(new UnitTestLookupInstanceImpl<>(beregningsgrunnlagDump));
     }
 
     @Test
-    void skal_dumpe_grunnlag() {
+    void skal_kjøre_dump_og_få_200() {
         KoblingEntitet koblingEntitet = lagKobling();
         lagGrunnlag(koblingEntitet);
 
-        var dump = beregningsgrunnlagDump.dump(koblingEntitet.getSaksnummer());
+        var dump = debugDumpsters.dumper(koblingEntitet.getSaksnummer());
 
-        assertThat(dump.size()).isEqualTo(1);
+        var response = Response.ok(dump)
+                .type(MediaType.APPLICATION_OCTET_STREAM)
+                .header("Content-Disposition", String.format("attachment; filename=\"%s.zip\"", koblingEntitet.getSaksnummer().getVerdi()))
+                .build();
+
+
+        assertThat(response.getStatus()).isEqualTo(200);
+    }
+
+    private KoblingEntitet lagKobling() {
+        var koblingEntitet = new KoblingEntitet(new KoblingReferanse(UUID.randomUUID()), YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN,
+                new Saksnummer("sak"), new AktørId("123456789"), false);
+        getEntityManager().persist(koblingEntitet);
+        return koblingEntitet;
     }
 
     private void lagGrunnlag(KoblingEntitet koblingEntitet) {
@@ -100,12 +113,5 @@ class BeregningsgrunnlagDumpTest extends EntityManagerAwareTest {
                                 .medArbeidsforholdRef(InternArbeidsforholdRef.nullRef())
                                 .medPeriode(IntervallEntitet.fraOgMed(LocalDate.now().minusMonths(10))).build()).build());
         beregningsgrunnlagRepository.lagre(koblingEntitet.getId(), grunnlagEntitet, BeregningsgrunnlagTilstand.FASTSATT);
-    }
-
-    private KoblingEntitet lagKobling() {
-        var koblingEntitet = new KoblingEntitet(new KoblingReferanse(UUID.randomUUID()), YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN,
-                new Saksnummer("sak"), new AktørId("123456789"), false);
-        getEntityManager().persist(koblingEntitet);
-        return koblingEntitet;
     }
 }
