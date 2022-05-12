@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -10,6 +11,7 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
+import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDto;
 
 public class YrkesaktivitetDto {
 
@@ -120,6 +122,12 @@ public class YrkesaktivitetDto {
     public Set<PermisjonDto> getPermisjoner() {
         return permisjoner;
     }
+
+
+    public Set<PermisjonDto> getFullPermisjon() {
+        return permisjoner.stream().filter(p -> p.getProsentsats() != null && p.getProsentsats().compareTo(BigDecimal.valueOf(100)) >= 0).collect(Collectors.toSet());
+    }
+
 
     void leggTilPermisjon(PermisjonDto permisjon) {
         this.permisjoner.add(permisjon);

@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
@@ -17,7 +16,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidsforholdHandlingType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BekreftetPermisjonStatus;
 
 public class ArbeidsforholdOverstyringDto {
 
@@ -29,7 +27,6 @@ public class ArbeidsforholdOverstyringDto {
     private String navn;
     private Stillingsprosent stillingsprosent;
     private List<ArbeidsforholdOverstyrtePerioderDto> arbeidsforholdOverstyrtePerioder = new ArrayList<>();
-    private BekreftetPermisjonDto bekreftetPermisjon = new BekreftetPermisjonDto();
 
     ArbeidsforholdOverstyringDto() {
     }
@@ -39,7 +36,6 @@ public class ArbeidsforholdOverstyringDto {
         this.arbeidsforholdRef = arbeidsforholdOverstyringEntitet.arbeidsforholdRef;
         this.handling = arbeidsforholdOverstyringEntitet.getHandling();
         this.nyArbeidsforholdRef = arbeidsforholdOverstyringEntitet.nyArbeidsforholdRef;
-        this.bekreftetPermisjon = arbeidsforholdOverstyringEntitet.bekreftetPermisjon;
         this.navn = arbeidsforholdOverstyringEntitet.getArbeidsgiverNavn();
         this.stillingsprosent = arbeidsforholdOverstyringEntitet.getStillingsprosent();
         this.begrunnelse = arbeidsforholdOverstyringEntitet.getBegrunnelse();
@@ -97,29 +93,8 @@ public class ArbeidsforholdOverstyringDto {
         return arbeidsforholdOverstyrtePerioder;
     }
 
-    public InternArbeidsforholdRefDto getNyArbeidsforholdRef() {
-        return nyArbeidsforholdRef;
-    }
-
     void setNyArbeidsforholdRef(InternArbeidsforholdRefDto nyArbeidsforholdRef) {
         this.nyArbeidsforholdRef = nyArbeidsforholdRef != null && !InternArbeidsforholdRefDto.nullRef().equals(nyArbeidsforholdRef) ? nyArbeidsforholdRef : null;
-    }
-
-    public Optional<BekreftetPermisjonDto> getBekreftetPermisjon() {
-        if (bekreftetPermisjon.getStatus().equals(BekreftetPermisjonStatus.UDEFINERT)) {
-            return Optional.empty();
-        }
-        return Optional.of(bekreftetPermisjon);
-    }
-
-    void setBekreftetPermisjon(BekreftetPermisjonDto bekreftetPermisjon) {
-        this.bekreftetPermisjon = bekreftetPermisjon;
-    }
-
-    public boolean erOverstyrt() {
-        return !Objects.equals(ArbeidsforholdHandlingType.BRUK, handling)
-                || (Objects.equals(ArbeidsforholdHandlingType.BRUK, handling) &&
-                !Objects.equals(bekreftetPermisjon.getStatus(), BekreftetPermisjonStatus.UDEFINERT));
     }
 
     public boolean kreverIkkeInntektsmelding() {

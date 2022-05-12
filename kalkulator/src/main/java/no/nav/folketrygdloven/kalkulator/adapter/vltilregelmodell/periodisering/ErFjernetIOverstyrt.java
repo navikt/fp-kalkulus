@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.felles.BeregningstidspunktTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDto;
 
 public class ErFjernetIOverstyrt {
     private ErFjernetIOverstyrt() {
@@ -27,15 +27,14 @@ public class ErFjernetIOverstyrt {
             .filter(periode -> !periode.getTom().isBefore(BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunktBeregning)))
             .collect(Collectors.toList());
         if (erAktivDagenFørSkjæringstidspunktet(skjæringstidspunktBeregning, ansettelsesPerioder)) {
-            return liggerIkkeIBGAktivitetAggregat(yrkesaktivitet, aktivitetAggregatEntitet) && varIkkeIPermisjonPåSkjæringstidspunkt(filter.getBekreftedePermisjonerForYrkesaktivitet(yrkesaktivitet), skjæringstidspunktBeregning);
+            return liggerIkkeIBGAktivitetAggregat(yrkesaktivitet, aktivitetAggregatEntitet) && varIkkeIPermisjonPåSkjæringstidspunkt(yrkesaktivitet.getFullPermisjon(), skjæringstidspunktBeregning);
         }
         return false;
     }
 
-    private static boolean varIkkeIPermisjonPåSkjæringstidspunkt(Collection<ArbeidsforholdOverstyringDto> bekreftedePermisjonerForYa, LocalDate skjæringstidspunktBeregning) {
-        return bekreftedePermisjonerForYa.stream()
-                .filter(os -> os.getBekreftetPermisjon().isPresent())
-                .noneMatch(os -> os.getBekreftetPermisjon().get().getPeriode().inkluderer(skjæringstidspunktBeregning));
+    private static boolean varIkkeIPermisjonPåSkjæringstidspunkt(Collection<PermisjonDto> permisjoner, LocalDate skjæringstidspunktBeregning) {
+        return permisjoner.stream()
+                .noneMatch(p -> p.getPeriode().inkluderer(skjæringstidspunktBeregning));
     }
 
     private static boolean liggerIkkeIBGAktivitetAggregat(YrkesaktivitetDto yrkesaktivitet, BeregningAktivitetAggregatDto aktivitetAggregatEntitet) {
