@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
 
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
@@ -16,20 +17,26 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Aktivitet;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
+import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.PermisjonDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PermisjonsbeskrivelseType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
@@ -37,41 +44,98 @@ import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.Arbeidsforhold;
 
-public class MapBeregningAktiviteterFraVLTilRegelK14Test {
-
+class MapBeregningAktiviteterFraVLTilRegelFellesTest {
     private static final String ORGNR = "974242931";
     private static final String ORGNR2 = "999999999";
     private static final AktørId aktørId = AktørId.dummy();
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019, 1, 1);
-
+    private static final KoblingReferanseMock KOBLING_REFERANSE = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
+    public static final String ARBEIDSGIVER_ORGNR = "123456789";
+    public static final Arbeidsgiver ARBEIDSGIVER = Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR);
+    public static final InternArbeidsforholdRefDto NULL_REF = InternArbeidsforholdRefDto.nullRef();
+    public static final InternArbeidsforholdRefDto ARBEIDSFORHOLD_ID = InternArbeidsforholdRefDto.nyRef();
+    private MapBeregningAktiviteterFraVLTilRegelFelles mapper = new MapBeregningAktiviteterFraVLTilRegelFelles();
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
 
     @Test
-    public void skal_mappe_arbeidsforhold_med_virksomhetarbeidsgiver_fra_opptjening_med_info_i_iay() {
+    void skal_mappe_et_arbeidsforhold_med_inntektsmelding_uten_referanse() {
         // Arrange
-        var arbId = InternArbeidsforholdRefDto.nyRef();
-        LocalDate fom = SKJÆRINGSTIDSPUNKT.minusMonths(12);
-        LocalDate tom = SKJÆRINGSTIDSPUNKT.minusDays(1);
-        Intervall periode = Intervall.fraOgMedTilOgMed(fom, tom);
-
-        var opptjeningAktivitet = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.ARBEID, periode, ORGNR, arbId);
+        LocalDate ansettelsesDato = SKJÆRINGSTIDSPUNKT.minusYears(1);
+        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = lagIAY(ansettelsesDato, NULL_REF, Collections.emptyList());
+        var opptjeningAktiviteterDto = lagOpptjeningsAktivitet(ansettelsesDato, NULL_REF);
 
         // Act
-        AktivitetStatusModell modell = mapForSkjæringstidspunkt(koblingReferanse, opptjeningAktivitet, List.of());
+        AktivitetStatusModell aktivitetStatusModell = mapForSkjæringstidspunkt(iayGrunnlagBuilder, opptjeningAktiviteterDto);
 
         // Assert
-        assertThat(modell.getSkjæringstidspunktForOpptjening()).isEqualTo(SKJÆRINGSTIDSPUNKT);
-        assertThat(modell.getAktivePerioder()).hasSize(1);
-        AktivPeriode aktivPeriode = modell.getAktivePerioder().get(0);
-        assertThat(aktivPeriode.getPeriode().getFom()).isEqualTo(fom);
-        assertThat(aktivPeriode.getPeriode().getTom()).isEqualTo(tom);
-        Arbeidsforhold arbeidsforhold = aktivPeriode.getArbeidsforhold();
-        assertThat(arbeidsforhold.getAktivitet()).isEqualByComparingTo(Aktivitet.ARBEIDSTAKERINNTEKT);
-        assertThat(arbeidsforhold.getReferanseType())
-            .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
-        assertThat(arbeidsforhold.getOrgnr()).isEqualTo(ORGNR);
-        assertThat(arbeidsforhold.getArbeidsforholdId()).isEqualTo(null);
+        var beregningsModell = aktivitetStatusModell.getAktivePerioder();
+        assertThat(beregningsModell).hasSize(1);
+        var aktivitet = beregningsModell.get(0);
+        assertThat(aktivitet.getArbeidsforhold().getOrgnr()).isEqualTo(ARBEIDSGIVER_ORGNR);
+        assertThat(aktivitet.getArbeidsforhold().getArbeidsforholdId()).isNull();
     }
+
+    @Test
+    void skal_mappe_et_arbeidsforhold_med_inntektsmelding_med_referanse() {
+        // Arrange
+        LocalDate ansettelsesDato = SKJÆRINGSTIDSPUNKT.minusYears(1);
+        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = lagIAY(ansettelsesDato, ARBEIDSFORHOLD_ID, Collections.emptyList());
+        var opptjeningAktiviteterDto = lagOpptjeningsAktivitet(ansettelsesDato, ARBEIDSFORHOLD_ID);
+
+        // Act
+        AktivitetStatusModell aktivitetStatusModell = mapForSkjæringstidspunkt(iayGrunnlagBuilder, opptjeningAktiviteterDto);
+
+        // Assert
+        var beregningsModell = aktivitetStatusModell.getAktivePerioder();
+        assertThat(beregningsModell).hasSize(1);
+        var aktivitet = beregningsModell.get(0);
+        assertThat(aktivitet.getArbeidsforhold().getOrgnr()).isEqualTo(ARBEIDSGIVER_ORGNR);
+        assertThat(aktivitet.getArbeidsforhold().getArbeidsforholdId()).isEqualTo(ARBEIDSFORHOLD_ID.getReferanse());
+        assertThat(aktivitet.getPeriode().getTom()).isEqualTo(TIDENES_ENDE);
+    }
+
+    @Test
+    void skal_mappe_et_arbeidsforhold_med_full_permisjon() {
+        // Arrange
+        LocalDate ansettelsesDato = SKJÆRINGSTIDSPUNKT.minusYears(1);
+        var permisjonsPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.plusDays(1));
+        List<PermisjonDtoBuilder> permisjonDtoBuilders = List.of(PermisjonDtoBuilder.ny().medPeriode(permisjonsPeriode).medProsentsats(BigDecimal.valueOf(100)).medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.VELFERDSPERMISJON));
+        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = lagIAY(ansettelsesDato, NULL_REF, permisjonDtoBuilders);
+        var opptjeningAktiviteterDto = lagOpptjeningsAktivitet(ansettelsesDato, NULL_REF);
+
+        // Act
+        AktivitetStatusModell aktivitetStatusModell = mapForSkjæringstidspunkt(iayGrunnlagBuilder, opptjeningAktiviteterDto);
+
+        // Assert
+        var beregningsModell = aktivitetStatusModell.getAktivePerioder();
+        assertThat(beregningsModell).hasSize(1);
+        var aktivitet = beregningsModell.get(0);
+        assertThat(aktivitet.getArbeidsforhold().getOrgnr()).isEqualTo(ARBEIDSGIVER_ORGNR);
+        assertThat(aktivitet.getArbeidsforhold().getArbeidsforholdId()).isNull();
+        assertThat(aktivitet.getPeriode().getTom()).isEqualTo(permisjonsPeriode.getFomDato().minusDays(1));
+    }
+
+    @Test
+    void skal_mappe_et_arbeidsforhold_med_delvis_permisjon() {
+        // Arrange
+        LocalDate ansettelsesDato = SKJÆRINGSTIDSPUNKT.minusYears(1);
+        var permisjonsPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.plusDays(1));
+        List<PermisjonDtoBuilder> permisjonDtoBuilders = List.of(PermisjonDtoBuilder.ny().medPeriode(permisjonsPeriode).medProsentsats(BigDecimal.valueOf(60)));
+        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = lagIAY(ansettelsesDato, NULL_REF, permisjonDtoBuilders);
+        var opptjeningAktiviteterDto = lagOpptjeningsAktivitet(ansettelsesDato, NULL_REF);
+
+        // Act
+        AktivitetStatusModell aktivitetStatusModell = mapForSkjæringstidspunkt(iayGrunnlagBuilder, opptjeningAktiviteterDto);
+
+        // Assert
+        var beregningsModell = aktivitetStatusModell.getAktivePerioder();
+        assertThat(beregningsModell).hasSize(1);
+        var aktivitet = beregningsModell.get(0);
+        assertThat(aktivitet.getArbeidsforhold().getOrgnr()).isEqualTo(ARBEIDSGIVER_ORGNR);
+        assertThat(aktivitet.getArbeidsforhold().getArbeidsforholdId()).isNull();
+        assertThat(aktivitet.getPeriode().getTom()).isEqualTo(TIDENES_ENDE);
+    }
+
 
     private AktivitetStatusModell mapForSkjæringstidspunkt(KoblingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter,
                                                            InntektsmeldingDto inntektsmelding) {
@@ -85,7 +149,7 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
                 .medData(lagData(alleYA))
                 .build();
         var input = new FastsettBeregningsaktiviteterInput(ref, iayGrunnlag, opptjeningAktiviteter, List.of(), null);
-        return new MapBeregningAktiviteterFraVLTilRegelK14().mapForSkjæringstidspunkt(input);
+        return new MapBeregningAktiviteterFraVLTilRegelFelles().mapForSkjæringstidspunkt(input);
     }
 
     private AktivitetStatusModell mapForSkjæringstidspunkt(KoblingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter,
@@ -100,16 +164,16 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
                 .medData(lagData(alleYA))
                 .build();
         var input = new FastsettBeregningsaktiviteterInput(ref, iayGrunnlag, opptjeningAktiviteter, List.of(), null);
-        return new MapBeregningAktiviteterFraVLTilRegelK14().mapForSkjæringstidspunkt(input);
+        return new MapBeregningAktiviteterFraVLTilRegelFelles().mapForSkjæringstidspunkt(input);
     }
 
     private AktivitetStatusModell mapForSkjæringstidspunktArbeidIIAY(KoblingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter,
-                                                           List<InntektsmeldingDto> inntektsmeldinger) {
+                                                                     List<InntektsmeldingDto> inntektsmeldinger) {
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
                 .medInntektsmeldinger(inntektsmeldinger)
                 .build();
         var input = new FastsettBeregningsaktiviteterInput(ref, iayGrunnlag, opptjeningAktiviteter, List.of(), null);
-        return new MapBeregningAktiviteterFraVLTilRegelK14().mapForSkjæringstidspunkt(input);
+        return new MapBeregningAktiviteterFraVLTilRegelFelles().mapForSkjæringstidspunkt(input);
     }
 
     private InntektArbeidYtelseAggregatBuilder lagData(List<YrkesaktivitetDto> yrkesaktiviteter) {
@@ -118,7 +182,7 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
         return InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER).leggTilAktørArbeid(arbeidBuilder);
     }
 
-    private Optional<YrkesaktivitetDto> lagYA(OpptjeningAktiviteterDto.OpptjeningPeriodeDto opp, LocalDate permisjonFOM, PermisjonsbeskrivelseType type) {
+    private Optional<YrkesaktivitetDto> lagYA(OpptjeningAktiviteterDto.OpptjeningPeriodeDto opp, PermisjonsbeskrivelseType type, Intervall permisjonperiode) {
         if (opp.getArbeidsgiver().isPresent()) {
             var yaBuilder = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty()).medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
                     .medArbeidsgiver(opp.getArbeidsgiver().get())
@@ -128,9 +192,9 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
             aktivitetsAvtaleBuilder.medPeriode(opp.getPeriode()).medErAnsettelsesPeriode(true);
             yaBuilder.leggTilAktivitetsAvtale(aktivitetsAvtaleBuilder);
 
-            if (permisjonFOM != null) {
+            if (permisjonperiode != null) {
                 var permisjonBuilder = PermisjonDtoBuilder.ny()
-                        .medPeriode(Intervall.fraOgMedTilOgMed(permisjonFOM, SKJÆRINGSTIDSPUNKT.plusYears(12)))
+                        .medPeriode(permisjonperiode)
                         .medProsentsats(BigDecimal.valueOf(100))
                         .medPermisjonsbeskrivelseType(type);
                 yaBuilder.leggTilPermisjon(permisjonBuilder);
@@ -138,6 +202,33 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
             return Optional.of(yaBuilder.build());
         }
         return Optional.empty();
+    }
+
+    @Test
+    public void skal_mappe_arbeidsforhold_med_virksomhetarbeidsgiver_fra_opptjening_med_info_i_iay() {
+        // Arrange
+        var arbId = InternArbeidsforholdRefDto.nyRef();
+        LocalDate fom = SKJÆRINGSTIDSPUNKT.minusMonths(12);
+        LocalDate tom = SKJÆRINGSTIDSPUNKT.minusDays(1);
+        Intervall periode = Intervall.fraOgMedTilOgMed(fom, tom);
+
+        var opptjeningAktivitet = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.ARBEID, periode, ARBEIDSGIVER_ORGNR, arbId);
+
+        // Act
+        AktivitetStatusModell modell = mapForSkjæringstidspunkt(koblingReferanse, opptjeningAktivitet, List.of());
+
+        // Assert
+        assertThat(modell.getSkjæringstidspunktForOpptjening()).isEqualTo(SKJÆRINGSTIDSPUNKT);
+        assertThat(modell.getAktivePerioder()).hasSize(1);
+        AktivPeriode aktivPeriode = modell.getAktivePerioder().get(0);
+        assertThat(aktivPeriode.getPeriode().getFom()).isEqualTo(fom);
+        assertThat(aktivPeriode.getPeriode().getTom()).isEqualTo(tom);
+        Arbeidsforhold arbeidsforhold = aktivPeriode.getArbeidsforhold();
+        assertThat(arbeidsforhold.getAktivitet()).isEqualByComparingTo(Aktivitet.ARBEIDSTAKERINNTEKT);
+        assertThat(arbeidsforhold.getReferanseType())
+                .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
+        assertThat(arbeidsforhold.getOrgnr()).isEqualTo(ARBEIDSGIVER_ORGNR);
+        assertThat(arbeidsforhold.getArbeidsforholdId()).isEqualTo(null);
     }
 
     @Test
@@ -149,9 +240,9 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
         LocalDate tom = SKJÆRINGSTIDSPUNKT.minusDays(1);
         var periode = Intervall.fraOgMedTilOgMed(fom, tom);
 
-        var opptjeningAktivitet = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.ARBEID, periode, ORGNR, arbId);
+        var opptjeningAktivitet = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.ARBEID, periode, ARBEIDSGIVER_ORGNR, arbId);
 
-        var inntektsmelding = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR, arbId, SKJÆRINGSTIDSPUNKT);
+        var inntektsmelding = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ARBEIDSGIVER_ORGNR, arbId, SKJÆRINGSTIDSPUNKT);
 
         // Act
         AktivitetStatusModell modell = mapForSkjæringstidspunkt(koblingReferanse, opptjeningAktivitet, inntektsmelding);
@@ -165,8 +256,8 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
         Arbeidsforhold arbeidsforhold = aktivPeriode.getArbeidsforhold();
         assertThat(arbeidsforhold.getAktivitet()).isEqualByComparingTo(Aktivitet.ARBEIDSTAKERINNTEKT);
         assertThat(arbeidsforhold.getReferanseType())
-            .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
-        assertThat(arbeidsforhold.getOrgnr()).isEqualTo(ORGNR);
+                .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
+        assertThat(arbeidsforhold.getOrgnr()).isEqualTo(ARBEIDSGIVER_ORGNR);
         assertThat(arbeidsforhold.getArbeidsforholdId()).isEqualTo(arbId.getReferanse());
     }
 
@@ -191,7 +282,7 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
         Arbeidsforhold arbeidsforhold = aktivPeriode.getArbeidsforhold();
         assertThat(arbeidsforhold.getAktivitet()).isEqualByComparingTo(Aktivitet.ARBEIDSTAKERINNTEKT);
         assertThat(arbeidsforhold.getReferanseType())
-            .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
+                .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
         assertThat(arbeidsforhold.getOrgnr()).isEqualTo(ORGNR);
         assertThat(arbeidsforhold.getArbeidsforholdId()).isNull();
     }
@@ -207,7 +298,7 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
         var opptjeningAktiviteter2 = OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.ARBEID, periode, ORGNR2, null, null);
         var alleAktiviteter = new OpptjeningAktiviteterDto(opptjeningAktiviteter, opptjeningAktiviteter2);
         var ya1 = lagYA(opptjeningAktiviteter, null, null).orElseThrow();
-        var ya2 = lagYA(opptjeningAktiviteter2, periode.getFomDato(), PermisjonsbeskrivelseType.VELFERDSPERMISJON).orElseThrow();
+        var ya2 = lagYA(opptjeningAktiviteter2, PermisjonsbeskrivelseType.VELFERDSPERMISJON, Intervall.fraOgMedTilOgMed(periode.getFomDato(), SKJÆRINGSTIDSPUNKT.plusYears(12))).orElseThrow();
 
         // Act
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
@@ -215,7 +306,7 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
                 .medData(lagData(Arrays.asList(ya1, ya2)))
                 .build();
         var input = new FastsettBeregningsaktiviteterInput(koblingReferanse, iayGrunnlag, alleAktiviteter, List.of(), null);
-        AktivitetStatusModell modell= new MapBeregningAktiviteterFraVLTilRegelK14().mapForSkjæringstidspunkt(input);
+        AktivitetStatusModell modell = new MapBeregningAktiviteterFraVLTilRegelFelles().mapForSkjæringstidspunkt(input);
 
         // Assert
         assertThat(modell.getSkjæringstidspunktForOpptjening()).isEqualTo(SKJÆRINGSTIDSPUNKT);
@@ -243,7 +334,7 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
     }
 
     @Test
-    public void skal_mappe_2_arbeidsforhold_med_permisjon_som_ikke_er_relevant_fra_det_ene() {
+    public void skal_mappe_2_arbeidsforhold_med_permisjon_fra_det_ene_i_14_dager() {
         // Arrange
         LocalDate fom = SKJÆRINGSTIDSPUNKT.minusMonths(12);
         LocalDate tom = SKJÆRINGSTIDSPUNKT.minusDays(1);
@@ -253,7 +344,7 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
         var opptjeningAktiviteter2 = OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.ARBEID, periode, ORGNR2, null, null);
         var alleAktiviteter = new OpptjeningAktiviteterDto(opptjeningAktiviteter, opptjeningAktiviteter2);
         var ya1 = lagYA(opptjeningAktiviteter, null, null).orElseThrow();
-        var ya2 = lagYA(opptjeningAktiviteter2, periode.getFomDato(), PermisjonsbeskrivelseType.PERMISJON_MED_FORELDREPENGER).orElseThrow();
+        var ya2 = lagYA(opptjeningAktiviteter2, PermisjonsbeskrivelseType.VELFERDSPERMISJON, Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusDays(15), SKJÆRINGSTIDSPUNKT.minusDays(1))).orElseThrow();
 
         // Act
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
@@ -261,11 +352,106 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
                 .medData(lagData(Arrays.asList(ya1, ya2)))
                 .build();
         var input = new FastsettBeregningsaktiviteterInput(koblingReferanse, iayGrunnlag, alleAktiviteter, List.of(), null);
-        AktivitetStatusModell modell= new MapBeregningAktiviteterFraVLTilRegelK14().mapForSkjæringstidspunkt(input);
+        AktivitetStatusModell modell = new MapBeregningAktiviteterFraVLTilRegelFelles().mapForSkjæringstidspunkt(input);
 
         // Assert
         assertThat(modell.getSkjæringstidspunktForOpptjening()).isEqualTo(SKJÆRINGSTIDSPUNKT);
         assertThat(modell.getAktivePerioder()).hasSize(2);
+
+        AktivPeriode aktivPeriode1 = modell.getAktivePerioder().stream().filter(p -> p.getArbeidsforhold().getOrgnr().equals(ORGNR)).findFirst().orElseThrow();
+        assertThat(aktivPeriode1.getPeriode().getFom()).isEqualTo(fom);
+        assertThat(aktivPeriode1.getPeriode().getTom()).isEqualTo(tom);
+        Arbeidsforhold arbeidsforhold = aktivPeriode1.getArbeidsforhold();
+        assertThat(arbeidsforhold.getAktivitet()).isEqualByComparingTo(Aktivitet.ARBEIDSTAKERINNTEKT);
+        assertThat(arbeidsforhold.getReferanseType())
+                .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
+        assertThat(arbeidsforhold.getOrgnr()).isEqualTo(ORGNR);
+        assertThat(arbeidsforhold.getArbeidsforholdId()).isNull();
+
+        AktivPeriode aktivPeriode2 = modell.getAktivePerioder().stream().filter(p -> p.getArbeidsforhold().getOrgnr().equals(ORGNR2)).findFirst().orElseThrow();
+        assertThat(aktivPeriode2.getPeriode().getFom()).isEqualTo(fom);
+        assertThat(aktivPeriode2.getPeriode().getTom()).isEqualTo(SKJÆRINGSTIDSPUNKT.minusDays(16));
+        Arbeidsforhold arbeidsforhold2 = aktivPeriode2.getArbeidsforhold();
+        assertThat(arbeidsforhold2.getAktivitet()).isEqualByComparingTo(Aktivitet.ARBEIDSTAKERINNTEKT);
+        assertThat(arbeidsforhold2.getReferanseType())
+                .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
+        assertThat(arbeidsforhold2.getOrgnr()).isEqualTo(ORGNR2);
+        assertThat(arbeidsforhold2.getArbeidsforholdId()).isNull();
+    }
+
+
+    @Test
+    public void skal_mappe_2_arbeidsforhold_med_permisjon_under_14_dager_fra_det_ene() {
+        // Arrange
+        LocalDate fom = SKJÆRINGSTIDSPUNKT.minusMonths(12);
+        LocalDate tom = SKJÆRINGSTIDSPUNKT.minusDays(1);
+        var periode = Intervall.fraOgMedTilOgMed(fom, tom);
+
+        var opptjeningAktiviteter = OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.ARBEID, periode, ORGNR, null, null);
+        var opptjeningAktiviteter2 = OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.ARBEID, periode, ORGNR2, null, null);
+        var alleAktiviteter = new OpptjeningAktiviteterDto(opptjeningAktiviteter, opptjeningAktiviteter2);
+        var ya1 = lagYA(opptjeningAktiviteter, null, null).orElseThrow();
+        var ya2 = lagYA(opptjeningAktiviteter2, PermisjonsbeskrivelseType.VELFERDSPERMISJON, Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusDays(14), SKJÆRINGSTIDSPUNKT.minusDays(1))).orElseThrow();
+
+        // Act
+        var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
+                .medInntektsmeldinger(Collections.emptyList())
+                .medData(lagData(Arrays.asList(ya1, ya2)))
+                .build();
+        var input = new FastsettBeregningsaktiviteterInput(koblingReferanse, iayGrunnlag, alleAktiviteter, List.of(), null);
+        AktivitetStatusModell modell = new MapBeregningAktiviteterFraVLTilRegelFelles().mapForSkjæringstidspunkt(input);
+
+        // Assert
+        assertThat(modell.getSkjæringstidspunktForOpptjening()).isEqualTo(SKJÆRINGSTIDSPUNKT);
+        assertThat(modell.getAktivePerioder()).hasSize(2);
+
+        AktivPeriode aktivPeriode1 = modell.getAktivePerioder().stream().filter(p -> p.getArbeidsforhold().getOrgnr().equals(ORGNR)).findFirst().orElseThrow();
+        assertThat(aktivPeriode1.getPeriode().getFom()).isEqualTo(fom);
+        assertThat(aktivPeriode1.getPeriode().getTom()).isEqualTo(tom);
+        Arbeidsforhold arbeidsforhold = aktivPeriode1.getArbeidsforhold();
+        assertThat(arbeidsforhold.getAktivitet()).isEqualByComparingTo(Aktivitet.ARBEIDSTAKERINNTEKT);
+        assertThat(arbeidsforhold.getReferanseType())
+                .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
+        assertThat(arbeidsforhold.getOrgnr()).isEqualTo(ORGNR);
+        assertThat(arbeidsforhold.getArbeidsforholdId()).isNull();
+
+        AktivPeriode aktivPeriode2 = modell.getAktivePerioder().stream().filter(p -> p.getArbeidsforhold().getOrgnr().equals(ORGNR2)).findFirst().orElseThrow();
+        assertThat(aktivPeriode2.getPeriode().getFom()).isEqualTo(fom);
+        assertThat(aktivPeriode2.getPeriode().getTom()).isEqualTo(tom);
+        Arbeidsforhold arbeidsforhold2 = aktivPeriode2.getArbeidsforhold();
+        assertThat(arbeidsforhold2.getAktivitet()).isEqualByComparingTo(Aktivitet.ARBEIDSTAKERINNTEKT);
+        assertThat(arbeidsforhold2.getReferanseType())
+                .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
+        assertThat(arbeidsforhold2.getOrgnr()).isEqualTo(ORGNR2);
+        assertThat(arbeidsforhold2.getArbeidsforholdId()).isNull();
+    }
+
+    @Test
+    public void skal_mappe_2_arbeidsforhold_med_permisjon_som_ikke_er_relevant_fra_det_ene() {
+        // Arrange
+        LocalDate fom = SKJÆRINGSTIDSPUNKT.minusMonths(12);
+        LocalDate tom = SKJÆRINGSTIDSPUNKT.minusDays(1);
+        var periode = Intervall.fraOgMedTilOgMed(fom, tom);
+
+        var opptjeningAktiviteter = OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.ARBEID, periode, ORGNR, null, null);
+        var opptjeningAktiviteter2 = OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.ARBEID, periode, ORGNR2, null, null);
+        var opptjeningAktiviteter3 = OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.FORELDREPENGER, periode, null, null, null);
+
+        var alleAktiviteter = new OpptjeningAktiviteterDto(opptjeningAktiviteter, opptjeningAktiviteter2, opptjeningAktiviteter3);
+        var ya1 = lagYA(opptjeningAktiviteter, null, null).orElseThrow();
+        var ya2 = lagYA(opptjeningAktiviteter2, PermisjonsbeskrivelseType.PERMISJON_MED_FORELDREPENGER, Intervall.fraOgMedTilOgMed(periode.getFomDato(), SKJÆRINGSTIDSPUNKT.plusYears(12))).orElseThrow();
+
+        // Act
+        var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
+                .medInntektsmeldinger(Collections.emptyList())
+                .medData(lagData(Arrays.asList(ya1, ya2)))
+                .build();
+        var input = new FastsettBeregningsaktiviteterInput(koblingReferanse, iayGrunnlag, alleAktiviteter, List.of(), null);
+        AktivitetStatusModell modell = new MapBeregningAktiviteterFraVLTilRegelFelles().mapForSkjæringstidspunkt(input);
+
+        // Assert
+        assertThat(modell.getSkjæringstidspunktForOpptjening()).isEqualTo(SKJÆRINGSTIDSPUNKT);
+        assertThat(modell.getAktivePerioder()).hasSize(3);
 
         AktivPeriode aktivPeriode1 = modell.getAktivePerioder().stream().filter(p -> p.getArbeidsforhold().getOrgnr().equals(ORGNR)).findFirst().orElseThrow();
         assertThat(aktivPeriode1.getPeriode().getFom()).isEqualTo(fom);
@@ -323,8 +509,8 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
         assertThat(modell.getAktivePerioder()).hasSize(3);
         for (InternArbeidsforholdRefDto ref : arbeidsforholdRef) {
             Optional<AktivPeriode> aktivPeriodeOpt = modell.getAktivePerioder().stream()
-                .filter(ap -> Objects.equals(ap.getArbeidsforhold().getArbeidsforholdId(), ref.getReferanse()))
-                .findFirst();
+                    .filter(ap -> Objects.equals(ap.getArbeidsforhold().getArbeidsforholdId(), ref.getReferanse()))
+                    .findFirst();
             assertThat(aktivPeriodeOpt.isPresent()).isTrue();
             AktivPeriode aktivPeriode = aktivPeriodeOpt.get();
             assertThat(aktivPeriode.getPeriode().getFom()).isEqualTo(fom);
@@ -332,7 +518,7 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
             Arbeidsforhold arbeidsforhold = aktivPeriode.getArbeidsforhold();
             assertThat(arbeidsforhold.getAktivitet()).isEqualByComparingTo(Aktivitet.ARBEIDSTAKERINNTEKT);
             assertThat(arbeidsforhold.getReferanseType())
-                .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
+                    .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
             assertThat(arbeidsforhold.getOrgnr()).isEqualTo(orgnr);
         }
     }
@@ -368,7 +554,7 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
         assertThat(arbeidsforhold.getArbeidsforholdId()).isNull();
         assertThat(arbeidsforhold.getAktivitet()).isEqualByComparingTo(Aktivitet.ARBEIDSTAKERINNTEKT);
         assertThat(arbeidsforhold.getReferanseType())
-            .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
+                .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
         assertThat(arbeidsforhold.getOrgnr()).isEqualTo(ORGNR);
     }
 
@@ -404,7 +590,7 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
         assertThat(arbeidsforhold.getArbeidsforholdId()).isNull();
         assertThat(arbeidsforhold.getAktivitet()).isEqualByComparingTo(Aktivitet.ARBEIDSTAKERINNTEKT);
         assertThat(arbeidsforhold.getReferanseType())
-            .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
+                .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
         assertThat(arbeidsforhold.getOrgnr()).isEqualTo(ORGNR);
     }
 
@@ -429,7 +615,7 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
         Arbeidsforhold arbeidsforhold = aktivPeriode.getArbeidsforhold();
         assertThat(arbeidsforhold.getAktivitet()).isEqualByComparingTo(Aktivitet.ARBEIDSTAKERINNTEKT);
         assertThat(arbeidsforhold.getReferanseType())
-            .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.AKTØR_ID);
+                .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.AKTØR_ID);
         assertThat(arbeidsforhold.getAktørId()).isEqualTo(aktørId.getId());
         assertThat(arbeidsforhold.getArbeidsforholdId()).isNull();
     }
@@ -480,11 +666,11 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
     public void skal_mappe_alle_SN_fra_opptjening_til_ein_aktivitet() {
         // Arrange
         var opptj1 = OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.NÆRING,
-            Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(12), SKJÆRINGSTIDSPUNKT.minusMonths(6)), "674367833");
+                Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(12), SKJÆRINGSTIDSPUNKT.minusMonths(6)), "674367833");
         var opptj2 = OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.NÆRING,
-            Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(4), SKJÆRINGSTIDSPUNKT.minusMonths(2)), "5465464545");
+                Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(4), SKJÆRINGSTIDSPUNKT.minusMonths(2)), "5465464545");
         var opptj3 = OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.NÆRING,
-            Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.plusMonths(4)), "543678342");
+                Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.plusMonths(4)), "543678342");
 
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(List.of(opptj1, opptj2, opptj3));
 
@@ -502,11 +688,11 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
     public void skal_mappe_sykepenger_fra_opptjening_til_ein_aktivitet() {
         // Arrange
         var opptj1 = OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.SYKEPENGER,
-            Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(12), SKJÆRINGSTIDSPUNKT.minusMonths(6)), "674367833");
+                Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(12), SKJÆRINGSTIDSPUNKT.minusMonths(6)), "674367833");
         var opptj2 = OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.SYKEPENGER,
-            Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(4), SKJÆRINGSTIDSPUNKT.minusMonths(2)), "5465464545");
+                Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(4), SKJÆRINGSTIDSPUNKT.minusMonths(2)), "5465464545");
         var opptj3 = OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.SYKEPENGER,
-            Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.plusMonths(4)), "543678342");
+                Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.plusMonths(4)), "543678342");
 
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(List.of(opptj1, opptj2, opptj3));
 
@@ -608,7 +794,7 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
 
     private void assertSykepengerPeriode(AktivitetStatusModell modell, Intervall periode) {
         Optional<AktivPeriode> aktivPeriodeOpt = modell.getAktivePerioder().stream()
-            .filter(ap -> ap.getPeriode().equals(Periode.of(periode.getFomDato(), periode.getTomDato()))).findFirst();
+                .filter(ap -> ap.getPeriode().equals(Periode.of(periode.getFomDato(), periode.getTomDato()))).findFirst();
         assertThat(aktivPeriodeOpt.isPresent()).isTrue();
         AktivPeriode aktivPeriode = aktivPeriodeOpt.get();
         assertThat(aktivPeriode.getAktivitet()).isEqualByComparingTo(Aktivitet.SYKEPENGER_MOTTAKER);
@@ -617,7 +803,7 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
 
     private void assertNæringPeriode(AktivitetStatusModell modell, Intervall periode) {
         Optional<AktivPeriode> aktivPeriodeOpt = modell.getAktivePerioder().stream()
-            .filter(ap -> ap.getPeriode().equals(Periode.of(periode.getFomDato(), periode.getTomDato()))).findFirst();
+                .filter(ap -> ap.getPeriode().equals(Periode.of(periode.getFomDato(), periode.getTomDato()))).findFirst();
         assertThat(aktivPeriodeOpt.isPresent()).isTrue();
         AktivPeriode aktivPeriode = aktivPeriodeOpt.get();
         assertThat(aktivPeriode.getAktivitet()).isEqualByComparingTo(Aktivitet.NÆRINGSINNTEKT);
@@ -626,7 +812,7 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
 
     private void assertFrilansPeriode(AktivitetStatusModell modell, Intervall periode) {
         Optional<AktivPeriode> aktivPeriodeOpt = modell.getAktivePerioder().stream()
-            .filter(ap -> ap.getPeriode().equals(Periode.of(periode.getFomDato(), periode.getTomDato()))).findFirst();
+                .filter(ap -> ap.getPeriode().equals(Periode.of(periode.getFomDato(), periode.getTomDato()))).findFirst();
         assertThat(aktivPeriodeOpt.isPresent()).isTrue();
         AktivPeriode aktivPeriode = aktivPeriodeOpt.get();
         assertThat(aktivPeriode.getAktivitet()).isEqualByComparingTo(Aktivitet.FRILANSINNTEKT);
@@ -638,15 +824,65 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
 
     private void assertAktivPeriode(AktivitetStatusModell modell, String orgnr, LocalDate fom, LocalDate tom, String arbRef) {
         Optional<AktivPeriode> aktivPeriodeOpt = modell.getAktivePerioder().stream()
-            .filter(ap -> Objects.equals(ap.getArbeidsforhold().getReferanseType(),
-                no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR) &&
-                Objects.equals(ap.getArbeidsforhold().getOrgnr(), orgnr) &&
-                Objects.equals(ap.getArbeidsforhold().getArbeidsforholdId(), arbRef) &&
-                Objects.equals(ap.getArbeidsforhold().getAktivitet(), Aktivitet.ARBEIDSTAKERINNTEKT))
-            .findFirst();
+                .filter(ap -> Objects.equals(ap.getArbeidsforhold().getReferanseType(),
+                        no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR) &&
+                        Objects.equals(ap.getArbeidsforhold().getOrgnr(), orgnr) &&
+                        Objects.equals(ap.getArbeidsforhold().getArbeidsforholdId(), arbRef) &&
+                        Objects.equals(ap.getArbeidsforhold().getAktivitet(), Aktivitet.ARBEIDSTAKERINNTEKT))
+                .findFirst();
         assertThat(aktivPeriodeOpt.isPresent()).isTrue();
         AktivPeriode aktivPeriode = aktivPeriodeOpt.get();
         assertThat(aktivPeriode.getPeriode().getFom()).isEqualTo(fom);
         assertThat(aktivPeriode.getPeriode().getTom()).isEqualTo(tom);
+    }
+
+
+    private AktivitetStatusModell mapForSkjæringstidspunkt(InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder, OpptjeningAktiviteterDto opptjeningAktiviteterDto) {
+        var beregningsgrunnlaginput = new BeregningsgrunnlagInput(KOBLING_REFERANSE, iayGrunnlagBuilder.build(), opptjeningAktiviteterDto, null, null);
+        var stegInput = new StegProsesseringInput(beregningsgrunnlaginput, BeregningsgrunnlagTilstand.OPPRETTET);
+        var input = new FastsettBeregningsaktiviteterInput(stegInput);
+        return mapper.mapForSkjæringstidspunkt(input);
+    }
+
+    private OpptjeningAktiviteterDto lagOpptjeningsAktivitet(LocalDate ansettelsesDato, InternArbeidsforholdRefDto nullRef) {
+        return new OpptjeningAktiviteterDto(List.of(OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.ARBEID, Intervall.fraOgMed(ansettelsesDato), ARBEIDSGIVER_ORGNR, null, nullRef)));
+    }
+
+    private InntektArbeidYtelseGrunnlagDtoBuilder lagIAY(LocalDate ansettelsesDato, InternArbeidsforholdRefDto arbeidsforholdReferanse, List<PermisjonDtoBuilder> permisjoner) {
+        var register = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
+        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = register.getAktørArbeidBuilder();
+        aktørArbeidBuilder.leggTilYrkesaktivitet(lagYrkesaktivitet(ansettelsesDato, permisjoner));
+        register.leggTilAktørArbeid(aktørArbeidBuilder);
+
+        InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder().medArbeidsgiver(ARBEIDSGIVER).medArbeidsforholdId(arbeidsforholdReferanse).medBeløp(BigDecimal.valueOf(300000)).build();
+        var iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of(inntektsmelding));
+        iayGrunnlagBuilder.medData(register);
+        return iayGrunnlagBuilder;
+    }
+
+    private YrkesaktivitetDto lagYrkesaktivitet(LocalDate ansettelsesDato, List<PermisjonDtoBuilder> permisjoner) {
+        YrkesaktivitetDtoBuilder yrkesaktivitetBuilder = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty());
+        AktivitetsAvtaleDtoBuilder aktivitetsavtaleBuilder = yrkesaktivitetBuilder.getAktivitetsAvtaleBuilder();
+
+        Intervall periode = Intervall.fraOgMedTilOgMed(ansettelsesDato, TIDENES_ENDE);
+        lagAktivitetsavtale(aktivitetsavtaleBuilder, periode);
+
+        AktivitetsAvtaleDtoBuilder ansettelsesPeriode = yrkesaktivitetBuilder.getAktivitetsAvtaleBuilder(periode, true);
+
+        YrkesaktivitetDtoBuilder yrkesaktivitetDtoBuilder = yrkesaktivitetBuilder.medArbeidsgiver(ARBEIDSGIVER)
+                .medArbeidsforholdId(ARBEIDSFORHOLD_ID)
+                .leggTilAktivitetsAvtale(aktivitetsavtaleBuilder)
+                .leggTilAktivitetsAvtale(ansettelsesPeriode)
+                .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
+
+        permisjoner.forEach(yrkesaktivitetDtoBuilder::leggTilPermisjon);
+
+        return yrkesaktivitetDtoBuilder
+                .build();
+    }
+
+    private void lagAktivitetsavtale(AktivitetsAvtaleDtoBuilder aktivitetsavtaleBuilder, Intervall periode) {
+        aktivitetsavtaleBuilder.medPeriode(periode)
+                .medErAnsettelsesPeriode(false);
     }
 }

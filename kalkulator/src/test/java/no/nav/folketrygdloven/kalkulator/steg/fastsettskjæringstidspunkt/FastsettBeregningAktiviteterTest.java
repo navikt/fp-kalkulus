@@ -12,7 +12,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningAktiviteterFraVLTilRegelK9;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningAktiviteterFraVLTilRegelFelles;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
@@ -22,7 +22,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatB
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.PermisjonDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
@@ -46,11 +46,11 @@ class FastsettBeregningAktiviteterTest {
     public static final InternArbeidsforholdRefDto ARBEIDSFORHOLD_ID = InternArbeidsforholdRefDto.nyRef();
 
     private FastsettBeregningAktiviteter fastsettBeregningAktiviteter = new FastsettBeregningAktiviteter(
-            new UnitTestLookupInstanceImpl<>(new MapBeregningAktiviteterFraVLTilRegelK9())
+            new UnitTestLookupInstanceImpl<>(new MapBeregningAktiviteterFraVLTilRegelFelles())
     );
 
     @Test
-    void skal_inkludere_aktiviteter_som_starter_på_skjæringstidspunkt() {
+    void skal_ikke_inkludere_aktiviteter_som_starter_på_skjæringstidspunkt() {
         // Arrange
         LocalDate ansettelsesDato = SKJÆRINGSTIDSPUNKT;
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = lagIAY(ansettelsesDato, NULL_REF, Collections.emptyList());
@@ -61,7 +61,7 @@ class FastsettBeregningAktiviteterTest {
         BeregningAktivitetAggregatDto beregningAktivitetAggregatDto = fastsettBeregningAktiviteter.fastsettAktiviteter(input);
 
         // Assert
-        assertThat(beregningAktivitetAggregatDto.getBeregningAktiviteter()).hasSize(1);
+        assertThat(beregningAktivitetAggregatDto.getBeregningAktiviteter()).isEmpty();
     }
 
     @Test

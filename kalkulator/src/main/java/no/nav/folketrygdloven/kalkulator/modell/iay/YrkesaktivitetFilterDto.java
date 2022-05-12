@@ -284,22 +284,5 @@ public class YrkesaktivitetFilterDto {
         return ansettelsesPerioder;
     }
 
-    public Collection<ArbeidsforholdOverstyringDto> getArbeidsforholdOverstyringer() {
-        return arbeidsforholdOverstyringer == null ? Collections.emptyList() : arbeidsforholdOverstyringer.getOverstyringer();
-    }
-
-    public Collection<ArbeidsforholdOverstyringDto> getBekreftedePermisjonerForYrkesaktivitet(YrkesaktivitetDto ya) {
-        Collection<ArbeidsforholdOverstyringDto> overstyringer = getArbeidsforholdOverstyringer();
-        List<ArbeidsforholdOverstyringDto> overstyringerForAktivitet = overstyringer.stream()
-                .filter(os -> ya.gjelderFor(os.getArbeidsgiver(), os.getArbeidsforholdRef()))
-                .collect(Collectors.toList());
-        return overstyringerForAktivitet.stream()
-                .filter(this::harBekreftetPermisjon)
-                .collect(Collectors.toList());
-    }
-
-    private boolean harBekreftetPermisjon(ArbeidsforholdOverstyringDto os) {
-        return os.getBekreftetPermisjon().isPresent() && BekreftetPermisjonStatus.BRUK_PERMISJON.equals(os.getBekreftetPermisjon().get().getStatus());
-    }
 
 }

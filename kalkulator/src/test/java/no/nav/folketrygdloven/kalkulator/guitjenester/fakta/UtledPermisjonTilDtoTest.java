@@ -14,29 +14,28 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdOverstyringDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.BekreftetPermisjonDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BekreftetPermisjonStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.PermisjonsbeskrivelseType;
 
 
-public class UtledBekreftetPermisjonerTilDtoTest {
+public class UtledPermisjonTilDtoTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
 
     @Test
-    public void skal_returne_empty_hvis_bekreftet_permisjon_ikke_er_present(){
+    public void skal_returne_empty_hvis_aktivitet_ikke_har_permisjon(){
 
         // Arrange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet("1");
@@ -54,10 +53,10 @@ public class UtledBekreftetPermisjonerTilDtoTest {
         ArbeidsforholdOverstyringDtoBuilder overstyringBuilder = informasjonBuilder.getOverstyringBuilderFor(arbeidsgiver, ref);
         informasjonBuilder.leggTil(overstyringBuilder);
 
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagGrunnlag(aktørArbeidBuilder, Optional.of(informasjonBuilder.build()));
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagGrunnlag(aktørArbeidBuilder);
 
         // Act
-        Optional<no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.PermisjonDto> permisjonDto = UtledBekreftetPermisjonerTilDto.utled(iayGrunnlag, SKJÆRINGSTIDSPUNKT, bgAndelArbeidsforhold);
+        Optional<no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.PermisjonDto> permisjonDto = UtledPermisjonTilDto.utled(iayGrunnlag, SKJÆRINGSTIDSPUNKT, bgAndelArbeidsforhold);
 
         // Assert
         assertThat(permisjonDto).isEmpty();
@@ -65,7 +64,7 @@ public class UtledBekreftetPermisjonerTilDtoTest {
     }
 
     @Test
-    public void skal_returne_empty_hvis_bekreftet_permisjon_slutter_før_stp(){
+    public void skal_returne_empty_hvis_permisjon_slutter_før_stp(){
 
         // Arrange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet("1");
@@ -77,17 +76,14 @@ public class UtledBekreftetPermisjonerTilDtoTest {
         YrkesaktivitetDtoBuilder yaBuilder = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty());
         AktivitetsAvtaleDtoBuilder aa = lagAktivitetsAvtaleBuilder(yaBuilder, fom, tom);
         YrkesaktivitetDtoBuilder ya = lagYrkesaktivitetBuilder(yaBuilder, aa, arbeidsgiver, ref);
+        ya.leggTilPermisjon(PermisjonDtoBuilder.ny().medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.VELFERDSPERMISJON).medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
+                .medProsentsats(BigDecimal.valueOf(100)));
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(List.of(ya));
 
-        ArbeidsforholdInformasjonDtoBuilder informasjonBuilder = ArbeidsforholdInformasjonDtoBuilder.oppdatere(Optional.empty());
-        ArbeidsforholdOverstyringDtoBuilder overstyringBuilder = informasjonBuilder.getOverstyringBuilderFor(arbeidsgiver, ref)
-            .medBekreftetPermisjon(new BekreftetPermisjonDto(fom, tom, BekreftetPermisjonStatus.BRUK_PERMISJON));
-        informasjonBuilder.leggTil(overstyringBuilder);
-
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagGrunnlag(aktørArbeidBuilder, Optional.of(informasjonBuilder.build()));
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagGrunnlag(aktørArbeidBuilder);
 
         // Act
-        Optional<no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.PermisjonDto> permisjonDto = UtledBekreftetPermisjonerTilDto.utled(iayGrunnlag, SKJÆRINGSTIDSPUNKT, bgAndelArbeidsforhold);
+        Optional<no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.PermisjonDto> permisjonDto = UtledPermisjonTilDto.utled(iayGrunnlag, SKJÆRINGSTIDSPUNKT, bgAndelArbeidsforhold);
 
         // Assert
         assertThat(permisjonDto).isEmpty();
@@ -95,7 +91,7 @@ public class UtledBekreftetPermisjonerTilDtoTest {
     }
 
     @Test
-    public void skal_returne_empty_hvis_bekreftet_permisjon_starter_etter_stp(){
+    public void skal_returne_empty_hvis_permisjon_starter_etter_stp(){
 
         // Arrange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet("1");
@@ -107,17 +103,15 @@ public class UtledBekreftetPermisjonerTilDtoTest {
         YrkesaktivitetDtoBuilder yaBuilder = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty());
         AktivitetsAvtaleDtoBuilder aa = lagAktivitetsAvtaleBuilder(yaBuilder, fom, tom);
         YrkesaktivitetDtoBuilder ya = lagYrkesaktivitetBuilder(yaBuilder, aa, arbeidsgiver, ref);
+        ya.leggTilPermisjon(PermisjonDtoBuilder.ny().medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.VELFERDSPERMISJON).medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
+                .medProsentsats(BigDecimal.valueOf(100)));
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(List.of(ya));
 
-        ArbeidsforholdInformasjonDtoBuilder informasjonBuilder = ArbeidsforholdInformasjonDtoBuilder.oppdatere(Optional.empty());
-        ArbeidsforholdOverstyringDtoBuilder overstyringBuilder = informasjonBuilder.getOverstyringBuilderFor(arbeidsgiver, ref)
-            .medBekreftetPermisjon(new BekreftetPermisjonDto(fom, tom, BekreftetPermisjonStatus.BRUK_PERMISJON));
-        informasjonBuilder.leggTil(overstyringBuilder);
 
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagGrunnlag(aktørArbeidBuilder, Optional.of(informasjonBuilder.build()));
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagGrunnlag(aktørArbeidBuilder);
 
         // Act
-        Optional<no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.PermisjonDto> permisjonDto = UtledBekreftetPermisjonerTilDto.utled(iayGrunnlag, SKJÆRINGSTIDSPUNKT, bgAndelArbeidsforhold);
+        Optional<no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.PermisjonDto> permisjonDto = UtledPermisjonTilDto.utled(iayGrunnlag, SKJÆRINGSTIDSPUNKT, bgAndelArbeidsforhold);
 
         // Assert
         assertThat(permisjonDto).isEmpty();
@@ -125,7 +119,7 @@ public class UtledBekreftetPermisjonerTilDtoTest {
     }
 
     @Test
-    public void skal_returne_empty_hvis_bekreftet_permisjon_ikke_har_status_BRUK_PERMISJON(){
+    public void skal_returne_empty_hvis_permisjon_er_mindre_enn_100_prosent(){
 
         // Arrange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet("1");
@@ -137,17 +131,14 @@ public class UtledBekreftetPermisjonerTilDtoTest {
         YrkesaktivitetDtoBuilder yaBuilder = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty());
         AktivitetsAvtaleDtoBuilder aa = lagAktivitetsAvtaleBuilder(yaBuilder, fom, tom);
         YrkesaktivitetDtoBuilder ya = lagYrkesaktivitetBuilder(yaBuilder, aa, arbeidsgiver, ref);
+        ya.leggTilPermisjon(PermisjonDtoBuilder.ny().medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.VELFERDSPERMISJON).medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
+                .medProsentsats(BigDecimal.valueOf(99)));
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(List.of(ya));
 
-        ArbeidsforholdInformasjonDtoBuilder informasjonBuilder = ArbeidsforholdInformasjonDtoBuilder.oppdatere(Optional.empty());
-        ArbeidsforholdOverstyringDtoBuilder overstyringBuilder = informasjonBuilder.getOverstyringBuilderFor(arbeidsgiver, ref)
-            .medBekreftetPermisjon(new BekreftetPermisjonDto(fom, tom, BekreftetPermisjonStatus.IKKE_BRUK_PERMISJON));
-        informasjonBuilder.leggTil(overstyringBuilder);
-
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagGrunnlag(aktørArbeidBuilder, Optional.of(informasjonBuilder.build()));
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagGrunnlag(aktørArbeidBuilder);
 
         // Act
-        Optional<no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.PermisjonDto> permisjonDto = UtledBekreftetPermisjonerTilDto.utled(iayGrunnlag, SKJÆRINGSTIDSPUNKT, bgAndelArbeidsforhold);
+        Optional<no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.PermisjonDto> permisjonDto = UtledPermisjonTilDto.utled(iayGrunnlag, SKJÆRINGSTIDSPUNKT, bgAndelArbeidsforhold);
 
         // Assert
         assertThat(permisjonDto).isEmpty();
@@ -167,17 +158,14 @@ public class UtledBekreftetPermisjonerTilDtoTest {
         YrkesaktivitetDtoBuilder yaBuilder = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty());
         AktivitetsAvtaleDtoBuilder aa = lagAktivitetsAvtaleBuilder(yaBuilder, fom, tom);
         YrkesaktivitetDtoBuilder ya = lagYrkesaktivitetBuilder(yaBuilder, aa, arbeidsgiver, ref);
+        ya.leggTilPermisjon(PermisjonDtoBuilder.ny().medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.VELFERDSPERMISJON).medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
+                .medProsentsats(BigDecimal.valueOf(100)));
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(List.of(ya));
 
-        ArbeidsforholdInformasjonDtoBuilder informasjonBuilder = ArbeidsforholdInformasjonDtoBuilder.oppdatere(Optional.empty());
-        ArbeidsforholdOverstyringDtoBuilder overstyringBuilder = informasjonBuilder.getOverstyringBuilderFor(arbeidsgiver, ref)
-            .medBekreftetPermisjon(new BekreftetPermisjonDto(fom, tom, BekreftetPermisjonStatus.BRUK_PERMISJON));
-        informasjonBuilder.leggTil(overstyringBuilder);
-
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagGrunnlag(aktørArbeidBuilder, Optional.of(informasjonBuilder.build()));
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagGrunnlag(aktørArbeidBuilder);
 
         // Act
-        Optional<no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.PermisjonDto> permisjonDto = UtledBekreftetPermisjonerTilDto.utled(iayGrunnlag, SKJÆRINGSTIDSPUNKT, bgAndelArbeidsforhold);
+        Optional<no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.PermisjonDto> permisjonDto = UtledPermisjonTilDto.utled(iayGrunnlag, SKJÆRINGSTIDSPUNKT, bgAndelArbeidsforhold);
 
         // Assert
         assertThat(permisjonDto).hasValueSatisfying(p -> {
@@ -193,14 +181,12 @@ public class UtledBekreftetPermisjonerTilDtoTest {
         return aktørArbeidBuilder;
     }
 
-    private InntektArbeidYtelseGrunnlagDto lagGrunnlag(InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder,
-                                                       Optional<ArbeidsforholdInformasjonDto> arbeidsforholdInformasjonOpt) {
+    private InntektArbeidYtelseGrunnlagDto lagGrunnlag(InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder) {
         InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder = InntektArbeidYtelseAggregatBuilder
             .oppdatere(Optional.empty(), VersjonTypeDto.REGISTER)
             .leggTilAktørArbeid(aktørArbeidBuilder);
         InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
             .medData(inntektArbeidYtelseAggregatBuilder);
-        arbeidsforholdInformasjonOpt.ifPresent(inntektArbeidYtelseGrunnlagBuilder::medInformasjon);
         return inntektArbeidYtelseGrunnlagBuilder.build();
     }
 

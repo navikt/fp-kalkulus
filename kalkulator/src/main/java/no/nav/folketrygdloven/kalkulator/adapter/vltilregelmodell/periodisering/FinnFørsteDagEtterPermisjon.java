@@ -1,0 +1,41 @@
+package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering;
+
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
+
+import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.Optional;
+
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonFilter;
+import no.nav.fpsak.tidsserie.LocalDateInterval;
+
+public class FinnFørsteDagEtterPermisjon {
+    private FinnFørsteDagEtterPermisjon() {
+        // skjul public constructor
+    }
+
+    /**
+     * @return Dersom det finnes en permisjon som gjelder på skjæringstidspunkt for beregning, returner første dag etter permisjonen.
+     * Ellers: Returner første dag i ansettelsesperioden til arbeidsforholdet. Dette kan være enten før eller etter første uttaksdag.
+     */
+    public static Optional<LocalDate> finn(YrkesaktivitetDto ya, Periode ansettelsesPeriode, LocalDate skjæringstidspunktBeregning, PermisjonFilter permisjonFilter) {
+        var tidslinjeForPermisjon = permisjonFilter.finnTidslinjeForPermisjonOver14Dager(ya);
+        var harIkkePermisjonPåStp = tidslinjeForPermisjon.intersection(new LocalDateInterval(skjæringstidspunktBeregning, skjæringstidspunktBeregning))
+                .isEmpty();
+        if (harIkkePermisjonPåStp) {
+            return Optional.of(ansettelsesPeriode.getFom());
+        }
+        var sisteDagMedPermisjon = tidslinjeForPermisjon.getLocalDateIntervals().stream()
+                .map(LocalDateInterval::getTomDato)
+                .filter(tomDato -> tomDato.isAfter(skjæringstidspunktBeregning))
+                .min(Comparator.naturalOrder())
+                .orElseThrow();
+        if (sisteDagMedPermisjon.equals(TIDENES_ENDE)) {
+            return Optional.empty();
+        }
+        LocalDate dagenEtterBekreftetPermisjon = sisteDagMedPermisjon.plusDays(1);
+        return Optional.of(dagenEtterBekreftetPermisjon);
+    }
+}

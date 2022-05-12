@@ -74,7 +74,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjeneste {
                     lagPerioderForNyAktivitetMedSøktYtelse(input.getYtelsespesifiktGrunnlag(), tilfelleEntry.getValue(), andel, endringAf)
                             .forEach(endringAf::leggTilPeriodeMedGraderingEllerRefusjon);
                     andel.getBgAndelArbeidsforhold().flatMap(bga ->
-                            UtledBekreftetPermisjonerTilDto.utled(input.getIayGrunnlag(), stp, bga)
+                            UtledPermisjonTilDto.utled(input.getIayGrunnlag(), stp, bga)
                     ).ifPresent(endringAf::setPermisjon);
                     return endringAf;
                 });
