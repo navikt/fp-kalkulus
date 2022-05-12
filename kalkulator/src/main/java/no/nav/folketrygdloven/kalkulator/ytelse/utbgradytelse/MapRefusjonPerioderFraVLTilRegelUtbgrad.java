@@ -8,14 +8,13 @@ import java.util.Set;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.FinnAnsettelsesPeriode;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.FinnFørsteDagEtterPermisjon;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.FinnFørsteDagEtterBekreftetPermisjon;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.refusjon.MapRefusjonPerioderFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.felles.frist.ArbeidsgiverRefusjonskravTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonFilter;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
@@ -30,18 +29,18 @@ public abstract class MapRefusjonPerioderFraVLTilRegelUtbgrad
     protected Optional<LocalDate> utledStartdatoPermisjon(Input input,
                                                           LocalDate skjæringstidspunktBeregning,
                                                           InntektsmeldingDto inntektsmelding,
-                                                          Set<YrkesaktivitetDto> yrkesaktiviteter, PermisjonFilter permisjonFilter) {
+                                                          Set<YrkesaktivitetDto> yrkesaktiviteter) {
         Optional<LocalDate> førsteSøktePermisjonsdag = yrkesaktiviteter.stream()
-                .map(ya -> finnFørsteSøktePermisjonsdag(input.getBeregningsgrunnlagInput(), ya, permisjonFilter)).filter(Optional::isPresent)
+                .map(ya -> finnFørsteSøktePermisjonsdag(input.getBeregningsgrunnlagInput(), ya)).filter(Optional::isPresent)
                 .map(Optional::get)
                 .min(Comparator.naturalOrder());
         return førsteSøktePermisjonsdag.map(dato -> skjæringstidspunktBeregning.isAfter(dato) ? skjæringstidspunktBeregning : dato);
     }
 
-    private Optional<LocalDate> finnFørsteSøktePermisjonsdag(BeregningsgrunnlagInput input, YrkesaktivitetDto ya, PermisjonFilter permisjonFilter) {
+    private Optional<LocalDate> finnFørsteSøktePermisjonsdag(BeregningsgrunnlagInput input, YrkesaktivitetDto ya) {
         LocalDate skjæringstidspunktBeregning = input.getBeregningsgrunnlag().getSkjæringstidspunkt();
         Periode ansettelsesPeriode = FinnAnsettelsesPeriode.getMinMaksPeriode(ya.getAlleAnsettelsesperioder(), skjæringstidspunktBeregning);
-        Optional<LocalDate> førstedagEtterBekreftetPermisjonOpt = FinnFørsteDagEtterPermisjon.finn(ya, ansettelsesPeriode, skjæringstidspunktBeregning, permisjonFilter);
+        Optional<LocalDate> førstedagEtterBekreftetPermisjonOpt = FinnFørsteDagEtterBekreftetPermisjon.finn(input.getIayGrunnlag(), ya, ansettelsesPeriode, skjæringstidspunktBeregning);
         if (førstedagEtterBekreftetPermisjonOpt.isEmpty()) {
             return Optional.empty();
         }

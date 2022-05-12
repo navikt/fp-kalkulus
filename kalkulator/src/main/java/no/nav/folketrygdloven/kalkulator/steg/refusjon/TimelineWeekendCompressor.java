@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.tid;
+package no.nav.folketrygdloven.kalkulator.steg.refusjon;
 
 import java.time.DayOfWeek;
 import java.util.NavigableSet;

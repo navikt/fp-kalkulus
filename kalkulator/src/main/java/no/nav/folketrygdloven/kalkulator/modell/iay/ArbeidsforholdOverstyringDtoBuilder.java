@@ -66,8 +66,13 @@ public class ArbeidsforholdOverstyringDtoBuilder {
         return this;
     }
 
-    public ArbeidsforholdOverstyringDtoBuilder leggTilOverstyrtPeriode(LocalDate fom, LocalDate tom) {
+    public ArbeidsforholdOverstyringDtoBuilder leggTilOverstyrtPeriode(LocalDate fom, LocalDate tom){
         kladd.leggTilOverstyrtPeriode(fom, tom);
+        return this;
+    }
+
+    public ArbeidsforholdOverstyringDtoBuilder medBekreftetPermisjon(BekreftetPermisjonDto bekreftetPermisjon){
+        kladd.setBekreftetPermisjon(bekreftetPermisjon);
         return this;
     }
 

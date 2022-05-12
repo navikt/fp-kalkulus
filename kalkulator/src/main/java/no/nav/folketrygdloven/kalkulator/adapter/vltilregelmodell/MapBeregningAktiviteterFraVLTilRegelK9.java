@@ -1,59 +1,63 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
+
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Aktivitet;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapOpptjeningAktivitetTypeFraVLTilRegel;
-import no.nav.folketrygdloven.kalkulator.felles.BeregningstidspunktTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørArbeidDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonFilter;
+import no.nav.folketrygdloven.kalkulator.modell.iay.PermisjonDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
-import no.nav.fpsak.tidsserie.LocalDateInterval;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("*")
-public class MapBeregningAktiviteterFraVLTilRegelFelles implements MapBeregningAktiviteterFraVLTilRegel {
+@FagsakYtelseTypeRef("OMP")
+@FagsakYtelseTypeRef("PSB")
+@FagsakYtelseTypeRef("PPN")
+public class MapBeregningAktiviteterFraVLTilRegelK9 implements MapBeregningAktiviteterFraVLTilRegel {
 
     @Override
     public AktivitetStatusModell mapForSkjæringstidspunkt(FastsettBeregningsaktiviteterInput input) {
-        var opptjeningSkjæringstidspunkt = input.getSkjæringstidspunktOpptjening();
+        LocalDate opptjeningSkjæringstidspunkt = input.getSkjæringstidspunktOpptjening();
 
-        var modell = new AktivitetStatusModell();
+        AktivitetStatusModell modell = new AktivitetStatusModell();
         modell.setSkjæringstidspunktForOpptjening(opptjeningSkjæringstidspunkt);
 
-        var relevanteAktiviteter = input.getOpptjeningAktiviteterForBeregning();
+        var relevanteAktiviteter = input.getOpptjeningAktiviteterForBeregningK9();
 
         if (!relevanteAktiviteter.isEmpty()) {
             var relevantYrkesaktivitet = input.getIayGrunnlag().getAktørArbeidFraRegister()
                     .map(AktørArbeidDto::hentAlleYrkesaktiviteter)
                     .orElse(Collections.emptyList());
-            var permisjonFilter = new PermisjonFilter(relevanteAktiviteter, relevantYrkesaktivitet);
-            var aktivePerioder = relevanteAktiviteter.stream()
+            List<AktivPeriode> aktivePerioder = relevanteAktiviteter.stream()
                     .flatMap(opptjeningsperiode ->
                             lagAktivPeriode(
                                     input.getInntektsmeldinger(),
+                                    relevantYrkesaktivitet,
                                     opptjeningsperiode,
                                     relevanteAktiviteter,
-                                    input.getSkjæringstidspunktOpptjening(),
-                                    permisjonFilter)
-                                    .stream()
+                                    input.getSkjæringstidspunktOpptjening())
+                            .stream()
                     ).collect(Collectors.toList());
             aktivePerioder.forEach(modell::leggTilEllerOppdaterAktivPeriode);
         }
@@ -62,18 +66,23 @@ public class MapBeregningAktiviteterFraVLTilRegelFelles implements MapBeregningA
     }
 
     private Optional<AktivPeriode> lagAktivPeriode(Collection<InntektsmeldingDto> inntektsmeldinger,
+                                                   Collection<YrkesaktivitetDto> yrkesaktiviteter,
                                                    OpptjeningAktiviteterDto.OpptjeningPeriodeDto opptjeningsperiode,
                                                    Collection<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> relevanteAktiviteter,
-                                                   LocalDate skjæringstidspunktOpptjening,
-                                                   PermisjonFilter permisjonFilter) {
+                                                   LocalDate skjæringstidspunktOpptjening) {
         Aktivitet aktivitetType = MapOpptjeningAktivitetTypeFraVLTilRegel.map(opptjeningsperiode.getOpptjeningAktivitetType());
         var gjeldendePeriode = opptjeningsperiode.getPeriode();
         if (Aktivitet.FRILANSINNTEKT.equals(aktivitetType)) {
             return Optional.of(AktivPeriode.forFrilanser(
                     Periode.of(gjeldendePeriode.getFomDato(), gjeldendePeriode.getTomDato())));
         } else if (Aktivitet.ARBEIDSTAKERINNTEKT.equals(aktivitetType)) {
-            var arbeidsgiver = opptjeningsperiode.getArbeidsgiver().orElseThrow(() -> new IllegalStateException("Forventer arbeidsgiver"));
-            var tomDato = finnTomdatoTaHensynTilPermisjon(opptjeningsperiode, skjæringstidspunktOpptjening, arbeidsgiver, permisjonFilter);
+            Arbeidsgiver arbeidsgiver = opptjeningsperiode.getArbeidsgiver().orElseThrow(() -> new IllegalStateException("Forventer arbeidsgiver"));
+
+            // Hvis vi ikke har relevante aktiviteter på stp uten permisjon må vi ignorere permisjonsperioder for å få aktiviteter til beregning.
+            boolean finnesAktivitePåSTPOmPermisjonHensyntas = finnesAktivitetPåSTPUtenPermisjon(yrkesaktiviteter, opptjeningsperiode, skjæringstidspunktOpptjening, gjeldendePeriode, relevanteAktiviteter);
+            LocalDate tomDato = finnesAktivitePåSTPOmPermisjonHensyntas
+                    ? finnTomdatoTaHensynTilPermisjon(yrkesaktiviteter, opptjeningsperiode, skjæringstidspunktOpptjening, gjeldendePeriode, arbeidsgiver)
+                    : gjeldendePeriode.getTomDato();
             if (!tomDato.isBefore(gjeldendePeriode.getFomDato())) {
                 return Optional.of(lagAktivPeriodeForArbeidstaker(inntektsmeldinger,
                         Periode.of(gjeldendePeriode.getFomDato(), tomDato),
@@ -90,6 +99,14 @@ public class MapBeregningAktiviteterFraVLTilRegelFelles implements MapBeregningA
         }
     }
 
+    private boolean finnesAktivitetPåSTPUtenPermisjon(Collection<YrkesaktivitetDto> yrkesaktiviteter, OpptjeningAktiviteterDto.OpptjeningPeriodeDto opptjeningsperiode, LocalDate skjæringstidspunktOpptjening, Intervall gjeldendePeriode, Collection<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> relevanteAktiviteter) {
+        List<LocalDate> alleTOMDatoerHensyntattPermisjon = relevanteAktiviteter.stream().map(ra -> {
+            Arbeidsgiver arbeidsgiver = opptjeningsperiode.getArbeidsgiver().orElseThrow(() -> new IllegalStateException("Forventer arbeidsgiver"));
+            return finnTomdatoTaHensynTilPermisjon(yrkesaktiviteter, opptjeningsperiode, skjæringstidspunktOpptjening, gjeldendePeriode, arbeidsgiver);
+        }).collect(Collectors.toList());
+        return alleTOMDatoerHensyntattPermisjon.stream().anyMatch(tom -> !tom.isBefore(skjæringstidspunktOpptjening));
+    }
+
     protected static AktivPeriode lagAktivPeriodeForArbeidstaker(Collection<InntektsmeldingDto> inntektsmeldinger,
                                                                  Periode gjeldendePeriode,
                                                                  Arbeidsgiver arbeidsgiver,
@@ -104,22 +121,32 @@ public class MapBeregningAktiviteterFraVLTilRegelFelles implements MapBeregningA
         }
     }
 
-    private LocalDate finnTomdatoTaHensynTilPermisjon(OpptjeningAktiviteterDto.OpptjeningPeriodeDto opptjeningsperiode,
+    private LocalDate finnTomdatoTaHensynTilPermisjon(Collection<YrkesaktivitetDto> yrkesaktiviteter,
+                                                      OpptjeningAktiviteterDto.OpptjeningPeriodeDto opptjeningsperiode,
                                                       LocalDate skjæringstidspunktOpptjening,
-                                                      Arbeidsgiver arbeidsgiver,
-                                                      PermisjonFilter permisjonFilter) {
-        var permisjonTidslinje = permisjonFilter.tidslinjeForPermisjoner(arbeidsgiver, opptjeningsperiode.getArbeidsforholdId());
-        var beregningstidspunkt = BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunktOpptjening);
-        var sisteDagFørPermisjonStart = permisjonTidslinje.getLocalDateIntervals().stream()
-                .filter(p -> p.overlaps(new LocalDateInterval(beregningstidspunkt, beregningstidspunkt)))
-                .map(LocalDateInterval::getFomDato)
+                                                      Intervall gjeldendePeriode,
+                                                      Arbeidsgiver arbeidsgiver) {
+        var relevantYrkesaktivitet = yrkesaktiviteter
+                .stream()
+                .filter(ya -> ya.gjelderFor(
+                        arbeidsgiver,
+                        opptjeningsperiode.getArbeidsforholdId())
+                ).findFirst()
+                .orElseThrow(() -> new IllegalStateException("Forventer å finne yrkesaktivitet for arbeidstakerinntekt"));
+        Optional<LocalDate> sisteDagFørPermisjonStart = finnSisteDagFørPermisjonsstart(skjæringstidspunktOpptjening, opptjeningsperiode, relevantYrkesaktivitet);
+        return sisteDagFørPermisjonStart.orElse(gjeldendePeriode.getTomDato());
+    }
+
+    private Optional<LocalDate> finnSisteDagFørPermisjonsstart(LocalDate skjæringstidspunktOpptjening, OpptjeningAktiviteterDto.OpptjeningPeriodeDto opptjeningsperiode, YrkesaktivitetDto relevantYrkesaktivitet) {
+        return relevantYrkesaktivitet.getPermisjoner()
+                .stream()
+                .filter(p -> p.getProsentsats() != null && p.getProsentsats().compareTo(BigDecimal.valueOf(100)) == 0 &&
+                        p.getPeriode().inkluderer(skjæringstidspunktOpptjening)
+                        && p.getPeriode().overlapper(opptjeningsperiode.getPeriode()))
+                .map(PermisjonDto::getPeriode)
+                .map(Intervall::getFomDato)
                 .min(Comparator.naturalOrder())
                 .map(d -> d.minusDays(1));
-        if (sisteDagFørPermisjonStart.isPresent() && sisteDagFørPermisjonStart.get().isBefore(opptjeningsperiode.getPeriode().getFomDato())) {
-            // Kan skje pga opptjening ikke hensyntar permisjon, og ingenting stopper aareg fra å ha permisjon hele arbeidsperioden
-            return opptjeningsperiode.getPeriode().getFomDato();
-        }
-        return sisteDagFørPermisjonStart.orElse(opptjeningsperiode.getPeriode().getTomDato());
     }
 
     private static AktivPeriode lagAktivePerioderForArbeidstakerHosPrivatperson(Collection<InntektsmeldingDto> inntektsmeldinger, String aktørId, Periode gjeldendePeriode) {

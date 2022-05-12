@@ -23,7 +23,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.NaturalYtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansInntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.PermisjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;

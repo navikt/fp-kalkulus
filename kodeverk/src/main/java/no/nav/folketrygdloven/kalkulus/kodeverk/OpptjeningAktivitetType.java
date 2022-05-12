@@ -114,21 +114,6 @@ public enum OpptjeningAktivitetType implements Kodeverdi {
             Set.of()),
             ;
 
-    public static final Set<OpptjeningAktivitetType> YTELSE = Set.of(
-            SYKEPENGER,
-            SYKEPENGER_AV_DAGPENGER,
-            FORELDREPENGER,
-            PLEIEPENGER,
-            PLEIEPENGER_AV_DAGPENGER,
-            SVANGERSKAPSPENGER,
-            OPPLÆRINGSPENGER,
-            FRISINN,
-            OMSORGSPENGER);
-
-    public static final Set<OpptjeningAktivitetType> K9_YTELSER = Set.of(
-            PLEIEPENGER, PLEIEPENGER_AV_DAGPENGER,
-            OPPLÆRINGSPENGER);
-
     private static final Map<String, OpptjeningAktivitetType> KODER = new LinkedHashMap<>();
 
     private static final Map<OpptjeningAktivitetType, Set<ArbeidType>> INDEKS_OPPTJ_ARBEID = new LinkedHashMap<>();

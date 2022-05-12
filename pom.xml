@@ -42,6 +42,8 @@
 
         <fpsak.nare.version>2.2.2</fpsak.nare.version>
 
+        <fpsak.tidsserie.version>2.5.7</fpsak.tidsserie.version>
+
         <beregningsgrunnlag.regelmodell.version>2.1.70</beregningsgrunnlag.regelmodell.version>
 
         <felles.version>0.7.19</felles.version>
@@ -99,7 +101,7 @@
             <dependency>
                 <groupId>no.nav.fpsak.tidsserie</groupId>
                 <artifactId>fpsak-tidsserie</artifactId>
-                <version>2.6.3</version>
+                <version>2.5.8</version>
             </dependency>
 
             <dependency>

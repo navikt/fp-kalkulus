@@ -7,6 +7,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Aktivitet;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
 
 public class LagAktivPeriodeForArbeidstakerFelles {
@@ -17,7 +18,7 @@ public class LagAktivPeriodeForArbeidstakerFelles {
                                                               String opptjeningArbeidsgiverOrgnummer,
                                                               InternArbeidsforholdRefDto arbeidsforholdRef) {
         if (opptjeningArbeidsgiverAktørId != null) {
-            return lagAktivePerioderForArbeidstakerHosPrivatperson(opptjeningArbeidsgiverAktørId, gjeldendePeriode);
+            return lagAktivePerioderForArbeidstakerHosPrivatperson(inntektsmeldinger, opptjeningArbeidsgiverAktørId, arbeidsforholdRef, gjeldendePeriode);
         } else if (opptjeningArbeidsgiverOrgnummer != null) {
             return lagAktivePerioderForArbeidstakerHosVirksomhet(inntektsmeldinger, gjeldendePeriode, opptjeningArbeidsgiverOrgnummer, arbeidsforholdRef);
         } else {
@@ -25,7 +26,7 @@ public class LagAktivPeriodeForArbeidstakerFelles {
         }
     }
 
-    private static AktivPeriode lagAktivePerioderForArbeidstakerHosPrivatperson(String aktørId, Periode gjeldendePeriode) {
+    private static AktivPeriode lagAktivePerioderForArbeidstakerHosPrivatperson(Collection<InntektsmeldingDto> inntektsmeldinger, String aktørId, InternArbeidsforholdRefDto arbeidsforholdRef, Periode gjeldendePeriode) {
         return AktivPeriode.forArbeidstakerHosPrivatperson(gjeldendePeriode, aktørId);
     }
 

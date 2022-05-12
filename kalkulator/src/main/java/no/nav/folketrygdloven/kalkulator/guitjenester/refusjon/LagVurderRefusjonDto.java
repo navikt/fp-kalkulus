@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -26,8 +27,9 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.tid.TimelineWeekendCompressor;
+import no.nav.folketrygdloven.kalkulator.steg.refusjon.TimelineWeekendCompressor;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
+import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonPeriodeEndring;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
@@ -35,6 +37,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusj
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusjon.RefusjonTilVurderingDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusjon.TidligereUtbetalingDto;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
+import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
 public final class LagVurderRefusjonDto {
     private static final BigDecimal MÅNEDER_I_ÅR = BigDecimal.valueOf(12);

@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.modell.iay.permisjon;
+package no.nav.folketrygdloven.kalkulator.modell.iay;
 
 import java.math.BigDecimal;
 import java.util.Objects;

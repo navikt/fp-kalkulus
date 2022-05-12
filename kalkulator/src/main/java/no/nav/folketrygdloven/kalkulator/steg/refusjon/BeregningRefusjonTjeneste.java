@@ -17,7 +17,6 @@ import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndelNøkk
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonPeriode;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonPeriodeEndring;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulator.tid.TimelineWeekendCompressor;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
