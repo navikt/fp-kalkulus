@@ -22,22 +22,34 @@ import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteter
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
-/** Inputstruktur for beregningsgrunnlag tjenester. */
+/**
+ * Inputstruktur for beregningsgrunnlag tjenester.
+ */
 public class BeregningsgrunnlagInput {
 
-    /** Data som referer behandlingen beregningsgrunnlag inngår i. */
+    /**
+     * Data som referer behandlingen beregningsgrunnlag inngår i.
+     */
     private KoblingReferanse koblingReferanse;
 
-    /** Grunnlag for Beregningsgrunnlg opprettet eller modifisert av modulen. Settes på av modulen. */
+    /**
+     * Grunnlag for Beregningsgrunnlg opprettet eller modifisert av modulen. Settes på av modulen.
+     */
     private BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag;
 
-    /** Refusjonsperioder pr mottattt krav pr Arbeidsgiver */
+    /**
+     * Refusjonsperioder pr mottattt krav pr Arbeidsgiver
+     */
     private List<KravperioderPrArbeidsforholdDto> kravPrArbeidsgiver;
 
-    /** IAY grunnlag benyttet av beregningsgrunnlag. Merk kan bli modifisert av innhenting av inntekter for beregning, sammenligning. */
+    /**
+     * IAY grunnlag benyttet av beregningsgrunnlag. Merk kan bli modifisert av innhenting av inntekter for beregning, sammenligning.
+     */
     private final InntektArbeidYtelseGrunnlagDto iayGrunnlag;
 
-    /** Aktiviteter til grunnlag for opptjening. */
+    /**
+     * Aktiviteter til grunnlag for opptjening.
+     */
     private final OpptjeningAktiviteterDto opptjeningAktiviteter;
 
     private final YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag;
@@ -119,7 +131,7 @@ public class BeregningsgrunnlagInput {
     }
 
     public BeregningsgrunnlagDto getBeregningsgrunnlag() {
-        return beregningsgrunnlagGrunnlag == null ? null: beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElseThrow();
+        return beregningsgrunnlagGrunnlag == null ? null : beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElseThrow();
     }
 
     public FagsakYtelseType getFagsakYtelseType() {
@@ -132,7 +144,7 @@ public class BeregningsgrunnlagInput {
 
     public Collection<InntektsmeldingDto> getInntektsmeldinger() {
         LocalDate skjæringstidspunktOpptjening = getSkjæringstidspunktOpptjening();
-        if(skjæringstidspunktOpptjening == null) return Collections.emptyList();
+        if (skjæringstidspunktOpptjening == null) return Collections.emptyList();
         return new InntektsmeldingFilter(iayGrunnlag).hentInntektsmeldingerBeregning(skjæringstidspunktOpptjening);
     }
 
@@ -140,15 +152,23 @@ public class BeregningsgrunnlagInput {
         return opptjeningAktiviteter;
     }
 
+    private boolean periodefilter(LocalDate skjæringstidspunktOpptjening, OpptjeningPeriodeDto p) {
+        if (getOpptjeningAktiviteter().getMidlertidigInaktivType() != null) {
+            return !p.getPeriode().getFomDato().isAfter(BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunktOpptjening)) ||
+                    p.getPeriode().getFomDato().isEqual(skjæringstidspunktOpptjening);
+        }
+        return !p.getPeriode().getFomDato().isAfter(BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunktOpptjening));
+    }
+
     public Collection<OpptjeningPeriodeDto> getOpptjeningAktiviteterForBeregning() {
         LocalDate skjæringstidspunktOpptjening = getSkjæringstidspunktOpptjening();
-        if(skjæringstidspunktOpptjening == null) return Collections.emptyList();
+        if (skjæringstidspunktOpptjening == null) return Collections.emptyList();
         var aktivitetFilter = new OpptjeningsaktiviteterPerYtelse(getFagsakYtelseType());
         return opptjeningAktiviteter.getOpptjeningPerioder()
-            .stream()
-            .filter(p -> !p.getPeriode().getFomDato().isAfter(BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunktOpptjening)))
-            .filter(p -> aktivitetFilter.erRelevantAktivitet(p.getOpptjeningAktivitetType()))
-            .collect(Collectors.toList());
+                .stream()
+                .filter(p -> periodefilter(skjæringstidspunktOpptjening, p))
+                .filter(p -> aktivitetFilter.erRelevantAktivitet(p.getOpptjeningAktivitetType()))
+                .collect(Collectors.toList());
     }
 
     public Skjæringstidspunkt getSkjæringstidspunkt() {
@@ -168,7 +188,9 @@ public class BeregningsgrunnlagInput {
     }
 
 
-    /** Sjekk fagsakytelsetype før denne kalles. */
+    /**
+     * Sjekk fagsakytelsetype før denne kalles.
+     */
     @SuppressWarnings("unchecked")
     public <V extends YtelsespesifiktGrunnlag> V getYtelsespesifiktGrunnlag() {
         return (V) ytelsespesifiktGrunnlag;
@@ -178,15 +200,16 @@ public class BeregningsgrunnlagInput {
         var newInput = new BeregningsgrunnlagInput(this);
         newInput.beregningsgrunnlagGrunnlag = grunnlag;
         newInput = grunnlag.getBeregningsgrunnlag()
-            .map(BeregningsgrunnlagDto::getSkjæringstidspunkt)
-            .map(newInput::medSkjæringstidspunktForBeregning)
-            .orElse(newInput);
+                .map(BeregningsgrunnlagDto::getSkjæringstidspunkt)
+                .map(newInput::medSkjæringstidspunktForBeregning)
+                .orElse(newInput);
         return newInput;
     }
 
 
-
-    /** Overstyrer behandlingreferanse, eks for å få ny skjæringstidspunkt fra beregningsgrunnlag fra tidligere. */
+    /**
+     * Overstyrer behandlingreferanse, eks for å få ny skjæringstidspunkt fra beregningsgrunnlag fra tidligere.
+     */
     public BeregningsgrunnlagInput medBehandlingReferanse(KoblingReferanse ref) {
         var newInput = new BeregningsgrunnlagInput(this);
         newInput.koblingReferanse = Objects.requireNonNull(ref, "behandlingReferanse");
@@ -203,12 +226,13 @@ public class BeregningsgrunnlagInput {
     @Override
     public String toString() {
         return "BeregningsgrunnlagInput{" +
-            "behandlingReferanse=" + koblingReferanse +
-            ", beregningsgrunnlagGrunnlag=" + beregningsgrunnlagGrunnlag +
-            ", refusjonskravPerioder=" + kravPrArbeidsgiver +
-            ", iayGrunnlag=" + iayGrunnlag +
-            ", opptjeningAktiviteter=" + opptjeningAktiviteter +
-            ", ytelsespesifiktGrunnlag=" + ytelsespesifiktGrunnlag +
-            '}';
+                "behandlingReferanse=" + koblingReferanse +
+                ", beregningsgrunnlagGrunnlag=" + beregningsgrunnlagGrunnlag +
+                ", refusjonskravPerioder=" + kravPrArbeidsgiver +
+                ", iayGrunnlag=" + iayGrunnlag +
+                ", opptjeningAktiviteter=" + opptjeningAktiviteter +
+                ", ytelsespesifiktGrunnlag=" + ytelsespesifiktGrunnlag +
+                '}';
     }
+
 }
