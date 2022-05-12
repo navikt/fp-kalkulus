@@ -68,8 +68,7 @@ public class XacmlRequestBuilderTjenesteImpl implements XacmlRequestBuilderTjene
         XacmlAttributeSet resourceAttributeSet = new XacmlAttributeSet();
         resourceAttributeSet.addAttribute(FellesAbacAttributter.RESOURCE_FELLES_DOMENE, pdpRequest.getString(FellesAbacAttributter.RESOURCE_FELLES_DOMENE));
         resourceAttributeSet.addAttribute(FellesAbacAttributter.RESOURCE_FELLES_RESOURCE_TYPE, pdpRequest.getString(FellesAbacAttributter.RESOURCE_FELLES_RESOURCE_TYPE));
-        setOptionalValueinAttributeSet(resourceAttributeSet, pdpRequest, domeneAbacAttributter.getAttributtnøkkelBehandlingstatus());
-        setOptionalValueinAttributeSet(resourceAttributeSet, pdpRequest, domeneAbacAttributter.getAttributtnøkkelSakstatus());
+        setOptionalValueinAttributeSet(resourceAttributeSet, pdpRequest, domeneAbacAttributter.getAttributtnøkkelBehandlingsuuid());
         if (ident != null) {
             resourceAttributeSet.addAttribute(ident.getElement1(), ident.getElement2());
         }

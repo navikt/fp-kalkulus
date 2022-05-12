@@ -71,14 +71,12 @@ public class PdpRequestBuilderImpl implements PdpRequestBuilder {
                 .collect(Collectors.toSet());
 
         if (!aksjonspunktTyper.isEmpty()) {
-            LOG.info(aksjonspunktTyper.toString());
             pdpRequest.put(domeneAbacAttributter.getAttributtnøkkelAksjonspunktType(), aksjonspunktTyper);
         }
 
-
-        // TODO: Gå over til å hente fra pip-tjenesten når alle kall inkluderer behandlinguuid?
-        pdpRequest.put(domeneAbacAttributter.getAttributtnøkkelBehandlingstatus(), AbacBehandlingStatus.UTREDES.getEksternKode());
-        pdpRequest.put(domeneAbacAttributter.getAttributtnøkkelSakstatus(), AbacFagsakStatus.UNDER_BEHANDLING.getEksternKode());
+        if (!attributter.getVerdier(StandardAbacAttributtType.BEHANDLING_UUID).isEmpty()) {
+            pdpRequest.put(domeneAbacAttributter.getAttributtnøkkelBehandlingsuuid(), attributter.getVerdier(StandardAbacAttributtType.BEHANDLING_UUID));
+        }
         return pdpRequest;
     }
 
