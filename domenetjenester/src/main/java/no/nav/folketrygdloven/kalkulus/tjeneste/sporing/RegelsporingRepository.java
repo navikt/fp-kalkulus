@@ -7,14 +7,13 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
@@ -81,7 +80,7 @@ public class RegelsporingRepository {
      * Rydder alle regelsporinger lagret lik eller før gitt tilstand
      *
      * @param koblingIder koblingIder
-     * @param tilstand  Beregningsgrunnlagtilstand
+     * @param tilstand    Beregningsgrunnlagtilstand
      */
     public void ryddRegelsporingForTilstand(Set<Long> koblingIder, BeregningsgrunnlagTilstand tilstand) {
 
@@ -118,6 +117,35 @@ public class RegelsporingRepository {
 
         var perioderOppdaterteRader = perioderQuery.executeUpdate();
         log.info("Deaktivert {} regelsporringsperioder for koblingId={}", perioderOppdaterteRader, koblingIder);
+
+        entityManager.flush();
+    }
+
+    /**
+     * Sletter alle inaktive regelsporinger
+     *
+     * @param koblingId koblingId
+     */
+    public void slettAlleInaktiveRegelsporinger(Long koblingId) {
+
+        // Sletter grunnlag-sproring
+        var grunnlagQuery = entityManager.createNativeQuery("delete from REGEL_SPORING_GRUNNLAG " +
+                        "where kobling_id = :koblingId " +
+                        "and aktiv = false")
+                .setParameter("koblingId", koblingId);
+
+        var oppdaterteRader = grunnlagQuery.executeUpdate();
+        log.info("Slettet {} regelsporringsgrunnlag for koblingId={}", oppdaterteRader, koblingId);
+
+
+        // Sletter periode-sporing
+        var perioderQuery = entityManager.createNativeQuery("delete from REGEL_SPORING_PERIODE " +
+                        "where kobling_id = :koblingId " +
+                        "and aktiv = false")
+                .setParameter("koblingId", koblingId);
+
+        var perioderOppdaterteRader = perioderQuery.executeUpdate();
+        log.info("Slettet {} regelsporringsperioder for koblingId={}", perioderOppdaterteRader, koblingId);
 
         entityManager.flush();
     }

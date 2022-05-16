@@ -221,6 +221,7 @@ public class BeregningStegTjeneste {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.fastsettBeregningsgrunnlag(input);
         repository.lagre(input.getKoblingId(), mapGrunnlag(beregningResultatAggregat.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
         lagreRegelsporing(input.getKoblingId(), beregningResultatAggregat.getRegelSporingAggregat(), input.getStegTilstand());
+        regelsporingRepository.slettAlleInaktiveRegelsporinger(input.getKoblingId());
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
 
