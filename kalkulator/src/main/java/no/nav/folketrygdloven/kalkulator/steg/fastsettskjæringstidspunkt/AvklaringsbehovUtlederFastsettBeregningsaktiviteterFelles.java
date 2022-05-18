@@ -30,7 +30,6 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterFelles implement
 
     private static List<BeregningAvklaringsbehovResultat> utledAvklaringsbehovForFelles(BeregningAktivitetAggregatDto beregningAktivitetAggregat,
                                                                                         BeregningsgrunnlagInput input,
-                                                                                        boolean erOverstyrt,
                                                                                         LocalDate skjæringstidspunktForBeregning) {
         Optional<AktørYtelseDto> aktørYtelse = input.getIayGrunnlag().getAktørYtelseFraRegister();
         Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();
@@ -42,9 +41,6 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterFelles implement
         Optional<LocalDate> ventPåMeldekortFrist = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(aktørYtelse, LocalDate.now(), skjæringstidspunktForBeregning);
         if (ventPåMeldekortFrist.isPresent()) {
             return List.of(autopunkt(AvklaringsbehovDefinisjon.AUTO_VENT_PÅ_SISTE_AAP_ELLER_DP_MELDEKORT, BeregningVenteårsak.VENT_PÅ_SISTE_AAP_ELLER_DP_MELDEKORT, ventPåMeldekortFrist.get()));
-        }
-        if (erOverstyrt) {
-            return emptyList();
         }
         if (AvklarAktiviteterTjeneste.skalAvklareAktiviteter(beregningAktivitetAggregat, aktørYtelse, input.getFagsakYtelseType())) {
             return List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.AVKLAR_AKTIVITETER));
@@ -60,6 +56,6 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterFelles implement
     public List<BeregningAvklaringsbehovResultat> utledAvklaringsbehov(BeregningsgrunnlagRegelResultat regelResultat, BeregningsgrunnlagInput input, boolean erOverstyrt) {
         BeregningAktivitetAggregatDto registerAktiviteter = regelResultat.getRegisterAktiviteter();
         LocalDate skjæringstidspunkt = regelResultat.getBeregningsgrunnlag().getSkjæringstidspunkt();
-        return utledAvklaringsbehovForFelles(registerAktiviteter, input, erOverstyrt, skjæringstidspunkt);
+        return utledAvklaringsbehovForFelles(registerAktiviteter, input, skjæringstidspunkt);
     }
 }

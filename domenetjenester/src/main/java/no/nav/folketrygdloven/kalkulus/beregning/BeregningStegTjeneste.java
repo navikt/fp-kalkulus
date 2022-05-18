@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Any;
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
@@ -35,10 +37,12 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kopiering.SpolFramoverTjeneste;
 import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
+import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.VidereførOverstyring;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.forlengelse.ForlengelseTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
@@ -51,6 +55,7 @@ public class BeregningStegTjeneste {
     private RegelsporingRepository regelsporingRepository;
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
     private ForlengelseTjeneste forlengelseTjeneste;
+    private Instance<VidereførOverstyring> videreførOverstyring;
 
     BeregningStegTjeneste() {
         // CDI
@@ -59,12 +64,15 @@ public class BeregningStegTjeneste {
     @Inject
     public BeregningStegTjeneste(BeregningsgrunnlagTjeneste beregningsgrunnlagTjeneste, BeregningsgrunnlagRepository repository,
                                  RegelsporingRepository regelsporingRepository,
-                                 AvklaringsbehovTjeneste avklaringsbehovTjeneste, ForlengelseTjeneste forlengelseTjeneste) {
+                                 AvklaringsbehovTjeneste avklaringsbehovTjeneste,
+                                 ForlengelseTjeneste forlengelseTjeneste,
+                                 @Any Instance<VidereførOverstyring> videreførOverstyring) {
         this.beregningsgrunnlagTjeneste = beregningsgrunnlagTjeneste;
         this.repository = repository;
         this.regelsporingRepository = regelsporingRepository;
         this.avklaringsbehovTjeneste = avklaringsbehovTjeneste;
         this.forlengelseTjeneste = forlengelseTjeneste;
+        this.videreførOverstyring = videreførOverstyring;
     }
 
     /**
@@ -107,7 +115,7 @@ public class BeregningStegTjeneste {
         validerIngenÅpneAvklaringsbehov(input.getKoblingId());
         var resultat = beregningsgrunnlagTjeneste.fastsettBeregningsaktiviteter(input);
         lagreOgKopier(input, resultat);
-        leggTilOverstyringHvisFinnes(input.getKoblingId(), resultat, AvklaringsbehovDefinisjon.OVERSTYRING_AV_BEREGNINGSAKTIVITETER);
+        leggTilOverstyringHvisFinnes(BeregningSteg.FASTSETT_STP_BER, input.getFagsakYtelseType(), input.getKoblingId(), resultat);
         lagreAvklaringsbehov(input, resultat);
         return mapTilstandResponse(input.getKoblingReferanse(), resultat);
     }
@@ -122,7 +130,7 @@ public class BeregningStegTjeneste {
     private TilstandResponse kontrollerFaktaBeregningsgrunnlag(FaktaOmBeregningInput input) {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.kontrollerFaktaBeregningsgrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
-        leggTilOverstyringHvisFinnes(input.getKoblingId(), beregningResultatAggregat, AvklaringsbehovDefinisjon.OVERSTYRING_AV_BEREGNINGSGRUNNLAG);
+        leggTilOverstyringHvisFinnes(BeregningSteg.KOFAKBER, input.getFagsakYtelseType(), input.getKoblingId(), beregningResultatAggregat);
         lagreAvklaringsbehov(input, beregningResultatAggregat);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
@@ -339,7 +347,6 @@ public class BeregningStegTjeneste {
                 .filter(ap -> !ap.erVentepunkt())
                 .collect(Collectors.toList());
         avklaringsbehovTjeneste.lagreAvklaringsresultater(input.getKoblingId(), avklaringsbehovSomLagresIKalkulus);
-        avklaringsbehovTjeneste.gjennopprettOverstyringForSteg(input.getKoblingId(), MapTilstandTilSteg.mapTilSteg(input.getStegTilstand()));
     }
 
     private void kontrollerIngenUløsteAvklaringsbehovFørSteg(BeregningSteg stegType, Long koblingId) {
@@ -350,14 +357,11 @@ public class BeregningStegTjeneste {
         avklaringsbehovTjeneste.validerIngenÅpneAvklaringsbehovPåKobling(koblingId);
     }
 
-    private void leggTilOverstyringHvisFinnes(Long koblingId, BeregningResultatAggregat beregningResultatAggregat, AvklaringsbehovDefinisjon kode) {
-        if (!kode.erOverstyring()) {
-            throw new IllegalStateException("Kan ikke legge til aksjonspunkt som ikke er overstyring utenfor en aksjonspunktutleder");
-        }
-        var overstyrAksjonspunkt = avklaringsbehovTjeneste.hentAvklaringsbehov(koblingId, kode);
-        if (overstyrAksjonspunkt.isPresent()) {
-            beregningResultatAggregat.leggTilAvklaringsbehov(BeregningAvklaringsbehovResultat.opprettFor(kode));
-        }
+    private void leggTilOverstyringHvisFinnes(BeregningSteg steg, FagsakYtelseType fagsakYtelseType, Long koblingId, BeregningResultatAggregat beregningResultatAggregat) {
+        VidereførOverstyring.finnTjeneste(videreførOverstyring, fagsakYtelseType)
+                .videreførOverstyringForSteg(koblingId, steg)
+                .map(it -> BeregningAvklaringsbehovResultat.opprettFor(it.getDefinisjon()))
+                .ifPresent(beregningResultatAggregat::leggTilAvklaringsbehov);
     }
 
 }

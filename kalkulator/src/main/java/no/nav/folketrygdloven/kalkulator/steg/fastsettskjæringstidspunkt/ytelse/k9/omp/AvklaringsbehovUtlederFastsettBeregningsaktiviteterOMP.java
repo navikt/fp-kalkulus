@@ -31,7 +31,6 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterOMP implements A
 
     private static List<BeregningAvklaringsbehovResultat> utledAvklaringsbehovForOMP(BeregningAktivitetAggregatDto beregningAktivitetAggregat,
                                                                                      BeregningsgrunnlagInput input,
-                                                                                     boolean erOverstyrt,
                                                                                      LocalDate skjæringstidspunktForBeregning) {
         Optional<AktørYtelseDto> aktørYtelse = input.getIayGrunnlag().getAktørYtelseFraRegister();
         Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();
@@ -39,9 +38,6 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterOMP implements A
         Optional<LocalDate> ventPåRapporteringAvInntektFrist = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, arbeidsgivere, LocalDate.now(), beregningAktivitetAggregat, skjæringstidspunktForBeregning);
         if (ventPåRapporteringAvInntektFrist.isPresent()) {
             return List.of(autopunkt(AvklaringsbehovDefinisjon.AUTO_VENT_PÅ_INNTEKT_RAPPORTERINGSFRIST, BeregningVenteårsak.VENT_INNTEKT_RAPPORTERINGSFRIST, ventPåRapporteringAvInntektFrist.get()));
-        }
-        if (erOverstyrt) {
-            return emptyList();
         }
         if (AvklarAktiviteterTjeneste.skalAvklareAktiviteter(beregningAktivitetAggregat, aktørYtelse, input.getFagsakYtelseType())) {
             return List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.AVKLAR_AKTIVITETER));
@@ -60,6 +56,6 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterOMP implements A
         }
         LocalDate skjæringstidspunkt = regelResultat.getBeregningsgrunnlag().getSkjæringstidspunkt();
         BeregningAktivitetAggregatDto registerAktiviteter = regelResultat.getRegisterAktiviteter();
-        return utledAvklaringsbehovForOMP(registerAktiviteter, input, erOverstyrt, skjæringstidspunkt);
+        return utledAvklaringsbehovForOMP(registerAktiviteter, input, skjæringstidspunkt);
     }
 }

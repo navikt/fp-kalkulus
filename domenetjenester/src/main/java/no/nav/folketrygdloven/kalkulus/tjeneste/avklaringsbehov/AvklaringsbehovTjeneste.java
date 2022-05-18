@@ -58,16 +58,6 @@ public class AvklaringsbehovTjeneste {
         }
     }
 
-    public void gjennopprettOverstyringForSteg(Long koblingId, BeregningSteg steg) {
-        KoblingEntitet koblingEntitet = koblingRepository.hentKoblingMedId(koblingId).orElseThrow();
-        var eksisterendeAP = avklaringsbehovRepository.hentAvklaringsbehovForKobling(koblingEntitet);
-        var avbrutteOverstyringer = eksisterendeAP.stream()
-                .filter(ap -> ap.getDefinisjon().getStegFunnet().equals(steg) && ap.getDefinisjon().erOverstyring())
-                .filter(ap -> ap.getStatus().equals(AvklaringsbehovStatus.AVBRUTT))
-                .toList();
-        avbrutteOverstyringer.forEach(this::reaktiverAvklaringsbehov);
-    }
-
     public void kopierAvklaringsbehov(KoblingEntitet nyKobling, AvklaringsbehovEntitet avklaringsbehov) {
         Optional<AvklaringsbehovEntitet> eksisterendeAP = avklaringsbehovRepository.hentAvklaringsbehovForKobling(nyKobling, avklaringsbehov.getDefinisjon());
         AvklaringsbehovEntitet kopiert;
