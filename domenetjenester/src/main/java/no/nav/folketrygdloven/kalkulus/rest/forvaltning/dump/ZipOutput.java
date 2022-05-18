@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulus.rest.forvaltning.dump;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -15,6 +16,7 @@ class ZipOutput {
         var zipEntry = new ZipEntry(saksnummer + "/" + dump.getPath());
         try {
             zipOut.putNextEntry(zipEntry);
+            zipOut.write(new byte[] { (byte)0xEF, (byte)0xBB, (byte)0xBF });
             zipOut.write(dump.getContent().getBytes(Charset.forName("UTF8")));
             zipOut.closeEntry();
         } catch (IOException e) {
