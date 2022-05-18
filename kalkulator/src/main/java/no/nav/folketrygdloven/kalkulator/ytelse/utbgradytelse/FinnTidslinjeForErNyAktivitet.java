@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse;
 
-import static no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.AktivitetStatusMatcher.matcherStatusEllerIkkeYrkesaktiv;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
 import java.util.Optional;
@@ -32,7 +31,8 @@ public class FinnTidslinjeForErNyAktivitet {
 
         var eksisterendeAndelSegmenter = vlBeregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
                 .filter(p -> p.getBeregningsgrunnlagPrStatusOgAndelList()
-                        .stream().anyMatch(a -> matcherStatusEllerIkkeYrkesaktiv(a.getAktivitetStatus(), uttakArbeidType) &&
+                        .stream().anyMatch(a ->
+                                AktivitetStatusMatcher.matcherStatus(a.getAktivitetStatus(), uttakArbeidType) &&
                                 a.getBgAndelArbeidsforhold().map(bgAndelArbeidsforhold -> bgAndelArbeidsforhold.getArbeidsgiver().equals(tilretteleggingArbeidsgiver) &&
                                         bgAndelArbeidsforhold.getArbeidsforholdRef().gjelderFor(internArbeidsforholdRef)).orElse(true)))
                 .map(p -> new LocalDateSegment<>(p.getBeregningsgrunnlagPeriodeFom(), p.getBeregningsgrunnlagPeriodeTom(), false))

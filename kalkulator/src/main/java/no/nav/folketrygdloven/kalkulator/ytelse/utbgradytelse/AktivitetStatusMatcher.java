@@ -6,8 +6,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
 public class AktivitetStatusMatcher {
 
-    public static boolean matcherStatusEllerIkkeYrkesaktiv(AktivitetStatus status, UttakArbeidType uttakArbeidType) {
-        return UttakArbeidType.IKKE_YRKESAKTIV.equals(uttakArbeidType) ||
+    public static boolean matcherStatus(AktivitetStatus status, UttakArbeidType uttakArbeidType) {
+        return (UttakArbeidType.IKKE_YRKESAKTIV.equals(uttakArbeidType) && status.erArbeidstaker()) ||
                 mapAktivitetStatus(uttakArbeidType).equals(status);
     }
 

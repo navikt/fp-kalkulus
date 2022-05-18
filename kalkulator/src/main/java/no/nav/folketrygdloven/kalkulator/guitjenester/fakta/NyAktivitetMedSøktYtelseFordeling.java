@@ -44,13 +44,10 @@ class NyAktivitetMedSøktYtelseFordeling {
     private static boolean matcherAndelAktivitetMedUtbetalingsgrad(BeregningsgrunnlagPrStatusOgAndelDto andel, UtbetalingsgradPrAktivitetDto utbAktivitet) {
         AktivitetDto arbeidsforhold = utbAktivitet.getUtbetalingsgradArbeidsforhold();
         UttakArbeidType uttakArbeidType = arbeidsforhold.getUttakArbeidType();
-        if (AktivitetStatusMatcher.matcherStatusEllerIkkeYrkesaktiv(andel.getAktivitetStatus(), uttakArbeidType)) {
-            if (andel.getAktivitetStatus().erArbeidstaker()) {
-                return matcherArbeidSøktYtelse(andel, arbeidsforhold);
-            }
-            return true;
+        if (andel.getAktivitetStatus().erArbeidstaker()) {
+            return AktivitetStatusMatcher.matcherStatus(andel.getAktivitetStatus(), uttakArbeidType) && matcherArbeidSøktYtelse(andel, arbeidsforhold);
         }
-        return false;
+        return AktivitetStatusMatcher.matcherStatus(andel.getAktivitetStatus(), uttakArbeidType);
     }
 
     private static Boolean matcherArbeidSøktYtelse(BeregningsgrunnlagPrStatusOgAndelDto andel, AktivitetDto arbeidsforhold) {

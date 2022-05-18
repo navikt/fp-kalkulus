@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
 
-import static no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.AktivitetStatusMatcher.matcherStatusEllerIkkeYrkesaktiv;
+import static no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.AktivitetStatusMatcher.matcherStatus;
 import static no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.AktivitetStatusMatcher.matcherStatusUtenIkkeYrkesaktiv;
 
 import java.math.BigDecimal;
@@ -31,12 +31,12 @@ public class UtbetalingsgradTjeneste {
     public static BigDecimal finnUtbetalingsgradForAndel(BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                          Intervall periode,
                                                          YtelsespesifiktGrunnlag ytelsesSpesifiktGrunnlag,
-                                                         boolean skalIgnorereYrkesaktiv) {
+                                                         boolean skalIgnorereIkkeYrkesaktivStatus) {
         if (ytelsesSpesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {
             if (andel.getAktivitetStatus().erArbeidstaker() && andel.getBgAndelArbeidsforhold().isPresent()) {
-                return mapUtbetalingsgradForArbeid(andel.getBgAndelArbeidsforhold().get(), periode, ytelsesSpesifiktGrunnlag, skalIgnorereYrkesaktiv);
+                return mapUtbetalingsgradForArbeid(andel.getBgAndelArbeidsforhold().get(), periode, ytelsesSpesifiktGrunnlag, skalIgnorereIkkeYrkesaktivStatus);
             } else {
-                return finnUtbetalingsgradForStatus(andel.getAktivitetStatus(), periode, ytelsesSpesifiktGrunnlag, skalIgnorereYrkesaktiv);
+                return finnUtbetalingsgradForStatus(andel.getAktivitetStatus(), periode, ytelsesSpesifiktGrunnlag);
             }
         }
         return BigDecimal.valueOf(100);
@@ -44,14 +44,14 @@ public class UtbetalingsgradTjeneste {
 
     private static BigDecimal finnUtbetalingsgradForStatus(AktivitetStatus status,
                                                            Intervall periode,
-                                                           YtelsespesifiktGrunnlag ytelsesSpesifiktGrunnlag, boolean skalIgnorereYrkesaktiv) {
+                                                           YtelsespesifiktGrunnlag ytelsesSpesifiktGrunnlag) {
         if (ytelsesSpesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {
             if (status.erArbeidstaker()) {
                 throw new IllegalStateException("Bruk Arbeidsforhold-mapper");
             }
             UtbetalingsgradGrunnlag utbetalingsgradGrunnlag = (UtbetalingsgradGrunnlag) ytelsesSpesifiktGrunnlag;
             return utbetalingsgradGrunnlag.getUtbetalingsgradPrAktivitet().stream()
-                    .filter(ubtGrad -> matcherStatusUtenIkkeYrkesaktiv(status, ubtGrad.getUtbetalingsgradArbeidsforhold().getUttakArbeidType()))
+                    .filter(ubtGrad -> matcherStatus(status, ubtGrad.getUtbetalingsgradArbeidsforhold().getUttakArbeidType()))
                     .flatMap(utb -> utb.getPeriodeMedUtbetalingsgrad().stream())
                     .filter(p -> p.getPeriode().inkluderer(periode.getFomDato()))
                     .map(PeriodeMedUtbetalingsgradDto::getUtbetalingsgrad)
@@ -64,11 +64,11 @@ public class UtbetalingsgradTjeneste {
     static BigDecimal mapUtbetalingsgradForArbeid(BGAndelArbeidsforholdDto arbeidsforhold,
                                                   Intervall periode,
                                                   YtelsespesifiktGrunnlag ytelsesSpesifiktGrunnlag,
-                                                  boolean skalIgnorereYrkesaktiv) {
+                                                  boolean skalIgnorereIkkeYrkesaktivStatus) {
         if (ytelsesSpesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {
             UtbetalingsgradGrunnlag utbetalingsgradGrunnlag = (UtbetalingsgradGrunnlag) ytelsesSpesifiktGrunnlag;
             return utbetalingsgradGrunnlag.getUtbetalingsgradPrAktivitet().stream()
-                    .filter(a -> erArbeidstaker(a, skalIgnorereYrkesaktiv))
+                    .filter(a -> erArbeidstaker(a, skalIgnorereIkkeYrkesaktivStatus))
                     .filter(utbGrad -> matcherArbeidsgiver(arbeidsforhold, utbGrad)
                             && matcherArbeidsforholdReferanse(arbeidsforhold, utbGrad))
                     .flatMap(utb -> utb.getPeriodeMedUtbetalingsgrad().stream())
@@ -80,11 +80,11 @@ public class UtbetalingsgradTjeneste {
         return BigDecimal.valueOf(100);
     }
 
-    private static boolean erArbeidstaker(UtbetalingsgradPrAktivitetDto ubtGrad, boolean ignorerYrkesaktiv) {
-        if (ignorerYrkesaktiv) {
+    private static boolean erArbeidstaker(UtbetalingsgradPrAktivitetDto ubtGrad, boolean ignorerIkkeYrkesaktivStatus) {
+        if (ignorerIkkeYrkesaktivStatus) {
             return matcherStatusUtenIkkeYrkesaktiv(AktivitetStatus.ARBEIDSTAKER, ubtGrad.getUtbetalingsgradArbeidsforhold().getUttakArbeidType());
         }
-        return matcherStatusEllerIkkeYrkesaktiv(AktivitetStatus.ARBEIDSTAKER, ubtGrad.getUtbetalingsgradArbeidsforhold().getUttakArbeidType());
+        return matcherStatus(AktivitetStatus.ARBEIDSTAKER, ubtGrad.getUtbetalingsgradArbeidsforhold().getUttakArbeidType());
     }
 
     private static boolean matcherArbeidsforholdReferanse(BGAndelArbeidsforholdDto arbeidsforhold, UtbetalingsgradPrAktivitetDto utbGrad) {
