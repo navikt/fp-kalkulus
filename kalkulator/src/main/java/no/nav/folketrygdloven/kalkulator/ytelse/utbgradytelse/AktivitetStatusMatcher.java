@@ -8,7 +8,7 @@ public class AktivitetStatusMatcher {
 
     public static boolean matcherStatus(AktivitetStatus status, UttakArbeidType uttakArbeidType) {
         return (UttakArbeidType.IKKE_YRKESAKTIV.equals(uttakArbeidType) && status.erArbeidstaker()) ||
-                mapAktivitetStatus(uttakArbeidType).equals(status);
+                matcherStatusUtenIkkeYrkesaktiv(status, uttakArbeidType);
     }
 
     public static boolean matcherStatusUtenIkkeYrkesaktiv(AktivitetStatus status, UttakArbeidType uttakArbeidType) {
@@ -46,7 +46,6 @@ public class AktivitetStatusMatcher {
         }
         throw new IllegalArgumentException("Ukjent UttakArbeidType '" + uttakArbeidType + "' kan ikke mappe til " + AktivitetStatus.class.getName());
     }
-
 
 
 }
