@@ -1,15 +1,11 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 
 class MapBeregningAktivitetDto {
 
