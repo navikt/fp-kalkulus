@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulus.app.sikkerhet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -75,13 +74,9 @@ public class PdpRequestBuilderImpl implements PdpRequestBuilder {
             pdpRequest.put(domeneAbacAttributter.getAttributtnøkkelAksjonspunktType(), aksjonspunktTyper);
         }
 
-        if (!attributter.getVerdier(StandardAbacAttributtType.BEHANDLING_UUID).isEmpty()) {
-            UUID behandlingUUID = (UUID) attributter.getVerdier(StandardAbacAttributtType.BEHANDLING_UUID).iterator().next();
-            LOG.info("Setter behhandlingUUID " + behandlingUUID);
-            pdpRequest.put(domeneAbacAttributter.getAttributtnøkkelBehandlingsuuid(), behandlingUUID);
-        }
-
-
+        // TODO: Gå over til å hente fra pip-tjenesten når alle kall inkluderer behandlinguuid?
+        pdpRequest.put(domeneAbacAttributter.getAttributtnøkkelBehandlingstatus(), AbacBehandlingStatus.UTREDES.getEksternKode());
+        pdpRequest.put(domeneAbacAttributter.getAttributtnøkkelSakstatus(), AbacFagsakStatus.UNDER_BEHANDLING.getEksternKode());
         return pdpRequest;
     }
 

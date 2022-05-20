@@ -8,24 +8,31 @@ import no.nav.k9.felles.konfigurasjon.konfig.KonfigVerdi;
 public class DomeneAbacAttributter {
 
     private String attributtnøkkelAksjonspunktType;
-    private String attributtnøkkelBehandlingsuuid;
-    
+    private String attributtnøkkelBehandlingstatus;
+    private String attributtnøkkelSakstatus;
+
     public DomeneAbacAttributter() {
     }
 
     @Inject
     public DomeneAbacAttributter(@KonfigVerdi(value = "abac.attributt.aksjonspunkttype") String attributtnøkkelAksjonspunktType,
-                                 @KonfigVerdi(value = "abac.attributt.behandlingsuuid") String attributtnøkkelBehandlingsuuid
+                                 @KonfigVerdi(value = "abac.attributt.behandlingstatus") String attributtnøkkelBehandlingstatus,
+                                 @KonfigVerdi(value = "abac.attributt.sakstatus") String attributtSakstatus
     ) {
         this.attributtnøkkelAksjonspunktType = attributtnøkkelAksjonspunktType;
-        this.attributtnøkkelBehandlingsuuid = attributtnøkkelBehandlingsuuid;
+        this.attributtnøkkelBehandlingstatus = attributtnøkkelBehandlingstatus;
+        this.attributtnøkkelSakstatus = attributtSakstatus;
     }
 
     public String getAttributtnøkkelAksjonspunktType() {
         return attributtnøkkelAksjonspunktType;
     }
 
-    public String getAttributtnøkkelBehandlingsuuid() {
-        return attributtnøkkelBehandlingsuuid;
+    public String getAttributtnøkkelBehandlingstatus() {
+        return attributtnøkkelBehandlingstatus;
+    }
+
+    public String getAttributtnøkkelSakstatus() {
+        return attributtnøkkelSakstatus;
     }
 }

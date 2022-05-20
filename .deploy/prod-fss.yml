@@ -71,8 +71,10 @@ spec:
       value: "no.nav.abac.attributter.k9.fagsak"
     - name: ABAC_ATTRIBUTT_AKSJONSPUNKTTYPE
       value: "no.nav.abac.attributter.resource.k9.sak.aksjonspunkt_type"
-    - name: ABAC_ATTRIBUTT_BEHANDLINGSUUID
-      value: "no.nav.abac.attributter.resource.k9.behandlings_uuid"
+    - name: ABAC_ATTRIBUTT_BEHANDLINGSTATUS
+      value: "no.nav.abac.attributter.resource.k9.sak.behandlingsstatus"
+    - name: ABAC_ATTRIBUTT_SAKSTATUS
+      value: "no.nav.abac.attributter.resource.k9.sak.saksstatus"
 
     # Feature-flag
     - name: PSB_TILKOMMET_INNTEKT
