@@ -1,36 +1,25 @@
 package no.nav.folketrygdloven.kalkulus.rest.forvaltning.dump;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Tuple;
-import jakarta.persistence.TypedQuery;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 
 @ApplicationScoped
 public class KalkulatorInputDump implements DebugDumpSak {
 
-    private static final Logger log = LoggerFactory.getLogger(KalkulatorInputDump.class);
-
     private EntityManager entityManager;
-    private KoblingRepository koblingRepository;
 
     public KalkulatorInputDump() {
         // for proxys
     }
 
     @Inject
-    public KalkulatorInputDump(EntityManager entityManager, KoblingRepository koblingRepository) {
+    public KalkulatorInputDump(EntityManager entityManager) {
         this.entityManager = entityManager;
-        this.koblingRepository = koblingRepository;
     }
 
     @Override
@@ -39,7 +28,8 @@ public class KalkulatorInputDump implements DebugDumpSak {
                 select cast(k.kobling_referanse as varchar)  ekstern_referanse,
                         k.id kobling_id,
                         cast(ki.input as varchar),
-                        ki.aktiv
+                        ki.aktiv,
+                        ki.opprettet_tid
                      from KOBLING k
                               inner join KALKULATOR_INPUT ki on ki.kobling_id = k.id
                     where k.saksnummer = :saksnummer
