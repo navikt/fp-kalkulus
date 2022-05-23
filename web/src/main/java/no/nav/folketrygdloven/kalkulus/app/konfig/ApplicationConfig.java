@@ -33,7 +33,6 @@ import no.nav.folketrygdloven.kalkulus.rest.MigrerAksjonspunktRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.OperereKalkulusRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.forvaltning.DiagnostikkBeregningRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.forvaltning.ForvaltningFrisinnRestTjeneste;
-import no.nav.folketrygdloven.kalkulus.rest.forvaltning.RegelsporingForvaltningRestTjeneste;
 
 @ApplicationPath(ApplicationConfig.API_URI)
 public class ApplicationConfig extends Application {
@@ -95,7 +94,6 @@ public class ApplicationConfig extends Application {
         classes.add(ForvaltningFrisinnRestTjeneste.class);
         classes.add(MigrerAksjonspunktRestTjeneste.class);
         classes.add(DiagnostikkBeregningRestTjeneste.class);
-        classes.add(RegelsporingForvaltningRestTjeneste.class);
 
 
         return Collections.unmodifiableSet(classes);
