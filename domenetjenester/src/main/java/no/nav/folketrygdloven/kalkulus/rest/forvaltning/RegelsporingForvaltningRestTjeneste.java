@@ -47,7 +47,8 @@ public class RegelsporingForvaltningRestTjeneste {
     @Path("/fjernPeriodeRegelSporinger")
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Sletter inaktive regelsporinger", summary = ("Sletter inaktive regelsporinger"), tags = "regelsporing-forvaltning")
-    @BeskyttetRessurs(action = BeskyttetRessursActionAttributt.DELETE, property = "abac.attributt.drift")
+    // Setter READ for å slippe å lage egne abac-regler for denne midlertidige funksjonaliteten
+    @BeskyttetRessurs(action = BeskyttetRessursActionAttributt.READ, property = "abac.attributt.drift")
     public Response fjernPeriodeRegelSporinger(@NotNull @Parameter(description = "maksAntall", required = true) @Valid FjernRegelsporingLimit maksAntall) {
 
         // Sletter periode-sporing
@@ -66,7 +67,8 @@ public class RegelsporingForvaltningRestTjeneste {
     @Path("/fjernGrunnlagRegelSporinger")
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Sletter inaktive regelsporinger", summary = ("Sletter inaktive regelsporinger"), tags = "regelsporing-forvaltning")
-    @BeskyttetRessurs(action = BeskyttetRessursActionAttributt.DELETE, property = "abac.attributt.drift")
+    // Setter READ for å slippe å lage egne abac-regler for denne midlertidige funksjonaliteten
+    @BeskyttetRessurs(action = BeskyttetRessursActionAttributt.READ, property = "abac.attributt.drift")
     public Response fjernGrunnlagRegelSporinger(@NotNull @Parameter(description = "maksAntall", required = true) @Valid FjernRegelsporingLimit maksAntall) {
 
         // Sletter grunnlag-sporing
