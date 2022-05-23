@@ -49,12 +49,12 @@ public class RegelsporingForvaltningRestTjeneste {
     @Operation(description = "Sletter inaktive regelsporinger", summary = ("Sletter inaktive regelsporinger"), tags = "regelsporing-forvaltning")
     // Setter READ for å slippe å lage egne abac-regler for denne midlertidige funksjonaliteten
     @BeskyttetRessurs(action = BeskyttetRessursActionAttributt.READ, property = "abac.attributt.drift")
-    public Response fjernPeriodeRegelSporinger(@NotNull @Parameter(description = "maksAntall", required = true) @Valid FjernRegelsporingLimit maksAntall) {
+    public Response fjernPeriodeRegelSporinger(@NotNull @Valid FjernRegelsporingLimit maksAntall) {
 
         // Sletter periode-sporing
         var perioderQuery = entityManager.createNativeQuery("delete from REGEL_SPORING_PERIODE " +
                         "where id in (SELECT ID FROM REGEL_SPORING_PERIODE WHERE AKTIV = FALSE LIMIT :limit)")
-                .setParameter("limit", maksAntall);
+                .setParameter("limit", maksAntall.getLimit());
 
         var antallSlettet = perioderQuery.executeUpdate();
 
@@ -69,7 +69,7 @@ public class RegelsporingForvaltningRestTjeneste {
     @Operation(description = "Sletter inaktive regelsporinger", summary = ("Sletter inaktive regelsporinger"), tags = "regelsporing-forvaltning")
     // Setter READ for å slippe å lage egne abac-regler for denne midlertidige funksjonaliteten
     @BeskyttetRessurs(action = BeskyttetRessursActionAttributt.READ, property = "abac.attributt.drift")
-    public Response fjernGrunnlagRegelSporinger(@NotNull @Parameter(description = "maksAntall", required = true) @Valid FjernRegelsporingLimit maksAntall) {
+    public Response fjernGrunnlagRegelSporinger(@NotNull @Valid FjernRegelsporingLimit maksAntall) {
 
         // Sletter grunnlag-sporing
         var grunnlagQuery = entityManager.createNativeQuery("delete from REGEL_SPORING_GRUNNLAG " +
