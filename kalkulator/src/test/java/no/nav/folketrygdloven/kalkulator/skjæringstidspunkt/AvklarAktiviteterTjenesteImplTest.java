@@ -244,7 +244,9 @@ public class AvklarAktiviteterTjenesteImplTest {
     private InntektArbeidYtelseGrunnlagDto lagAktørYtelse(Tuple<Periode, Integer>... meldekortPerioder) {
         InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
         InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder = inntektArbeidYtelseAggregatBuilder.getAktørYtelseBuilder();
-        YtelseDtoBuilder ytelseBuilder = aktørYtelseBuilder.getYtelselseBuilderForType(ARBEIDSAVKLARINGSPENGER, Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(6), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1)));
+        YtelseDtoBuilder ytelseBuilder = YtelseDtoBuilder.ny()
+                .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(6), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1)))
+                .medYtelseType(ARBEIDSAVKLARINGSPENGER);
         if (meldekortPerioder != null && meldekortPerioder.length > 0) {
             Stream.of(meldekortPerioder).forEach(meldekort -> ytelseBuilder.leggTilYtelseAnvist(lagYtelseAnvist(ytelseBuilder, meldekort.getElement1(), meldekort.getElement2())));
         }

@@ -155,7 +155,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
     private YtelseDtoBuilder lagYtelse(FagsakYtelseType relatertYtelseType, InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder,
                                        LocalDate fom, LocalDate tom, BigDecimal beløp, BigDecimal utbetalingsgrad,
                                        LocalDate meldekortFom, LocalDate meldekortTom) {
-        YtelseDtoBuilder ytelselseBuilder = aktørYtelseBuilder.getYtelselseBuilderForType(relatertYtelseType, Intervall.fraOgMedTilOgMed(fom, tom));
+        YtelseDtoBuilder ytelselseBuilder = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom)).medYtelseType(relatertYtelseType);
         return ytelselseBuilder.medYtelseType(FagsakYtelseType.DAGPENGER)
                 .medVedtaksDagsats(beløp)
                 .leggTilYtelseAnvist(ytelselseBuilder.getAnvistBuilder()

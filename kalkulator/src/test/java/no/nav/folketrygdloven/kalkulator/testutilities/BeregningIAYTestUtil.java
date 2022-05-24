@@ -127,7 +127,7 @@ public class BeregningIAYTestUtil {
         InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(inntektArbeidYtelseGrunnlagBuilder.getKladd().getRegisterVersjon(), VersjonTypeDto.REGISTER);
         InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder = inntektArbeidYtelseAggregatBuilder
             .getAktørYtelseBuilder();
-        YtelseDtoBuilder ytelseBuilder = aktørYtelseBuilder.getYtelselseBuilderForType(ytelseType, Intervall.fraOgMedTilOgMed(fom, tom));
+        YtelseDtoBuilder ytelseBuilder = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom)).medYtelseType(ytelseType);
         if (meldekortPerioder != null) {
             Arrays.asList(meldekortPerioder).forEach(meldekortPeriode -> {
                 YtelseAnvistDto ytelseAnvist = lagYtelseAnvist(meldekortPeriode, ytelseBuilder);

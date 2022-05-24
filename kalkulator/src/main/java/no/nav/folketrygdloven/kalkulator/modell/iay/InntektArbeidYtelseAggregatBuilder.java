@@ -7,9 +7,7 @@ import java.util.Optional;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 
 /**
@@ -38,8 +36,8 @@ public class InntektArbeidYtelseAggregatBuilder {
     private static InntektArbeidYtelseAggregatBuilder builderFor(Optional<InntektArbeidYtelseAggregatDto> kopierDataFra,
                                                                  VersjonTypeDto versjon) {
         return kopierDataFra
-            .map(kopier -> new InntektArbeidYtelseAggregatBuilder(new InntektArbeidYtelseAggregatDto(kopier), versjon))
-            .orElseGet(() -> new InntektArbeidYtelseAggregatBuilder(new InntektArbeidYtelseAggregatDto(), versjon));
+                .map(kopier -> new InntektArbeidYtelseAggregatBuilder(new InntektArbeidYtelseAggregatDto(kopier), versjon))
+                .orElseGet(() -> new InntektArbeidYtelseAggregatBuilder(new InntektArbeidYtelseAggregatDto(), versjon));
     }
 
     /**
@@ -115,7 +113,6 @@ public class InntektArbeidYtelseAggregatBuilder {
     VersjonTypeDto getVersjon() {
         return versjon;
     }
-
 
 
     public InternArbeidsforholdRefDto medNyInternArbeidsforholdRef(Arbeidsgiver arbeidsgiver, EksternArbeidsforholdRef eksternReferanse) {
@@ -249,10 +246,6 @@ public class InntektArbeidYtelseAggregatBuilder {
 
         boolean getErOppdatering() {
             return oppdatering;
-        }
-
-        public YtelseDtoBuilder getYtelselseBuilderForType(FagsakYtelseType type, Intervall periode) {
-            return kladd.getYtelseBuilderForType(type, periode);
         }
 
         public AktørYtelseBuilder leggTilYtelse(YtelseDtoBuilder builder) {

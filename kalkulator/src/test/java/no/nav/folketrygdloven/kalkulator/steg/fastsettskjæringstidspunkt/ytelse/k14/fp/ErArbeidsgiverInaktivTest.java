@@ -33,11 +33,10 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektPeriodeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
-import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 
 class ErArbeidsgiverInaktivTest {
-    private static final LocalDate STP = LocalDate.of(2021,10,1);
+    private static final LocalDate STP = LocalDate.of(2021, 10, 1);
     private InntektArbeidYtelseAggregatBuilder data = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
     private InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder arbeidBuilder = data.getAktørArbeidBuilder();
     private InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder ytelseBuilder = data.getAktørYtelseBuilder();
@@ -149,7 +148,9 @@ class ErArbeidsgiverInaktivTest {
     }
 
     private void lagYtelse(Arbeidsgiver ag, LocalDate fom, LocalDate tom, FagsakYtelseType ytelse) {
-        YtelseDtoBuilder builder = ytelseBuilder.getYtelselseBuilderForType(ytelse, Intervall.fraOgMedTilOgMed(fom, tom));
+        YtelseDtoBuilder builder = YtelseDtoBuilder.ny()
+                .medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
+                .medYtelseType(ytelse);
         YtelseFordelingDto yf = new YtelseFordelingDto(ag, InntektPeriodeType.DAGLIG, 100, true);
         YtelseGrunnlagDto yg = new YtelseGrunnlagDto(Arbeidskategori.ARBEIDSTAKER, Collections.singletonList(yf));
         builder.medYtelseGrunnlag(yg);
@@ -169,7 +170,7 @@ class ErArbeidsgiverInaktivTest {
     private void lagInntekt(Arbeidsgiver ag, LocalDate fom, int måneder) {
         InntektDtoBuilder intBuilder = InntektDtoBuilder.oppdatere(Optional.empty());
         intBuilder.medArbeidsgiver(ag).medInntektsKilde(InntektskildeType.INNTEKT_BEREGNING);
-        for (int i = 0; i<måneder; i++) {
+        for (int i = 0; i < måneder; i++) {
             LocalDate start = fom.plusMonths(i);
             InntektspostDtoBuilder postBuilder = intBuilder.getInntektspostBuilder();
             postBuilder.medPeriode(start.withDayOfMonth(1), start.with(TemporalAdjusters.lastDayOfMonth()))

@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PermisjonsbeskrivelseType;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
@@ -21,7 +22,7 @@ import no.nav.fpsak.tidsserie.StandardCombinators;
 public final class PermisjonPerYrkesaktivitet {
 
     public static LocalDateTimeline<Boolean> utledPermisjonPerYrkesaktivitet(YrkesaktivitetDto yrkesaktivitet,
-                                                                             Map<OpptjeningAktivitetType, LocalDateTimeline<Boolean>> tidslinjePerYtelse) {
+                                                                             Map<FagsakYtelseType, LocalDateTimeline<Boolean>> tidslinjePerYtelse) {
         List<LocalDateTimeline<Boolean>> aktivPermisjonTidslinjer = yrkesaktivitet.getPermisjoner()
                 .stream()
                 .filter(permisjon -> erStørreEllerLik100Prosent(permisjon.getProsentsats()))
@@ -36,11 +37,11 @@ public final class PermisjonPerYrkesaktivitet {
         return aktivPermisjonTidslinje;
     }
 
-    private static Set<Intervall> justerPeriodeEtterYtelse(PermisjonDto it, Map<OpptjeningAktivitetType,
-            LocalDateTimeline<Boolean>> tidslinjePerYtelse) {
+    private static Set<Intervall> justerPeriodeEtterYtelse(PermisjonDto it,
+                                                           Map<FagsakYtelseType, LocalDateTimeline<Boolean>> tidslinjePerYtelse) {
         if (Objects.equals(it.getPermisjonsbeskrivelseType(), PermisjonsbeskrivelseType.PERMISJON_MED_FORELDREPENGER)) {
-            var foreldrepengerTidslinje = tidslinjePerYtelse.getOrDefault(OpptjeningAktivitetType.FORELDREPENGER, new LocalDateTimeline<>(List.of()));
-            var svangerskapspengerTidslinje = tidslinjePerYtelse.getOrDefault(OpptjeningAktivitetType.SVANGERSKAPSPENGER, new LocalDateTimeline<>(List.of()));
+            var foreldrepengerTidslinje = tidslinjePerYtelse.getOrDefault(FagsakYtelseType.FORELDREPENGER, new LocalDateTimeline<>(List.of()));
+            var svangerskapspengerTidslinje = tidslinjePerYtelse.getOrDefault(FagsakYtelseType.SVANGERSKAPSPENGER, new LocalDateTimeline<>(List.of()));
 
             var permisjonstidslinje = new LocalDateTimeline<>(List.of(new LocalDateSegment<>(it.getPeriode().getFomDato(), it.getPeriode().getTomDato(), true)));
             permisjonstidslinje = permisjonstidslinje.disjoint(foreldrepengerTidslinje).disjoint(svangerskapspengerTidslinje);

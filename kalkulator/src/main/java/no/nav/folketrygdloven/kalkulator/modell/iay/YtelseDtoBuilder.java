@@ -19,16 +19,8 @@ public class YtelseDtoBuilder {
         this.oppdaterer = oppdaterer;
     }
 
-    private static YtelseDtoBuilder ny() {
+    public static YtelseDtoBuilder ny() {
         return new YtelseDtoBuilder(new YtelseDto(), false);
-    }
-
-    private static YtelseDtoBuilder oppdatere(YtelseDto oppdatere) {
-        return new YtelseDtoBuilder(oppdatere, true);
-    }
-
-    public static YtelseDtoBuilder oppdatere(Optional<YtelseDto> oppdatere) {
-        return oppdatere.map(YtelseDtoBuilder::oppdatere).orElseGet(YtelseDtoBuilder::ny);
     }
 
     public YtelseDtoBuilder medYtelseType(FagsakYtelseType relatertYtelseType) {

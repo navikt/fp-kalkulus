@@ -11,16 +11,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
-import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.tid.TimelineWeekendCompressor;
-import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 import no.nav.fpsak.tidsserie.StandardCombinators;
@@ -28,18 +26,14 @@ import no.nav.fpsak.tidsserie.StandardCombinators;
 
 public class PermisjonFilter {
 
-    private final Map<OpptjeningAktivitetType, LocalDateTimeline<Boolean>> tidslinjePerYtelse;
+    private final Map<FagsakYtelseType, LocalDateTimeline<Boolean>> tidslinjePerYtelse;
     private final Collection<YrkesaktivitetDto> yrkesaktiviteter;
     private LocalDate fom;
 
-    public PermisjonFilter(BeregningAktivitetAggregatDto beregningAktivitetAggregatDto,
+    public PermisjonFilter(Collection<YtelseDto> ytelser,
                            Collection<YrkesaktivitetDto> yrkesaktiviteter) {
-        this.tidslinjePerYtelse = utledYtelsesTidslinjer(beregningAktivitetAggregatDto.getBeregningAktiviteter().stream().map(AktivitetFraOpptjening::new).toList());
-        this.yrkesaktiviteter = yrkesaktiviteter;
-    }
-
-    public PermisjonFilter(Collection<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> opptjeningperioder, Collection<YrkesaktivitetDto> yrkesaktiviteter) {
-        this.tidslinjePerYtelse = utledYtelsesTidslinjer(opptjeningperioder.stream().map(AktivitetFraOpptjening::new).toList());
+        var ytelseperioder = ytelser.stream().map(Ytelseperiode::new).toList();
+        this.tidslinjePerYtelse = utledYtelsesTidslinjer(ytelseperioder);
         this.yrkesaktiviteter = yrkesaktiviteter;
     }
 
@@ -83,13 +77,12 @@ public class PermisjonFilter {
         return new LocalDateTimeline<>(permisjonOver14Dager);
     }
 
-    private Map<OpptjeningAktivitetType, LocalDateTimeline<Boolean>> utledYtelsesTidslinjer(Collection<AktivitetFraOpptjening> aktiviteter) {
+    private Map<FagsakYtelseType, LocalDateTimeline<Boolean>> utledYtelsesTidslinjer(Collection<Ytelseperiode> aktiviteter) {
         var gruppertPåYtelse = aktiviteter.stream()
-                .filter(op -> OpptjeningAktivitetType.YTELSE.contains(op.opptjeningAktivitetType()))
-                .collect(Collectors.groupingBy(AktivitetFraOpptjening::opptjeningAktivitetType));
-        var timelinePerYtelse = new HashMap<OpptjeningAktivitetType, LocalDateTimeline<Boolean>>();
+                .collect(Collectors.groupingBy(Ytelseperiode::ytelseType));
+        var timelinePerYtelse = new HashMap<FagsakYtelseType, LocalDateTimeline<Boolean>>();
 
-        for (Map.Entry<OpptjeningAktivitetType, List<AktivitetFraOpptjening>> entry : gruppertPåYtelse.entrySet()) {
+        for (var entry : gruppertPåYtelse.entrySet()) {
             var segmenter = entry.getValue()
                     .stream()
                     .map(it -> new LocalDateSegment<>(it.periode().getFomDato(), it.periode().getTomDato(), true))
@@ -109,15 +102,12 @@ public class PermisjonFilter {
         return new LocalDateTimeline<>(compressor.getSegmenter());
     }
 
-    private record AktivitetFraOpptjening(OpptjeningAktivitetType opptjeningAktivitetType, Intervall periode) {
+    private record Ytelseperiode(FagsakYtelseType ytelseType, Intervall periode) {
 
-        private AktivitetFraOpptjening(BeregningAktivitetDto aktivitet) {
-            this(aktivitet.getOpptjeningAktivitetType(), aktivitet.getPeriode());
+        private Ytelseperiode(YtelseDto ytelse) {
+            this(ytelse.getYtelseType(), ytelse.getPeriode());
         }
 
-        private AktivitetFraOpptjening(OpptjeningAktiviteterDto.OpptjeningPeriodeDto aktivitet) {
-            this(aktivitet.getOpptjeningAktivitetType(), aktivitet.getPeriode());
-        }
     }
 
 }

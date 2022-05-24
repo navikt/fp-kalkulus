@@ -183,14 +183,14 @@ public class BeregningUtilsTest {
     }
 
     private YtelseAnvistDto lagMeldekort(BigDecimal utbetalingsgrad, LocalDate fom, LocalDate tom) {
-        return YtelseDtoBuilder.oppdatere(Optional.empty()).getAnvistBuilder()
+        return YtelseDtoBuilder.ny().getAnvistBuilder()
             .medAnvistPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
             .medUtbetalingsgradProsent(utbetalingsgrad).build();
     }
 
 
     private YtelseDtoBuilder lagYtelse(FagsakYtelseType ytelsetype, LocalDate fom, LocalDate tom) {
-        return YtelseDtoBuilder.oppdatere(Optional.empty())
+        return YtelseDtoBuilder.ny()
                 .medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
                 .medYtelseType(ytelsetype);
     }

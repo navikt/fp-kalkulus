@@ -42,6 +42,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefu
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.AktørYtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
@@ -164,7 +165,8 @@ public abstract class MapRefusjonPerioderFraVLTilRegel {
         var grunnlag = inputAndeler.getBeregningsgrunnlagInput().getBeregningsgrunnlagGrunnlag();
         var iayGrunnlag = inputAndeler.getBeregningsgrunnlagInput().getIayGrunnlag();
         Collection<YrkesaktivitetDto> yrkesaktiviteterSomErRelevant = FinnYrkesaktiviteterForBeregningTjeneste.finnYrkesaktiviteter(iayGrunnlag, grunnlag, referanse.getSkjæringstidspunktBeregning());
-        var permisjonFilter = new PermisjonFilter(grunnlag.getGjeldendeAktiviteter(), yrkesaktiviteterSomErRelevant);
+        var alleYtelser = iayGrunnlag.getAktørYtelseFraRegister().map(AktørYtelseDto::getAlleYtelser).orElse(Collections.emptyList());
+        var permisjonFilter = new PermisjonFilter(alleYtelser, yrkesaktiviteterSomErRelevant);
         permisjonFilter.medFom(referanse.getSkjæringstidspunktBeregning());
         return inputAndeler.getInntektsmeldinger().stream()
                 .filter(this::harRefusjon)
@@ -324,10 +326,6 @@ public abstract class MapRefusjonPerioderFraVLTilRegel {
             return andeler;
         }
 
-        public PermisjonFilter getPermisjonFilter() {
-            var yrkesaktiviteter = FinnYrkesaktiviteterForBeregningTjeneste.finnYrkesaktiviteter(beregningsgrunnlagInput.getIayGrunnlag(), beregningsgrunnlagInput.getBeregningsgrunnlagGrunnlag(), beregningsgrunnlagInput.getSkjæringstidspunktForBeregning());
-            return new PermisjonFilter(beregningsgrunnlagInput.getOpptjeningAktiviteterForBeregning(), yrkesaktiviteter);
-        }
     }
 
 }

@@ -273,7 +273,7 @@ public class VurderMottarYtelseTjenesteTest {
 
     private InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder lagAktørYtelseForFrilans() {
         return InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder.oppdatere(Optional.empty())
-                .leggTilYtelse(YtelseDtoBuilder.oppdatere(Optional.empty()).medYtelseType(FagsakYtelseType.SYKEPENGER)
+                .leggTilYtelse(YtelseDtoBuilder.ny().medYtelseType(FagsakYtelseType.SYKEPENGER)
                         .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10), SKJÆRINGSTIDSPUNKT_OPPTJENING))
                         .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny()
                                 .medBeløp(BigDecimal.TEN)
@@ -286,7 +286,7 @@ public class VurderMottarYtelseTjenesteTest {
 
     private InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder lagAktørYtelseForArbeidsgiver(Arbeidsgiver arbeidsgiver, boolean fullRefusjon) {
         return InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder.oppdatere(Optional.empty())
-                .leggTilYtelse(YtelseDtoBuilder.oppdatere(Optional.empty()).medYtelseType(FagsakYtelseType.SYKEPENGER)
+                .leggTilYtelse(YtelseDtoBuilder.ny().medYtelseType(FagsakYtelseType.SYKEPENGER)
                         .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10), SKJÆRINGSTIDSPUNKT_OPPTJENING))
                         .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny()
                                 .medBeløp(BigDecimal.TEN)

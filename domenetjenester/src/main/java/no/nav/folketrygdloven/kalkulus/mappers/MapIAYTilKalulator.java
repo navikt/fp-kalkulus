@@ -299,7 +299,7 @@ public class MapIAYTilKalulator {
     }
 
     private static YtelseDtoBuilder mapYtelse(YtelseDto ytelse) {
-        YtelseDtoBuilder builder = YtelseDtoBuilder.oppdatere(Optional.empty());
+        YtelseDtoBuilder builder = YtelseDtoBuilder.ny();
         if (ytelse.getYtelseAnvist() != null) {
             ytelse.getYtelseAnvist().forEach(ytelseAnvistDto -> builder.leggTilYtelseAnvist(mapYtelseAnvist(ytelseAnvistDto)));
         }

@@ -29,6 +29,8 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
@@ -37,6 +39,7 @@ import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingT
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PermisjonsbeskrivelseType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
@@ -180,6 +183,14 @@ class MapBeregningAktiviteterFraVLTilRegelFellesTest {
         var arbeidBuilder = InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder.oppdatere(Optional.empty());
         yrkesaktiviteter.forEach(arbeidBuilder::leggTilYrkesaktivitet);
         return InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER).leggTilAktørArbeid(arbeidBuilder);
+    }
+
+    private InntektArbeidYtelseAggregatBuilder lagData(List<YrkesaktivitetDto> yrkesaktiviteter, List<YtelseDtoBuilder> ytelser) {
+        var arbeidBuilder = InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder.oppdatere(Optional.empty());
+        yrkesaktiviteter.forEach(arbeidBuilder::leggTilYrkesaktivitet);
+        var aktørYtelseBuilder = InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder.oppdatere(Optional.empty());
+        ytelser.forEach(aktørYtelseBuilder::leggTilYtelse);
+        return InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER).leggTilAktørArbeid(arbeidBuilder).leggTilAktørYtelse(aktørYtelseBuilder);
     }
 
     private Optional<YrkesaktivitetDto> lagYA(OpptjeningAktiviteterDto.OpptjeningPeriodeDto opp, PermisjonsbeskrivelseType type, Intervall permisjonperiode) {
@@ -440,11 +451,12 @@ class MapBeregningAktiviteterFraVLTilRegelFellesTest {
         var alleAktiviteter = new OpptjeningAktiviteterDto(opptjeningAktiviteter, opptjeningAktiviteter2, opptjeningAktiviteter3);
         var ya1 = lagYA(opptjeningAktiviteter, null, null).orElseThrow();
         var ya2 = lagYA(opptjeningAktiviteter2, PermisjonsbeskrivelseType.PERMISJON_MED_FORELDREPENGER, Intervall.fraOgMedTilOgMed(periode.getFomDato(), SKJÆRINGSTIDSPUNKT.plusYears(12))).orElseThrow();
+        var foreldrepengerYtelse = YtelseDtoBuilder.ny().medYtelseType(FagsakYtelseType.FORELDREPENGER).medPeriode(periode);
 
         // Act
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
                 .medInntektsmeldinger(Collections.emptyList())
-                .medData(lagData(Arrays.asList(ya1, ya2)))
+                .medData(lagData(Arrays.asList(ya1, ya2), List.of(foreldrepengerYtelse)))
                 .build();
         var input = new FastsettBeregningsaktiviteterInput(koblingReferanse, iayGrunnlag, alleAktiviteter, List.of(), null);
         AktivitetStatusModell modell = new MapBeregningAktiviteterFraVLTilRegelFelles().mapForSkjæringstidspunkt(input);

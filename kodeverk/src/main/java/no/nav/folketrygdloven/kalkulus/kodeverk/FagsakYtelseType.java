@@ -26,7 +26,9 @@ public enum FagsakYtelseType implements Kodeverdi {
      */
     DAGPENGER("DAG", "Dagpenger", "DAGPENGER"),
 
-    /** Ny ytelse for kompenasasjon for koronatiltak for Selvstendig næringsdrivende og Frilansere (Anmodning 10). */
+    /**
+     * Ny ytelse for kompenasasjon for koronatiltak for Selvstendig næringsdrivende og Frilansere (Anmodning 10).
+     */
     FRISINN("FRISINN", "FRIlansere og Selstendig næringsdrivendes INNtektskompensasjon", "FRISINN"),
 
     /**
@@ -76,6 +78,12 @@ public enum FagsakYtelseType implements Kodeverdi {
 
     private static final Set<FagsakYtelseType> ARENA_YTELSER = new HashSet<>(Arrays.asList(DAGPENGER,
             ARBEIDSAVKLARINGSPENGER));
+
+    public static final Set<FagsakYtelseType> K9_YTELSER = Set.of(
+            OMSORGSPENGER,
+            PLEIEPENGER_SYKT_BARN,
+            PLEIEPENGER_NÆRSTÅENDE,
+            OPPLÆRINGSPENGER);
 
     static {
         for (var v : values()) {

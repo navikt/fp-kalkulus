@@ -38,13 +38,6 @@ public class AktørYtelseDto {
         return ytelser != null && !ytelser.isEmpty();
     }
 
-    YtelseDtoBuilder getYtelseBuilderForType(FagsakYtelseType type, Intervall periode) {
-        Optional<YtelseDto> ytelse = getAlleYtelser().stream()
-            .filter(ya -> ya.getPeriode().equals(periode) && ya.getYtelseType().equals(type))
-            .findFirst();
-        return YtelseDtoBuilder.oppdatere(ytelse).medPeriode(periode).medYtelseType(type);
-    }
-
     void leggTilYtelse(YtelseDto ytelse) {
         this.ytelser.add(ytelse);
     }

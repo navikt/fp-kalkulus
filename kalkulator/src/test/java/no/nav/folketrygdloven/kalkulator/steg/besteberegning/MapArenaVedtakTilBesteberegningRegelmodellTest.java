@@ -87,7 +87,7 @@ class MapArenaVedtakTilBesteberegningRegelmodellTest {
     }
 
     private YtelseDto lagVedtak(LocalDate fom, LocalDate tom, FagsakYtelseType ytelse, YtelseAnvistDto... meldekort) {
-        YtelseDtoBuilder builder = YtelseDtoBuilder.oppdatere(Optional.empty())
+        YtelseDtoBuilder builder = YtelseDtoBuilder.ny()
                 .medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
                 .medYtelseType(ytelse);
         Arrays.asList(meldekort).forEach(builder::leggTilYtelseAnvist);
