@@ -69,7 +69,7 @@ public class PermisjonFilter {
         var aktivitetsTidslinje = new LocalDateTimeline<>(yrkesaktivitet.getAlleAnsettelsesperioder().stream()
                 .map(AktivitetsAvtaleDto::getPeriode)
                 .map(p -> new LocalDateSegment<>(p.getFomDato(), p.getTomDato(), Boolean.TRUE))
-                .toList());
+                .toList(), StandardCombinators::alwaysTrueForMatch);
         tidslinjeTilVurdering = tidslinjeTilVurdering.intersection(aktivitetsTidslinje.compress());
 
         // Legg til mellomliggende periode dersom helg mellom permisjonsperioder
