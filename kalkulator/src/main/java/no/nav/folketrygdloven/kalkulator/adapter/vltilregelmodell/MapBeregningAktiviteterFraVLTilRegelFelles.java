@@ -18,7 +18,6 @@ import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInpu
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørArbeidDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørYtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonFilter;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
@@ -47,7 +46,7 @@ public class MapBeregningAktiviteterFraVLTilRegelFelles implements MapBeregningA
                     .map(AktørArbeidDto::hentAlleYrkesaktiviteter)
                     .orElse(Collections.emptyList());
             var alleYtelser = input.getIayGrunnlag().getAktørYtelseFraRegister().map(AktørYtelseDto::getAlleYtelser).orElse(Collections.emptyList());
-            var permisjonFilter = new PermisjonFilter(alleYtelser, relevantYrkesaktivitet);
+            var permisjonFilter = new PermisjonFilter(alleYtelser, relevantYrkesaktivitet, input.getSkjæringstidspunktOpptjening());
             var aktivePerioder = relevanteAktiviteter.stream()
                     .flatMap(opptjeningsperiode ->
                             lagAktivPeriode(

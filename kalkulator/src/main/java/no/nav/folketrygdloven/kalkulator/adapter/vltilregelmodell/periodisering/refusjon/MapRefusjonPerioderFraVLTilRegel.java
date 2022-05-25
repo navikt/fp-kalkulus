@@ -166,7 +166,7 @@ public abstract class MapRefusjonPerioderFraVLTilRegel {
         var iayGrunnlag = inputAndeler.getBeregningsgrunnlagInput().getIayGrunnlag();
         Collection<YrkesaktivitetDto> yrkesaktiviteterSomErRelevant = FinnYrkesaktiviteterForBeregningTjeneste.finnYrkesaktiviteter(iayGrunnlag, grunnlag, referanse.getSkjæringstidspunktBeregning());
         var alleYtelser = iayGrunnlag.getAktørYtelseFraRegister().map(AktørYtelseDto::getAlleYtelser).orElse(Collections.emptyList());
-        var permisjonFilter = new PermisjonFilter(alleYtelser, yrkesaktiviteterSomErRelevant);
+        var permisjonFilter = new PermisjonFilter(alleYtelser, yrkesaktiviteterSomErRelevant, referanse.getSkjæringstidspunktBeregning());
         permisjonFilter.medFom(referanse.getSkjæringstidspunktBeregning());
         return inputAndeler.getInntektsmeldinger().stream()
                 .filter(this::harRefusjon)

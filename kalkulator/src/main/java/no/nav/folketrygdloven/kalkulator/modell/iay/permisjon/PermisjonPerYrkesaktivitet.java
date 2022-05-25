@@ -1,6 +1,9 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay.permisjon;
 
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
+
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -22,11 +25,11 @@ import no.nav.fpsak.tidsserie.StandardCombinators;
 public final class PermisjonPerYrkesaktivitet {
 
     public static LocalDateTimeline<Boolean> utledPermisjonPerYrkesaktivitet(YrkesaktivitetDto yrkesaktivitet,
-                                                                             Map<FagsakYtelseType, LocalDateTimeline<Boolean>> tidslinjePerYtelse) {
+                                                                             Map<FagsakYtelseType, LocalDateTimeline<Boolean>> tidslinjePerYtelse, LocalDate skjæringstidspunkt) {
         List<LocalDateTimeline<Boolean>> aktivPermisjonTidslinjer = yrkesaktivitet.getPermisjoner()
                 .stream()
                 .filter(permisjon -> erStørreEllerLik100Prosent(permisjon.getProsentsats()))
-                .map(it -> justerPeriodeEtterYtelse(it, tidslinjePerYtelse))
+                .map(it -> justerPeriodeEtterYtelse(it, tidslinjePerYtelse, skjæringstidspunkt))
                 .flatMap(Collection::stream)
                 .map(permisjon -> new LocalDateTimeline<>(permisjon.getFomDato(), permisjon.getTomDato(), Boolean.TRUE))
                 .toList();
@@ -38,13 +41,15 @@ public final class PermisjonPerYrkesaktivitet {
     }
 
     private static Set<Intervall> justerPeriodeEtterYtelse(PermisjonDto it,
-                                                           Map<FagsakYtelseType, LocalDateTimeline<Boolean>> tidslinjePerYtelse) {
+                                                           Map<FagsakYtelseType, LocalDateTimeline<Boolean>> tidslinjePerYtelse,
+                                                           LocalDate skjæringstidspunkt) {
+        var vilkårsperiodeTidslinje = new LocalDateTimeline<>(List.of(new LocalDateSegment<>(skjæringstidspunkt, TIDENES_ENDE, true)));
         if (Objects.equals(it.getPermisjonsbeskrivelseType(), PermisjonsbeskrivelseType.PERMISJON_MED_FORELDREPENGER)) {
             var foreldrepengerTidslinje = tidslinjePerYtelse.getOrDefault(FagsakYtelseType.FORELDREPENGER, new LocalDateTimeline<>(List.of()));
             var svangerskapspengerTidslinje = tidslinjePerYtelse.getOrDefault(FagsakYtelseType.SVANGERSKAPSPENGER, new LocalDateTimeline<>(List.of()));
 
             var permisjonstidslinje = new LocalDateTimeline<>(List.of(new LocalDateSegment<>(it.getPeriode().getFomDato(), it.getPeriode().getTomDato(), true)));
-            permisjonstidslinje = permisjonstidslinje.disjoint(foreldrepengerTidslinje).disjoint(svangerskapspengerTidslinje);
+            permisjonstidslinje = permisjonstidslinje.disjoint(foreldrepengerTidslinje).disjoint(svangerskapspengerTidslinje).disjoint(vilkårsperiodeTidslinje);
 
             return permisjonstidslinje.compress()
                     .toSegments()
@@ -54,7 +59,7 @@ public final class PermisjonPerYrkesaktivitet {
                     .collect(Collectors.toCollection(TreeSet::new));
         } else if (Objects.equals(it.getPermisjonsbeskrivelseType(), PermisjonsbeskrivelseType.VELFERDSPERMISJON)) {
             var permisjonstidslinje = new LocalDateTimeline<>(List.of(new LocalDateSegment<>(it.getPeriode().getFomDato(), it.getPeriode().getTomDato(), true)));
-            for (OpptjeningAktivitetType aktivitetType : OpptjeningAktivitetType.K9_YTELSER) {
+            for (var aktivitetType : FagsakYtelseType.K9_YTELSER) {
                 var ytelsesTidslinje = tidslinjePerYtelse.getOrDefault(aktivitetType, new LocalDateTimeline<>(List.of()));
                 permisjonstidslinje = permisjonstidslinje.disjoint(ytelsesTidslinje);
             }

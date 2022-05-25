@@ -43,7 +43,7 @@ class MapRefusjonPerioderFraVLTilRegelK9Test {
         var aktivitetsAvtaleDtoBuilder = AktivitetsAvtaleDtoBuilder.ny().medPeriode(utbetalingsperiode).medErAnsettelsesPeriode(true);
         var aktivitetsavtaler = List.of(aktivitetsAvtaleDtoBuilder.build());
         var relaterteYrkesaktiviteter = Set.of(lagYrkesaktivitet(arbeidsgiver, aktivitetsAvtaleDtoBuilder, null));
-        var permisjonFilter = new PermisjonFilter(Collections.emptyList(), relaterteYrkesaktiviteter);
+        var permisjonFilter = new PermisjonFilter(Collections.emptyList(), relaterteYrkesaktiviteter, stp);
 
         var gyldigeRefusjonPerioder = mapper.finnGyldigeRefusjonPerioder(stp,
                 ytelsespesifiktGrunnlag,
@@ -72,7 +72,7 @@ class MapRefusjonPerioderFraVLTilRegelK9Test {
         var aktivitetsavtaler = List.of(aktivitetsAvtaleDtoBuilder.build());
         var permisjonsperiode = Intervall.fraOgMedTilOgMed(stp.plusDays(1), stp.plusDays(15));
         var relaterteYrkesaktiviteter = Set.of(lagYrkesaktivitet(arbeidsgiver, aktivitetsAvtaleDtoBuilder, permisjonsperiode));
-        var permisjonFilter = new PermisjonFilter(Collections.emptyList(), relaterteYrkesaktiviteter);
+        var permisjonFilter = new PermisjonFilter(Collections.emptyList(), relaterteYrkesaktiviteter, stp);
 
         var gyldigeRefusjonPerioder = mapper.finnGyldigeRefusjonPerioder(stp,
                 ytelsespesifiktGrunnlag,
