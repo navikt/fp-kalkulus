@@ -6,8 +6,10 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import java.util.List;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import no.nav.folketrygdloven.kalkulus.beregning.v1.UtbetalingsgradPrAktivitetDto;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -21,7 +23,7 @@ public class OpptjeningAktiviteterDto {
 
     @JsonProperty(value = "perioder", required = true)
     @Valid
-    @Size(min = 1)
+    @Size()
     private List<OpptjeningPeriodeDto> perioder;
 
     @JsonProperty(value = "midlertidigInaktivType", required = false)
@@ -50,5 +52,10 @@ public class OpptjeningAktiviteterDto {
 
     public MidlertidigInaktivType getMidlertidigInaktivType() {
         return midlertidigInaktivType;
+    }
+
+    @AssertTrue(message = "Skal ha opptjeningsaktiviteter dersom ikke inaktiv")
+    public boolean skalHaAktiviteterDersomIkkeInaktiv() {
+        return midlertidigInaktivType != null || !perioder.isEmpty();
     }
 }

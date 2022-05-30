@@ -153,7 +153,7 @@ public class BeregningsgrunnlagInput {
     }
 
     private boolean periodefilter(LocalDate skjæringstidspunktOpptjening, OpptjeningPeriodeDto p) {
-        if (getOpptjeningAktiviteter().getMidlertidigInaktivType() != null) {
+        if (getOpptjeningAktiviteter().erMidlertidigInaktiv()) {
             return !p.getPeriode().getFomDato().isAfter(BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunktOpptjening)) ||
                     p.getPeriode().getFomDato().isEqual(skjæringstidspunktOpptjening);
         }

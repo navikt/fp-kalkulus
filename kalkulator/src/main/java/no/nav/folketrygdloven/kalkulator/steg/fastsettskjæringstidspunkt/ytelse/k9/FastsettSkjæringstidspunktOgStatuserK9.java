@@ -44,9 +44,9 @@ public class FastsettSkjæringstidspunktOgStatuserK9 implements FastsettSkjærin
         AktivitetStatusModell regelmodell = MapBGStatuserFraVLTilRegel.map(input.getInntektsmeldinger(),
                 beregningAktivitetAggregat, ytelseFilter);
 
-        no.nav.folketrygdloven.kalkulus.opptjening.v1.MidlertidigInaktivType midlerTidigInaktivInput = input.getOpptjeningAktiviteter().getMidlertidigInaktivType();
         MidlertidigInaktivType midlertidigInaktivType = null;
-        if (midlerTidigInaktivInput != null) {
+        if (input.getOpptjeningAktiviteter().erMidlertidigInaktiv()) {
+            var midlerTidigInaktivInput = input.getOpptjeningAktiviteter().getMidlertidigInaktivType();
             if (midlerTidigInaktivInput.name().equals(MidlertidigInaktivType.A.name())) {
                 List<AktivPeriode> aktiviteterPåStp = regelmodell.getAktivePerioder().stream().filter(aktivPeriode -> aktivPeriode.getPeriode().inneholder(input.getSkjæringstidspunktOpptjening())).collect(Collectors.toList());
                 if (!aktiviteterPåStp.isEmpty()) {

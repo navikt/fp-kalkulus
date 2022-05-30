@@ -6,7 +6,6 @@ import java.util.Objects;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Aktivitet;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapOpptjeningAktivitetTypeFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
@@ -18,8 +17,6 @@ import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
 
 public class MapBGStatuserFraVLTilRegel {
-
-    private static final String INGEN_AKTIVITET_MELDING = "Må ha aktiviteter for å sette status.";
 
     private MapBGStatuserFraVLTilRegel() {
         // Skjul
@@ -36,11 +33,7 @@ public class MapBGStatuserFraVLTilRegel {
                                            BeregningAktivitetAggregatDto beregningAktivitetAggregat,
                                            AktivitetStatusModell modell, YtelseFilterDto ytelseFilter) {
         List<BeregningAktivitetDto> relevanteAktiviteter = beregningAktivitetAggregat.getBeregningAktiviteter();
-        if (relevanteAktiviteter.isEmpty()) {  // For enklere feilsøking når det mangler aktiviteter
-            throw new IllegalStateException(INGEN_AKTIVITET_MELDING);
-        } else {
-            relevanteAktiviteter.forEach(a -> modell.leggTilEllerOppdaterAktivPeriode(lagAktivPerioder(inntektsmeldinger, a, ytelseFilter)));
-        }
+        relevanteAktiviteter.forEach(a -> modell.leggTilEllerOppdaterAktivPeriode(lagAktivPerioder(inntektsmeldinger, a, ytelseFilter)));
     }
 
     private static AktivPeriode lagAktivPerioder(Collection<InntektsmeldingDto> inntektsmeldinger, BeregningAktivitetDto ba, YtelseFilterDto ytelseFilter) {
@@ -90,7 +83,7 @@ public class MapBGStatuserFraVLTilRegel {
     }
 
     private static boolean harInntektsmelding(Collection<InntektsmeldingDto> inntektsmeldinger,
-                                                                                            String orgnummer, InternArbeidsforholdRefDto ref) {
+                                              String orgnummer, InternArbeidsforholdRefDto ref) {
         return inntektsmeldinger.stream()
                 .anyMatch(im -> Objects.equals(im.getArbeidsgiver().getOrgnr(), orgnummer) &&
                         im.getArbeidsforholdRef().gjelderFor(ref));

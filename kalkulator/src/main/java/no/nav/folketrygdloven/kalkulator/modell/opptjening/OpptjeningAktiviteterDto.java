@@ -42,6 +42,10 @@ public class OpptjeningAktiviteterDto {
         return midlertidigInaktivType;
     }
 
+    public boolean erMidlertidigInaktiv() {
+        return midlertidigInaktivType != null;
+    }
+
     public static class OpptjeningPeriodeDto {
 
         private OpptjeningAktivitetType type;

@@ -28,7 +28,7 @@ public class ForeslåSkjæringstidspunktTjeneste {
 
     public BeregningsgrunnlagRegelResultat foreslåSkjæringstidspunkt(FastsettBeregningsaktiviteterInput input) {
         var beregningAktivitetAggregat = fastsettBeregningAktiviteter.fastsettAktiviteter(input);
-        if (beregningAktivitetAggregat.getBeregningAktiviteter().isEmpty()) {
+        if (beregningAktivitetAggregat.getBeregningAktiviteter().isEmpty() && !input.getOpptjeningAktiviteter().erMidlertidigInaktiv()) {
             // Avslår vilkår
             var beregningsgrunnlagRegelResultat = new BeregningsgrunnlagRegelResultat(beregningAktivitetAggregat);
             beregningsgrunnlagRegelResultat.setVilkårsresultat(List.of(new BeregningVilkårResultat(false, Vilkårsavslagsårsak.FOR_LAVT_BG, Intervall.fraOgMed(input.getSkjæringstidspunktOpptjening()))));
