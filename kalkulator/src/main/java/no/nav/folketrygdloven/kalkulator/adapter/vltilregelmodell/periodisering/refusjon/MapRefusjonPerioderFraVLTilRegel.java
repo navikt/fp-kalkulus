@@ -7,7 +7,6 @@ import static no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodiserin
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -239,7 +238,7 @@ public abstract class MapRefusjonPerioderFraVLTilRegel {
                                                                    List<AktivitetsAvtaleDto> alleAnsattperioderForInntektsmeldingEtterStartAvBeregning, Set<YrkesaktivitetDto> yrkesaktiviteter, PermisjonFilter permisjonFilter);
 
 
-    private List<AktivitetsAvtaleDto> finnAnsattperioderForYrkesaktiviteter(Set<YrkesaktivitetDto> yrkesaktiviteter, LocalDate skjæringstidspunktBeregning) {
+    protected List<AktivitetsAvtaleDto> finnAnsattperioderForYrkesaktiviteter(Collection<YrkesaktivitetDto> yrkesaktiviteter, LocalDate skjæringstidspunktBeregning) {
         return yrkesaktiviteter.stream()
                 .flatMap(ya -> ya.getAlleAnsettelsesperioder().stream())
                 .filter(a -> !a.getPeriode().getTomDato().isBefore(BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunktBeregning)))
@@ -273,23 +272,20 @@ public abstract class MapRefusjonPerioderFraVLTilRegel {
     protected Optional<LocalDate> utledStartdatoPermisjon(Input input,
                                                           LocalDate skjæringstidspunktBeregning,
                                                           InntektsmeldingDto inntektsmelding,
-                                                          Set<YrkesaktivitetDto> yrkesaktiviteter,
+                                                          Set<YrkesaktivitetDto> yrkesaktiviteterForIM,
                                                           PermisjonFilter permisjonFilter) {
-        Optional<LocalDate> førsteDatoEtterBekreftetPermisjon = yrkesaktiviteter.stream()
-                .map(ya -> finnFørsteSøktePermisjonsdag(input.getBeregningsgrunnlagInput(), ya, permisjonFilter))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .min(Comparator.naturalOrder());
+        var førsteDatoEtterBekreftetPermisjon = finnFørsteSøktePermisjonsdag(input.getBeregningsgrunnlagInput(), yrkesaktiviteterForIM, permisjonFilter);
         if (førsteDatoEtterBekreftetPermisjon.isEmpty()) {
             return Optional.empty();
         }
         return Optional.of(FinnStartdatoPermisjon.finnStartdatoPermisjon(Optional.of(inntektsmelding), skjæringstidspunktBeregning, førsteDatoEtterBekreftetPermisjon.get()));
     }
 
-    private Optional<LocalDate> finnFørsteSøktePermisjonsdag(BeregningsgrunnlagInput input, YrkesaktivitetDto ya, PermisjonFilter permisjonFilter) {
+    private Optional<LocalDate> finnFørsteSøktePermisjonsdag(BeregningsgrunnlagInput input, Collection<YrkesaktivitetDto> yrkesaktiviteter, PermisjonFilter permisjonFilter) {
         LocalDate skjæringstidspunktBeregning = input.getBeregningsgrunnlag().getSkjæringstidspunkt();
-        Periode ansettelsesPeriode = FinnAnsettelsesPeriode.getMinMaksPeriode(ya.getAlleAnsettelsesperioder(), skjæringstidspunktBeregning);
-        Optional<LocalDate> førstedagEtterBekreftetPermisjonOpt = FinnFørsteDagEtterPermisjon.finn(ya, ansettelsesPeriode,
+        List<AktivitetsAvtaleDto> alleAnsattperioderForInntektsmeldingEtterStartAvBeregning = finnAnsattperioderForYrkesaktiviteter(yrkesaktiviteter, input.getSkjæringstidspunktOpptjening());
+        Periode ansettelsesPeriode = FinnAnsettelsesPeriode.getMinMaksPeriode(alleAnsattperioderForInntektsmeldingEtterStartAvBeregning, input.getSkjæringstidspunktOpptjening());
+        Optional<LocalDate> førstedagEtterBekreftetPermisjonOpt = FinnFørsteDagEtterPermisjon.finn(yrkesaktiviteter, ansettelsesPeriode,
                 skjæringstidspunktBeregning, permisjonFilter);
         if (førstedagEtterBekreftetPermisjonOpt.isEmpty()) {
             return Optional.empty();
