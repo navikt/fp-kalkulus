@@ -26,7 +26,7 @@ public class FinnFørsteDagEtterPermisjon {
     public static Optional<LocalDate> finn(Collection<YrkesaktivitetDto> yrkesaktiviteter, Periode ansettelsesPeriode, LocalDate skjæringstidspunktBeregning, PermisjonFilter permisjonFilter) {
         var tidslinjeForPermisjon = yrkesaktiviteter.stream()
                 .map(permisjonFilter::finnTidslinjeForPermisjonOver14Dager)
-                .reduce((t1, t2) -> t1.crossJoin(t2, StandardCombinators::alwaysTrueForMatch))
+                .reduce((t1, t2) -> t1.intersection(t2, StandardCombinators::alwaysTrueForMatch))
                 .orElse(LocalDateTimeline.empty());
 
         var harIkkePermisjonPåStp = tidslinjeForPermisjon.intersection(new LocalDateInterval(skjæringstidspunktBeregning, skjæringstidspunktBeregning))

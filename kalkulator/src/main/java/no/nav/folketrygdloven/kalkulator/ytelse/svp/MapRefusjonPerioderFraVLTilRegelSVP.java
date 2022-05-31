@@ -87,7 +87,7 @@ public class MapRefusjonPerioderFraVLTilRegelSVP extends MapRefusjonPerioderFraV
     private LocalDateTimeline<Boolean> finnPermisjontidslinje(Set<YrkesaktivitetDto> yrkesaktiviteterRelatertTilInntektsmelding, PermisjonFilter permisjonFilter) {
         return yrkesaktiviteterRelatertTilInntektsmelding.stream()
                 .map(permisjonFilter::finnTidslinjeForPermisjonOver14Dager)
-                .reduce((t1, t2) -> t1.combine(t2, StandardCombinators::alwaysTrueForMatch, LocalDateTimeline.JoinStyle.CROSS_JOIN))
+                .reduce((t1, t2) -> t1.combine(t2, StandardCombinators::alwaysTrueForMatch, LocalDateTimeline.JoinStyle.INNER_JOIN))
                 .orElse(LocalDateTimeline.empty());
     }
 
