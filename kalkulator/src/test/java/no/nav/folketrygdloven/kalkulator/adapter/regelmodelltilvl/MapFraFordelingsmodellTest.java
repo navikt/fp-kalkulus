@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.fordel.andelsmessig.modell.FordelAndelModell;
-import no.nav.folketrygdloven.beregningsgrunnlag.fordel.andelsmessig.modell.FordelPeriodeModell;
+import no.nav.folketrygdloven.beregningsgrunnlag.fordel.modell.FordelAndelModell;
+import no.nav.folketrygdloven.beregningsgrunnlag.fordel.modell.FordelPeriodeModell;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
@@ -74,7 +74,7 @@ class MapFraFordelingsmodellTest {
         assertAndel(andeler, 2L, 0, null, Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE);
         assertAndel(andeler, 3L, 100000, null, Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE);
     }
-    
+
     @Test
     public void skal_teste_mapping_av_tre_andeler_blir_fire_med_ny_andel_frilans() {
         // Arrange
