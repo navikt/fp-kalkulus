@@ -16,7 +16,6 @@ import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonFilter;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.MapRefusjonPerioderFraVLTilRegelUtbgrad;
@@ -41,7 +40,6 @@ public class MapRefusjonPerioderFraVLTilRegelSVP extends MapRefusjonPerioderFraV
      * @param inntektsmelding         inntektsmelding
      * @param ansattperioder          Ansettelsesperioder
      * @param yrkesaktiviteter        Yrkesaktiviteter relatert til inntektsmelding
-     * @param permisjonFilter         Permisjonsfilter
      * @return Gyldige perioder for refusjon
      */
     @Override
@@ -49,16 +47,14 @@ public class MapRefusjonPerioderFraVLTilRegelSVP extends MapRefusjonPerioderFraV
                                                           YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
                                                           InntektsmeldingDto inntektsmelding,
                                                           List<AktivitetsAvtaleDto> ansattperioder,
-                                                          Set<YrkesaktivitetDto> yrkesaktiviteter,
-                                                          PermisjonFilter permisjonFilter) {
+                                                          Set<YrkesaktivitetDto> yrkesaktiviteter) {
         if (inntektsmelding.getRefusjonOpphører() != null && inntektsmelding.getRefusjonOpphører().isBefore(startdatoPermisjon)) {
             // Refusjon opphører før det utledede startpunktet, blir aldri refusjon
             return Collections.emptyList();
         }
         if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
             var utbetalingTidslinje = finnUtbetalingTidslinje(utbetalingsgradGrunnlag, inntektsmelding);
-            var permisjontidslinje = finnPermisjontidslinje(yrkesaktiviteter, permisjonFilter);
-            return utbetalingTidslinje.disjoint(permisjontidslinje)
+            return utbetalingTidslinje
                     .getLocalDateIntervals()
                     .stream()
                     .map(it -> Intervall.fraOgMedTilOgMed(it.getFomDato(), it.getTomDato()))
@@ -82,13 +78,6 @@ public class MapRefusjonPerioderFraVLTilRegelSVP extends MapRefusjonPerioderFraV
         }
 
         return timeline.compress();
-    }
-
-    private LocalDateTimeline<Boolean> finnPermisjontidslinje(Set<YrkesaktivitetDto> yrkesaktiviteterRelatertTilInntektsmelding, PermisjonFilter permisjonFilter) {
-        return yrkesaktiviteterRelatertTilInntektsmelding.stream()
-                .map(permisjonFilter::finnTidslinjeForPermisjonOver14Dager)
-                .reduce((t1, t2) -> t1.combine(t2, StandardCombinators::alwaysTrueForMatch, LocalDateTimeline.JoinStyle.INNER_JOIN))
-                .orElse(LocalDateTimeline.empty());
     }
 
 }

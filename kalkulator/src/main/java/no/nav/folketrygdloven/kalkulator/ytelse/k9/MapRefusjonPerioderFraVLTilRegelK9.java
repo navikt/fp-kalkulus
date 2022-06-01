@@ -13,7 +13,6 @@ import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonFilter;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.MapRefusjonPerioderFraVLTilRegelUtbgrad;
@@ -34,7 +33,6 @@ public abstract class MapRefusjonPerioderFraVLTilRegelK9 extends MapRefusjonPeri
      * @param ytelsespesifiktGrunnlag Ytelsesspesifikt grunnlag
      * @param im inntektsmelding for refusjonskrav
      * @param relaterteYrkesaktiviteter Relaterte yrkesaktiviteter
-     * @param permisjonFilter Permisjonsfilter
      * @return Gyldige perioder for refusjon
      */
     @Override
@@ -42,8 +40,7 @@ public abstract class MapRefusjonPerioderFraVLTilRegelK9 extends MapRefusjonPeri
                                                           YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
                                                           InntektsmeldingDto im,
                                                           List<AktivitetsAvtaleDto> ansattperioder,
-                                                          Set<YrkesaktivitetDto> relaterteYrkesaktiviteter,
-                                                          PermisjonFilter permisjonFilter) {
+                                                          Set<YrkesaktivitetDto> relaterteYrkesaktiviteter) {
         if (im.getRefusjonOpphører() != null && im.getRefusjonOpphører().isBefore(startdatoPermisjon)) {
             // Refusjon opphører før det utledede startpunktet, blir aldri refusjon
             return Collections.emptyList();
@@ -51,21 +48,13 @@ public abstract class MapRefusjonPerioderFraVLTilRegelK9 extends MapRefusjonPeri
         if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {
             var utbetalingTidslinje = finnUtbetalingTidslinje((UtbetalingsgradGrunnlag) ytelsespesifiktGrunnlag, im);
             var ansettelseTidslinje = finnAnsettelseTidslinje(ansattperioder);
-            var permisjonTidslinje = finnPermisjontidslinje(relaterteYrkesaktiviteter, permisjonFilter);
-            return utbetalingTidslinje.intersection(ansettelseTidslinje).disjoint(permisjonTidslinje)
+            return utbetalingTidslinje.intersection(ansettelseTidslinje)
                     .getLocalDateIntervals()
                     .stream()
                     .map(i -> Intervall.fraOgMedTilOgMed(i.getFomDato(), i.getTomDato()))
                     .collect(Collectors.toList());
         }
         throw new IllegalStateException("Forventet utbetalingsgrader men fant ikke UtbetalingsgradGrunnlag.");
-    }
-
-    private LocalDateTimeline<Boolean> finnPermisjontidslinje(Set<YrkesaktivitetDto> yrkesaktiviteterRelatertTilInntektsmelding, PermisjonFilter permisjonFilter) {
-        return yrkesaktiviteterRelatertTilInntektsmelding.stream()
-                .map(permisjonFilter::finnTidslinjeForPermisjonOver14Dager)
-                .reduce((t1, t2) -> t1.combine(t2, StandardCombinators::alwaysTrueForMatch, LocalDateTimeline.JoinStyle.INNER_JOIN))
-                .orElse(LocalDateTimeline.empty());
     }
 
     private LocalDateTimeline<Boolean> finnAnsettelseTidslinje(List<AktivitetsAvtaleDto> ansattperioder) {

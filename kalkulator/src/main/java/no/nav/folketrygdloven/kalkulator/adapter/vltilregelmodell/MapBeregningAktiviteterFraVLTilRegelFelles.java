@@ -113,7 +113,7 @@ public class MapBeregningAktiviteterFraVLTilRegelFelles implements MapBeregningA
         var permisjonTidslinje = permisjonFilter.tidslinjeForPermisjoner(arbeidsgiver, opptjeningsperiode.getArbeidsforholdId());
         var beregningstidspunkt = BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunktOpptjening);
         var sisteDagFørPermisjonStart = permisjonTidslinje.getLocalDateIntervals().stream()
-                .filter(p -> p.overlaps(new LocalDateInterval(beregningstidspunkt, beregningstidspunkt)))
+                .filter(p -> p.contains(beregningstidspunkt))
                 .map(LocalDateInterval::getFomDato)
                 .min(Comparator.naturalOrder())
                 .map(d -> d.minusDays(1));

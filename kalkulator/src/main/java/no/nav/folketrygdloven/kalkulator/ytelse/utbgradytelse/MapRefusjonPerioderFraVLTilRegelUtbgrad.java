@@ -16,6 +16,7 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.
 import no.nav.folketrygdloven.kalkulator.felles.frist.ArbeidsgiverRefusjonskravTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
+import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
@@ -31,25 +32,29 @@ public abstract class MapRefusjonPerioderFraVLTilRegelUtbgrad
     }
 
     @Override
-    protected Optional<LocalDate> utledStartdatoPermisjon(Input input,
-                                                          LocalDate skjæringstidspunktBeregning,
+    protected Optional<LocalDate> utledStartdatoPermisjon(LocalDate skjæringstidspunktBeregning,
                                                           InntektsmeldingDto inntektsmelding,
-                                                          Set<YrkesaktivitetDto> yrkesaktiviteterForIM, PermisjonFilter permisjonFilter) {
-        var førsteSøktePermisjonsdag = finnFørsteSøktePermisjonsdag(input.getBeregningsgrunnlagInput(), yrkesaktiviteterForIM, permisjonFilter);
+                                                          Set<YrkesaktivitetDto> yrkesaktiviteterForIM,
+                                                          PermisjonFilter permisjonFilter,
+                                                          YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+        var førsteSøktePermisjonsdag = finnFørsteSøktePermisjonsdag(
+                yrkesaktiviteterForIM, permisjonFilter,
+                skjæringstidspunktBeregning,
+                (UtbetalingsgradGrunnlag) ytelsespesifiktGrunnlag);
         return førsteSøktePermisjonsdag.map(dato -> skjæringstidspunktBeregning.isAfter(dato) ? skjæringstidspunktBeregning : dato);
     }
 
-    private Optional<LocalDate> finnFørsteSøktePermisjonsdag(BeregningsgrunnlagInput input, Collection<YrkesaktivitetDto> yrkesaktiviteter, PermisjonFilter permisjonFilter) {
-        LocalDate skjæringstidspunktBeregning = input.getBeregningsgrunnlag().getSkjæringstidspunkt();
-        List<AktivitetsAvtaleDto> alleAnsattperioderForInntektsmeldingEtterStartAvBeregning = finnAnsattperioderForYrkesaktiviteter(yrkesaktiviteter, input.getSkjæringstidspunktOpptjening());
-        Periode ansettelsesPeriode = FinnAnsettelsesPeriode.getMinMaksPeriode(alleAnsattperioderForInntektsmeldingEtterStartAvBeregning, input.getSkjæringstidspunktOpptjening());
-        Optional<LocalDate> førstedagEtterBekreftetPermisjonOpt = FinnFørsteDagEtterPermisjon.finn(yrkesaktiviteter, ansettelsesPeriode,
-                skjæringstidspunktBeregning, permisjonFilter);
-        if (førstedagEtterBekreftetPermisjonOpt.isEmpty()) {
+    private Optional<LocalDate> finnFørsteSøktePermisjonsdag(Collection<YrkesaktivitetDto> yrkesaktiviteter,
+                                                             PermisjonFilter permisjonFilter,
+                                                             LocalDate skjæringstidspunkt,
+                                                             UtbetalingsgradGrunnlag ytelsespesifiktGrunnlag) {
+        var alleAnsattperioderForInntektsmeldingEtterStartAvBeregning = finnAnsattperioderForYrkesaktiviteter(yrkesaktiviteter, skjæringstidspunkt);
+        var ansettelsesPeriode = FinnAnsettelsesPeriode.getMinMaksPeriode(alleAnsattperioderForInntektsmeldingEtterStartAvBeregning, skjæringstidspunkt);
+        var førstedagEtterPermisjonOpt = FinnFørsteDagEtterPermisjon.finn(yrkesaktiviteter, ansettelsesPeriode, skjæringstidspunkt, permisjonFilter);
+        if (førstedagEtterPermisjonOpt.isEmpty()) {
             return Optional.empty();
         }
-        UtbetalingsgradGrunnlag utbetalingsgradGrunnlag = input.getYtelsespesifiktGrunnlag();
-        var utbetalingsgrader = yrkesaktiviteter.stream().map(ya -> utbetalingsgradGrunnlag.finnUtbetalingsgraderForArbeid(ya.getArbeidsgiver(), ya.getArbeidsforholdRef()))
+        var utbetalingsgrader = yrkesaktiviteter.stream().map(ya -> ytelsespesifiktGrunnlag.finnUtbetalingsgraderForArbeid(ya.getArbeidsgiver(), ya.getArbeidsforholdRef()))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
         Optional<LocalDate> førsteDatoMedUtbetalingOpt = utbetalingsgrader.stream()
@@ -62,9 +67,9 @@ public abstract class MapRefusjonPerioderFraVLTilRegelUtbgrad
             return Optional.empty();
         }
 
-        LocalDate førsteDagEtterPermisjon = førstedagEtterBekreftetPermisjonOpt.get();
+        LocalDate førsteDagEtterPermisjon = førstedagEtterPermisjonOpt.get();
         LocalDate førsteDatoMedUtbetaling = førsteDatoMedUtbetalingOpt.get();
-        return førsteDagEtterPermisjon.isAfter(førsteDatoMedUtbetaling) ? førstedagEtterBekreftetPermisjonOpt : førsteDatoMedUtbetalingOpt;
+        return førsteDagEtterPermisjon.isAfter(førsteDatoMedUtbetaling) ? førstedagEtterPermisjonOpt : førsteDatoMedUtbetalingOpt;
     }
 
 }

@@ -35,8 +35,8 @@ public class FinnFørsteDagEtterPermisjon {
             return Optional.of(ansettelsesPeriode.getFom());
         }
         var sisteDagMedPermisjon = tidslinjeForPermisjon.getLocalDateIntervals().stream()
+                .filter(p -> p.contains(skjæringstidspunktBeregning))
                 .map(LocalDateInterval::getTomDato)
-                .filter(tomDato -> tomDato.isAfter(skjæringstidspunktBeregning))
                 .min(Comparator.naturalOrder())
                 .orElseThrow();
         if (sisteDagMedPermisjon.equals(TIDENES_ENDE)) {
