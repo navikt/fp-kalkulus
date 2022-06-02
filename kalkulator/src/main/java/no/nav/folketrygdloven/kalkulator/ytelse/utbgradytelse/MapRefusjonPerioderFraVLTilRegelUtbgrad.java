@@ -32,11 +32,11 @@ public abstract class MapRefusjonPerioderFraVLTilRegelUtbgrad
     }
 
     @Override
-    protected Optional<LocalDate> utledStartdatoPermisjon(LocalDate skjæringstidspunktBeregning,
-                                                          InntektsmeldingDto inntektsmelding,
-                                                          Set<YrkesaktivitetDto> yrkesaktiviteterForIM,
-                                                          PermisjonFilter permisjonFilter,
-                                                          YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+    protected Optional<LocalDate> utledStartdatoEtterPermisjon(LocalDate skjæringstidspunktBeregning,
+                                                               InntektsmeldingDto inntektsmelding,
+                                                               Set<YrkesaktivitetDto> yrkesaktiviteterForIM,
+                                                               PermisjonFilter permisjonFilter,
+                                                               YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         var førsteSøktePermisjonsdag = finnFørsteSøktePermisjonsdag(
                 yrkesaktiviteterForIM, permisjonFilter,
                 skjæringstidspunktBeregning,

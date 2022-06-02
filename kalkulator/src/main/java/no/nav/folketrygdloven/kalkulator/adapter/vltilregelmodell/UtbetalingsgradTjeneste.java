@@ -13,6 +13,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
@@ -68,9 +69,9 @@ public class UtbetalingsgradTjeneste {
         if (ytelsesSpesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {
             UtbetalingsgradGrunnlag utbetalingsgradGrunnlag = (UtbetalingsgradGrunnlag) ytelsesSpesifiktGrunnlag;
             return utbetalingsgradGrunnlag.getUtbetalingsgradPrAktivitet().stream()
-                    .filter(a -> erArbeidstaker(a, skalIgnorereIkkeYrkesaktivStatus))
-                    .filter(utbGrad -> matcherArbeidsgiver(arbeidsforhold, utbGrad)
-                            && matcherArbeidsforholdReferanse(arbeidsforhold, utbGrad))
+                    .filter(utbGrad -> utbGrad.getUtbetalingsgradArbeidsforhold().getUttakArbeidType().equals(UttakArbeidType.MIDL_INAKTIV)
+                            || (erArbeidstaker(utbGrad, skalIgnorereIkkeYrkesaktivStatus) && matcherArbeidsgiver(arbeidsforhold, utbGrad)
+                            && matcherArbeidsforholdReferanse(arbeidsforhold, utbGrad)))
                     .flatMap(utb -> utb.getPeriodeMedUtbetalingsgrad().stream())
                     .filter(p -> p.getPeriode().inkluderer(periode.getFomDato()))
                     .map(PeriodeMedUtbetalingsgradDto::getUtbetalingsgrad)

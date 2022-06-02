@@ -35,7 +35,7 @@ public class MapRefusjonPerioderFraVLTilRegelSVP extends MapRefusjonPerioderFraV
     /**
      * Finner gyldige perioder for refusjon basert på perioder med utbetalingsgrad og inntektsmeldingsdata
      *
-     * @param startdatoPermisjon      Startdato for permisjonen for ytelse søkt for
+     * @param startDato      Startdato for permisjonen for ytelse søkt for
      * @param ytelsespesifiktGrunnlag Ytelsesspesifikt grunnlag
      * @param inntektsmelding         inntektsmelding
      * @param ansattperioder          Ansettelsesperioder
@@ -43,12 +43,12 @@ public class MapRefusjonPerioderFraVLTilRegelSVP extends MapRefusjonPerioderFraV
      * @return Gyldige perioder for refusjon
      */
     @Override
-    protected List<Intervall> finnGyldigeRefusjonPerioder(LocalDate startdatoPermisjon,
+    protected List<Intervall> finnGyldigeRefusjonPerioder(LocalDate startDato,
                                                           YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
                                                           InntektsmeldingDto inntektsmelding,
                                                           List<AktivitetsAvtaleDto> ansattperioder,
                                                           Set<YrkesaktivitetDto> yrkesaktiviteter) {
-        if (inntektsmelding.getRefusjonOpphører() != null && inntektsmelding.getRefusjonOpphører().isBefore(startdatoPermisjon)) {
+        if (inntektsmelding.getRefusjonOpphører() != null && inntektsmelding.getRefusjonOpphører().isBefore(startDato)) {
             // Refusjon opphører før det utledede startpunktet, blir aldri refusjon
             return Collections.emptyList();
         }

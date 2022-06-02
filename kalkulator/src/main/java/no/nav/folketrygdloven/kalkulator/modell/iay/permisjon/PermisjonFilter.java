@@ -28,7 +28,6 @@ public class PermisjonFilter {
 
     private final Map<FagsakYtelseType, LocalDateTimeline<Boolean>> tidslinjePerYtelse;
     private final Collection<YrkesaktivitetDto> yrkesaktiviteter;
-    private LocalDate fom;
     private final LocalDate skjæringstidspunkt;
 
     public PermisjonFilter(Collection<YtelseDto> ytelser,
@@ -39,9 +38,6 @@ public class PermisjonFilter {
         this.yrkesaktiviteter = yrkesaktiviteter;
     }
 
-    public void medFom(LocalDate fom) {
-        this.fom = fom;
-    }
 
     public LocalDateTimeline<Boolean> tidslinjeForPermisjoner(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRef) {
         var relevantYrkesaktivitet = yrkesaktiviteter
@@ -60,7 +56,7 @@ public class PermisjonFilter {
         LocalDateTimeline<Boolean> aktivPermisjonTidslinje = PermisjonPerYrkesaktivitet.utledPermisjonPerYrkesaktivitet(yrkesaktivitet, tidslinjePerYtelse, skjæringstidspunkt);
 
         // Vurder kun permisjonsperioder over aktivitetens lengde og fra gitt dato
-        LocalDateTimeline<Boolean> tidslinjeTilVurdering = new LocalDateTimeline<>(List.of(new LocalDateSegment<>(fom != null ? fom : TIDENES_BEGYNNELSE, TIDENES_ENDE, Boolean.TRUE)));
+        LocalDateTimeline<Boolean> tidslinjeTilVurdering = new LocalDateTimeline<>(List.of(new LocalDateSegment<>(TIDENES_BEGYNNELSE, TIDENES_ENDE, Boolean.TRUE)));
         tidslinjeTilVurdering = tidslinjeTilVurdering.intersection(aktivPermisjonTidslinje.compress());
         var aktivitetsTidslinje = new LocalDateTimeline<>(yrkesaktivitet.getAlleAnsettelsesperioder().stream()
                 .map(AktivitetsAvtaleDto::getPeriode)

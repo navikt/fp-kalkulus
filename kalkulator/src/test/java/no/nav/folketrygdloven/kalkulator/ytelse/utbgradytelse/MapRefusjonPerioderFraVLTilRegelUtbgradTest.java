@@ -11,7 +11,6 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.refusjon.MapRefusjonPerioderFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.PleiepengerSyktBarnGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
@@ -48,7 +47,7 @@ class MapRefusjonPerioderFraVLTilRegelUtbgradTest {
         var relaterteYrkesaktiviteter = Set.of(lagYrkesaktivitet(arbeidsgiver, aktivitetsAvtaleDtoBuilder, permisjonsperiode));
         var permisjonFilter = new PermisjonFilter(Collections.emptyList(), relaterteYrkesaktiviteter, stp);
 
-        var startdato = mapper.utledStartdatoPermisjon(stp, inntektsmelding, relaterteYrkesaktiviteter, permisjonFilter, ytelsespesifiktGrunnlag);
+        var startdato = mapper.utledStartdatoEtterPermisjon(stp, inntektsmelding, relaterteYrkesaktiviteter, permisjonFilter, ytelsespesifiktGrunnlag);
 
         assertThat(startdato.isPresent()).isTrue();
         assertThat(startdato.get()).isEqualTo(permisjonsperiode.getTomDato().plusDays(1));
@@ -66,7 +65,7 @@ class MapRefusjonPerioderFraVLTilRegelUtbgradTest {
         var relaterteYrkesaktiviteter = Set.of(lagYrkesaktivitet(arbeidsgiver, aktivitetsAvtaleDtoBuilder, permisjonsperiode));
         var permisjonFilter = new PermisjonFilter(Collections.emptyList(), relaterteYrkesaktiviteter, stp);
 
-        var startdato = mapper.utledStartdatoPermisjon(stp, inntektsmelding, relaterteYrkesaktiviteter, permisjonFilter, ytelsespesifiktGrunnlag);
+        var startdato = mapper.utledStartdatoEtterPermisjon(stp, inntektsmelding, relaterteYrkesaktiviteter, permisjonFilter, ytelsespesifiktGrunnlag);
 
         assertThat(startdato.isPresent()).isTrue();
         assertThat(startdato.get()).isEqualTo(stp);
@@ -85,7 +84,26 @@ class MapRefusjonPerioderFraVLTilRegelUtbgradTest {
         var relaterteYrkesaktiviteter = Set.of(lagYrkesaktivitet(arbeidsgiver, aktivitetsAvtaleDtoBuilder, permisjonsperiode));
         var permisjonFilter = new PermisjonFilter(Collections.emptyList(), relaterteYrkesaktiviteter, stp);
 
-        var startdato = mapper.utledStartdatoPermisjon(stp, inntektsmelding, relaterteYrkesaktiviteter, permisjonFilter, ytelsespesifiktGrunnlag);
+        var startdato = mapper.utledStartdatoEtterPermisjon(stp, inntektsmelding, relaterteYrkesaktiviteter, permisjonFilter, ytelsespesifiktGrunnlag);
+
+        assertThat(startdato.isPresent()).isTrue();
+        assertThat(startdato.get()).isEqualTo(utbetalingsperiode.getFomDato());
+    }
+
+    @Test
+    void skal_returnerer_første_dag_med_søkt_utbetaling_ved_inaktiv() {
+        var stp = LocalDate.now();
+        var arbeidsgiver = Arbeidsgiver.virksomhet("123456789");
+        var utbetalingsperiode = Intervall.fraOgMedTilOgMed(stp.plusDays(20), stp.plusDays(25));
+        var ytelsespesifiktGrunnlag = lagUtbetalingsgrunnlagInaktiv(utbetalingsperiode);
+        var inntektsmelding = lagInntektsmelding(stp, arbeidsgiver);
+        var ansettelsesperiode = Intervall.fraOgMedTilOgMed(stp.minusYears(10), stp.plusYears(15));
+        var aktivitetsAvtaleDtoBuilder = AktivitetsAvtaleDtoBuilder.ny().medPeriode(ansettelsesperiode).medErAnsettelsesPeriode(true);
+        var permisjonsperiode = Intervall.fraOgMedTilOgMed(stp.minusDays(1), stp.plusDays(15));
+        var relaterteYrkesaktiviteter = Set.of(lagYrkesaktivitet(arbeidsgiver, aktivitetsAvtaleDtoBuilder, permisjonsperiode));
+        var permisjonFilter = new PermisjonFilter(Collections.emptyList(), relaterteYrkesaktiviteter, stp);
+
+        var startdato = mapper.utledStartdatoEtterPermisjon(stp, inntektsmelding, relaterteYrkesaktiviteter, permisjonFilter, ytelsespesifiktGrunnlag);
 
         assertThat(startdato.isPresent()).isTrue();
         assertThat(startdato.get()).isEqualTo(utbetalingsperiode.getFomDato());
@@ -96,6 +114,13 @@ class MapRefusjonPerioderFraVLTilRegelUtbgradTest {
                 new AktivitetDto(arbeidsgiver, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID),
                 List.of(new PeriodeMedUtbetalingsgradDto(utbetalingsperiode, BigDecimal.ONE)))));
     }
+
+    private PleiepengerSyktBarnGrunnlag lagUtbetalingsgrunnlagInaktiv(Intervall utbetalingsperiode) {
+        return new PleiepengerSyktBarnGrunnlag(List.of(new UtbetalingsgradPrAktivitetDto(
+                new AktivitetDto(null, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.MIDL_INAKTIV),
+                List.of(new PeriodeMedUtbetalingsgradDto(utbetalingsperiode, BigDecimal.ONE)))));
+    }
+
 
     private InntektsmeldingDto lagInntektsmelding(LocalDate stp, Arbeidsgiver arbeidsgiver) {
         return InntektsmeldingDtoBuilder.builder()

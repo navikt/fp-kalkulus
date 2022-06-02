@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.k9;
 
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
@@ -29,24 +31,24 @@ public abstract class MapRefusjonPerioderFraVLTilRegelK9 extends MapRefusjonPeri
     /** Finner gyldige perioder for refusjon basert på perioder med utbetalingsgrad og ansettelse
      *
      *
-     * @param startdatoPermisjon Startdato for permisjonen for ytelse søkt for
+     * @param startdatoEtterPermisjon Startdato for permisjonen for ytelse søkt for
      * @param ytelsespesifiktGrunnlag Ytelsesspesifikt grunnlag
      * @param im inntektsmelding for refusjonskrav
      * @param relaterteYrkesaktiviteter Relaterte yrkesaktiviteter
      * @return Gyldige perioder for refusjon
      */
     @Override
-    protected List<Intervall> finnGyldigeRefusjonPerioder(LocalDate startdatoPermisjon,
+    protected List<Intervall> finnGyldigeRefusjonPerioder(LocalDate startdatoEtterPermisjon,
                                                           YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
                                                           InntektsmeldingDto im,
                                                           List<AktivitetsAvtaleDto> ansattperioder,
                                                           Set<YrkesaktivitetDto> relaterteYrkesaktiviteter) {
-        if (im.getRefusjonOpphører() != null && im.getRefusjonOpphører().isBefore(startdatoPermisjon)) {
+        if (im.getRefusjonOpphører() != null && im.getRefusjonOpphører().isBefore(startdatoEtterPermisjon)) {
             // Refusjon opphører før det utledede startpunktet, blir aldri refusjon
             return Collections.emptyList();
         }
         if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {
-            var utbetalingTidslinje = finnUtbetalingTidslinje((UtbetalingsgradGrunnlag) ytelsespesifiktGrunnlag, im);
+            var utbetalingTidslinje = finnUtbetalingTidslinje((UtbetalingsgradGrunnlag) ytelsespesifiktGrunnlag, im, startdatoEtterPermisjon);
             var ansettelseTidslinje = finnAnsettelseTidslinje(ansattperioder);
             return utbetalingTidslinje.intersection(ansettelseTidslinje)
                     .getLocalDateIntervals()
@@ -72,7 +74,7 @@ public abstract class MapRefusjonPerioderFraVLTilRegelK9 extends MapRefusjonPeri
         return timeline.compress();
     }
 
-    private LocalDateTimeline<Boolean> finnUtbetalingTidslinje(UtbetalingsgradGrunnlag ytelsespesifiktGrunnlag, InntektsmeldingDto im) {
+    private LocalDateTimeline<Boolean> finnUtbetalingTidslinje(UtbetalingsgradGrunnlag ytelsespesifiktGrunnlag, InntektsmeldingDto im, LocalDate startDatoEtterPermisjon) {
         var segmenterMedUtbetaling = ytelsespesifiktGrunnlag.finnUtbetalingsgraderForArbeid(im.getArbeidsgiver(), im.getArbeidsforholdRef())
                 .stream()
                 .filter(p -> p.getUtbetalingsgrad() != null && p.getUtbetalingsgrad().compareTo(BigDecimal.ZERO) > 0)
@@ -85,6 +87,9 @@ public abstract class MapRefusjonPerioderFraVLTilRegelK9 extends MapRefusjonPeri
         for (LocalDateTimeline<Boolean> localDateSegments : segmenterMedUtbetaling) {
             timeline = timeline.combine(localDateSegments, StandardCombinators::coalesceRightHandSide, LocalDateTimeline.JoinStyle.CROSS_JOIN);
         }
+
+        var tidslinjeEtterPermisjon = new LocalDateTimeline<>(List.of(new LocalDateSegment<>(startDatoEtterPermisjon, TIDENES_ENDE, Boolean.TRUE)));
+        timeline = timeline.intersection(tidslinjeEtterPermisjon);
 
         return timeline.compress();
     }
