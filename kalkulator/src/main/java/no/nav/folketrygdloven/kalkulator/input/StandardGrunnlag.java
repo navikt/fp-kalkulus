@@ -1,8 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.input;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
-
 public class StandardGrunnlag implements YtelsespesifiktGrunnlag {
 
     private final int dekningsgrad = 100;
@@ -13,7 +10,7 @@ public class StandardGrunnlag implements YtelsespesifiktGrunnlag {
     }
 
     @Override
-    public int getDekningsgrad(BeregningsgrunnlagDto vlBeregningsgrunnlag, OpptjeningAktiviteterDto opptjeningAktiviteterDto) {
+    public int getDekningsgrad() {
         return dekningsgrad;
     }
 

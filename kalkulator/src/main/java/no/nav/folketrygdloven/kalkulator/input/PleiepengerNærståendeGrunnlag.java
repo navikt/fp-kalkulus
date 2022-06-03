@@ -2,10 +2,7 @@ package no.nav.folketrygdloven.kalkulator.input;
 
 import java.util.List;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
-import no.nav.folketrygdloven.kalkulus.opptjening.v1.MidlertidigInaktivType;
 
 public class PleiepengerNærståendeGrunnlag extends UtbetalingsgradGrunnlag implements YtelsespesifiktGrunnlag {
 
@@ -18,10 +15,7 @@ public class PleiepengerNærståendeGrunnlag extends UtbetalingsgradGrunnlag imp
     }
 
     @Override
-    public int getDekningsgrad(BeregningsgrunnlagDto bg, OpptjeningAktiviteterDto opptjeningAktiviteterDto) {
-        if (erMidlertidigInaktivTypeA(bg, opptjeningAktiviteterDto)) {
-            return dekningsgrad_inaktiv;
-        }
+    public int getDekningsgrad() {
         return dekningsgrad;
     }
 

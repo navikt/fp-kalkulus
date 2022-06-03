@@ -22,6 +22,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatusMedHjemmel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BeregningsgrunnlagHjemmel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Dekningsgrad;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.MidlertidigInaktivType;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode;
@@ -139,6 +140,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medAntallGMinstekravVilkår(getAntallGForOppfyltVilkår(input))
                 .medAntallGØvreGrenseverdi(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi())
                 .medUregulertGrunnbeløp(mapUregulertGrunnbeløp(input, beregningsgrunnlag))
+                .medMidlertidigInaktivType(mapMidlertidigInaktivType(input))
                 .medGrunnbeløpSatser((input instanceof ForeslåBeregningsgrunnlagInput) ? ((ForeslåBeregningsgrunnlagInput) input).getGrunnbeløpsatser() : Collections.emptyList())
                 .build();
     }
@@ -148,6 +150,16 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
             return KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGForOppfyltVilkårInaktiv();
         }
         return KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGForOppfyltVilkår();
+    }
+
+    private MidlertidigInaktivType mapMidlertidigInaktivType(BeregningsgrunnlagInput input) {
+        if (input.getOpptjeningAktiviteter() == null) {
+            return null;
+        }
+        var midlertidigInaktivType = input.getOpptjeningAktiviteter().getMidlertidigInaktivType();
+        return midlertidigInaktivType != null ?
+                MidlertidigInaktivType.valueOf(midlertidigInaktivType.name()) :
+                null;
     }
 
     private boolean erMidlertidigInaktiv(BeregningsgrunnlagInput input) {
@@ -185,7 +197,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
             return Dekningsgrad.fra(frisinngrunnlag.getDekningsgradForDato(periodeFom));
         }
 
-        return Dekningsgrad.fra(ytelsespesifiktGrunnlag.getDekningsgrad(vlBeregningsgrunnlag, dto));
+        return Dekningsgrad.fra(ytelsespesifiktGrunnlag.getDekningsgrad());
     }
 
     private AktivitetStatusMedHjemmel mapVLAktivitetStatusMedHjemmel(final BeregningsgrunnlagAktivitetStatusDto vlBGAktivitetStatus) {
