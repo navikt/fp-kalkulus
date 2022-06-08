@@ -100,6 +100,10 @@ public class KoblingTjeneste {
         return repository.hentSisteKoblingForSaksnummer(saksnummer).map(KoblingEntitet::getAktørId);
     }
 
+    public List<KoblingEntitet> hentKoblingerForSak(Saksnummer saksnummer) {
+        return repository.hentAlleKoblingerForSaksnummer(saksnummer);
+    }
+
     // Burde ta i bruk skrivelås?
     public KoblingLås taSkrivesLås(KoblingReferanse referanse) {
         return taSkrivesLås(repository.hentKoblingIdForKoblingReferanse(referanse));

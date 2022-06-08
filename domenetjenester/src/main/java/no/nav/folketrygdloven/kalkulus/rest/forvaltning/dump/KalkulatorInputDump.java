@@ -1,29 +1,46 @@
 package no.nav.folketrygdloven.kalkulus.rest.forvaltning.dump;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Tuple;
+import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
+import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 
 @ApplicationScoped
 public class KalkulatorInputDump implements DebugDumpSak {
 
     private EntityManager entityManager;
+    private KalkulatorInputTjeneste kalkulatorInputTjeneste;
+    private KoblingTjeneste koblingTjeneste;
 
     public KalkulatorInputDump() {
         // for proxys
     }
 
     @Inject
-    public KalkulatorInputDump(EntityManager entityManager) {
+    public KalkulatorInputDump(EntityManager entityManager, KalkulatorInputTjeneste kalkulatorInputTjeneste, KoblingTjeneste koblingTjeneste) {
         this.entityManager = entityManager;
+        this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
+        this.koblingTjeneste = koblingTjeneste;
     }
 
     @Override
     public List<DumpOutput> dump(Saksnummer saksnummer) {
+        var inputPrKobling = kalkulatorInputTjeneste.hentJsonInputForSak(saksnummer);
+        var resultatListe = inputPrKobling.entrySet().stream()
+                .map(e -> new DumpOutput(String.format("kobling-%s/kalkulator-input.json", e.getKey()), e.getValue()))
+                .collect(Collectors.toCollection(ArrayList::new));
+
         var sql = """
                 select cast(k.kobling_referanse as varchar)  ekstern_referanse,
                         k.id kobling_id,
@@ -46,11 +63,13 @@ public class KalkulatorInputDump implements DebugDumpSak {
         List<Tuple> results = query.getResultList();
 
         if (results.isEmpty()) {
-            return List.of();
+            return resultatListe;
         }
 
-        return CsvOutput.dumpResultSetToCsv(path, results)
-                .map(List::of).orElse(List.of());
+        resultatListe.addAll(CsvOutput.dumpResultSetToCsv(path, results)
+                .map(List::of).orElse(List.of()));
+
+        return resultatListe;
     }
 
 }
