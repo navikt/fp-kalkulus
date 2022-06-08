@@ -91,7 +91,7 @@ class MapRefusjonPerioderFraVLTilRegelUtbgradTest {
     }
 
     @Test
-    void skal_returnerer_første_dag_med_søkt_utbetaling_ved_inaktiv() {
+    void skal_ikke_returnerer_første_dag_med_søkt_utbetaling_ved_inaktiv_og_ingen_arbeid() {
         var stp = LocalDate.now();
         var arbeidsgiver = Arbeidsgiver.virksomhet("123456789");
         var utbetalingsperiode = Intervall.fraOgMedTilOgMed(stp.plusDays(20), stp.plusDays(25));
@@ -105,8 +105,7 @@ class MapRefusjonPerioderFraVLTilRegelUtbgradTest {
 
         var startdato = mapper.utledStartdatoEtterPermisjon(stp, inntektsmelding, relaterteYrkesaktiviteter, permisjonFilter, ytelsespesifiktGrunnlag);
 
-        assertThat(startdato.isPresent()).isTrue();
-        assertThat(startdato.get()).isEqualTo(utbetalingsperiode.getFomDato());
+        assertThat(startdato.isPresent()).isFalse();
     }
 
     private PleiepengerSyktBarnGrunnlag lagUtbetalingsgrunnlag(Arbeidsgiver arbeidsgiver, Intervall utbetalingsperiode) {

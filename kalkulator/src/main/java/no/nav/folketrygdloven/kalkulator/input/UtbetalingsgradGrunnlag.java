@@ -9,7 +9,6 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.MidlertidigInaktivType;
 
@@ -28,7 +27,7 @@ public abstract class UtbetalingsgradGrunnlag {
     public List<PeriodeMedUtbetalingsgradDto> finnUtbetalingsgraderForArbeid(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRefDto) {
         return getUtbetalingsgradPrAktivitet()
                 .stream()
-                .filter(akt -> akt.getUtbetalingsgradArbeidsforhold().getUttakArbeidType().equals(UttakArbeidType.MIDL_INAKTIV) || (matchArbeidsgiver(arbeidsgiver, akt) && matcherArbeidsforholdReferanse(arbeidsforholdRefDto, akt)))
+                .filter(akt -> matchArbeidsgiver(arbeidsgiver, akt) && matcherArbeidsforholdReferanse(arbeidsforholdRefDto, akt))
                 .flatMap(akt -> akt.getPeriodeMedUtbetalingsgrad().stream())
                 .collect(Collectors.toList());
     }
