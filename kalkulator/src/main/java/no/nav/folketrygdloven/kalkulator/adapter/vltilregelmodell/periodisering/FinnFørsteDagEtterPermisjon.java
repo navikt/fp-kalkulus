@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.kalkulator.felles.BeregningstidspunktTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonFilter;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
@@ -28,14 +29,14 @@ public class FinnFørsteDagEtterPermisjon {
                 .map(permisjonFilter::finnTidslinjeForPermisjonOver14Dager)
                 .reduce((t1, t2) -> t1.intersection(t2, StandardCombinators::alwaysTrueForMatch))
                 .orElse(LocalDateTimeline.empty());
-
-        var harIkkePermisjonPåStp = tidslinjeForPermisjon.intersection(new LocalDateInterval(skjæringstidspunktBeregning, skjæringstidspunktBeregning))
+        var beregningstidspunkt = BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunktBeregning);
+        var harIkkePermisjonPåBeregningstidspunkt = tidslinjeForPermisjon.intersection(new LocalDateInterval(beregningstidspunkt, beregningstidspunkt))
                 .isEmpty();
-        if (harIkkePermisjonPåStp) {
+        if (harIkkePermisjonPåBeregningstidspunkt) {
             return Optional.of(ansettelsesPeriode.getFom());
         }
         var sisteDagMedPermisjon = tidslinjeForPermisjon.getLocalDateIntervals().stream()
-                .filter(p -> p.contains(skjæringstidspunktBeregning))
+                .filter(p -> p.contains(beregningstidspunkt))
                 .map(LocalDateInterval::getTomDato)
                 .min(Comparator.naturalOrder())
                 .orElseThrow();

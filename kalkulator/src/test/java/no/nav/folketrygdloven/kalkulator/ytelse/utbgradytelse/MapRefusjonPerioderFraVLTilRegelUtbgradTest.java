@@ -42,7 +42,7 @@ class MapRefusjonPerioderFraVLTilRegelUtbgradTest {
         var utbetalingsperiode = Intervall.fraOgMedTilOgMed(stp, stp.plusDays(15));
         var ytelsespesifiktGrunnlag = lagUtbetalingsgrunnlag(arbeidsgiver, utbetalingsperiode);
         var inntektsmelding = lagInntektsmelding(stp, arbeidsgiver);
-        var aktivitetsAvtaleDtoBuilder = AktivitetsAvtaleDtoBuilder.ny().medPeriode(utbetalingsperiode).medErAnsettelsesPeriode(true);
+        var aktivitetsAvtaleDtoBuilder = AktivitetsAvtaleDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(stp.minusDays(1), stp.plusDays(15))).medErAnsettelsesPeriode(true);
         var permisjonsperiode = Intervall.fraOgMedTilOgMed(stp.minusDays(1), stp.plusDays(15));
         var relaterteYrkesaktiviteter = Set.of(lagYrkesaktivitet(arbeidsgiver, aktivitetsAvtaleDtoBuilder, permisjonsperiode));
         var permisjonFilter = new PermisjonFilter(Collections.emptyList(), relaterteYrkesaktiviteter, stp);
