@@ -15,11 +15,13 @@ import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInpu
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
+import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat.Builder;
 import no.nav.folketrygdloven.kalkulator.output.BeregningVilkårResultat;
@@ -41,6 +43,7 @@ import no.nav.folketrygdloven.kalkulator.steg.fullføre.FullføreBeregningsgrunn
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.AvklaringsbehovUtlederFaktaOmBeregning;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.VurderRefusjonBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.VurderRefusjonBeregningsgrunnlagFelles;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 /**
@@ -172,12 +175,27 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
      */
     @Override
     public BeregningResultatAggregat vurderRefusjonskravForBeregninggrunnlag(VurderRefusjonBeregningsgrunnlagInput input) {
+        validerVedForlengelse(input);
         BeregningsgrunnlagRegelResultat vurderRefusjonResultat = vurderRefusjonBeregningsgrunnlag.vurderRefusjon(input);
         return Builder.fra(input)
                 .medAvklaringsbehov(vurderRefusjonResultat.getAvklaringsbehov())
                 .medBeregningsgrunnlag(vurderRefusjonResultat.getBeregningsgrunnlag(), input.getStegTilstand())
                 .medRegelSporingAggregat(vurderRefusjonResultat.getRegelsporinger().orElse(null))
                 .build();
+    }
+
+    private void validerVedForlengelse(VurderRefusjonBeregningsgrunnlagInput input) {
+        var erForlengelse = input.getForlengelseperioder().size() > 0;
+        if (erForlengelse && input.getYtelsespesifiktGrunnlag() instanceof UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
+            var harUttakForBrukersAndel = utbetalingsgradGrunnlag.getUtbetalingsgradPrAktivitet()
+                    .stream().anyMatch(a -> a.getUtbetalingsgradArbeidsforhold().getUttakArbeidType().equals(UttakArbeidType.BRUKERS_ANDEL));
+            var bgHarIkkeBrukersAndel = input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
+                    .noneMatch(a -> a.getAktivitetStatus().equals(AktivitetStatus.BRUKERS_ANDEL));
+
+            if (harUttakForBrukersAndel && bgHarIkkeBrukersAndel) {
+                throw new IllegalStateException("Uttak og beregning i ugyldig tilstand. Saken må flippes til manuell revurdering og flyttes til start.");
+            }
+        }
     }
 
     /**
