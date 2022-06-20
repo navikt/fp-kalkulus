@@ -18,7 +18,7 @@
 
         <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
 
-        <jersey.version>3.0.4</jersey.version>
+        <jersey.version>3.0.5</jersey.version>
     </properties>
 
     <dependencyManagement>
