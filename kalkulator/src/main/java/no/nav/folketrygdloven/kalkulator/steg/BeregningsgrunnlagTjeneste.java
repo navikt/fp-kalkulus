@@ -175,7 +175,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
      */
     @Override
     public BeregningResultatAggregat vurderRefusjonskravForBeregninggrunnlag(VurderRefusjonBeregningsgrunnlagInput input) {
-        validerVedForlengelse(input);
+        validerSynkronisertUttak(input);
         BeregningsgrunnlagRegelResultat vurderRefusjonResultat = vurderRefusjonBeregningsgrunnlag.vurderRefusjon(input);
         return Builder.fra(input)
                 .medAvklaringsbehov(vurderRefusjonResultat.getAvklaringsbehov())
@@ -184,9 +184,8 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
                 .build();
     }
 
-    private void validerVedForlengelse(VurderRefusjonBeregningsgrunnlagInput input) {
-        var erForlengelse = input.getForlengelseperioder().size() > 0;
-        if (erForlengelse && input.getYtelsespesifiktGrunnlag() instanceof UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
+    private void validerSynkronisertUttak(VurderRefusjonBeregningsgrunnlagInput input) {
+        if (input.getYtelsespesifiktGrunnlag() instanceof UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
             var harUttakForBrukersAndel = utbetalingsgradGrunnlag.getUtbetalingsgradPrAktivitet()
                     .stream().anyMatch(a -> a.getUtbetalingsgradArbeidsforhold().getUttakArbeidType().equals(UttakArbeidType.BRUKERS_ANDEL));
             var bgHarIkkeBrukersAndel = input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
