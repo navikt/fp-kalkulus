@@ -31,23 +31,24 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjeneste {
      *
      * @param aktørYtelse aktørytelse for søker
      * @param dagensdato Dagens dato/ idag
-     * @param skjæringstidspunkt
+     * @param skjæringstidspunkt Skjæringstidspunkt
+     * @param arenaytelser Arenaytelser som skal vurderes
      * @return Optional som innholder ventefrist om autopunkt skal opprettes, Optional.empty ellers
      */
-    public static Optional<LocalDate> skalVenteTilDatoPåMeldekortAAPellerDP(Optional<AktørYtelseDto> aktørYtelse, LocalDate dagensdato, LocalDate skjæringstidspunkt) {
-        if (!harLøpendeVedtakOgSendtInnMeldekortNylig(aktørYtelse, skjæringstidspunkt))
+    public static Optional<LocalDate> skalVenteTilDatoPåMeldekortAAPellerDP(Optional<AktørYtelseDto> aktørYtelse, LocalDate dagensdato, LocalDate skjæringstidspunkt, Set<FagsakYtelseType> arenaytelser) {
+        if (!harLøpendeVedtakOgSendtInnMeldekortNylig(aktørYtelse, skjæringstidspunkt, arenaytelser))
             return Optional.empty();
 
-        if(erSisteMeldekortMottatt(aktørYtelse, skjæringstidspunkt)){
+        if(erSisteMeldekortMottatt(aktørYtelse, skjæringstidspunkt, arenaytelser)){
             return Optional.empty();
         }
 
         return utledVenteFrist(skjæringstidspunkt, dagensdato);
     }
 
-    private static boolean erSisteMeldekortMottatt(Optional<AktørYtelseDto> aktørYtelse, LocalDate skjæringstidspunkt) {
+    private static boolean erSisteMeldekortMottatt(Optional<AktørYtelseDto> aktørYtelse, LocalDate skjæringstidspunkt, Set<FagsakYtelseType> arenaytelser) {
         var ytelseFilterVedtak = new YtelseFilterDto(aktørYtelse).før(skjæringstidspunkt);
-        Optional<YtelseDto> nyligsteVedtak = MeldekortUtils.sisteVedtakFørStpForType(ytelseFilterVedtak, skjæringstidspunkt, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, FagsakYtelseType.DAGPENGER));
+        Optional<YtelseDto> nyligsteVedtak = MeldekortUtils.sisteVedtakFørStpForType(ytelseFilterVedtak, skjæringstidspunkt, arenaytelser);
 
         var ytelseFilterMeldekort = new YtelseFilterDto(aktørYtelse);
 
@@ -63,18 +64,22 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjeneste {
         return meldekortLøpendeYtelse.isPresent();
     }
 
-    private static boolean harLøpendeVedtakOgSendtInnMeldekortNylig(Optional<AktørYtelseDto> aktørYtelse, LocalDate skjæringstidspunkt) {
-        List<YtelseDto> aapOgDPYtelser = getAAPogDPYtelser(aktørYtelse, skjæringstidspunkt);
-        boolean hattAAPSiste4Mnd = hattGittYtelseIGittPeriode(aapOgDPYtelser, skjæringstidspunkt.minusMonths(4).withDayOfMonth(1),
-                FagsakYtelseType.ARBEIDSAVKLARINGSPENGER);
-        Predicate<List<YtelseDto>> hattDPSiste10Mnd = ytelser -> hattGittYtelseIGittPeriode(ytelser, skjæringstidspunkt.minusMonths(10), FagsakYtelseType.DAGPENGER);
+    private static boolean harLøpendeVedtakOgSendtInnMeldekortNylig(Optional<AktørYtelseDto> aktørYtelse, LocalDate skjæringstidspunkt, Set<FagsakYtelseType> arenaytelseTyper) {
+        List<YtelseDto> ytelser = getArenaytelserYtelser(aktørYtelse, skjæringstidspunkt, arenaytelseTyper);
 
-        if (!hattAAPSiste4Mnd && !hattDPSiste10Mnd.test(aapOgDPYtelser)) {
+        var skalSjekkeAAP = arenaytelseTyper.stream().anyMatch(y -> y.equals(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER));
+        var skalSjekkeDP = arenaytelseTyper.stream().anyMatch(y -> y.equals(FagsakYtelseType.DAGPENGER));
+
+        boolean hattAAPSiste4Mnd = hattGittYtelseIGittPeriode(ytelser, skjæringstidspunkt.minusMonths(4).withDayOfMonth(1),
+                FagsakYtelseType.ARBEIDSAVKLARINGSPENGER);
+        Predicate<List<YtelseDto>> hattDPSiste10Mnd = it -> hattGittYtelseIGittPeriode(it, skjæringstidspunkt.minusMonths(10), FagsakYtelseType.DAGPENGER);
+
+        if ((!skalSjekkeAAP || !hattAAPSiste4Mnd) && (!skalSjekkeDP || !hattDPSiste10Mnd.test(ytelser))) {
             return false;
         }
 
-        FagsakYtelseType ytelseType = hattAAPSiste4Mnd ? FagsakYtelseType.ARBEIDSAVKLARINGSPENGER : FagsakYtelseType.DAGPENGER;
-        return aapOgDPYtelser.stream()
+        var ytelseType = hattAAPSiste4Mnd ? FagsakYtelseType.ARBEIDSAVKLARINGSPENGER : FagsakYtelseType.DAGPENGER;
+        return ytelser.stream()
             .filter(ytelse -> ytelseType.equals(ytelse.getYtelseType()))
             .anyMatch(ytelse -> ytelse.getPeriode().getFomDato().isBefore(skjæringstidspunkt)
                 && !ytelse.getPeriode().getTomDato().isBefore(skjæringstidspunkt.minusDays(1)));
@@ -87,12 +92,11 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjeneste {
             .anyMatch(ya -> !ya.getAnvistTOM().isBefore(hattYtelseFom));
     }
 
-    private static List<YtelseDto> getAAPogDPYtelser(Optional<AktørYtelseDto> aktørYtelse, LocalDate skjæringstidspunkt) {
+    private static List<YtelseDto> getArenaytelserYtelser(Optional<AktørYtelseDto> aktørYtelse, LocalDate skjæringstidspunkt, Set<FagsakYtelseType> arenaytelser) {
         var filter = new YtelseFilterDto(aktørYtelse).før(skjæringstidspunkt);
-        var ytelser = filter.getFiltrertYtelser().stream()
-            .filter(ytelse -> FagsakYtelseType.ARBEIDSAVKLARINGSPENGER.equals(ytelse.getYtelseType()) || FagsakYtelseType.DAGPENGER.equals(ytelse.getYtelseType()))
+        return filter.getFiltrertYtelser().stream()
+            .filter(ytelse -> arenaytelser.contains(ytelse.getYtelseType()))
             .collect(Collectors.toList());
-        return ytelser;
     }
 
     private static Optional<LocalDate> utledVenteFrist(LocalDate skjæringstidspunktOpptjening, LocalDate dagensdato) {

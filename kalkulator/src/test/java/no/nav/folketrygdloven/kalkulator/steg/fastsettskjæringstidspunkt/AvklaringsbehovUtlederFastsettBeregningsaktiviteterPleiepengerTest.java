@@ -19,6 +19,7 @@ import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
@@ -33,6 +34,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -43,13 +45,13 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
 
-public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterTest {
+public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterPleiepengerTest {
 
     private static final String INNTEKT_RAPPORTERING_FRIST_DATO = "inntekt.rapportering.frist.dato";
     private BeregningAktivitetAggregatDto beregningAktivitetAggregat;
     private KoblingReferanse ref;
 
-    private AvklaringsbehovUtlederFastsettBeregningsaktiviteterFelles apUtleder = new AvklaringsbehovUtlederFastsettBeregningsaktiviteterFelles();
+    private AvklaringsbehovUtlederFastsettBeregningsaktiviteterPleiepenger apUtleder = new AvklaringsbehovUtlederFastsettBeregningsaktiviteterPleiepenger();
     private boolean erOverstyrt;
 
     private OpptjeningAktiviteterDto opptjeningAktiviteter = new OpptjeningAktiviteterDto();
@@ -90,7 +92,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterTest {
         //Act
         BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = lagRegelresultat();
         beregningsgrunnlagRegelResultat.setRegisterAktiviteter(beregningAktivitetAggregat);
-        List<BeregningAvklaringsbehovResultat> resultater = new AvklaringsbehovUtlederFastsettBeregningsaktiviteterFelles().utledAvklaringsbehov(beregningsgrunnlagRegelResultat, lagBeregningsgrunnlagInput(rapporteringsfrist), erOverstyrt);
+        List<BeregningAvklaringsbehovResultat> resultater = new AvklaringsbehovUtlederFastsettBeregningsaktiviteterPleiepenger().utledAvklaringsbehov(beregningsgrunnlagRegelResultat, lagBeregningsgrunnlagInput(rapporteringsfrist), erOverstyrt);
 
         // Assert
         assertThat(resultater).hasSize(1);
@@ -114,6 +116,45 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterTest {
         beregningsgrunnlagRegelResultat.setRegisterAktiviteter(beregningAktivitetAggregat);
         return beregningsgrunnlagRegelResultat;
     }
+
+
+    @Test
+    public void skalIkkeUtledeAutopunktNårLøpendeYtelseOgMeldekortForAAPIkkeErMottatt() {
+        // Arrange
+        LocalDate skjæringstidspunkt = LocalDate.now();
+        LocalDate ytelsePeriodeFom = skjæringstidspunkt.minusMonths(2);
+        YtelseDtoBuilder yb = YtelseDtoBuilder.ny();
+        YtelseDto ytelse = yb.medYtelseType(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER)
+                .medPeriode(Intervall.fraOgMed(ytelsePeriodeFom))
+                .leggTilYtelseAnvist(lagYtelseAnvist(yb.getAnvistBuilder(), skjæringstidspunkt.minusWeeks(3), skjæringstidspunkt.minusWeeks(1)))
+                .build();
+
+        BeregningsgrunnlagDto bgMedKunYtelse = BeregningsgrunnlagDto.builder()
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.KUN_YTELSE))
+                .medSkjæringstidspunkt(skjæringstidspunkt)
+                .build();
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
+                .medBeregningsgrunnlagPeriode(skjæringstidspunkt, null)
+                .build(bgMedKunYtelse);
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
+                .medAktivitetStatus(AktivitetStatus.BRUKERS_ANDEL)
+                .build(periode);
+        BeregningAktivitetAggregatDto beregningAktivitetAggregat = lagBeregningAktivitetAggregatDto(skjæringstidspunkt,
+                OpptjeningAktivitetType.FORELDREPENGER, Intervall.fraOgMed(ytelsePeriodeFom));
+
+        List<YtelseDto> liste = Collections.singletonList(ytelse);
+        when(iayMock.getAktørYtelseFraRegister()).thenReturn(Optional.of(ay));
+        when(ay.getAlleYtelser()).thenReturn(liste);
+
+        // Act
+        BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = new BeregningsgrunnlagRegelResultat(bgMedKunYtelse, Collections.emptyList());
+        beregningsgrunnlagRegelResultat.setRegisterAktiviteter(beregningAktivitetAggregat);
+        List<BeregningAvklaringsbehovResultat> resultater = apUtleder.utledAvklaringsbehov(beregningsgrunnlagRegelResultat, lagMockBeregningsgrunnlagInput(), erOverstyrt);
+
+        // Assert
+        assertThat(resultater).hasSize(0);
+    }
+
 
     @Test
     public void skalUtledeAutopunktNårLøpendeYtelseOgMeldekortSomInkludererStpIkkeErMottatt() {
@@ -193,16 +234,16 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterTest {
                 .build();
 
         BeregningsgrunnlagDto bgMedDagpenger = BeregningsgrunnlagDto.builder()
-                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSAVKLARINGSPENGER))
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.DAGPENGER))
                 .medSkjæringstidspunkt(skjæringstidspunkt)
                 .build();
         BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(skjæringstidspunkt, null)
                 .build(bgMedDagpenger);
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
-                .medAktivitetStatus(AktivitetStatus.ARBEIDSAVKLARINGSPENGER).build(periode);
+                .medAktivitetStatus(AktivitetStatus.DAGPENGER).build(periode);
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = lagBeregningAktivitetAggregatDto(skjæringstidspunkt,
-                OpptjeningAktivitetType.ARBEIDSAVKLARING, Intervall.fraOgMed(ytelsePeriodeFom));
+                OpptjeningAktivitetType.DAGPENGER, Intervall.fraOgMed(ytelsePeriodeFom));
 
         List<YtelseDto> liste = Collections.singletonList(ytelse);
         when(iayMock.getAktørYtelseFraRegister()).thenReturn(Optional.of(ay));
@@ -262,22 +303,22 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterTest {
         Intervall periodeIntervallForAktivitet = Intervall.fraOgMedTilOgMed(skjæringstidspunkt.minusMonths(10), skjæringstidspunkt.minusDays(1));
         YtelseDtoBuilder yb = YtelseDtoBuilder.ny();
         YtelseAnvistDto meldekort1 = YtelseAnvistDtoBuilder.ny().medAnvistPeriode(Intervall.fraOgMedTilOgMed(skjæringstidspunkt.minusWeeks(4), skjæringstidspunkt.minusWeeks(2))).build();
-        YtelseDto ytelse = yb.medYtelseType(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER)
+        YtelseDto ytelse = yb.medYtelseType(FagsakYtelseType.DAGPENGER)
                 .medPeriode(periodeIntervallForAktivitet)
                 .leggTilYtelseAnvist(meldekort1)
                 .build();
 
         BeregningsgrunnlagDto bgMedDagpenger = BeregningsgrunnlagDto.builder()
-                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSAVKLARINGSPENGER))
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.DAGPENGER))
                 .medSkjæringstidspunkt(skjæringstidspunkt)
                 .build();
         BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(skjæringstidspunkt, null)
                 .build(bgMedDagpenger);
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
-                .medAktivitetStatus(AktivitetStatus.ARBEIDSAVKLARINGSPENGER).build(periode);
+                .medAktivitetStatus(AktivitetStatus.DAGPENGER).build(periode);
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = lagBeregningAktivitetAggregatDto(skjæringstidspunkt,
-                OpptjeningAktivitetType.ARBEIDSAVKLARING, periodeIntervallForAktivitet);
+                OpptjeningAktivitetType.DAGPENGER, periodeIntervallForAktivitet);
 
         List<YtelseDto> liste = Collections.singletonList(ytelse);
         when(iayMock.getAktørYtelseFraRegister()).thenReturn(Optional.of(ay));
