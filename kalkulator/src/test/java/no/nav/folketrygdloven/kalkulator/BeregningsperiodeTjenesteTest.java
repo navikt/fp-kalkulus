@@ -193,6 +193,20 @@ public class BeregningsperiodeTjenesteTest {
         assertThat(frist).hasValue(SKJÆRINGSTIDSPUNKT.plusDays(7));
     }
 
+    @Test
+    public void skalUtledeRiktigFristKunFL() {
+        // Arrange
+        LocalDate dagensdato = SKJÆRINGSTIDSPUNKT.plusDays(2);
+        var beregningAktivitetAggregatDto = lagAktivitetAggregat1FrilansAndel();
+
+        // Act
+        Optional<LocalDate> frist = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntektFL(input, dagensdato, beregningAktivitetAggregatDto, input.getSkjæringstidspunktForBeregning());
+
+        // Assert
+        assertThat(frist).isPresent();
+        assertThat(frist).hasValue(SKJÆRINGSTIDSPUNKT.plusDays(7));
+    }
+
     private BeregningAktivitetAggregatDto lagAktivitetAggregat1FrilansAndel() {
         return BeregningAktivitetAggregatDto.builder().medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT)
                 .leggTilAktivitet(BeregningAktivitetDto.builder()

@@ -72,19 +72,6 @@ public class BeregningsperiodeTjeneste {
                 : Optional.empty();
     }
 
-    private static boolean erPåvirketAvInntektsrapporteringsfrist(BeregningsgrunnlagInput input,
-                                                                            LocalDate dagensDato,
-                                                                            BeregningAktivitetAggregatDto aktivitetAggregatDto,
-                                                                            LocalDate skjæringstidspunktForBeregning) {
-        if (!harAktivitetStatuserSomKanSettesPåVent(aktivitetAggregatDto, skjæringstidspunktForBeregning)) {
-            return true;
-        }
-        LocalDate beregningsperiodeTom = hentBeregningsperiodeTomForATFL(skjæringstidspunktForBeregning);
-        LocalDate originalFrist = beregningsperiodeTom.plusDays((Integer) input.getKonfigVerdi(INNTEKT_RAPPORTERING_FRIST_DATO));
-        LocalDate fristMedHelligdagerInkl = BevegeligeHelligdagerUtil.hentFørsteVirkedagFraOgMed(originalFrist);
-        return !dagensDato.isAfter(fristMedHelligdagerInkl);
-    }
-
     public static Optional<LocalDate> skalVentePåInnrapporteringAvInntektFL(BeregningsgrunnlagInput input,
                                                                           LocalDate dagensDato,
                                                                           BeregningAktivitetAggregatDto aktivitetAggregatDto,
@@ -94,8 +81,20 @@ public class BeregningsperiodeTjeneste {
         }
         boolean erFrilans = erFrilans(aktivitetAggregatDto, skjæringstidspunktForBeregning);
         return erFrilans
-                ? Optional.empty()
-                : Optional.of(utledBehandlingPåVentFrist(input, skjæringstidspunktForBeregning));
+                ? Optional.of(utledBehandlingPåVentFrist(input, skjæringstidspunktForBeregning))
+                : Optional.empty();
+    }
+
+    private static boolean erPåvirketAvInntektsrapporteringsfrist(BeregningsgrunnlagInput input,
+                                                                  LocalDate dagensDato,
+                                                                  BeregningAktivitetAggregatDto aktivitetAggregatDto,
+                                                                  LocalDate skjæringstidspunktForBeregning) {
+        boolean harRelevantAktivitet = harAktivitetStatuserSomKanSettesPåVent(aktivitetAggregatDto, skjæringstidspunktForBeregning);
+        LocalDate beregningsperiodeTom = hentBeregningsperiodeTomForATFL(skjæringstidspunktForBeregning);
+        LocalDate originalFrist = beregningsperiodeTom.plusDays((Integer) input.getKonfigVerdi(INNTEKT_RAPPORTERING_FRIST_DATO));
+        LocalDate fristMedHelligdagerInkl = BevegeligeHelligdagerUtil.hentFørsteVirkedagFraOgMed(originalFrist);
+        boolean erFristPassert = dagensDato.isAfter(fristMedHelligdagerInkl);
+        return harRelevantAktivitet && !erFristPassert;
     }
 
     private static boolean erFrilans(BeregningAktivitetAggregatDto aktivitetAggregatDto, LocalDate skjæringstidspunkt) {
