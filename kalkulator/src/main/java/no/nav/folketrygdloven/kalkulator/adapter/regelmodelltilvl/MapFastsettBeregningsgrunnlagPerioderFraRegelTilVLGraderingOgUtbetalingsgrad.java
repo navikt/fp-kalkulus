@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AktivitetStatusV2;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetAndel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
@@ -18,7 +17,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste;
-import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
@@ -45,28 +43,20 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLGraderingOgUtbeta
     }
 
     private void mapNyAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, LocalDate skjæringstidspunkt, SplittetAndel nyAndel) {
-        Intervall beregningsperiode;
         // Antar at vi ikkje får nye andeler for ytelse FRISINN
         BeregningsperiodeTjeneste beregningsperiodeTjeneste = new BeregningsperiodeTjeneste();
-        if (nyAndel.getAktivitetStatus() != null && AktivitetStatusV2.SN.equals(nyAndel.getAktivitetStatus())) {
-            beregningsperiode = beregningsperiodeTjeneste.fastsettBeregningsperiodeForSNAndeler(skjæringstidspunkt);
-        } else {
-            beregningsperiode = beregningsperiodeTjeneste.fastsettBeregningsperiodeForATFLAndeler(skjæringstidspunkt);
-        }
         if (nyAndelErSNFlDP(nyAndel)) {
             AktivitetStatus aktivitetStatus = mapAktivitetStatus(nyAndel.getAktivitetStatus());
             if (aktivitetStatus == null) {
                 throw new IllegalStateException("Klarte ikke identifisere aktivitetstatus under periodesplitt. Status var " + nyAndel.getAktivitetStatus());
             }
             boolean eksisterende = beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
-                    .anyMatch(a -> a.getAktivitetStatus().equals(aktivitetStatus) && a.getArbeidsforholdType().equals(aktivitetTypeMap.get(aktivitetStatus)) &&
-                            a.getBeregningsperiodeFom().equals(beregningsperiode.getFomDato()) && a.getBeregningsperiodeTom().equals(beregningsperiode.getTomDato()));
+                    .anyMatch(a -> a.getAktivitetStatus().equals(aktivitetStatus) && a.getArbeidsforholdType().equals(aktivitetTypeMap.get(aktivitetStatus)));
             if (!eksisterende) {
                 BeregningsgrunnlagPrStatusOgAndelDto.ny()
                         .medKilde(AndelKilde.PROSESS_PERIODISERING)
                         .medAktivitetStatus(aktivitetStatus)
                         .medArbforholdType(aktivitetTypeMap.get(aktivitetStatus))
-                        .medBeregningsperiode(beregningsperiode.getFomDato(), beregningsperiode.getTomDato())
                         .build(beregningsgrunnlagPeriode);
             }
         } else {
@@ -82,7 +72,6 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLGraderingOgUtbeta
                     .medBGAndelArbeidsforhold(andelArbeidsforholdBuilder)
                     .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                     .medArbforholdType(OpptjeningAktivitetType.ARBEID)
-                    .medBeregningsperiode(beregningsperiode.getFomDato(), beregningsperiode.getTomDato())
                     .build(beregningsgrunnlagPeriode);
         }
     }

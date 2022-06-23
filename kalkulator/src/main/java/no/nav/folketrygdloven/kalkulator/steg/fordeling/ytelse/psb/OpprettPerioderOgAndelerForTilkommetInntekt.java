@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.FinnAnsettelsesPeriode;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -22,8 +21,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 
 class OpprettPerioderOgAndelerForTilkommetInntekt {
-
-    private final BeregningsperiodeTjeneste beregningsperiodeTjeneste = new BeregningsperiodeTjeneste();
 
     BeregningsgrunnlagDto opprettPerioderOgAndeler(BeregningsgrunnlagDto beregningsgrunnlag, List<AktivitetDto> tilkomneAktiviteter) {
         BeregningsgrunnlagDto nyttBg = new BeregningsgrunnlagDto(beregningsgrunnlag);
@@ -66,8 +63,6 @@ class OpprettPerioderOgAndelerForTilkommetInntekt {
         }
 
         if (yrkesaktivitetDto.getArbeidType().equals(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)) {
-            Intervall beregningsperiode = beregningsperiodeTjeneste.fastsettBeregningsperiodeForATFLAndeler(p.getBeregningsgrunnlagPeriodeFom());
-
             BeregningsgrunnlagPrStatusOgAndelDto.ny()
                     .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                     .medInntektskategoriAutomatiskFordeling(Inntektskategori.ARBEIDSTAKER)
@@ -76,16 +71,13 @@ class OpprettPerioderOgAndelerForTilkommetInntekt {
                             .medArbeidsperiodeTom(periode.get().getTom())
                             .medArbeidsgiver(yrkesaktivitetDto.getArbeidsgiver()))
                     .medArbforholdType(OpptjeningAktivitetType.ARBEID)
-                    .medBeregningsperiode(beregningsperiode.getFomDato(), beregningsperiode.getTomDato())
                     .medKilde(AndelKilde.PROSESS_PERIODISERING_TILKOMMET_INNTEKT)
                     .build(p);
         } else if (yrkesaktivitetDto.getArbeidType().equals(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER)) {
-            Intervall beregningsperiode = beregningsperiodeTjeneste.fastsettBeregningsperiodeForATFLAndeler(p.getBeregningsgrunnlagPeriodeFom());
             if (p.getBeregningsgrunnlagPrStatusOgAndelList().stream().noneMatch(a -> a.getAktivitetStatus().erFrilanser())) {
                 BeregningsgrunnlagPrStatusOgAndelDto.ny()
                         .medAktivitetStatus(AktivitetStatus.FRILANSER)
                         .medInntektskategori(Inntektskategori.FRILANSER)
-                        .medBeregningsperiode(beregningsperiode.getFomDato(), beregningsperiode.getTomDato())
                         .medKilde(AndelKilde.PROSESS_PERIODISERING_TILKOMMET_INNTEKT)
                         .build(p);
             }

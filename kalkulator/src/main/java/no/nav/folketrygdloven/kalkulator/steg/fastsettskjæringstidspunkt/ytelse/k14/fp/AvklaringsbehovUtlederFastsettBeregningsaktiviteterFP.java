@@ -5,22 +5,15 @@ import static java.util.Collections.emptyList;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørYtelseDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AutopunktUtlederFastsettBeregningsaktiviteterTjeneste;
@@ -40,15 +33,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterFP implements Av
                                                                                  boolean erOverstyrt,
                                                                                  LocalDate skjæringstidspunktForBeregning) {
         Optional<AktørYtelseDto> aktørYtelse = input.getIayGrunnlag().getAktørYtelseFraRegister();
-        Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();
-        List<Arbeidsgiver> inaktiveArbeidsgivere = beregningAktivitetAggregat.getBeregningAktiviteter().stream()
-                .map(BeregningAktivitetDto::getArbeidsgiver)
-                .filter(Objects::nonNull)
-                .filter(ag -> ErArbeidsgiverInaktiv.erInaktivt(ag, input.getIayGrunnlag(), skjæringstidspunktForBeregning))
-                .collect(Collectors.toList());
-        List<Arbeidsgiver> arbeidsgivereViIkkeTrengerVentePå = inntektsmeldinger.stream().map(InntektsmeldingDto::getArbeidsgiver).collect(Collectors.toList());
-        arbeidsgivereViIkkeTrengerVentePå.addAll(inaktiveArbeidsgivere);
-        Optional<LocalDate> ventPåRapporteringAvInntektFrist = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, arbeidsgivereViIkkeTrengerVentePå, LocalDate.now(), beregningAktivitetAggregat, skjæringstidspunktForBeregning);
+        Optional<LocalDate> ventPåRapporteringAvInntektFrist = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntektFL(input, LocalDate.now(), beregningAktivitetAggregat, skjæringstidspunktForBeregning);
         if (ventPåRapporteringAvInntektFrist.isPresent()) {
             return List.of(autopunkt(AvklaringsbehovDefinisjon.AUTO_VENT_PÅ_INNTEKT_RAPPORTERINGSFRIST, BeregningVenteårsak.VENT_INNTEKT_RAPPORTERINGSFRIST, ventPåRapporteringAvInntektFrist.get()));
         }

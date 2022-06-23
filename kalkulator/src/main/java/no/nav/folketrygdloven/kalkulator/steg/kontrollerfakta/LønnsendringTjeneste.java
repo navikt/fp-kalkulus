@@ -1,10 +1,12 @@
 package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -16,7 +18,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 
@@ -47,10 +48,12 @@ public class LønnsendringTjeneste {
     public static List<YrkesaktivitetDto> finnAktiviteterMedLønnsendringEtterFørsteDagISisteMåned(BeregningsgrunnlagDto beregningsgrunnlag,
                                                                                                   InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                                                   Collection<InntektsmeldingDto> inntektsmeldinger) {
-        LocalDate stpBeregning = beregningsgrunnlag.getSkjæringstidspunkt();
         // Vi teller ikkje med første dag, siden man då har ein heil måned med inntekt å beregne fra
-        Intervall sisteMåned = Intervall.fraOgMedTilOgMed(stpBeregning.minusMonths(1).withDayOfMonth(2), stpBeregning);
-        return finnAktiviteterMedLønnsendringUtenInntektsmelding(beregningsgrunnlag, iayGrunnlag, sisteMåned, inntektsmeldinger);
+        BiPredicate<BeregningsgrunnlagPrStatusOgAndelDto, LocalDate> harLønnsendringISisteMåned = (andel, dato) -> {
+            LocalDate fom = beregningsgrunnlag.getSkjæringstidspunkt().minusMonths(1).withDayOfMonth(2);
+            return Intervall.fraOgMedTilOgMed(fom, beregningsgrunnlag.getSkjæringstidspunkt()).inkluderer(dato);
+        };
+        return finnYrkesaktiviteterMedLønnsendringIBeregningsperiode(beregningsgrunnlag, iayGrunnlag, inntektsmeldinger, harLønnsendringISisteMåned);
     }
 
     /**
@@ -63,9 +66,8 @@ public class LønnsendringTjeneste {
     public static List<YrkesaktivitetDto> finnAktiviteterMedLønnsendringUtenInntektsmeldingIHeleBeregningsperioden(BeregningsgrunnlagDto beregningsgrunnlag,
                                                                                                                    InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                                                                    Collection<InntektsmeldingDto> inntektsmeldinger) {
-        LocalDate stpBeregning = beregningsgrunnlag.getSkjæringstidspunkt();
-        Intervall beregningsperiode = new BeregningsperiodeTjeneste().fastsettBeregningsperiodeForATFLAndeler(stpBeregning);
-        return finnAktiviteterMedLønnsendringUtenInntektsmelding(beregningsgrunnlag, iayGrunnlag, Intervall.fraOgMedTilOgMed(beregningsperiode.getFomDato(), stpBeregning), inntektsmeldinger);
+        BiPredicate<BeregningsgrunnlagPrStatusOgAndelDto, LocalDate> datoErInkludertIRelevantPeriode = (andel, dato) -> andel.getBeregningsperiode().inkluderer(dato);
+        return finnYrkesaktiviteterMedLønnsendringIBeregningsperiode(beregningsgrunnlag, iayGrunnlag, inntektsmeldinger, datoErInkludertIRelevantPeriode);
     }
 
     public static List<YrkesaktivitetDto> finnAktiviteterMedLønnsendringUtenInntektsmelding(BeregningsgrunnlagDto beregningsgrunnlag,
@@ -92,6 +94,52 @@ public class LønnsendringTjeneste {
                 .filter(ya -> finnesKorresponderendeBeregningsgrunnlagsandel(arbeidstakerAndeler, ya))
                 .filter(ya -> manglerInntektsmelding(inntektsmeldinger, ya))
                 .collect(Collectors.toList());
+    }
+
+    private static List<YrkesaktivitetDto> finnYrkesaktiviteterMedLønnsendringIBeregningsperiode(BeregningsgrunnlagDto beregningsgrunnlag,
+                                                                                                 InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                                                                                 Collection<InntektsmeldingDto> inntektsmeldinger,
+                                                                                                 BiPredicate<BeregningsgrunnlagPrStatusOgAndelDto, LocalDate> harBeregningsperiodeSomOverlapperDato) {
+        List<YrkesaktivitetDto> aktiviteterMedLønnsendring = new ArrayList<>();
+        alleArbeidstakerandeler(beregningsgrunnlag).forEach(andel -> {
+            Optional<AktørArbeidDto> aktørArbeid = iayGrunnlag.getAktørArbeidFraRegister();
+            var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), aktørArbeid);
+            Optional<YrkesaktivitetDto> yrkesaktivitet = finnMatchendeYrkesaktivitetMedLønnsendring(andel, filter);
+            yrkesaktivitet.ifPresent(ya-> {
+                boolean harLønnsendringIBeregningsperiode = harLønnsendringIBeregningsperiode(harBeregningsperiodeSomOverlapperDato, andel, filter, ya);
+                boolean manglerIM = manglerInntektsmelding(inntektsmeldinger, andel);
+                if (manglerIM && harLønnsendringIBeregningsperiode) {
+                    aktiviteterMedLønnsendring.add(yrkesaktivitet.get());
+                }
+            });
+        });
+        return aktiviteterMedLønnsendring;
+    }
+
+    private static boolean harLønnsendringIBeregningsperiode(BiPredicate<BeregningsgrunnlagPrStatusOgAndelDto, LocalDate> harBeregningsperiodeSomOverlapperDato,
+                                                             BeregningsgrunnlagPrStatusOgAndelDto andel,
+                                                             YrkesaktivitetFilterDto filter,
+                                                             YrkesaktivitetDto ya) {
+        return harAvtalerMedLønnsendringIPerioden(filter.getAktivitetsAvtalerForArbeid(ya), harBeregningsperiodeSomOverlapperDato, andel);
+    }
+
+    private static boolean harAvtalerMedLønnsendringIPerioden(Collection<AktivitetsAvtaleDto> aktivitetsAvtalerForArbeid,
+                                                              BiPredicate<BeregningsgrunnlagPrStatusOgAndelDto,
+                                                                      LocalDate> harBeregningsperiodeSomOverlapperDato,
+                                                              BeregningsgrunnlagPrStatusOgAndelDto andel) {
+        return aktivitetsAvtalerForArbeid
+                .stream()
+                .filter(aa -> aa.getSisteLønnsendringsdato() != null)
+                .anyMatch(aa -> harBeregningsperiodeSomOverlapperDato.test(andel, aa.getSisteLønnsendringsdato()));
+    }
+
+    private static Optional<YrkesaktivitetDto> finnMatchendeYrkesaktivitetMedLønnsendring(BeregningsgrunnlagPrStatusOgAndelDto andel, YrkesaktivitetFilterDto filter) {
+        return filter.getYrkesaktiviteterForBeregning().stream().filter(ya -> andel.gjelderSammeArbeidsforhold(ya.getArbeidsgiver(), ya.getArbeidsforholdRef())).findFirst();
+
+    }
+
+    private static boolean manglerInntektsmelding(Collection<InntektsmeldingDto> inntektsmeldinger, BeregningsgrunnlagPrStatusOgAndelDto andel) {
+        return inntektsmeldinger.stream().noneMatch(im -> andel.gjelderSammeArbeidsforhold(im.getArbeidsgiver(), im.getArbeidsforholdRef()));
     }
 
     private static boolean manglerInntektsmelding(Collection<InntektsmeldingDto> inntektsmeldinger, YrkesaktivitetDto ya) {

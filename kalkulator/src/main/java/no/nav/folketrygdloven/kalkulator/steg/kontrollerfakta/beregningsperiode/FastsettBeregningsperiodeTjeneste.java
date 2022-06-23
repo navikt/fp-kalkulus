@@ -6,7 +6,6 @@ import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsp
 import java.util.Collection;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -14,7 +13,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("FP")
 @FagsakYtelseTypeRef("SVP")
 @FagsakYtelseTypeRef("PSB")
 @FagsakYtelseTypeRef("PPN")

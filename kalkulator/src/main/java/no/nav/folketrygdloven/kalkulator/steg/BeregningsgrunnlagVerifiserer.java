@@ -53,19 +53,21 @@ public final class BeregningsgrunnlagVerifiserer {
     }
 
     private static void verifiserOpprettetAndel(BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        Objects.requireNonNull(andel.getAktivitetStatus(), "Aktivitetstatus " + andel.toString());
-        Objects.requireNonNull(andel.getAndelsnr(), "Andelsnummer " + andel.toString());
-        Objects.requireNonNull(andel.getArbeidsforholdType(), "ArbeidsforholdType " + andel.toString());
+        Objects.requireNonNull(andel.getAktivitetStatus(), "Aktivitetstatus " + andel);
+        Objects.requireNonNull(andel.getAndelsnr(), "Andelsnummer " + andel);
+        Objects.requireNonNull(andel.getArbeidsforholdType(), "ArbeidsforholdType " + andel);
         if (andel.getAktivitetStatus().equals(AktivitetStatus.ARBEIDSTAKER)) {
             if (andel.getArbeidsforholdType().equals(OpptjeningAktivitetType.ARBEID)) {
-                verifiserOptionalPresent(andel.getBgAndelArbeidsforhold(), "BgAndelArbeidsforhold " + andel.toString());
+                verifiserOptionalPresent(andel.getBgAndelArbeidsforhold(), "BgAndelArbeidsforhold " + andel);
             }
-            Objects.requireNonNull(andel.getBeregningsperiodeFom(), "BeregningsperiodeFom " + andel.toString());
-            Objects.requireNonNull(andel.getBeregningsperiodeTom(), "BeregningsperiodeTom " + andel.toString());
+            if (andel.getKilde() == null || AndelKilde.PROSESS_START.equals(andel.getKilde()) || AndelKilde.SAKSBEHANDLER_KOFAKBER.equals(andel.getKilde())) {
+                Objects.requireNonNull(andel.getBeregningsperiodeFom(), "BeregningsperiodeFom " + andel);
+                Objects.requireNonNull(andel.getBeregningsperiodeTom(), "BeregningsperiodeTom " + andel);
+            }
             if (andel.getBgAndelArbeidsforhold().isPresent()) {
                 BGAndelArbeidsforholdDto arbFor = andel.getBgAndelArbeidsforhold().get();
-                Objects.requireNonNull(arbFor.getArbeidsperiodeFom(), "arbeidsperiodeFom " + andel.toString());
-                Objects.requireNonNull(arbFor.getArbeidsperiodeTom(), "arbeidsperiodeTom " + andel.toString());
+                Objects.requireNonNull(arbFor.getArbeidsperiodeFom(), "arbeidsperiodeFom " + andel);
+                Objects.requireNonNull(arbFor.getArbeidsperiodeTom(), "arbeidsperiodeTom " + andel);
             }
         }
     }

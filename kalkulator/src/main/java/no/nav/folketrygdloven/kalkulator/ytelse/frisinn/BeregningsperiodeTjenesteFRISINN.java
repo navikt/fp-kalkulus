@@ -1,10 +1,8 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.frisinn;
 
 import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -17,10 +15,4 @@ public class BeregningsperiodeTjenesteFRISINN extends BeregningsperiodeTjeneste 
     public Intervall fastsettBeregningsperiodeForATFLAndeler(LocalDate skjæringstidspunkt) {
         return Intervall.fraOgMedTilOgMed(skjæringstidspunkt.minusYears(1).withDayOfMonth(1), skjæringstidspunkt.withDayOfMonth(1).minusDays(1));
     }
-
-    @Override
-    public Intervall fastsettBeregningsperiodeForSNAndeler(LocalDate skjæringstidspunkt) {
-        return Intervall.fraOgMedTilOgMed(skjæringstidspunkt.minusYears(3).withDayOfYear(1), skjæringstidspunkt.minusYears(1).with(TemporalAdjusters.lastDayOfYear()));
-    }
-
 }

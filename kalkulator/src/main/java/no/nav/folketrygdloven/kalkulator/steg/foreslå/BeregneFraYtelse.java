@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.steg.foreslå;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +22,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregat
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AnvistAndel;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.Virkedager;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
@@ -42,24 +40,21 @@ class BeregneFraYtelse {
         boolean harVurderMottarYtelse = foreslåttBeregningsgrunnlag.getFaktaOmBeregningTilfeller()
                 .stream().anyMatch(faktaOmBeregningTilfelle -> faktaOmBeregningTilfelle.equals(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE));
         if (harVurderMottarYtelse) {
-            LocalDate skjæringstidspunkt = foreslåttBeregningsgrunnlag.getSkjæringstidspunkt();
-            Intervall beregningsperiode = new BeregningsperiodeTjeneste().fastsettBeregningsperiodeForATFLAndeler(skjæringstidspunkt);
-            List<YtelseAnvistDto> anvisninger = hentAlleRelevanteAnvisninger(input, beregningsperiode);
 
             var atflStatus = regelmodell.getBeregningsgrunnlagPerioder().get(0)
                     .getBeregningsgrunnlagPrStatus(AktivitetStatus.ATFL);
+            List<BeregningsgrunnlagPrArbeidsforhold> arbeidsforholdUtenInntektsmeldingMedBeregningsperiode = atflStatus == null ? Collections.emptyList() : finnArbeidsforholdUtenInntektsmeldingMedBeregningsperiode(regelmodell, atflStatus);
 
-            boolean harAnvisteAndeler = anvisninger.stream().anyMatch(a -> a.getAnvisteAndeler() != null && !a.getAnvisteAndeler().isEmpty());
+            for (var beregnetAndel : arbeidsforholdUtenInntektsmeldingMedBeregningsperiode) {
+                Intervall beregningsperiode = Intervall.fraOgMedTilOgMed(beregnetAndel.getBeregningsperiode().getFom(), beregnetAndel.getBeregningsperiode().getTom());
+                List<YtelseAnvistDto> anvisninger = hentAlleRelevanteAnvisninger(input, beregningsperiode);
+                boolean harAnvisteAndeler = anvisninger.stream().anyMatch(a -> a.getAnvisteAndeler() != null && !a.getAnvisteAndeler().isEmpty());
+                if (!harAnvisteAndeler) {
+                    continue;
+                }
 
-            if (atflStatus == null || !harAnvisteAndeler) {
-                return;
-            }
-
-            var arbeidsforholdUtenInntektsmelding = finnArbeidsforholdUtenInntektsmelding(regelmodell, beregningsperiode, atflStatus);
-
-            for (var beregnetAndel : arbeidsforholdUtenInntektsmelding) {
                 BigDecimal direkteUtbetalingForAndel = finnSumDirekteUtbetaltYtelseIPeriodeForAndel(beregningsperiode, anvisninger, beregnetAndel);
-                BigDecimal andelLønnOgYtelse = finnLønnOgDirekteUtbetaltYtelseForAndel(regelmodell, beregningsperiode, atflStatus, arbeidsforholdUtenInntektsmelding, beregnetAndel, direkteUtbetalingForAndel);
+                BigDecimal andelLønnOgYtelse = finnLønnOgDirekteUtbetaltYtelseForAndel(regelmodell, beregningsperiode, atflStatus, arbeidsforholdUtenInntektsmeldingMedBeregningsperiode, beregnetAndel, direkteUtbetalingForAndel);
                 if (beregnetAndel.getBeregnetPrÅr().compareTo(andelLønnOgYtelse) != 0) {
                     loggBeregning(input, beregnetAndel, direkteUtbetalingForAndel, andelLønnOgYtelse, "Fant differanse i beregning");
                 } else {
@@ -81,10 +76,10 @@ class BeregneFraYtelse {
                 .collect(Collectors.toList());
     }
 
-    private static List<BeregningsgrunnlagPrArbeidsforhold> finnArbeidsforholdUtenInntektsmelding(Beregningsgrunnlag regelmodell, Intervall beregningsperiode, BeregningsgrunnlagPrStatus atflStatus) {
+    private static List<BeregningsgrunnlagPrArbeidsforhold> finnArbeidsforholdUtenInntektsmeldingMedBeregningsperiode(Beregningsgrunnlag regelmodell, BeregningsgrunnlagPrStatus atflStatus) {
         return atflStatus.getArbeidsforholdIkkeFrilans()
                 .stream()
-                .filter(a -> a.getBeregningsperiode() != null && a.getBeregningsperiode().getFom().equals(beregningsperiode.getFomDato()))
+                .filter(a -> a.getBeregningsperiode() != null)
                 .filter(a -> !regelmodell.getInntektsgrunnlag().finnesInntektsdata(Inntektskilde.INNTEKTSMELDING, a))
                 .collect(Collectors.toList());
     }
