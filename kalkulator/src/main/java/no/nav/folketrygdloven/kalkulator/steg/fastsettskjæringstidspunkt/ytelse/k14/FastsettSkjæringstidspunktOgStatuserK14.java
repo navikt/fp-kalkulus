@@ -39,7 +39,7 @@ public class FastsettSkjæringstidspunktOgStatuserK14 implements FastsettSkjæri
         RegelResultat regelResultatFastsettSkjæringstidspunkt = fastsettSkjæringstidspunkt(regelmodell);
         RegelResultat regelResultatFastsettStatus = fastsettStatus(regelmodell);
 
-        // Oversett endelig resultat av regelmodell (+ spore input -> evaluation)
+        // Oversett endelig resultat av regelmodell (+ spore input -> evaluation.)
         List<RegelResultat> regelResultater = List.of(
                 regelResultatFastsettSkjæringstidspunkt,
                 regelResultatFastsettStatus);
