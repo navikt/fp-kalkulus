@@ -78,7 +78,7 @@ public class LønnsendringTjeneste {
 
         Optional<AktørArbeidDto> aktørArbeid = iayGrunnlag.getAktørArbeidFraRegister();
 
-        List<BeregningsgrunnlagPrStatusOgAndelDto> arbeidstakerAndeler = alleArbeidstakerandeler(beregningsgrunnlag);
+        List<BeregningsgrunnlagPrStatusOgAndelDto> arbeidstakerAndeler = alleArbeidstakerandelerMedBeregningsperiode(beregningsgrunnlag);
 
         if (aktørArbeid.isEmpty() || arbeidstakerAndeler.isEmpty()) {
             return Collections.emptyList();
@@ -101,7 +101,7 @@ public class LønnsendringTjeneste {
                                                                                                  Collection<InntektsmeldingDto> inntektsmeldinger,
                                                                                                  BiPredicate<BeregningsgrunnlagPrStatusOgAndelDto, LocalDate> harBeregningsperiodeSomOverlapperDato) {
         List<YrkesaktivitetDto> aktiviteterMedLønnsendring = new ArrayList<>();
-        alleArbeidstakerandeler(beregningsgrunnlag).forEach(andel -> {
+        alleArbeidstakerandelerMedBeregningsperiode(beregningsgrunnlag).forEach(andel -> {
             Optional<AktørArbeidDto> aktørArbeid = iayGrunnlag.getAktørArbeidFraRegister();
             var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), aktørArbeid);
             Optional<YrkesaktivitetDto> yrkesaktivitet = finnMatchendeYrkesaktivitetMedLønnsendring(andel, filter);
@@ -152,10 +152,11 @@ public class LønnsendringTjeneste {
                 .anyMatch(andel -> andel.gjelderSammeArbeidsforhold(a.getArbeidsgiver(), a.getArbeidsforholdRef()));
     }
 
-    private static List<BeregningsgrunnlagPrStatusOgAndelDto> alleArbeidstakerandeler(BeregningsgrunnlagDto beregningsgrunnlag) {
+    private static List<BeregningsgrunnlagPrStatusOgAndelDto> alleArbeidstakerandelerMedBeregningsperiode(BeregningsgrunnlagDto beregningsgrunnlag) {
         return beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
                 .map(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPrStatusOgAndelList).flatMap(Collection::stream)
                 .filter(bpsa -> bpsa.getAktivitetStatus().erArbeidstaker())
+                .filter(bpsa -> bpsa.getBeregningsperiode() != null)
                 .collect(Collectors.toList());
     }
 
