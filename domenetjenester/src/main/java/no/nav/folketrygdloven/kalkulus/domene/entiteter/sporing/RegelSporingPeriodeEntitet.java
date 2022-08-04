@@ -36,6 +36,9 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
     @Column(name = "kobling_id", nullable = false, updatable = false)
     private Long koblingId;
 
+    @Column(name = "regel_input_hash", nullable = false, updatable = false)
+    private String regelInputHash;
+
     @Column(name = "regel_evaluering_json", columnDefinition="TEXT")
     private String regelEvaluering;
 
@@ -89,6 +92,14 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
 
     public void setAktiv(boolean aktiv) {
         this.aktiv = aktiv;
+    }
+
+    public void setRegelInputHash(String regelInputHash) {
+        this.regelInputHash = regelInputHash;
+    }
+
+    public void setRegelInput(String regelInput) {
+        this.regelInput = regelInput;
     }
 
     public static Builder ny() {

@@ -13,5 +13,6 @@
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet" />
 
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelInputKomprimering" />
 
 </entity-mappings>

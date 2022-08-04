@@ -1,5 +1,9 @@
 package no.nav.folketrygdloven.kalkulus.tjeneste.sporing;
 
+import static ch.qos.logback.core.encoder.ByteArrayUtil.toHexString;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +18,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
@@ -49,9 +54,38 @@ public class RegelsporingRepository {
                     if (!sporing.erAktiv()) {
                         throw new IllegalArgumentException("Kan ikke lagre en inaktivt reglsporing");
                     }
+                    if (KonfigurasjonVerdi.get("REGEL_INPUT_HASHING_ENABLED", true)) {
+                        var hash = kjørRegelInputHashing(sporing.getRegelInput());
+                        sporing.setRegelInputHash(hash);
+                        if (KonfigurasjonVerdi.get("REGEL_INPUT_KOMPRIMERING_ENABLED", true)) {
+                            sporing.setRegelInput(null);
+                        }
+                    }
                     entityManager.persist(sporing);
                 }));
         entityManager.flush();
+    }
+
+    private String kjørRegelInputHashing(String regelInput) {
+        String regelInputHash = lagMD5Hash(regelInput);
+        var insertQuery = entityManager.createNativeQuery(
+                        "INSERT INTO REGEL_INPUT_KOMPRIMERING (REGEL_INPUT_HASH, REGEL_INPUT_JSON) " +
+                                "VALUES (:md5_hash, :sporing_json) " +
+                                "ON CONFLICT DO NOTHING")
+                .setParameter("sporing_json", regelInput)
+                .setParameter("md5_hash", regelInputHash);
+        insertQuery.executeUpdate();
+        return regelInputHash;
+    }
+
+    private String lagMD5Hash(String regelInput) {
+        byte[] md5Hash;
+        try {
+            md5Hash = MessageDigest.getInstance("MD5").digest(regelInput.getBytes());
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e.getMessage());
+        }
+        return toHexString(md5Hash);
     }
 
     /**

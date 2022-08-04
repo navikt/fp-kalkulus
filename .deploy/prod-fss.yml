@@ -101,3 +101,7 @@ spec:
       value: "true"
     - name: MAP_YTELSE_DAGPENGER_FRA_ANDELER
       value: "false"
+    - name: REGEL_INPUT_KOMPRIMMERING_ENABLED
+      value: "false"
+    - name: REGEL_INPUT_HASHING_ENABLED
+      value: "false"
