@@ -8,6 +8,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -64,6 +65,43 @@ public class RegelsporingRepository {
                     entityManager.persist(sporing);
                 }));
         entityManager.flush();
+    }
+
+    /**
+     * Lager hash og komprimererer alle regelsporinger på kobling
+     *
+     * @param koblingId koblingID
+     */
+    public void hashAlleForKobling(Long koblingId) {
+        TypedQuery<RegelSporingPeriodeEntitet> query = entityManager.createQuery(
+                "from RegelSporingPeriodeEntitet sporing " +
+                        "where sporing.koblingId = :koblingId and regelInput is not null", RegelSporingPeriodeEntitet.class); //$NON-NLS-1$
+        query.setParameter(KOBLING_ID, koblingId); //$NON-NLS-1$
+        var resultList = query.getResultList();
+
+        resultList.forEach(r -> {
+            var hash = kjørRegelInputHashing(r.getRegelInput());
+            r.setRegelInputHash(hash);
+            r.setRegelInput(null);
+            entityManager.persist(r);
+        });
+        entityManager.flush();
+    }
+
+    /**
+     * Finner vilkårlig sporing uten komprimering
+     *
+     */
+    public Optional<Long> finnKoblingUtenKomprimering() {
+        TypedQuery<RegelSporingPeriodeEntitet> query = entityManager.createQuery(
+                "from RegelSporingPeriodeEntitet sporing " +
+                        "where regelInput is not null", RegelSporingPeriodeEntitet.class); //$NON-NLS-1$
+        query.setMaxResults(1); //$NON-NLS-1$
+        var resultList = query.getResultList();
+        if (resultList.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(resultList.get(0).getKoblingId());
     }
 
     private String kjørRegelInputHashing(String regelInput) {

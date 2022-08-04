@@ -36,7 +36,7 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
     @Column(name = "kobling_id", nullable = false, updatable = false)
     private Long koblingId;
 
-    @Column(name = "regel_input_hash", nullable = false, updatable = false)
+    @Column(name = "regel_input_hash", nullable = true, updatable = true)
     private String regelInputHash;
 
     @Column(name = "regel_evaluering_json", columnDefinition="TEXT")
