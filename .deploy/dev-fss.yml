@@ -106,3 +106,5 @@ spec:
       value: "true"
     - name: REGEL_INPUT_HASHING_ENABLED
       value: "true"
+    - name: REKURSIV_TASK_KOMPRIMERING_ENABLED
+      value: "true"

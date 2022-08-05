@@ -25,6 +25,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.forvaltning.AksjonspunktMigreringTjeneste;
@@ -63,6 +64,9 @@ public class KomprimerJsonInputRestTjeneste {
     @BeskyttetRessurs(action = CREATE, property = DRIFT)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response komprimerRegelsporing(@NotNull @Valid KomprimerRegelInputRequestAbacDto spesifikasjon) {
+        if (!KonfigurasjonVerdi.get("REKURSIV_TASK_KOMPRIMERING_ENABLED", true)) {
+            return Response.noContent().build();
+        }
         var koblinger = koblingRepository.hentAlleKoblingerForSaksnummer(new Saksnummer(spesifikasjon.getSaksnummer()));
         koblinger.forEach(k -> regelsporingRepository.hashAlleForKobling(k.getId()));
         var nesteKoblingId = regelsporingRepository.finnKoblingUtenKomprimering();
@@ -73,7 +77,7 @@ public class KomprimerJsonInputRestTjeneste {
         if (kobling.isEmpty()) {
             return Response.noContent().build();
         } else {
-            return Response.ok(kobling.get(0).getSaksnummer()).build();
+            return Response.ok(new no.nav.folketrygdloven.kalkulus.response.v1.regelinput.Saksnummer(kobling.get(0).getSaksnummer().getVerdi())).build();
         }
     }
 
