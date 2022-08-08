@@ -4,8 +4,9 @@ import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessurs
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.CREATE;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -27,8 +28,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.forvaltning.AksjonspunktMigreringTjeneste;
 import no.nav.folketrygdloven.kalkulus.request.v1.regelinput.KomprimerRegelInputRequest;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
@@ -43,6 +42,7 @@ import no.nav.k9.felles.sikkerhet.abac.BeskyttetRessurs;
 @Transactional
 public class KomprimerJsonInputRestTjeneste {
 
+    private static final Logger log = LoggerFactory.getLogger(KomprimerJsonInputRestTjeneste.class);
 
     private RegelsporingRepository regelsporingRepository;
     private KoblingRepository koblingRepository;
@@ -67,6 +67,7 @@ public class KomprimerJsonInputRestTjeneste {
         if (!KonfigurasjonVerdi.get("REKURSIV_TASK_KOMPRIMERING_ENABLED", true)) {
             return Response.noContent().build();
         }
+        log.info("Utfører komprimering for saksnummer " + spesifikasjon.getSaksnummer());
         var koblinger = koblingRepository.hentAlleKoblingerForSaksnummer(new Saksnummer(spesifikasjon.getSaksnummer()));
         koblinger.forEach(k -> regelsporingRepository.hashAlleForKobling(k.getId()));
         var nesteKoblingId = regelsporingRepository.finnKoblingUtenKomprimering();
@@ -75,8 +76,10 @@ public class KomprimerJsonInputRestTjeneste {
         }
         var kobling = koblingRepository.hentKoblingerFor(List.of(nesteKoblingId.get()));
         if (kobling.isEmpty()) {
+            log.info("Komprimering utført. Returnerer ingen saksnummer.");
             return Response.noContent().build();
         } else {
+            log.info("Komprimering utført. Returnerer neste saksnummer: " + kobling.get(0).getSaksnummer().getVerdi());
             return Response.ok(new no.nav.folketrygdloven.kalkulus.response.v1.regelinput.Saksnummer(kobling.get(0).getSaksnummer().getVerdi())).build();
         }
     }
