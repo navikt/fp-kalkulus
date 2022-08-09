@@ -21,6 +21,7 @@ public class DevDbKonfigurasjon {
         conf.setDataSource(dataSource);
         conf.setLocationsAsStrings(location);
         conf.setBaselineOnMigrate(true);
+        conf.setCleanDisabled(false);
         Flyway flyway = new Flyway(conf);
         try {
             flyway.clean();

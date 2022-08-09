@@ -4,13 +4,10 @@ import static no.nav.k9.felles.konfigurasjon.env.Cluster.LOCAL;
 import static no.nav.k9.felles.konfigurasjon.env.Cluster.NAIS_CLUSTER_NAME;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.sql.DataSource;
 
 import org.eclipse.jetty.jaas.JAASLoginService;
 import org.eclipse.jetty.plus.jndi.EnvEntry;
@@ -50,18 +47,6 @@ import no.nav.k9.felles.sikkerhet.jaspic.OidcAuthModule;
 
 public class JettyServer {
 
-    /**
-     * Legges først slik at alltid resetter context før prosesserer nye requests.
-     * Kjøres først så ikke risikerer andre har satt Request#setHandled(true).
-     */
-    static final class ResetLogContextHandler extends AbstractHandler {
-        @Override
-        public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
-                throws IOException, ServletException {
-            MDC.clear();
-        }
-    }
-
     private static final Environment ENV = Environment.current();
     private static final Logger log = LoggerFactory.getLogger(JettyServer.class);
     private AppKonfigurasjon appKonfigurasjon;
@@ -93,7 +78,7 @@ public class JettyServer {
 
     protected void start(AppKonfigurasjon appKonfigurasjon) throws Exception {
         Server server = new Server(appKonfigurasjon.getServerPort());
-        server.setConnectors(createConnectors(appKonfigurasjon, server).toArray(new Connector[] {}));
+        server.setConnectors(createConnectors(appKonfigurasjon, server).toArray(new Connector[]{}));
 
         var handlers = new HandlerList(new ResetLogContextHandler(), createContext(appKonfigurasjon));
         server.setHandler(handlers);
@@ -126,9 +111,9 @@ public class JettyServer {
         var factory = new DefaultAuthConfigFactory();
 
         factory.registerConfigProvider(new JaspiAuthConfigProvider(new OidcAuthModule()),
-            "HttpServlet",
-            "server /ftkalkulus",
-            "OIDC Authentication");
+                "HttpServlet",
+                "server /ftkalkulus",
+                "OIDC Authentication");
 
         AuthConfigFactory.setFactory(factory);
     }
@@ -141,13 +126,9 @@ public class JettyServer {
             // operasjoner
             initSql = null;
         }
-        DataSource migreringDs = DatasourceUtil.createDatasource("defaultDS", DatasourceRole.ADMIN, ENV.getCluster(),
-                1);
-        try {
+        try (var migreringDs = DatasourceUtil.createDatasource("defaultDS", DatasourceRole.ADMIN, ENV.getCluster(),
+                1)) {
             DatabaseScript.migrate(migreringDs, initSql);
-            migreringDs.getConnection().close();
-        } catch (SQLException e) {
-            log.warn("Klarte ikke stenge connection etter migrering", e);
         }
     }
 
@@ -165,7 +146,6 @@ public class JettyServer {
         webAppContext.setDescriptor(descriptor);
         webAppContext.setBaseResource(createResourceCollection());
         webAppContext.setContextPath(appKonfigurasjon.getContextPath());
-
         webAppContext.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
 
         webAppContext.setAttribute("org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern",
@@ -230,6 +210,18 @@ public class JettyServer {
         return new ResourceCollection(
             Resource.newClassPathResource("META-INF/resources/webjars/"),
             Resource.newClassPathResource("/web"));
+    }
+
+    /**
+     * Legges først slik at alltid resetter context før prosesserer nye requests.
+     * Kjøres først så ikke risikerer andre har satt Request#setHandled(true).
+     */
+    static final class ResetLogContextHandler extends AbstractHandler {
+        @Override
+        public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
+                throws IOException, ServletException {
+            MDC.clear();
+        }
     }
 
 }

@@ -2,10 +2,7 @@ package no.nav.folketrygdloven.kalkulus.jetty;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
-
-import javax.sql.DataSource;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
@@ -74,15 +71,9 @@ public class JettyDevServer extends JettyServer {
             super.migrerDatabaser();
         } catch (IllegalStateException e) {
             log.info("Migreringer feilet, cleaner og prøver på nytt for lokal db.");
-            DataSource migreringDs = DatasourceUtil.createDatasource("defaultDS", DatasourceRole.ADMIN, ENV.getCluster(), 1);
-            try {
+
+            try (var migreringDs = DatasourceUtil.createDatasource("defaultDS", DatasourceRole.ADMIN, ENV.getCluster(), 1)) {
                 DevDbKonfigurasjon.clean(migreringDs);
-            } finally {
-                try {
-                    migreringDs.getConnection().close();
-                } catch (SQLException sqlException) {
-                    log.warn("Klarte ikke stenge connection etter migrering", sqlException);
-                }
             }
             super.migrerDatabaser();
         }

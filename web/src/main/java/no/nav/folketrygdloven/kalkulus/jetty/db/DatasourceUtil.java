@@ -4,8 +4,6 @@ import static no.nav.k9.felles.konfigurasjon.env.Cluster.LOCAL;
 
 import java.util.Properties;
 
-import javax.sql.DataSource;
-
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -20,7 +18,7 @@ public class DatasourceUtil {
 
     private static final String VAULT_PREPROD_NAVN = "preprod-fss";
 
-    public static DataSource createDatasource(String datasourceName, DatasourceRole role, Cluster cluster,
+    public static HikariDataSource createDatasource(String datasourceName, DatasourceRole role, Cluster cluster,
                                               int maxPoolSize) {
         String rolePrefix = getRolePrefix(datasourceName);
         HikariConfig config = initConnectionPoolConfig(datasourceName, maxPoolSize);
@@ -69,7 +67,7 @@ public class DatasourceUtil {
         return config;
     }
 
-    private static DataSource createVaultDatasource(HikariConfig config, String mountPath, String role) {
+    private static HikariDataSource createVaultDatasource(HikariConfig config, String mountPath, String role) {
         try {
             return HikariCPVaultUtil.createHikariDataSourceWithVaultIntegration(config, mountPath, role);
         } catch (VaultError vaultError) {
@@ -77,7 +75,7 @@ public class DatasourceUtil {
         }
     }
 
-    private static DataSource createLocalDatasource(HikariConfig config, String schema, String username,
+    private static HikariDataSource createLocalDatasource(HikariConfig config, String schema, String username,
                                                     String password) {
         config.setUsername(username);
         config.setPassword(password); // NOSONAR false positive
