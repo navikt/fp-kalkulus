@@ -100,7 +100,7 @@ spec:
     - name: VURDER_MOTTAR_YTELSE_AT_FILTRERING
       value: "true"
     - name: MAP_YTELSE_DAGPENGER_FRA_ANDELER
-      value: "false"
+      value: "true"
     - name: REGEL_INPUT_KOMPRIMMERING_ENABLED
       value: "false"
     - name: REGEL_INPUT_HASHING_ENABLED
