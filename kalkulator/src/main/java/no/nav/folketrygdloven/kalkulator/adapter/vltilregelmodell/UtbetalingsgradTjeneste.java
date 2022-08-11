@@ -5,14 +5,16 @@ import static no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.AktivitetSt
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
+import java.util.stream.Stream;
 
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
@@ -34,7 +36,7 @@ public class UtbetalingsgradTjeneste {
                                                          boolean skalIgnorereIkkeYrkesaktivStatus) {
         if (ytelsesSpesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {
             if (andel.getAktivitetStatus().erArbeidstaker() && andel.getBgAndelArbeidsforhold().isPresent()) {
-                return mapUtbetalingsgradForArbeid(andel.getBgAndelArbeidsforhold().get(), periode, ytelsesSpesifiktGrunnlag, skalIgnorereIkkeYrkesaktivStatus);
+                return finnUtbetalingsgradForArbeid(andel.getBgAndelArbeidsforhold().get().getArbeidsgiver(), andel.getBgAndelArbeidsforhold().get().getArbeidsforholdRef(), periode, ytelsesSpesifiktGrunnlag, skalIgnorereIkkeYrkesaktivStatus);
             } else {
                 return finnUtbetalingsgradForStatus(andel.getAktivitetStatus(), periode, ytelsesSpesifiktGrunnlag);
             }
@@ -61,16 +63,15 @@ public class UtbetalingsgradTjeneste {
         return BigDecimal.valueOf(100);
     }
 
-    static BigDecimal mapUtbetalingsgradForArbeid(BGAndelArbeidsforholdDto arbeidsforhold,
-                                                  Intervall periode,
-                                                  YtelsespesifiktGrunnlag ytelsesSpesifiktGrunnlag,
-                                                  boolean skalIgnorereIkkeYrkesaktivStatus) {
+    public static BigDecimal finnUtbetalingsgradForArbeid(Arbeidsgiver arbeidsgiver,
+                                                          InternArbeidsforholdRefDto arbeidsforholdRef,
+                                                          Intervall periode,
+                                                          YtelsespesifiktGrunnlag ytelsesSpesifiktGrunnlag,
+                                                          boolean skalIgnorereIkkeYrkesaktivStatus) {
         if (ytelsesSpesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {
             UtbetalingsgradGrunnlag utbetalingsgradGrunnlag = (UtbetalingsgradGrunnlag) ytelsesSpesifiktGrunnlag;
-            return utbetalingsgradGrunnlag.getUtbetalingsgradPrAktivitet().stream()
-                    .filter(utbGrad -> erArbeidstaker(utbGrad, skalIgnorereIkkeYrkesaktivStatus) &&
-                            matcherArbeidsgiver(arbeidsforhold, utbGrad) &&
-                            matcherArbeidsforholdReferanse(arbeidsforhold, utbGrad))
+            return finnPerioderForArbeid(utbetalingsgradGrunnlag, arbeidsgiver, arbeidsforholdRef, skalIgnorereIkkeYrkesaktivStatus)
+                    .stream()
                     .flatMap(utb -> utb.getPeriodeMedUtbetalingsgrad().stream())
                     .filter(p -> p.getPeriode().inkluderer(periode.getFomDato()))
                     .map(PeriodeMedUtbetalingsgradDto::getUtbetalingsgrad)
@@ -80,6 +81,13 @@ public class UtbetalingsgradTjeneste {
         return BigDecimal.valueOf(100);
     }
 
+    public static List<UtbetalingsgradPrAktivitetDto> finnPerioderForArbeid(UtbetalingsgradGrunnlag utbetalingsgradGrunnlag, Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRef, boolean skalIgnorereIkkeYrkesaktivStatus) {
+        return utbetalingsgradGrunnlag.getUtbetalingsgradPrAktivitet().stream()
+                .filter(utbGrad -> erArbeidstaker(utbGrad, skalIgnorereIkkeYrkesaktivStatus) &&
+                        matcherArbeidsgiver(utbGrad, arbeidsgiver) &&
+                        matcherArbeidsforholdReferanse(utbGrad, arbeidsforholdRef)).toList();
+    }
+
     private static boolean erArbeidstaker(UtbetalingsgradPrAktivitetDto ubtGrad, boolean ignorerIkkeYrkesaktivStatus) {
         if (ignorerIkkeYrkesaktivStatus) {
             return matcherStatusUtenIkkeYrkesaktiv(AktivitetStatus.ARBEIDSTAKER, ubtGrad.getUtbetalingsgradArbeidsforhold().getUttakArbeidType());
@@ -87,14 +95,14 @@ public class UtbetalingsgradTjeneste {
         return matcherStatus(AktivitetStatus.ARBEIDSTAKER, ubtGrad.getUtbetalingsgradArbeidsforhold().getUttakArbeidType());
     }
 
-    private static boolean matcherArbeidsforholdReferanse(BGAndelArbeidsforholdDto arbeidsforhold, UtbetalingsgradPrAktivitetDto utbGrad) {
-        return utbGrad.getUtbetalingsgradArbeidsforhold().getInternArbeidsforholdRef().gjelderFor(arbeidsforhold.getArbeidsforholdRef());
+    private static boolean matcherArbeidsforholdReferanse(UtbetalingsgradPrAktivitetDto utbGrad, InternArbeidsforholdRefDto arbeidsforholdRef) {
+        return utbGrad.getUtbetalingsgradArbeidsforhold().getInternArbeidsforholdRef().gjelderFor(arbeidsforholdRef);
     }
 
-    private static Boolean matcherArbeidsgiver(BGAndelArbeidsforholdDto arbeidsforhold, UtbetalingsgradPrAktivitetDto utbGrad) {
+    private static Boolean matcherArbeidsgiver(UtbetalingsgradPrAktivitetDto utbGrad, Arbeidsgiver arbeidsgiver) {
         return utbGrad.getUtbetalingsgradArbeidsforhold().getArbeidsgiver()
                 .map(Arbeidsgiver::getIdentifikator)
-                .map(id -> arbeidsforhold.getArbeidsgiver().getIdentifikator().equals(id))
+                .map(id -> arbeidsgiver.getIdentifikator().equals(id))
                 .orElse(false);
     }
 
