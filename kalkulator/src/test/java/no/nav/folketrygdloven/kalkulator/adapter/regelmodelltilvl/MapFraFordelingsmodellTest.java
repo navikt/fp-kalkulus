@@ -184,6 +184,7 @@ class MapFraFordelingsmodellTest {
         var regelBuilder = FordelAndelModell.builder()
                 .medAktivitetStatus(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.valueOf(aktivitetStatus.getKode()))
                 .medAndelNr(andelsnr)
+                .medUtbetalingsgrad(BigDecimal.valueOf(100))
                 .medInntektskategori(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektskategori.valueOf(ik.getKode()))
                 .medFordeltPrÅr(fordeltPrÅr == null ? null : BigDecimal.valueOf(fordeltPrÅr))
                 .medFordeltRefusjonPrÅr(fordeltRefPrÅr == null ? null : BigDecimal.valueOf(fordeltRefPrÅr));

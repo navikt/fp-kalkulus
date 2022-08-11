@@ -108,3 +108,5 @@ spec:
       value: "true"
     - name: REKURSIV_TASK_KOMPRIMERING_ENABLED
       value: "true"
+    - name: FORDELING_MED_GRADERING_ENABLED
+      value: "true"
