@@ -47,7 +47,7 @@ public class MapTilFordelingsmodell {
                 .medAktivitetStatus(regelstatus)
                 .medAndelNr(bgAndel.getAndelsnr())
                 .erSøktYtelseFor(erSøktYtelseFor(bgAndel, input))
-                .medUtbetalingsgrad(KonfigurasjonVerdi.get("FORDELING_MED_GRADERING_ENABLED", true) ? UtbetalingsgradTjeneste.finnUtbetalingsgradForAndel(bgAndel, bgAndel.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false) :  BigDecimal.valueOf(100))
+                .medUtbetalingsgrad(KonfigurasjonVerdi.get("FORDELING_MED_GRADERING_ENABLED", false) ? UtbetalingsgradTjeneste.finnUtbetalingsgradForAndel(bgAndel, bgAndel.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false) :  BigDecimal.valueOf(100))
                 .medInntektskategori(MapInntektskategoriFraVLTilRegel.map(bgAndel.getGjeldendeInntektskategori()));
         mapArbeidsforhold(bgAndel).ifPresent(regelBuilder::medArbeidsforhold);
         bgAndel.getBgAndelArbeidsforhold().ifPresent(arb -> regelBuilder.medGjeldendeRefusjonPrÅr(arb.getGjeldendeRefusjonPrÅr()));
