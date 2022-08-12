@@ -13,7 +13,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef(FagsakYtelseType.PLEIEPENGER_SYKT_BARN)
-@FagsakYtelseTypeRef(FagsakYtelseType.OPPLÆRINGSPENGER)
 public class PSBFordelBeregningsgrunnlagTjeneste implements FordelBeregningsgrunnlagTjeneste {
 
     private final TilkommetInntektPeriodeTjeneste periodeTjeneste = new TilkommetInntektPeriodeTjeneste();
