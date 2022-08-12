@@ -3,22 +3,22 @@ package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere;
 import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Any;
 import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
 import no.nav.folketrygdloven.kalkulator.felles.frist.InntektsmeldingMedRefusjonTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("FP")
-@FagsakYtelseTypeRef("SVP")
-@FagsakYtelseTypeRef("PSB")
-@FagsakYtelseTypeRef("PPN")
+@FagsakYtelseTypeRef(FagsakYtelseType.FORELDREPENGER)
+@FagsakYtelseTypeRef(FagsakYtelseType.SVANGERSKAPSPENGER)
+@FagsakYtelseTypeRef(FagsakYtelseType.PLEIEPENGER_SYKT_BARN)
+@FagsakYtelseTypeRef(FagsakYtelseType.OPPLÆRINGSPENGER)
+@FagsakYtelseTypeRef(FagsakYtelseType.PLEIEPENGER_NÆRSTÅENDE)
 @FaktaOmBeregningTilfelleRef("VURDER_REFUSJONSKRAV_SOM_HAR_KOMMET_FOR_SENT")
 public class VurderRefusjonskravTilfelleUtleder implements TilfelleUtleder {
 

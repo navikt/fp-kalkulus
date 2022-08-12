@@ -29,7 +29,7 @@ import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusMod
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("*")
+@FagsakYtelseTypeRef
 public class MapBeregningAktiviteterFraVLTilRegelFelles implements MapBeregningAktiviteterFraVLTilRegel {
 
     @Override

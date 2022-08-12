@@ -31,6 +31,12 @@ public class OpptjeningsaktiviteterPerYtelse {
                     OpptjeningAktivitetType.ARBEIDSAVKLARING,
                     OpptjeningAktivitetType.VENTELØNN_VARTPENGER,
                     OpptjeningAktivitetType.ETTERLØNN_SLUTTPAKKE),
+            FagsakYtelseType.OPPLÆRINGSPENGER, Set.of(
+                    OpptjeningAktivitetType.VIDERE_ETTERUTDANNING,
+                    OpptjeningAktivitetType.UTENLANDSK_ARBEIDSFORHOLD,
+                    OpptjeningAktivitetType.ARBEIDSAVKLARING,
+                    OpptjeningAktivitetType.VENTELØNN_VARTPENGER,
+                    OpptjeningAktivitetType.ETTERLØNN_SLUTTPAKKE),
             FagsakYtelseType.PLEIEPENGER_NÆRSTÅENDE, Set.of(
                     OpptjeningAktivitetType.VIDERE_ETTERUTDANNING,
                     OpptjeningAktivitetType.UTENLANDSK_ARBEIDSFORHOLD,

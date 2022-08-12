@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.input.OmsorgspengerGrunnlag;
@@ -20,20 +19,21 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
-@FagsakYtelseTypeRef("OMP")
+@FagsakYtelseTypeRef(FagsakYtelseType.OMSORGSPENGER)
 @ApplicationScoped
 public class FastsettGrunnlagOmsorgspenger extends FastsettGrunnlagGenerell {
 
     @Override
-    public boolean skalGrunnlagFastsettes(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagPrStatusOgAndelDto andel){
+    public boolean skalGrunnlagFastsettes(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagPrStatusOgAndelDto andel) {
         if (erBlittFastsattFør(andel)) {
             return true;
         }
-        if(!harForeslåttBeregning(input.getBeregningsgrunnlagGrunnlag())){
+        if (!harForeslåttBeregning(input.getBeregningsgrunnlagGrunnlag())) {
             return false;
         }
-        if(erBrukerKunArbeidstaker(input) && finnesKunFullRefusjon(input)) {
+        if (erBrukerKunArbeidstaker(input) && finnesKunFullRefusjon(input)) {
             return false;
         }
         return super.skalGrunnlagFastsettes(input, andel);
@@ -63,7 +63,7 @@ public class FastsettGrunnlagOmsorgspenger extends FastsettGrunnlagGenerell {
     }
 
     private static boolean girDirekteUtbetalingTilBruker(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagPeriodeDto periode) {
-        if(!harForeslåttBeregning(input.getBeregningsgrunnlagGrunnlag())){
+        if (!harForeslåttBeregning(input.getBeregningsgrunnlagGrunnlag())) {
             return false;
         }
         BigDecimal grenseverdi6G = input.getBeregningsgrunnlag().getGrunnbeløp().getVerdi().multiply(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi());
@@ -78,12 +78,12 @@ public class FastsettGrunnlagOmsorgspenger extends FastsettGrunnlagGenerell {
         return lavesteGrenseRefusjon.compareTo(avkortetTotaltGrunnlag) < 0;
     }
 
-    private static boolean erBrukerKunArbeidstaker(BeregningsgrunnlagGUIInput input){
+    private static boolean erBrukerKunArbeidstaker(BeregningsgrunnlagGUIInput input) {
         return input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .allMatch(a -> AktivitetStatus.ARBEIDSTAKER.equals(a.getAktivitetStatus()));
     }
 
-    private static boolean harForeslåttBeregning(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto){
+    private static boolean harForeslåttBeregning(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto) {
         return !beregningsgrunnlagGrunnlagDto.getBeregningsgrunnlagTilstand().erFør(BeregningsgrunnlagTilstand.FORESLÅTT);
     }
 

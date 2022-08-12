@@ -37,7 +37,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Vilkårsavslagsårsak;
 import no.nav.fpsak.nare.evaluation.Evaluation;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("*")
+@FagsakYtelseTypeRef
 public class VurderBeregningsgrunnlagTjeneste {
 
     protected static final Set<BeregningUtfallÅrsak> AVSLAGSÅRSAKER = Set.of(BeregningUtfallÅrsak.AVSLAG_UNDER_HALV_G,

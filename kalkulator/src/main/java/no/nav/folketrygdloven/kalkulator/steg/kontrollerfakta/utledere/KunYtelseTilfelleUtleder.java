@@ -23,7 +23,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("*")
+@FagsakYtelseTypeRef
 @FaktaOmBeregningTilfelleRef("FASTSETT_BG_KUN_YTELSE")
 public class KunYtelseTilfelleUtleder implements TilfelleUtleder {
 
@@ -62,7 +62,6 @@ public class KunYtelseTilfelleUtleder implements TilfelleUtleder {
                 .filter(y -> !y.getYtelseType().equals(FagsakYtelseType.DAGPENGER) && !y.getYtelseType().equals(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER))
                 .filter(y -> y.getPeriode().getTomDato().isAfter(beregningsgrunnlag.getSkjæringstidspunkt().minusMonths(3).withDayOfMonth(1)));
     }
-
 
 
     private boolean erBasertPåDagpenger(YtelseDto y) {

@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag;
@@ -21,9 +20,10 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningVilkårResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.steg.fullføre.ytelse.utbgrad.FullføreBeregningsgrunnlagUtbgrad;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.fpsak.nare.evaluation.Evaluation;
 
-@FagsakYtelseTypeRef("FRISINN")
+@FagsakYtelseTypeRef(FagsakYtelseType.FRISINN)
 @ApplicationScoped
 public class FullføreBeregningsgrunnlagFRISINN extends FullføreBeregningsgrunnlagUtbgrad {
 
@@ -35,7 +35,7 @@ public class FullføreBeregningsgrunnlagFRISINN extends FullføreBeregningsgrunn
 
     @Inject
     public FullføreBeregningsgrunnlagFRISINN(MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel,
-                                             @FagsakYtelseTypeRef("FRISINN") VurderBeregningsgrunnlagTjenesteFRISINN vurderBeregningsgrunnlagTjeneste) {
+                                             @FagsakYtelseTypeRef(FagsakYtelseType.FRISINN) VurderBeregningsgrunnlagTjenesteFRISINN vurderBeregningsgrunnlagTjeneste) {
         super(mapBeregningsgrunnlagFraVLTilRegel);
         this.vurderBeregningsgrunnlagTjeneste = vurderBeregningsgrunnlagTjeneste;
     }

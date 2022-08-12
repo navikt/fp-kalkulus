@@ -25,7 +25,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("*")
+@FagsakYtelseTypeRef
 public class BeregningsperiodeTjeneste {
 
     public static final String INNTEKT_RAPPORTERING_FRIST_DATO = "inntekt.rapportering.frist.dato";
@@ -73,9 +73,9 @@ public class BeregningsperiodeTjeneste {
     }
 
     public static Optional<LocalDate> skalVentePåInnrapporteringAvInntektFL(BeregningsgrunnlagInput input,
-                                                                          LocalDate dagensDato,
-                                                                          BeregningAktivitetAggregatDto aktivitetAggregatDto,
-                                                                          LocalDate skjæringstidspunktForBeregning) {
+                                                                            LocalDate dagensDato,
+                                                                            BeregningAktivitetAggregatDto aktivitetAggregatDto,
+                                                                            LocalDate skjæringstidspunktForBeregning) {
         if (!erPåvirketAvInntektsrapporteringsfrist(input, dagensDato, aktivitetAggregatDto, skjæringstidspunktForBeregning)) {
             return Optional.empty();
         }

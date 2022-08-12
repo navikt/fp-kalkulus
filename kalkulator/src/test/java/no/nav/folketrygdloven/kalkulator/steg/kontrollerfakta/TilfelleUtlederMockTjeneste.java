@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.enterprise.inject.Instance;
-
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere.ArbeidstakerOgFrilanserISammeOrganisasjonTilfelleUtleder;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere.EtterlønnSluttpakkeTilfelleUtleder;
@@ -29,7 +28,7 @@ public class TilfelleUtlederMockTjeneste {
         Instance<TilfelleUtleder> emptyMockInstances = mock(Instance.class);
         mockInstance(utlederInstances);
         when(utlederInstances.select(any())).thenReturn(emptyMockInstances);
-        when(utlederInstances.select(new FagsakYtelseTypeRef.FagsakYtelseTypeRefLiteral("*"))).thenReturn(utlederInstances);
+        when(utlederInstances.select(new FagsakYtelseTypeRef.FagsakYtelseTypeRefLiteral())).thenReturn(utlederInstances);
         return utlederInstances;
     }
 

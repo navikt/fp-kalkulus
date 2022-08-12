@@ -5,7 +5,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
@@ -16,7 +15,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("*")
+@FagsakYtelseTypeRef
 @FaktaOmBeregningTilfelleRef("VURDER_MILITÆR_SIVILTJENESTE")
 public class VurderMilitærTilfelleUtleder implements TilfelleUtleder {
 
@@ -26,12 +25,12 @@ public class VurderMilitærTilfelleUtleder implements TilfelleUtleder {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElse(null);
         Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
         return harOppgittMilitærIOpptjeningsperioden(input.getOpptjeningAktiviteterForBeregning()) ?
-            Optional.of(FaktaOmBeregningTilfelle.VURDER_MILITÆR_SIVILTJENESTE) : Optional.empty();
+                Optional.of(FaktaOmBeregningTilfelle.VURDER_MILITÆR_SIVILTJENESTE) : Optional.empty();
     }
 
     private static boolean harOppgittMilitærIOpptjeningsperioden(Collection<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> opptjeningRelevantForBeregning) {
         return opptjeningRelevantForBeregning.stream()
-            .anyMatch(opptjening -> opptjening.getOpptjeningAktivitetType().equals(OpptjeningAktivitetType.MILITÆR_ELLER_SIVILTJENESTE));
+                .anyMatch(opptjening -> opptjening.getOpptjeningAktivitetType().equals(OpptjeningAktivitetType.MILITÆR_ELLER_SIVILTJENESTE));
     }
 
 }

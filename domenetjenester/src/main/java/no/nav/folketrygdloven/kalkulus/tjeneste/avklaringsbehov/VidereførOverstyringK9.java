@@ -9,12 +9,14 @@ import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("PSB")
-@FagsakYtelseTypeRef("PPN")
-@FagsakYtelseTypeRef("OMP")
-@FagsakYtelseTypeRef("FRISINN")
+@FagsakYtelseTypeRef(FagsakYtelseType.PLEIEPENGER_SYKT_BARN)
+@FagsakYtelseTypeRef(FagsakYtelseType.OPPLÆRINGSPENGER)
+@FagsakYtelseTypeRef(FagsakYtelseType.PLEIEPENGER_NÆRSTÅENDE)
+@FagsakYtelseTypeRef(FagsakYtelseType.OMSORGSPENGER)
+@FagsakYtelseTypeRef(FagsakYtelseType.FRISINN)
 public class VidereførOverstyringK9 implements VidereførOverstyring {
 
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
@@ -27,9 +29,10 @@ public class VidereførOverstyringK9 implements VidereførOverstyring {
         this.avklaringsbehovTjeneste = avklaringsbehovTjeneste;
     }
 
-    /** K9 har gått bort fra å videreføre overstyring av beregningsaktiviteter.
+    /**
+     * K9 har gått bort fra å videreføre overstyring av beregningsaktiviteter.
      *
-     * @param koblingId Kobling Id
+     * @param koblingId     Kobling Id
      * @param beregningSteg Steg
      * @return Overstyring avklaringsbehov
      */

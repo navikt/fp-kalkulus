@@ -20,13 +20,12 @@ import jakarta.enterprise.inject.Stereotype;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.enterprise.util.AnnotationLiteral;
 import jakarta.inject.Qualifier;
-
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 /**
  * Marker type som implementerer interface {@link BehandlingSteg} for å skille ulike implementasjoner av samme steg for ulike ytelser (eks.
  * Foreldrepenger vs. Engangsstønad).<br>
- *
+ * <p>
  * NB: Settes kun dersom det er flere implementasjoner med samme {@link BehandlingStegRef}.
  */
 @Repeatable(FagsakYtelseTypeRef.ContainerOfFagsakYtelseTypeRef.class)
@@ -34,7 +33,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 @Stereotype
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.PARAMETER, ElementType.FIELD, ElementType.METHOD })
+@Target({ElementType.TYPE, ElementType.PARAMETER, ElementType.FIELD, ElementType.METHOD})
 @Documented
 public @interface FagsakYtelseTypeRef {
 
@@ -45,27 +44,25 @@ public @interface FagsakYtelseTypeRef {
      *
      * @see no.nav.folketrygdloven.kalkulus.kodeverk.behandlingslager.fagsak.FagsakYtelseType
      */
-    String value() default "*";
+    FagsakYtelseType value() default FagsakYtelseType.UDEFINERT;
 
-    /** AnnotationLiteral som kan brukes ved CDI søk. */
+    /**
+     * AnnotationLiteral som kan brukes ved CDI søk.
+     */
     public static class FagsakYtelseTypeRefLiteral extends AnnotationLiteral<FagsakYtelseTypeRef> implements FagsakYtelseTypeRef {
 
-        private String navn;
+        private FagsakYtelseType navn;
 
         public FagsakYtelseTypeRefLiteral() {
-            this("*");
-        }
-
-        public FagsakYtelseTypeRefLiteral(String navn) {
-            this.navn = navn;
+            this(FagsakYtelseType.UDEFINERT);
         }
 
         public FagsakYtelseTypeRefLiteral(FagsakYtelseType ytelseType) {
-            this.navn = (ytelseType == null ? "*" : ytelseType.getKode());
+            this.navn = (ytelseType == null ? FagsakYtelseType.UDEFINERT : ytelseType);
         }
 
         @Override
-        public String value() {
+        public FagsakYtelseType value() {
             return navn;
         }
 
@@ -77,16 +74,8 @@ public @interface FagsakYtelseTypeRef {
         private Lookup() {
         }
 
-        public static <I> Optional<I> find(Class<I> cls, String ytelseTypeKode) {
-            return find(cls, (CDI<I>) CDI.current(), ytelseTypeKode);
-        }
-
         public static <I> Optional<I> find(Class<I> cls, FagsakYtelseType ytelseTypeKode) {
-            return find(cls, (CDI<I>) CDI.current(), ytelseTypeKode.getKode());
-        }
-
-        public static <I> Optional<I> find(Class<I> cls, Instance<I> instances, FagsakYtelseType ytelseTypeKode) {
-            return find(cls, instances, ytelseTypeKode.getKode());
+            return find(cls, (CDI<I>) CDI.current(), ytelseTypeKode);
         }
 
         /**
@@ -94,13 +83,13 @@ public @interface FagsakYtelseTypeRef {
          * injected med riktig forventet klassetype og @Any qualifier.
          */
         public static <I> Optional<I> find(Instance<I> instances, FagsakYtelseType ytelseTypeKode) {
-            return find(null, instances, ytelseTypeKode.getKode());
+            return find(null, instances, ytelseTypeKode);
         }
 
-        public static <I> Optional<I> find(Class<I> cls, Instance<I> instances, String ytelseTypeKode) {
+        public static <I> Optional<I> find(Class<I> cls, Instance<I> instances, FagsakYtelseType ytelseTypeKode) {
             Objects.requireNonNull(instances, "instances");
 
-            for (var fagsakLiteral : coalesce(ytelseTypeKode, "*")) {
+            for (var fagsakLiteral : coalesce(ytelseTypeKode, FagsakYtelseType.UDEFINERT)) {
                 var inst = select(cls, instances, new FagsakYtelseTypeRefLiteral(fagsakLiteral));
                 if (inst.isResolvable()) {
                     return Optional.of(getInstance(inst));
@@ -116,21 +105,21 @@ public @interface FagsakYtelseTypeRef {
 
         private static <I> Instance<I> select(Class<I> cls, Instance<I> instances, Annotation anno) {
             return cls != null
-                ? instances.select(cls, anno)
-                : instances.select(anno);
+                    ? instances.select(cls, anno)
+                    : instances.select(anno);
         }
 
         private static <I> I getInstance(Instance<I> inst) {
             var i = inst.get();
             if (i.getClass().isAnnotationPresent(Dependent.class)) {
                 throw new IllegalStateException(
-                    "Kan ikke ha @Dependent scope bean ved Instance lookup dersom en ikke også håndtere lifecycle selv: " + i.getClass());
+                        "Kan ikke ha @Dependent scope bean ved Instance lookup dersom en ikke også håndtere lifecycle selv: " + i.getClass());
             }
             return i;
         }
 
-        private static List<String> coalesce(String... vals) {
-            return Arrays.asList(vals).stream().filter(v -> v != null).distinct().collect(Collectors.toList());
+        private static List<FagsakYtelseType> coalesce(FagsakYtelseType... vals) {
+            return Arrays.stream(vals).filter(Objects::nonNull).distinct().collect(Collectors.toList());
         }
     }
 
@@ -141,7 +130,7 @@ public @interface FagsakYtelseTypeRef {
      */
     @Inherited
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ ElementType.TYPE, ElementType.PARAMETER, ElementType.FIELD })
+    @Target({ElementType.TYPE, ElementType.PARAMETER, ElementType.FIELD})
     @Documented
     public @interface ContainerOfFagsakYtelseTypeRef {
         FagsakYtelseTypeRef[] value();

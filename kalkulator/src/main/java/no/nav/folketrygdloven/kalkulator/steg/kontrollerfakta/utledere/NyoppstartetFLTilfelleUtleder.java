@@ -4,7 +4,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
@@ -15,7 +14,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("*")
+@FagsakYtelseTypeRef
 @FaktaOmBeregningTilfelleRef("VURDER_NYOPPSTARTET_FL")
 public class NyoppstartetFLTilfelleUtleder implements TilfelleUtleder {
 
@@ -25,7 +24,7 @@ public class NyoppstartetFLTilfelleUtleder implements TilfelleUtleder {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElse(null);
         Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
         return KontrollerFaktaBeregningFrilanserTjeneste.erNyoppstartetFrilanser(beregningsgrunnlagGrunnlag, input.getIayGrunnlag()) ?
-            Optional.of(FaktaOmBeregningTilfelle.VURDER_NYOPPSTARTET_FL) : Optional.empty();
+                Optional.of(FaktaOmBeregningTilfelle.VURDER_NYOPPSTARTET_FL) : Optional.empty();
     }
 
 }

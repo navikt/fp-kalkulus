@@ -8,7 +8,6 @@ import java.util.Set;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
@@ -27,6 +26,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.mapFraEntitet.BehandlingslagerTilKalkulusMapper;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 
@@ -44,7 +44,7 @@ public class KontrollerBeregningsinputTjeneste {
     @Inject
     public KontrollerBeregningsinputTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository,
                                              StegProsessInputTjeneste stegProsessInputTjeneste,
-                                             @FagsakYtelseTypeRef("FRISINN") ForeslåBeregningsgrunnlagFRISINN foreslåBeregningsgrunnlag) {
+                                             @FagsakYtelseTypeRef(FagsakYtelseType.FRISINN) ForeslåBeregningsgrunnlagFRISINN foreslåBeregningsgrunnlag) {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.stegProsessInputTjeneste = stegProsessInputTjeneste;
         this.foreslåBeregningsgrunnlag = foreslåBeregningsgrunnlag;

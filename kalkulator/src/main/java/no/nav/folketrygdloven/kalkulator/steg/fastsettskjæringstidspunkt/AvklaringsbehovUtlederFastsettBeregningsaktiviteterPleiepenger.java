@@ -26,8 +26,9 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningVenteårsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("PSB")
-@FagsakYtelseTypeRef("PPN")
+@FagsakYtelseTypeRef(FagsakYtelseType.PLEIEPENGER_SYKT_BARN)
+@FagsakYtelseTypeRef(FagsakYtelseType.OPPLÆRINGSPENGER)
+@FagsakYtelseTypeRef(FagsakYtelseType.PLEIEPENGER_NÆRSTÅENDE)
 public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterPleiepenger implements AvklaringsbehovUtlederFastsettBeregningsaktiviteter {
 
     private static List<BeregningAvklaringsbehovResultat> utledAvklaringsbehovForPleiepenger(BeregningAktivitetAggregatDto beregningAktivitetAggregat,

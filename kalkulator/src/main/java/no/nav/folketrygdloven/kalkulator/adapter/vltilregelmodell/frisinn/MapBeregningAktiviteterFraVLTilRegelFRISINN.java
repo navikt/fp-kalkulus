@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Aktivitet;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
@@ -20,13 +19,14 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("FRISINN")
+@FagsakYtelseTypeRef(FagsakYtelseType.FRISINN)
 public class MapBeregningAktiviteterFraVLTilRegelFRISINN implements MapBeregningAktiviteterFraVLTilRegel {
 
     public static final String INGEN_AKTIVITET_MELDING = "Må ha aktiviteter for å sette status.";
@@ -79,9 +79,9 @@ public class MapBeregningAktiviteterFraVLTilRegelFRISINN implements MapBeregning
 
     private boolean harOppgittFLEtterStpOpptjening(LocalDate opptjeningSkjæringstidspunkt, Optional<OppgittOpptjeningDto> oppgittOpptjening) {
         return oppgittOpptjening.flatMap(OppgittOpptjeningDto::getFrilans)
-                    .filter(fl -> fl.getOppgittFrilansInntekt().stream()
-                            .anyMatch(ip -> !ip.getPeriode().getTomDato().isBefore(opptjeningSkjæringstidspunkt)))
-                    .isPresent();
+                .filter(fl -> fl.getOppgittFrilansInntekt().stream()
+                        .anyMatch(ip -> !ip.getPeriode().getTomDato().isBefore(opptjeningSkjæringstidspunkt)))
+                .isPresent();
     }
 
     private boolean harOppgittSNEtterStpOpptjening(LocalDate opptjeningSkjæringstidspunkt, Optional<OppgittOpptjeningDto> oppgittOpptjening) {
@@ -111,7 +111,8 @@ public class MapBeregningAktiviteterFraVLTilRegelFRISINN implements MapBeregning
             var opptjeningArbeidsforhold = opptjeningsperiode.getArbeidsforholdId();
             return LagAktivPeriodeForArbeidstakerFelles.lagAktivPeriodeForArbeidstaker(inntektsmeldinger, regelPeriode, opptjeningArbeidsgiverAktørId,
                     opptjeningArbeidsgiverOrgnummer, opptjeningArbeidsforhold);
-        } if (Aktivitet.NÆRINGSINNTEKT.equals(aktivitetType)) {
+        }
+        if (Aktivitet.NÆRINGSINNTEKT.equals(aktivitetType)) {
             return AktivPeriode.forAndre(aktivitetType, harSNEtterStp ? utvidetPeriode : regelPeriode);
         } else {
             return AktivPeriode.forAndre(aktivitetType, regelPeriode);

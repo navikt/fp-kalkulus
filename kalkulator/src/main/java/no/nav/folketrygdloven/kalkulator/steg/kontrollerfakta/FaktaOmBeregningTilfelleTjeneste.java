@@ -9,7 +9,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Any;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
@@ -38,12 +37,12 @@ public class FaktaOmBeregningTilfelleTjeneste {
     /**
      * Finner tilfeller i fakta om beregning som gir grunnlag for manuell behandling.
      *
-     * @param input Beregningsgrunnlaginput
+     * @param input                      Beregningsgrunnlaginput
      * @param beregningsgrunnlagGrunnlag Beregningsgrunnlag
      * @return Liste med tilfeller
      */
     public List<FaktaOmBeregningTilfelle> finnTilfellerForFellesAvklaringsbehov(FaktaOmBeregningInput input,
-                                                                             BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
+                                                                                BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
         List<FaktaOmBeregningTilfelle> tilfeller = new ArrayList<>();
         List<TilfelleUtleder> utledere = finnUtledere(input.getFagsakYtelseType());
         for (TilfelleUtleder utleder : utledere) {
@@ -67,7 +66,7 @@ public class FaktaOmBeregningTilfelleTjeneste {
     }
 
     private Instance<TilfelleUtleder> finnYtelsesspesifikkeUtledere(FagsakYtelseType ytelseType) {
-        return this.tilfelleUtledere.select(new FagsakYtelseTypeRef.FagsakYtelseTypeRefLiteral(ytelseType.getKode()));
+        return this.tilfelleUtledere.select(new FagsakYtelseTypeRef.FagsakYtelseTypeRefLiteral(ytelseType));
     }
 
     private void leggTilDefaultOmDetIkkeFinnesSpesifikkPerTilfelle(Instance<TilfelleUtleder> spesifikkeYtelseInstanser, List<TilfelleUtleder> utledere) {
@@ -80,7 +79,7 @@ public class FaktaOmBeregningTilfelleTjeneste {
     }
 
     private Instance<TilfelleUtleder> finnDefaultInstanserAvUtledere() {
-        return this.tilfelleUtledere.select(new FagsakYtelseTypeRef.FagsakYtelseTypeRefLiteral("*"));
+        return this.tilfelleUtledere.select(new FagsakYtelseTypeRef.FagsakYtelseTypeRefLiteral());
     }
 
     private boolean harIkkeYtelsesspesifikkImplementasjon(Instance<TilfelleUtleder> spesifikkeYtelseInstanser, TilfelleUtleder defaultInstans) {

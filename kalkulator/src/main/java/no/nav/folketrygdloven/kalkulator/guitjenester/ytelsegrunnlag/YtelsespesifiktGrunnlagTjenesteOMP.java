@@ -3,22 +3,22 @@ package no.nav.folketrygdloven.kalkulator.guitjenester.ytelsegrunnlag;
 import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FastsettGrunnlagOmsorgspenger;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.OmsorgspengeGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.YtelsespesifiktGrunnlagDto;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("OMP")
-public class YtelsespesifiktGrunnlagTjenesteOMP implements YtelsespesifiktGrunnlagTjeneste{
+@FagsakYtelseTypeRef(FagsakYtelseType.OMSORGSPENGER)
+public class YtelsespesifiktGrunnlagTjenesteOMP implements YtelsespesifiktGrunnlagTjeneste {
 
     @Override
-    public Optional<YtelsespesifiktGrunnlagDto> map(BeregningsgrunnlagGUIInput input){
+    public Optional<YtelsespesifiktGrunnlagDto> map(BeregningsgrunnlagGUIInput input) {
         var beregningsgrunnlag = input.getBeregningsgrunnlagGrunnlag();
         var omsorgspengeGrunnlagDto = new OmsorgspengeGrunnlagDto();
 
@@ -29,11 +29,11 @@ public class YtelsespesifiktGrunnlagTjenesteOMP implements YtelsespesifiktGrunnl
         return Optional.of(omsorgspengeGrunnlagDto);
     }
 
-    private boolean harForeslåttBeregning(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto){
+    private boolean harForeslåttBeregning(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto) {
         return !beregningsgrunnlagGrunnlagDto.getBeregningsgrunnlagTilstand().erFør(BeregningsgrunnlagTilstand.FORESLÅTT);
     }
 
-    private static boolean erBrukerKunArbeidstaker(BeregningsgrunnlagGUIInput input){
+    private static boolean erBrukerKunArbeidstaker(BeregningsgrunnlagGUIInput input) {
         return input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .allMatch(a -> AktivitetStatus.ARBEIDSTAKER.equals(a.getAktivitetStatus()));
     }

@@ -5,16 +5,16 @@ import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsp
 import java.util.Collection;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.FastsettBeregningsperiode;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("FRISINN")
+@FagsakYtelseTypeRef(FagsakYtelseType.FRISINN)
 public class FastsettBeregningsperiodeTjenesteFRISINN implements FastsettBeregningsperiode {
 
     private final BeregningsperiodeTjeneste beregningsperiodeTjeneste = new BeregningsperiodeTjenesteFRISINN();

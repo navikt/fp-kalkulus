@@ -146,6 +146,7 @@ public class MapFraKalkulator {
             case FORELDREPENGER -> mapForeldrepengerGrunnlag(ytelsespesifiktGrunnlag);
             case SVANGERSKAPSPENGER -> mapSvangerskapspengerGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.SvangerskapspengerGrunnlag) ytelsespesifiktGrunnlag);
             case PLEIEPENGER_SYKT_BARN -> mapPleiepengerSyktBarnGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.PleiepengerSyktBarnGrunnlag) ytelsespesifiktGrunnlag);
+            case OPPLÆRINGSPENGER -> OpplæringspengerGrunnlagMapper.mapGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.OpplæringspengerGrunnlag) ytelsespesifiktGrunnlag);
             case PLEIEPENGER_NÆRSTÅENDE -> mapPleiepengerNærståendeGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.PleiepengerNærståendeGrunnlag) ytelsespesifiktGrunnlag);
             case FRISINN -> mapFrisinnGrunnlag(iayGrunnlag, beregningsgrunnlagGrunnlagEntitet, (no.nav.folketrygdloven.kalkulus.beregning.v1.FrisinnGrunnlag) ytelsespesifiktGrunnlag);
             case OMSORGSPENGER -> mapOmsorgspengegrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.OmsorgspengerGrunnlag) ytelsespesifiktGrunnlag);

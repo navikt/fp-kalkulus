@@ -25,7 +25,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningVenteårsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("FP")
+@FagsakYtelseTypeRef(FagsakYtelseType.FORELDREPENGER)
 public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterFP implements AvklaringsbehovUtlederFastsettBeregningsaktiviteter {
 
     private static List<BeregningAvklaringsbehovResultat> utledAvklaringsbehovFP(BeregningAktivitetAggregatDto beregningAktivitetAggregat,

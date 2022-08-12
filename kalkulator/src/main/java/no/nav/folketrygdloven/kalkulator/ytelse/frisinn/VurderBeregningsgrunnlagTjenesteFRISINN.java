@@ -30,11 +30,12 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningVilkårResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.vilkår.VurderBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Vilkårsavslagsårsak;
 import no.nav.fpsak.nare.evaluation.Evaluation;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("FRISINN")
+@FagsakYtelseTypeRef(FagsakYtelseType.FRISINN)
 public class VurderBeregningsgrunnlagTjenesteFRISINN extends VurderBeregningsgrunnlagTjeneste {
 
     public VurderBeregningsgrunnlagTjenesteFRISINN() {
@@ -77,8 +78,8 @@ public class VurderBeregningsgrunnlagTjenesteFRISINN extends VurderBeregningsgru
 
     @Override
     protected List<BeregningVilkårResultat> mapTilVilkårResultatListe(List<RegelResultat> regelResultater,
-                                                                    BeregningsgrunnlagDto beregningsgrunnlag,
-                                                                    YtelsespesifiktGrunnlag ytelsesSpesifiktGrunnlag) {
+                                                                      BeregningsgrunnlagDto beregningsgrunnlag,
+                                                                      YtelsespesifiktGrunnlag ytelsesSpesifiktGrunnlag) {
         FrisinnGrunnlag frisinnGrunnlag = (FrisinnGrunnlag) ytelsesSpesifiktGrunnlag;
         List<BeregningVilkårResultat> vilkårsResultatListe = new ArrayList<>();
         Iterator<RegelResultat> regelResultatIterator = regelResultater.iterator();

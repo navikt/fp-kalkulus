@@ -11,17 +11,20 @@ import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("SVP")
-@FagsakYtelseTypeRef("PSB")
-@FagsakYtelseTypeRef("PPN")
-@FagsakYtelseTypeRef("OMP")
+@FagsakYtelseTypeRef(FagsakYtelseType.SVANGERSKAPSPENGER)
+@FagsakYtelseTypeRef(FagsakYtelseType.PLEIEPENGER_SYKT_BARN)
+@FagsakYtelseTypeRef(FagsakYtelseType.OPPLÆRINGSPENGER)
+@FagsakYtelseTypeRef(FagsakYtelseType.PLEIEPENGER_NÆRSTÅENDE)
+@FagsakYtelseTypeRef(FagsakYtelseType.OMSORGSPENGER)
 public class FastsettBeregningsperiodeTjeneste implements FastsettBeregningsperiode {
 
     private final BeregningsperiodeTjeneste beregningsperiodeTjeneste = new BeregningsperiodeTjeneste();
 
-    public FastsettBeregningsperiodeTjeneste() {}
+    public FastsettBeregningsperiodeTjeneste() {
+    }
 
     public BeregningsgrunnlagDto fastsettBeregningsperiode(BeregningsgrunnlagDto beregningsgrunnlag,
                                                            InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
@@ -37,7 +40,6 @@ public class FastsettBeregningsperiodeTjeneste implements FastsettBeregningsperi
             return fastsattForATFL;
         }
     }
-
 
 
 }

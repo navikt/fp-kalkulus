@@ -20,11 +20,12 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.MapRefusjonPerioderFraVLTilRegelUtbgrad;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 import no.nav.fpsak.tidsserie.StandardCombinators;
 
-@FagsakYtelseTypeRef("SVP")
+@FagsakYtelseTypeRef(FagsakYtelseType.SVANGERSKAPSPENGER)
 @ApplicationScoped
 public class MapRefusjonPerioderFraVLTilRegelSVP extends MapRefusjonPerioderFraVLTilRegelUtbgrad {
 
@@ -36,7 +37,7 @@ public class MapRefusjonPerioderFraVLTilRegelSVP extends MapRefusjonPerioderFraV
     /**
      * Finner gyldige perioder for refusjon basert på perioder med utbetalingsgrad og inntektsmeldingsdata
      *
-     * @param startDato      Startdato for permisjonen for ytelse søkt for
+     * @param startDato               Startdato for permisjonen for ytelse søkt for
      * @param ytelsespesifiktGrunnlag Ytelsesspesifikt grunnlag
      * @param inntektsmelding         inntektsmelding
      * @param ansattperioder          Ansettelsesperioder

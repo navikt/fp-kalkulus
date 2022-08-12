@@ -45,7 +45,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("FRISINN")
+@FagsakYtelseTypeRef(FagsakYtelseType.FRISINN)
 public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLTilRegel {
 
     public static final int MÅNEDER_FØR_STP = 36;
@@ -133,9 +133,9 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
         ytelseFilter.getAlleYtelser().stream()
                 .filter(y -> !y.getYtelseType().equals(FagsakYtelseType.FRISINN))
                 .forEach(ytelse -> ytelse.getYtelseAnvist().stream()
-                    .filter(ytelseAnvistDto -> !ytelseAnvistDto.getAnvistTOM().isBefore(skjæringstidspunktOpptjening.minusMonths(MÅNEDER_FØR_STP)))
-                .filter(this::harHattUtbetalingForPeriode)
-                .forEach(anvist -> inntektsgrunnlag.leggTilPeriodeinntekt(byggPeriodeinntektForYtelse(anvist, ytelse.getVedtaksDagsats(), ytelse.getYtelseType()))));
+                        .filter(ytelseAnvistDto -> !ytelseAnvistDto.getAnvistTOM().isBefore(skjæringstidspunktOpptjening.minusMonths(MÅNEDER_FØR_STP)))
+                        .filter(this::harHattUtbetalingForPeriode)
+                        .forEach(anvist -> inntektsgrunnlag.leggTilPeriodeinntekt(byggPeriodeinntektForYtelse(anvist, ytelse.getVedtaksDagsats(), ytelse.getYtelseType()))));
     }
 
     private boolean harHattUtbetalingForPeriode(YtelseAnvistDto ytelse) {
@@ -146,7 +146,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
 
     private Periodeinntekt byggPeriodeinntektForYtelse(YtelseAnvistDto anvist, Optional<Beløp> vedtaksDagsats, FagsakYtelseType ytelsetype) {
         return Periodeinntekt.builder()
-                .medInntektskildeOgPeriodeType(erAAPEllerDP(ytelsetype) ? Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP: Inntektskilde.ANNEN_YTELSE)
+                .medInntektskildeOgPeriodeType(erAAPEllerDP(ytelsetype) ? Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP : Inntektskilde.ANNEN_YTELSE)
                 .medInntekt(finnBeløp(anvist, vedtaksDagsats))
                 .medUtbetalingsfaktor(erAAPEllerDP(ytelsetype) ? anvist.getUtbetalingsgradProsent().map(Stillingsprosent::getVerdi)
                         .map(s -> s.divide(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG, 10, RoundingMode.HALF_UP)).orElseThrow() : BigDecimal.ONE)

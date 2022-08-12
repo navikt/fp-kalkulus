@@ -6,15 +6,15 @@ import java.util.List;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.AvklaringsbehovutledertjenesteVurderRefusjon;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("FRISINN")
+@FagsakYtelseTypeRef(FagsakYtelseType.FRISINN)
 public class AvklaringsbehovutledertjenesteVurderRefusjonFRISINN implements AvklaringsbehovutledertjenesteVurderRefusjon {
 
     @Inject
@@ -23,7 +23,7 @@ public class AvklaringsbehovutledertjenesteVurderRefusjonFRISINN implements Avkl
 
     @Override
     public List<BeregningAvklaringsbehovResultat> utledAvklaringsbehov(BeregningsgrunnlagInput input,
-                                                                   BeregningsgrunnlagDto periodisertMedRefusjonOgGradering) {
+                                                                       BeregningsgrunnlagDto periodisertMedRefusjonOgGradering) {
         return Collections.emptyList();
     }
 }

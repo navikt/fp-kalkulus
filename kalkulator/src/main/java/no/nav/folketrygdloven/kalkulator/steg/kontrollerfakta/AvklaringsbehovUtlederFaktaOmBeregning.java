@@ -7,7 +7,6 @@ import java.util.Objects;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -18,7 +17,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("*")
+@FagsakYtelseTypeRef
 public class AvklaringsbehovUtlederFaktaOmBeregning {
 
     protected FaktaOmBeregningTilfelleTjeneste faktaOmBeregningTilfelleTjeneste;
@@ -33,8 +32,8 @@ public class AvklaringsbehovUtlederFaktaOmBeregning {
     }
 
     public FaktaOmBeregningAvklaringsbehovResultat utledAvklaringsbehovFor(FaktaOmBeregningInput input,
-                                                                       BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag,
-                                                                       boolean erOverstyrt) {
+                                                                           BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag,
+                                                                           boolean erOverstyrt) {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElse(null);
         Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
 
@@ -42,12 +41,12 @@ public class AvklaringsbehovUtlederFaktaOmBeregning {
 
         if (erOverstyrt) {
             return new FaktaOmBeregningAvklaringsbehovResultat(singletonList(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.OVERSTYRING_AV_BEREGNINGSGRUNNLAG)),
-                faktaOmBeregningTilfeller);
+                    faktaOmBeregningTilfeller);
         }
         if (faktaOmBeregningTilfeller.isEmpty()) {
             return FaktaOmBeregningAvklaringsbehovResultat.INGEN_AKSJONSPUNKTER;
         }
         return new FaktaOmBeregningAvklaringsbehovResultat(singletonList(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.VURDER_FAKTA_FOR_ATFL_SN)),
-            faktaOmBeregningTilfeller);
+                faktaOmBeregningTilfeller);
     }
 }

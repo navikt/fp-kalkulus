@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
@@ -15,15 +14,16 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AvklaringsbehovUtlederFastsettBeregningsaktiviteter;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningVenteårsak;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("FRISINN")
+@FagsakYtelseTypeRef(FagsakYtelseType.FRISINN)
 public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterFRISINN implements AvklaringsbehovUtlederFastsettBeregningsaktiviteter {
 
     @Override
     public List<BeregningAvklaringsbehovResultat> utledAvklaringsbehov(BeregningsgrunnlagRegelResultat regelResultat,
-                                                                   BeregningsgrunnlagInput input,
-                                                                   boolean erOverstyrt) {
+                                                                       BeregningsgrunnlagInput input,
+                                                                       boolean erOverstyrt) {
         if (regelResultat.getBeregningsgrunnlagHvisFinnes().isEmpty()) {
             if (regelResultat.getAvklaringsbehov().stream().anyMatch(bar -> bar.getBeregningAvklaringsbehovDefinisjon().equals(AvklaringsbehovDefinisjon.AUTO_VENT_FRISINN))) {
                 return List.of(BeregningAvklaringsbehovResultat.opprettMedFristFor(

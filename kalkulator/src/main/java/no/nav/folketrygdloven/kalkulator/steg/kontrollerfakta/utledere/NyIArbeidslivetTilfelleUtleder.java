@@ -4,7 +4,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
@@ -15,7 +14,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("*")
+@FagsakYtelseTypeRef
 @FaktaOmBeregningTilfelleRef("VURDER_SN_NY_I_ARBEIDSLIVET")
 public class NyIArbeidslivetTilfelleUtleder implements TilfelleUtleder {
 
@@ -24,7 +23,7 @@ public class NyIArbeidslivetTilfelleUtleder implements TilfelleUtleder {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElse(null);
         Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
         return NyIArbeidslivetTjeneste.erNyIArbeidslivetMedAktivitetStatusSN(beregningsgrunnlag, input.getIayGrunnlag()) ?
-            Optional.of(FaktaOmBeregningTilfelle.VURDER_SN_NY_I_ARBEIDSLIVET) : Optional.empty();
+                Optional.of(FaktaOmBeregningTilfelle.VURDER_SN_NY_I_ARBEIDSLIVET) : Optional.empty();
     }
 
 }

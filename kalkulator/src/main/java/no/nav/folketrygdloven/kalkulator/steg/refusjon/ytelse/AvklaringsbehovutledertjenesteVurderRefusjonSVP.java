@@ -11,7 +11,6 @@ import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.SvangerskapspengerGrunnlag;
@@ -25,9 +24,10 @@ import no.nav.folketrygdloven.kalkulator.steg.refusjon.AvklaringsbehovutlederVur
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.AvklaringsbehovutledertjenesteVurderRefusjon;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("SVP")
+@FagsakYtelseTypeRef(FagsakYtelseType.SVANGERSKAPSPENGER)
 public class AvklaringsbehovutledertjenesteVurderRefusjonSVP implements AvklaringsbehovutledertjenesteVurderRefusjon {
 
     @Inject
@@ -36,7 +36,7 @@ public class AvklaringsbehovutledertjenesteVurderRefusjonSVP implements Avklarin
 
     @Override
     public List<BeregningAvklaringsbehovResultat> utledAvklaringsbehov(BeregningsgrunnlagInput input,
-                                                                   BeregningsgrunnlagDto periodisertMedRefusjonOgGradering) {
+                                                                       BeregningsgrunnlagDto periodisertMedRefusjonOgGradering) {
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = new ArrayList<>();
 
         if (AvklaringsbehovutlederVurderRefusjon.skalHaAvklaringsbehovVurderRefusjonskrav(input, periodisertMedRefusjonOgGradering)) {
