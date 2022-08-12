@@ -3,12 +3,6 @@ package no.nav.folketrygdloven.kalkulus.beregning.v1;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -18,6 +12,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotNull;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "ytelseType", defaultImpl = Void.class)
 @JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE, creatorVisibility = Visibility.NONE)
@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = PleiepengerNærståendeGrunnlag.class, name = PleiepengerNærståendeGrunnlag.YTELSE_TYPE),
         @JsonSubTypes.Type(value = PleiepengerSyktBarnGrunnlag.class, name = PleiepengerSyktBarnGrunnlag.YTELSE_TYPE),
         @JsonSubTypes.Type(value = OmsorgspengerGrunnlag.class, name = OmsorgspengerGrunnlag.YTELSE_TYPE),
+        @JsonSubTypes.Type(value = OpplæringspengerGrunnlag.class, name = OpplæringspengerGrunnlag.YTELSE_TYPE),
         @JsonSubTypes.Type(value = ForeldrepengerGrunnlag.class, name = ForeldrepengerGrunnlag.YTELSE_TYPE),
         @JsonSubTypes.Type(value = SvangerskapspengerGrunnlag.class, name = SvangerskapspengerGrunnlag.YTELSE_TYPE),
         @JsonSubTypes.Type(value = FrisinnGrunnlag.class, name = FrisinnGrunnlag.YTELSE_TYPE),
