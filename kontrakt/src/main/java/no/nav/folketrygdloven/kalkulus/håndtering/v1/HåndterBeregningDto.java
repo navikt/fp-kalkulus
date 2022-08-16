@@ -58,6 +58,11 @@ public abstract class HåndterBeregningDto {
     @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}§]+$", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
     private String begrunnelse;
 
+    @JsonProperty(value = "avbrutt")
+    @Valid
+    private boolean avbrutt;
+
+
     public HåndterBeregningDto(@NotNull @Valid HåndteringKode kode) {
         this.kode = kode;
     }
@@ -79,5 +84,9 @@ public abstract class HåndterBeregningDto {
 
     public void setBegrunnelse(String begrunnelse) {
         this.begrunnelse = begrunnelse;
+    }
+
+    public boolean skalAvbrytes() {
+        return avbrutt;
     }
 }

@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.håndtering;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.Dependent;
@@ -10,6 +11,7 @@ import jakarta.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulus.beregning.MapHåndteringskodeTilTilstand;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
@@ -40,7 +42,13 @@ public class HåndtererApplikasjonTjeneste {
         Long koblingId = håndterBeregningInput.getKoblingId();
         AvklaringsbehovDefinisjon avklaringsbehovdefinisjon = AvklaringsbehovDefinisjon.fraHåndtering(håndterBeregningDto.getKode());
         if (avklaringsbehovdefinisjon.erOverstyring()) {
-            opprettOverstyringAvklaringsbehov(koblingId, avklaringsbehovdefinisjon);
+            if (håndterBeregningDto.skalAvbrytes()) {
+                var overstyring = avklaringsbehovTjeneste.hentAvklaringsbehov(koblingId, avklaringsbehovdefinisjon);
+                overstyring.ifPresent(o -> avklaringsbehovTjeneste.avbrytAvklaringsbehov(koblingId, o));
+                return OppdateringRespons.TOM_RESPONS();
+            } else {
+                opprettOverstyringAvklaringsbehov(koblingId, avklaringsbehovdefinisjon);
+            }
         }
         BeregningsgrunnlagTilstand tilstand = MapHåndteringskodeTilTilstand.map(håndterBeregningDto.getKode());
         HåndteringResultat resultat = håndterOgLagre(håndterBeregningInput, håndterBeregningDto, håndterBeregningDto.getKode(), tilstand);

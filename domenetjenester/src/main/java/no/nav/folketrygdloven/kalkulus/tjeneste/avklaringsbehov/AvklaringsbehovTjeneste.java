@@ -211,7 +211,7 @@ public class AvklaringsbehovTjeneste {
         return ap.getStegFunnet().erEtter(avklaringsbehovEntitet.getStegFunnet());
     }
 
-    private void avbrytAvklaringsbehov(Long koblingId, AvklaringsbehovEntitet ap) {
+    public void avbrytAvklaringsbehov(Long koblingId, AvklaringsbehovEntitet ap) {
         LOG.info("Avbryter avklaringsbehov {} for kobling {}", ap.getDefinisjon(), koblingId);
         avklaringsbehovKontrollTjeneste.avbryt(ap);
         avklaringsbehovRepository.lagre(ap);
