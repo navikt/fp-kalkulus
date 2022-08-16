@@ -33,12 +33,20 @@ public class OverstyrBeregningsaktiviteterDto extends HåndterBeregningDto {
 
 
     public OverstyrBeregningsaktiviteterDto() {
-        super(HåndteringKode.fraKode(IDENT_TYPE));
+        super(HåndteringKode.fraKode(IDENT_TYPE), false);
         // Json deserialisering
     }
 
+    private OverstyrBeregningsaktiviteterDto(boolean avbryt) {
+        super(HåndteringKode.fraKode(IDENT_TYPE), avbryt);
+    }
+
+    public static OverstyrBeregningsaktiviteterDto avbryt() {
+        return new OverstyrBeregningsaktiviteterDto(true);
+    }
+
     public OverstyrBeregningsaktiviteterDto(@Valid @NotNull @Size(max = 1000) List<BeregningsaktivitetLagreDto> beregningsaktivitetLagreDtoList) {
-        super(HåndteringKode.fraKode(IDENT_TYPE));
+        super(HåndteringKode.fraKode(IDENT_TYPE), false);
         this.beregningsaktivitetLagreDtoList = beregningsaktivitetLagreDtoList;
     }
 

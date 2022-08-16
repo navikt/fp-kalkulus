@@ -3,11 +3,6 @@ package no.nav.folketrygdloven.kalkulus.håndtering.v1;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -15,6 +10,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.avklaraktiviteter.AvklarAktiviteterHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FaktaOmBeregningHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.FaktaOmFordelingHåndteringDto;
@@ -67,6 +66,11 @@ public abstract class HåndterBeregningDto {
         this.kode = kode;
     }
 
+    public HåndterBeregningDto(@NotNull @Valid HåndteringKode kode, boolean avbrutt) {
+        this.kode = kode;
+        this.avbrutt = avbrutt;
+    }
+
     public HåndterBeregningDto() {
         // default ctor
     }
@@ -75,7 +79,9 @@ public abstract class HåndterBeregningDto {
         return kode;
     }
 
-    /** Type ident. (per ident fra subklasse). */
+    /**
+     * Type ident. (per ident fra subklasse).
+     */
     public abstract String getIdentType();
 
     public String getBegrunnelse() {
