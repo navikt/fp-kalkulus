@@ -6,17 +6,17 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.hibernate.annotations.BatchSize;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
-
-import org.hibernate.annotations.BatchSize;
-
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 
 
@@ -33,7 +33,8 @@ public class BeregningAktivitetAggregatEntitet extends BaseEntitet {
     @Column(name = "versjon", nullable = false)
     private long versjon;
 
-    @OneToMany(mappedBy = "beregningAktiviteter")
+    @OneToMany
+    @JoinColumn(name = "bg_aktiviteter_id", nullable = false, updatable = false)
     @BatchSize(size=20)
     private List<BeregningAktivitetEntitet> aktiviteter = new ArrayList<>();
 
@@ -65,7 +66,6 @@ public class BeregningAktivitetAggregatEntitet extends BaseEntitet {
     }
 
     private void leggTilAktivitet(BeregningAktivitetEntitet beregningAktivitet) {
-        beregningAktivitet.setBeregningAktiviteter(this);
         aktiviteter.add(beregningAktivitet);
     }
 

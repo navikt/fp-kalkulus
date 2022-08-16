@@ -40,6 +40,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.GrunnlagRe
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSatsType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.k9.felles.jpa.HibernateVerktøy;
 
 @ApplicationScoped
 public class BeregningsgrunnlagRepository {
@@ -92,7 +93,7 @@ public class BeregningsgrunnlagRepository {
      */
     public List<BeregningsgrunnlagGrunnlagEntitet> hentBeregningsgrunnlagGrunnlagEntiteter(Collection<Long> koblingIds) {
         TypedQuery<BeregningsgrunnlagGrunnlagEntitet> query = entityManager.createQuery(
-                "from BeregningsgrunnlagGrunnlagEntitet grunnlag " +
+                "select grunnlag from BeregningsgrunnlagGrunnlagEntitet grunnlag " +
                         "where grunnlag.koblingId in :koblingId " +
                         "and grunnlag.aktiv = :aktivt", //$NON-NLS-1$
                 BeregningsgrunnlagGrunnlagEntitet.class);
@@ -146,7 +147,7 @@ public class BeregningsgrunnlagRepository {
     @SuppressWarnings("unchecked")
     public Optional<BeregningsgrunnlagGrunnlagEntitet> hentOriginalGrunnlagForTilstand(Long koblingId,
                                                                                        BeregningsgrunnlagTilstand tilstand) {
-        Query query = entityManager.createNativeQuery(
+        var query = entityManager.createNativeQuery(
                 "SELECT GR.* FROM  GR_BEREGNINGSGRUNNLAG GR " +
                         "INNER JOIN KOBLING_RELASJON KR ON KR.ORIGINAL_KOBLING_ID = GR.KOBLING_ID " +
                         "WHERE KR.KOBLING_ID = :koblingId AND STEG_OPPRETTET = :beregningsgrunnlagTilstand " +
@@ -155,7 +156,11 @@ public class BeregningsgrunnlagRepository {
         query.setParameter("koblingId", koblingId); // $NON-NLS-1$
         query.setParameter("beregningsgrunnlagTilstand", tilstand.getKode()); // $NON-NLS-1$
         query.setMaxResults(1);
-        return query.getResultStream().findFirst();
+        List<BeregningsgrunnlagGrunnlagEntitet> resultatListe = query.getResultList();
+        if (resultatListe.size() > 1) {
+            throw new IllegalArgumentException("Flere enn en rader");
+        }
+        return resultatListe.size() == 1 ? Optional.of(resultatListe.get(0)) : Optional.empty();
     }
 
 
@@ -170,15 +175,18 @@ public class BeregningsgrunnlagRepository {
     public Optional<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitet(Long koblingId,
                                                                                                   BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
         TypedQuery<BeregningsgrunnlagGrunnlagEntitet> query = entityManager.createQuery(
-                "from BeregningsgrunnlagGrunnlagEntitet " +
-                        "where koblingId=:koblingId " +
-                        "and beregningsgrunnlagTilstand = :beregningsgrunnlagTilstand " +
-                        "order by opprettetTidspunkt desc, id desc", //$NON-NLS-1$
+                "select b from BeregningsgrunnlagGrunnlagEntitet b " +
+                        "where b.koblingId=:koblingId " +
+                        "and b.beregningsgrunnlagTilstand = :beregningsgrunnlagTilstand " +
+                        "order by b.opprettetTidspunkt desc, b.id desc", //$NON-NLS-1$
                 BeregningsgrunnlagGrunnlagEntitet.class);
         query.setParameter(KOBLING_ID, koblingId); // $NON-NLS-1$
         query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, beregningsgrunnlagTilstand); // $NON-NLS-1$
-        query.setMaxResults(1);
-        return query.getResultStream().findFirst();
+        var resultList = query.getResultList();
+        if (resultList.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(resultList.iterator().next());
     }
 
 
@@ -205,7 +213,7 @@ public class BeregningsgrunnlagRepository {
         query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, beregningsgrunnlagTilstand); // $NON-NLS-1$
         query.setParameter("opprettetTidspunktMin", opprettetTidspunktMin); // $NON-NLS-1$
         query.setMaxResults(1);
-        return query.getResultStream().findFirst();
+        return HibernateVerktøy.hentUniktResultat(query);
     }
 
     /**

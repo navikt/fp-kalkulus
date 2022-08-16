@@ -9,17 +9,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.OpptjeningAktivitetTypeKodeverdiConverter;
@@ -45,11 +39,6 @@ public class BeregningAktivitetEntitet extends BaseEntitet implements IndexKey, 
     @AttributeOverride(name = "fomDato", column = @Column(name = "fom"))
     @AttributeOverride(name = "tomDato", column = @Column(name = "tom"))
     private IntervallEntitet periode;
-
-    @JsonBackReference
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    @JoinColumn(name = "bg_aktiviteter_id", nullable = false, updatable = false)
-    private BeregningAktivitetAggregatEntitet beregningAktiviteter;
 
     @Embedded
     private Arbeidsgiver arbeidsgiver;
@@ -86,14 +75,6 @@ public class BeregningAktivitetEntitet extends BaseEntitet implements IndexKey, 
 
     public OpptjeningAktivitetType getOpptjeningAktivitetType() {
         return opptjeningAktivitetType != null ? opptjeningAktivitetType : OpptjeningAktivitetType.UDEFINERT;
-    }
-
-    public BeregningAktivitetAggregatEntitet getBeregningAktiviteter() {
-        return beregningAktiviteter;
-    }
-
-    void setBeregningAktiviteter(BeregningAktivitetAggregatEntitet beregningAktiviteter) {
-        this.beregningAktiviteter = beregningAktiviteter;
     }
 
     public BeregningAktivitetNøkkel getNøkkel() {
