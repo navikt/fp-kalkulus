@@ -4,12 +4,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.hibernate.annotations.NaturalId;
+
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -18,9 +21,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
-
-import org.hibernate.annotations.NaturalId;
-
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.GrunnlagReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.BeregningsgrunnlagTilstandKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.diff.DiffIgnore;
@@ -50,27 +50,27 @@ public class BeregningsgrunnlagGrunnlagEntitet extends BaseEntitet {
     })
     private GrunnlagReferanse grunnlagReferanse;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "beregningsgrunnlag_id", updatable = false, unique = true)
     private BeregningsgrunnlagEntitet beregningsgrunnlag;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "register_aktiviteter_id", updatable = false, unique = true, nullable = false)
     private BeregningAktivitetAggregatEntitet registerAktiviteter;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "saksbehandlet_aktiviteter_id", updatable = false, unique = true)
     private BeregningAktivitetAggregatEntitet saksbehandletAktiviteter;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ba_overstyringer_id", updatable = false, unique = true)
     private BeregningAktivitetOverstyringerEntitet overstyringer;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "br_overstyringer_id", updatable = false, unique = true)
     private BeregningRefusjonOverstyringerEntitet refusjonOverstyringer;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fakta_aggregat_id", updatable = false, unique = true)
     private FaktaAggregatEntitet faktaAggregat;
 

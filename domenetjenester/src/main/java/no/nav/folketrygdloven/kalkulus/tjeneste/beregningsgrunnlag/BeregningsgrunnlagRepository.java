@@ -170,10 +170,10 @@ public class BeregningsgrunnlagRepository {
     public Optional<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitet(Long koblingId,
                                                                                                   BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
         TypedQuery<BeregningsgrunnlagGrunnlagEntitet> query = entityManager.createQuery(
-                "from BeregningsgrunnlagGrunnlagEntitet " +
-                        "where koblingId=:koblingId " +
-                        "and beregningsgrunnlagTilstand = :beregningsgrunnlagTilstand " +
-                        "order by opprettetTidspunkt desc, id desc", //$NON-NLS-1$
+                "select b from BeregningsgrunnlagGrunnlagEntitet b " +
+                        "where b.koblingId=:koblingId " +
+                        "and b.beregningsgrunnlagTilstand = :beregningsgrunnlagTilstand " +
+                        "order by b.opprettetTidspunkt desc, b.id desc", //$NON-NLS-1$
                 BeregningsgrunnlagGrunnlagEntitet.class);
         query.setParameter(KOBLING_ID, koblingId); // $NON-NLS-1$
         query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, beregningsgrunnlagTilstand); // $NON-NLS-1$
