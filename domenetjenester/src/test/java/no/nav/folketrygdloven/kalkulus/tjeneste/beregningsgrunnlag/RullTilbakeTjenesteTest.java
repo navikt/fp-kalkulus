@@ -185,7 +185,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
                         .build()), BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
 
         // Act
-        rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(Set.of(koblingId), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+        rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(Set.of(koblingId), BeregningsgrunnlagTilstand.OPPRETTET);
 
         // Assert
         Optional<AvklaringsbehovEntitet> avklaringsbehovEntitet = avklaringsbehovTjeneste.hentAvklaringsbehov(koblingId, avklaringsbehovDefinisjon);
