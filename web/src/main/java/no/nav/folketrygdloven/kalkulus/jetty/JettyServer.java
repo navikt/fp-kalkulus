@@ -127,7 +127,7 @@ public class JettyServer {
             initSql = null;
         }
         try (var migreringDs = DatasourceUtil.createDatasource("defaultDS", DatasourceRole.ADMIN, ENV.getCluster(),
-                1)) {
+                2)) {
             DatabaseScript.migrate(migreringDs, initSql);
         }
     }
