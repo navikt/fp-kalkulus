@@ -1,7 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
@@ -15,6 +13,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.FaktaVurdering;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaVurderingKilde;
@@ -32,7 +33,7 @@ public class FaktaAktørEntitet extends BaseEntitet {
     private long versjon;
 
     @JsonBackReference
-    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @OneToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "FAKTA_AGGREGAT_ID", nullable = false, updatable = false)
     private FaktaAggregatEntitet faktaAggregat;
 

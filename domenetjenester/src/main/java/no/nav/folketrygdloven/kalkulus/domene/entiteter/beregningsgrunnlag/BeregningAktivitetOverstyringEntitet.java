@@ -2,8 +2,6 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
 import java.util.Optional;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -17,6 +15,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.BeregingAktivitetHandlingTypeKodeverdiConverter;
@@ -57,7 +58,7 @@ public class BeregningAktivitetOverstyringEntitet extends BaseEntitet {
     private OpptjeningAktivitetType opptjeningAktivitetType;
 
     @JsonBackReference
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "ba_overstyringer_id", nullable = false, updatable = false)
     private BeregningAktivitetOverstyringerEntitet overstyringerEntitet;
 

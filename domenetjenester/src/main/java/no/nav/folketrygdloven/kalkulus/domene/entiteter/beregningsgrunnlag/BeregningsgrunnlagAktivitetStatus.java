@@ -2,13 +2,10 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,6 +13,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.AktivitetStatusKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.HjemmelKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
@@ -35,7 +35,7 @@ public class BeregningsgrunnlagAktivitetStatus extends BaseEntitet {
     private long versjon;
 
     @JsonBackReference
-    @ManyToOne(cascade = {CascadeType.PERSIST}, optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {CascadeType.PERSIST}, optional = false)
     @JoinColumn(name = "beregningsgrunnlag_id", nullable = false, updatable = false)
     private BeregningsgrunnlagEntitet beregningsgrunnlag;
 
