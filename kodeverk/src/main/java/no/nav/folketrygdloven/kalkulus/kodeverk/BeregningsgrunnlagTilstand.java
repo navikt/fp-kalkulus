@@ -135,6 +135,12 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi {
         return thisIndex < thatIndex;
     }
 
+    public boolean erEtter(BeregningsgrunnlagTilstand that) {
+        int thisIndex = tilstandRekkefølge.indexOf(this);
+        int thatIndex = tilstandRekkefølge.indexOf(that);
+        return thatIndex < thisIndex;
+    }
+
     @JsonProperty
     @Override
     public String getKode() {
