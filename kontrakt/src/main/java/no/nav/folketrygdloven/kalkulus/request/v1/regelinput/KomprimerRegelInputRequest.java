@@ -16,7 +16,6 @@ public class KomprimerRegelInputRequest {
 
     @JsonProperty(value = "saksnummer")
     @Valid
-    @NotNull
     private String saksnummer;
 
     @JsonProperty(value = "antall")
