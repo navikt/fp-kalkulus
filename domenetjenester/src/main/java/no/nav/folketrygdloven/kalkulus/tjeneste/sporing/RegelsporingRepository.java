@@ -68,6 +68,26 @@ public class RegelsporingRepository {
     }
 
     /**
+     * Lager hash og komprimererer regelsporinger
+     *
+     */
+    public void hashVilkårlige(int antall) {
+        TypedQuery<RegelSporingPeriodeEntitet> query = entityManager.createQuery(
+                "from RegelSporingPeriodeEntitet sporing " +
+                        "where regelInput is not null", RegelSporingPeriodeEntitet.class); //$NON-NLS-1$
+        query.setMaxResults(antall);
+        var resultList = query.getResultList();
+
+        resultList.forEach(r -> {
+            var hash = kjørRegelInputHashing(r.getRegelInput());
+            r.setRegelInputHash(hash);
+            r.setRegelInput(null);
+            entityManager.persist(r);
+        });
+        entityManager.flush();
+    }
+
+    /**
      * Lager hash og komprimererer alle regelsporinger på kobling
      *
      * @param koblingId koblingID

@@ -84,6 +84,18 @@ public class KomprimerJsonInputRestTjeneste {
         }
     }
 
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("komprimerAntallRegelSporinger")
+    @Operation(description = "Komprimerer N perioderegelsporinger", tags = "regelinputForvaltning", summary = ("Komprimerer regelsporinger"))
+    @BeskyttetRessurs(action = CREATE, property = DRIFT)
+    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
+    public Response komprimerAntallRegelSporinger(@NotNull @Valid KomprimerRegelInputRequestAbacDto spesifikasjon) {
+        regelsporingRepository.hashVilkårlige(spesifikasjon.getAntall());
+        return Response.ok().build();
+    }
+
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)

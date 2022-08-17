@@ -14,20 +14,31 @@ import jakarta.validation.constraints.NotNull;
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
 public class KomprimerRegelInputRequest {
 
-    @JsonProperty(value = "saksnummer", required = true)
+    @JsonProperty(value = "saksnummer")
     @Valid
     @NotNull
     private String saksnummer;
+
+    @JsonProperty(value = "antall")
+    @Valid
+    @NotNull
+    private int antall;
 
     public KomprimerRegelInputRequest() {
     }
 
     @JsonCreator
-    public KomprimerRegelInputRequest(@JsonProperty(value = "saksnummer", required = true) String saksnummer) {
+    public KomprimerRegelInputRequest(@JsonProperty(value = "saksnummer") String saksnummer,
+                                      @JsonProperty(value = "antall") int antall) {
         this.saksnummer = saksnummer;
+        this.antall = antall;
     }
 
     public String getSaksnummer() {
         return saksnummer;
+    }
+
+    public int getAntall() {
+        return antall;
     }
 }
