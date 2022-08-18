@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
@@ -66,4 +67,13 @@ public class BeregnForRequest {
     public List<Periode> getForlengelsePerioder() {
         return forlengelsePerioder;
     }
+
+    @AssertTrue(message = "Kan ikke ha originalreferanse lik referanse som beregnes")
+    public boolean skalVereUnikeReferanser() {
+        if (originalEksternReferanser != null) {
+            return originalEksternReferanser.stream().noneMatch(r -> r.equals(eksternReferanse));
+        }
+        return true;
+    }
+
 }

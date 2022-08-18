@@ -63,6 +63,7 @@ public class KoblingTjeneste {
                     var koblingId = finnIdFraListe(e.getKey(), alleKoblinger);
                     return e.getValue().stream().map(v -> new KoblingRelasjon(koblingId, finnIdFraListe(v, alleKoblinger)));
                 })
+                .filter(r -> !r.getKoblingId().equals(r.getOriginalKoblingId())) // Filtrere ut koblinger mot seg selv
                 .collect(Collectors.toList());
         koblingRelasjonEniteter.forEach(repository::lagre);
         return repository.hentRelasjonerFor(alleKoblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet()));

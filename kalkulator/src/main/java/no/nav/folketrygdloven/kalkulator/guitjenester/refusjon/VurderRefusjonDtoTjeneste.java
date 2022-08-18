@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
@@ -37,12 +38,21 @@ public final class VurderRefusjonDtoTjeneste {
 
         Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjon = originaleGrunnlag.stream()
                 .flatMap(originaltBg -> AndelerMedØktRefusjonTjeneste.finnAndelerMedØktRefusjon(beregningsgrunnlag.get(), originaltBg, grenseverdi).entrySet().stream())
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, unikeElementer()));
         if (!andelerMedØktRefusjon.isEmpty()) {
             return LagVurderRefusjonDto.lagDto(andelerMedØktRefusjon, input);
         }
 
         return lagDtoBasertPåTidligereAvklaringer(input);
+    }
+
+    private static BinaryOperator<List<RefusjonAndel>> unikeElementer() {
+        return (andeler1, andeler2) -> {
+            var nyListe = new ArrayList<RefusjonAndel>();
+            nyListe.addAll(andeler1);
+            nyListe.addAll(andeler2);
+            return nyListe.stream().distinct().toList();
+        };
     }
 
     // Metode for å støtte visning av saker som tidligere er løst men som av ulike grunner ikke lenger gir samme resultat i avklaringsbehovutledning
