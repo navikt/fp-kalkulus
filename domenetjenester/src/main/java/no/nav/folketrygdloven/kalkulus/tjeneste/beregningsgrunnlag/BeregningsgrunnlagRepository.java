@@ -240,6 +240,35 @@ public class BeregningsgrunnlagRepository {
         return query.getResultList();
     }
 
+
+
+    /**
+     * Henter siste {@link BeregningsgrunnlagGrunnlagEntitet} opprettet i et bestemt steg. Ignorerer om grunnlaget er aktivt eller ikke.
+     *
+     * @param koblingId                  en koblingId
+     * @param opprettetTidspunktMax      største opprettet tidspunkt
+     * @param beregningsgrunnlagTilstand steget {@link BeregningsgrunnlagGrunnlagEntitet} er opprettet i
+     * @return Hvis det finnes et eller fler BeregningsgrunnlagGrunnlagEntitet som har blitt opprettet i {@code stegOpprettet} returneres den
+     * som ble opprettet sist
+     */
+    public Optional<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitetOpprettetFør(Long koblingId,
+                                                                                                                LocalDateTime opprettetTidspunktMax,
+                                                                                                                BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
+        TypedQuery<BeregningsgrunnlagGrunnlagEntitet> query = entityManager.createQuery(
+                "from BeregningsgrunnlagGrunnlagEntitet " +
+                        "where koblingId=:koblingId " +
+                        "and beregningsgrunnlagTilstand = :beregningsgrunnlagTilstand " +
+                        "and opprettetTidspunkt < :opprettetTidspunktMax " +
+                        "order by opprettetTidspunkt desc, id desc", //$NON-NLS-1$
+                BeregningsgrunnlagGrunnlagEntitet.class);
+        query.setParameter(KOBLING_ID, koblingId); // $NON-NLS-1$
+        query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, beregningsgrunnlagTilstand); // $NON-NLS-1$
+        query.setParameter("opprettetTidspunktMax", opprettetTidspunktMax); // $NON-NLS-1$
+        query.setMaxResults(1);
+        return HibernateVerktøy.hentUniktResultat(query);
+    }
+
+
     public BeregningSats finnGrunnbeløp(LocalDate dato) {
         TypedQuery<BeregningSats> query = entityManager.createQuery("from BeregningSats where satsType=:satsType" + //$NON-NLS-1$
                 " and periode.fomDato<=:dato" + //$NON-NLS-1$
@@ -410,7 +439,7 @@ public class BeregningsgrunnlagRepository {
         endreAktivOgLagre(entitet, false);
     }
 
-    private void endreAktivOgLagre(BeregningsgrunnlagGrunnlagEntitet entitet, boolean aktiv) {
+    public void endreAktivOgLagre(BeregningsgrunnlagGrunnlagEntitet entitet, boolean aktiv) {
         entitet.setAktiv(aktiv);
         entityManager.persist(entitet);
         entityManager.flush();
