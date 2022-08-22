@@ -81,8 +81,8 @@ public class KopierOgResetRestTjeneste {
                 spesifikasjon.getKopierBeregningListe(),
                 spesifikasjon.getYtelseSomSkalBeregnes(),
                 new Saksnummer(spesifikasjon.getSaksnummer()),
-                spesifikasjon.getStegType() == null ? BeregningSteg.FAST_BERGRUNN : BeregningSteg.fraKode(spesifikasjon.getStegType().getKode())
-        );
+                spesifikasjon.getStegType() == null ? BeregningSteg.FAST_BERGRUNN : BeregningSteg.fraKode(spesifikasjon.getStegType().getKode()),
+                spesifikasjon.getBehandlingAvsluttetTid());
         resetGrunnlagTjeneste.resetGrunnlag(spesifikasjon.getKopierBeregningListe(), spesifikasjon.getYtelseSomSkalBeregnes(), spesifikasjon.getOriginalBehandlingAvsluttetTid());
         return Response.ok(spesifikasjon.getKopierBeregningListe()
                 .stream()
@@ -102,8 +102,9 @@ public class KopierOgResetRestTjeneste {
                                                           UUID behandlingUuid,
                                                           YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
                                                           List<KopierBeregningRequest> kopierBeregningListe, StegType stegType,
-                                                          LocalDateTime originalBehandlingAvsluttetTid) {
-            super(saksnummer, behandlingUuid, ytelseSomSkalBeregnes, stegType, kopierBeregningListe, originalBehandlingAvsluttetTid);
+                                                          LocalDateTime originalBehandlingAvsluttetTid,
+                                                          LocalDateTime behandlingAvsluttetTid) {
+            super(saksnummer, behandlingUuid, ytelseSomSkalBeregnes, stegType, kopierBeregningListe, originalBehandlingAvsluttetTid, behandlingAvsluttetTid);
         }
 
 

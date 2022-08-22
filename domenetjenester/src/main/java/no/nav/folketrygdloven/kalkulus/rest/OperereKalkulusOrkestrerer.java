@@ -152,7 +152,7 @@ public class OperereKalkulusOrkestrerer {
             return koblinger;
         } else {
             var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtterKontrakt.fraKode(ytelseSomSkalBeregnes.getKode());
-            var koblinger = koblingTjeneste.finnEllerOpprett(referanser, ytelseTyperKalkulusStøtter, aktørId, saksnummer, false);
+            var koblinger = koblingTjeneste.finnEllerOpprett(referanser, ytelseTyperKalkulusStøtter, aktørId, saksnummer);
             validerKoblingOgSak(koblinger, saksnummer.getVerdi());
             return koblinger;
         }

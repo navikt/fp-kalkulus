@@ -75,7 +75,7 @@ class DebugDumpstersTest extends EntityManagerAwareTest {
 
     private KoblingEntitet lagKobling() {
         var koblingEntitet = new KoblingEntitet(new KoblingReferanse(UUID.randomUUID()), YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN,
-                new Saksnummer("sak"), new AktørId("123456789"), false);
+                new Saksnummer("sak"), new AktørId("123456789"));
         getEntityManager().persist(koblingEntitet);
         return koblingEntitet;
     }

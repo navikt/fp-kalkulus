@@ -222,24 +222,41 @@ public class BeregningsgrunnlagRepository {
      *
      * @param koblingIds                 en liste med koblingId
      * @param beregningsgrunnlagTilstand steget {@link BeregningsgrunnlagGrunnlagEntitet} er opprettet i
+     * @param opprettetTidMax
      * @return Liste med grunnlag fra gitt {@link BeregningsgrunnlagTilstand} som ble opprettet sist pr kobling
      */
     @SuppressWarnings("unchecked")
     public List<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(Collection<Long> koblingIds,
-                                                                                                          BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
-        Query query = entityManager.createNativeQuery(
-                "SELECT GR.* FROM GR_BEREGNINGSGRUNNLAG GR " +
-                        "WHERE GR.OPPRETTET_TID = (SELECT max(GR2.OPPRETTET_TID) FROM GR_BEREGNINGSGRUNNLAG GR2 " +
-                        "WHERE GR2.KOBLING_ID = GR.KOBLING_ID AND " +
-                        "GR2.STEG_OPPRETTET = :beregningsgrunnlagTilstand) AND " +
-                        "GR.KOBLING_ID IN :koblingId AND " +
-                        "GR.STEG_OPPRETTET = :beregningsgrunnlagTilstand", //$NON-NLS-1$
-                BeregningsgrunnlagGrunnlagEntitet.class);
-        query.setParameter(KOBLING_ID, koblingIds); // $NON-NLS-1$
-        query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, beregningsgrunnlagTilstand.getKode()); // $NON-NLS-1$
-        return query.getResultList();
+                                                                                                          BeregningsgrunnlagTilstand beregningsgrunnlagTilstand,
+                                                                                                          LocalDateTime opprettetTidMax) {
+        if (opprettetTidMax != null) {
+            Query query = entityManager.createNativeQuery(
+                    "SELECT GR.* FROM GR_BEREGNINGSGRUNNLAG GR " +
+                            "WHERE GR.OPPRETTET_TID = (SELECT max(GR2.OPPRETTET_TID) FROM GR_BEREGNINGSGRUNNLAG GR2 " +
+                            "WHERE GR2.KOBLING_ID = GR.KOBLING_ID AND " +
+                            "GR2.STEG_OPPRETTET = :beregningsgrunnlagTilstand AND " +
+                            "GR2.OPPRETTET_TID <= :opprettetTidMax) AND " +
+                            "GR.KOBLING_ID IN :koblingId AND " +
+                            "GR.STEG_OPPRETTET = :beregningsgrunnlagTilstand", //$NON-NLS-1$
+                    BeregningsgrunnlagGrunnlagEntitet.class);
+            query.setParameter(KOBLING_ID, koblingIds); // $NON-NLS-1$
+            query.setParameter("opprettetTidMax", opprettetTidMax);
+            query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, beregningsgrunnlagTilstand.getKode()); // $NON-NLS-1$
+            return query.getResultList();
+        } else {
+            Query query = entityManager.createNativeQuery(
+                    "SELECT GR.* FROM GR_BEREGNINGSGRUNNLAG GR " +
+                            "WHERE GR.OPPRETTET_TID = (SELECT max(GR2.OPPRETTET_TID) FROM GR_BEREGNINGSGRUNNLAG GR2 " +
+                            "WHERE GR2.KOBLING_ID = GR.KOBLING_ID AND " +
+                            "GR2.STEG_OPPRETTET = :beregningsgrunnlagTilstand) AND " +
+                            "GR.KOBLING_ID IN :koblingId AND " +
+                            "GR.STEG_OPPRETTET = :beregningsgrunnlagTilstand", //$NON-NLS-1$
+                    BeregningsgrunnlagGrunnlagEntitet.class);
+            query.setParameter(KOBLING_ID, koblingIds); // $NON-NLS-1$
+            query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, beregningsgrunnlagTilstand.getKode()); // $NON-NLS-1$
+            return query.getResultList();
+        }
     }
-
 
 
     /**
@@ -252,8 +269,8 @@ public class BeregningsgrunnlagRepository {
      * som ble opprettet sist
      */
     public Optional<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitetOpprettetFør(Long koblingId,
-                                                                                                                LocalDateTime opprettetTidspunktMax,
-                                                                                                                BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
+                                                                                                              LocalDateTime opprettetTidspunktMax,
+                                                                                                              BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
         TypedQuery<BeregningsgrunnlagGrunnlagEntitet> query = entityManager.createQuery(
                 "from BeregningsgrunnlagGrunnlagEntitet " +
                         "where koblingId=:koblingId " +
@@ -297,8 +314,7 @@ public class BeregningsgrunnlagRepository {
         BeregningsgrunnlagGrunnlagBuilder builder = opprettGrunnlagBuilderFor(koblingId);
         builder.medBeregningsgrunnlag(beregningsgrunnlag);
         BeregningsgrunnlagGrunnlagEntitet grunnlagEntitet = builder.build(koblingId, beregningsgrunnlagTilstand);
-        lagreOgFlush(koblingId, grunnlagEntitet);
-        return grunnlagEntitet;
+        return lagreOgFlush(koblingId, grunnlagEntitet);
     }
 
     public BeregningsgrunnlagGrunnlagEntitet lagre(Long koblingId, BeregningsgrunnlagGrunnlagBuilder builder,
@@ -307,11 +323,10 @@ public class BeregningsgrunnlagRepository {
         Objects.requireNonNull(builder, BUILDER);
         Objects.requireNonNull(beregningsgrunnlagTilstand, BEREGNINGSGRUNNLAG_TILSTAND);
         BeregningsgrunnlagGrunnlagEntitet grunnlagEntitet = builder.build(koblingId, beregningsgrunnlagTilstand);
-        lagreOgFlush(koblingId, grunnlagEntitet);
-        return grunnlagEntitet;
+        return lagreOgFlush(koblingId, grunnlagEntitet);
     }
 
-    private void lagreOgFlush(Long koblingId, BeregningsgrunnlagGrunnlagEntitet nyttGrunnlag) {
+    private BeregningsgrunnlagGrunnlagEntitet lagreOgFlush(Long koblingId, BeregningsgrunnlagGrunnlagEntitet nyttGrunnlag) {
         Objects.requireNonNull(koblingId, KOBLING_ID);
         Objects.requireNonNull(nyttGrunnlag.getBeregningsgrunnlagTilstand(), BEREGNINGSGRUNNLAG_TILSTAND);
         Optional<BeregningsgrunnlagGrunnlagEntitet> tidligereAggregat = hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
@@ -326,6 +341,7 @@ public class BeregningsgrunnlagRepository {
         }
         lagreGrunnlag(nyttGrunnlag);
         entityManager.flush();
+        return nyttGrunnlag;
     }
 
     private BeregningsgrunnlagGrunnlagEntitet settFaktaFraTidligere(Long koblingId, BeregningsgrunnlagGrunnlagEntitet nyttGrunnlag, Optional<BeregningsgrunnlagGrunnlagEntitet> tidligereAggregat) {

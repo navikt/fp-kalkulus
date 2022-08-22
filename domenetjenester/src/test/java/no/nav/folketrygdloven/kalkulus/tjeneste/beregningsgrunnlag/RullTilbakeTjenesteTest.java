@@ -214,7 +214,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
         AktørId aktørId = new AktørId("1234123412341");
         KoblingReferanse koblingReferanse = new KoblingReferanse(UUID.randomUUID());
         Saksnummer saksnummer = new Saksnummer("1234");
-        KoblingEntitet koblingEntitet = new KoblingEntitet(koblingReferanse, YtelseTyperKalkulusStøtterKontrakt.FORELDREPENGER, saksnummer, aktørId, false);
+        KoblingEntitet koblingEntitet = new KoblingEntitet(koblingReferanse, YtelseTyperKalkulusStøtterKontrakt.FORELDREPENGER, saksnummer, aktørId);
         koblingRepository.lagre(koblingEntitet);
         koblingId = koblingEntitet.getId();
     }

@@ -55,7 +55,7 @@ public class HåndteringInputTjeneste {
         var grunnlagEntiteter = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingId)
                 .stream().collect(Collectors.toMap(BeregningsgrunnlagGrunnlagEntitet::getKoblingId, Function.identity()));
         validerKoblingMotGrunnlag(koblingId, tilstand, grunnlagEntiteter);
-        var grunnlagFraForrigeOppdatering = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingId, tilstand)
+        var grunnlagFraForrigeOppdatering = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingId, tilstand, null)
                 .stream().collect(Collectors.toMap(BeregningsgrunnlagGrunnlagEntitet::getKoblingId, Function.identity()));
         var forlengelsePerioderPrKobling = forlengelseRepository.hentAktivePerioderForKoblingId(koblingId)
                 .stream().collect(Collectors.toMap(ForlengelseperioderEntitet::getKoblingId, Function.identity()));

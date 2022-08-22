@@ -140,8 +140,8 @@ public class OperereKalkulusRestTjeneste {
                 spesifikasjon.getKopierBeregningListe(),
                 spesifikasjon.getYtelseSomSkalBeregnes(),
                 new Saksnummer(spesifikasjon.getSaksnummer()),
-                spesifikasjon.getStegType() == null ? BeregningSteg.VURDER_VILKAR_BERGRUNN : BeregningSteg.fraKode(spesifikasjon.getStegType().getKode())
-        );
+                spesifikasjon.getStegType() == null ? BeregningSteg.VURDER_VILKAR_BERGRUNN : BeregningSteg.fraKode(spesifikasjon.getStegType().getKode()),
+                null);
         return Response.ok(spesifikasjon.getKopierBeregningListe()
                 .stream()
                 .map(KopierBeregningRequest::getEksternReferanse)

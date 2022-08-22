@@ -63,6 +63,10 @@ public class KopierOgResettBeregningListeRequest implements KalkulusRequest {
     @NotNull
     private LocalDateTime originalBehandlingAvsluttetTid;
 
+    @JsonProperty(value = "behandlingAvsluttetTid", required = true)
+    @Valid
+    @NotNull
+    private LocalDateTime behandlingAvsluttetTid;
 
     protected KopierOgResettBeregningListeRequest() {
     }
@@ -73,13 +77,15 @@ public class KopierOgResettBeregningListeRequest implements KalkulusRequest {
                                                YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
                                                StegType stegType,
                                                List<KopierBeregningRequest> kopierBeregningListe,
-                                               LocalDateTime originalBehandlingAvsluttetTid) {
+                                               LocalDateTime originalBehandlingAvsluttetTid,
+                                               LocalDateTime behandlingAvsluttetTid) {
         this.saksnummer = saksnummer;
         this.behandlingUuid = behandlingUuid;
         this.ytelseSomSkalBeregnes = ytelseSomSkalBeregnes;
         this.stegType = stegType;
         this.kopierBeregningListe = kopierBeregningListe;
         this.originalBehandlingAvsluttetTid = originalBehandlingAvsluttetTid;
+        this.behandlingAvsluttetTid = behandlingAvsluttetTid;
     }
 
     @Override
@@ -107,4 +113,9 @@ public class KopierOgResettBeregningListeRequest implements KalkulusRequest {
     public LocalDateTime getOriginalBehandlingAvsluttetTid() {
         return originalBehandlingAvsluttetTid;
     }
+
+    public LocalDateTime getBehandlingAvsluttetTid() {
+        return behandlingAvsluttetTid;
+    }
+
 }

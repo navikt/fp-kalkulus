@@ -35,7 +35,7 @@ class AvklaringsbehovRepositoryTest extends EntityManagerAwareTest {
         KoblingReferanse koblingReferanse = new KoblingReferanse(UUID.randomUUID());
         Saksnummer saksnummer = new Saksnummer("1234");
 
-        kobling = new KoblingEntitet(koblingReferanse, YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_NÆRSTÅENDE, saksnummer, aktørId, false);
+        kobling = new KoblingEntitet(koblingReferanse, YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_NÆRSTÅENDE, saksnummer, aktørId);
         avklaringsbehovRepository = new AvklaringsbehovRepository(getEntityManager());
         koblingRepository = new KoblingRepository(getEntityManager());
         koblingRepository.lagre(kobling);

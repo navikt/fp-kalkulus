@@ -187,7 +187,7 @@ public class AksjonspunktMigreringTjeneste {
 
     private List<KoblingEntitet> finnKoblingerMedFordelAksjonspunkt(List<KoblingEntitet> koblinger) {
         var koblingIder = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
-        var beregningsgrunnlagGrunnlagEntiteter = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingIder, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
+        var beregningsgrunnlagGrunnlagEntiteter = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingIder, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING, null);
         var inputRespons = kalkulatorInputTjeneste.hentForKoblinger(koblingIder);
 
         Map<Long, InntektsmeldingAggregatDto> inntektsmeldingerPrKobling = inputRespons.entrySet().stream()

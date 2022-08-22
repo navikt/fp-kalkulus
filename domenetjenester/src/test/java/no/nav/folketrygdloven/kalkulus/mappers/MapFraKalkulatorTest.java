@@ -62,7 +62,7 @@ class MapFraKalkulatorTest {
         UUID randomUUID = UUID.randomUUID();
         YtelseTyperKalkulusStøtterKontrakt ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtterKontrakt.DAGPENGER;
         Saksnummer saksnummer1 = new Saksnummer(saksnummer);
-        KoblingEntitet koblingEntitet = new KoblingEntitet(new KoblingReferanse(randomUUID), ytelseTyperKalkulusStøtter, saksnummer1, AktørId.dummy(), false);
+        KoblingEntitet koblingEntitet = new KoblingEntitet(new KoblingReferanse(randomUUID), ytelseTyperKalkulusStøtter, saksnummer1, AktørId.dummy());
         KalkulatorInputDto kalkulatorInputDto = byggKalkulatorInput();
 
         BeregningsgrunnlagInput input = mapFraKalkulatorInputTilBeregningsgrunnlagInput(koblingEntitet, kalkulatorInputDto, Optional.empty(), Collections.emptyList());

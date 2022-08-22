@@ -36,7 +36,7 @@ public class KoblingTjeneste {
         this.låsRepository = låsRepository;
     }
 
-    public List<KoblingEntitet> finnEllerOpprett(List<KoblingReferanse> referanser, YtelseTyperKalkulusStøtterKontrakt ytelseTyperKalkulusStøtter, AktørId aktørId, Saksnummer saksnummer, boolean erForlengelse) {
+    public List<KoblingEntitet> finnEllerOpprett(List<KoblingReferanse> referanser, YtelseTyperKalkulusStøtterKontrakt ytelseTyperKalkulusStøtter, AktørId aktørId, Saksnummer saksnummer) {
         var eksisterendeKoblinger = hentKoblinger(referanser, ytelseTyperKalkulusStøtter);
         var alleKoblinger = new ArrayList<>(eksisterendeKoblinger);
         if (eksisterendeKoblinger.size() != referanser.size()) {
@@ -44,7 +44,7 @@ public class KoblingTjeneste {
                     .filter(ref -> eksisterendeKoblinger.stream().map(KoblingEntitet::getKoblingReferanse)
                             .map(KoblingReferanse::getReferanse)
                             .noneMatch(koblingRef -> koblingRef.equals(ref.getReferanse())))
-                    .map(ref -> new KoblingEntitet(ref, ytelseTyperKalkulusStøtter, saksnummer, aktørId, erForlengelse))
+                    .map(ref -> new KoblingEntitet(ref, ytelseTyperKalkulusStøtter, saksnummer, aktørId))
                     .collect(Collectors.toList());
             nyeKoblinger.forEach(kobling -> repository.lagre(kobling));
             alleKoblinger.addAll(nyeKoblinger);
