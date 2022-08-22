@@ -26,14 +26,14 @@ public class VurderVarigEndringEllerNyoppstartetSNDto {
     @JsonProperty("bruttoBeregningsgrunnlag")
     @Valid
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     private Integer bruttoBeregningsgrunnlag;
 
     public VurderVarigEndringEllerNyoppstartetSNDto() {
         // For Json deserialisering
     }
 
-    public VurderVarigEndringEllerNyoppstartetSNDto(@Valid @NotNull boolean erVarigEndretNaering, @Valid @Min(0) @Max(Long.MAX_VALUE) Integer bruttoBeregningsgrunnlag) {
+    public VurderVarigEndringEllerNyoppstartetSNDto(@Valid @NotNull boolean erVarigEndretNaering, @Valid @Min(0) @Max(178956970) Integer bruttoBeregningsgrunnlag) {
         this.erVarigEndretNaering = erVarigEndretNaering;
         this.bruttoBeregningsgrunnlag = bruttoBeregningsgrunnlag;
     }

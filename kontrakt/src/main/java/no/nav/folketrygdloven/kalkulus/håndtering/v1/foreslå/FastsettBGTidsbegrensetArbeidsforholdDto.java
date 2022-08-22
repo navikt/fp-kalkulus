@@ -30,7 +30,7 @@ public class FastsettBGTidsbegrensetArbeidsforholdDto {
     @JsonProperty("frilansInntekt")
     @Valid
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     private Integer frilansInntekt;
 
 
@@ -38,7 +38,7 @@ public class FastsettBGTidsbegrensetArbeidsforholdDto {
         // For Jackson
     }
 
-    public FastsettBGTidsbegrensetArbeidsforholdDto(@Valid @Size(max = 100) List<FastsattePerioderTidsbegrensetDto> fastsatteTidsbegrensedePerioder, @Valid @Min(0) @Max(Long.MAX_VALUE) Integer frilansInntekt) {
+    public FastsettBGTidsbegrensetArbeidsforholdDto(@Valid @Size(max = 100) List<FastsattePerioderTidsbegrensetDto> fastsatteTidsbegrensedePerioder, @Valid @Min(0) @Max(178956970) Integer frilansInntekt) {
         this.fastsatteTidsbegrensedePerioder = fastsatteTidsbegrensedePerioder;
         this.frilansInntekt = frilansInntekt;
     }

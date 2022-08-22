@@ -76,7 +76,7 @@ public class BeregningsgrunnlagPrStatusOgAndelFRISINNDto {
     @NotNull
     @Valid
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     private Long dagsats;
 
     @JsonProperty(value = "inntektskategori")
@@ -94,7 +94,7 @@ public class BeregningsgrunnlagPrStatusOgAndelFRISINNDto {
                                                        @NotNull @Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 10, fraction = 2) BigDecimal avkortetPrÅr,
                                                        @NotNull @Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 10, fraction = 2) BigDecimal løpendeInntektPrÅr,
                                                        @NotNull @Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 10, fraction = 2) BigDecimal bgFratrukketInntektstak,
-                                                       @NotNull @Valid @Min(0) @Max(Long.MAX_VALUE) Long dagsats,
+                                                       @NotNull @Valid @Min(0) @Max(178956970) Long dagsats,
                                                        @NotNull @Valid Inntektskategori inntektskategori, Avslagsårsak avslagsårsak) {
         this.aktivitetStatus = aktivitetStatus;
         this.bruttoPrÅr = bruttoPrÅr;

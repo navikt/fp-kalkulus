@@ -24,7 +24,7 @@ public class FastsatteVerdierDto {
     @JsonProperty("fastsattBeløpPrMnd")
     @Valid
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     private Integer fastsattBeløpPrMnd;
 
     @JsonProperty("inntektskategori")
@@ -40,7 +40,7 @@ public class FastsatteVerdierDto {
         // For json deserialisering
     }
 
-    public FastsatteVerdierDto(@Valid @Min(0) @Max(Long.MAX_VALUE) Integer fastsattBeløpPrMnd,
+    public FastsatteVerdierDto(@Valid @Min(0) @Max(178956970) Integer fastsattBeløpPrMnd,
                                @Valid @NotNull Inntektskategori inntektskategori,
                                @Valid Boolean skalHaBesteberegning) {
         this.fastsattBeløpPrMnd = fastsattBeløpPrMnd;

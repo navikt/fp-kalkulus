@@ -41,7 +41,7 @@ public class InntektsgrunnlagMånedDto {
 
     public InntektsgrunnlagMånedDto(@Valid @NotNull LocalDate fom,
                                     @Valid @NotNull LocalDate tom,
-                                    @Valid @NotNull @Min(0) @Max(Integer.MAX_VALUE) List<InntektsgrunnlagInntektDto> inntekter) {
+                                    @Valid @NotNull @Min(0) @Max(178956970) List<InntektsgrunnlagInntektDto> inntekter) {
         this.fom = fom;
         this.tom = tom;
         this.inntekter = inntekter;

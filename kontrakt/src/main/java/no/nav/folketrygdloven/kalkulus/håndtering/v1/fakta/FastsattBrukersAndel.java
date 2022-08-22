@@ -39,7 +39,7 @@ public class FastsattBrukersAndel {
     @JsonProperty("fastsattBeløp")
     @Valid
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     private Integer fastsattBeløp;
 
     @JsonProperty("inntektskategori")

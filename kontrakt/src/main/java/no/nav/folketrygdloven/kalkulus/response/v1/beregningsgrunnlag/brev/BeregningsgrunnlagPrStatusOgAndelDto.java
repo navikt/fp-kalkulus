@@ -63,14 +63,14 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     @JsonProperty(value = "dagsatsBruker")
     @Valid
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     @NotNull
     private Long dagsatsBruker;
 
     @JsonProperty(value = "dagsatsArbeidsgiver")
     @Valid
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     @NotNull
     private Long dagsatsArbeidsgiver;
 
@@ -78,14 +78,14 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     @JsonProperty(value = "ugradertDagsatsBruker")
     @Valid
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     @NotNull
     private Long ugradertDagsatsBruker;
 
     @JsonProperty(value = "ugradertDagsatsArbeidsgiver")
     @Valid
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     @NotNull
     private Long ugradertDagsatsArbeidsgiver;
 

@@ -44,7 +44,7 @@ public class VurderRefusjonAndelBeregningsgrunnlagDto {
     @JsonProperty("delvisRefusjonBeløpPrMnd")
     @Valid
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     private Integer delvisRefusjonBeløpPrMnd;
 
     public VurderRefusjonAndelBeregningsgrunnlagDto() {

@@ -75,13 +75,13 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     @JsonProperty(value = "dagsatsBruker")
     @Valid
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     private Long dagsatsBruker;
 
     @JsonProperty(value = "dagsatsArbeidsgiver")
     @Valid
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     private Long dagsatsArbeidsgiver;
 
     @JsonProperty(value = "inntektskategori")
@@ -209,7 +209,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     @JsonProperty(value = "orginalDagsatsFraTilstøtendeYtelse")
     @Valid
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     private Long orginalDagsatsFraTilstøtendeYtelse;
 
     // TODO Fjern dette feltet når det er laget en egen brevtjeneste

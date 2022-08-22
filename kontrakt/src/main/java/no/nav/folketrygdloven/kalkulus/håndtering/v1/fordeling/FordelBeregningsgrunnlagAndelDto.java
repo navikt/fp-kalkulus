@@ -32,13 +32,13 @@ public class FordelBeregningsgrunnlagAndelDto extends FordelRedigerbarAndelDto {
     @JsonProperty("forrigeRefusjonPrÅr")
     @Valid
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     private Integer forrigeRefusjonPrÅr;
 
     @JsonProperty("forrigeArbeidsinntektPrÅr")
     @Valid
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     private Integer forrigeArbeidsinntektPrÅr;
 
     FordelBeregningsgrunnlagAndelDto() { // NOSONAR

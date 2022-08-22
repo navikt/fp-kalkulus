@@ -33,13 +33,13 @@ public class FastsettBeregningsgrunnlagAndelDto extends RedigerbarAndelDto {
     @JsonProperty("forrigeRefusjonPrÅr")
     @Valid
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     private Integer forrigeRefusjonPrÅr;
 
     @JsonProperty("forrigeArbeidsinntektPrÅr")
     @Valid
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     private Integer forrigeArbeidsinntektPrÅr;
 
     FastsettBeregningsgrunnlagAndelDto() { // NOSONAR

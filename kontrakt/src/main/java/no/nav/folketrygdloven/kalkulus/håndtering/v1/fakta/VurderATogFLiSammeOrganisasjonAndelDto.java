@@ -27,7 +27,7 @@ public class VurderATogFLiSammeOrganisasjonAndelDto {
     @JsonProperty("arbeidsinntekt")
     @Valid
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     private Integer arbeidsinntekt;
 
     public VurderATogFLiSammeOrganisasjonAndelDto() {

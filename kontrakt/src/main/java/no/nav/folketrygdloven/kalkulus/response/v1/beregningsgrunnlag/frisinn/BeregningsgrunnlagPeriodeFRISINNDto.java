@@ -71,7 +71,7 @@ public class BeregningsgrunnlagPeriodeFRISINNDto {
     @JsonProperty(value = "dagsats")
     @Valid
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     private Long dagsats;
 
     @JsonProperty(value = "periodeÅrsaker")

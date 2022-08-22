@@ -21,7 +21,7 @@ public class FastsettEtterlønnSluttpakkeDto {
     @JsonProperty("fastsettEtterlønnSluttpakke")
     @Valid
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     private Integer fastsattPrMnd;
 
     public FastsettEtterlønnSluttpakkeDto() {

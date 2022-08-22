@@ -24,13 +24,13 @@ public class FordelFastsatteVerdierDto {
     @JsonProperty("refusjonPrÅr")
     @Valid
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     private Integer refusjonPrÅr;
 
     @JsonProperty("fastsattÅrsbeløp")
     @Valid
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     private Integer fastsattÅrsbeløp;
 
     @JsonProperty("inntektskategori")
@@ -40,7 +40,7 @@ public class FordelFastsatteVerdierDto {
 
     @JsonProperty("fastsattÅrsbeløpInklNaturalytelse")
     @Min(0)
-    @Max(Integer.MAX_VALUE)
+    @Max(178956970)
     @NotNull
     private Integer fastsattÅrsbeløpInklNaturalytelse;
 
@@ -49,10 +49,10 @@ public class FordelFastsatteVerdierDto {
     }
 
 
-    public FordelFastsatteVerdierDto(@Valid @Min(0) @Max(Long.MAX_VALUE) Integer refusjonPrÅr,
-                                     @Valid @Min(0) @Max(Long.MAX_VALUE) Integer fastsattÅrsbeløp,
+    public FordelFastsatteVerdierDto(@Valid @Min(0) @Max(178956970) Integer refusjonPrÅr,
+                                     @Valid @Min(0) @Max(178956970) Integer fastsattÅrsbeløp,
                                      @Valid @NotNull Inntektskategori inntektskategori,
-                                     @Min(0) @Max(Integer.MAX_VALUE) @NotNull Integer fastsattÅrsbeløpInklNaturalytelse) {
+                                     @Min(0) @Max(178956970) @NotNull Integer fastsattÅrsbeløpInklNaturalytelse) {
         this.refusjonPrÅr = refusjonPrÅr;
         this.fastsattÅrsbeløp = fastsattÅrsbeløp;
         this.inntektskategori = inntektskategori;

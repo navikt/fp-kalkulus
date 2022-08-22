@@ -20,7 +20,7 @@ public class FastsettMånedsinntektFLDto {
     @JsonProperty("maanedsinntekt")
     @Valid
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     private Integer maanedsinntekt;
 
     public FastsettMånedsinntektFLDto() {

@@ -55,7 +55,7 @@ public class BeregningsgrunnlagPeriodeDto {
     @JsonProperty(value = "dagsats")
     @Valid
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     private Long dagsats;
 
     public BeregningsgrunnlagPeriodeDto() {
