@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -43,4 +44,11 @@ public class KopierBeregningRequest {
     public UUID getKopierFraReferanse() {
         return kopierFraReferanse;
     }
+
+    @AssertTrue(message = "Kan ikke ha kopierFraReferanse lik eksternReferanse")
+    public boolean skalVereUlikeReferanser() {
+        return !kopierFraReferanse.equals(eksternReferanse);
+    }
+
+
 }
