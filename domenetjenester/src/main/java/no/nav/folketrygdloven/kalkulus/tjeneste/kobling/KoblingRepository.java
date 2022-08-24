@@ -5,14 +5,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
@@ -72,7 +71,7 @@ public class KoblingRepository {
 
     public Optional<Long> hentFor(KoblingReferanse referanse, YtelseTyperKalkulusStøtterKontrakt ytelseType) {
         TypedQuery<Long> query = entityManager
-            .createQuery("SELECT k.id FROM Kobling k WHERE k.koblingReferanse = :referanse AND k.ytelseTyperKalkulusStøtter = :ytelse", Long.class);
+                .createQuery("SELECT k.id FROM Kobling k WHERE k.koblingReferanse = :referanse AND k.ytelseTyperKalkulusStøtter = :ytelse", Long.class);
         query.setParameter("referanse", referanse);
         query.setParameter("ytelse", ytelseType);
         return HibernateVerktøy.hentUniktResultat(query);
@@ -80,7 +79,7 @@ public class KoblingRepository {
 
     public List<KoblingEntitet> hentKoblingerFor(Collection<KoblingReferanse> referanser, YtelseTyperKalkulusStøtterKontrakt ytelseType) {
         TypedQuery<KoblingEntitet> query = entityManager.createQuery(
-            "SELECT k FROM Kobling k WHERE k.koblingReferanse IN(:referanser) AND k.ytelseTyperKalkulusStøtter = :ytelseType", KoblingEntitet.class);
+                "SELECT k FROM Kobling k WHERE k.koblingReferanse IN(:referanser) AND k.ytelseTyperKalkulusStøtter = :ytelseType", KoblingEntitet.class);
         query.setParameter("referanser", referanser);
         query.setParameter("ytelseType", ytelseType);
         return query.getResultList();
@@ -99,6 +98,19 @@ public class KoblingRepository {
         query.setParameter("saksnummer", saksnummer);
         query.setMaxResults(1);
         return HibernateVerktøy.hentUniktResultat(query);
+    }
+
+    public void fjernUgyldigKoblingrelasjonForId(Long koblingId) {
+        var query = entityManager.createNativeQuery(
+                "DELETE FROM KOBLING_RELASJON k " +
+                        "WHERE k.kobling_id = :koblingId " +
+                        "AND k.original_kobling_id = :koblingId"
+        );
+        query.setParameter("koblingId", koblingId);
+        var slettedeRader = query.executeUpdate();
+        if (slettedeRader > 1) {
+            throw new IllegalStateException("Skal kun slette en ugyldig koblingrelasjon");
+        }
     }
 
     public List<KoblingRelasjon> hentRelasjonerForId(Long koblingId) {
@@ -164,8 +176,8 @@ public class KoblingRepository {
 
     public List<KoblingEntitet> hentKoblingerFor(Collection<Long> koblingIder) {
         return entityManager.createQuery("SELECT k FROM Kobling k WHERE k.id IN (:koblingIder)", KoblingEntitet.class)
-            .setParameter("koblingIder", koblingIder)
-            .getResultList();
+                .setParameter("koblingIder", koblingIder)
+                .getResultList();
     }
 
 }

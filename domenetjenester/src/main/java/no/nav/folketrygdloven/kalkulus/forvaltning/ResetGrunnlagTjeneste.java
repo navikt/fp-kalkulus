@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
@@ -14,20 +13,23 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.request.v1.KopierBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
+import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 
 @ApplicationScoped
 public class ResetGrunnlagTjeneste {
 
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private KoblingTjeneste koblingTjeneste;
+    private KoblingRepository koblingRepository;
 
     public ResetGrunnlagTjeneste() {
     }
 
     @Inject
-    public ResetGrunnlagTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository, KoblingTjeneste koblingTjeneste) {
+    public ResetGrunnlagTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository, KoblingTjeneste koblingTjeneste, KoblingRepository koblingRepository) {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.koblingTjeneste = koblingTjeneste;
+        this.koblingRepository = koblingRepository;
     }
 
     public void resetGrunnlag(List<KopierBeregningRequest> kopiRequests,
@@ -37,6 +39,7 @@ public class ResetGrunnlagTjeneste {
                 .collect(Collectors.toList());
         var originalKobling = finnKoblinger(ytelseType, originalReferanser);
         reaktiverForrigeFastsatt(originalBehandlingAvsluttetTid, originalKobling);
+        originalKobling.forEach(k -> koblingRepository.fjernUgyldigKoblingrelasjonForId(k.getId()));
     }
 
     private void reaktiverForrigeFastsatt(LocalDateTime originalBehandlingAvsluttetTid, List<KoblingEntitet> originalKobling) {

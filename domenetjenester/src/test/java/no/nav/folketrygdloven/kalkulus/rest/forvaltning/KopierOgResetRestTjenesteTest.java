@@ -35,6 +35,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingRef
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Årsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
 import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
@@ -110,7 +111,7 @@ class KopierOgResetRestTjenesteTest extends EntityManagerAwareTest {
         var koblingTjeneste = new KoblingTjeneste(koblingRepository, new LåsRepository(getEntityManager()));
         kalkulatorInputTjeneste = new KalkulatorInputTjeneste(repository, koblingTjeneste);
         var kopierBeregningsgrunnlagTjeneste = new KopierBeregningsgrunnlagTjeneste(koblingTjeneste, repository, avklaringsbehovTjeneste, kalkulatorInputTjeneste);
-        tjeneste = new KopierOgResetRestTjeneste(kopierBeregningsgrunnlagTjeneste, new ResetGrunnlagTjeneste(repository, koblingTjeneste));
+        tjeneste = new KopierOgResetRestTjeneste(kopierBeregningsgrunnlagTjeneste, new ResetGrunnlagTjeneste(repository, koblingTjeneste, koblingRepository));
     }
 
 
@@ -120,6 +121,7 @@ class KopierOgResetRestTjenesteTest extends EntityManagerAwareTest {
         var originalKoblingReferanse = UUID.randomUUID();
         var originalKobling = new KoblingEntitet(new KoblingReferanse(originalKoblingReferanse), YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN, SAK, AKTØR_ID);
         koblingRepository.lagre(originalKobling);
+        koblingRepository.lagre(new KoblingRelasjon(originalKobling.getId(), originalKobling.getId()));
         kalkulatorInputTjeneste.lagreKalkulatorInput(originalKobling.getId(), byggKalkulatorInput());
 
         var gr1 = repository.lagre(originalKobling.getId(), byggGrunnlag(200000), BeregningsgrunnlagTilstand.FASTSATT);
@@ -138,6 +140,9 @@ class KopierOgResetRestTjenesteTest extends EntityManagerAwareTest {
         // 1
 
         kjørOgVerifiser(originalKoblingReferanse, originalKobling, gr3, behandling3AvsluttetTid, gr4, behandling4AvsluttetTid, 2);
+
+        var relasjoner = koblingRepository.hentRelasjonerFor(List.of(originalKobling.getId()));
+        assertThat(relasjoner.stream().noneMatch(r -> r.getKoblingId().equals(r.getOriginalKoblingId()))).isTrue();
 
         // 2
 
