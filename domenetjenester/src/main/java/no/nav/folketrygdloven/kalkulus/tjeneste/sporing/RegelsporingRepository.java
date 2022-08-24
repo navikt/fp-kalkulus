@@ -70,8 +70,9 @@ public class RegelsporingRepository {
     /**
      * Lager hash og komprimererer regelsporinger
      *
+     * @return
      */
-    public void hashVilkårlige(int antall) {
+    public int hashVilkårlige(int antall) {
         TypedQuery<RegelSporingPeriodeEntitet> query = entityManager.createQuery(
                 "from RegelSporingPeriodeEntitet sporing " +
                         "where regelInput is not null", RegelSporingPeriodeEntitet.class); //$NON-NLS-1$
@@ -85,6 +86,7 @@ public class RegelsporingRepository {
             entityManager.persist(r);
         });
         entityManager.flush();
+        return resultList.size();
     }
 
     /**
@@ -110,7 +112,6 @@ public class RegelsporingRepository {
 
     /**
      * Finner vilkårlig sporing uten komprimering
-     *
      */
     public Optional<Long> finnKoblingUtenKomprimering() {
         TypedQuery<RegelSporingPeriodeEntitet> query = entityManager.createQuery(

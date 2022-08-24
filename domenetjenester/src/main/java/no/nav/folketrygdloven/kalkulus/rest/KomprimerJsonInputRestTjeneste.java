@@ -91,8 +91,8 @@ public class KomprimerJsonInputRestTjeneste {
     @BeskyttetRessurs(action = CREATE, property = DRIFT)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response komprimerAntallRegelSporinger(@NotNull @Valid KomprimerRegelInputRequestAbacDto spesifikasjon) {
-        regelsporingRepository.hashVilkårlige(spesifikasjon.getAntall());
-        return Response.ok().build();
+        var antallHashet = regelsporingRepository.hashVilkårlige(spesifikasjon.getAntall());
+        return Response.ok(antallHashet).build();
     }
 
 
