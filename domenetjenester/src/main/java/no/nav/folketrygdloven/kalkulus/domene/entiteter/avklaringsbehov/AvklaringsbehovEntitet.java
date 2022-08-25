@@ -48,6 +48,10 @@ public class AvklaringsbehovEntitet extends BaseEntitet implements Comparable<Av
     @Column(name = "begrunnelse")
     private String begrunnelse;
 
+    @Column(name = "er_trukket")
+    private Boolean erTrukket;
+
+
     @Version
     @Column(name = "versjon", nullable = false)
     private long versjon;
@@ -77,6 +81,10 @@ public class AvklaringsbehovEntitet extends BaseEntitet implements Comparable<Av
         return status;
     }
 
+    public Boolean getErTrukket() {
+        return erTrukket != null && erTrukket;
+    }
+
     public String getBegrunnelse() {
         return begrunnelse;
     }
@@ -87,8 +95,11 @@ public class AvklaringsbehovEntitet extends BaseEntitet implements Comparable<Av
     }
 
     void setBegrunnelse(String begrunnelse) {
-        Objects.requireNonNull(begrunnelse, "begrunnelse");
         this.begrunnelse = begrunnelse;
+    }
+
+    void setErTrukket(Boolean erTrukket) {
+        this.erTrukket = erTrukket;
     }
 
     void setStatus(AvklaringsbehovStatus status) {
@@ -172,6 +183,13 @@ public class AvklaringsbehovEntitet extends BaseEntitet implements Comparable<Av
             mal.setBegrunnelse(begrunnelse);
             return this;
         }
+
+
+        AvklaringsbehovEntitet.Builder medErTrukket(boolean erTrukket) {
+            mal.setErTrukket(erTrukket);
+            return this;
+        }
+
 
         AvklaringsbehovEntitet buildFor(KoblingEntitet kobling) {
             mal.setKobling(kobling);

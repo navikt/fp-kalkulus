@@ -8,11 +8,14 @@ public final class AvklaringsbehovDto {
     private final AvklaringsbehovDefinisjon definisjon;
     private final AvklaringsbehovStatus status;
     private final String begrunnelse;
+    private final Boolean erTrukket;
 
-    public AvklaringsbehovDto(AvklaringsbehovDefinisjon definisjon, AvklaringsbehovStatus status, String begrunnelse) {
+
+    public AvklaringsbehovDto(AvklaringsbehovDefinisjon definisjon, AvklaringsbehovStatus status, String begrunnelse, Boolean erTrukket) {
         this.definisjon = definisjon;
         this.status = status;
         this.begrunnelse = begrunnelse;
+        this.erTrukket = erTrukket;
     }
 
     public AvklaringsbehovDefinisjon getDefinisjon() {
@@ -25,5 +28,9 @@ public final class AvklaringsbehovDto {
 
     public String getBegrunnelse() {
         return begrunnelse;
+    }
+
+    public Boolean getErTrukket() {
+        return erTrukket != null && erTrukket;
     }
 }

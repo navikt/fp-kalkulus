@@ -38,6 +38,7 @@ public class AvklaringsbehovKontrollTjeneste {
 
     public void gjennopprett(AvklaringsbehovEntitet avklaringsbehovEntitet) {
         avklaringsbehovEntitet.setStatus(AvklaringsbehovStatus.OPPRETTET);
+        avklaringsbehovEntitet.setErTrukket(false);
     }
 
     public void løs(AvklaringsbehovEntitet avklaringsbehovEntitet, String begrunnelse) {
@@ -53,8 +54,16 @@ public class AvklaringsbehovKontrollTjeneste {
     }
 
 
-    public no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet avbryt(no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet avklaringsbehovEntitet) {
+    public AvklaringsbehovEntitet avbryt(no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet avklaringsbehovEntitet) {
         avklaringsbehovEntitet.setStatus(AvklaringsbehovStatus.AVBRUTT);
         return avklaringsbehovEntitet;
     }
+
+    public AvklaringsbehovEntitet trekkOverstyring(no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet avklaringsbehovEntitet) {
+        avklaringsbehovEntitet.setStatus(AvklaringsbehovStatus.UTFØRT);
+        avklaringsbehovEntitet.setErTrukket(true);
+        avklaringsbehovEntitet.setBegrunnelse(null);
+        return avklaringsbehovEntitet;
+    }
+
 }

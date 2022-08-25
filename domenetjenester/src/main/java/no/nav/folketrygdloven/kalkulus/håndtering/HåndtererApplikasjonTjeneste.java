@@ -9,6 +9,7 @@ import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
 
+import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulus.beregning.MapHåndteringskodeTilTilstand;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
@@ -44,7 +45,7 @@ public class HåndtererApplikasjonTjeneste {
         if (avklaringsbehovdefinisjon.erOverstyring()) {
             if (håndterBeregningDto.skalAvbrytes()) {
                 var overstyring = avklaringsbehovTjeneste.hentAvklaringsbehov(koblingId, avklaringsbehovdefinisjon);
-                overstyring.ifPresent(o -> avklaringsbehovTjeneste.avbrytAvklaringsbehov(koblingId, o));
+                overstyring.ifPresent(o -> avklaringsbehovTjeneste.trekkOverstyring(koblingId, o));
                 return OppdateringRespons.TOM_RESPONS();
             } else {
                 opprettOverstyringAvklaringsbehov(koblingId, avklaringsbehovdefinisjon);
@@ -69,7 +70,9 @@ public class HåndtererApplikasjonTjeneste {
     }
 
     private void opprettOverstyringAvklaringsbehov(Long koblingId, AvklaringsbehovDefinisjon avklaringsbehovdefinisjon) {
-        avklaringsbehovTjeneste.avbrytAndreAvklaringsbehovISammeSteg(koblingId, avklaringsbehovdefinisjon);
+        if (!KonfigurasjonVerdi.get("TREKKE_OVERSTYRING_ENABLED", false)) {
+            avklaringsbehovTjeneste.avbrytAndreAvklaringsbehovISammeSteg(koblingId, avklaringsbehovdefinisjon);
+        }
         avklaringsbehovTjeneste.opprettEllerGjennopprettAvklaringsbehov(koblingId, avklaringsbehovdefinisjon);
     }
 

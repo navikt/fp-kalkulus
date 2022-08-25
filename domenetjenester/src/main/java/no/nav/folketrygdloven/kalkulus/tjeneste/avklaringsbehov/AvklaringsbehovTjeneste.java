@@ -217,6 +217,12 @@ public class AvklaringsbehovTjeneste {
         avklaringsbehovRepository.lagre(ap);
     }
 
+    public void trekkOverstyring(Long koblingId, AvklaringsbehovEntitet ap) {
+        LOG.info("Trekker overstyring {} for kobling {}", ap.getDefinisjon(), koblingId);
+        avklaringsbehovKontrollTjeneste.trekkOverstyring(ap);
+        avklaringsbehovRepository.lagre(ap);
+    }
+
     private void kastManglendeAvklaringsbehovFeil(Long koblingId, AvklaringsbehovDefinisjon avklaringsbehovDefinisjon) {
         throw new TekniskException("FT-406876",
                 String.format("Avklaringsbehov med definisjon %s på koblingen med id %s finnes sikke på koblingen.", avklaringsbehovDefinisjon, koblingId));

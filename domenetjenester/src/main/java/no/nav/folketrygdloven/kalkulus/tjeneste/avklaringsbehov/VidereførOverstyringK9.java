@@ -41,7 +41,8 @@ public class VidereførOverstyringK9 implements VidereførOverstyring {
         return Arrays.stream(AvklaringsbehovDefinisjon.values()).filter(it -> it.erOverstyring() && it.getStegFunnet().equals(beregningSteg))
                 .filter(it -> !it.equals(AvklaringsbehovDefinisjon.OVERSTYRING_AV_BEREGNINGSAKTIVITETER))
                 .findFirst()
-                .flatMap(it -> avklaringsbehovTjeneste.hentAvklaringsbehov(koblingId, it));
+                .flatMap(it -> avklaringsbehovTjeneste.hentAvklaringsbehov(koblingId, it))
+                .filter(ab -> !ab.getErTrukket());
     }
 
 }

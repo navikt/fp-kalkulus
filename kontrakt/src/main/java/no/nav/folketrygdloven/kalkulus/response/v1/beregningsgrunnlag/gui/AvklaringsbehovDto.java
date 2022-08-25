@@ -21,6 +21,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovStatus;
 public record AvklaringsbehovDto(@JsonProperty(value = "definisjon") @NotNull @Valid AvklaringsbehovDefinisjon definisjon,
                                  @JsonProperty(value = "status") @NotNull @Valid AvklaringsbehovStatus status,
                                  @JsonProperty(value = "kanLoses") @NotNull @Valid boolean kanLoses,
+                                 @JsonProperty(value = "erTrukket") @NotNull @Valid boolean erTrukket,
                                  @JsonProperty(value = "begrunnelse")
                               @Size(max = 5000)
                               @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}§]+$", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")

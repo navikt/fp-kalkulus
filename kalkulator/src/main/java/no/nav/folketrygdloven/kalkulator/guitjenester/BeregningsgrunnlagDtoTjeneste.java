@@ -86,8 +86,9 @@ public class BeregningsgrunnlagDtoTjeneste {
 
     private void mapAvklaringsbehov(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
         dto.setAvklaringsbehov(input.getAvklaringsbehov().stream()
-                .filter(ab -> !ab.getStatus().equals(AvklaringsbehovStatus.AVBRUTT))
-                .map(a -> new AvklaringsbehovDto(a.getDefinisjon(), a.getStatus(), kanLøses(a, input), a.getBegrunnelse())).collect(Collectors.toList()));
+                .filter(ab -> !ab.getStatus().equals(AvklaringsbehovStatus.AVBRUTT) && !ab.getErTrukket())
+                .map(a -> new AvklaringsbehovDto(a.getDefinisjon(), a.getStatus(), kanLøses(a, input),
+                        a.getErTrukket(),  a.getBegrunnelse())).collect(Collectors.toList()));
     }
 
     private boolean kanLøses(no.nav.folketrygdloven.kalkulator.modell.avklaringsbehov.AvklaringsbehovDto a, BeregningsgrunnlagGUIInput input) {

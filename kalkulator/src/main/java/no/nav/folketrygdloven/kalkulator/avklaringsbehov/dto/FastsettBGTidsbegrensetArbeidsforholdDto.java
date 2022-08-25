@@ -16,7 +16,7 @@ public class FastsettBGTidsbegrensetArbeidsforholdDto {
     private List<FastsattePerioderTidsbegrensetDto> fastsatteTidsbegrensedePerioder;
 
     @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Max(178956970)
     private Integer frilansInntekt;
 
 

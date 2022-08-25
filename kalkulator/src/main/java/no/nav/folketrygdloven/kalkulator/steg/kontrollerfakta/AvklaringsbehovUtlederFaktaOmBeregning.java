@@ -8,6 +8,7 @@ import java.util.Objects;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
+import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
@@ -39,7 +40,7 @@ public class AvklaringsbehovUtlederFaktaOmBeregning {
 
         List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = faktaOmBeregningTilfelleTjeneste.finnTilfellerForFellesAvklaringsbehov(input, beregningsgrunnlagGrunnlag);
 
-        if (erOverstyrt) {
+        if (erOverstyrt && !KonfigurasjonVerdi.get("TREKKE_OVERSTYRING_ENABLED", false)) {
             return new FaktaOmBeregningAvklaringsbehovResultat(singletonList(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.OVERSTYRING_AV_BEREGNINGSGRUNNLAG)),
                     faktaOmBeregningTilfeller);
         }
