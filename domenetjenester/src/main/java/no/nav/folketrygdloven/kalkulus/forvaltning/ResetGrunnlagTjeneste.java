@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulus.forvaltning;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -10,8 +11,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingRef
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
-import no.nav.folketrygdloven.kalkulus.request.v1.KopierBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 
@@ -32,12 +31,12 @@ public class ResetGrunnlagTjeneste {
         this.koblingRepository = koblingRepository;
     }
 
-    public void resetGrunnlag(List<KopierBeregningRequest> kopiRequests,
-                              YtelseTyperKalkulusStøtterKontrakt ytelseType, LocalDateTime originalBehandlingAvsluttetTid) {
-        var originalReferanser = kopiRequests.stream().map(KopierBeregningRequest::getKopierFraReferanse)
+    public void resetGrunnlag(List<UUID> eksternReferanser,
+                              LocalDateTime originalBehandlingAvsluttetTid) {
+        var originalReferanser = eksternReferanser.stream()
                 .map(KoblingReferanse::new)
                 .collect(Collectors.toList());
-        var originalKobling = finnKoblinger(ytelseType, originalReferanser);
+        var originalKobling = finnKoblinger(originalReferanser);
         reaktiverForrigeFastsatt(originalBehandlingAvsluttetTid, originalKobling);
         originalKobling.forEach(k -> koblingRepository.fjernUgyldigKoblingrelasjonForId(k.getId()));
     }
@@ -57,9 +56,8 @@ public class ResetGrunnlagTjeneste {
         });
     }
 
-    private List<KoblingEntitet> finnKoblinger(YtelseTyperKalkulusStøtterKontrakt ytelseType, List<KoblingReferanse> referanser) {
-        var eksisterendeKoblinger = koblingTjeneste.hentKoblinger(referanser, ytelseType);
-        return eksisterendeKoblinger;
+    private List<KoblingEntitet> finnKoblinger(List<KoblingReferanse> referanser) {
+        return koblingTjeneste.hentKoblinger(referanser);
     }
 
 }

@@ -1,6 +1,8 @@
 package no.nav.folketrygdloven.kalkulus.rest.forvaltning;
 
 import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributtMiljøvariabel.BEREGNINGSGRUNNLAG;
+import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributtMiljøvariabel.DRIFT;
+import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.CREATE;
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.UPDATE;
 
 import java.time.LocalDateTime;
@@ -39,6 +41,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontr
 import no.nav.folketrygdloven.kalkulus.kopiering.KopierBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulus.request.v1.KopierBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.KopierOgResettBeregningListeRequest;
+import no.nav.folketrygdloven.kalkulus.request.v1.ResettBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.KopiResponse;
 import no.nav.k9.felles.sikkerhet.abac.AbacDataAttributter;
 import no.nav.k9.felles.sikkerhet.abac.AbacDto;
@@ -83,12 +86,25 @@ public class KopierOgResetRestTjeneste {
                 new Saksnummer(spesifikasjon.getSaksnummer()),
                 spesifikasjon.getStegType() == null ? BeregningSteg.FAST_BERGRUNN : BeregningSteg.fraKode(spesifikasjon.getStegType().getKode()),
                 spesifikasjon.getBehandlingAvsluttetTid());
-        resetGrunnlagTjeneste.resetGrunnlag(spesifikasjon.getKopierBeregningListe(), spesifikasjon.getYtelseSomSkalBeregnes(), spesifikasjon.getOriginalBehandlingAvsluttetTid());
+        resetGrunnlagTjeneste.resetGrunnlag(spesifikasjon.getKopierBeregningListe().stream().map(KopierBeregningRequest::getKopierFraReferanse).toList(), spesifikasjon.getOriginalBehandlingAvsluttetTid());
         return Response.ok(spesifikasjon.getKopierBeregningListe()
                 .stream()
                 .map(KopierBeregningRequest::getEksternReferanse)
                 .map(KopiResponse::new).collect(Collectors.toList())).build();
     }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/resett")
+    @Operation(description = "Resetter original til forrige fastsatte.",
+            tags = "beregn",
+            summary = ("Resetter et grunnlag."))
+    @BeskyttetRessurs(action = CREATE, property = DRIFT)
+    public Response resett(@NotNull @Valid ResettBeregningRequestAbacDto spesifikasjon) {
+        resetGrunnlagTjeneste.resetGrunnlag(List.of(spesifikasjon.getEksternReferanse()), spesifikasjon.getBehandlingAvsluttetTid());
+        return Response.ok().build();
+    }
+
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -116,6 +132,27 @@ public class KopierOgResetRestTjeneste {
             }
             abacDataAttributter.leggTil(StandardAbacAttributtType.SAKSNUMMER, getSaksnummer());
             return abacDataAttributter;
+        }
+    }
+
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
+    public static class ResettBeregningRequestAbacDto extends ResettBeregningRequest implements AbacDto {
+
+        public ResettBeregningRequestAbacDto() {
+        }
+
+        public ResettBeregningRequestAbacDto(UUID eksternReferanse,
+                                             LocalDateTime behandlingAvsluttetTid) {
+            super(eksternReferanse, behandlingAvsluttetTid);
+        }
+
+
+        @Override
+        public AbacDataAttributter abacAttributter() {
+            return new AbacDataAttributter();
         }
     }
 
