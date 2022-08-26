@@ -10,7 +10,6 @@ import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørArbeidDto;
@@ -19,6 +18,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 
 public class LønnsendringTjeneste {
@@ -105,7 +105,7 @@ public class LønnsendringTjeneste {
             Optional<AktørArbeidDto> aktørArbeid = iayGrunnlag.getAktørArbeidFraRegister();
             var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), aktørArbeid);
             Optional<YrkesaktivitetDto> yrkesaktivitet = finnMatchendeYrkesaktivitetMedLønnsendring(andel, filter);
-            yrkesaktivitet.ifPresent(ya-> {
+            yrkesaktivitet.ifPresent(ya -> {
                 boolean harLønnsendringIBeregningsperiode = harLønnsendringIBeregningsperiode(harBeregningsperiodeSomOverlapperDato, andel, filter, ya);
                 boolean manglerIM = manglerInntektsmelding(inntektsmeldinger, andel);
                 if (manglerIM && harLønnsendringIBeregningsperiode) {
@@ -153,8 +153,10 @@ public class LønnsendringTjeneste {
     }
 
     private static List<BeregningsgrunnlagPrStatusOgAndelDto> alleArbeidstakerandelerMedBeregningsperiode(BeregningsgrunnlagDto beregningsgrunnlag) {
-        return beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
-                .map(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPrStatusOgAndelList).flatMap(Collection::stream)
+        return beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0)
+                .getBeregningsgrunnlagPrStatusOgAndelList()
+                .stream()
+                .filter(bpsa -> bpsa.getKilde().equals(AndelKilde.PROSESS_START))
                 .filter(bpsa -> bpsa.getAktivitetStatus().erArbeidstaker())
                 .filter(bpsa -> bpsa.getBeregningsperiode() != null)
                 .collect(Collectors.toList());
