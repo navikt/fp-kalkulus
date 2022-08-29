@@ -2,9 +2,12 @@ package no.nav.folketrygdloven.kalkulus.kopiering;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -17,6 +20,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
@@ -58,7 +62,7 @@ public class KopierBeregningsgrunnlagTjeneste {
      * @param ytelseType   Ytelsetype
      * @param saksnummer   Saksnummer
      * @param steg         Definerer steget som vi kopierer beregningsgrunnlag fra
-     * @param opprettetTidMax
+     * @param opprettetTidMax Opprettet tid max
      */
     public void kopierGrunnlagOgOpprettKoblinger(List<KopierBeregningRequest> kopiRequests,
                                                  YtelseTyperKalkulusStøtterKontrakt ytelseType,
@@ -118,31 +122,66 @@ public class KopierBeregningsgrunnlagTjeneste {
         var eksisterendeKoblingReferanser = kopiRequests.stream().map(KopierBeregningRequest::getKopierFraReferanse)
                 .map(KoblingReferanse::new)
                 .collect(Collectors.toList());
-        var eksisterendeKoblinger = koblingTjeneste.hentKoblinger(eksisterendeKoblingReferanser, ytelseType);
-        return eksisterendeKoblinger;
+        return koblingTjeneste.hentKoblinger(eksisterendeKoblingReferanser, ytelseType);
     }
 
     private void kopierBeregningsgrunnlag(List<KopierBeregningRequest> kopiRequests, List<KoblingEntitet> nyeKoblinger, List<KoblingEntitet> eksisterendeKoblinger, BeregningSteg steg, LocalDateTime opprettetTidMax) {
-        List<BeregningsgrunnlagGrunnlagEntitet> grunnlagSomSkalKopieres = finnGrunnlagSomSkalKopieres(eksisterendeKoblinger, steg, opprettetTidMax);
+        var grunnlagSomSkalKopieres = finnGrunnlagSomSkalKopieres(
+                eksisterendeKoblinger,
+                steg,
+                opprettetTidMax);
 
-        grunnlagSomSkalKopieres.forEach(gr -> {
-            var nyKoblingId = finnNyKoblingId(gr.getKoblingId(), eksisterendeKoblinger, nyeKoblinger, kopiRequests);
+        grunnlagSomSkalKopieres.forEach((koblingId, gr) -> {
+            var nyKoblingId = finnNyKoblingId(koblingId, eksisterendeKoblinger, nyeKoblinger, kopiRequests);
             var kopi = BeregningsgrunnlagGrunnlagBuilder.kopiere(gr);
             beregningsgrunnlagRepository.lagre(nyKoblingId, kopi, MapStegTilTilstand.mapTilStegTilstand(steg));
         });
     }
 
-    private List<BeregningsgrunnlagGrunnlagEntitet> finnGrunnlagSomSkalKopieres(List<KoblingEntitet> eksisterendeKoblinger, BeregningSteg steg, LocalDateTime opprettetTidMax) {
-        if (steg.equals(BeregningSteg.VURDER_VILKAR_BERGRUNN)) {
-            return finnGrunnlagForKopiAvVilkårsvurdering(eksisterendeKoblinger, opprettetTidMax);
+    private Map<Long, BeregningsgrunnlagGrunnlagEntitet> finnGrunnlagSomSkalKopieres(List<KoblingEntitet> kopierFraKoblinger, BeregningSteg steg, LocalDateTime opprettetTidMax) {
+        var eksisterendeKoblingIder = mapTilId(kopierFraKoblinger);
+        var grunnlagsliste = finnSisteGrunnlagForStegPrKobling(steg, opprettetTidMax, eksisterendeKoblingIder);
+        var resultMap = grunnlagsliste.stream().collect(Collectors.toMap(BeregningsgrunnlagGrunnlagEntitet::getKoblingId, Function.identity()));
+        var koblingerUtenGrunnlag = finnKoblingIdIkkeInkludertIListeMedGrunnlag(eksisterendeKoblingIder, resultMap.values());
+        var koblingMap = koblingTjeneste.hentKoblingRelasjoner(koblingerUtenGrunnlag).stream()
+                .collect(Collectors.toMap(KoblingRelasjon::getOriginalKoblingId, KoblingRelasjon::getKoblingId));
+
+        // Finner siste i originale koblinger
+        while (!koblingerUtenGrunnlag.isEmpty() && !koblingMap.isEmpty()) {
+            var originalKoblinger = koblingMap.keySet();
+            var grunnlagFraOriginaleKoblinger = finnSisteGrunnlagForStegPrKobling(steg, opprettetTidMax, originalKoblinger);
+            oppdaterResultatMap(resultMap, koblingMap, grunnlagFraOriginaleKoblinger);
+            koblingerUtenGrunnlag = finnKoblingIdIkkeInkludertIListeMedGrunnlag(originalKoblinger, grunnlagFraOriginaleKoblinger);
+            koblingMap = finnKoblingMap(koblingerUtenGrunnlag, koblingMap);
         }
-        return beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(mapTilId(eksisterendeKoblinger), MapStegTilTilstand.mapTilStegTilstand(steg), opprettetTidMax);
+
+        var kopierFraKoblingerUtenGrunnlag = eksisterendeKoblingIder.stream().filter(id -> !resultMap.containsKey(id)).collect(Collectors.toSet());
+        if (!kopierFraKoblingerUtenGrunnlag.isEmpty()) {
+            throw new IllegalStateException("Prøvde å kopiere grunnlag fra steg " + steg.getKode() + " for koblinger " + kopierFraKoblingerUtenGrunnlag + ", men grunnlag fant ikke grunnlag med riktig tilstand." );
+        }
+        return resultMap;
     }
 
-    private List<BeregningsgrunnlagGrunnlagEntitet> finnGrunnlagForKopiAvVilkårsvurdering(List<KoblingEntitet> eksisterendeKoblinger, LocalDateTime opprettetTidMax) {
+    private void oppdaterResultatMap(Map<Long, BeregningsgrunnlagGrunnlagEntitet> resultMap, Map<Long, Long> koblingMap, List<BeregningsgrunnlagGrunnlagEntitet> grunnlagFraOriginaleKoblinger) {
+        grunnlagFraOriginaleKoblinger.forEach(gr -> resultMap.put(koblingMap.get(gr.getKoblingId()), gr));
+    }
+
+    private Map<Long, Long> finnKoblingMap(Set<Long> koblingerUtenGrunnlag, Map<Long, Long> koblingMap) {
+        return koblingTjeneste.hentKoblingRelasjoner(koblingerUtenGrunnlag).stream()
+                .collect(Collectors.toMap(KoblingRelasjon::getOriginalKoblingId, r -> koblingMap.get(r.getKoblingId())));
+    }
+
+    private List<BeregningsgrunnlagGrunnlagEntitet> finnSisteGrunnlagForStegPrKobling(BeregningSteg steg, LocalDateTime opprettetTidMax, Set<Long> koblingIder) {
+        if (steg.equals(BeregningSteg.VURDER_VILKAR_BERGRUNN)) {
+            return finnGrunnlagForKopiAvVilkårsvurdering(opprettetTidMax, koblingIder);
+        }
+        return beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingIder, MapStegTilTilstand.mapTilStegTilstand(steg), opprettetTidMax);
+    }
+
+    private List<BeregningsgrunnlagGrunnlagEntitet> finnGrunnlagForKopiAvVilkårsvurdering(LocalDateTime opprettetTidMax, Set<Long> koblingIder) {
         // Fordi det finnes grunnlag uten tilstand VURDER_VILKÅR må vi sjekke andre tilstander
-        var vurdertVilkårGrunnlag = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(mapTilId(eksisterendeKoblinger), BeregningsgrunnlagTilstand.VURDERT_VILKÅR, opprettetTidMax);
-        List<Long> koblingIdUtenVurdertVilkårGrunnlag = finnKoblingIdIkkeInkludertIListeMedGrunnlag(mapTilId(eksisterendeKoblinger), vurdertVilkårGrunnlag);
+        var vurdertVilkårGrunnlag = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingIder, BeregningsgrunnlagTilstand.VURDERT_VILKÅR, opprettetTidMax);
+        var koblingIdUtenVurdertVilkårGrunnlag = finnKoblingIdIkkeInkludertIListeMedGrunnlag(koblingIder, vurdertVilkårGrunnlag);
         var foreslåttUtGrunnlag = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingIdUtenVurdertVilkårGrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT_UT, opprettetTidMax);
         var koblingIdUtenForeslåttUtGrunnlag = finnKoblingIdIkkeInkludertIListeMedGrunnlag(koblingIdUtenVurdertVilkårGrunnlag, foreslåttUtGrunnlag);
         var foreslåttGrunnlag = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingIdUtenForeslåttUtGrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT, opprettetTidMax);
@@ -154,10 +193,10 @@ public class KopierBeregningsgrunnlagTjeneste {
         return grunnlagSomSkalKopieres;
     }
 
-    private List<Long> finnKoblingIdIkkeInkludertIListeMedGrunnlag(List<Long> listeMedId, List<BeregningsgrunnlagGrunnlagEntitet> grunnlagsliste) {
-        var idForGrunnlagMedVilkårvurdering = grunnlagsliste.stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId).collect(Collectors.toSet());
-        return listeMedId.stream().filter(i -> idForGrunnlagMedVilkårvurdering.stream().noneMatch(id -> id.equals(i)))
-                .collect(Collectors.toList());
+    private Set<Long> finnKoblingIdIkkeInkludertIListeMedGrunnlag(Set<Long> listeMedId, Collection<BeregningsgrunnlagGrunnlagEntitet> grunnlagsliste) {
+        var koblingerMedGrunnlag = grunnlagsliste.stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId).collect(Collectors.toSet());
+        return listeMedId.stream().filter(i -> koblingerMedGrunnlag.stream().noneMatch(id -> id.equals(i)))
+                .collect(Collectors.toSet());
     }
 
     private void kopierAvklaringsbehov(List<KopierBeregningRequest> kopiRequests, List<KoblingEntitet> eksisterendeKoblinger, List<KoblingEntitet> nyeKoblinger, BeregningSteg steg) {
@@ -181,8 +220,8 @@ public class KopierBeregningsgrunnlagTjeneste {
     }
 
 
-    private List<Long> mapTilId(List<KoblingEntitet> eksisterendeKoblinger) {
-        return eksisterendeKoblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toList());
+    private Set<Long> mapTilId(List<KoblingEntitet> eksisterendeKoblinger) {
+        return eksisterendeKoblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
     }
 
     private UUID finnNyKoblingReferanse(Long eksisterendeKoblingId,

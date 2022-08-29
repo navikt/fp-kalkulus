@@ -34,6 +34,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingRef
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Årsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
 import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
@@ -136,6 +137,41 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         assertThat(finnBrutto(grNyKobling.get())).isEqualTo(finnBrutto(gr1));
 
     }
+
+    @Test
+    void skal_kopiere_grunnlag_fra_forrige_original_kobling_til_ny_kobling() {
+        var forrigeOriginalKoblingReferanse = UUID.randomUUID();
+        var forrigeOriginalKobling = new KoblingEntitet(new KoblingReferanse(forrigeOriginalKoblingReferanse), YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN, SAK, AKTØR_ID);
+        koblingRepository.lagre(forrigeOriginalKobling);
+        var originalKoblingReferanse = UUID.randomUUID();
+        var originalKobling = new KoblingEntitet(new KoblingReferanse(originalKoblingReferanse), YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN, SAK, AKTØR_ID);
+        koblingRepository.lagre(originalKobling);
+
+        koblingRepository.lagre(new KoblingRelasjon(originalKobling.getId(), forrigeOriginalKobling.getId()));
+
+        kalkulatorInputTjeneste.lagreKalkulatorInput(originalKobling.getId(), byggKalkulatorInput());
+
+        var gr1 = repository.lagre(forrigeOriginalKobling.getId(), byggGrunnlag(200000), BeregningsgrunnlagTilstand.FASTSATT);
+
+        var nyReferanse2 = UUID.randomUUID();
+        tjeneste.kopierGrunnlagOgOpprettKoblinger(
+                List.of(new KopierBeregningRequest(nyReferanse2, originalKoblingReferanse)),
+                YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN,
+                SAK,
+                BeregningSteg.FAST_BERGRUNN,
+                null
+        );
+
+        var alleKoblinger = koblingRepository.hentAlleKoblingerForSaksnummer(SAK);
+        assertThat(alleKoblinger.size()).isEqualTo(3);
+        var nyKobling = alleKoblinger.stream().filter(k -> k.getKoblingReferanse().getReferanse().equals(nyReferanse2)).findFirst();
+        assertThat(nyKobling).isPresent();
+
+        var grNyKobling = repository.hentBeregningsgrunnlagGrunnlagEntitet(nyKobling.get().getId());
+        assertThat(finnBrutto(grNyKobling.get())).isEqualTo(finnBrutto(gr1));
+
+    }
+
 
     private BigDecimal finnBrutto(BeregningsgrunnlagGrunnlagEntitet grNyKobling1) {
         return grNyKobling1.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBruttoPrÅr().getVerdi();
