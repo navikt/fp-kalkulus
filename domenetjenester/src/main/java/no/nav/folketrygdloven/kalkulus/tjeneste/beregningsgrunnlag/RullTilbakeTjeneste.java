@@ -63,7 +63,7 @@ public class RullTilbakeTjeneste {
 
     private List<BeregningsgrunnlagGrunnlagEntitet> finnGrunnlagSomSkalRullesTilbake(List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet, BeregningsgrunnlagTilstand tilstand) {
         return beregningsgrunnlagGrunnlagEntitet.stream()
-                .filter(gr -> gr.getBeregningsgrunnlagTilstand().erEtter(tilstand))
+                .filter(gr -> !gr.getBeregningsgrunnlagTilstand().erFør(tilstand))
                 .collect(Collectors.toList());
     }
 
