@@ -125,7 +125,6 @@ class StegInputMapper {
         var beregningsgrunnlagInput = MapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input, grunnlagEntitet, forlengelseperioder);
         var grunnlagFraSteg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(
                 kobling,
-                beregningsgrunnlagInput.getSkjæringstidspunktOpptjening(),
                 mapTilStegTilstand(stegType));
         var grunnlagFraStegUt = finnForrigeAvklartGrunnlagHvisFinnes(grunnlagFraSteg, stegType);
         return new StegProsesseringInput(beregningsgrunnlagInput, mapTilStegTilstand(stegType))

@@ -67,13 +67,11 @@ public class BeregningsgrunnlagRepository {
      * Om revurderingen ikke har grunnlag opprettet i denne tilstanden returneres grunnlaget fra originalbehandlingen for samme tilstand.
      *
      * @param koblingId                    en koblingId
-     * @param skjæringstidspunktOpptjening skjæringstidspunkt for opptjening
      * @param beregningsgrunnlagTilstand   steget {@link BeregningsgrunnlagGrunnlagEntitet} er opprettet i
      * @return Hvis det finnes et eller fler BeregningsgrunnlagGrunnlagEntitet som har blitt opprettet i {@code stegOpprettet} returneres den
      * som ble opprettet sist
      */
     public Optional<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(KoblingEntitet kobling,
-                                                                                                                 LocalDate skjæringstidspunktOpptjening,
                                                                                                                  BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
         Optional<BeregningsgrunnlagGrunnlagEntitet> sisteBg = hentSisteBeregningsgrunnlagGrunnlagEntitet(kobling.getId(), beregningsgrunnlagTilstand);
         if (!sisteBg.isPresent()) {
@@ -149,8 +147,18 @@ public class BeregningsgrunnlagRepository {
                                                                                        BeregningsgrunnlagTilstand tilstand) {
         var query = entityManager.createNativeQuery(
                 "SELECT GR.* FROM  GR_BEREGNINGSGRUNNLAG GR " +
-                        "INNER JOIN KOBLING_RELASJON KR ON KR.ORIGINAL_KOBLING_ID = GR.KOBLING_ID " +
-                        "WHERE KR.KOBLING_ID = :koblingId AND STEG_OPPRETTET = :beregningsgrunnlagTilstand " +
+                        "WHERE (GR.KOBLING_ID IN (" +
+                        "with recursive originalkoblinger as (" +
+                        "    select original_kobling_id" +
+                        "    from kobling_relasjon" +
+                        "    where kobling_id = :koblingId" +
+                        "  union" +
+                        "    select kr.original_kobling_id" +
+                        "    from kobling_relasjon kr" +
+                        "         inner join originalkoblinger o on o.original_kobling_id = kr.kobling_id" +
+                        ") select * from originalkoblinger" +
+                        ")) " +
+                        "AND STEG_OPPRETTET = :beregningsgrunnlagTilstand " +
                         "order by GR.OPPRETTET_TID desc, GR.ID desc", //$NON-NLS-1$
                 BeregningsgrunnlagGrunnlagEntitet.class);
         query.setParameter("koblingId", koblingId); // $NON-NLS-1$
