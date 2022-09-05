@@ -1,9 +1,11 @@
 package no.nav.folketrygdloven.kalkulator.steg.fordeling.ytelse.psb;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.FinnAnsettelsesPeriode;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -42,8 +44,8 @@ class OpprettPerioderOgAndelerForTilkommetInntekt {
         return nyttBg;
     }
 
-    private Optional<LocalDate> finnStartdato(YrkesaktivitetDto yrkesaktivitetDto, LocalDate skjæringstidspunkt) {
-        return yrkesaktivitetDto.getAlleAktivitetsAvtaler().stream()
+    private Optional<LocalDate> finnStartdato(Collection<YrkesaktivitetDto> yrkesaktiviteter, LocalDate skjæringstidspunkt) {
+        return yrkesaktiviteter.stream().flatMap(ya -> ya.getAlleAktivitetsAvtaler().stream())
                 .filter(a -> a.getPeriode().getFomDato().isAfter(skjæringstidspunkt))
                 .min(Comparator.comparing(a -> a.getPeriode().getFomDato()))
                 .map(AktivitetsAvtaleDto::getPeriode)
@@ -51,29 +53,31 @@ class OpprettPerioderOgAndelerForTilkommetInntekt {
     }
 
     private void leggTilNyAndel(BeregningsgrunnlagPeriodeDto p, AktivitetDto aktivitetDto, LocalDate skjæringstidspunkt) {
-        YrkesaktivitetDto yrkesaktivitetDto = aktivitetDto.getYrkesaktivitetDto();
+        var yrkesaktiviteter = aktivitetDto.getYrkesaktivitetDto();
 
         var periode = FinnAnsettelsesPeriode.finnMinMaksPeriode(
-                yrkesaktivitetDto.getAlleAktivitetsAvtaler(),
+                yrkesaktiviteter.stream().flatMap(ya -> ya.getAlleAktivitetsAvtaler().stream()).collect(Collectors.toList()),
                 skjæringstidspunkt);
 
-        if(periode.isEmpty()) {
+        if (periode.isEmpty()) {
             throw new IllegalArgumentException("Fant ingen arbeidsperiode etter skjæringstidspunktet for aktivitet: "
-                    + yrkesaktivitetDto.getArbeidsgiver());
+                    + aktivitetDto.getArbeidsgiver());
         }
 
-        if (yrkesaktivitetDto.getArbeidType().equals(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)) {
+        var arbeidType = yrkesaktiviteter.stream().map(YrkesaktivitetDto::getArbeidType).findFirst().orElseThrow();
+
+        if (arbeidType.equals(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)) {
             BeregningsgrunnlagPrStatusOgAndelDto.ny()
                     .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                     .medInntektskategoriAutomatiskFordeling(Inntektskategori.ARBEIDSTAKER)
                     .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
                             .medArbeidsperiodeFom(periode.get().getFom())
                             .medArbeidsperiodeTom(periode.get().getTom())
-                            .medArbeidsgiver(yrkesaktivitetDto.getArbeidsgiver()))
+                            .medArbeidsgiver(aktivitetDto.getArbeidsgiver()))
                     .medArbforholdType(OpptjeningAktivitetType.ARBEID)
                     .medKilde(AndelKilde.PROSESS_PERIODISERING_TILKOMMET_INNTEKT)
                     .build(p);
-        } else if (yrkesaktivitetDto.getArbeidType().equals(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER)) {
+        } else if (arbeidType.equals(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER)) {
             if (p.getBeregningsgrunnlagPrStatusOgAndelList().stream().noneMatch(a -> a.getAktivitetStatus().erFrilanser())) {
                 BeregningsgrunnlagPrStatusOgAndelDto.ny()
                         .medAktivitetStatus(AktivitetStatus.FRILANSER)

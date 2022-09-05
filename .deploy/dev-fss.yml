@@ -79,7 +79,7 @@ spec:
 
     # Feature-flag
     - name: PSB_TILKOMMET_INNTEKT
-      value: "false"
+      value: "true"
     - name: SKAL_VURDERE_FORLENGELSE
       value: "true"
     - name: BEREGNE_DAGPENGER_FRA_SYKEPENGER

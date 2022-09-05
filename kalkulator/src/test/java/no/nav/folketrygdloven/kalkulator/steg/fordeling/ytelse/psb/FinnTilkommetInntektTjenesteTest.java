@@ -20,6 +20,8 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatB
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
@@ -46,7 +48,7 @@ class FinnTilkommetInntektTjenesteTest {
 
     @Test
     void skal_ikke_finne_en_aktivitet_uten_tilkommet_inntekt() {
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayGrunnlag(Optional.empty(), Optional.empty());
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayGrunnlag(Optional.empty(), Optional.empty(), List.of());
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(List.of(ARBEIDSGIVER));
 
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = lagUtbetalingsgradperiode(SKJÆRINGSTIDSPUNKT.plusMonths(1));
@@ -64,15 +66,15 @@ class FinnTilkommetInntektTjenesteTest {
                         SKJÆRINGSTIDSPUNKT.plusMonths(2).withDayOfMonth(1).minusDays(1),
                         30000))
         );
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayGrunnlag(Optional.of(tilkommetYrkesaktivitet), Optional.of(tilkommetInntekt));
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayGrunnlag(Optional.of(tilkommetYrkesaktivitet), Optional.of(tilkommetInntekt), List.of());
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(List.of(ARBEIDSGIVER));
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = lagUtbetalingsgradperiode(SKJÆRINGSTIDSPUNKT.plusMonths(2).withDayOfMonth(1).minusDays(1));
 
         List<no.nav.folketrygdloven.kalkulator.steg.fordeling.ytelse.psb.AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag, utbetalingsgradPrAktivitet);
 
         assertThat(aktivitetDtos).hasSize(1);
-        assertThat(aktivitetDtos.get(0).getInntekter()).hasSize(1);
-        assertThat(aktivitetDtos.get(0).getYrkesaktivitetDto().getArbeidsgiver()).isEqualTo(ARBEIDSGIVER2);
+        assertThat(aktivitetDtos.get(0).getMånedsinntekt().getVerdi().compareTo(BigDecimal.valueOf(30000))).isEqualTo(0);
+        assertThat(aktivitetDtos.get(0).getYrkesaktivitetDto().iterator().next().getArbeidsgiver()).isEqualTo(ARBEIDSGIVER2);
     }
 
 
@@ -85,7 +87,7 @@ class FinnTilkommetInntektTjenesteTest {
                         SKJÆRINGSTIDSPUNKT.plusMonths(2).withDayOfMonth(1).minusDays(1),
                         30000))
         );
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayGrunnlag(Optional.of(tilkommetYrkesaktivitet), Optional.of(tilkommetInntekt));
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayGrunnlag(Optional.of(tilkommetYrkesaktivitet), Optional.of(tilkommetInntekt), List.of());
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(List.of(ARBEIDSGIVER));
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = lagUtbetalingsgradperiode(SKJÆRINGSTIDSPUNKT.plusMonths(1).withDayOfMonth(1).minusDays(1));
 
@@ -104,16 +106,117 @@ class FinnTilkommetInntektTjenesteTest {
                         SKJÆRINGSTIDSPUNKT.plusMonths(1).withDayOfMonth(1).minusDays(1),
                         30000))
         );
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayGrunnlag(Optional.of(tilkommetYrkesaktivitet), Optional.of(tilkommetInntekt));
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayGrunnlag(Optional.of(tilkommetYrkesaktivitet), Optional.of(tilkommetInntekt), List.of());
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(List.of(ARBEIDSGIVER));
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = lagUtbetalingsgradperiode(SKJÆRINGSTIDSPUNKT.plusMonths(2).withDayOfMonth(1).minusDays(1));
 
         List<no.nav.folketrygdloven.kalkulator.steg.fordeling.ytelse.psb.AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag, utbetalingsgradPrAktivitet);
 
         assertThat(aktivitetDtos).hasSize(1);
-        assertThat(aktivitetDtos.get(0).getInntekter()).hasSize(1);
-        assertThat(aktivitetDtos.get(0).getYrkesaktivitetDto().getArbeidsgiver()).isEqualTo(ARBEIDSGIVER2);
+        assertThat(aktivitetDtos.get(0).getMånedsinntekt().getVerdi().compareTo(BigDecimal.valueOf(30000))).isEqualTo(0);
+        assertThat(aktivitetDtos.get(0).getYrkesaktivitetDto().iterator().next().getArbeidsgiver()).isEqualTo(ARBEIDSGIVER2);
     }
+
+    @Test
+    void skal_finne_en_aktivitet_for_tilkommet_inntekt_fra_inntektsmelding() {
+        YrkesaktivitetDtoBuilder tilkommetYrkesaktivitet = lagYrkesaktivitet(ARBEIDSGIVER2, SKJÆRINGSTIDSPUNKT.plusMonths(1));
+        InntektDtoBuilder tilkommetInntekt = lagInntektDto(ARBEIDSGIVER2,
+                List.of(lagInntektspost(
+                        SKJÆRINGSTIDSPUNKT.plusMonths(1).withDayOfMonth(1),
+                        SKJÆRINGSTIDSPUNKT.plusMonths(2).withDayOfMonth(1).minusDays(1),
+                        30000))
+        );
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayGrunnlag(Optional.of(tilkommetYrkesaktivitet),
+                Optional.of(tilkommetInntekt),
+                List.of(InntektsmeldingDtoBuilder.builder()
+                        .medArbeidsgiver(ARBEIDSGIVER2)
+                        .medBeløp(BigDecimal.valueOf(10000))
+                        .medStartDatoPermisjon(SKJÆRINGSTIDSPUNKT)
+                        .build()));
+        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(List.of(ARBEIDSGIVER));
+        List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = lagUtbetalingsgradperiode(SKJÆRINGSTIDSPUNKT.plusMonths(2).withDayOfMonth(1).minusDays(1));
+
+        List<no.nav.folketrygdloven.kalkulator.steg.fordeling.ytelse.psb.AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag, utbetalingsgradPrAktivitet);
+
+        assertThat(aktivitetDtos).hasSize(1);
+        assertThat(aktivitetDtos.get(0).getMånedsinntekt().getVerdi().compareTo(BigDecimal.valueOf(10000))).isEqualTo(0);
+        assertThat(aktivitetDtos.get(0).getYrkesaktivitetDto().iterator().next().getArbeidsgiver()).isEqualTo(ARBEIDSGIVER2);
+    }
+
+
+    @Test
+    void skal_finne_en_aktivitet_for_tilkommet_inntekt_på_skjæringstidspunktet_med_inntekt_i_to_måneder() {
+        YrkesaktivitetDtoBuilder tilkommetYrkesaktivitet = lagYrkesaktivitet(ARBEIDSGIVER2, SKJÆRINGSTIDSPUNKT.plusMonths(1));
+        InntektDtoBuilder tilkommetInntekt = lagInntektDto(ARBEIDSGIVER2,
+                List.of(lagInntektspost(
+                        SKJÆRINGSTIDSPUNKT.withDayOfMonth(1),
+                        SKJÆRINGSTIDSPUNKT.plusMonths(2).withDayOfMonth(1).minusDays(1),
+                        30000))
+        );
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayGrunnlag(Optional.of(tilkommetYrkesaktivitet), Optional.of(tilkommetInntekt), List.of());
+        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(List.of(ARBEIDSGIVER));
+        List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = lagUtbetalingsgradperiode(SKJÆRINGSTIDSPUNKT.plusMonths(2).withDayOfMonth(1).minusDays(1));
+
+        List<no.nav.folketrygdloven.kalkulator.steg.fordeling.ytelse.psb.AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag, utbetalingsgradPrAktivitet);
+
+        assertThat(aktivitetDtos).hasSize(1);
+        assertThat(aktivitetDtos.get(0).getMånedsinntekt().getVerdi().compareTo(BigDecimal.valueOf(15000))).isEqualTo(0);
+        assertThat(aktivitetDtos.get(0).getYrkesaktivitetDto().iterator().next().getArbeidsgiver()).isEqualTo(ARBEIDSGIVER2);
+    }
+
+    @Test
+    void skal_finne_en_aktivitet_for_tilkommet_inntekt_på_skjæringstidspunktet_med_inntekt_i_tre_måneder() {
+        YrkesaktivitetDtoBuilder tilkommetYrkesaktivitet = lagYrkesaktivitet(ARBEIDSGIVER2, SKJÆRINGSTIDSPUNKT.plusMonths(1));
+        InntektDtoBuilder tilkommetInntekt = lagInntektDto(ARBEIDSGIVER2,
+                List.of(lagInntektspost(
+                        SKJÆRINGSTIDSPUNKT.withDayOfMonth(1),
+                        SKJÆRINGSTIDSPUNKT.plusMonths(3).withDayOfMonth(1).minusDays(1),
+                        30000))
+        );
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayGrunnlag(Optional.of(tilkommetYrkesaktivitet), Optional.of(tilkommetInntekt), List.of());
+        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(List.of(ARBEIDSGIVER));
+        List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = lagUtbetalingsgradperiode(SKJÆRINGSTIDSPUNKT.plusMonths(2).withDayOfMonth(1).minusDays(1));
+
+        List<no.nav.folketrygdloven.kalkulator.steg.fordeling.ytelse.psb.AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag, utbetalingsgradPrAktivitet);
+
+        assertThat(aktivitetDtos).hasSize(1);
+        assertThat(aktivitetDtos.get(0).getMånedsinntekt().getVerdi().compareTo(BigDecimal.valueOf(10000))).isEqualTo(0);
+        assertThat(aktivitetDtos.get(0).getYrkesaktivitetDto().iterator().next().getArbeidsgiver()).isEqualTo(ARBEIDSGIVER2);
+    }
+
+
+    @Test
+    void skal_finne_en_aktivitet_for_tilkommet_inntekt_på_skjæringstidspunktet_med_flere_inntekter_i_over_tre_måneder() {
+        YrkesaktivitetDtoBuilder tilkommetYrkesaktivitet = lagYrkesaktivitet(ARBEIDSGIVER2, SKJÆRINGSTIDSPUNKT.plusMonths(1));
+        InntektDtoBuilder tilkommetInntekt = lagInntektDto(ARBEIDSGIVER2,
+                List.of(lagInntektspost(
+                                SKJÆRINGSTIDSPUNKT.withDayOfMonth(1),
+                                SKJÆRINGSTIDSPUNKT.plusMonths(1).withDayOfMonth(1).minusDays(1),
+                                15000),
+                        lagInntektspost(
+                                SKJÆRINGSTIDSPUNKT.plusMonths(1).withDayOfMonth(1),
+                                SKJÆRINGSTIDSPUNKT.plusMonths(2).withDayOfMonth(1).minusDays(1),
+                                5000),
+                        lagInntektspost(
+                                SKJÆRINGSTIDSPUNKT.plusMonths(2).withDayOfMonth(1),
+                                SKJÆRINGSTIDSPUNKT.plusMonths(3).withDayOfMonth(1).minusDays(1),
+                                10000),
+                        lagInntektspost(
+                                SKJÆRINGSTIDSPUNKT.plusMonths(3).withDayOfMonth(1),
+                                SKJÆRINGSTIDSPUNKT.plusMonths(4).withDayOfMonth(1).minusDays(1),
+                                50000))
+        );
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayGrunnlag(Optional.of(tilkommetYrkesaktivitet), Optional.of(tilkommetInntekt), List.of());
+        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(List.of(ARBEIDSGIVER));
+        List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = lagUtbetalingsgradperiode(SKJÆRINGSTIDSPUNKT.plusMonths(2).withDayOfMonth(1).minusDays(1));
+
+        List<no.nav.folketrygdloven.kalkulator.steg.fordeling.ytelse.psb.AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag, utbetalingsgradPrAktivitet);
+
+        assertThat(aktivitetDtos).hasSize(1);
+        assertThat(aktivitetDtos.get(0).getMånedsinntekt().getVerdi().compareTo(BigDecimal.valueOf(10000))).isEqualTo(0);
+        assertThat(aktivitetDtos.get(0).getYrkesaktivitetDto().iterator().next().getArbeidsgiver()).isEqualTo(ARBEIDSGIVER2);
+    }
+
 
     @Test
     void skal_ikke_finne_en_aktivitet_for_tilkommet_inntekt_som_har_andel_i_beregningsgrunnlaget_fra_før() {
@@ -124,7 +227,7 @@ class FinnTilkommetInntektTjenesteTest {
                         SKJÆRINGSTIDSPUNKT.plusMonths(1).withDayOfMonth(1).minusDays(1),
                         30000))
         );
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayGrunnlag(Optional.of(tilkommetYrkesaktivitet), Optional.of(tilkommetInntekt));
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayGrunnlag(Optional.of(tilkommetYrkesaktivitet), Optional.of(tilkommetInntekt), List.of());
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(List.of(ARBEIDSGIVER, ARBEIDSGIVER2));
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = lagUtbetalingsgradperiode(SKJÆRINGSTIDSPUNKT.plusMonths(2).withDayOfMonth(1).minusDays(1));
 
@@ -140,12 +243,13 @@ class FinnTilkommetInntektTjenesteTest {
         return utbetalingsgradPrAktivitet;
     }
 
-    private InntektArbeidYtelseGrunnlagDto lagIayGrunnlag(Optional<YrkesaktivitetDtoBuilder> tilkommetAktivitet, Optional<InntektDtoBuilder> tilkommetInntekt) {
+    private InntektArbeidYtelseGrunnlagDto lagIayGrunnlag(Optional<YrkesaktivitetDtoBuilder> tilkommetAktivitet, Optional<InntektDtoBuilder> tilkommetInntekt, List<InntektsmeldingDto> inntektsmeldinger) {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
                 .medData(InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER)
                         .leggTilAktørArbeid(lagAktørArbeid(tilkommetAktivitet))
                         .leggTilAktørInntekt(lagAktørInntekt(tilkommetInntekt)))
-                        .build();
+                .medInntektsmeldinger(inntektsmeldinger)
+                .build();
         return iayGrunnlag;
     }
 
@@ -195,9 +299,9 @@ class FinnTilkommetInntektTjenesteTest {
 
     private InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder lagAktørInntekt(Optional<InntektDtoBuilder> tilkommetInntekt) {
         var inntektsposter = List.of(lagInntektspost(
-                SKJÆRINGSTIDSPUNKT.minusMonths(3).withDayOfMonth(1),
-                SKJÆRINGSTIDSPUNKT.minusMonths(2).withDayOfMonth(1).minusDays(1),
-                30000),
+                        SKJÆRINGSTIDSPUNKT.minusMonths(3).withDayOfMonth(1),
+                        SKJÆRINGSTIDSPUNKT.minusMonths(2).withDayOfMonth(1).minusDays(1),
+                        30000),
                 lagInntektspost(
                         SKJÆRINGSTIDSPUNKT.minusMonths(2).withDayOfMonth(1),
                         SKJÆRINGSTIDSPUNKT.minusMonths(1).withDayOfMonth(1).minusDays(1),
