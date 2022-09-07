@@ -49,9 +49,9 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.Vurder
 public class FaktaOmBeregningDtoTjenesteImplTest {
 
     public static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.now();
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(LocalDate.now());
 
     private FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste;
-    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(LocalDate.now());
 
     @BeforeEach
     public void setUp() {
