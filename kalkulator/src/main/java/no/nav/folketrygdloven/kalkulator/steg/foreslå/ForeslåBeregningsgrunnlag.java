@@ -6,10 +6,17 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
 import no.nav.folketrygdloven.beregningsgrunnlag.foreslå.RegelForeslåBeregningsgrunnlag;
+import no.nav.folketrygdloven.beregningsgrunnlag.foreslå.RegelForeslåBeregningsgrunnlagNy;
+import no.nav.folketrygdloven.beregningsgrunnlag.fortsettForeslå.RegelFortsettForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag;
@@ -45,6 +52,7 @@ import no.nav.fpsak.nare.evaluation.Evaluation;
 @ApplicationScoped
 @FagsakYtelseTypeRef()
 public class ForeslåBeregningsgrunnlag {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ForeslåBeregningsgrunnlag.class);
     protected MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel;
     private final MapBeregningsgrunnlagFraRegelTilVL mapBeregningsgrunnlagFraRegelTilVL = new MapBeregningsgrunnlagFraRegelTilVL();
 
@@ -68,6 +76,8 @@ public class ForeslåBeregningsgrunnlag {
         String jsonInput = toJson(regelmodellBeregningsgrunnlag);
         List<RegelResultat> regelResultater = kjørRegelForeslåBeregningsgrunnlag(regelmodellBeregningsgrunnlag, jsonInput);
 
+        kjørNyeReglerOgSammenlign(input, regelmodellBeregningsgrunnlag);
+
         // Oversett endelig resultat av regelmodell til foreslått Beregningsgrunnlag  (+ spore input -> evaluation)
         BeregningsgrunnlagDto foreslåttBeregningsgrunnlag = mapBeregningsgrunnlagFraRegelTilVL.mapForeslåBeregningsgrunnlag(regelmodellBeregningsgrunnlag, beregningsgrunnlag);
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = utledAvklaringsbehov(input, regelResultater);
@@ -82,6 +92,30 @@ public class ForeslåBeregningsgrunnlag {
 
     protected void verifiserBeregningsgrunnlag(BeregningsgrunnlagDto foreslåttBeregningsgrunnlag) {
         BeregningsgrunnlagVerifiserer.verifiserForeslåttBeregningsgrunnlag(foreslåttBeregningsgrunnlag);
+    }
+
+    protected void kjørNyeReglerOgSammenlign(ForeslåBeregningsgrunnlagInput input, Beregningsgrunnlag regelmodellForGammelKjøring) {
+        BeregningsgrunnlagGrunnlagDto grunnlag = input.getBeregningsgrunnlagGrunnlag();
+        Beregningsgrunnlag regelmodellForNyKjøring = mapBeregningsgrunnlagFraVLTilRegel.map(input, grunnlag);
+        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag()
+                .orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag her"));
+        splittPerioder(input, regelmodellForNyKjøring, beregningsgrunnlag, input.getBeregningsgrunnlagGrunnlag().getFaktaAggregat());
+        String jsonInput = toJson(regelmodellForNyKjøring);
+        kjørRegelForeslåBeregningsgrunnlagNy(regelmodellForNyKjøring, jsonInput);
+        try {
+            var gammelJson = JsonMapper.toJson(regelmodellForGammelKjøring);
+            var nyJson = JsonMapper.toJson(regelmodellForNyKjøring);
+            var erLike = gammelJson.equals(nyJson);
+            if (!erLike) {
+                var msg = String.format("FT-777777: Missmatch mellom gammel og ny regelkjøring på kobling med UUID %s for ytelsetype %s",
+                        input.getKoblingReferanse().getKoblingUuid(), input.getKoblingReferanse().getFagsakYtelseType());
+                LOGGER.info(msg);
+            }
+        } catch (JsonProcessingException e) {
+            var msg = String.format("FT-777778: Kunne ikke deserialisere regelmodell til json på kobling med UUID %s for ytelsetype %s",
+                    input.getKoblingReferanse().getKoblingUuid(), input.getKoblingReferanse().getFagsakYtelseType());
+            LOGGER.info(msg);
+        }
     }
 
     protected void splittPerioder(BeregningsgrunnlagInput input,
@@ -102,6 +136,18 @@ public class ForeslåBeregningsgrunnlag {
         for (BeregningsgrunnlagPeriode periode : regelmodellBeregningsgrunnlag.getBeregningsgrunnlagPerioder()) {
             Evaluation evaluation = new RegelForeslåBeregningsgrunnlag(periode).evaluer(periode);
             regelResultater.add(RegelmodellOversetter.getRegelResultat(evaluation, jsonInput));
+        }
+        return regelResultater;
+    }
+
+    private List<RegelResultat> kjørRegelForeslåBeregningsgrunnlagNy(Beregningsgrunnlag regelmodellBeregningsgrunnlag, String jsonInput) {
+        // Evaluerer hver BeregningsgrunnlagPeriode fra initielt Beregningsgrunnlag
+        List<RegelResultat> regelResultater = new ArrayList<>();
+        for (BeregningsgrunnlagPeriode periode : regelmodellBeregningsgrunnlag.getBeregningsgrunnlagPerioder()) {
+            Evaluation evaluation = new RegelForeslåBeregningsgrunnlagNy(periode).evaluer(periode);
+            regelResultater.add(RegelmodellOversetter.getRegelResultat(evaluation, jsonInput));
+            Evaluation evaluation2 = new RegelFortsettForeslåBeregningsgrunnlag(periode).evaluer(periode);
+            regelResultater.add(RegelmodellOversetter.getRegelResultat(evaluation2, jsonInput));
         }
         return regelResultater;
     }

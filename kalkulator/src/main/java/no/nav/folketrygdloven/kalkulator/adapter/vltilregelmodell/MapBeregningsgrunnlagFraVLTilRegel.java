@@ -134,7 +134,6 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medYtelsesdagerIEtÅr(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getYtelsesdagerIÅr())
                 .medAvviksgrenseProsent(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAvviksgrenseProsent())
                 .medYtelsesSpesifiktGrunnlag(mapYtelsesSpesifiktGrunnlag(input, beregningsgrunnlag))
-                .medSplitteATFLToggleVerdi(input.isEnabled(TOGGLE, false))
                 // Verdier som kun brukes av FORESLÅ (skille ut i egen mapping?)
                 .medAntallGMilitærHarKravPå(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGMilitærHarKravPå().intValue())
                 .medAntallGMinstekravVilkår(getAntallGForOppfyltVilkår(input))

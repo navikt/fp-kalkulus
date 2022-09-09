@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.steg.foreslå;
 
-import static no.nav.folketrygdloven.kalkulator.steg.foreslå.ForeslåBeregningsgrunnlagMedTogglePåTest.NULL_REF;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_BEGYNNELSE;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -887,7 +886,7 @@ public class ForeslåBeregningsgrunnlagTest {
     private FaktaAggregatDto lagFakta(Arbeidsgiver virksomhet, boolean erTidsbegrenset, Boolean erNyIArbeidslivet) {
         return FaktaAggregatDto.builder()
                 .medFaktaAktør(erNyIArbeidslivet == null ? null : FaktaAktørDto.builder().medErNyIArbeidslivetSNFastsattAvSaksbehandler(erNyIArbeidslivet).build())
-                .erstattEksisterendeEllerLeggTil(new FaktaArbeidsforholdDto.Builder(virksomhet, NULL_REF)
+                .erstattEksisterendeEllerLeggTil(new FaktaArbeidsforholdDto.Builder(virksomhet, InternArbeidsforholdRefDto.nullRef())
                         .medErTidsbegrensetFastsattAvSaksbehandler(erTidsbegrenset)
                         .build()).build();
     }
