@@ -4,6 +4,7 @@ import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FASTSETT_ST
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FAST_BERGRUNN;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FORDEL_BERGRUNN;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FORS_BERGRUNN;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FORS_BERGRUNN_2;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FORS_BESTEBEREGNING;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.KOFAKBER;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.VURDER_REF_BERGRUNN;
@@ -13,6 +14,8 @@ import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstan
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FASTSATT_INN;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FORESLÅTT;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FORESLÅTT_2;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FORESLÅTT_2_UT;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FORESLÅTT_UT;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.KOFAKBER_UT;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER;
@@ -35,6 +38,7 @@ public class MapStegTilTilstand {
             KOFAKBER, OPPDATERT_MED_ANDELER,
             FORS_BESTEBEREGNING, BESTEBEREGNET,
             FORS_BERGRUNN, FORESLÅTT,
+            FORS_BERGRUNN_2, FORESLÅTT_2,
             VURDER_VILKAR_BERGRUNN, VURDERT_VILKÅR,
             VURDER_REF_BERGRUNN, VURDERT_REFUSJON,
             FORDEL_BERGRUNN, OPPDATERT_MED_REFUSJON_OG_GRADERING,
@@ -44,6 +48,7 @@ public class MapStegTilTilstand {
             FASTSETT_STP_BER, FASTSATT_BEREGNINGSAKTIVITETER,
             KOFAKBER, KOFAKBER_UT,
             FORS_BERGRUNN, FORESLÅTT_UT,
+            FORS_BERGRUNN_2, FORESLÅTT_2_UT,
             VURDER_REF_BERGRUNN, VURDERT_REFUSJON_UT,
             FORDEL_BERGRUNN, FASTSATT_INN);
 

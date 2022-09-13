@@ -14,6 +14,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagDel2Input;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
 import no.nav.folketrygdloven.kalkulator.input.FullføreBeregningsgrunnlagInput;
@@ -61,6 +62,8 @@ class StegInputMapper {
             return lagInputForeslåBesteberegning(stegProsesseringInput);
         } else if (stegType.equals(BeregningSteg.FORS_BERGRUNN)) {
             return lagInputForeslå(stegProsesseringInput);
+        } else if (stegType.equals(BeregningSteg.FORS_BERGRUNN_2)) {
+            return lagInputForeslåDel2(stegProsesseringInput);
         } else if (stegType.equals(BeregningSteg.VURDER_VILKAR_BERGRUNN)) {
             Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning());
             return lagInputVurderVilkår(stegProsesseringInput, førsteFastsatteGrunnlagEntitet);
@@ -137,6 +140,12 @@ class StegInputMapper {
         var input = new ForeslåBesteberegningInput(stegProsesseringInput);
         return input.medGrunnbeløpsatser(finnSatser());
     }
+
+    private ForeslåBeregningsgrunnlagDel2Input lagInputForeslåDel2(StegProsesseringInput stegProsesseringInput) {
+        var foreslåBeregningsgrunnlagInput = new ForeslåBeregningsgrunnlagDel2Input(stegProsesseringInput);
+        return foreslåBeregningsgrunnlagInput.medGrunnbeløpsatser(finnSatser());
+    }
+
 
     private ForeslåBeregningsgrunnlagInput lagInputForeslå(StegProsesseringInput stegProsesseringInput) {
         var foreslåBeregningsgrunnlagInput = new ForeslåBeregningsgrunnlagInput(stegProsesseringInput);

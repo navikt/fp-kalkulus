@@ -21,6 +21,7 @@ public enum BeregningSteg implements Kodeverdi {
     FASTSETT_STP_BER("FASTSETT_STP_BER", "Fastsett skjæringstidspunkt beregning"),
     KOFAKBER("KOFAKBER", "Kontroller fakta for beregning"),
     FORS_BERGRUNN("FORS_BERGRUNN", "Foreslå beregningsgrunnlag"),
+    FORS_BERGRUNN_2("FORS_BERGRUNN_2", "Del 2 av foreslå beregningsgrunnlag"),
 
     // Kun for foreldrepenger
     FORS_BESTEBEREGNING("FORS_BESTEBEREGNING", "Foreslå besteberegning"),
@@ -40,6 +41,7 @@ public enum BeregningSteg implements Kodeverdi {
             FASTSETT_STP_BER,
             KOFAKBER,
             FORS_BERGRUNN,
+            FORS_BERGRUNN_2,
             FORS_BESTEBEREGNING,
             VURDER_VILKAR_BERGRUNN,
             VURDER_REF_BERGRUNN,

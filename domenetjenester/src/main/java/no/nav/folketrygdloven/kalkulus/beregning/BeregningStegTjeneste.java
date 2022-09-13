@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulus.beregning;
 
 import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper.mapGrunnlag;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -16,6 +17,7 @@ import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagDel2Input;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
@@ -92,6 +94,8 @@ public class BeregningStegTjeneste {
             return foreslåBesteberegning((ForeslåBesteberegningInput) input);
         } else if (stegType.equals(BeregningSteg.FORS_BERGRUNN)) {
             return foreslåBeregningsgrunnlag((ForeslåBeregningsgrunnlagInput) input);
+        } else if (stegType.equals(BeregningSteg.FORS_BERGRUNN_2)) {
+            return foreslåBeregningsgrunnlagDel2((ForeslåBeregningsgrunnlagDel2Input) input);
         } else if (stegType.equals(BeregningSteg.VURDER_VILKAR_BERGRUNN)) {
             return vurderBeregningsgrunnlagsvilkår((VurderBeregningsgrunnlagvilkårInput) input);
         } else if (stegType.equals(BeregningSteg.VURDER_REF_BERGRUNN)) {
@@ -150,8 +154,20 @@ public class BeregningStegTjeneste {
     }
 
     /**
+     * ForeslåBeregningsgrunnlag
+     * Steg 4. FORS_DEL_2_BERGRUNN
+     *
+     * @param input {@link BeregningsgrunnlagInput}
+     * @return {@link BeregningAvklaringsbehovResultat}
+     */
+    private TilstandResponse foreslåBeregningsgrunnlagDel2(ForeslåBeregningsgrunnlagDel2Input input) {
+        // TODO Implementer steg når k9 er koblet på nytt steg
+        return new TilstandResponse(input.getKoblingReferanse().getKoblingUuid(), Collections.emptyList());
+    }
+
+    /**
      * ForeslåBesteberegning
-     * Steg 3.5. FORS_BESTEBEREGNING
+     * Steg 4.5. FORS_BESTEBEREGNING
      * <p>
      * Dette steget vil aldri bli brukt av noe annet enn foreldrepenger, men legges inn her for å kunne testes via verdikjedetest
      *
@@ -174,7 +190,7 @@ public class BeregningStegTjeneste {
 
     /**
      * VurderRefusjonBeregningsgrunnlag
-     * Steg 4. VURDER_REF_BERGRUNN
+     * Steg 5. VURDER_VILKAR_BERGRUNN
      *
      * @param input {@link BeregningsgrunnlagInput}
      * @return {@link BeregningAvklaringsbehovResultat}
@@ -192,7 +208,7 @@ public class BeregningStegTjeneste {
 
     /**
      * VurderRefusjonBeregningsgrunnlag
-     * Steg 4. VURDER_REF_BERGRUNN
+     * Steg 6. VURDER_REF_BERGRUNN
      *
      * @param input {@link BeregningsgrunnlagInput}
      * @return {@link BeregningAvklaringsbehovResultat}
@@ -207,7 +223,7 @@ public class BeregningStegTjeneste {
 
     /**
      * FordelBeregningsgrunnlag
-     * Steg 5. FORDEL_BERGRUNN
+     * Steg 7. FORDEL_BERGRUNN
      *
      * @param input {@link BeregningsgrunnlagInput}
      * @return {@link BeregningAvklaringsbehovResultat}
@@ -221,7 +237,7 @@ public class BeregningStegTjeneste {
 
     /**
      * FastsettBeregningsgrunnlagSteg
-     * Steg 6. FAST_BERGRUNN
+     * Steg 8. FAST_BERGRUNN
      *
      * @param input {@link BeregningsgrunnlagInput}
      */
