@@ -5,6 +5,6 @@ import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 public class ForeslåSplittToggle {
 
     public static boolean erTogglePå() {
-        return KonfigurasjonVerdi.get("SPLITT_FORESLÅ_TOGGLE", false);
+        return KonfigurasjonVerdi.get("SPLITT_FORESLA_TOGGLE", false);
     }
 }
