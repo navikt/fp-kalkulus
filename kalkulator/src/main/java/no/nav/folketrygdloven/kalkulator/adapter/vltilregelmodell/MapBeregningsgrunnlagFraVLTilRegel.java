@@ -18,6 +18,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Any;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
+import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatusMedHjemmel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BeregningsgrunnlagHjemmel;
@@ -36,6 +37,7 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapIn
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapPeriodeÅrsakFraVlTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagDel2Input;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FullføreBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.VurderBeregningsgrunnlagvilkårInput;
@@ -140,8 +142,17 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medAntallGØvreGrenseverdi(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi())
                 .medUregulertGrunnbeløp(mapUregulertGrunnbeløp(input, beregningsgrunnlag))
                 .medMidlertidigInaktivType(mapMidlertidigInaktivType(input))
-                .medGrunnbeløpSatser((input instanceof ForeslåBeregningsgrunnlagInput) ? ((ForeslåBeregningsgrunnlagInput) input).getGrunnbeløpsatser() : Collections.emptyList())
+                .medGrunnbeløpSatser(grunnbeløpSatser(input))
                 .build();
+    }
+
+    private List<Grunnbeløp> grunnbeløpSatser(BeregningsgrunnlagInput input) {
+        if (input instanceof ForeslåBeregningsgrunnlagInput) {
+            return ((ForeslåBeregningsgrunnlagInput) input).getGrunnbeløpsatser();
+        } else if (input instanceof ForeslåBeregningsgrunnlagDel2Input) {
+            return ((ForeslåBeregningsgrunnlagDel2Input) input).getGrunnbeløpsatser();
+        }
+        return Collections.emptyList();
     }
 
     private BigDecimal getAntallGForOppfyltVilkår(BeregningsgrunnlagInput input) {

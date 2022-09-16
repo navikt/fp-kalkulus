@@ -161,8 +161,14 @@ public class BeregningStegTjeneste {
      * @return {@link BeregningAvklaringsbehovResultat}
      */
     private TilstandResponse foreslåBeregningsgrunnlagDel2(ForeslåBeregningsgrunnlagDel2Input input) {
-        // TODO Implementer steg når k9 er koblet på nytt steg
-        return new TilstandResponse(input.getKoblingReferanse().getKoblingUuid(), Collections.emptyList());
+        if (input.isEnabled("splitt-foreslå-toggle", false)) {
+            var beregningResultatAggregat = beregningsgrunnlagTjeneste.foreslåBeregningsgrunnlagDel2(input);
+            lagreOgKopier(input, beregningResultatAggregat);
+            lagreAvklaringsbehov(input, beregningResultatAggregat);
+            return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
+        } else {
+            return new TilstandResponse(input.getKoblingReferanse().getKoblingUuid(), Collections.emptyList());
+        }
     }
 
     /**

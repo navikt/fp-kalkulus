@@ -15,6 +15,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AktivitetStatusV2;
+import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.StandardGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
@@ -52,6 +53,9 @@ public class MapFraKalkulator {
     private static final String TOGGLE_SPLITTE_SAMMENLIGNINGSGRUNNLAG = "fpsak.splitteSammenligningATFL";
     private static final String TOGGLE_AUTOMATISK_BESTEBEREGNING = "automatisk-besteberegning";
     private static final String TOGGLE_TSF_1715 = "feilretting-tsf-1715";
+
+    // Hvis denne toggle er på vil alle statuser utenom SN og MS bli beregnet i foreslå steget, mens SN og MS må beregnes i foreslå 2 steget.
+    private static final String TOGGLE_SPLITT_FORESLÅ = "splitt-foreslå-toggle";
 
 
     public static Arbeidsgiver mapArbeidsgiver(Aktør arbeidsgiver) {
@@ -95,6 +99,7 @@ public class MapFraKalkulator {
         utenGrunnbeløp.leggTilToggle(TOGGLE_SPLITTE_SAMMENLIGNINGSGRUNNLAG, false);
         utenGrunnbeløp.leggTilToggle(TOGGLE_TSF_1715, false);
         utenGrunnbeløp.leggTilToggle(TOGGLE_AUTOMATISK_BESTEBEREGNING, true); // Legger til toggle for å kunne teste verdikjede
+        utenGrunnbeløp.leggTilToggle(TOGGLE_SPLITT_FORESLÅ, ForeslåSplittToggle.erTogglePå());
         utenGrunnbeløp.setForlengelseperioder(mapPerioder(forlengelseperioder));
         return beregningsgrunnlagGrunnlagEntitet.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag)
                 .map(utenGrunnbeløp::medBeregningsgrunnlagGrunnlag)

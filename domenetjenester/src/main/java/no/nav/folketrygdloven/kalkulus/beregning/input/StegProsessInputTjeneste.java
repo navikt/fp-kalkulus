@@ -38,7 +38,10 @@ public class StegProsessInputTjeneste {
     }
 
     @Inject
-    public StegProsessInputTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository, ForlengelseRepository forlengelseRepository, KoblingRepository koblingRepository, KalkulatorInputTjeneste kalkulatorInputTjeneste) {
+    public StegProsessInputTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository,
+                                    ForlengelseRepository forlengelseRepository,
+                                    KoblingRepository koblingRepository,
+                                    KalkulatorInputTjeneste kalkulatorInputTjeneste) {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.forlengelseRepository = forlengelseRepository;
         this.koblingRepository = koblingRepository;

@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulator.steg;
 
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagDel2Input;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
@@ -40,21 +41,33 @@ public interface KalkulatorInterface {
      */
     BeregningResultatAggregat foreslåBeregningsgrunnlag(ForeslåBeregningsgrunnlagInput input);
 
-    /** Steg 3.5: Foreslår besteberegning
+    /** Steg 4: Foreslå beregningsgrunnlag del 2
+     *
+     *  Fortsetter beregning i henhold til kap 8 i folketrygdloven for
+     *  statuser som er avhengig av resultatet fra steg 3 (foreslå beregningsgrunnlag)
+     *
+     * @param input Input til steget
+     * @return Resultat med avklaringsbehov og nytt beregningsgrunnlag
+     */
+    BeregningResultatAggregat foreslåBeregningsgrunnlagDel2(ForeslåBeregningsgrunnlagDel2Input input);
+
+    /** Steg 4.5: Foreslår besteberegning
+     *
+     * Kun relevant for foreldrepenger. Beregner i henhold til §14-7 3. ledd
      *
      * @param input Input til steget
      * @return Nytt beregningsgrunnlag
      */
     BeregningResultatAggregat foreslåBesteberegning(ForeslåBesteberegningInput input);
 
-    /** Vurderer beregningsgrunnlagsvilkåret
+    /** Steg 5 Vurderer beregningsgrunnlagsvilkåret
      *
      * @param input Input til steget
      * @return Vurdering av vilkår
      */
     BeregningResultatAggregat vurderBeregningsgrunnlagvilkår(StegProsesseringInput input);
 
-    /** Steg 4: Vurder refusjonskrav
+    /** Steg 6: Vurder refusjonskrav
      *
      * Vurderer beregningsgrunnlagvilkåret
      *
@@ -63,14 +76,14 @@ public interface KalkulatorInterface {
      */
     BeregningResultatAggregat vurderRefusjonskravForBeregninggrunnlag(VurderRefusjonBeregningsgrunnlagInput input);
 
-    /** Steg 5: Fordel beregningsgrunnlag
+    /** Steg 7: Fordel beregningsgrunnlag
      *
      * @param input Input til steget
      * @return Nytt beregningsgrunnlag og avklaringsbehov
      */
     BeregningResultatAggregat fordelBeregningsgrunnlag(StegProsesseringInput input);
 
-    /** Steg 6: Fastsett beregningsgrunnlag
+    /** Steg 8: Fastsett beregningsgrunnlag
      *
      * @param input Input til steget
      * @return Fastsatt beregningsgrunnlag

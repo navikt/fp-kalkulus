@@ -74,7 +74,12 @@ public final class BeregningsgrunnlagVerifiserer {
 
     public static void verifiserForeslåttBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
         verifiserOppdatertBeregningsgrunnlag(beregningsgrunnlag);
-        beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p, lagVerifiserForeslåttAndelConsumer(p)));
+        beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p, verifiserForeslåttDel1Andel(p)));
+        beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p, verifiserForeslåttDel2Andel(p)));
+        verifiserSammenligningsgrunnlag(beregningsgrunnlag);
+    }
+
+    private static void verifiserSammenligningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
         SammenligningsgrunnlagDto sg = beregningsgrunnlag.getSammenligningsgrunnlag();
         if (sg != null) {
             Objects.requireNonNull(sg.getRapportertPrÅr(), "RapportertPrÅr");
@@ -82,6 +87,18 @@ public final class BeregningsgrunnlagVerifiserer {
             Objects.requireNonNull(sg.getSammenligningsperiodeFom(), "SammenligningsperiodeFom");
             Objects.requireNonNull(sg.getSammenligningsperiodeTom(), "SammenligningsperiodeTom");
         }
+    }
+
+    public static void verifiserForeslåttBeregningsgrunnlagDel1(BeregningsgrunnlagDto beregningsgrunnlag) {
+        verifiserOppdatertBeregningsgrunnlag(beregningsgrunnlag);
+        beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p, verifiserForeslåttDel1Andel(p)));
+        verifiserSammenligningsgrunnlag(beregningsgrunnlag);
+    }
+
+    public static void verifiserForeslåttBeregningsgrunnlagDel2(BeregningsgrunnlagDto beregningsgrunnlag) {
+        verifiserOppdatertBeregningsgrunnlag(beregningsgrunnlag);
+        beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p, verifiserForeslåttDel2Andel(p)));
+        verifiserSammenligningsgrunnlag(beregningsgrunnlag);
     }
 
     public static void verifiserBesteberegnetBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
@@ -98,13 +115,7 @@ public final class BeregningsgrunnlagVerifiserer {
     private static void verifiserFordeltBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
         verifiserOppdatertBeregningsgrunnlag(beregningsgrunnlag);
         beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p, BeregningsgrunnlagVerifiserer::verifiserFordeltAndel));
-        SammenligningsgrunnlagDto sg = beregningsgrunnlag.getSammenligningsgrunnlag();
-        if (sg != null) {
-            Objects.requireNonNull(sg.getRapportertPrÅr(), "RapportertPrÅr");
-            Objects.requireNonNull(sg.getAvvikPromilleNy(), "AvvikPromille");
-            Objects.requireNonNull(sg.getSammenligningsperiodeFom(), "SammenligningsperiodeFom");
-            Objects.requireNonNull(sg.getSammenligningsperiodeTom(), "SammenligningsperiodeTom");
-        }
+        verifiserSammenligningsgrunnlag(beregningsgrunnlag);
     }
 
     public static void verifiserFastsattBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
@@ -122,17 +133,14 @@ public final class BeregningsgrunnlagVerifiserer {
         }
     }
 
-    private static Consumer<BeregningsgrunnlagPrStatusOgAndelDto> lagVerifiserForeslåttAndelConsumer(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
+    private static Consumer<BeregningsgrunnlagPrStatusOgAndelDto> verifiserForeslåttDel1Andel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
         return (BeregningsgrunnlagPrStatusOgAndelDto andel) -> {
+            if (andel.getAktivitetStatus().equals(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
+                    || andel.getAktivitetStatus().equals(AktivitetStatus.MILITÆR_ELLER_SIVIL)) {
+                return;
+            }
             Objects.requireNonNull(andel.getGjeldendeInntektskategori(), "Inntektskategori");
-            if (andel.getAktivitetStatus().equals(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)) {
-                if (!periodeOppståttGrunnetGradering(beregningsgrunnlagPeriode.getPeriodeÅrsaker())) {
-                    Objects.requireNonNull(andel.getPgiSnitt(), "PgiSnitt");
-                    Objects.requireNonNull(andel.getPgi1(), "PgiÅr1");
-                    Objects.requireNonNull(andel.getPgi2(), "PgiÅr2");
-                    Objects.requireNonNull(andel.getPgi3(), "PgiÅr3");
-                }
-            } else if (!andel.getArbeidsforholdType().equals(OpptjeningAktivitetType.ETTERLØNN_SLUTTPAKKE)) {
+            if (!andel.getArbeidsforholdType().equals(OpptjeningAktivitetType.ETTERLØNN_SLUTTPAKKE)) {
                 LocalDate bgPeriodeFom = beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom();
                 String andelBeskrivelse = lagAndelBeskrivelse(andel);
                 String feilBeskrivelse = "andel " + andelBeskrivelse + " i perioden fom " + bgPeriodeFom;
@@ -142,6 +150,20 @@ public final class BeregningsgrunnlagVerifiserer {
             if (andel.getAktivitetStatus().equals(AktivitetStatus.DAGPENGER) || andel.getAktivitetStatus().equals(AktivitetStatus.ARBEIDSAVKLARINGSPENGER)) {
                 Objects.requireNonNull(andel.getÅrsbeløpFraTilstøtendeYtelse(), "ÅrsbeløpFraTilstøtendeYtelse");
                 Objects.requireNonNull(andel.getOrginalDagsatsFraTilstøtendeYtelse(), "originalDagsatsFraTilstøtendeYtelse");
+            }
+        };
+    }
+
+    private static Consumer<BeregningsgrunnlagPrStatusOgAndelDto> verifiserForeslåttDel2Andel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
+        return (BeregningsgrunnlagPrStatusOgAndelDto andel) -> {
+            Objects.requireNonNull(andel.getGjeldendeInntektskategori(), "Inntektskategori");
+            if (andel.getAktivitetStatus().equals(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)) {
+                if (!periodeOppståttGrunnetGradering(beregningsgrunnlagPeriode.getPeriodeÅrsaker())) {
+                    Objects.requireNonNull(andel.getPgiSnitt(), "PgiSnitt");
+                    Objects.requireNonNull(andel.getPgi1(), "PgiÅr1");
+                    Objects.requireNonNull(andel.getPgi2(), "PgiÅr2");
+                    Objects.requireNonNull(andel.getPgi3(), "PgiÅr3");
+                }
             }
         };
     }
@@ -177,11 +199,6 @@ public final class BeregningsgrunnlagVerifiserer {
         }
     }
 
-    private static boolean erLagtTilIFordeling(BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        return andel.getKilde().equals(AndelKilde.PROSESS_OMFORDELING) || andel.getKilde().equals(AndelKilde.SAKSBEHANDLER_FORDELING);
-    }
-
-
     private static void verifiserFastsattAndel(BeregningsgrunnlagPrStatusOgAndelDto andel) {
         Objects.requireNonNull(andel.getBruttoPrÅr(), "BruttoPrÅr");
         Objects.requireNonNull(andel.getAvkortetPrÅr(), "AvkortetPrÅr");
@@ -209,5 +226,4 @@ public final class BeregningsgrunnlagVerifiserer {
             throw new KalkulatorException("FT-370743", String.format("Postcondition feilet: Beregningsgrunnlag i ugyldig tilstand etter steg. Optional %s er ikke present, men skulle ha vært det.", obj));
         }
     }
-
 }

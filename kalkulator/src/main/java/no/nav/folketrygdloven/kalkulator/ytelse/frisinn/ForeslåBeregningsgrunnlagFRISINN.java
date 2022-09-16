@@ -49,7 +49,7 @@ public class ForeslåBeregningsgrunnlagFRISINN extends ForeslåBeregningsgrunnla
     }
 
     @Override
-    protected List<RegelResultat> kjørRegelForeslåBeregningsgrunnlag(Beregningsgrunnlag regelmodellBeregningsgrunnlag, String jsonInput) {
+    protected List<RegelResultat> kjørRegelForeslåBeregningsgrunnlag(Beregningsgrunnlag regelmodellBeregningsgrunnlag, String jsonInput, ForeslåBeregningsgrunnlagInput input) {
         // Evaluerer hver BeregningsgrunnlagPeriode fra initielt Beregningsgrunnlag
         List<RegelResultat> regelResultater = new ArrayList<>();
         for (BeregningsgrunnlagPeriode periode : regelmodellBeregningsgrunnlag.getBeregningsgrunnlagPerioder()) {
@@ -73,13 +73,8 @@ public class ForeslåBeregningsgrunnlagFRISINN extends ForeslåBeregningsgrunnla
 
 
     @Override
-    protected void verifiserBeregningsgrunnlag(BeregningsgrunnlagDto foreslåttBeregningsgrunnlag) {
+    protected void verifiserBeregningsgrunnlag(BeregningsgrunnlagDto foreslåttBeregningsgrunnlag, ForeslåBeregningsgrunnlagInput input) {
         BeregningsgrunnlagVerifisererFRISINN.verifiserForeslåttBeregningsgrunnlag(foreslåttBeregningsgrunnlag);
-    }
-
-    @Override
-    protected void kjørNyeReglerOgSammenlign(ForeslåBeregningsgrunnlagInput input, Beregningsgrunnlag regelmodellForGammelKjøring) {
-        // Ikke relevant for FRISINN og trenger ikke kjøres
     }
 
     private void splittForOppgittPeriode(OppgittPeriodeInntekt oppgittPeriodeInntekt, Beregningsgrunnlag regelmodellBeregningsgrunnlag) {
