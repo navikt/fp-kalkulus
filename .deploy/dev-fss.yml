@@ -47,6 +47,12 @@ spec:
         kvPath: /apikey/appdynamics/dev
       - mountPath: /var/run/secrets/nais.io/vault
         kvPath: /kv/preprod/fss/ftkalkulus/k9saksbehandling
+  azure:
+    application:
+      enabled: true
+      claims:
+        extra:
+          - "NAVident"
   env:
     - name: LOADBALANCER_URL
       value: https://ftkalkulus.nais.preprod.local
