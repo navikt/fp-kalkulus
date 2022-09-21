@@ -53,6 +53,12 @@ spec:
       claims:
         extra:
           - "NAVident"
+  accessPolicy:
+      inbound:
+        rules:
+          - application: k9-sak
+            namespace: k9saksbehandling
+            cluster: dev-fss
   env:
     - name: LOADBALANCER_URL
       value: https://ftkalkulus.nais.preprod.local
