@@ -28,7 +28,6 @@ import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingPeriode;
 import no.nav.folketrygdloven.kalkulator.steg.BeregningsgrunnlagVerifiserer;
 import no.nav.folketrygdloven.kalkulator.steg.foreslå.AvklaringsbehovUtlederForeslåBeregning;
-import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.fpsak.nare.evaluation.Evaluation;
 
@@ -54,7 +53,7 @@ public class ForeslåBeregningsgrunnlagDel2 {
 
 
         // Hvis gammelt foreslå-steg er kjørt vil andeler med status SN og MS allerede være foreslått og vi ikke kjøre foreslå del 2
-        if (snOgMsErAlleredeForeslått(beregningsgrunnlag)) {
+        if (SnMsForeslåttSjekk.snOgMsErAlleredeForeslått(beregningsgrunnlag)) {
             return new BeregningsgrunnlagRegelResultat(beregningsgrunnlag, Collections.emptyList());
         }
 
@@ -80,29 +79,6 @@ public class ForeslåBeregningsgrunnlagDel2 {
                 BeregningsgrunnlagPeriodeRegelType.FORESLÅ_2);
         return new BeregningsgrunnlagRegelResultat(foreslåttBeregningsgrunnlag, avklaringsbehov,
                 new RegelSporingAggregat(regelsporinger));
-    }
-
-    private boolean snOgMsErAlleredeForeslått(BeregningsgrunnlagDto beregningsgrunnlag) {
-        var erMS = beregningsgrunnlag.getAktivitetStatuser().stream()
-                .anyMatch(status -> status.getAktivitetStatus().equals(AktivitetStatus.MILITÆR_ELLER_SIVIL));
-        var erSN = beregningsgrunnlag.getAktivitetStatuser().stream()
-                .anyMatch(status -> status.getAktivitetStatus().erSelvstendigNæringsdrivende());
-        if (!erMS && !erSN) {
-            return false;
-        }
-        var førstePeriode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
-        var snAndelErForeslått = !erSN || førstePeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream().anyMatch(andel -> andel.getAktivitetStatus().equals(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
-                && andel.getBruttoPrÅr() != null);
-        var msAndelErForeslått = !erMS || førstePeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream().anyMatch(andel -> andel.getAktivitetStatus().equals(AktivitetStatus.MILITÆR_ELLER_SIVIL)
-                && andel.getBruttoPrÅr() != null);
-        if (snAndelErForeslått && msAndelErForeslått) {
-            return true;
-        }
-        if (!snAndelErForeslått && !msAndelErForeslått) {
-            return false;
-        }
-        String msg = String.format("FEIL: SN og MS er ikke i samme tilstand på vei inn i foreslå 2 steget. Er sn foreslått: %s. Er MS foreslått: %s", snAndelErForeslått, msAndelErForeslått);
-        throw new IllegalStateException(msg);
     }
 
     private void verifiserBeregningsgrunnlag(BeregningsgrunnlagDto foreslåttBeregningsgrunnlag) {
