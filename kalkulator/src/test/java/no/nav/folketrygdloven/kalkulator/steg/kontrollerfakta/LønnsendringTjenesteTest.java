@@ -37,12 +37,57 @@ public class LønnsendringTjenesteTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, 9, 30);
 
     @Test
+    public void skalGiLønnsendringNårLønnsendringEtterBeregningsperiodenMenFørStp() {
+        // Arrange
+        var arbId = InternArbeidsforholdRefDto.nyRef();
+        String orgnr = "123456780";
+        Intervall periode = Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING);
+        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedArbeid(arbId, orgnr, periode,
+                SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.withDayOfMonth(1).minusDays(1));
+        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
+        BeregningIAYTestUtil.byggArbeidForBehandling(SKJÆRINGSTIDSPUNKT_OPPTJENING,
+                SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1),
+                SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2), arbId, Arbeidsgiver.virksomhet(orgnr),
+                Optional.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(5)),
+                iayGrunnlagBuilder);
+
+        // Act
+        boolean brukerHarLønnsendring = LønnsendringTjeneste.brukerHarHattLønnsendringIHeleBeregningsperiodenOgManglerInntektsmelding(beregningsgrunnlag, iayGrunnlagBuilder.build(), Collections.emptyList());
+
+        // Assert
+        assertThat(brukerHarLønnsendring).isTrue();
+    }
+
+    @Test
+    public void skalGiLønnsendringNårLønnsendringEtterBeregningsperiodenMenFørStpOgBeregningsperiodeSlutterToMånedeFør() {
+        // Arrange
+        var arbId = InternArbeidsforholdRefDto.nyRef();
+        String orgnr = "123456780";
+        Intervall periode = Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING);
+        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedArbeid(arbId, orgnr, periode,
+                SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1).withDayOfMonth(1).minusDays(1));
+        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
+        BeregningIAYTestUtil.byggArbeidForBehandling(SKJÆRINGSTIDSPUNKT_OPPTJENING,
+                SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1),
+                SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2), arbId, Arbeidsgiver.virksomhet(orgnr),
+                Optional.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(5)),
+                iayGrunnlagBuilder);
+
+        // Act
+        boolean brukerHarLønnsendring = LønnsendringTjeneste.brukerHarHattLønnsendringIHeleBeregningsperiodenOgManglerInntektsmelding(beregningsgrunnlag, iayGrunnlagBuilder.build(), Collections.emptyList());
+
+        // Assert
+        assertThat(brukerHarLønnsendring).isTrue();
+    }
+
+
+    @Test
     public void skalTesteAtAvklaringsbehovOpprettesNårBrukerHarLønnsendringUtenInntektsmelding() {
         // Arrange
         var arbId = InternArbeidsforholdRefDto.nyRef();
         String orgnr = "123456780";
         Intervall periode = Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING);
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedArbeid(arbId, orgnr, periode, SKJÆRINGSTIDSPUNKT_OPPTJENING);
+        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedArbeid(arbId, orgnr, periode, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING);
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         BeregningIAYTestUtil.byggArbeidForBehandling(SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2), arbId, Arbeidsgiver.virksomhet(orgnr),
@@ -63,7 +108,7 @@ public class LønnsendringTjenesteTest {
         var arbId = InternArbeidsforholdRefDto.nyRef();
         String orgnr = "123456780";
         Intervall periode = Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING);
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedArbeid(arbId, orgnr, periode, SKJÆRINGSTIDSPUNKT_OPPTJENING);
+        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedArbeid(arbId, orgnr, periode, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING);
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         BeregningIAYTestUtil.byggArbeidForBehandling(SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1),
                 SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2), arbId, Arbeidsgiver.virksomhet(orgnr),
@@ -85,7 +130,7 @@ public class LønnsendringTjenesteTest {
         var arbId = InternArbeidsforholdRefDto.nyRef();
         String orgnr = "123456780";
         Intervall periode = Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING);
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedArbeid(arbId, orgnr, periode, SKJÆRINGSTIDSPUNKT_OPPTJENING);
+        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedArbeid(arbId, orgnr, periode, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING);
         InntektArbeidYtelseAggregatBuilder oppdatere = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = oppdatere.getAktørArbeidBuilder();
         leggTilAktivitet(arbId, orgnr, periode, aktørArbeidBuilder, Optional.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(4L)));
@@ -109,7 +154,7 @@ public class LønnsendringTjenesteTest {
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(orgnr);
         Optional<LocalDate> lønnsendringsdato = Optional.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1L));
         Intervall periode = Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING);
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedArbeid(arbId, orgnr, periode, SKJÆRINGSTIDSPUNKT_OPPTJENING);
+        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedArbeid(arbId, orgnr, periode, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING);
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         BeregningIAYTestUtil.byggArbeidForBehandling(
                 SKJÆRINGSTIDSPUNKT_OPPTJENING,
@@ -138,7 +183,7 @@ public class LønnsendringTjenesteTest {
         Optional<LocalDate> lønnsendringsdato = Optional.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1L));
         LocalDate fraOgMed = SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1);
         Intervall periode = Intervall.fraOgMed(fraOgMed);
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedArbeid(arbId, orgnr, periode, SKJÆRINGSTIDSPUNKT_OPPTJENING);
+        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedArbeid(arbId, orgnr, periode, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING);
         InntektArbeidYtelseAggregatBuilder oppdatere = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = oppdatere.getAktørArbeidBuilder();
         leggTilAktivitet(arbId, orgnr, periode, aktørArbeidBuilder, lønnsendringsdato);
@@ -184,7 +229,9 @@ public class LønnsendringTjenesteTest {
         aktørArbeidBuilder.leggTilYrkesaktivitet(yrkesaktivitetBuilder);
     }
 
-    private BeregningsgrunnlagDto lagBeregningsgrunnlagMedArbeid(InternArbeidsforholdRefDto arbId, String orgnr, Intervall periode, LocalDate skjæringstidspunktOpptjening) {
+    private BeregningsgrunnlagDto lagBeregningsgrunnlagMedArbeid(InternArbeidsforholdRefDto arbId,
+                                                                 String orgnr, Intervall periode,
+                                                                 LocalDate skjæringstidspunktOpptjening, LocalDate beregningsperiodeTom) {
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.Builder.oppdater(Optional.empty())
             .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
             .medSkjæringstidspunkt(skjæringstidspunktOpptjening)
@@ -193,7 +240,7 @@ public class LønnsendringTjenesteTest {
             .medBeregningsgrunnlagPeriode(skjæringstidspunktOpptjening, null)
             .build(beregningsgrunnlag);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(3), SKJÆRINGSTIDSPUNKT_OPPTJENING)
+            .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(3), beregningsperiodeTom)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
                 .medArbeidsforholdRef(arbId)
                 .medArbeidsgiver(Arbeidsgiver.virksomhet(orgnr))

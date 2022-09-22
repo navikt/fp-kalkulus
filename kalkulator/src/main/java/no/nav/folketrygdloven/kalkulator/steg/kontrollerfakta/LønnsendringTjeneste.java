@@ -66,9 +66,19 @@ public class LønnsendringTjeneste {
     public static List<YrkesaktivitetDto> finnAktiviteterMedLønnsendringUtenInntektsmeldingIHeleBeregningsperioden(BeregningsgrunnlagDto beregningsgrunnlag,
                                                                                                                    InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                                                                    Collection<InntektsmeldingDto> inntektsmeldinger) {
-        BiPredicate<BeregningsgrunnlagPrStatusOgAndelDto, LocalDate> datoErInkludertIRelevantPeriode = (andel, dato) -> andel.getBeregningsperiode().inkluderer(dato);
+        BiPredicate<BeregningsgrunnlagPrStatusOgAndelDto, LocalDate> datoErInkludertIRelevantPeriode = (andel, dato) -> {
+            var stp = beregningsgrunnlag.getSkjæringstidspunkt();
+            if (andel.getBeregningsperiode().getTomDato().isBefore(stp.minusDays(1))) {
+                var periodeFraTomTilStp = Intervall.fraOgMedTilOgMed(
+                        andel.getBeregningsperiode().getTomDato().plusDays(1),
+                        stp.minusDays(1));
+                return andel.getBeregningsperiode().inkluderer(dato) || periodeFraTomTilStp.inkluderer(dato);
+            }
+            return andel.getBeregningsperiode().inkluderer(dato);
+        };
         return finnYrkesaktiviteterMedLønnsendringIBeregningsperiode(beregningsgrunnlag, iayGrunnlag, inntektsmeldinger, datoErInkludertIRelevantPeriode);
     }
+
 
     public static List<YrkesaktivitetDto> finnAktiviteterMedLønnsendringUtenInntektsmelding(BeregningsgrunnlagDto beregningsgrunnlag,
                                                                                             InntektArbeidYtelseGrunnlagDto iayGrunnlag,
