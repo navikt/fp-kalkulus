@@ -83,16 +83,17 @@ public class ForeslåBeregningsgrunnlagDel2 {
     }
 
     private boolean snOgMsErAlleredeForeslått(BeregningsgrunnlagDto beregningsgrunnlag) {
-        var erMSEllerSN = beregningsgrunnlag.getAktivitetStatuser().stream()
-                .anyMatch(status -> status.getAktivitetStatus().erSelvstendigNæringsdrivende()
-                        || status.getAktivitetStatus().equals(AktivitetStatus.MILITÆR_ELLER_SIVIL));
-        if (!erMSEllerSN) {
+        var erMS = beregningsgrunnlag.getAktivitetStatuser().stream()
+                .anyMatch(status -> status.getAktivitetStatus().equals(AktivitetStatus.MILITÆR_ELLER_SIVIL));
+        var erSN = beregningsgrunnlag.getAktivitetStatuser().stream()
+                .anyMatch(status -> status.getAktivitetStatus().erSelvstendigNæringsdrivende());
+        if (!erMS && !erSN) {
             return false;
         }
         var førstePeriode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
-        var snAndelErForeslått = førstePeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream().anyMatch(andel -> andel.getAktivitetStatus().equals(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
+        var snAndelErForeslått = !erSN || førstePeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream().anyMatch(andel -> andel.getAktivitetStatus().equals(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
                 && andel.getBruttoPrÅr() != null);
-        var msAndelErForeslått = førstePeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream().anyMatch(andel -> andel.getAktivitetStatus().equals(AktivitetStatus.MILITÆR_ELLER_SIVIL)
+        var msAndelErForeslått = !erMS || førstePeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream().anyMatch(andel -> andel.getAktivitetStatus().equals(AktivitetStatus.MILITÆR_ELLER_SIVIL)
                 && andel.getBruttoPrÅr() != null);
         if (snAndelErForeslått && msAndelErForeslått) {
             return true;
