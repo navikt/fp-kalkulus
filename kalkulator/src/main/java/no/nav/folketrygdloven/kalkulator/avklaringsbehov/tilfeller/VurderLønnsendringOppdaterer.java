@@ -23,10 +23,6 @@ public class VurderLønnsendringOppdaterer implements FaktaOmBeregningTilfelleOp
 
     @Override
     public void oppdater(FaktaBeregningLagreDto dto, Optional<BeregningsgrunnlagDto> forrigeBg, BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder) {
-        if (KonfigurasjonVerdi.get("AUTOMATISK_BEREGNE_LONNSENDRING", false)) {
-            // Dersom toggle er på har vi allerede lagret faktavurderingen
-            return;
-        }
         var lønnsendringDto = dto.getVurdertLonnsendring();
         var beregningsgrunnlag = input.getBeregningsgrunnlag();
         var arbeidstakerAndeler = grunnlagBuilder.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().stream()
