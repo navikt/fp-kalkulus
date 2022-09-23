@@ -99,7 +99,7 @@ public class VurderBeregningsgrunnlagTjeneste {
         // Evaluerer hver BeregningsgrunnlagPeriode fra foreslått Beregningsgrunnlag
         List<RegelResultat> regelResultater = new ArrayList<>();
         for (BeregningsgrunnlagPeriode periode : beregningsgrunnlagRegel.getBeregningsgrunnlagPerioder()) {
-            RegelVurderBeregningsgrunnlag regel = new RegelVurderBeregningsgrunnlag(periode);
+            RegelVurderBeregningsgrunnlag regel = new RegelVurderBeregningsgrunnlag();
             Evaluation evaluation = regel.evaluer(periode);
             regelResultater.add(RegelmodellOversetter.getRegelResultat(evaluation, jsonInput));
         }

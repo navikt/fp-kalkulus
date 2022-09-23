@@ -69,7 +69,7 @@ public class FullføreBeregningsgrunnlagFRISINN extends FullføreBeregningsgrunn
     protected List<RegelResultat> kjørRegelFullførberegningsgrunnlag(Beregningsgrunnlag beregningsgrunnlagRegel, String input) {
         List<RegelResultat> regelResultater = new ArrayList<>();
         for (BeregningsgrunnlagPeriode periode : beregningsgrunnlagRegel.getBeregningsgrunnlagPerioder()) {
-            RegelFullføreBeregningsgrunnlagFRISINN regel = new RegelFullføreBeregningsgrunnlagFRISINN(periode);
+            RegelFullføreBeregningsgrunnlagFRISINN regel = new RegelFullføreBeregningsgrunnlagFRISINN();
             Evaluation evaluation = regel.evaluer(periode);
             regelResultater.add(RegelmodellOversetter.getRegelResultat(evaluation, input));
         }
@@ -82,7 +82,7 @@ public class FullføreBeregningsgrunnlagFRISINN extends FullføreBeregningsgrunn
                 .map(periode -> {
                     Boolean erVilkårOppfylt = erVilkårOppfyltForSøknadsperiode(beregningVilkårResultatListe, søknadsperioder, periode);
                     BeregningsgrunnlagPeriode.builder(periode).medErVilkårOppfylt(erVilkårOppfylt);
-                    RegelFinnGrenseverdiFRISINN regel = new RegelFinnGrenseverdiFRISINN(periode);
+                    RegelFinnGrenseverdiFRISINN regel = new RegelFinnGrenseverdiFRISINN();
                     Evaluation evaluering = regel.evaluer(periode);
                     return RegelmodellOversetter.getSporing(evaluering);
                 }).collect(Collectors.toList());
