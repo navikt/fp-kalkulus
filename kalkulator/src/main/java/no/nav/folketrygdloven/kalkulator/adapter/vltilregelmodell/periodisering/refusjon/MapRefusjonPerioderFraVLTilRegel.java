@@ -182,14 +182,14 @@ public abstract class MapRefusjonPerioderFraVLTilRegel {
         Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndel = finnAndelForInntektsmelding(im, inputAndeler);
         Set<YrkesaktivitetDto> yrkesaktiviteter = finnYrkesaktiviteterForInntektsmelding(im, inputAndeler);
         BeregningsgrunnlagInput beregningsgrunnlagInput = inputAndeler.getBeregningsgrunnlagInput();
-        LocalDate skjæringstidspunktOpptjening = beregningsgrunnlagInput.getSkjæringstidspunktOpptjening();
-        List<AktivitetsAvtaleDto> alleAnsattperioderForInntektsmeldingEtterStartAvBeregning = finnAnsattperioderForYrkesaktiviteter(yrkesaktiviteter, skjæringstidspunktOpptjening);
-        Periode ansettelsesPeriode = FinnAnsettelsesPeriode.getMinMaksPeriode(alleAnsattperioderForInntektsmeldingEtterStartAvBeregning, skjæringstidspunktOpptjening);
+        LocalDate skjæringstidspunktBeregning = beregningsgrunnlagInput.getBeregningsgrunnlag().getSkjæringstidspunkt();
+        List<AktivitetsAvtaleDto> alleAnsattperioderForInntektsmeldingEtterStartAvBeregning = finnAnsattperioderForYrkesaktiviteter(yrkesaktiviteter, skjæringstidspunktBeregning);
+        Periode ansettelsesPeriode = FinnAnsettelsesPeriode.getMinMaksPeriode(alleAnsattperioderForInntektsmeldingEtterStartAvBeregning, skjæringstidspunktBeregning);
         LocalDate startdatoEtterPermisjon = utledStartdatoEtterPermisjon(
-                skjæringstidspunktOpptjening,
+                skjæringstidspunktBeregning,
                 im,
                 yrkesaktiviteter,
-                permisjonFilter, inputAndeler.getBeregningsgrunnlagInput().getYtelsespesifiktGrunnlag()).orElse(skjæringstidspunktOpptjening);
+                permisjonFilter, inputAndeler.getBeregningsgrunnlagInput().getYtelsespesifiktGrunnlag()).orElse(skjæringstidspunktBeregning);
 
         ArbeidsforholdOgInntektsmelding.Builder builder = ArbeidsforholdOgInntektsmelding.builder();
         matchendeAndel.map(BeregningsgrunnlagPrStatusOgAndelDto::getAndelsnr).ifPresent(builder::medAndelsnr);

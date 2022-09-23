@@ -121,7 +121,7 @@ public class MapPerioderForGraderingFraVLTilRegelOgUtbetalingsgradTest {
 
         assertThat(map.getArbeidsforholdOgInntektsmeldinger()).hasSize(1);
         assertThat(map.getArbeidsforholdOgInntektsmeldinger().get(0).getRefusjoner()).hasSize(1);
-        assertThat(map.getArbeidsforholdOgInntektsmeldinger().get(0).getRefusjoner().get(0).getFom()).isEqualTo(skjæringstidspunktOpptjening);
+        assertThat(map.getArbeidsforholdOgInntektsmeldinger().get(0).getRefusjoner().get(0).getFom()).isEqualTo(input.getBeregningsgrunnlag().getSkjæringstidspunkt());
         assertThat(map.getArbeidsforholdOgInntektsmeldinger().get(0).getRefusjoner().get(0).getMånedsbeløp()).isEqualTo(REFUSJON);
         assertThat(map.getArbeidsforholdOgInntektsmeldinger().get(0).getAndelsnr()).isEqualTo(1L);
     }
