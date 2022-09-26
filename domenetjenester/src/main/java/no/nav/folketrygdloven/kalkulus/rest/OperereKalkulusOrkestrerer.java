@@ -133,7 +133,7 @@ public class OperereKalkulusOrkestrerer {
     private Map<Long, BeregningsgrunnlagInput> lagInputOgRullTilbakeVedBehov(Set<Long> koblingIder,
                                                                              Map<Long, KalkulatorInputDto> kalkulatorInputPrKobling,
                                                                              LagInputTjeneste lagInputTjeneste) {
-        rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(koblingIder, lagInputTjeneste.getTilstand());
+        rullTilbakeTjeneste.rullTilbakeTilForrigeTilstandVedBehov(koblingIder, lagInputTjeneste.getTilstand());
         return lagInput(koblingIder, lagInputTjeneste, kalkulatorInputPrKobling);
     }
 

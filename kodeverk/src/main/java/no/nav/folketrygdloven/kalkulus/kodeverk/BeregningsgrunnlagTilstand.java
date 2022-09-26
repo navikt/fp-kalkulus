@@ -132,6 +132,15 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi {
         return Optional.of(forrigeTilstand);
     }
 
+    public static Optional<BeregningsgrunnlagTilstand> finnNesteTilstand(BeregningsgrunnlagTilstand tilstand) {
+        int tilstandIndex = tilstandRekkefølge.indexOf(tilstand);
+        if (tilstandIndex == tilstandRekkefølge.size() - 1) {
+            return Optional.empty();
+        }
+        BeregningsgrunnlagTilstand forrigeTilstand = tilstandRekkefølge.get(tilstandIndex + 1);
+        return Optional.of(forrigeTilstand);
+    }
+
 
     public boolean erFør(BeregningsgrunnlagTilstand that) {
         int thisIndex = tilstandRekkefølge.indexOf(this);

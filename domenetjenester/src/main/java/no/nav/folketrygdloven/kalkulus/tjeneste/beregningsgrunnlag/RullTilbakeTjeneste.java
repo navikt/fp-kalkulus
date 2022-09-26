@@ -1,13 +1,15 @@
 package no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.kalkulus.beregning.MapTilstandTilSteg;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
@@ -37,7 +39,7 @@ public class RullTilbakeTjeneste {
         this.forlengelseTjeneste = forlengelseTjeneste;
     }
 
-    public void rullTilbakeTilObligatoriskTilstandFørVedBehov(Set<Long> koblingIder, BeregningsgrunnlagTilstand tilstand) {
+    public void rullTilbakeTilForrigeTilstandVedBehov(Set<Long> koblingIder, BeregningsgrunnlagTilstand tilstand) {
         List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntiteter = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingIder);
         var rullTilbakeListe = finnGrunnlagSomSkalRullesTilbake(beregningsgrunnlagGrunnlagEntiteter, tilstand);
         if (!rullTilbakeListe.isEmpty()) {
@@ -52,12 +54,8 @@ public class RullTilbakeTjeneste {
         Set<Long> rullTilbakeKoblinger = rullTilbakeListe.stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId).collect(Collectors.toSet());
         beregningsgrunnlagRepository.deaktiverBeregningsgrunnlagGrunnlagEntiteter(rullTilbakeListe);
         regelsporingRepository.ryddRegelsporingForTilstand(rullTilbakeKoblinger, tilstand);
-        Optional<BeregningsgrunnlagTilstand> forrigeObligatoriskTilstand = tilstand.erObligatoriskTilstand() ? Optional.of(tilstand) : BeregningsgrunnlagTilstand.finnForrigeObligatoriskTilstand(tilstand);
-        if (forrigeObligatoriskTilstand.isPresent()) {
-            beregningsgrunnlagRepository.reaktiverBeregningsgrunnlagGrunnlagEntiteter(rullTilbakeKoblinger, forrigeObligatoriskTilstand.get());
-        } else {
-            BeregningsgrunnlagTilstand første = BeregningsgrunnlagTilstand.finnFørste();
-            beregningsgrunnlagRepository.reaktiverBeregningsgrunnlagGrunnlagEntiteter(rullTilbakeKoblinger, første);
+        if (BeregningsgrunnlagTilstand.finnFørste().erFør(tilstand)) {
+            beregningsgrunnlagRepository.reaktiverForrigeGrunnlagForKoblinger(rullTilbakeKoblinger, tilstand);
         }
     }
 

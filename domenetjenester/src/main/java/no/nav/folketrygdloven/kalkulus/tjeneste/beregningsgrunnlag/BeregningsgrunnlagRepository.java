@@ -7,7 +7,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Objects;
 import java.util.Optional;
@@ -66,8 +68,8 @@ public class BeregningsgrunnlagRepository {
      * eller ikke.
      * Om revurderingen ikke har grunnlag opprettet i denne tilstanden returneres grunnlaget fra originalbehandlingen for samme tilstand.
      *
-     * @param koblingId                    en koblingId
-     * @param beregningsgrunnlagTilstand   steget {@link BeregningsgrunnlagGrunnlagEntitet} er opprettet i
+     * @param kobling                  en kobling
+     * @param beregningsgrunnlagTilstand steget {@link BeregningsgrunnlagGrunnlagEntitet} er opprettet i
      * @return Hvis det finnes et eller fler BeregningsgrunnlagGrunnlagEntitet som har blitt opprettet i {@code stegOpprettet} returneres den
      * som ble opprettet sist
      */
@@ -477,44 +479,65 @@ public class BeregningsgrunnlagRepository {
         entityManager.flush();
     }
 
-
-    public boolean reaktiverBeregningsgrunnlagGrunnlagEntitet(Long koblingId, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
-        Optional<BeregningsgrunnlagGrunnlagEntitet> aktivEntitetOpt = hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
-        aktivEntitetOpt.ifPresent(this::deaktiverBeregningsgrunnlagGrunnlagEntitet);
-        Optional<BeregningsgrunnlagGrunnlagEntitet> kontrollerFaktaEntitetOpt = hentSisteBeregningsgrunnlagGrunnlagEntitet(koblingId,
-                beregningsgrunnlagTilstand);
-        boolean reaktiverer = kontrollerFaktaEntitetOpt.isPresent();
-        kontrollerFaktaEntitetOpt.ifPresent(entitet -> endreAktivOgLagre(entitet, true));
-        entityManager.flush();
-        return reaktiverer;
+    /**
+     * Reaktiverer grunnlag til forrige tilstand før gjeldende tilstand.
+     * <p>
+     * Grunnlaget som reaktiveres må oppfylle følgende:
+     * - tilstand må vere før gjeldende
+     * - opprettet tid må være før opprettet tid i forrige grunnlag med gjeldende tilstand
+     * - er sist opprettet av grunnlag med samme tilstand
+     * <p>
+     * Dersom en kobling ikke har et tidligere grunnlag med gjeldende tilstand
+     * benyttes opprettet tid fra grunnlag med tilstand lik neste tilstand i samsvar med tilstandrekkefølgen
+     *
+     * @param koblinger         Koblinger med grunnlag som skal reaktiveres
+     * @param gjeldendeTilstand Gjeldende tilstand
+     */
+    public void reaktiverForrigeGrunnlagForKoblinger(Set<Long> koblinger, BeregningsgrunnlagTilstand gjeldendeTilstand) {
+        var maksOppretteTidPrKobling = finnMaksOpprettetTidForGrunnlagPrKobling(koblinger, gjeldendeTilstand);
+        maksOppretteTidPrKobling.forEach((koblingId, maksOpprettetTid) -> reaktiverSisteLagredeMedTilstandFør(gjeldendeTilstand, koblingId, maksOpprettetTid));
     }
 
-
-    public boolean reaktiverBeregningsgrunnlagGrunnlagEntiteter(Set<Long> koblingIder, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
-        List<BeregningsgrunnlagGrunnlagEntitet> aktiveEntiteter = hentBeregningsgrunnlagGrunnlagEntiteter(koblingIder);
-        deaktiverBeregningsgrunnlagGrunnlagEntiteter(aktiveEntiteter);
-        var kontrollerFaktaEntiteter = koblingIder.stream()
-                .flatMap(id -> hentSisteBeregningsgrunnlagGrunnlagEntitet(id, beregningsgrunnlagTilstand).stream())
-                .collect(Collectors.toList());
-        endreAktivOgLagre(kontrollerFaktaEntiteter, true);
-        entityManager.flush();
-        return !kontrollerFaktaEntiteter.isEmpty();
-    }
-
-
-    public boolean reaktiverSisteBeregningsgrunnlagGrunnlagEntitetFørTilstand(Long koblingId, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
-        Optional<BeregningsgrunnlagGrunnlagEntitet> aktivEntitetOpt = hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
-        aktivEntitetOpt.ifPresent(this::deaktiverBeregningsgrunnlagGrunnlagEntitet);
-        Optional<BeregningsgrunnlagTilstand> forrigeTilstand = BeregningsgrunnlagTilstand.finnForrigeTilstand(beregningsgrunnlagTilstand);
-        Optional<BeregningsgrunnlagGrunnlagEntitet> forrigeEntitet = forrigeTilstand
-                .flatMap(tilstand -> hentSisteBeregningsgrunnlagGrunnlagEntitet(koblingId, tilstand));
-        while (forrigeEntitet.isEmpty() && forrigeTilstand.isPresent()) {
-            forrigeTilstand = BeregningsgrunnlagTilstand.finnForrigeTilstand(forrigeTilstand.get());
-            forrigeEntitet = forrigeTilstand.flatMap(tilstand -> hentSisteBeregningsgrunnlagGrunnlagEntitet(koblingId, tilstand));
+    private void reaktiverSisteLagredeMedTilstandFør(BeregningsgrunnlagTilstand tilstand, Long koblingId, LocalDateTime maksOpprettetTid) {
+        Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagForKobling = Optional.empty();
+        var forrigeTilstand = tilstand;
+        while (grunnlagForKobling.isEmpty()) {
+            forrigeTilstand = BeregningsgrunnlagTilstand.finnForrigeTilstand(forrigeTilstand).orElseThrow();
+            grunnlagForKobling = hentSisteBeregningsgrunnlagGrunnlagEntitetOpprettetFør(koblingId, maksOpprettetTid, forrigeTilstand);
         }
-        forrigeEntitet.ifPresent(entitet -> endreAktivOgLagre(entitet, true));
+        endreAktivOgLagre(grunnlagForKobling.get(), true);
         entityManager.flush();
-        return forrigeTilstand.isPresent();
+    }
+
+    private Map<Long, LocalDateTime> finnMaksOpprettetTidForGrunnlagPrKobling(Set<Long> koblinger, BeregningsgrunnlagTilstand tilstand) {
+        var sisteGrunnlagFraTilstand = hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(
+                koblinger,
+                tilstand,
+                null);
+
+        Map<Long, LocalDateTime> maksOppretteTidPrKobling = new HashMap<>();
+
+        sisteGrunnlagFraTilstand.forEach(gr -> maksOppretteTidPrKobling.put(gr.getKoblingId(), gr.getOpprettetTidspunkt()));
+
+        var manglendeKoblinger = koblinger.stream()
+                .filter(k -> !maksOppretteTidPrKobling.containsKey(k))
+                .collect(Collectors.toSet());
+
+        // Koblinger kan mangle grunnlag med gitt tilstand dersom steget er opprettet etter at koblingen ble behandlet forrige gang
+        // Dersom dette skjer ser vi på neste tilstand i loop til alle koblingene er dekket
+        var nesteTilstand =  tilstand;
+        while (!manglendeKoblinger.isEmpty()) {
+            nesteTilstand = BeregningsgrunnlagTilstand.finnNesteTilstand(nesteTilstand).orElseThrow(() -> new IllegalStateException("Kunne ikke finne neste tilstand fordi siste tilstand er nådd"));
+            sisteGrunnlagFraTilstand = hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(manglendeKoblinger,
+                    nesteTilstand,
+                    null);
+
+            sisteGrunnlagFraTilstand.forEach(gr -> maksOppretteTidPrKobling.put(gr.getKoblingId(), gr.getOpprettetTidspunkt()));
+            manglendeKoblinger = koblinger.stream()
+                    .filter(k -> !maksOppretteTidPrKobling.containsKey(k))
+                    .collect(Collectors.toSet());
+        }
+        return maksOppretteTidPrKobling;
     }
 
     public boolean lagreOgSjekkStatus(KalkulatorInputEntitet input) {
