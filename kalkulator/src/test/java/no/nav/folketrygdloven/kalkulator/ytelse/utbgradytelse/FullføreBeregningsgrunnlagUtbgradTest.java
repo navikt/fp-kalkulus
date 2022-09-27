@@ -375,9 +375,9 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
 
         BeregningsgrunnlagPeriodeDto resPeriode2 = bgPerioder.get(1);
-        assertPeriode(resPeriode2, 1_200_000, 450_000, 1730, 450_000);
-        assertAndel(getAndel(resPeriode2, ORGNR1), BigDecimal.ZERO, BigDecimal.valueOf(225_000), BigDecimal.valueOf(225_000));
-        assertAndel(getAndel(resPeriode2, ORGNR2), BigDecimal.ZERO, BigDecimal.valueOf(225_000), BigDecimal.valueOf(225_000));
+        assertPeriode(resPeriode2, 1_200_000, 450_000, 1731, 450_000);
+        assertAndel(getAndel(resPeriode2, ORGNR1), BigDecimal.ZERO, BigDecimal.valueOf(300_000), BigDecimal.valueOf(300_000));
+        assertAndel(getAndel(resPeriode2, ORGNR2), BigDecimal.ZERO, BigDecimal.valueOf(150_000), BigDecimal.valueOf(150_000));
 
         assertRegelsporing(resultat.getRegelsporinger());
     }
@@ -604,9 +604,9 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
-        assertPeriode(resPeriode, 1_200_000, 450_000, 1730, 450_000);
-        assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.ZERO, BigDecimal.valueOf(225_000), BigDecimal.valueOf(225_000));
-        assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.ZERO, BigDecimal.valueOf(225_000), BigDecimal.valueOf(225_000));
+        assertPeriode(resPeriode, 1_200_000, 450_000, 1731, 450_000);
+        assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.ZERO, BigDecimal.valueOf(300_000), BigDecimal.valueOf(300_000));
+        assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.ZERO, BigDecimal.valueOf(150_000), BigDecimal.valueOf(150_000));
         assertRegelsporing(resultat.getRegelsporinger());
     }
 
