@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulus.beregning;
 import java.util.HashMap;
 import java.util.Map;
 
-import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 import no.nav.folketrygdloven.kalkulus.mappers.ForeslåSplittToggle;
@@ -28,7 +27,7 @@ public class MapHåndteringskodeTilTilstand {
 
     public static BeregningsgrunnlagTilstand map(HåndteringKode kode) {
         if (ForeslåSplittToggle.erTogglePå() && kode.equals(HåndteringKode.VURDER_VARIG_ENDRET_ELLER_NYOPPSTARTET_NÆRING_SELVSTENDIG_NÆRINGSDRIVENDE_KODE)) {
-            return BeregningsgrunnlagTilstand.FORESLÅTT_2;
+            return BeregningsgrunnlagTilstand.FORESLÅTT_2_UT;
         }
         if (map.containsKey(kode)) {
             return map.get(kode);
