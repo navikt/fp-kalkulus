@@ -14,9 +14,9 @@ import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagDel2Input;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
+import no.nav.folketrygdloven.kalkulator.input.FortsettForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FullføreBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.input.VurderBeregningsgrunnlagvilkårInput;
@@ -62,7 +62,7 @@ class StegInputMapper {
             return lagInputForeslåBesteberegning(stegProsesseringInput);
         } else if (stegType.equals(BeregningSteg.FORS_BERGRUNN)) {
             return lagInputForeslå(stegProsesseringInput);
-        } else if (stegType.equals(BeregningSteg.FORS_BERGRUNN_2)) {
+        } else if (stegType.equals(BeregningSteg.FORTS_FORS_BERGRUNN)) {
             return lagInputForeslåDel2(stegProsesseringInput);
         } else if (stegType.equals(BeregningSteg.VURDER_VILKAR_BERGRUNN)) {
             Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning());
@@ -141,8 +141,8 @@ class StegInputMapper {
         return input.medGrunnbeløpsatser(finnSatser());
     }
 
-    private ForeslåBeregningsgrunnlagDel2Input lagInputForeslåDel2(StegProsesseringInput stegProsesseringInput) {
-        var foreslåBeregningsgrunnlagInput = new ForeslåBeregningsgrunnlagDel2Input(stegProsesseringInput);
+    private FortsettForeslåBeregningsgrunnlagInput lagInputForeslåDel2(StegProsesseringInput stegProsesseringInput) {
+        var foreslåBeregningsgrunnlagInput = new FortsettForeslåBeregningsgrunnlagInput(stegProsesseringInput);
         return foreslåBeregningsgrunnlagInput.medGrunnbeløpsatser(finnSatser());
     }
 

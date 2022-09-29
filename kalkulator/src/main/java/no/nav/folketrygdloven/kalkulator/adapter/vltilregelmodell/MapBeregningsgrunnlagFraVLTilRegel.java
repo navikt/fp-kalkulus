@@ -37,8 +37,8 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapIn
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapPeriodeÅrsakFraVlTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagDel2Input;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.FortsettForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FullføreBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.VurderBeregningsgrunnlagvilkårInput;
 import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
@@ -149,8 +149,8 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
     private List<Grunnbeløp> grunnbeløpSatser(BeregningsgrunnlagInput input) {
         if (input instanceof ForeslåBeregningsgrunnlagInput) {
             return ((ForeslåBeregningsgrunnlagInput) input).getGrunnbeløpsatser();
-        } else if (input instanceof ForeslåBeregningsgrunnlagDel2Input) {
-            return ((ForeslåBeregningsgrunnlagDel2Input) input).getGrunnbeløpsatser();
+        } else if (input instanceof FortsettForeslåBeregningsgrunnlagInput) {
+            return ((FortsettForeslåBeregningsgrunnlagInput) input).getGrunnbeløpsatser();
         }
         return Collections.emptyList();
     }

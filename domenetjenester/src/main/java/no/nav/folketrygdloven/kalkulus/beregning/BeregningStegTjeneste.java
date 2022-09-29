@@ -17,9 +17,9 @@ import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
-import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagDel2Input;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
+import no.nav.folketrygdloven.kalkulator.input.FortsettForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.input.VurderBeregningsgrunnlagvilkårInput;
 import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
@@ -94,8 +94,8 @@ public class BeregningStegTjeneste {
             return foreslåBesteberegning((ForeslåBesteberegningInput) input);
         } else if (stegType.equals(BeregningSteg.FORS_BERGRUNN)) {
             return foreslåBeregningsgrunnlag((ForeslåBeregningsgrunnlagInput) input);
-        } else if (stegType.equals(BeregningSteg.FORS_BERGRUNN_2)) {
-            return foreslåBeregningsgrunnlagDel2((ForeslåBeregningsgrunnlagDel2Input) input);
+        } else if (stegType.equals(BeregningSteg.FORTS_FORS_BERGRUNN)) {
+            return fortsettForeslåBeregningsgrunnlag((FortsettForeslåBeregningsgrunnlagInput) input);
         } else if (stegType.equals(BeregningSteg.VURDER_VILKAR_BERGRUNN)) {
             return vurderBeregningsgrunnlagsvilkår((VurderBeregningsgrunnlagvilkårInput) input);
         } else if (stegType.equals(BeregningSteg.VURDER_REF_BERGRUNN)) {
@@ -155,12 +155,12 @@ public class BeregningStegTjeneste {
 
     /**
      * ForeslåBeregningsgrunnlag
-     * Steg 4. FORS_DEL_2_BERGRUNN
+     * Steg 4. FORS_BERGRUNN_2
      *
      * @param input {@link BeregningsgrunnlagInput}
      * @return {@link BeregningAvklaringsbehovResultat}
      */
-    private TilstandResponse foreslåBeregningsgrunnlagDel2(ForeslåBeregningsgrunnlagDel2Input input) {
+    private TilstandResponse fortsettForeslåBeregningsgrunnlag(FortsettForeslåBeregningsgrunnlagInput input) {
         if (input.isEnabled("splitt-foreslå-toggle", false)) {
             var beregningResultatAggregat = beregningsgrunnlagTjeneste.foreslåBeregningsgrunnlagDel2(input);
             lagreOgKopier(input, beregningResultatAggregat);

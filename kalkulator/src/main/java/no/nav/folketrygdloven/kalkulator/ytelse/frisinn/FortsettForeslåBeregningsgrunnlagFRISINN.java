@@ -6,10 +6,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
-import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagDel2Input;
+import no.nav.folketrygdloven.kalkulator.input.FortsettForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
-import no.nav.folketrygdloven.kalkulator.steg.foreslåDel2.ForeslåBeregningsgrunnlagDel2;
+import no.nav.folketrygdloven.kalkulator.steg.fortsettForeslå.FortsettForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 /**
@@ -19,20 +19,20 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
  */
 @ApplicationScoped
 @FagsakYtelseTypeRef(FagsakYtelseType.FRISINN)
-public class ForeslåBeregningsgrunnlagDel2FRISINN extends ForeslåBeregningsgrunnlagDel2 {
+public class FortsettForeslåBeregningsgrunnlagFRISINN extends FortsettForeslåBeregningsgrunnlag {
     protected MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel;
 
-    public ForeslåBeregningsgrunnlagDel2FRISINN() {
+    public FortsettForeslåBeregningsgrunnlagFRISINN() {
         // CDI
     }
 
     @Inject
-    public ForeslåBeregningsgrunnlagDel2FRISINN(MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel) {
+    public FortsettForeslåBeregningsgrunnlagFRISINN(MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel) {
         this.mapBeregningsgrunnlagFraVLTilRegel = mapBeregningsgrunnlagFraVLTilRegel;
     }
 
     @Override
-    public BeregningsgrunnlagRegelResultat foreslåBeregningsgrunnlagDel2(ForeslåBeregningsgrunnlagDel2Input input) {
+    public BeregningsgrunnlagRegelResultat foreslåBeregningsgrunnlagDel2(FortsettForeslåBeregningsgrunnlagInput input) {
         BeregningsgrunnlagDto beregningsgrunnlag = input.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlag()
                 .orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag her"));
         return new BeregningsgrunnlagRegelResultat(beregningsgrunnlag, Collections.emptyList());

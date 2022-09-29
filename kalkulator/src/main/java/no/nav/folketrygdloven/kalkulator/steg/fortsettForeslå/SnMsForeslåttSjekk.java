@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.steg.foreslåDel2;
+package no.nav.folketrygdloven.kalkulator.steg.fortsettForeslå;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;

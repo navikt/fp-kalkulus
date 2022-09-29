@@ -12,9 +12,9 @@ import jakarta.inject.Inject;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
-import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagDel2Input;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
+import no.nav.folketrygdloven.kalkulator.input.FortsettForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
@@ -40,7 +40,7 @@ import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.Avklarin
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.vilkår.VilkårTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.vilkår.VurderBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.foreslå.ForeslåBeregningsgrunnlag;
-import no.nav.folketrygdloven.kalkulator.steg.foreslåDel2.ForeslåBeregningsgrunnlagDel2;
+import no.nav.folketrygdloven.kalkulator.steg.fortsettForeslå.FortsettForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.steg.fullføre.FullføreBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.AvklaringsbehovUtlederFaktaOmBeregning;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.VurderRefusjonBeregningsgrunnlag;
@@ -65,7 +65,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
     private Instance<FordelBeregningsgrunnlagTjeneste> fordelBeregningsgrunnlagTjeneste;
     private VurderRefusjonBeregningsgrunnlag vurderRefusjonBeregningsgrunnlag;
     private Instance<VilkårTjeneste> vilkårTjeneste;
-    private Instance<ForeslåBeregningsgrunnlagDel2> foreslåBeregningsgrunnlagDel2Tjeneste;
+    private Instance<FortsettForeslåBeregningsgrunnlag> foreslåBeregningsgrunnlagDel2Tjeneste;
 
 
     public BeregningsgrunnlagTjeneste() {
@@ -82,7 +82,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
                                       VurderRefusjonBeregningsgrunnlagFelles vurderRefusjonBeregningsgrunnlag,
                                       @Any Instance<ForeslåBeregningsgrunnlag> foreslåBeregningsgrunnlag,
                                       @Any Instance<VurderBeregningsgrunnlagTjeneste> vurderBeregningsgrunnlagTjeneste,
-                                      @Any Instance<ForeslåBeregningsgrunnlagDel2> foreslåBeregningsgrunnlagDel2Tjeneste,
+                                      @Any Instance<FortsettForeslåBeregningsgrunnlag> foreslåBeregningsgrunnlagDel2Tjeneste,
                                       @Any Instance<VilkårTjeneste> vilkårTjeneste) {
         this.foreslåSkjæringstidspunktTjeneste = foreslåSkjæringstidspunktTjeneste;
         this.fullføreBeregningsgrunnlag = fullføreBeregningsgrunnlag;
@@ -237,7 +237,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
     }
 
     @Override
-    public BeregningResultatAggregat foreslåBeregningsgrunnlagDel2(ForeslåBeregningsgrunnlagDel2Input input) {
+    public BeregningResultatAggregat foreslåBeregningsgrunnlagDel2(FortsettForeslåBeregningsgrunnlagInput input) {
         BeregningsgrunnlagRegelResultat resultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), foreslåBeregningsgrunnlagDel2Tjeneste)
                 .foreslåBeregningsgrunnlagDel2(input);
         return BeregningResultatAggregat.Builder.fra(input)

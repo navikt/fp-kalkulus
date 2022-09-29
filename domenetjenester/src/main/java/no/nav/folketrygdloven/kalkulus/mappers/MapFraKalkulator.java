@@ -15,7 +15,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AktivitetStatusV2;
-import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.StandardGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
@@ -54,7 +53,7 @@ public class MapFraKalkulator {
     private static final String TOGGLE_AUTOMATISK_BESTEBEREGNING = "automatisk-besteberegning";
     private static final String TOGGLE_TSF_1715 = "feilretting-tsf-1715";
 
-    // Hvis denne toggle er på vil alle statuser utenom SN og MS bli beregnet i foreslå steget, mens SN og MS må beregnes i foreslå 2 steget.
+    // Hvis denne toggle er på vil alle statuser utenom SN og MS bli beregnet i foreslå steget, mens SN og MS må beregnes i fortsett foreslå steget.
     private static final String TOGGLE_SPLITT_FORESLÅ = "splitt-foreslå-toggle";
 
 

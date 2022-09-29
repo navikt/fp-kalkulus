@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.steg.foreslåDel2;
+package no.nav.folketrygdloven.kalkulator.steg.fortsettForeslå;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

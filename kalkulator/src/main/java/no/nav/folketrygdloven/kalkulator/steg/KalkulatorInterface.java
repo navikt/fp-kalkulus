@@ -2,9 +2,9 @@ package no.nav.folketrygdloven.kalkulator.steg;
 
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
-import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagDel2Input;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
+import no.nav.folketrygdloven.kalkulator.input.FortsettForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat;
@@ -41,7 +41,7 @@ public interface KalkulatorInterface {
      */
     BeregningResultatAggregat foreslåBeregningsgrunnlag(ForeslåBeregningsgrunnlagInput input);
 
-    /** Steg 4: Foreslå beregningsgrunnlag del 2
+    /** Steg 4: Fortsett foreslå beregningsgrunnlag
      *
      *  Fortsetter beregning i henhold til kap 8 i folketrygdloven for
      *  statuser som er avhengig av resultatet fra steg 3 (foreslå beregningsgrunnlag)
@@ -49,7 +49,7 @@ public interface KalkulatorInterface {
      * @param input Input til steget
      * @return Resultat med avklaringsbehov og nytt beregningsgrunnlag
      */
-    BeregningResultatAggregat foreslåBeregningsgrunnlagDel2(ForeslåBeregningsgrunnlagDel2Input input);
+    BeregningResultatAggregat foreslåBeregningsgrunnlagDel2(FortsettForeslåBeregningsgrunnlagInput input);
 
     /** Steg 4.5: Foreslår besteberegning
      *
