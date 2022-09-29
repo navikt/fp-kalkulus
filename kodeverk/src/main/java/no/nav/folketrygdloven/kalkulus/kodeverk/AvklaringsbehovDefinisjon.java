@@ -29,11 +29,11 @@ enum AvklaringsbehovDefinisjon implements Kodeverdi {
 
     // 5000 vanlig saksbehandlig
     FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS("5038", MANUELL, BeregningSteg.FORS_BERGRUNN, "Fastsette beregningsgrunnlag for arbeidstaker/frilanser skjønnsmessig"),
-    VURDER_VARIG_ENDRET_ELLER_NYOPPSTARTET_NÆRING_SELVSTENDIG_NÆRINGSDRIVENDE("5039", MANUELL, BeregningSteg.FORS_BERGRUNN_2, "Vurder varig endret/nyoppstartet næring selvstendig næringsdrivende"),
-    FASTSETT_BEREGNINGSGRUNNLAG_SELVSTENDIG_NÆRINGSDRIVENDE("5042", MANUELL, BeregningSteg.FORS_BERGRUNN_2, "Fastsett beregningsgrunnlag for selvstendig næringsdrivende"),
+    VURDER_VARIG_ENDRET_ELLER_NYOPPSTARTET_NÆRING_SELVSTENDIG_NÆRINGSDRIVENDE("5039", MANUELL, BeregningSteg.FORTS_FORS_BERGRUNN, "Vurder varig endret/nyoppstartet næring selvstendig næringsdrivende"),
+    FASTSETT_BEREGNINGSGRUNNLAG_SELVSTENDIG_NÆRINGSDRIVENDE("5042", MANUELL, BeregningSteg.FORTS_FORS_BERGRUNN, "Fastsett beregningsgrunnlag for selvstendig næringsdrivende"),
     FORDEL_BEREGNINGSGRUNNLAG("5046", MANUELL, BeregningSteg.FORDEL_BERGRUNN, "Fordel beregningsgrunnlag"),
     FASTSETT_BEREGNINGSGRUNNLAG_TIDSBEGRENSET_ARBEIDSFORHOLD("5047", MANUELL, BeregningSteg.FORS_BERGRUNN, "Fastsett beregningsgrunnlag for tidsbegrenset arbeidsforhold"),
-    FASTSETT_BEREGNINGSGRUNNLAG_FOR_SN_NY_I_ARBEIDSLIVET("5049", MANUELL, BeregningSteg.FORS_BERGRUNN_2, "Fastsett beregningsgrunnlag for SN som er ny i arbeidslivet"),
+    FASTSETT_BEREGNINGSGRUNNLAG_FOR_SN_NY_I_ARBEIDSLIVET("5049", MANUELL, BeregningSteg.FORTS_FORS_BERGRUNN, "Fastsett beregningsgrunnlag for SN som er ny i arbeidslivet"),
     VURDER_GRADERING_UTEN_BEREGNINGSGRUNNLAG("5050", MANUELL, BeregningSteg.FAST_BERGRUNN, "Vurder gradering på andel uten beregningsgrunnlag"),
     AVKLAR_AKTIVITETER("5052", MANUELL, BeregningSteg.FASTSETT_STP_BER, "Avklar aktivitet for beregning"),
     VURDER_FAKTA_FOR_ATFL_SN("5058", MANUELL, BeregningSteg.KOFAKBER, "Vurder fakta for arbeidstaker, frilans og selvstendig næringsdrivende"),
