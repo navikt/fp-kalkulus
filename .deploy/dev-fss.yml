@@ -120,8 +120,6 @@ spec:
       value: "true"
     - name: REKURSIV_TASK_KOMPRIMERING_ENABLED
       value: "true"
-    - name: FORDELING_MED_GRADERING_ENABLED
-      value: "true"
     - name: TREKKE_OVERSTYRING_ENABLED
       value: "true"
     - name: SPLITT_FORESLA_TOGGLE

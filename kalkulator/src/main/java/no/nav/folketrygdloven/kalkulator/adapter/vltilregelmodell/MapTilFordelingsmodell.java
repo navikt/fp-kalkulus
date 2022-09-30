@@ -47,7 +47,7 @@ public class MapTilFordelingsmodell {
                 .medAktivitetStatus(regelstatus)
                 .medAndelNr(bgAndel.getAndelsnr())
                 .erSøktYtelseFor(erSøktYtelseFor(bgAndel, input))
-                .medUtbetalingsgrad(KonfigurasjonVerdi.get("FORDELING_MED_GRADERING_ENABLED", false) ? UtbetalingsgradTjeneste.finnUtbetalingsgradForAndel(bgAndel, bgAndel.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false) :  BigDecimal.valueOf(100))
+                .medUtbetalingsgrad(hundreEllerNull(bgAndel, input))
                 .medInntektskategori(MapInntektskategoriFraVLTilRegel.map(bgAndel.getGjeldendeInntektskategori()));
         mapArbeidsforhold(bgAndel).ifPresent(regelBuilder::medArbeidsforhold);
         bgAndel.getBgAndelArbeidsforhold().ifPresent(arb -> regelBuilder.medGjeldendeRefusjonPrÅr(arb.getGjeldendeRefusjonPrÅr()));
@@ -55,11 +55,16 @@ public class MapTilFordelingsmodell {
         bgAndel.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseTilkommetPrÅr).ifPresent(regelBuilder::medNaturalytelseTilkommerPrÅr);
         if (bgAndel.getBruttoPrÅr() != null) {
             regelBuilder.medForeslåttPrÅr(bgAndel.getBruttoPrÅr());
-        } else if (erArbeidsandelMedSøktRefusjon(bgAndel)){
+        } else if (erArbeidsandelMedSøktRefusjon(bgAndel)) {
             // Andel er opprettet etter foreslå steget, henter inntekt fra IM for bruk ved andelsmessig fordeling
             regelBuilder.medInntektFraInnektsmelding(finnInntektFraIM(bgAndel, input));
         }
         return regelBuilder.build();
+    }
+
+    private static BigDecimal hundreEllerNull(BeregningsgrunnlagPrStatusOgAndelDto bgAndel, BeregningsgrunnlagInput input) {
+        var ubetalingsgrad = finnUtbetalingsgradForAndel(bgAndel, bgAndel.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);
+        return ubetalingsgrad.compareTo(BigDecimal.ZERO) > 0 ? BigDecimal.valueOf(100) : BigDecimal.ZERO;
     }
 
     private static boolean erArbeidsandelMedSøktRefusjon(BeregningsgrunnlagPrStatusOgAndelDto bgAndel) {
