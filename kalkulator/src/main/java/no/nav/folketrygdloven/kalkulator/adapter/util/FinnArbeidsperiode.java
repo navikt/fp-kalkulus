@@ -4,13 +4,20 @@ import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
+import no.nav.fpsak.tidsserie.LocalDateSegment;
+import no.nav.fpsak.tidsserie.LocalDateTimeline;
+import no.nav.fpsak.tidsserie.StandardCombinators;
 
 
 public class FinnArbeidsperiode {
@@ -47,6 +54,37 @@ public class FinnArbeidsperiode {
 
     private boolean erKunstig(Arbeidsgiver arbeidsgiver) {
         return arbeidsgiver != null && arbeidsgiver.getErVirksomhet() && OrgNummer.KUNSTIG_ORG.equals(arbeidsgiver.getIdentifikator());
+    }
+
+    public static LocalDateTimeline<Boolean> finnAnsettelseTidslinje(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRefDto, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+        YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister());
+        Collection<YrkesaktivitetDto> yrkesaktiviteterForBeregning = filter.getYrkesaktiviteterForBeregning();
+        var yrkesaktiviteter = yrkesaktiviteterForBeregning.stream().filter(ya -> ya.gjelderFor(arbeidsgiver, arbeidsforholdRefDto))
+                .toList();
+        return finnAnsettelseTidslinje(yrkesaktiviteter);
+    }
+
+    public static LocalDateTimeline<Boolean> finnAnsettelseTidslinje(Collection<YrkesaktivitetDto> yrkesaktiviteter) {
+        var ansattperioder = finnAnsattperioderForYrkesaktiviteter(yrkesaktiviteter);
+
+        var segmenterMedAnsettelse = ansattperioder.stream()
+                .map(AktivitetsAvtaleDto::getPeriode)
+                .map(p -> new LocalDateTimeline<>(List.of(new LocalDateSegment<>(p.getFomDato(), p.getTomDato(), true))))
+                .collect(Collectors.toList());
+
+        var timeline = new LocalDateTimeline<Boolean>(List.of());
+
+        for (LocalDateTimeline<Boolean> localDateSegments : segmenterMedAnsettelse) {
+            timeline = timeline.combine(localDateSegments, StandardCombinators::coalesceRightHandSide, LocalDateTimeline.JoinStyle.CROSS_JOIN);
+        }
+
+        return timeline.compress();
+    }
+
+    private static List<AktivitetsAvtaleDto> finnAnsattperioderForYrkesaktiviteter(Collection<YrkesaktivitetDto> yrkesaktiviteter) {
+        return yrkesaktiviteter.stream()
+                .flatMap(ya -> ya.getAlleAnsettelsesperioder().stream())
+                .collect(Collectors.toList());
     }
 
 }

@@ -12,7 +12,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.fordel.modell.FordelPeriodeMode
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
-import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
+import no.nav.folketrygdloven.kalkulator.adapter.util.FinnArbeidsperiode;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapInntektskategoriFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -20,6 +20,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
 public class MapTilFordelingsmodell {
 
@@ -63,9 +64,21 @@ public class MapTilFordelingsmodell {
     }
 
     private static BigDecimal hundreEllerNull(BeregningsgrunnlagPrStatusOgAndelDto bgAndel, BeregningsgrunnlagInput input) {
-        var ubetalingsgrad = finnUtbetalingsgradForAndel(bgAndel, bgAndel.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);
+        var periode = bgAndel.getBeregningsgrunnlagPeriode().getPeriode();
+        var ubetalingsgrad = finnUtbetalingsgradForAndel(bgAndel, periode, input.getYtelsespesifiktGrunnlag(), false);
+        if (bgAndel.getBgAndelArbeidsforhold().isPresent()) {
+            var ansattTidslinje = FinnArbeidsperiode.finnAnsettelseTidslinje(bgAndel.getBgAndelArbeidsforhold().get().getArbeidsgiver(),
+                    bgAndel.getBgAndelArbeidsforhold().get().getArbeidsforholdRef(),
+                    input.getIayGrunnlag());
+            var aktuellPeriode = new LocalDateTimeline<>(periode.getFomDato(), periode.getTomDato(), Boolean.TRUE);
+            var erAnsattIPeriode = !ansattTidslinje.intersection(aktuellPeriode).isEmpty();
+            if (!erAnsattIPeriode) {
+                return BigDecimal.valueOf(100);
+            }
+        }
         return ubetalingsgrad.compareTo(BigDecimal.ZERO) > 0 ? BigDecimal.valueOf(100) : BigDecimal.ZERO;
     }
+
 
     private static boolean erArbeidsandelMedSøktRefusjon(BeregningsgrunnlagPrStatusOgAndelDto bgAndel) {
         var gjeldendeRefusjon = bgAndel.getBgAndelArbeidsforhold()
