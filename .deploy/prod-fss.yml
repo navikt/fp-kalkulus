@@ -109,5 +109,3 @@ spec:
       value: "true"
     - name: TREKKE_OVERSTYRING_ENABLED
       value: "true"
-    - name: SPLITT_FORESLA_TOGGLE
-      value: "true"

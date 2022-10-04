@@ -32,7 +32,7 @@ public class FortsettForeslåBeregningsgrunnlagFRISINN extends FortsettForeslåB
     }
 
     @Override
-    public BeregningsgrunnlagRegelResultat foreslåBeregningsgrunnlagDel2(FortsettForeslåBeregningsgrunnlagInput input) {
+    public BeregningsgrunnlagRegelResultat fortsettForeslåBeregningsgrunnlag(FortsettForeslåBeregningsgrunnlagInput input) {
         BeregningsgrunnlagDto beregningsgrunnlag = input.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlag()
                 .orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag her"));
         return new BeregningsgrunnlagRegelResultat(beregningsgrunnlag, Collections.emptyList());

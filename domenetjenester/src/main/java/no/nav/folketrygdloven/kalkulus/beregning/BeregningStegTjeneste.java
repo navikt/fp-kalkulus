@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulus.beregning;
 
 import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper.mapGrunnlag;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -161,14 +160,10 @@ public class BeregningStegTjeneste {
      * @return {@link BeregningAvklaringsbehovResultat}
      */
     private TilstandResponse fortsettForeslåBeregningsgrunnlag(FortsettForeslåBeregningsgrunnlagInput input) {
-        if (input.isEnabled("splitt-foreslå-toggle", false)) {
-            var beregningResultatAggregat = beregningsgrunnlagTjeneste.foreslåBeregningsgrunnlagDel2(input);
-            lagreOgKopier(input, beregningResultatAggregat);
-            lagreAvklaringsbehov(input, beregningResultatAggregat);
-            return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
-        } else {
-            return new TilstandResponse(input.getKoblingReferanse().getKoblingUuid(), Collections.emptyList());
-        }
+        var beregningResultatAggregat = beregningsgrunnlagTjeneste.foreslåBeregningsgrunnlagDel2(input);
+        lagreOgKopier(input, beregningResultatAggregat);
+        lagreAvklaringsbehov(input, beregningResultatAggregat);
+        return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
 
     /**

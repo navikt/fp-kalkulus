@@ -35,8 +35,9 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
-import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
+import no.nav.folketrygdloven.kalkulator.steg.fortsettForeslå.FortsettForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.testutilities.TestHjelper;
+import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
@@ -62,7 +63,7 @@ public class ForeslåBeregningsgrunnlagSNTest {
     private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(
             new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel),
             ytelsesSpesifikkMapper);
-    private ForeslåBeregningsgrunnlag foreslåBeregningsgrunnlag = new ForeslåBeregningsgrunnlag(mapBeregningsgrunnlagFraVLTilRegel);
+    private FortsettForeslåBeregningsgrunnlag fortsettForeslåBeregningsgrunnlag = new FortsettForeslåBeregningsgrunnlag(mapBeregningsgrunnlagFraVLTilRegel);
 
     @Test
     public void testBeregningsgrunnlagSelvstendigNæringsdrivende() {
@@ -80,10 +81,10 @@ public class ForeslåBeregningsgrunnlagSNTest {
             .medData(registerBuilder)
             .medInntektsmeldinger(inntektsmeldinger).build();
         KoblingReferanse ref = lagReferanseMedStp(koblingReferanse);
-        var input = BeregningsgrunnlagInputTestUtil.lagForeslåttBeregningsgrunnlagInput(ref, grunnlagDtoBuilder, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag);
+        var input = BeregningsgrunnlagInputTestUtil.lagFortsettForeslåttBeregningsgrunnlagInput(ref, grunnlagDtoBuilder, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag);
 
         // Act
-        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
+        BeregningsgrunnlagRegelResultat resultat = fortsettForeslåBeregningsgrunnlag.fortsettForeslåBeregningsgrunnlag(input);
 
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();

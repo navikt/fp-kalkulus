@@ -46,7 +46,7 @@ public class FortsettForeslåBeregningsgrunnlag {
         this.mapBeregningsgrunnlagFraVLTilRegel = mapBeregningsgrunnlagFraVLTilRegel;
     }
 
-    public BeregningsgrunnlagRegelResultat foreslåBeregningsgrunnlagDel2(FortsettForeslåBeregningsgrunnlagInput input) {
+    public BeregningsgrunnlagRegelResultat fortsettForeslåBeregningsgrunnlag(FortsettForeslåBeregningsgrunnlagInput input) {
         BeregningsgrunnlagGrunnlagDto grunnlag = input.getBeregningsgrunnlagGrunnlag();
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag()
                 .orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag her"));

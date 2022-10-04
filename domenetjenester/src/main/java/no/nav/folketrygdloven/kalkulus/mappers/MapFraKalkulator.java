@@ -53,10 +53,6 @@ public class MapFraKalkulator {
     private static final String TOGGLE_AUTOMATISK_BESTEBEREGNING = "automatisk-besteberegning";
     private static final String TOGGLE_TSF_1715 = "feilretting-tsf-1715";
 
-    // Hvis denne toggle er på vil alle statuser utenom SN og MS bli beregnet i foreslå steget, mens SN og MS må beregnes i fortsett foreslå steget.
-    private static final String TOGGLE_SPLITT_FORESLÅ = "splitt-foreslå-toggle";
-
-
     public static Arbeidsgiver mapArbeidsgiver(Aktør arbeidsgiver) {
         if (arbeidsgiver == null) {
             return null;
@@ -98,7 +94,6 @@ public class MapFraKalkulator {
         utenGrunnbeløp.leggTilToggle(TOGGLE_SPLITTE_SAMMENLIGNINGSGRUNNLAG, false);
         utenGrunnbeløp.leggTilToggle(TOGGLE_TSF_1715, false);
         utenGrunnbeløp.leggTilToggle(TOGGLE_AUTOMATISK_BESTEBEREGNING, true); // Legger til toggle for å kunne teste verdikjede
-        utenGrunnbeløp.leggTilToggle(TOGGLE_SPLITT_FORESLÅ, ForeslåSplittToggle.erTogglePå());
         utenGrunnbeløp.setForlengelseperioder(mapPerioder(forlengelseperioder));
         return beregningsgrunnlagGrunnlagEntitet.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag)
                 .map(utenGrunnbeløp::medBeregningsgrunnlagGrunnlag)

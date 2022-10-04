@@ -12,6 +12,7 @@ import java.util.Optional;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.FortsettForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.OmsorgspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
@@ -138,6 +139,22 @@ public class BeregningsgrunnlagInputTestUtil {
         inputMedBeregningsgrunnlag.setToggles(toggles);
         inputMedBeregningsgrunnlag.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
         return new ForeslåBeregningsgrunnlagInput(new StegProsesseringInput(inputMedBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT))
+                .medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER);
+    }
+
+    public static FortsettForeslåBeregningsgrunnlagInput lagFortsettForeslåttBeregningsgrunnlagInput(KoblingReferanse koblingReferanse,
+                                                                                     BeregningsgrunnlagGrunnlagDtoBuilder beregningsgrunnlagGrunnlagBuilder,
+                                                                                     BeregningsgrunnlagTilstand tilstand,
+                                                                                     InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
+        foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(2);
+        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null,
+                opprett(iayGrunnlag, koblingReferanse.getSkjæringstidspunktBeregning()), foreldrepengerGrunnlag);
+        BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
+        BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
+        inputMedBeregningsgrunnlag.setToggles(toggles);
+        inputMedBeregningsgrunnlag.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
+        return new FortsettForeslåBeregningsgrunnlagInput(new StegProsesseringInput(inputMedBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT))
                 .medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER);
     }
 

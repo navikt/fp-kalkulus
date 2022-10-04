@@ -9,7 +9,6 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -593,31 +592,6 @@ public class ForeslåBeregningsgrunnlagTest {
         periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(2);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(3), TIDENES_ENDE, 1, PeriodeÅrsak.NATURALYTELSE_BORTFALT);
         verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), arbeidsgiver, ÅRSINNTEKT1, null, null);
-    }
-
-    @Test
-    public void skalGiEittAvklaringsbehovForSNNyIArbeidslivetOgKortvarigArbeidsforhold() {
-        // Arrange
-        BeregningsgrunnlagDto nyttGrunnlag = lagBeregningsgrunnlagATFL_SN();
-        InntektArbeidYtelseAggregatBuilder register = testHjelper.initBehandlingFor_AT_SN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1),
-                2014, SKJÆRINGSTIDSPUNKT_BEREGNING, ARBEIDSFORHOLD_ORGNR1,
-                BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
-                iayGrunnlagBuilder);
-        iayGrunnlagBuilder.medData(register);
-        FaktaAggregatDto faktaAggregat = lagFakta(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), true, true);
-        lagKortvarigArbeidsforhold(nyttGrunnlag, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4).minusDays(1));
-        List<InntektsmeldingDto> inntektsmeldinger = Collections.emptyList();
-
-        // Act
-        BeregningsgrunnlagRegelResultat resultat = act(nyttGrunnlag, inntektsmeldinger, faktaAggregat);
-
-        // Assert
-        BeregningsgrunnlagDto bg = resultat.getBeregningsgrunnlag();
-        assertThat(bg.getBeregningsgrunnlagPerioder()).hasSize(2);
-        bg.getBeregningsgrunnlagPerioder().forEach(p -> assertThat(p.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(2));
-        List<BeregningAvklaringsbehovResultat> aps = resultat.getAvklaringsbehov();
-        List<AvklaringsbehovDefinisjon> apDefs = aps.stream().map(BeregningAvklaringsbehovResultat::getBeregningAvklaringsbehovDefinisjon).collect(Collectors.toList());
-        assertThat(apDefs).containsExactly(AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_FOR_SN_NY_I_ARBEIDSLIVET);
     }
 
     @Test

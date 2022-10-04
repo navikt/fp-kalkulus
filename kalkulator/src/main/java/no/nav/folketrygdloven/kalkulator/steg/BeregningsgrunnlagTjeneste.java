@@ -239,7 +239,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
     @Override
     public BeregningResultatAggregat foreslåBeregningsgrunnlagDel2(FortsettForeslåBeregningsgrunnlagInput input) {
         BeregningsgrunnlagRegelResultat resultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), foreslåBeregningsgrunnlagDel2Tjeneste)
-                .foreslåBeregningsgrunnlagDel2(input);
+                .fortsettForeslåBeregningsgrunnlag(input);
         return BeregningResultatAggregat.Builder.fra(input)
                 .medAvklaringsbehov(resultat.getAvklaringsbehov())
                 .medBeregningsgrunnlag(resultat.getBeregningsgrunnlag(), input.getStegTilstand())

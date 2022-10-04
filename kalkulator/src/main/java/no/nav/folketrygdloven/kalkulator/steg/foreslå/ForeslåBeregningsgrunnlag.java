@@ -6,13 +6,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
-import no.nav.folketrygdloven.beregningsgrunnlag.foreslå.RegelForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.foreslå.RegelForeslåBeregningsgrunnlagNy;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
@@ -49,8 +45,6 @@ import no.nav.fpsak.nare.evaluation.Evaluation;
 @ApplicationScoped
 @FagsakYtelseTypeRef()
 public class ForeslåBeregningsgrunnlag {
-    private static final String TOGGLE_SPLITT_FORESLÅ = "splitt-foreslå-toggle";
-    private static final Logger LOGGER = LoggerFactory.getLogger(ForeslåBeregningsgrunnlag.class);
     protected MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel;
     private final MapBeregningsgrunnlagFraRegelTilVL mapBeregningsgrunnlagFraRegelTilVL = new MapBeregningsgrunnlagFraRegelTilVL();
 
@@ -89,11 +83,7 @@ public class ForeslåBeregningsgrunnlag {
     }
 
     protected void verifiserBeregningsgrunnlag(BeregningsgrunnlagDto foreslåttBeregningsgrunnlag, ForeslåBeregningsgrunnlagInput input) {
-        if (input.isEnabled(TOGGLE_SPLITT_FORESLÅ, false)) {
-            BeregningsgrunnlagVerifiserer.verifiserForeslåttBeregningsgrunnlagDel1(foreslåttBeregningsgrunnlag);
-        } else {
-            BeregningsgrunnlagVerifiserer.verifiserForeslåttBeregningsgrunnlag(foreslåttBeregningsgrunnlag);
-        }
+        BeregningsgrunnlagVerifiserer.verifiserForeslåttBeregningsgrunnlagDel1(foreslåttBeregningsgrunnlag);
     }
 
     protected void splittPerioder(BeregningsgrunnlagInput input,
@@ -111,16 +101,9 @@ public class ForeslåBeregningsgrunnlag {
     protected List<RegelResultat> kjørRegelForeslåBeregningsgrunnlag(Beregningsgrunnlag regelmodellBeregningsgrunnlag, String jsonInput, ForeslåBeregningsgrunnlagInput input) {
         // Evaluerer hver BeregningsgrunnlagPeriode fra initielt Beregningsgrunnlag
         List<RegelResultat> regelResultater = new ArrayList<>();
-        if (input.isEnabled(TOGGLE_SPLITT_FORESLÅ, false)) {
-            for (BeregningsgrunnlagPeriode periode : regelmodellBeregningsgrunnlag.getBeregningsgrunnlagPerioder()) {
-                Evaluation evaluation = new RegelForeslåBeregningsgrunnlagNy(periode).evaluer(periode);
-                regelResultater.add(RegelmodellOversetter.getRegelResultat(evaluation, jsonInput));
-            }
-        } else {
-            for (BeregningsgrunnlagPeriode periode : regelmodellBeregningsgrunnlag.getBeregningsgrunnlagPerioder()) {
-                Evaluation evaluation = new RegelForeslåBeregningsgrunnlag(periode).evaluer(periode);
-                regelResultater.add(RegelmodellOversetter.getRegelResultat(evaluation, jsonInput));
-            }
+        for (BeregningsgrunnlagPeriode periode : regelmodellBeregningsgrunnlag.getBeregningsgrunnlagPerioder()) {
+            Evaluation evaluation = new RegelForeslåBeregningsgrunnlagNy(periode).evaluer(periode);
+            regelResultater.add(RegelmodellOversetter.getRegelResultat(evaluation, jsonInput));
         }
         return regelResultater;
     }
