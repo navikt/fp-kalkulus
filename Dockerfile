@@ -7,8 +7,9 @@ ENV JAVA_OPTS="-XX:MaxRAMPercentage=75.0 \
 RUN mkdir webapp
 
 # Export vault properties
-COPY .scripts/03-import-appdynamics.sh /init-scripts/03-import-appdynamics.sh
-COPY .scripts/05-import-users.sh /init-scripts/05-import-users.sh
+COPY --chown=apprunner:root .scripts/03-import-appdynamics.sh /init-scripts/03-import-appdynamics.sh
+COPY --chown=apprunner:root .scripts/05-import-users.sh /init-scripts/05-import-users.sh
+COPY --chown=apprunner:root .scripts/08-remote-debug.sh /init-scripts/08-remote-debug.sh
 
 # Application Container (Jetty)
 COPY web/target/lib/*.jar ./
