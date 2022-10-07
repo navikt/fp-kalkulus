@@ -65,7 +65,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
     private Instance<FordelBeregningsgrunnlagTjeneste> fordelBeregningsgrunnlagTjeneste;
     private VurderRefusjonBeregningsgrunnlag vurderRefusjonBeregningsgrunnlag;
     private Instance<VilkårTjeneste> vilkårTjeneste;
-    private Instance<FortsettForeslåBeregningsgrunnlag> foreslåBeregningsgrunnlagDel2Tjeneste;
+    private Instance<FortsettForeslåBeregningsgrunnlag> fortsettForeslåBeregningsgrunnlagTjeneste;
 
 
     public BeregningsgrunnlagTjeneste() {
@@ -82,7 +82,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
                                       VurderRefusjonBeregningsgrunnlagFelles vurderRefusjonBeregningsgrunnlag,
                                       @Any Instance<ForeslåBeregningsgrunnlag> foreslåBeregningsgrunnlag,
                                       @Any Instance<VurderBeregningsgrunnlagTjeneste> vurderBeregningsgrunnlagTjeneste,
-                                      @Any Instance<FortsettForeslåBeregningsgrunnlag> foreslåBeregningsgrunnlagDel2Tjeneste,
+                                      @Any Instance<FortsettForeslåBeregningsgrunnlag> fortsettForeslåBeregningsgrunnlagTjeneste,
                                       @Any Instance<VilkårTjeneste> vilkårTjeneste) {
         this.foreslåSkjæringstidspunktTjeneste = foreslåSkjæringstidspunktTjeneste;
         this.fullføreBeregningsgrunnlag = fullføreBeregningsgrunnlag;
@@ -94,7 +94,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
         this.foreslåBeregningsgrunnlag = foreslåBeregningsgrunnlag;
         this.vurderBeregningsgrunnlagTjeneste = vurderBeregningsgrunnlagTjeneste;
         this.vilkårTjeneste = vilkårTjeneste;
-        this.foreslåBeregningsgrunnlagDel2Tjeneste = foreslåBeregningsgrunnlagDel2Tjeneste;
+        this.fortsettForeslåBeregningsgrunnlagTjeneste = fortsettForeslåBeregningsgrunnlagTjeneste;
     }
 
     @Override
@@ -237,8 +237,8 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
     }
 
     @Override
-    public BeregningResultatAggregat foreslåBeregningsgrunnlagDel2(FortsettForeslåBeregningsgrunnlagInput input) {
-        BeregningsgrunnlagRegelResultat resultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), foreslåBeregningsgrunnlagDel2Tjeneste)
+    public BeregningResultatAggregat fortsettForeslåBeregningsgrunnlag(FortsettForeslåBeregningsgrunnlagInput input) {
+        BeregningsgrunnlagRegelResultat resultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), fortsettForeslåBeregningsgrunnlagTjeneste)
                 .fortsettForeslåBeregningsgrunnlag(input);
         return BeregningResultatAggregat.Builder.fra(input)
                 .medAvklaringsbehov(resultat.getAvklaringsbehov())

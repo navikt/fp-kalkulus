@@ -49,7 +49,7 @@ public interface KalkulatorInterface {
      * @param input Input til steget
      * @return Resultat med avklaringsbehov og nytt beregningsgrunnlag
      */
-    BeregningResultatAggregat foreslåBeregningsgrunnlagDel2(FortsettForeslåBeregningsgrunnlagInput input);
+    BeregningResultatAggregat fortsettForeslåBeregningsgrunnlag(FortsettForeslåBeregningsgrunnlagInput input);
 
     /** Steg 4.5: Foreslår besteberegning
      *

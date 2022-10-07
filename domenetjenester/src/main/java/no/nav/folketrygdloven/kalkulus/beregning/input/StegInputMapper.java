@@ -63,7 +63,7 @@ class StegInputMapper {
         } else if (stegType.equals(BeregningSteg.FORS_BERGRUNN)) {
             return lagInputForeslå(stegProsesseringInput);
         } else if (stegType.equals(BeregningSteg.FORTS_FORS_BERGRUNN)) {
-            return lagInputForeslåDel2(stegProsesseringInput);
+            return lagInputFortsettForeslå(stegProsesseringInput);
         } else if (stegType.equals(BeregningSteg.VURDER_VILKAR_BERGRUNN)) {
             Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning());
             return lagInputVurderVilkår(stegProsesseringInput, førsteFastsatteGrunnlagEntitet);
@@ -141,7 +141,7 @@ class StegInputMapper {
         return input.medGrunnbeløpsatser(finnSatser());
     }
 
-    private FortsettForeslåBeregningsgrunnlagInput lagInputForeslåDel2(StegProsesseringInput stegProsesseringInput) {
+    private FortsettForeslåBeregningsgrunnlagInput lagInputFortsettForeslå(StegProsesseringInput stegProsesseringInput) {
         var foreslåBeregningsgrunnlagInput = new FortsettForeslåBeregningsgrunnlagInput(stegProsesseringInput);
         return foreslåBeregningsgrunnlagInput.medGrunnbeløpsatser(finnSatser());
     }
