@@ -44,7 +44,7 @@
 
         <beregningsgrunnlag.regelmodell.version>2.1.80</beregningsgrunnlag.regelmodell.version>
 
-        <felles.version>0.9.0</felles.version>
+        <felles.version>0.9.32</felles.version>
 
         <prometheus.version>0.16.0</prometheus.version>
         <junit.version>5.9.1</junit.version>
