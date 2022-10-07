@@ -143,4 +143,21 @@ class SnMsForeslåttSjekkTest {
         assertThat(erForeslått).isFalse();
     }
 
+    @Test
+    public void skal_returnere_false_når_grunnlag_er_overstyrt() {
+        var snAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
+                .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
+                .medBeregnetPrÅr(BigDecimal.valueOf(500))
+                .medAndelsnr(1L);
+        var periode = BeregningsgrunnlagPeriodeDto.ny()
+                .medBeregningsgrunnlagPeriode(FOM, TOM)
+                .leggTilBeregningsgrunnlagPrStatusOgAndel(snAndel);
+        var bg = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(FOM)
+                .medOverstyring(true)
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE))
+                .leggTilBeregningsgrunnlagPeriode(periode).build();
+        var erForeslått = SnMsForeslåttSjekk.snOgMsErAlleredeForeslått(bg);
+
+        assertThat(erForeslått).isFalse();
+    }
 }

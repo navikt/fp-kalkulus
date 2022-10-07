@@ -16,6 +16,10 @@ public class SnMsForeslåttSjekk {
         if (!erMS && !erSN) {
             return false;
         }
+        if (beregningsgrunnlag.isOverstyrt()) {
+            // Skal kjøre fortsett foreslå normalt hvis saken er overstyrt så den får satt hjemler og andre felter korrekt.
+            return false;
+        }
         var førstePeriode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         var snAndelErForeslått = førstePeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream().anyMatch(andel -> andel.getAktivitetStatus().equals(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
                 && andel.getBruttoPrÅr() != null);
