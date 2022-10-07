@@ -40,7 +40,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <fpsak.nare.version>2.3.1</fpsak.nare.version>
+        <fpsak.nare.version>2.4.0</fpsak.nare.version>
 
         <beregningsgrunnlag.regelmodell.version>2.1.80</beregningsgrunnlag.regelmodell.version>
 
