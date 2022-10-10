@@ -155,12 +155,10 @@ public class HentKalkulusRestTjeneste {
                 .collect(Collectors.toList());
         var koblinger = koblingTjeneste.hentKoblinger(koblingReferanser, ytelseType);
         var erForlengelsePrKobling = forlengelseTjeneste.erForlengelser(koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet()));
-        var input = guiInputTjeneste.lagInputForKoblinger(koblinger.stream().map(KoblingEntitet::getId).toList(), List.of());
         var dtoer = hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(koblinger).stream()
                 .map(grunnlag -> MapBrevBeregningsgrunnlag.mapGrunnlag(
                         finnEksternReferanse(koblinger, grunnlag.getKoblingId()),
                         grunnlag,
-                        input.get(grunnlag.getKoblingId()),
                         erForlengelsePrKobling.getOrDefault(grunnlag.getKoblingId(), false)))
                 .collect(Collectors.toList());
         return dtoer.isEmpty() ? Response.noContent().build() : Response.ok(dtoer).build();

@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.mapTilKontrakt;
 
+import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
 import static no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapDetaljertBeregningsgrunnlag.mapSammenligningsgrunnlag;
 
 import java.math.BigDecimal;
@@ -7,10 +8,6 @@ import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
-import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
-import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
-import no.nav.folketrygdloven.kalkulator.konfig.DefaultKonfig;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
@@ -30,44 +27,39 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.brev.Bereg
 public class MapBrevBeregningsgrunnlag {
 
 
-    public static BeregningsgrunnlagGrunnlagDto mapGrunnlag(KoblingReferanse koblingReferanse,
-                                                            BeregningsgrunnlagGrunnlagEntitet beregningsgrunnlagGrunnlagEntitet,
-                                                            BeregningsgrunnlagGUIInput input,
-                                                            boolean erForlengelse) {
+    public static BeregningsgrunnlagGrunnlagDto mapGrunnlag(KoblingReferanse koblingReferanse, BeregningsgrunnlagGrunnlagEntitet beregningsgrunnlagGrunnlagEntitet, boolean erForlengelse) {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlagEntitet.getBeregningsgrunnlag()
-                .map(gr -> MapBrevBeregningsgrunnlag.map(gr, input.getYtelsespesifiktGrunnlag())).orElse(null);
+                .map(MapBrevBeregningsgrunnlag::map).orElse(null);
         return new BeregningsgrunnlagGrunnlagDto(koblingReferanse.getReferanse(), beregningsgrunnlag, erForlengelse);
     }
 
-    public static BeregningsgrunnlagDto map(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+    public static BeregningsgrunnlagDto map(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
         return new BeregningsgrunnlagDto(
                 beregningsgrunnlagEntitet.getSkjæringstidspunkt(),
                 mapAktivitetstatuser(beregningsgrunnlagEntitet),
-                mapBeregningsgrunnlagPerioder(beregningsgrunnlagEntitet, ytelsespesifiktGrunnlag),
+                mapBeregningsgrunnlagPerioder(beregningsgrunnlagEntitet),
                 mapSammenligningsgrunnlag(beregningsgrunnlagEntitet),
                 beregningsgrunnlagEntitet.getGrunnbeløp() == null ? null : beregningsgrunnlagEntitet.getGrunnbeløp().getVerdi());
     }
 
-    private static List<BeregningsgrunnlagPeriodeDto> mapBeregningsgrunnlagPerioder(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        return beregningsgrunnlagEntitet.getBeregningsgrunnlagPerioder().stream().map(p -> MapBrevBeregningsgrunnlag.mapPeriode(p, ytelsespesifiktGrunnlag)).collect(Collectors.toList());
+    private static List<BeregningsgrunnlagPeriodeDto> mapBeregningsgrunnlagPerioder(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
+        return beregningsgrunnlagEntitet.getBeregningsgrunnlagPerioder().stream().map(MapBrevBeregningsgrunnlag::mapPeriode).collect(Collectors.toList());
     }
 
-    private static BeregningsgrunnlagPeriodeDto mapPeriode(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+    private static BeregningsgrunnlagPeriodeDto mapPeriode(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode) {
         return new BeregningsgrunnlagPeriodeDto(
-                mapAndeler(beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList(), beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag),
+                mapAndeler(beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList(), beregningsgrunnlagPeriode.getPeriode().getTomDato().equals(TIDENES_ENDE)),
                 new Periode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom()),
                 mapFraBeløp(beregningsgrunnlagPeriode.getBruttoPrÅr()),
                 mapFraBeløp(beregningsgrunnlagPeriode.getAvkortetPrÅr()),
                 beregningsgrunnlagPeriode.getDagsats());
     }
 
-    private static List<BeregningsgrunnlagPrStatusOgAndelDto> mapAndeler(List<BeregningsgrunnlagPrStatusOgAndel> beregningsgrunnlagPrStatusOgAndelList, BeregningsgrunnlagPeriode periode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        return beregningsgrunnlagPrStatusOgAndelList.stream().map(a -> mapAndel(a, periode, ytelsespesifiktGrunnlag)).collect(Collectors.toList());
+    private static List<BeregningsgrunnlagPrStatusOgAndelDto> mapAndeler(List<BeregningsgrunnlagPrStatusOgAndel> beregningsgrunnlagPrStatusOgAndelList, boolean erSistePeriode) {
+        return beregningsgrunnlagPrStatusOgAndelList.stream().map(a -> mapAndel(a, erSistePeriode)).collect(Collectors.toList());
     }
 
-    private static BeregningsgrunnlagPrStatusOgAndelDto mapAndel(BeregningsgrunnlagPrStatusOgAndel andel,
-                                                                 BeregningsgrunnlagPeriode periode,
-                                                                 YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+    private static BeregningsgrunnlagPrStatusOgAndelDto mapAndel(BeregningsgrunnlagPrStatusOgAndel andel, boolean erSistePeriode) {
         return new BeregningsgrunnlagPrStatusOgAndelDto(
                 andel.getAndelsnr(),
                 AktivitetStatus.fraKode(andel.getAktivitetStatus().getKode()),
@@ -76,8 +68,8 @@ public class MapBrevBeregningsgrunnlag {
                 mapFraBeløp(andel.getBruttoPrÅr()),
                 andel.getDagsatsBruker(),
                 andel.getDagsatsArbeidsgiver(),
-                finnUgradertDagsatsBruker(andel, periode, ytelsespesifiktGrunnlag),
-                finnUgradertDagsatsArbeidsgiver(andel, periode, ytelsespesifiktGrunnlag),
+                finnUgradertDagsatsBruker(andel, erSistePeriode),
+                finnUgradertDagsatsArbeidsgiver(andel, erSistePeriode),
                 Inntektskategori.fraKode(andel.getInntektskategori().getKode()),
                 mapBgAndelArbeidsforhold(andel),
                 mapFraBeløp(andel.getAvkortetFørGraderingPrÅr()),
@@ -88,9 +80,7 @@ public class MapBrevBeregningsgrunnlag {
                 andel.getFastsattAvSaksbehandler());
     }
 
-    private static Long finnUgradertDagsatsBruker(BeregningsgrunnlagPrStatusOgAndel andel,
-                                                  BeregningsgrunnlagPeriode periode,
-                                                  YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+    private static Long finnUgradertDagsatsBruker(BeregningsgrunnlagPrStatusOgAndel andel, boolean erSistePeriode) {
         if (andel.getDagsatsBruker() == null) {
             return null;
         }
@@ -98,30 +88,13 @@ public class MapBrevBeregningsgrunnlag {
             return 0L;
         }
         var andelTilBruker = andel.getAvkortetBrukersAndelPrÅr().getVerdi().divide(andel.getAvkortetPrÅr().getVerdi(), 10, RoundingMode.HALF_UP);
-        BigDecimal avkortetFørGraderingPrÅr = finnAvkortetFørGradering(andel, periode, ytelsespesifiktGrunnlag);
-        return avkortetFørGraderingPrÅr.
-                multiply(andelTilBruker)
+        // Grunnet en feil i mapping har vi ikke lagret avkortetFørGradering for andeler i siste periode for en del behandlinger før 16.12.2021
+        var avkortetFørGraderingPrÅr = erSistePeriode ? BigDecimal.ZERO : andel.getAvkortetFørGraderingPrÅr().getVerdi();
+        return avkortetFørGraderingPrÅr.multiply(andelTilBruker)
                 .divide(BigDecimal.valueOf(260), 10, RoundingMode.HALF_UP).longValue();
     }
 
-    private static BigDecimal finnAvkortetFørGradering(BeregningsgrunnlagPrStatusOgAndel andel, BeregningsgrunnlagPeriode periode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        BigDecimal avkortetFørGraderingPrÅr;
-        if (andel.getAvkortetFørGraderingPrÅr() != null) {
-            // Grunnet en feil i mapping har vi ikke lagret avkortetFørGradering for andeler i siste periode for en del behandlinger før 16.12.2021
-            avkortetFørGraderingPrÅr = andel.getAvkortetFørGraderingPrÅr().getVerdi();
-        } else if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
-            // Fallback for saker der avkortetFørGraderingPrÅr ikke er satt
-            var grenseverdi = periode.getBeregningsgrunnlag().getGrunnbeløp().getVerdi().multiply(new DefaultKonfig().getAntallGØvreGrenseverdi());
-            avkortetFørGraderingPrÅr = FinnInntektstak.finnInntektstakForAndel(andel, periode, utbetalingsgradGrunnlag, grenseverdi);
-        } else {
-            avkortetFørGraderingPrÅr = andel.getAvkortetPrÅr().getVerdi();
-        }
-        return avkortetFørGraderingPrÅr;
-    }
-
-    private static Long finnUgradertDagsatsArbeidsgiver(BeregningsgrunnlagPrStatusOgAndel andel,
-                                                        BeregningsgrunnlagPeriode periode,
-                                                        YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+    private static Long finnUgradertDagsatsArbeidsgiver(BeregningsgrunnlagPrStatusOgAndel andel, boolean erSistePeriode) {
         if (andel.getDagsatsArbeidsgiver() == null) {
             return null;
         }
@@ -129,7 +102,8 @@ public class MapBrevBeregningsgrunnlag {
             return 0L;
         }
         var andelTilArbeidsgiver = andel.getAvkortetRefusjonPrÅr().getVerdi().divide(andel.getAvkortetPrÅr().getVerdi(), 10, RoundingMode.HALF_UP);
-        var avkortetFørGraderingPrÅr = finnAvkortetFørGradering(andel, periode, ytelsespesifiktGrunnlag);
+        // Grunnet en feil i mapping har vi ikke lagret avkortetFørGradering for andeler i siste periode for en del behandlinger før 16.12.2021
+        var avkortetFørGraderingPrÅr = erSistePeriode ? BigDecimal.ZERO : andel.getAvkortetFørGraderingPrÅr().getVerdi();
         return avkortetFørGraderingPrÅr.multiply(andelTilArbeidsgiver)
                 .divide(BigDecimal.valueOf(260), 10, RoundingMode.HALF_UP).longValue();
 
