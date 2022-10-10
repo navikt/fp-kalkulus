@@ -1,0 +1,2 @@
+ALTER TABLE if exists BG_SG_PR_STATUS
+ALTER COLUMN avvik_promille TYPE NUMERIC(27, 10);
