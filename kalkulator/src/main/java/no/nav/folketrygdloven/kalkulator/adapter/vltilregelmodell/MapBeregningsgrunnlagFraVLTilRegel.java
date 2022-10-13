@@ -7,9 +7,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,7 +27,6 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.In
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrStatus;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SammenligningsGrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.YtelsesSpesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.adapter.util.BeregningsgrunnlagUtil;
@@ -56,8 +53,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -65,17 +60,9 @@ import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 
 @ApplicationScoped
 public class MapBeregningsgrunnlagFraVLTilRegel {
-    private static final String TOGGLE = "fpsak.splitteSammenligningATFL";
-    private static final Map<SammenligningsgrunnlagType, AktivitetStatus> SAMMENLIGNINGSGRUNNLAGTYPE_AKTIVITETSTATUS_MAP = Map.of(
-            SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN, AktivitetStatus.ATFL_SN,
-            SammenligningsgrunnlagType.SAMMENLIGNING_AT, AktivitetStatus.AT,
-            SammenligningsgrunnlagType.SAMMENLIGNING_FL, AktivitetStatus.FL,
-            SammenligningsgrunnlagType.SAMMENLIGNING_SN, AktivitetStatus.SN
-    );
     private Instance<MapInntektsgrunnlagVLTilRegel> alleInntektMappere;
     private Instance<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper;
 
@@ -113,24 +100,17 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         MapInntektsgrunnlagVLTilRegel inntektMapper = FagsakYtelseTypeRef.Lookup.find(alleInntektMappere, ref.getFagsakYtelseType()).orElseThrow();
         Inntektsgrunnlag inntektsgrunnlag = inntektMapper.map(input, beregningsgrunnlag.getSkjæringstidspunkt());
         List<BeregningsgrunnlagPeriode> perioder = mapBeregningsgrunnlagPerioder(beregningsgrunnlag, input);
-        //Sammenligningsgrunnlaget blir alltid satt inne i regel
-        EnumMap<AktivitetStatus, SammenligningsGrunnlag> sammenligningsgrunnlagMap = mapSammenligningsgrunnlagPrStatus(beregningsgrunnlag);
-        SammenligningsGrunnlag sammenligningsgrunnlag = beregningsgrunnlag.getSammenligningsgrunnlag() != null ?
-                mapSammenligningsGrunnlag(beregningsgrunnlag.getSammenligningsgrunnlag()) : null;
-
         LocalDate skjæringstidspunkt = beregningsgrunnlag.getSkjæringstidspunkt();
 
         boolean erMilitærIOpptjeningsperioden = harHattMilitærIOpptjeningsperioden(oppdatertGrunnlag.getGjeldendeAktiviteter());
 
         var builder = no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag.builder();
-        sammenligningsgrunnlagMap.forEach(builder::medSammenligningsgrunnlagPrStatus);
 
         return builder
                 .medInntektsgrunnlag(inntektsgrunnlag)
                 .medSkjæringstidspunkt(skjæringstidspunkt)
                 .medAktivitetStatuser(aktivitetStatuser)
                 .medBeregningsgrunnlagPerioder(perioder)
-                .medSammenligningsgrunnlag(sammenligningsgrunnlag)
                 .medGrunnbeløp(beregningsgrunnlag.getGrunnbeløp().getVerdi())
                 .medMilitærIOpptjeningsperioden(erMilitærIOpptjeningsperioden)
                 .medYtelsesdagerIEtÅr(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getYtelsesdagerIÅr())
@@ -238,16 +218,6 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         }
     }
 
-    private SammenligningsGrunnlag mapSammenligningsGrunnlag(SammenligningsgrunnlagDto sammenligningsgrunnlag) {
-        return SammenligningsGrunnlag.builder()
-                .medSammenligningsperiode(new Periode(
-                        sammenligningsgrunnlag.getSammenligningsperiodeFom(),
-                        sammenligningsgrunnlag.getSammenligningsperiodeTom()))
-                .medRapportertPrÅr(sammenligningsgrunnlag.getRapportertPrÅr())
-                .medAvvikProsentFraPromilleNy(sammenligningsgrunnlag.getAvvikPromilleNy())
-                .build();
-    }
-
     private List<BeregningsgrunnlagPeriode> mapBeregningsgrunnlagPerioder(BeregningsgrunnlagDto vlBeregningsgrunnlag,
                                                                           BeregningsgrunnlagInput input) {
         List<BeregningsgrunnlagPeriode> perioder = new ArrayList<>();
@@ -287,21 +257,6 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
             }
         }
         return liste;
-    }
-
-    private EnumMap<AktivitetStatus, SammenligningsGrunnlag> mapSammenligningsgrunnlagPrStatus(BeregningsgrunnlagDto Beregningsgrunnlag) {
-        EnumMap<AktivitetStatus, SammenligningsGrunnlag> sammenligningsGrunnlagMap = new EnumMap<>(AktivitetStatus.class);
-        for (SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlagPrStatus : Beregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe()) {
-            SammenligningsGrunnlag sammenligningsGrunnlag = SammenligningsGrunnlag.builder()
-                    .medSammenligningsperiode(new Periode(
-                            sammenligningsgrunnlagPrStatus.getSammenligningsperiodeFom(),
-                            sammenligningsgrunnlagPrStatus.getSammenligningsperiodeTom()))
-                    .medRapportertPrÅr(sammenligningsgrunnlagPrStatus.getRapportertPrÅr())
-                    .medAvvikProsentFraPromilleNy(sammenligningsgrunnlagPrStatus.getAvvikPromilleNy())
-                    .build();
-            sammenligningsGrunnlagMap.put(SAMMENLIGNINGSGRUNNLAGTYPE_AKTIVITETSTATUS_MAP.get(sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType()), sammenligningsGrunnlag);
-        }
-        return sammenligningsGrunnlagMap;
     }
 
     // Ikke ATFL og TY, de har separat mapping

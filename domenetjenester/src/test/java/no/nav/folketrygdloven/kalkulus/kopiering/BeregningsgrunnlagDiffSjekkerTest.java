@@ -55,8 +55,8 @@ class BeregningsgrunnlagDiffSjekkerTest {
         sammenligningsgrunnlagPrStatusFl.medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_FL);
 
         BeregningsgrunnlagDto beregningsgrunnlagDto = BeregningsgrunnlagDto.builder()
-                .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagPrStatusAt)
-                .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagPrStatusFl)
+                .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagPrStatusAt.build())
+                .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagPrStatusFl.build())
                 .medSkjæringstidspunkt(LocalDate.now())
                 .build();
         boolean resultat = BeregningsgrunnlagDiffSjekker.harSignifikantDiffIBeregningsgrunnlag(beregningsgrunnlagDto, beregningsgrunnlagDto);
@@ -78,11 +78,11 @@ class BeregningsgrunnlagDiffSjekkerTest {
         sammenligningsgrunnlagPrStatusFl.medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_FL);
 
         BeregningsgrunnlagDto aktivt = BeregningsgrunnlagDto.builder()
-                .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagPrStatusAt)
+                .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagPrStatusAt.build())
                 .medSkjæringstidspunkt(LocalDate.now())
                 .build();
         BeregningsgrunnlagDto forrige = BeregningsgrunnlagDto.builder()
-                .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagPrStatusFl)
+                .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagPrStatusFl.build())
                 .medSkjæringstidspunkt(LocalDate.now())
                 .build();
         boolean resultat = BeregningsgrunnlagDiffSjekker.harSignifikantDiffIBeregningsgrunnlag(aktivt, forrige);
@@ -118,13 +118,13 @@ class BeregningsgrunnlagDiffSjekkerTest {
         sammenligningsgrunnlagPrStatusAtForrige.medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_AT);
 
         BeregningsgrunnlagDto aktivt = BeregningsgrunnlagDto.builder()
-                .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagPrStatusAtAktivt)
-                .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagPrStatusFlAktivt)
+                .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagPrStatusAtAktivt.build())
+                .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagPrStatusFlAktivt.build())
                 .medSkjæringstidspunkt(LocalDate.now())
                 .build();
         BeregningsgrunnlagDto forrige = BeregningsgrunnlagDto.builder()
-                .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagPrStatusAtForrige)
-                .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagPrStatusFlForrige)
+                .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagPrStatusAtForrige.build())
+                .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagPrStatusFlForrige.build())
                 .medSkjæringstidspunkt(LocalDate.now())
                 .build();
         boolean resultat = BeregningsgrunnlagDiffSjekker.harSignifikantDiffIBeregningsgrunnlag(aktivt, forrige);
@@ -149,7 +149,7 @@ class BeregningsgrunnlagDiffSjekkerTest {
         sammenligningsgrunnlagPrStatusAt.medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_AT);
 
         BeregningsgrunnlagDto aktivt = BeregningsgrunnlagDto.builder()
-                .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagPrStatusAt)
+                .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagPrStatusAt.build())
                 .medSkjæringstidspunkt(LocalDate.now())
                 .build();
         BeregningsgrunnlagDto forrige = BeregningsgrunnlagDto.builder()

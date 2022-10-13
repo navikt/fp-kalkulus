@@ -139,9 +139,11 @@ public class BeregningsgrunnlagDtoTjeneste {
     private void mapSammenlingingsgrunnlagPrStatus(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
         var beregningsgrunnlag = input.getBeregningsgrunnlag();
         List<SammenligningsgrunnlagDto> sammenligningsgrunnlagDto = lagSammenligningsgrunnlagDtoPrStatus(beregningsgrunnlag);
-        if (sammenligningsgrunnlagDto.isEmpty() && dto.getSammenligningsgrunnlag() != null) {
+        if (dto.getSammenligningsgrunnlag() != null) {
             dto.getSammenligningsgrunnlag().setSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN);
             dto.getSammenligningsgrunnlag().setDifferanseBeregnet(finnDifferanseBeregnetGammeltSammenliningsgrunnlag(beregningsgrunnlag, dto.getSammenligningsgrunnlag().getRapportertPrAar()));
+        }
+        if (sammenligningsgrunnlagDto.isEmpty() && dto.getSammenligningsgrunnlag() != null) {
             dto.setSammenligningsgrunnlagPrStatus(List.of(dto.getSammenligningsgrunnlag()));
         } else {
             dto.setSammenligningsgrunnlagPrStatus(sammenligningsgrunnlagDto);
@@ -214,7 +216,8 @@ public class BeregningsgrunnlagDtoTjeneste {
             dto.setAvvikPromille(s.getAvvikPromilleNy());
             BigDecimal avvikProsent = s.getAvvikPromilleNy() == null ? null : s.getAvvikPromilleNy().scaleByPowerOfTen(-1);
             dto.setAvvikProsent(avvikProsent);
-            dto.setSammenligningsgrunnlagType(s.getSammenligningsgrunnlagType());
+            // Midltertidig hack siden dette er eneste type frontend støtter
+            dto.setSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN);
             dto.setDifferanseBeregnet(finnDifferanseBeregnet(beregningsgrunnlag, s));
             sammenligningsgrunnlagDtos.add(dto);
         });

@@ -3,6 +3,8 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
@@ -16,9 +18,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Promille;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.SammenligningsgrunnlagTypeKodeverdiConverter;
@@ -53,23 +52,30 @@ public class SammenligningsgrunnlagPrStatus extends BaseEntitet {
     @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "rapportert_pr_aar", nullable = false)))
     private Beløp rapportertPrÅr;
 
+    // Denne fjernes og blir erstattet av avvikPromille når data er flyttet i prod
     @Embedded
     @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "avvik_promille_ny", nullable = false)))
     private Promille avvikPromilleNy = Promille.ZERO;
+
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "avvik_promille", nullable = false)))
+    private Promille avvikPromille = Promille.ZERO;
 
     @JsonBackReference
     @ManyToOne(optional = false)
     @JoinColumn(name = "beregningsgrunnlag_id", nullable = false, updatable = false, unique = true)
     private BeregningsgrunnlagEntitet beregningsgrunnlag;
 
+    public SammenligningsgrunnlagPrStatus() {
+        // Hibernate
+    }
+
     public SammenligningsgrunnlagPrStatus(SammenligningsgrunnlagPrStatus sammenligningsgrunnlagPrStatus) {
         this.avvikPromilleNy = sammenligningsgrunnlagPrStatus.getAvvikPromilleNy();
+        this.avvikPromille = sammenligningsgrunnlagPrStatus.getAvvikPromille();
         this.rapportertPrÅr = sammenligningsgrunnlagPrStatus.getRapportertPrÅr();
         this.sammenligningsgrunnlagType = sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType();
         this.sammenligningsperiode = sammenligningsgrunnlagPrStatus.sammenligningsperiode;
-    }
-
-    private SammenligningsgrunnlagPrStatus() {
     }
 
     public Long getId() {
@@ -88,8 +94,20 @@ public class SammenligningsgrunnlagPrStatus extends BaseEntitet {
         return rapportertPrÅr;
     }
 
-    public Promille getAvvikPromilleNy() {
+    public Promille getGjeldendeAvvik() {
+        if (avvikPromille != null) {
+            return avvikPromille;
+        }
         return avvikPromilleNy;
+    }
+
+    @Deprecated // Fjernes når data er migrert
+    private Promille getAvvikPromilleNy() {
+        return avvikPromilleNy;
+    }
+
+    private Promille getAvvikPromille() {
+        return avvikPromille;
     }
 
     public SammenligningsgrunnlagType getSammenligningsgrunnlagType() {
@@ -116,6 +134,7 @@ public class SammenligningsgrunnlagPrStatus extends BaseEntitet {
                 && Objects.equals(this.getSammenligningsgrunnlagType(), other.getSammenligningsgrunnlagType())
                 && Objects.equals(this.getSammenligningsperiodeFom(), other.getSammenligningsperiodeFom())
                 && Objects.equals(this.getSammenligningsperiodeTom(), other.getSammenligningsperiodeTom())
+                && Objects.equals(this.getGjeldendeAvvik(), other.getGjeldendeAvvik())
                 && Objects.equals(this.getRapportertPrÅr(), other.getRapportertPrÅr());
     }
 
@@ -169,9 +188,14 @@ public class SammenligningsgrunnlagPrStatus extends BaseEntitet {
             return this;
         }
 
-        SammenligningsgrunnlagPrStatus build(BeregningsgrunnlagEntitet kladd) {
+        public Builder medAvvikPromille(Promille avvikPromille) {
+            Objects.requireNonNull(avvikPromille, "avvik");
+            sammenligningsgrunnlagMal.avvikPromille = avvikPromille;
+            return this;
+        }
+
+        public SammenligningsgrunnlagPrStatus build() {
             verifyStateForBuild();
-            kladd.leggTilSammenligningsgrunnlagPrStatus(sammenligningsgrunnlagMal);
             return sammenligningsgrunnlagMal;
         }
 
@@ -182,9 +206,6 @@ public class SammenligningsgrunnlagPrStatus extends BaseEntitet {
             Objects.requireNonNull(sammenligningsgrunnlagMal.sammenligningsperiode.getTomDato(), "sammenligningsperiodeTom");
             Objects.requireNonNull(sammenligningsgrunnlagMal.rapportertPrÅr, "rapportertPrÅr");
             Objects.requireNonNull(sammenligningsgrunnlagMal.avvikPromilleNy, "avvikPromille");
-            if (sammenligningsgrunnlagMal.beregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().stream().anyMatch(sg -> sg.sammenligningsgrunnlagType.equals(sammenligningsgrunnlagMal.sammenligningsgrunnlagType))) {
-                throw new IllegalArgumentException("Kan ikke legge til sammenligningsgrunnlag for " + sammenligningsgrunnlagMal.sammenligningsgrunnlagType + " fordi det allerede er lagt til.");
-            }
         }
     }
 

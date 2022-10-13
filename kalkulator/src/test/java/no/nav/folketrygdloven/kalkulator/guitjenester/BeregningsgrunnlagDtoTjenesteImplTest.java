@@ -223,7 +223,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         assertThat(sammenligningsgrunnlag.getRapportertPrAar()).isEqualTo(RAPPORTERT_PR_AAR);
         assertThat(sammenligningsgrunnlag.getSammenligningsgrunnlagFom()).isEqualTo(SAMMENLIGNING_FOM);
         assertThat(sammenligningsgrunnlag.getSammenligningsgrunnlagTom()).isEqualTo(SAMMENLIGNING_TOM);
-        assertThat(sammenligningsgrunnlag.getSammenligningsgrunnlagType()).isEqualTo(SammenligningsgrunnlagType.SAMMENLIGNING_AT);
+        assertThat(sammenligningsgrunnlag.getSammenligningsgrunnlagType()).isEqualTo(SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN);
         assertThat(sammenligningsgrunnlag.getDifferanseBeregnet()).isEqualTo(BRUTTO_PR_AAR.subtract(RAPPORTERT_PR_AAR));
 
         SammenligningsgrunnlagDto sammenligningsgrunnlag2 = beregningsgrunnlagDto.getSammenligningsgrunnlagPrStatus().get(1);
@@ -232,7 +232,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         assertThat(sammenligningsgrunnlag2.getRapportertPrAar()).isEqualTo(RAPPORTERT_PR_AAR);
         assertThat(sammenligningsgrunnlag2.getSammenligningsgrunnlagFom()).isEqualTo(SAMMENLIGNING_FOM);
         assertThat(sammenligningsgrunnlag2.getSammenligningsgrunnlagTom()).isEqualTo(SAMMENLIGNING_TOM);
-        assertThat(sammenligningsgrunnlag2.getSammenligningsgrunnlagType()).isEqualTo(SammenligningsgrunnlagType.SAMMENLIGNING_FL);
+        assertThat(sammenligningsgrunnlag2.getSammenligningsgrunnlagType()).isEqualTo(SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN);
         assertThat(sammenligningsgrunnlag2.getDifferanseBeregnet()).isEqualTo(BRUTTO_PR_AAR.subtract(RAPPORTERT_PR_AAR));
 
         SammenligningsgrunnlagDto sammenligningsgrunnlag3 = beregningsgrunnlagDto.getSammenligningsgrunnlagPrStatus().get(2);
@@ -241,7 +241,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         assertThat(sammenligningsgrunnlag3.getRapportertPrAar()).isEqualTo(RAPPORTERT_PR_AAR);
         assertThat(sammenligningsgrunnlag3.getSammenligningsgrunnlagFom()).isEqualTo(SAMMENLIGNING_FOM);
         assertThat(sammenligningsgrunnlag3.getSammenligningsgrunnlagTom()).isEqualTo(SAMMENLIGNING_TOM);
-        assertThat(sammenligningsgrunnlag3.getSammenligningsgrunnlagType()).isEqualTo(SammenligningsgrunnlagType.SAMMENLIGNING_SN);
+        assertThat(sammenligningsgrunnlag3.getSammenligningsgrunnlagType()).isEqualTo(SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN);
         assertThat(sammenligningsgrunnlag3.getDifferanseBeregnet()).isEqualTo(PGI_SNITT.subtract(RAPPORTERT_PR_AAR));
     }
 
@@ -341,7 +341,8 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
                         .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT)
                         .medRapportertPrÅr(RAPPORTERT_PR_AAR)
                         .medSammenligningsgrunnlagType(no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN)
-                        .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM))
+                        .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM)
+                        .build())
                 .build();
         BeregningsgrunnlagAktivitetStatusDto.builder()
                 .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER)
@@ -367,17 +368,20 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
                         .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT)
                         .medRapportertPrÅr(RAPPORTERT_PR_AAR)
                         .medSammenligningsgrunnlagType(no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType.SAMMENLIGNING_AT)
-                        .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM))
+                        .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM)
+                        .build())
                 .leggTilSammenligningsgrunnlag(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto.builder()
                         .medAvvikPromilleNy(AVVIK_UNDER_25_PROSENT)
                         .medRapportertPrÅr(RAPPORTERT_PR_AAR)
                         .medSammenligningsgrunnlagType(no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType.SAMMENLIGNING_FL)
-                        .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM))
+                        .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM)
+                        .build())
                 .leggTilSammenligningsgrunnlag(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto.builder()
                         .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT)
                         .medRapportertPrÅr(RAPPORTERT_PR_AAR)
                         .medSammenligningsgrunnlagType(no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType.SAMMENLIGNING_SN)
-                        .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM))
+                        .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM)
+                        .build())
                 .build();
         BeregningsgrunnlagAktivitetStatusDto.builder()
                 .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER)

@@ -19,6 +19,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatusMedHjemmel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BeregningsgrunnlagHjemmel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.SammenligningGrunnlagType;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrStatus;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SammenligningsGrunnlag;
@@ -82,7 +83,8 @@ public class RegelMapperTestDataHelper {
             .medSammenligningsperiode(MINUS_YEARS_1, NOW)
             .medRapportertPrÅr(BigDecimal.valueOf(1098318.12))
             .medAvvikPromilleNy(BigDecimal.valueOf(220L))
-            .medSammenligningsgrunnlagType(sammenligningsgrunnlagType));
+            .medSammenligningsgrunnlagType(sammenligningsgrunnlagType)
+            .build());
     }
 
     public static BeregningsgrunnlagPeriodeDto buildVLBGPeriode(BeregningsgrunnlagDto beregningsgrunnlag) {
@@ -144,6 +146,16 @@ public class RegelMapperTestDataHelper {
             .medAvvikProsent(BigDecimal.ZERO)
             .build();
     }
+
+    public static SammenligningsGrunnlag buildRegelSammenligningsG(SammenligningGrunnlagType type) {
+        return SammenligningsGrunnlag.builder()
+                .medSammenligningstype(type)
+                .medSammenligningsperiode(new Periode(MINUS_YEARS_1, MINUS_DAYS_20))
+                .medRapportertPrÅr(BigDecimal.valueOf(42))
+                .medAvvikProsent(BigDecimal.ZERO)
+                .build();
+    }
+
 
     public static BeregningsgrunnlagPrStatus buildRegelBGPeriode(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode regelBGP, no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus status, Periode periode) {
         if (no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.erArbeidstakerEllerFrilanser(status)) {

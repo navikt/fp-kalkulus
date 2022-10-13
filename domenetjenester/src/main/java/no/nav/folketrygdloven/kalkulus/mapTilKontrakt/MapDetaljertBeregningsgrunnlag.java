@@ -173,7 +173,7 @@ public class MapDetaljertBeregningsgrunnlag {
                 new Periode(sammenligningsgrunnlagPrStatus.getSammenligningsperiodeFom(), sammenligningsgrunnlagPrStatus.getSammenligningsperiodeTom()),
                 sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType(),
                 mapFraBeløp(sammenligningsgrunnlagPrStatus.getRapportertPrÅr()),
-                sammenligningsgrunnlagPrStatus.getAvvikPromilleNy().getVerdi());
+                sammenligningsgrunnlagPrStatus.getGjeldendeAvvik().getVerdi());
     }
 
     public static Sammenligningsgrunnlag mapSammenligningsgrunnlag(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {

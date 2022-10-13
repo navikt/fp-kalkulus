@@ -13,9 +13,7 @@ public class SammenligningsgrunnlagPrStatusDto {
     private Intervall sammenligningsperiode;
     private SammenligningsgrunnlagType sammenligningsgrunnlagType;
     private BigDecimal rapportertPrÅr;
-    private Long avvikPromille = 0L;
     private BigDecimal avvikPromilleNy = BigDecimal.ZERO;
-    private BeregningsgrunnlagDto beregningsgrunnlag;
 
     public SammenligningsgrunnlagPrStatusDto() {
     }
@@ -24,7 +22,6 @@ public class SammenligningsgrunnlagPrStatusDto {
         this.sammenligningsperiode = fraKopi.sammenligningsperiode;
         this.sammenligningsgrunnlagType = fraKopi.sammenligningsgrunnlagType;
         this.rapportertPrÅr = fraKopi.rapportertPrÅr;
-        this.avvikPromille = fraKopi.avvikPromille;
         this.avvikPromilleNy = fraKopi.getAvvikPromilleNy();
     }
 
@@ -40,20 +37,12 @@ public class SammenligningsgrunnlagPrStatusDto {
         return rapportertPrÅr;
     }
 
-    public Long getAvvikPromille() {
-        return avvikPromille;
-    }
-
     public BigDecimal getAvvikPromilleNy() {
         return avvikPromilleNy;
     }
 
     public SammenligningsgrunnlagType getSammenligningsgrunnlagType() {
         return sammenligningsgrunnlagType;
-    }
-
-    public BeregningsgrunnlagDto getBeregningsgrunnlag() {
-        return beregningsgrunnlag;
     }
 
     @Override
@@ -64,8 +53,7 @@ public class SammenligningsgrunnlagPrStatusDto {
             return false;
         }
         SammenligningsgrunnlagPrStatusDto other = (SammenligningsgrunnlagPrStatusDto) obj;
-        return Objects.equals(this.getBeregningsgrunnlag(), other.getBeregningsgrunnlag())
-                && Objects.equals(this.getSammenligningsgrunnlagType(), other.getSammenligningsgrunnlagType())
+        return Objects.equals(this.getSammenligningsgrunnlagType(), other.getSammenligningsgrunnlagType())
                 && Objects.equals(this.getSammenligningsperiodeFom(), other.getSammenligningsperiodeFom())
                 && Objects.equals(this.getSammenligningsperiodeTom(), other.getSammenligningsperiodeTom())
                 && Objects.equals(this.getRapportertPrÅr(), other.getRapportertPrÅr());
@@ -73,7 +61,7 @@ public class SammenligningsgrunnlagPrStatusDto {
 
     @Override
     public int hashCode() {
-        return Objects.hash(beregningsgrunnlag, sammenligningsgrunnlagType, sammenligningsperiode, rapportertPrÅr, avvikPromille);
+        return Objects.hash(sammenligningsgrunnlagType, sammenligningsperiode, rapportertPrÅr);
     }
 
     @Override
@@ -83,23 +71,11 @@ public class SammenligningsgrunnlagPrStatusDto {
                 + "sammenligningsperiodeFom=" + sammenligningsperiode.getFomDato() + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + "sammenligningsperiodeTom=" + sammenligningsperiode.getTomDato() + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + "rapportertPrÅr=" + rapportertPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "avvikPromille=" + avvikPromille + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + ">"; //$NON-NLS-1$
     }
 
     public static Builder builder() {
         return new Builder();
-    }
-
-    void setBeregningsgrunnlagDto(BeregningsgrunnlagDto beregningsgrunnlagDto) {
-        verifiserUnikhet(beregningsgrunnlagDto);
-        this.beregningsgrunnlag = beregningsgrunnlagDto;
-    }
-
-    private void verifiserUnikhet(BeregningsgrunnlagDto beregningsgrunnlag) {
-        if (beregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().stream().anyMatch(sg -> sg.sammenligningsgrunnlagType.equals(this.sammenligningsgrunnlagType))) {
-            throw new IllegalArgumentException("Kan ikke legge til sammenligningsgrunnlag for " + this.sammenligningsgrunnlagType + " fordi det allerede er lagt til.");
-        }
     }
 
     public static class Builder {
@@ -133,13 +109,6 @@ public class SammenligningsgrunnlagPrStatusDto {
             return this;
         }
 
-        public Builder medAvvikPromille(Long avvikPromille) {
-            if(avvikPromille != null) {
-                sammenligningsgrunnlagMal.avvikPromille = avvikPromille;
-            }
-            return this;
-        }
-
         public Builder medAvvikPromilleNy(BigDecimal avvikPromilleUtenAvrunding) {
             if(avvikPromilleUtenAvrunding != null) {
                 sammenligningsgrunnlagMal.avvikPromilleNy = avvikPromilleUtenAvrunding;
@@ -147,12 +116,7 @@ public class SammenligningsgrunnlagPrStatusDto {
             return this;
         }
 
-        Builder medBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
-            sammenligningsgrunnlagMal.beregningsgrunnlag = beregningsgrunnlag;
-            return this;
-        }
-
-        SammenligningsgrunnlagPrStatusDto build() {
+        public SammenligningsgrunnlagPrStatusDto build() {
             verifyStateForBuild();
             return sammenligningsgrunnlagMal;
         }
@@ -163,7 +127,6 @@ public class SammenligningsgrunnlagPrStatusDto {
             Objects.requireNonNull(sammenligningsgrunnlagMal.sammenligningsperiode.getFomDato(), "sammenligningsperiodeFom");
             Objects.requireNonNull(sammenligningsgrunnlagMal.sammenligningsperiode.getTomDato(), "sammenligningsperiodeTom");
             Objects.requireNonNull(sammenligningsgrunnlagMal.rapportertPrÅr, "rapportertPrÅr");
-            Objects.requireNonNull(sammenligningsgrunnlagMal.avvikPromille, "avvikPromille");
         }
 
     }

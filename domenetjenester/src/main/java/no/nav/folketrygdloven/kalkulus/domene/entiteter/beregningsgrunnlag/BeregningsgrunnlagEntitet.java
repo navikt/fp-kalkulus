@@ -9,6 +9,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.hibernate.annotations.BatchSize;
+
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.CascadeType;
@@ -23,9 +25,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
-
-import org.hibernate.annotations.BatchSize;
-
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.diff.ChangeTracked;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
@@ -165,14 +164,14 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
 
     void leggTilSammenligningsgrunnlagPrStatus(SammenligningsgrunnlagPrStatus sammenligningsgrunnlagPrStatus) {
         Objects.requireNonNull(sammenligningsgrunnlagPrStatus, "sammenligningsgrunnlagPrStatus");
-        // Aktivitetstatuser burde implementeres som eit Set
-        if (!sammenligningsgrunnlagPrStatusListe.contains(sammenligningsgrunnlagPrStatus)) {
-            sammenligningsgrunnlagPrStatus.setBeregningsgrunnlag(this);
-            sammenligningsgrunnlagPrStatusListe.add(sammenligningsgrunnlagPrStatus);
-        } else {
-            throw new IllegalArgumentException("Kan ikke legge til sammenligningsgrunnlag for " + sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType() +
+        var finnesFraFør = sammenligningsgrunnlagPrStatusListe.stream()
+                .anyMatch(sg -> sg.getSammenligningsgrunnlagType().equals(sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType()));
+        if (finnesFraFør) {
+            throw new IllegalStateException("Feil: Kan ikke legge til sammenligningsgrunnlag for " + sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType() +
                     " fordi det allerede er lagt til.");
         }
+        sammenligningsgrunnlagPrStatusListe.add(sammenligningsgrunnlagPrStatus);
+        sammenligningsgrunnlagPrStatus.setBeregningsgrunnlag(this);
     }
 
     public boolean isOverstyrt() {
@@ -263,8 +262,8 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
             return this;
         }
 
-        public Builder leggTilSammenligningsgrunnlag(SammenligningsgrunnlagPrStatus.Builder sammenligningsgrunnlagPrStatusBuilder) { // NOSONAR
-            sammenligningsgrunnlagPrStatusBuilder.build(kladd);
+        public Builder leggTilSammenligningsgrunnlag(SammenligningsgrunnlagPrStatus sammenligningsgrunnlagPrStatus) {
+            kladd.leggTilSammenligningsgrunnlagPrStatus(sammenligningsgrunnlagPrStatus);
             return this;
         }
 

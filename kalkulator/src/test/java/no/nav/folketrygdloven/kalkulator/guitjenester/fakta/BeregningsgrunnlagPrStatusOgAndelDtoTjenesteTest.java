@@ -262,7 +262,8 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
                         .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT)
                         .medRapportertPrÅr(RAPPORTERT_PR_AAR)
                         .medSammenligningsgrunnlagType(sammenligningsgrunnlagType)
-                        .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM))
+                        .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM)
+                        .build())
                 .build();
     }
 

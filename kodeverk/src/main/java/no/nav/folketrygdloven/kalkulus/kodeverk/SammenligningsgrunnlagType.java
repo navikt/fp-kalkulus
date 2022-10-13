@@ -27,6 +27,7 @@ public enum SammenligningsgrunnlagType implements Kodeverdi {
 
     SAMMENLIGNING_AT("SAMMENLIGNING_AT", "Sammenligningsgrunnlag arbeidstaker"),
     SAMMENLIGNING_FL("SAMMENLIGNING_FL", "Sammenligningsgrunnlag frilans"),
+    SAMMENLIGNING_AT_FL("SAMMENLIGNING_AT_FL", "Sammenligningsgrunnlag arbeidstaker og frilans samlet"),
     SAMMENLIGNING_SN("SAMMENLIGNING_SN", "Sammenligningsgrunnlag næring"),
     SAMMENLIGNING_ATFL_SN("SAMMENLIGNING_ATFL_SN", "Sammenligningsgrunnlag for Arbeidstaker, frilans og selvstendig næringsdrivende"),
     ;
@@ -69,7 +70,7 @@ public enum SammenligningsgrunnlagType implements Kodeverdi {
         }
         return ad;
     }
-    
+
     public static Map<String, SammenligningsgrunnlagType> kodeMap() {
         return Collections.unmodifiableMap(KODER);
     }
@@ -79,7 +80,7 @@ public enum SammenligningsgrunnlagType implements Kodeverdi {
     public String getKode() {
         return kode;
     }
-    
+
     @JsonProperty
     @Override
     public String getKodeverk() {

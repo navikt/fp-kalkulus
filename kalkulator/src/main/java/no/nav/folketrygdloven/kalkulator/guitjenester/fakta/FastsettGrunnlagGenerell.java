@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
@@ -18,12 +17,16 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 @ApplicationScoped
 @FagsakYtelseTypeRef()
 public class FastsettGrunnlagGenerell {
-    private static final Map<SammenligningsgrunnlagType, AktivitetStatus> SAMMENLIGNINGSGRUNNLAGTYPE_AKTIVITETSTATUS_MAP;
+    private static final Map<SammenligningsgrunnlagType, List<AktivitetStatus>> SAMMENLIGNINGSGRUNNLAGTYPE_AKTIVITETSTATUS_MAP;
     static {
         SAMMENLIGNINGSGRUNNLAGTYPE_AKTIVITETSTATUS_MAP = Map.of(
-                SammenligningsgrunnlagType.SAMMENLIGNING_AT, no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER,
-                SammenligningsgrunnlagType.SAMMENLIGNING_FL, no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.FRILANSER,
-                SammenligningsgrunnlagType.SAMMENLIGNING_SN, no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+                SammenligningsgrunnlagType.SAMMENLIGNING_AT, List.of(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER),
+                SammenligningsgrunnlagType.SAMMENLIGNING_FL, List.of(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.FRILANSER),
+                SammenligningsgrunnlagType.SAMMENLIGNING_AT_FL, List.of(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER,
+                        no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.FRILANSER),
+                SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN, List.of(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER,
+                        no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.FRILANSER, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE),
+                SammenligningsgrunnlagType.SAMMENLIGNING_SN, List.of(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE));
     }
 
     public boolean skalGrunnlagFastsettes(BeregningsgrunnlagGUIInput input, no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel){
@@ -44,7 +47,7 @@ public class FastsettGrunnlagGenerell {
         }
 
         return input.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe().stream()
-                .filter(s -> SAMMENLIGNINGSGRUNNLAGTYPE_AKTIVITETSTATUS_MAP.get(s.getSammenligningsgrunnlagType()).equals(andel.getAktivitetStatus()))
+                .filter(s -> SAMMENLIGNINGSGRUNNLAGTYPE_AKTIVITETSTATUS_MAP.get(s.getSammenligningsgrunnlagType()).contains(andel.getAktivitetStatus()))
                 .anyMatch(s -> erAvvikStørreEnn25Prosent(s.getAvvikPromilleNy()));
     }
 
@@ -54,7 +57,7 @@ public class FastsettGrunnlagGenerell {
 
     private static boolean skalGrunnlagFastsettesForSN(BeregningsgrunnlagGUIInput input) {
         Optional<SammenligningsgrunnlagPrStatusDto> sammenligningsgrunnlagPrStatus =  input.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe().stream()
-                .filter(s -> no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE.equals(SAMMENLIGNINGSGRUNNLAGTYPE_AKTIVITETSTATUS_MAP.get(s.getSammenligningsgrunnlagType())))
+                .filter(s -> SAMMENLIGNINGSGRUNNLAGTYPE_AKTIVITETSTATUS_MAP.get(s.getSammenligningsgrunnlagType()).contains(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE))
                 .findAny();
         if(sammenligningsgrunnlagPrStatus.isPresent()){
             return erAvvikStørreEnn25Prosent(sammenligningsgrunnlagPrStatus.get().getAvvikPromilleNy());

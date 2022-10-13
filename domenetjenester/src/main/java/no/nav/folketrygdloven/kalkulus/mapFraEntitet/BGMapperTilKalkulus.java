@@ -60,14 +60,13 @@ public class BGMapperTilKalkulus {
         return builder;
     }
 
-    public static SammenligningsgrunnlagPrStatusDto.Builder mapSammenligningsgrunnlagMedStatus(SammenligningsgrunnlagPrStatus fraFagsystem) {
+    public static SammenligningsgrunnlagPrStatusDto mapSammenligningsgrunnlagMedStatus(SammenligningsgrunnlagPrStatus fraFagsystem) {
         SammenligningsgrunnlagPrStatusDto.Builder builder = new SammenligningsgrunnlagPrStatusDto.Builder();
-        builder.medAvvikPromilleNy(mapFraPromille(fraFagsystem.getAvvikPromilleNy()));
+        builder.medAvvikPromilleNy(mapFraPromille(fraFagsystem.getGjeldendeAvvik()));
         builder.medRapportertPrÅr(mapFraBeløp(fraFagsystem.getRapportertPrÅr()));
         builder.medSammenligningsgrunnlagType(SammenligningsgrunnlagType.fraKode(fraFagsystem.getSammenligningsgrunnlagType().getKode()));
         builder.medSammenligningsperiode(fraFagsystem.getSammenligningsperiodeFom(), fraFagsystem.getSammenligningsperiodeTom());
-
-        return builder;
+        return builder.build();
     }
 
     private static BeregningsgrunnlagPrStatusOgAndelDto.Builder mapStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel fraFagsystem) {

@@ -3,12 +3,11 @@ package no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.SammenligningGrunnlagType;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrStatus;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SammenligningsGrunnlag;
@@ -29,12 +28,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 
 public class MapBeregningsgrunnlagFraRegelTilVL {
-    private static final Map<AktivitetStatus, SammenligningsgrunnlagType> AKTIVITETSTATUS_SAMMENLIGNINGSGRUNNLAGTYPE_MAP = Map.of(
-            AktivitetStatus.ATFL_SN, SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN,
-            AktivitetStatus.AT, SammenligningsgrunnlagType.SAMMENLIGNING_AT,
-            AktivitetStatus.FL, SammenligningsgrunnlagType.SAMMENLIGNING_FL,
-            AktivitetStatus.SN, SammenligningsgrunnlagType.SAMMENLIGNING_SN
-    );
 
     protected enum Steg {
         FORESLÅ,
@@ -54,10 +47,14 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
 
     private BeregningsgrunnlagDto map(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatGrunnlag, BeregningsgrunnlagDto eksisterendeVLGrunnlag, Steg steg) {
         mapSammenligningsgrunnlag(resultatGrunnlag.getSammenligningsGrunnlag(), eksisterendeVLGrunnlag);
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = BeregningsgrunnlagDto.builder(eksisterendeVLGrunnlag).build();
-        if (nyttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().isEmpty()) {
-            mapSammenligningsgrunnlagPrStatus(resultatGrunnlag.getSammenligningsGrunnlagPrAktivitetstatus(), nyttBeregningsgrunnlag);
-        }
+        var builder = BeregningsgrunnlagDto.builder(eksisterendeVLGrunnlag);
+        var sgPrStatus = resultatGrunnlag.getSammenligningsgrunnlagPrStatus().stream()
+                .map(this::mapSammenligningsgrunnlagPrStatus)
+                // Har vi allerede et sammenligningsgrunnlag av denne typen trenger vi ikke flere
+                .filter(sg -> eksisterendeVLGrunnlag.getSammenligningsgrunnlagForStatus(sg.getSammenligningsgrunnlagType()).isEmpty())
+                .collect(Collectors.toList());
+        sgPrStatus.forEach(builder::leggTilSammenligningsgrunnlag);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = builder.build();
 
         Objects.requireNonNull(resultatGrunnlag, "resultatGrunnlag");
         MapAktivitetStatusMedHjemmel.mapAktivitetStatusMedHjemmel(resultatGrunnlag.getAktivitetStatuser(), nyttBeregningsgrunnlag, resultatGrunnlag.getBeregningsgrunnlagPerioder().get(0));
@@ -65,6 +62,22 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
         mapPerioder(nyttBeregningsgrunnlag, steg, resultatGrunnlag.getBeregningsgrunnlagPerioder());
 
         return nyttBeregningsgrunnlag;
+    }
+
+    public SammenligningsgrunnlagPrStatusDto mapSammenligningsgrunnlagPrStatus(SammenligningsGrunnlag sgRegel) {
+        return SammenligningsgrunnlagPrStatusDto.builder()
+                .medSammenligningsgrunnlagType(mapSammenligningstype(sgRegel.getSammenligningstype()))
+                .medSammenligningsperiode(sgRegel.getSammenligningsperiode().getFom(), sgRegel.getSammenligningsperiode().getTom())
+                .medRapportertPrÅr(sgRegel.getRapportertPrÅr())
+                .medAvvikPromilleNy(sgRegel.getAvvikPromilleUtenAvrunding())
+                .build();
+    }
+
+    private SammenligningsgrunnlagType mapSammenligningstype(SammenligningGrunnlagType sammenligningstype) {
+        return switch (sammenligningstype) {
+            case AT_FL -> SammenligningsgrunnlagType.SAMMENLIGNING_AT_FL;
+            case SN -> SammenligningsgrunnlagType.SAMMENLIGNING_SN;
+        };
     }
 
     protected void mapPerioder(BeregningsgrunnlagDto eksisterendeVLGrunnlag, Steg steg,
@@ -335,20 +348,6 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
             BeregningsgrunnlagDto.Builder.oppdater(Optional.of(eksisterendeVLGrunnlag))
                     .medSammenligningsgrunnlag(builder);
         }
-    }
-
-    private static void mapSammenligningsgrunnlagPrStatus(Map<AktivitetStatus, SammenligningsGrunnlag> sammenligningsgrunnlag,
-                                                          BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
-        sammenligningsgrunnlag.forEach((key, value) -> {
-            if (!AKTIVITETSTATUS_SAMMENLIGNINGSGRUNNLAGTYPE_MAP.containsKey(key)) {
-                throw new IllegalArgumentException("Finner ingen mapping mellom AktivitetStatus " + key + " og SammenligningsgrunnlagType");
-            }
-            BeregningsgrunnlagDto.Builder.oppdater(Optional.of(eksisterendeVLGrunnlag)).leggTilSammenligningsgrunnlag(SammenligningsgrunnlagPrStatusDto.builder()
-                    .medSammenligningsperiode(value.getSammenligningsperiode().getFom(), value.getSammenligningsperiode().getTom())
-                    .medRapportertPrÅr(value.getRapportertPrÅr())
-                    .medAvvikPromilleNy(value.getAvvikPromilleUtenAvrunding())
-                    .medSammenligningsgrunnlagType(AKTIVITETSTATUS_SAMMENLIGNINGSGRUNNLAGTYPE_MAP.get(key)));
-        });
     }
 
     private static List<PeriodeÅrsak> mapPeriodeÅrsaker(List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak> periodeÅrsaker) {

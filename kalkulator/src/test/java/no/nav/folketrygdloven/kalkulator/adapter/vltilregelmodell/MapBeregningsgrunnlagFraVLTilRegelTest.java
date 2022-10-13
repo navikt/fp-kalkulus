@@ -35,7 +35,6 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.In
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektskilde;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Periodeinntekt;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SammenligningsGrunnlag;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.ForeldrepengerGrunnlagMapper;
@@ -46,7 +45,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørArbeidDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
@@ -228,8 +226,6 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         assertThat(resultatBG).isNotNull();
         verifiserInntekterFraSigrun(resultatBG, TOTALINNTEKT_SIGRUN);
         assertThat(resultatBG.getSkjæringstidspunkt()).isEqualTo(MINUS_DAYS_5);
-        assertThat(resultatBG.getSammenligningsGrunnlag().getRapportertPrÅr().doubleValue()).isEqualTo(1098318.12, within(0.01));
-        assertThat(resultatBG.getSammenligningsGrunnlag().getAvvikPromille()).isEqualTo(220L);
         assertThat(resultatBG.getBeregningsgrunnlagPerioder()).hasSize(1);
         final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode resultatBGP = resultatBG.getBeregningsgrunnlagPerioder().get(0);
         assertThat(resultatBGP.getBeregningsgrunnlagPeriode().getFom()).isEqualTo(resultatBG.getSkjæringstidspunkt());
@@ -245,11 +241,6 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
                     assertThat(resultatBGPS.samletNaturalytelseBortfaltMinusTilkommetPrÅr()).isZero();
                 }
         );
-        assertThat(resultatBG.getSammenligningsGrunnlagPrAktivitetstatus(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.SN)).isNotNull();
-        assertThat(resultatBG.getSammenligningsGrunnlagPrAktivitetstatus(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.SN)
-                .getRapportertPrÅr().doubleValue()).isEqualTo(1098318.12, within(0.01));
-        assertThat(resultatBG.getSammenligningsGrunnlagPrAktivitetstatus(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.SN)
-                .getAvvikPromille()).isEqualTo(220L);
     }
 
     private no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag map(KoblingReferanse koblingReferanse, BeregningsgrunnlagGrunnlagDto grunnlag, InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder) {
@@ -473,30 +464,6 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         assertThat(resultatBG.getSammenligningsGrunnlag()).isNull();
     }
 
-
-    @Test
-    public void skalLageSammenligningsgrunnlagForTilbakehopp() {
-        //Arrange
-        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        InntektArbeidYtelseAggregatBuilder register = opprettForBehandling(iayGrunnlagBuilder);
-        iayGrunnlagBuilder.medData(register);
-        BeregningsgrunnlagDto beregningsgrunnlag = buildVLBeregningsgrunnlag();
-        buildVLBGAktivitetStatus(beregningsgrunnlag, AktivitetStatus.ARBEIDSTAKER);
-        buildVLBGPeriode(beregningsgrunnlag);
-        buildVLSammenligningsgrunnlag(beregningsgrunnlag);
-
-        // Act
-        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(koblingReferanse, lagGrunnlag(beregningsgrunnlag), iayGrunnlagBuilder);
-
-        // Assert
-        SammenligningsGrunnlag resultatSG = resultatBG.getSammenligningsGrunnlag();
-        assertThat(resultatSG).isNotNull();
-        SammenligningsgrunnlagDto forrigeSG = beregningsgrunnlag.getSammenligningsgrunnlag();
-        assertThat(resultatSG.getSammenligningsperiode()).isEqualTo(Periode.of(forrigeSG.getSammenligningsperiodeFom(), forrigeSG.getSammenligningsperiodeTom()));
-        assertThat(resultatSG.getRapportertPrÅr()).isEqualByComparingTo(forrigeSG.getRapportertPrÅr());
-        assertThat(resultatSG.getAvvikPromilleUtenAvrunding()).isEqualTo(forrigeSG.getAvvikPromilleNy());
-    }
-
     @Test
     public void skalIkkeLageSammenligningsgrunnlagNårHarInnhentetNyeData() {
         //Arrange
@@ -537,11 +504,6 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
                     assertThat(resultatBGPS.getBeregnetPrÅr().doubleValue()).isEqualTo(1000.01, within(0.01));
                 }
         );
-        assertThat(resultatBG.getSammenligningsGrunnlagPrAktivitetstatus(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.FL)).isNotNull();
-        assertThat(resultatBG.getSammenligningsGrunnlagPrAktivitetstatus(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.FL)
-                .getRapportertPrÅr().doubleValue()).isEqualTo(1098318.12, within(0.01));
-        assertThat(resultatBG.getSammenligningsGrunnlagPrAktivitetstatus(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.FL)
-                .getAvvikPromille()).isEqualTo(220L);
     }
 
     @Test
@@ -574,11 +536,6 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
                     assertArbeidforhold(resultatBGPS.getArbeidsforhold().get(1), MINUS_YEARS_1, NOW);
                 }
         );
-        assertThat(resultatBG.getSammenligningsGrunnlagPrAktivitetstatus(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.AT)).isNotNull();
-        assertThat(resultatBG.getSammenligningsGrunnlagPrAktivitetstatus(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.AT)
-                .getRapportertPrÅr().doubleValue()).isEqualTo(1098318.12, within(0.01));
-        assertThat(resultatBG.getSammenligningsGrunnlagPrAktivitetstatus(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.AT)
-                .getAvvikPromille()).isEqualTo(220L);
     }
 
     private BeregningsgrunnlagGrunnlagDto lagGrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {

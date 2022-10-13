@@ -15,6 +15,7 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
+import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 
 public class BeregningsgrunnlagDto {
 
@@ -37,7 +38,6 @@ public class BeregningsgrunnlagDto {
         this.sammenligningsgrunnlagPrStatusListe = kopiereFra.getSammenligningsgrunnlagPrStatusListe().stream().map(s -> {
             SammenligningsgrunnlagPrStatusDto.Builder builder = SammenligningsgrunnlagPrStatusDto.Builder.kopier(s);
             SammenligningsgrunnlagPrStatusDto build = builder.build();
-            build.setBeregningsgrunnlagDto(this);
             return build;
         }).collect(Collectors.toList());
 
@@ -132,6 +132,12 @@ public class BeregningsgrunnlagDto {
 
     public List<SammenligningsgrunnlagPrStatusDto> getSammenligningsgrunnlagPrStatusListe() {
         return sammenligningsgrunnlagPrStatusListe;
+    }
+
+    public Optional<SammenligningsgrunnlagPrStatusDto> getSammenligningsgrunnlagForStatus(SammenligningsgrunnlagType type) {
+        return sammenligningsgrunnlagPrStatusListe.stream()
+                .filter(sg -> sg.getSammenligningsgrunnlagType().equals(type))
+                .findFirst();
     }
 
     public boolean isOverstyrt() {
@@ -257,9 +263,19 @@ public class BeregningsgrunnlagDto {
             return this;
         }
 
-        public Builder leggTilSammenligningsgrunnlag(SammenligningsgrunnlagPrStatusDto.Builder sammenligningsgrunnlagPrStatusBuilder) { // NOSONAR
-            kladd.sammenligningsgrunnlagPrStatusListe.add(sammenligningsgrunnlagPrStatusBuilder.medBeregningsgrunnlag(kladd).build());
+        public Builder leggTilSammenligningsgrunnlag(SammenligningsgrunnlagPrStatusDto sgPrStatus) {
+            verifiserIngenLikeSammenligningsgrunnlag(sgPrStatus);
+            kladd.sammenligningsgrunnlagPrStatusListe.add(sgPrStatus);
             return this;
+        }
+
+        private void verifiserIngenLikeSammenligningsgrunnlag(SammenligningsgrunnlagPrStatusDto sgPrStatus) {
+            var finnesAlleredeSGAForStatus = kladd.sammenligningsgrunnlagPrStatusListe.stream()
+                    .anyMatch(sg -> sg.getSammenligningsgrunnlagType().equals(sgPrStatus.getSammenligningsgrunnlagType()));
+            if (finnesAlleredeSGAForStatus) {
+                throw new IllegalStateException("FEIL: Prøver legge til sammenligningsgrunnlag med status " + sgPrStatus.getSammenligningsgrunnlagType() +
+                        " men et sammenligningsgrunnlag med denne statusen finnes allerede på grunnlaget!");
+            }
         }
 
         public Builder medOverstyring(boolean overstyrt) {
