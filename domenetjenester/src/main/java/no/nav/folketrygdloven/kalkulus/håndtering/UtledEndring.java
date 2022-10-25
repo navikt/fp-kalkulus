@@ -9,16 +9,20 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.faktaberegning.UtledFaktaOmBeregningVurderinger;
-import no.nav.folketrygdloven.kalkulus.håndtering.foreslå.UtledVarigEndringEllerNyoppstartetSNVurderinger;
+import no.nav.folketrygdloven.kalkulus.håndtering.foreslå.UtledVarigEndringEllerNyoppstartetVurderinger;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FaktaOmBeregningHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.VurderVarigEndringEllerNyoppstartetSNHåndteringDto;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.VurderVarigEndretArbeidssituasjonHåndteringDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningsgrunnlagEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningsgrunnlagPeriodeEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.Endringer;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.FaktaOmBeregningVurderinger;
+import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.VarigEndretArbeidssituasjonEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.VarigEndretEllerNyoppstartetNæringEndring;
 
 public class UtledEndring {
@@ -41,25 +45,46 @@ public class UtledEndring {
         BeregningsgrunnlagEndring beregningsgrunnlagEndring = utledBeregningsgrunnlagEndring(beregningsgrunnlagDto, bgFraSteg, forrigeBeregningsgrunnlagOpt);
         endringBuilder.medBeregningsgrunnlagEndring(beregningsgrunnlagEndring);
         UtledEndringIAktiviteter.utedEndring(dto, beregningsgrunnlagGrunnlagDto.getRegisterAktiviteter(),
-                beregningsgrunnlagGrunnlagDto.getGjeldendeAktiviteter(),
-                forrigeGrunnlag.map(BeregningsgrunnlagGrunnlagDto::getRegisterAktiviteter),
-                forrigeGrunnlag.map(BeregningsgrunnlagGrunnlagDto::getGjeldendeAktiviteter))
+                        beregningsgrunnlagGrunnlagDto.getGjeldendeAktiviteter(),
+                        forrigeGrunnlag.map(BeregningsgrunnlagGrunnlagDto::getRegisterAktiviteter),
+                        forrigeGrunnlag.map(BeregningsgrunnlagGrunnlagDto::getGjeldendeAktiviteter))
                 .map(endringBuilder::medBeregningAktiviteterEndring);
         mapFaktaOmBeregningEndring(beregningsgrunnlagGrunnlagDto, forrigeGrunnlag, dto, endringBuilder)
                 .map(endringBuilder::medFaktaOmBeregningVurderinger);
         mapVarigEndretNæringEndring(forrigeGrunnlag, dto, endringBuilder, beregningsgrunnlagDto, iayGrunnlag)
                 .map(endringBuilder::medVarigEndretNæringEndring);
+        mapVarigEndretArbeidssituasjonEndring(forrigeGrunnlag, dto, endringBuilder, beregningsgrunnlagDto, iayGrunnlag)
+                .map(endringBuilder::medVarigEndretArbeidssituasjonEndring);
         return endringBuilder.build();
     }
 
     private static Optional<VarigEndretEllerNyoppstartetNæringEndring> mapVarigEndretNæringEndring(Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag, HåndterBeregningDto dto, Endringer.Builder endringBuilder, BeregningsgrunnlagDto beregningsgrunnlagDto, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         if (dto instanceof VurderVarigEndringEllerNyoppstartetSNHåndteringDto) {
-            return Optional.of(UtledVarigEndringEllerNyoppstartetSNVurderinger.utled(
+            return Optional.of(UtledVarigEndringEllerNyoppstartetVurderinger.utledForVarigEndretEllerNyoppstartetNæring(
                     beregningsgrunnlagDto,
                     forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag),
-                    iayGrunnlag));
+                    iayGrunnlag
+            ));
         }
         return Optional.empty();
+    }
+
+    private static Optional<VarigEndretArbeidssituasjonEndring> mapVarigEndretArbeidssituasjonEndring(Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag, HåndterBeregningDto dto, Endringer.Builder endringBuilder, BeregningsgrunnlagDto beregningsgrunnlagDto, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+        if (dto instanceof VurderVarigEndretArbeidssituasjonHåndteringDto) {
+            var endring = UtledVarigEndringEllerNyoppstartetVurderinger.utledEndring(
+                    beregningsgrunnlagDto,
+                    forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag),
+                    UtledEndring::finnBrukersAndel);
+            return Optional.of(new VarigEndretArbeidssituasjonEndring(endring));
+        }
+        return Optional.empty();
+    }
+
+    private static BeregningsgrunnlagPrStatusOgAndelDto finnBrukersAndel(BeregningsgrunnlagPeriodeDto bgPeriode) {
+        return bgPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
+                .filter(a -> a.getAktivitetStatus().equals(AktivitetStatus.BRUKERS_ANDEL))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Forventet å finne brukersAndel"));
     }
 
     private static Optional<FaktaOmBeregningVurderinger> mapFaktaOmBeregningEndring(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto, Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag, HåndterBeregningDto dto, Endringer.Builder endringBuilder) {

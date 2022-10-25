@@ -77,6 +77,7 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
         return switch (sammenligningstype) {
             case AT_FL -> SammenligningsgrunnlagType.SAMMENLIGNING_AT_FL;
             case SN -> SammenligningsgrunnlagType.SAMMENLIGNING_SN;
+            case MIDLERTIDIG_INAKTIV -> SammenligningsgrunnlagType.SAMMENLIGNING_MIDL_INAKTIV;
         };
     }
 

@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulator.steg.foreslå;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_FOR_SN_NY_I_ARBEIDSLIVET;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_TIDSBEGRENSET_ARBEIDSFORHOLD;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon.VURDER_VARIG_ENDRET_ARBEIDSSITUASJON_MIDLERTIDIG_INAKTIV;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon.VURDER_VARIG_ENDRET_ELLER_NYOPPSTARTET_NÆRING_SELVSTENDIG_NÆRINGSDRIVENDE;
 
 import java.util.Collection;
@@ -22,18 +23,18 @@ public class AvklaringsbehovUtlederForeslåBeregning {
     }
 
     public static List<BeregningAvklaringsbehovResultat> utledAvklaringsbehov(@SuppressWarnings("unused") BeregningsgrunnlagInput input,
-                                                                             List<RegelResultat> regelResultater) {
+                                                                              List<RegelResultat> regelResultater) {
         return mapRegelResultater(regelResultater);
     }
 
     private static List<BeregningAvklaringsbehovResultat> mapRegelResultater(List<RegelResultat> regelResultater) {
         return regelResultater.stream()
-            .map(RegelResultat::getMerknader)
-            .flatMap(Collection::stream)
-            .distinct()
-            .map(AvklaringsbehovUtlederForeslåBeregning::mapRegelMerknad)
-            .map(BeregningAvklaringsbehovResultat::opprettFor)
-            .collect(Collectors.toList());
+                .map(RegelResultat::getMerknader)
+                .flatMap(Collection::stream)
+                .distinct()
+                .map(AvklaringsbehovUtlederForeslåBeregning::mapRegelMerknad)
+                .map(BeregningAvklaringsbehovResultat::opprettFor)
+                .collect(Collectors.toList());
     }
 
     private static AvklaringsbehovDefinisjon mapRegelMerknad(RegelMerknad regelMerknad) {
@@ -43,6 +44,7 @@ public class AvklaringsbehovUtlederForeslåBeregning {
             case FASTSETT_AVVIK_TIDSBEGRENSET -> FASTSETT_BEREGNINGSGRUNNLAG_TIDSBEGRENSET_ARBEIDSFORHOLD;
             case FASTSETT_SELVSTENDIG_NY_ARBEIDSLIVET -> FASTSETT_BEREGNINGSGRUNNLAG_FOR_SN_NY_I_ARBEIDSLIVET;
             case VARIG_ENDRING_OG_AVVIK_STØRRE_ENN_25_PROSENT -> VURDER_VARIG_ENDRET_ELLER_NYOPPSTARTET_NÆRING_SELVSTENDIG_NÆRINGSDRIVENDE;
+            case VARIG_ENDRING_OG_AVVIK_STØRRE_ENN_25_PROSENT_MIDLERTIDIG_INAKTIV -> VURDER_VARIG_ENDRET_ARBEIDSSITUASJON_MIDLERTIDIG_INAKTIV;
             default -> throw new IllegalArgumentException("Utviklerfeil: Uventet regelutfall " + regelMerknad.utfallÅrsak());
         };
     }

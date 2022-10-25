@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Aktivitet;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapOpptjeningAktivitetTypeFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
@@ -26,6 +27,7 @@ public class MapBGStatuserFraVLTilRegel {
         AktivitetStatusModell regelmodell = new AktivitetStatusModell();
         regelmodell.setSkjæringstidspunktForOpptjening(beregningAktivitetAggregat.getSkjæringstidspunktOpptjening());
         leggTilAktiviteter(inntektsmeldinger, beregningAktivitetAggregat, regelmodell, ytelseFilter);
+        regelmodell.leggTilToggle("AVVIKSVURDER_MIDL_INAKTIV", KonfigurasjonVerdi.get("AVVIKSVURDER_MIDL_INAKTIV", false));
         return regelmodell;
     }
 

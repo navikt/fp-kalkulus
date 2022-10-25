@@ -21,30 +21,40 @@ public final class FinnAnsettelsesPeriode {
         return Optional.ofNullable(getMinMaksPeriode(ansettelsesPerioder, skjæringstidspunkt));
     }
 
-    /** Forventer at skjæringstidspunktet ligger i en av ansettelses periodene
-     *
+
+    /**
+     * Finner min-max uavhengig av skjæringstidspunkt
      *
      * @param ansettelsesPerioder Ansettelsesperioder
-     * @param skjæringstidspunkt Skjæringstidspunkt
+     * @return Periode {@link Periode}
+     */
+    public static Optional<Periode> getMinMaksPeriode(Collection<AktivitetsAvtaleDto> ansettelsesPerioder) {
+        var arbeidsperiodeFom = ansettelsesPerioder
+                .stream()
+                .map(a -> a.getPeriode().getFomDato())
+                .min(Comparator.naturalOrder());
+        var arbeidsperiodeTom = ansettelsesPerioder
+                .stream()
+                .map(a -> a.getPeriode().getTomDato())
+                .max(Comparator.naturalOrder());
+        if (arbeidsperiodeFom.isEmpty() || arbeidsperiodeTom.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(Periode.of(arbeidsperiodeFom.get(), arbeidsperiodeTom.get()));
+    }
+
+    /**
+     * Forventer at skjæringstidspunktet ligger i en av ansettelses periodene
+     *
+     * @param ansettelsesPerioder Ansettelsesperioder
+     * @param skjæringstidspunkt  Skjæringstidspunkt
      * @return Periode {@link Periode}
      */
     public static Periode getMinMaksPeriode(Collection<AktivitetsAvtaleDto> ansettelsesPerioder, LocalDate skjæringstidspunkt) {
         List<AktivitetsAvtaleDto> perioderSomSlutterEtterStp = ansettelsesPerioder
-            .stream()
-            .filter(ap -> !ap.getPeriode().getTomDato().isBefore(BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunkt)))
-            .collect(Collectors.toList());
-        if (perioderSomSlutterEtterStp.isEmpty()) {
-            return null;
-        }
-        LocalDate arbeidsperiodeFom = perioderSomSlutterEtterStp
-            .stream()
-            .map(a -> a.getPeriode().getFomDato())
-            .min(Comparator.naturalOrder()).orElseThrow();
-
-        LocalDate arbeidsperiodeTom = perioderSomSlutterEtterStp
-            .stream()
-            .map(a -> a.getPeriode().getTomDato())
-            .max(Comparator.naturalOrder()).orElseThrow();
-        return Periode.of(arbeidsperiodeFom, arbeidsperiodeTom);
+                .stream()
+                .filter(ap -> !ap.getPeriode().getTomDato().isBefore(BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunkt)))
+                .collect(Collectors.toList());
+        return getMinMaksPeriode(perioderSomSlutterEtterStp).orElse(null);
     }
 }

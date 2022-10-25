@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
 import java.math.BigDecimal;
 import java.util.List;
 
-import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FastsettBruttoBeregningsgrunnlagSNDto;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
@@ -20,8 +19,7 @@ public class FastsettBruttoBeregningsgrunnlagSNHåndterer {
         // Skjul
     }
 
-    public static BeregningsgrunnlagGrunnlagDto håndter(BeregningsgrunnlagInput input, FastsettBruttoBeregningsgrunnlagSNDto dto) {
-        Integer bruttoBeregningsgrunnlag = dto.getBruttoBeregningsgrunnlag();
+    public static BeregningsgrunnlagGrunnlagDto håndter(BeregningsgrunnlagInput input, Integer bruttoBeregningsgrunnlag) {
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
         if (bruttoBeregningsgrunnlag != null) {
             BeregningsgrunnlagDto grunnlag = grunnlagBuilder.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag();

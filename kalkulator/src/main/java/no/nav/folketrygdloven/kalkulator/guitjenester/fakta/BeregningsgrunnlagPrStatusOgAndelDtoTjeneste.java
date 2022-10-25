@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
 import static java.util.stream.Collectors.toList;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -12,7 +11,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Any;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.felles.FinnInntektsmeldingForAndel;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
@@ -69,7 +67,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         var ref = input.getKoblingReferanse();
         Optional<FaktaAggregatDto> faktaAggregat = input.getFaktaAggregat();
         BeregningsgrunnlagPrStatusOgAndelDto dto = LagTilpassetDtoTjeneste.opprettTilpassetDTO(ref, andel, iayGrunnlag, faktaAggregat);
-        LocalDate skjæringstidspunktForBeregning = input.getSkjæringstidspunktForBeregning();
         Optional<InntektsmeldingDto> inntektsmelding = FinnInntektsmeldingForAndel.finnInntektsmelding(andel, inntektsmeldinger);
         BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, inntektsmelding, iayGrunnlag).ifPresent(dto::setArbeidsforhold);
         dto.setDagsats(andel.getDagsats());
@@ -94,14 +91,17 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
                 .map(FaktaArbeidsforholdDto::getHarLønnsendringIBeregningsperiodenVurdering).ifPresent(dto::setLonnsendringIBeregningsperioden);
         dto.setLagtTilAvSaksbehandler(andel.erLagtTilAvSaksbehandler());
         dto.setErTilkommetAndel(!andel.getKilde().equals(AndelKilde.PROSESS_START));
-        if(andel.getAktivitetStatus().erFrilanser() || andel.getAktivitetStatus().erArbeidstaker() || andel.getAktivitetStatus().erSelvstendigNæringsdrivende()){
+        if (andel.getAktivitetStatus().erFrilanser()
+                || andel.getAktivitetStatus().erArbeidstaker()
+                || andel.getAktivitetStatus().erSelvstendigNæringsdrivende()
+                || andel.getAktivitetStatus().equals(AktivitetStatus.BRUKERS_ANDEL)) {
             dto.setSkalFastsetteGrunnlag(skalGrunnlagFastsettesForYtelse(input, andel));
         }
         return dto;
     }
 
     private boolean skalGrunnlagFastsettesForYtelse(BeregningsgrunnlagGUIInput input,
-                                                    no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel){
+                                                    no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
         return FagsakYtelseTypeRef.Lookup.find(fastsettGrunnlag, input.getFagsakYtelseType())
                 .orElseThrow(() -> new IllegalStateException("Finner ikke implementasjon for om grunnlag skal fastsettes for BehandlingReferanse " + input.getKoblingReferanse()))
                 .skalGrunnlagFastsettes(input, andel);
@@ -109,15 +109,15 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
 
     private static boolean dtoKanSorteres(List<BeregningsgrunnlagPrStatusOgAndelDto> arbeidsarbeidstakerAndeler) {
         List<BeregningsgrunnlagPrStatusOgAndelDto> listMedNull = arbeidsarbeidstakerAndeler
-            .stream()
-            .filter(a -> a.getBeregnetPrAar() == null)
-            .collect(toList());
+                .stream()
+                .filter(a -> a.getBeregnetPrAar() == null)
+                .collect(toList());
         return listMedNull.isEmpty();
     }
 
     private static Comparator<BeregningsgrunnlagPrStatusOgAndelDto> comparatorEtterBeregnetOgArbeidsforholdId() {
         return Comparator.comparing(BeregningsgrunnlagPrStatusOgAndelDto::getBeregnetPrAar)
-            .reversed();
+                .reversed();
     }
 
 }

@@ -217,7 +217,7 @@ public class BeregningsgrunnlagDtoTjeneste {
             BigDecimal avvikProsent = s.getAvvikPromilleNy() == null ? null : s.getAvvikPromilleNy().scaleByPowerOfTen(-1);
             dto.setAvvikProsent(avvikProsent);
             // Midltertidig hack siden dette er eneste type frontend støtter
-            dto.setSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN);
+            dto.setSammenligningsgrunnlagType(s.getSammenligningsgrunnlagType());
             dto.setDifferanseBeregnet(finnDifferanseBeregnet(beregningsgrunnlag, s));
             sammenligningsgrunnlagDtos.add(dto);
         });
@@ -228,7 +228,7 @@ public class BeregningsgrunnlagDtoTjeneste {
     private BigDecimal finnDifferanseBeregnetGammeltSammenliningsgrunnlag(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag, BigDecimal rapportertPrÅr) {
         BigDecimal beregnet;
         if (finnesAndelMedSN(beregningsgrunnlag)) {
-            beregnet = hentBeregnetSelvstendigNæringsdrivende(beregningsgrunnlag);
+            beregnet = hentBeregnetPGI(beregningsgrunnlag, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
         } else {
             beregnet = hentBeregnetSamletArbeidstakerOgFrilanser(beregningsgrunnlag);
         }
@@ -243,7 +243,9 @@ public class BeregningsgrunnlagDtoTjeneste {
         } else if (SammenligningsgrunnlagType.SAMMENLIGNING_FL.equals(sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType())) {
             beregnet = hentBeregnetFrilanser(beregningsgrunnlag);
         } else if (SammenligningsgrunnlagType.SAMMENLIGNING_SN.equals(sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType())) {
-            beregnet = hentBeregnetSelvstendigNæringsdrivende(beregningsgrunnlag);
+            beregnet = hentBeregnetPGI(beregningsgrunnlag, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+        } else if (SammenligningsgrunnlagType.SAMMENLIGNING_MIDL_INAKTIV.equals(sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType())) {
+            beregnet = hentBeregnetPGI(beregningsgrunnlag, AktivitetStatus.BRUKERS_ANDEL);
         } else {
             return finnDifferanseBeregnetGammeltSammenliningsgrunnlag(beregningsgrunnlag, sammenligningsgrunnlagPrStatus.getRapportertPrÅr());
         }
@@ -266,9 +268,9 @@ public class BeregningsgrunnlagDtoTjeneste {
                 .reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
     }
 
-    private BigDecimal hentBeregnetSelvstendigNæringsdrivende(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag) {
+    private BigDecimal hentBeregnetPGI(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag, AktivitetStatus status) {
         return beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
-                .filter(b -> b.getAktivitetStatus().equals(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE))
+                .filter(b -> b.getAktivitetStatus().equals(status))
                 .map(BeregningsgrunnlagPrStatusOgAndelDto::getPgiSnitt)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal::add).orElse(BigDecimal.ZERO);

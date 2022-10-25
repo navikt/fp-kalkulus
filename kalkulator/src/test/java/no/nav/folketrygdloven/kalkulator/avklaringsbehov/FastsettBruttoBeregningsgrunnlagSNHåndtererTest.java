@@ -41,7 +41,7 @@ public class FastsettBruttoBeregningsgrunnlagSNHåndtererTest {
         var fastsettBGDto = new FastsettBruttoBeregningsgrunnlagSNDto(BRUTTO_BG);
 
         // Act
-        BeregningsgrunnlagGrunnlagDto grunnlag = FastsettBruttoBeregningsgrunnlagSNHåndterer.håndter(input, fastsettBGDto);
+        BeregningsgrunnlagGrunnlagDto grunnlag = FastsettBruttoBeregningsgrunnlagSNHåndterer.håndter(input, fastsettBGDto.getBruttoBeregningsgrunnlag());
 
         //Assert
         assertBeregningsgrunnlag(grunnlag, antallPerioder);
@@ -57,7 +57,7 @@ public class FastsettBruttoBeregningsgrunnlagSNHåndtererTest {
         var fastsettBGDto = new FastsettBruttoBeregningsgrunnlagSNDto(BRUTTO_BG);
 
         // Act
-        BeregningsgrunnlagGrunnlagDto grunnlag = FastsettBruttoBeregningsgrunnlagSNHåndterer.håndter(input, fastsettBGDto);
+        BeregningsgrunnlagGrunnlagDto grunnlag = FastsettBruttoBeregningsgrunnlagSNHåndterer.håndter(input, fastsettBGDto.getBruttoBeregningsgrunnlag());
 
         //Assert
         assertBeregningsgrunnlag(grunnlag, antallPerioder);

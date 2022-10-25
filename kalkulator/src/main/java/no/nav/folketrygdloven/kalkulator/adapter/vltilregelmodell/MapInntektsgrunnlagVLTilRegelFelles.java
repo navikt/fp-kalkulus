@@ -77,11 +77,16 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
                 .forFilter((inntekt, inntektsposter) -> mapInntekt(inntektsgrunnlag, inntekt, inntektsposter, yrkesaktiviteter));
     }
 
-    private void mapInntekt(Inntektsgrunnlag inntektsgrunnlag, InntektDto inntekt, Collection<InntektspostDto> inntektsposter,
+    private void mapInntekt(Inntektsgrunnlag inntektsgrunnlag,
+                            InntektDto inntekt,
+                            Collection<InntektspostDto> inntektsposter,
                             Collection<YrkesaktivitetDto> yrkesaktiviteter) {
         inntektsposter.forEach(inntektspost -> {
 
             Arbeidsforhold arbeidsgiver = mapYrkesaktivitet(inntekt.getArbeidsgiver(), yrkesaktiviteter);
+
+
+
             if (Objects.isNull(arbeidsgiver)) {
                 throw new IllegalStateException("Arbeidsgiver må være satt.");
             } else if (Objects.isNull(inntektspost.getPeriode().getFomDato())) {
@@ -100,9 +105,20 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
     }
 
     private Arbeidsforhold mapYrkesaktivitet(Arbeidsgiver arbeidsgiver, Collection<YrkesaktivitetDto> yrkesaktiviteter) {
-        return erFrilanser(arbeidsgiver, yrkesaktiviteter)
+        var arbeidsforhold = erFrilanser(arbeidsgiver, yrkesaktiviteter)
                 ? Arbeidsforhold.frilansArbeidsforhold()
                 : lagNyttArbeidsforholdHosArbeidsgiver(arbeidsgiver);
+
+        settAnsettelsesperiode(arbeidsgiver, yrkesaktiviteter, arbeidsforhold);
+
+        return arbeidsforhold;
+    }
+
+    private void settAnsettelsesperiode(Arbeidsgiver arbeidsgiver, Collection<YrkesaktivitetDto> yrkesaktiviteter, Arbeidsforhold arbeidsforhold) {
+        var minMaksAnsettelsesPeriode = FinnAnsettelsesPeriode.getMinMaksPeriode(yrkesaktiviteter.stream().filter(ya -> ya.getArbeidsgiver().equals(arbeidsgiver))
+                .flatMap(ya -> ya.getAlleAnsettelsesperioder().stream())
+                .collect(Collectors.toList()));
+        minMaksAnsettelsesPeriode.ifPresent(Arbeidsforhold.builder(arbeidsforhold)::medAnsettelsesPeriode);
     }
 
     private boolean erFrilanser(Arbeidsgiver arbeidsgiver, Collection<YrkesaktivitetDto> yrkesaktiviteter) {
@@ -134,14 +150,15 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
                                     LocalDate skjæringstidspunktBeregning) {
         inntektsmeldinger.stream()
                 .filter(im -> slutterPåEllerEtterSkjæringstidspunkt(im, filterYaRegister, skjæringstidspunktBeregning))
-                .map(this::mapNaturalYtelse)
+                .map(im -> mapInntektOgNaturalytelser(im, filterYaRegister.getYrkesaktiviteterForBeregning()))
                 .forEach(inntektsgrunnlag::leggTilPeriodeinntekt);
     }
 
-    private Periodeinntekt mapNaturalYtelse(InntektsmeldingDto im) {
+    private Periodeinntekt mapInntektOgNaturalytelser(InntektsmeldingDto im, Collection<YrkesaktivitetDto> yrkesaktiviteter) {
 
         try {
             Arbeidsforhold arbeidsforhold = MapArbeidsforholdFraVLTilRegel.mapForInntektsmelding(im);
+            settAnsettelsesperiode(im.getArbeidsgiver(), yrkesaktiviteter, arbeidsforhold);
             BigDecimal inntekt = im.getInntektBeløp().getVerdi();
             List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.NaturalYtelse> naturalytelser = im.getNaturalYtelser().stream()
                     .map(ny -> new no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.NaturalYtelse(ny.getBeloepPerMnd().getVerdi(),
@@ -324,6 +341,7 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
                 lagInntektSammenligningPrStatus(inntektsgrunnlag, filter, yrkesaktiviteter);
             }
             lagInntekterSN(inntektsgrunnlag, filter);
+
         }
 
         mapInntektsmelding(inntektsgrunnlag, inntektsmeldinger, filterYaRegister, skjæringstidspunktBeregning);

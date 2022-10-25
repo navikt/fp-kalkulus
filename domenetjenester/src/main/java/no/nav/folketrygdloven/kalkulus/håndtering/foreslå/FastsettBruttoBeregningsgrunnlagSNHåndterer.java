@@ -19,7 +19,7 @@ class FastsettBruttoBeregningsgrunnlagSNHåndterer implements BeregningHåndtere
 
     @Override
     public HåndteringResultat håndter(FastsettBruttoBeregningsgrunnlagSNHåndteringDto dto, HåndterBeregningsgrunnlagInput input) {
-        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = no.nav.folketrygdloven.kalkulator.avklaringsbehov.FastsettBruttoBeregningsgrunnlagSNHåndterer.håndter(input, OppdatererDtoMapper.mapFastsettBruttoBeregningsgrunnlagSNDto(dto.getFastsettBruttoBeregningsgrunnlagSNDto()));
+        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = no.nav.folketrygdloven.kalkulator.avklaringsbehov.FastsettBruttoBeregningsgrunnlagSNHåndterer.håndter(input, dto.getBruttoBeregningsgrunnlag());
         Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag = input.getForrigeGrunnlagFraHåndteringTilstand();
         BeregningsgrunnlagGrunnlagDto grunnlagFraSteg = input.getBeregningsgrunnlagGrunnlag();
         var endring = UtledEndring.utled(nyttGrunnlag, grunnlagFraSteg, forrigeGrunnlag, dto, input.getIayGrunnlag());

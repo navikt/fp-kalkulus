@@ -30,6 +30,8 @@ public enum SammenligningsgrunnlagType implements Kodeverdi {
     SAMMENLIGNING_AT_FL("SAMMENLIGNING_AT_FL", "Sammenligningsgrunnlag arbeidstaker og frilans samlet"),
     SAMMENLIGNING_SN("SAMMENLIGNING_SN", "Sammenligningsgrunnlag næring"),
     SAMMENLIGNING_ATFL_SN("SAMMENLIGNING_ATFL_SN", "Sammenligningsgrunnlag for Arbeidstaker, frilans og selvstendig næringsdrivende"),
+    SAMMENLIGNING_MIDL_INAKTIV("SAMMENLIGNING_MIDL_INAKTIV", "Sammenligningsgrunnlag for midlertidig inaktiv"),
+
     ;
 
     private static final Map<String, SammenligningsgrunnlagType> KODER = new LinkedHashMap<>();

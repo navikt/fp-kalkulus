@@ -21,6 +21,7 @@ import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBGTidsbeg
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBeregningsgrunnlagATFLHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBruttoBeregningsgrunnlagSNHåndteringDto;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.VurderVarigEndretArbeidssituasjonHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.VurderVarigEndringEllerNyoppstartetSNHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.overstyring.OverstyrBeregningsaktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.overstyring.OverstyrBeregningsgrunnlagHåndteringDto;
@@ -42,6 +43,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
         @JsonSubTypes.Type(value = FastsettBruttoBeregningsgrunnlagSNHåndteringDto.class, name = FastsettBruttoBeregningsgrunnlagSNHåndteringDto.IDENT_TYPE),
         @JsonSubTypes.Type(value = VurderRefusjonBeregningsgrunnlagDto.class, name = VurderRefusjonBeregningsgrunnlagDto.IDENT_TYPE),
         @JsonSubTypes.Type(value = VurderVarigEndringEllerNyoppstartetSNHåndteringDto.class, name = VurderVarigEndringEllerNyoppstartetSNHåndteringDto.IDENT_TYPE),
+        @JsonSubTypes.Type(value = VurderVarigEndretArbeidssituasjonHåndteringDto.class, name = VurderVarigEndretArbeidssituasjonHåndteringDto.IDENT_TYPE),
+
 })
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)

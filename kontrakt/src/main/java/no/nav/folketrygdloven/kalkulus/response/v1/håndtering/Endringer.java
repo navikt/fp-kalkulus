@@ -9,6 +9,7 @@ public class Endringer {
     private BeregningAktiviteterEndring beregningAktiviteterEndring;
     private FaktaOmBeregningVurderinger faktaOmBeregningVurderinger;
     private VarigEndretEllerNyoppstartetNæringEndring varigEndretEllerNyoppstartetNæringEndring;
+    private VarigEndretArbeidssituasjonEndring varigEndretArbeidssituasjonEndring;
     private RefusjonoverstyringEndring refusjonoverstyringEndring;
 
     private Endringer() {
@@ -36,6 +37,10 @@ public class Endringer {
 
     public VarigEndretEllerNyoppstartetNæringEndring getVarigEndretNæringEndring() {
         return varigEndretEllerNyoppstartetNæringEndring;
+    }
+
+    public VarigEndretArbeidssituasjonEndring getVarigEndretArbeidssituasjonEndring() {
+        return varigEndretArbeidssituasjonEndring;
     }
 
     public static Builder ny() {
@@ -67,6 +72,12 @@ public class Endringer {
 
         public Builder medVarigEndretNæringEndring(VarigEndretEllerNyoppstartetNæringEndring varigEndretEllerNyoppstartetNæringEndring) {
             this.kladd.varigEndretEllerNyoppstartetNæringEndring = varigEndretEllerNyoppstartetNæringEndring;
+            return this;
+        }
+
+
+        public Builder medVarigEndretArbeidssituasjonEndring(VarigEndretArbeidssituasjonEndring varigEndretArbeidssituasjonEndring) {
+            this.kladd.varigEndretArbeidssituasjonEndring = varigEndretArbeidssituasjonEndring;
             return this;
         }
 

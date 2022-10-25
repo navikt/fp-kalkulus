@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Min;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class FastsettBruttoBeregningsgrunnlagSNDto {
+public class FastsettBruttoBeregningsgrunnlagDto {
 
     @JsonProperty("bruttoBeregningsgrunnlag")
     @Valid
@@ -16,7 +16,7 @@ public class FastsettBruttoBeregningsgrunnlagSNDto {
     private Integer bruttoBeregningsgrunnlag;
 
     @JsonCreator
-    public FastsettBruttoBeregningsgrunnlagSNDto(@JsonProperty("bruttoBeregningsgrunnlag") Integer bruttoBeregningsgrunnlag) {
+    public FastsettBruttoBeregningsgrunnlagDto(@JsonProperty("bruttoBeregningsgrunnlag") Integer bruttoBeregningsgrunnlag) {
         this.bruttoBeregningsgrunnlag = bruttoBeregningsgrunnlag;
     }
 

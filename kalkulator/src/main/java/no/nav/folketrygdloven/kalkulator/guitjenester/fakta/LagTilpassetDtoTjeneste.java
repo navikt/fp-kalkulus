@@ -27,7 +27,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.Beregn
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.EgenNæringDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.PgiDto;
 
-class LagTilpassetDtoTjeneste  {
+class LagTilpassetDtoTjeneste {
 
     private static final BigDecimal MND_I_1_ÅR = BigDecimal.valueOf(12);
     private static final BigDecimal DAGPENGER_FAKTOR = BigDecimal.valueOf(62.4);
@@ -41,10 +41,10 @@ class LagTilpassetDtoTjeneste  {
                                                                     no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                                     InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
                                                                     Optional<FaktaAggregatDto> faktaAggregat) {
-        if (AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE.equals(andel.getAktivitetStatus())) {
+        if (AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE.equals(andel.getAktivitetStatus())  || AktivitetStatus.BRUKERS_ANDEL.equals(andel.getAktivitetStatus())) {
             return opprettSNDto(andel, inntektArbeidYtelseGrunnlag, ref.getSkjæringstidspunktBeregning());
         } else if (AktivitetStatus.ARBEIDSTAKER.equals(andel.getAktivitetStatus())
-            && andel.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseBortfaltPrÅr).isPresent()) {
+                && andel.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseBortfaltPrÅr).isPresent()) {
             return opprettATDto(andel);
         } else if (AktivitetStatus.FRILANSER.equals(andel.getAktivitetStatus())) {
             return opprettFLDto(faktaAggregat.flatMap(FaktaAggregatDto::getFaktaAktør));
@@ -62,8 +62,8 @@ class LagTilpassetDtoTjeneste  {
         BeregningsgrunnlagPrStatusOgAndelSNDto dtoSN = new BeregningsgrunnlagPrStatusOgAndelSNDto();
 
         List<OppgittEgenNæringDto> egneNæringer = inntektArbeidYtelseGrunnlag.getOppgittOpptjening()
-            .map(OppgittOpptjeningDto::getEgenNæring)
-            .orElse(Collections.emptyList());
+                .map(OppgittOpptjeningDto::getEgenNæring)
+                .orElse(Collections.emptyList());
 
         dtoSN.setPgiSnitt(andel.getPgiSnitt());
 

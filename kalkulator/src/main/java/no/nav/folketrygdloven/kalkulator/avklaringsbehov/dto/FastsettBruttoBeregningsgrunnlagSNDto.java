@@ -4,7 +4,7 @@ public class FastsettBruttoBeregningsgrunnlagSNDto {
 
     private Integer bruttoBeregningsgrunnlag;
 
-    public FastsettBruttoBeregningsgrunnlagSNDto(Integer bruttoBeregningsgrunnlag) {
+    public  FastsettBruttoBeregningsgrunnlagSNDto(Integer bruttoBeregningsgrunnlag) {
         this.bruttoBeregningsgrunnlag = bruttoBeregningsgrunnlag;
     }
 

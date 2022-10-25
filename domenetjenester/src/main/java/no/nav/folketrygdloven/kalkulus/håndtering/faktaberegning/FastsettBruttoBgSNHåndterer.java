@@ -9,15 +9,15 @@ import no.nav.folketrygdloven.kalkulus.håndtering.BeregningHåndterer;
 import no.nav.folketrygdloven.kalkulus.håndtering.DtoTilServiceAdapter;
 import no.nav.folketrygdloven.kalkulus.håndtering.HåndteringResultat;
 import no.nav.folketrygdloven.kalkulus.håndtering.mapping.OppdatererDtoMapper;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBruttoBeregningsgrunnlagSNDto;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBruttoBeregningsgrunnlagDto;
 
 @ApplicationScoped
-@DtoTilServiceAdapter(dto = FastsettBruttoBeregningsgrunnlagSNDto.class, adapter = BeregningHåndterer.class)
-public class FastsettBruttoBgSNHåndterer implements BeregningHåndterer<FastsettBruttoBeregningsgrunnlagSNDto> {
+@DtoTilServiceAdapter(dto = FastsettBruttoBeregningsgrunnlagDto.class, adapter = BeregningHåndterer.class)
+public class FastsettBruttoBgSNHåndterer implements BeregningHåndterer<FastsettBruttoBeregningsgrunnlagDto> {
 
     @Override
-    public HåndteringResultat håndter(FastsettBruttoBeregningsgrunnlagSNDto dto, HåndterBeregningsgrunnlagInput beregningsgrunnlagInput) {
-        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = FastsettBruttoBeregningsgrunnlagSNHåndterer.håndter(beregningsgrunnlagInput, OppdatererDtoMapper.mapFastsettBruttoBeregningsgrunnlagSNDto(dto));
+    public HåndteringResultat håndter(FastsettBruttoBeregningsgrunnlagDto dto, HåndterBeregningsgrunnlagInput beregningsgrunnlagInput) {
+        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = FastsettBruttoBeregningsgrunnlagSNHåndterer.håndter(beregningsgrunnlagInput, OppdatererDtoMapper.mapFastsettBruttoBeregningsgrunnlagSNDto(dto).getBruttoBeregningsgrunnlag());
         // TODO Lag endringresultat
         return new HåndteringResultat(nyttGrunnlag, null);
     }
