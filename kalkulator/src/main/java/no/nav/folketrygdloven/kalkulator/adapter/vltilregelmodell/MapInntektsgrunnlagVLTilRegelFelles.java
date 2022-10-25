@@ -86,7 +86,6 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
             Arbeidsforhold arbeidsgiver = mapYrkesaktivitet(inntekt.getArbeidsgiver(), yrkesaktiviteter);
 
 
-
             if (Objects.isNull(arbeidsgiver)) {
                 throw new IllegalStateException("Arbeidsgiver må være satt.");
             } else if (Objects.isNull(inntektspost.getPeriode().getFomDato())) {
@@ -115,7 +114,9 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
     }
 
     private void settAnsettelsesperiode(Arbeidsgiver arbeidsgiver, Collection<YrkesaktivitetDto> yrkesaktiviteter, Arbeidsforhold arbeidsforhold) {
-        var minMaksAnsettelsesPeriode = FinnAnsettelsesPeriode.getMinMaksPeriode(yrkesaktiviteter.stream().filter(ya -> ya.getArbeidsgiver().equals(arbeidsgiver))
+        var minMaksAnsettelsesPeriode = FinnAnsettelsesPeriode.getMinMaksPeriode(yrkesaktiviteter.stream()
+                .filter(ya -> ya.getArbeidsgiver() != null)
+                .filter(ya -> ya.getArbeidsgiver().equals(arbeidsgiver))
                 .flatMap(ya -> ya.getAlleAnsettelsesperioder().stream())
                 .collect(Collectors.toList()));
         minMaksAnsettelsesPeriode.ifPresent(Arbeidsforhold.builder(arbeidsforhold)::medAnsettelsesPeriode);

@@ -49,7 +49,7 @@ public class VurderVarigEndringEllerNyoppstartetSNHåndteringDto extends Håndte
     }
 
     @Override
-    public int getBruttoBeregningsgrunnlag() {
+    public Integer getBruttoBeregningsgrunnlag() {
         if (vurderVarigEndringEllerNyoppstartetDto != null) {
             return vurderVarigEndringEllerNyoppstartetDto.getBruttoBeregningsgrunnlag();
         }

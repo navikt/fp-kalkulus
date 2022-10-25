@@ -43,7 +43,7 @@ public class FastsettBruttoBeregningsgrunnlagSNHåndteringDto extends HåndterBe
     }
 
     @Override
-    public int getBruttoBeregningsgrunnlag() {
+    public Integer getBruttoBeregningsgrunnlag() {
         return fastsettBruttoBeregningsgrunnlagSNDto.getBruttoBeregningsgrunnlag();
     }
 }

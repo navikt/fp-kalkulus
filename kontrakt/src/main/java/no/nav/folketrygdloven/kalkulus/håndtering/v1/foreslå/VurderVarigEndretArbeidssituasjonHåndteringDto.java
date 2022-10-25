@@ -44,7 +44,7 @@ public class VurderVarigEndretArbeidssituasjonHåndteringDto extends HåndterBer
     }
 
     @Override
-    public int getBruttoBeregningsgrunnlag() {
+    public Integer getBruttoBeregningsgrunnlag() {
         return vurderVarigEndringEllerNyoppstartetDto.getBruttoBeregningsgrunnlag();
     }
 }
