@@ -124,3 +124,5 @@ spec:
       value: "true"
     - name: AVVIKSVURDER_MIDL_INAKTIV
       value: "true"
+    - name: SAMMENLIGNING_PR_STATUS_FRONTEND
+      value: "true"

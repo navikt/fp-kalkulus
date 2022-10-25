@@ -15,6 +15,7 @@ import jakarta.enterprise.inject.Any;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
+import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.BeregningsgrunnlagPrStatusOgAndelDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FinnÅrsinntektvisningstall;
@@ -217,7 +218,7 @@ public class BeregningsgrunnlagDtoTjeneste {
             BigDecimal avvikProsent = s.getAvvikPromilleNy() == null ? null : s.getAvvikPromilleNy().scaleByPowerOfTen(-1);
             dto.setAvvikProsent(avvikProsent);
             // Midltertidig hack siden dette er eneste type frontend støtter
-            dto.setSammenligningsgrunnlagType(s.getSammenligningsgrunnlagType());
+            dto.setSammenligningsgrunnlagType(KonfigurasjonVerdi.get("AVVIKSVURDER_MIDL_INAKTIV", false) || KonfigurasjonVerdi.get("SAMMENLIGNING_PR_STATUS_FRONTEND", false) ? s.getSammenligningsgrunnlagType() : SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN);
             dto.setDifferanseBeregnet(finnDifferanseBeregnet(beregningsgrunnlag, s));
             sammenligningsgrunnlagDtos.add(dto);
         });

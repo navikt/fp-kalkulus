@@ -212,6 +212,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
     @Test
     public void skalSetteSammenligningsgrunnlagDtoMedDifferanseNårFlereAndeler() {
         // Arrange
+        System.setProperty("SAMMENLIGNING_PR_STATUS_FRONTEND", "true");
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
         lagBehandlingMedBgOgOpprettFagsakRelasjonFlereAndeler(arbeidsgiver);
         // Act
