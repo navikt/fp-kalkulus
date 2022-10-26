@@ -4,13 +4,17 @@ import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.AktørYtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonFilter;
+import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonPerYrkesaktivitet;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -56,13 +60,24 @@ public class FinnArbeidsperiode {
         return arbeidsgiver != null && arbeidsgiver.getErVirksomhet() && OrgNummer.KUNSTIG_ORG.equals(arbeidsgiver.getIdentifikator());
     }
 
-    public static LocalDateTimeline<Boolean> finnAnsettelseTidslinje(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRefDto, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+    public static LocalDateTimeline<Boolean> finnAnsettelseTidslinje(Arbeidsgiver arbeidsgiver,
+                                                                     InternArbeidsforholdRefDto arbeidsforholdRefDto,
+                                                                     InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDate skjæringstidspunktBeregning) {
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister());
         Collection<YrkesaktivitetDto> yrkesaktiviteterForBeregning = filter.getYrkesaktiviteterForBeregning();
         var yrkesaktiviteter = yrkesaktiviteterForBeregning.stream().filter(ya -> ya.gjelderFor(arbeidsgiver, arbeidsforholdRefDto))
                 .toList();
-        return finnAnsettelseTidslinje(yrkesaktiviteter);
+        var ansattTidslinje = finnAnsettelseTidslinje(yrkesaktiviteter);
+        var permisjonTidslinje = finnPermisjonstidslinje(arbeidsgiver, arbeidsforholdRefDto, iayGrunnlag, skjæringstidspunktBeregning, yrkesaktiviteterForBeregning);
+        return ansattTidslinje.disjoint(permisjonTidslinje);
     }
+
+    private static LocalDateTimeline<Boolean> finnPermisjonstidslinje(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRefDto, InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDate skjæringstidspunktBeregning, Collection<YrkesaktivitetDto> yrkesaktiviteterForBeregning) {
+        var alleYtelser = iayGrunnlag.getAktørYtelseFraRegister().map(AktørYtelseDto::getAlleYtelser).orElse(Collections.emptyList());
+        var permisjonFilter = new PermisjonFilter(alleYtelser, yrkesaktiviteterForBeregning, skjæringstidspunktBeregning);
+        return permisjonFilter.tidslinjeForPermisjoner(arbeidsgiver, arbeidsforholdRefDto);
+    }
+
 
     public static LocalDateTimeline<Boolean> finnAnsettelseTidslinje(Collection<YrkesaktivitetDto> yrkesaktiviteter) {
         var ansattperioder = finnAnsattperioderForYrkesaktiviteter(yrkesaktiviteter);

@@ -69,7 +69,7 @@ public class MapTilFordelingsmodell {
         if (bgAndel.getBgAndelArbeidsforhold().isPresent()) {
             var ansattTidslinje = FinnArbeidsperiode.finnAnsettelseTidslinje(bgAndel.getBgAndelArbeidsforhold().get().getArbeidsgiver(),
                     bgAndel.getBgAndelArbeidsforhold().get().getArbeidsforholdRef(),
-                    input.getIayGrunnlag());
+                    input.getIayGrunnlag(), input.getSkjæringstidspunktForBeregning());
             var aktuellPeriode = new LocalDateTimeline<>(periode.getFomDato(), periode.getTomDato(), Boolean.TRUE);
             var erAnsattIPeriode = !ansattTidslinje.intersection(aktuellPeriode).isEmpty();
             if (!erAnsattIPeriode) {
