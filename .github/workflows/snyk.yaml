@@ -43,7 +43,7 @@ jobs:
               {
                 "id": "central",
                 "name": "Maven Central",
-                "url": "https://repo.maven.apache.org/maven2"
+                "url": "https://repo.maven.apache.org/maven2",
                 "releases": { "enabled": "true" },
                 "snapshots": { "enabled": "true" }
               },
