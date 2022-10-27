@@ -53,7 +53,7 @@ jobs:
                 "url": "https://maven.pkg.github.com/${{ github.repository }}"
               }
             ]
-          pluginRepositories: |
+          plugin_repositories: |
             [
               {
                 "id": "github",
