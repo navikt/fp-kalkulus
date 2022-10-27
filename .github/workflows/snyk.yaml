@@ -44,7 +44,17 @@ jobs:
                 "id": "central",
                 "name": "Maven Central",
                 "url": "https://repo.maven.apache.org/maven2"
+                "releases": { "enabled": "true" },
+                "snapshots": { "enabled": "true" }
               },
+              {
+                "id": "github",
+                "name": "github",
+                "url": "https://maven.pkg.github.com/${{ github.repository }}"
+              }
+            ]
+          pluginRepositories: |
+            [
               {
                 "id": "github",
                 "name": "github",
@@ -59,6 +69,7 @@ jobs:
                 "username": "${{ github.actor }}"
               }
             ]
+
           output_file: snyk-settings.xml
 
       - name: Set TAG for mvn revision
