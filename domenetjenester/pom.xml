@@ -76,8 +76,19 @@
             <groupId>org.jboss.weld.servlet</groupId>
             <artifactId>weld-servlet-core</artifactId>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jboss.spec.javax.annotation</groupId>
+                    <artifactId>
+                        jboss-annotations-api_1.3_spec
+                    </artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.jboss.spec.javax.el</groupId>
+                    <artifactId>jboss-el-api_3.0_spec</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-
         <!-- For Zipping i diagnostikk/dump  -->
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
