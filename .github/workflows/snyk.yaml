@@ -72,6 +72,12 @@ jobs:
 
           output_file: snyk-settings.xml
 
+      - name: Upload snyk-settings
+          uses: actions/upload-artifact@v1
+          with:
+            name: snyk-settings
+            path: /home/runner/work/${{ github.repository }}/${{ github.repository }}/snyk-settings.xml
+
       - name: Set TAG for mvn revision
         run: echo "TAG=snyk-$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
 
