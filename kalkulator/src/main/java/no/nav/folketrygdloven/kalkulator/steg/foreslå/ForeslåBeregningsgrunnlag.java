@@ -83,7 +83,7 @@ public class ForeslåBeregningsgrunnlag {
     }
 
     protected void verifiserBeregningsgrunnlag(BeregningsgrunnlagDto foreslåttBeregningsgrunnlag, ForeslåBeregningsgrunnlagInput input) {
-        BeregningsgrunnlagVerifiserer.verifiserForeslåttBeregningsgrunnlagDel1(foreslåttBeregningsgrunnlag);
+        BeregningsgrunnlagVerifiserer.verifiserForeslåttBeregningsgrunnlag(foreslåttBeregningsgrunnlag);
     }
 
     protected void splittPerioder(BeregningsgrunnlagInput input,

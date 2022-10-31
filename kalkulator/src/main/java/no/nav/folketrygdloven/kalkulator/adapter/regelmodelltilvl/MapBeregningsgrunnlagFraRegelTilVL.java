@@ -19,7 +19,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeid
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
@@ -46,7 +45,6 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
     }
 
     private BeregningsgrunnlagDto map(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatGrunnlag, BeregningsgrunnlagDto eksisterendeVLGrunnlag, Steg steg) {
-        mapSammenligningsgrunnlag(resultatGrunnlag.getSammenligningsGrunnlag(), eksisterendeVLGrunnlag);
         var builder = BeregningsgrunnlagDto.builder(eksisterendeVLGrunnlag);
         var sgPrStatus = resultatGrunnlag.getSammenligningsgrunnlagPrStatus().stream()
                 .map(this::mapSammenligningsgrunnlagPrStatus)
@@ -334,21 +332,6 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
             }
             andelBuilder.build(beregningsgrunnlagPeriode);
         });
-    }
-
-    private static void mapSammenligningsgrunnlag(final SammenligningsGrunnlag resultatSammenligningsGrunnlag, BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
-        if (resultatSammenligningsGrunnlag != null) {
-            SammenligningsgrunnlagDto.Builder builder = SammenligningsgrunnlagDto.builder()
-                    .medSammenligningsperiode(
-                            resultatSammenligningsGrunnlag.getSammenligningsperiode().getFom(),
-                            resultatSammenligningsGrunnlag.getSammenligningsperiode().getTom()
-                    )
-                    .medRapportertPrÅr(resultatSammenligningsGrunnlag.getRapportertPrÅr())
-                    .medAvvikPromilleNy(resultatSammenligningsGrunnlag.getAvvikPromilleUtenAvrunding())
-                    .medAvvikPromille(resultatSammenligningsGrunnlag.getAvvikPromille());
-            BeregningsgrunnlagDto.Builder.oppdater(Optional.of(eksisterendeVLGrunnlag))
-                    .medSammenligningsgrunnlag(builder);
-        }
     }
 
     private static List<PeriodeÅrsak> mapPeriodeÅrsaker(List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak> periodeÅrsaker) {

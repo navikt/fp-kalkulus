@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.mapTilEntitet;
 
-import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.*;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.KOFAKBER_UT;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER;
 import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilIAYMapper.mapArbeidsforholdRef;
 import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilIAYMapper.mapArbeidsgiver;
 
@@ -69,9 +70,6 @@ public class KalkulatorTilEntitetMapper {
         builder.medGrunnbeløp(new Beløp(beregningsgrunnlagFraKalkulus.getGrunnbeløp().getVerdi()));
         builder.medOverstyring(beregningsgrunnlagFraKalkulus.isOverstyrt());
         builder.medSkjæringstidspunkt(beregningsgrunnlagFraKalkulus.getSkjæringstidspunkt());
-        if (beregningsgrunnlagFraKalkulus.getSammenligningsgrunnlag() != null) {
-            builder.medSammenligningsgrunnlagOld(KalkulatorTilBGMapper.mapSammenligningsgrunnlag(beregningsgrunnlagFraKalkulus.getSammenligningsgrunnlag()));
-        }
 
         //lister
         beregningsgrunnlagFraKalkulus.getAktivitetStatuser().forEach(beregningsgrunnlagAktivitetStatus -> builder.leggTilAktivitetStatus(KalkulatorTilBGMapper.mapAktivitetStatus(beregningsgrunnlagAktivitetStatus)));

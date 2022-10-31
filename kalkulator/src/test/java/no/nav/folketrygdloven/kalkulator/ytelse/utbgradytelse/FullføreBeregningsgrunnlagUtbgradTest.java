@@ -36,7 +36,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto;
@@ -59,6 +59,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
+import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 import no.nav.folketrygdloven.utils.Tuple;
 import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
@@ -95,27 +96,36 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
     }
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlagAT() {
+        var sg = SammenligningsgrunnlagPrStatusDto.builder()
+                .medSammenligningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING)
+                .medRapportertPrÅr(BigDecimal.ZERO)
+                .medAvvikPromilleNy(BigDecimal.valueOf(0L))
+                .medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_AT_FL)
+                .build();
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_BEREGNING)
                 .medGrunnbeløp(BigDecimal.valueOf(GRUNNBELØP))
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER).medHjemmel(Hjemmel.F_14_7_8_30))
+                .leggTilSammenligningsgrunnlag(sg)
                 .build();
         BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, null)
-                .build(bg);
-        SammenligningsgrunnlagDto.builder()
-                .medSammenligningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING)
-                .medRapportertPrÅr(BigDecimal.ZERO)
-                .medAvvikPromilleNy(BigDecimal.valueOf(0L))
                 .build(bg);
         return bg;
     }
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlagATMedToPerioder() {
+        var sg = SammenligningsgrunnlagPrStatusDto.builder()
+                .medSammenligningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING)
+                .medRapportertPrÅr(BigDecimal.ZERO)
+                .medAvvikPromilleNy(BigDecimal.valueOf(0L))
+                .medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_AT_FL)
+                .build();
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_BEREGNING)
                 .medGrunnbeløp(BigDecimal.valueOf(GRUNNBELØP))
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER).medHjemmel(Hjemmel.F_14_7_8_30))
+                .leggTilSammenligningsgrunnlag(sg)
                 .build();
         BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(2))
@@ -123,11 +133,6 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(2).plusDays(1), null)
                 .leggTilPeriodeÅrsak(PeriodeÅrsak.ENDRING_I_AKTIVITETER_SØKT_FOR)
-                .build(bg);
-        SammenligningsgrunnlagDto.builder()
-                .medSammenligningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING)
-                .medRapportertPrÅr(BigDecimal.ZERO)
-                .medAvvikPromilleNy(BigDecimal.valueOf(0L))
                 .build(bg);
         return bg;
     }

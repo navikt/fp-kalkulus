@@ -14,7 +14,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeid
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.ytelse.fp.GraderingUtenBeregningsgrunnlagTjeneste;
@@ -72,30 +71,23 @@ public final class BeregningsgrunnlagVerifiserer {
         }
     }
 
+    private static void verifiserSammenligningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
+        beregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().forEach(sg-> {
+            Objects.requireNonNull(sg.getRapportertPrÅr(), "RapportertPrÅr");
+            Objects.requireNonNull(sg.getAvvikPromilleNy(), "AvvikPromille");
+            Objects.requireNonNull(sg.getSammenligningsgrunnlagType(), "sammenligningsgrunnlagType");
+            Objects.requireNonNull(sg.getSammenligningsperiodeFom(), "SammenligningsperiodeFom");
+            Objects.requireNonNull(sg.getSammenligningsperiodeTom(), "SammenligningsperiodeTom");
+        });
+    }
+
     public static void verifiserForeslåttBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
         verifiserOppdatertBeregningsgrunnlag(beregningsgrunnlag);
         beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p, verifiserForeslåttDel1Andel(p)));
-        beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p, verifiserForeslåttDel2Andel(p)));
         verifiserSammenligningsgrunnlag(beregningsgrunnlag);
     }
 
-    private static void verifiserSammenligningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
-        SammenligningsgrunnlagDto sg = beregningsgrunnlag.getSammenligningsgrunnlag();
-        if (sg != null) {
-            Objects.requireNonNull(sg.getRapportertPrÅr(), "RapportertPrÅr");
-            Objects.requireNonNull(sg.getAvvikPromilleNy(), "AvvikPromille");
-            Objects.requireNonNull(sg.getSammenligningsperiodeFom(), "SammenligningsperiodeFom");
-            Objects.requireNonNull(sg.getSammenligningsperiodeTom(), "SammenligningsperiodeTom");
-        }
-    }
-
-    public static void verifiserForeslåttBeregningsgrunnlagDel1(BeregningsgrunnlagDto beregningsgrunnlag) {
-        verifiserOppdatertBeregningsgrunnlag(beregningsgrunnlag);
-        beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p, verifiserForeslåttDel1Andel(p)));
-        verifiserSammenligningsgrunnlag(beregningsgrunnlag);
-    }
-
-    public static void verifiserForeslåttBeregningsgrunnlagDel2(BeregningsgrunnlagDto beregningsgrunnlag) {
+    public static void verifiserFortsettForeslåttBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
         verifiserOppdatertBeregningsgrunnlag(beregningsgrunnlag);
         beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p, verifiserForeslåttDel2Andel(p)));
         verifiserSammenligningsgrunnlag(beregningsgrunnlag);

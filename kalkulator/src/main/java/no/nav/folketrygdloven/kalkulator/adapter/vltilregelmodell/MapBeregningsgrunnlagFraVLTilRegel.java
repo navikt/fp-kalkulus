@@ -42,7 +42,6 @@ import no.nav.folketrygdloven.kalkulator.input.VurderBeregningsgrunnlagvilkårIn
 import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
@@ -64,6 +63,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
 @ApplicationScoped
 public class MapBeregningsgrunnlagFraVLTilRegel {
+    private static final String FREMSKYNDET_REGELENDRING = "fremskyndet.regelendring.toggle";
     private Instance<MapInntektsgrunnlagVLTilRegel> alleInntektMappere;
     private Instance<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper;
 
@@ -76,13 +76,6 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                                               @Any Instance<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper) {
         this.alleInntektMappere = inntektsmapper;
         this.ytelsesSpesifikkMapper = ytelsesSpesifikkMapper;
-    }
-
-    public List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode> mapTilFordelingsregel(KoblingReferanse referanse,
-                                                                                                                                BeregningsgrunnlagDto Beregningsgrunnlag, BeregningsgrunnlagInput input) {
-        Objects.requireNonNull(referanse, "BehandlingReferanse kan ikke være null!");
-        Objects.requireNonNull(Beregningsgrunnlag, "Beregningsgrunnlag kan ikke være null!");
-        return mapBeregningsgrunnlagPerioder(Beregningsgrunnlag, input);
     }
 
     public no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag map(BeregningsgrunnlagInput input,
@@ -124,8 +117,16 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medUregulertGrunnbeløp(mapUregulertGrunnbeløp(input, beregningsgrunnlag))
                 .medMidlertidigInaktivType(mapMidlertidigInaktivType(input))
                 .medGrunnbeløpSatser(grunnbeløpSatser(input))
+                .medFomDatoForIndividuellSammenligningATFL_SN(finnFomForIndividuellSammenligning(input))
                 .leggTilToggle("AVVIKSVURDER_MIDL_INAKTIV", KonfigurasjonVerdi.get("AVVIKSVURDER_MIDL_INAKTIV", false))
                 .build();
+    }
+
+    private LocalDate finnFomForIndividuellSammenligning(BeregningsgrunnlagInput input) {
+        var regelendringErFremskyndet = input.isEnabled(FREMSKYNDET_REGELENDRING, false);
+        return regelendringErFremskyndet
+                ? LocalDate.of(2022,11,1)
+                : LocalDate.of(2023,1,1);
     }
 
     private List<Grunnbeløp> grunnbeløpSatser(BeregningsgrunnlagInput input) {

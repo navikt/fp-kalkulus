@@ -12,7 +12,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeid
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
@@ -66,13 +65,14 @@ public final class BeregningsgrunnlagVerifisererFRISINN {
     public static void verifiserForeslåttBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
         verifiserOppdatertBeregningsgrunnlag(beregningsgrunnlag);
         beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p, lagVerifiserForeslåttAndelConsumer(p)));
-        SammenligningsgrunnlagDto sg = beregningsgrunnlag.getSammenligningsgrunnlag();
-        if (sg != null) {
+        beregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().forEach(sg -> {
             Objects.requireNonNull(sg.getRapportertPrÅr(), "RapportertPrÅr");
             Objects.requireNonNull(sg.getAvvikPromilleNy(), "AvvikPromille");
+            Objects.requireNonNull(sg.getSammenligningsgrunnlagType(), "sammenligningsgrunnlagType");
             Objects.requireNonNull(sg.getSammenligningsperiodeFom(), "SammenligningsperiodeFom");
             Objects.requireNonNull(sg.getSammenligningsperiodeTom(), "SammenligningsperiodeTom");
-        }
+        });
+
     }
 
     private static Consumer<BeregningsgrunnlagPrStatusOgAndelDto> lagVerifiserForeslåttAndelConsumer(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {

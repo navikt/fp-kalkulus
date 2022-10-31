@@ -13,7 +13,6 @@ import static no.nav.folketrygdloven.kalkulator.GrunnbeløpTestKonstanter.GSNITT
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatusMedHjemmel;
@@ -28,7 +27,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
@@ -70,21 +68,13 @@ public class RegelMapperTestDataHelper {
             .build(beregningsgrunnlag);
     }
 
-    public static void buildVLSammenligningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
-        SammenligningsgrunnlagDto.builder()
-            .medRapportertPrÅr(BigDecimal.valueOf(1098318.12))
-            .medSammenligningsperiode(MINUS_YEARS_1, NOW)
-            .medAvvikPromilleNy(BigDecimal.valueOf(220))
-            .build(beregningsgrunnlag);
-    }
-
-    public static void buildVLSammenligningsgrunnlagPrStatus(BeregningsgrunnlagDto beregningsgrunnlag, SammenligningsgrunnlagType sammenligningsgrunnlagType) {
-        BeregningsgrunnlagDto.Builder.oppdater(Optional.of(beregningsgrunnlag)).leggTilSammenligningsgrunnlag(SammenligningsgrunnlagPrStatusDto.builder()
+    public static SammenligningsgrunnlagPrStatusDto buildSammenligningsgrunnlagPrStatus(SammenligningsgrunnlagType sammenligningsgrunnlagType) {
+        return SammenligningsgrunnlagPrStatusDto.builder()
             .medSammenligningsperiode(MINUS_YEARS_1, NOW)
             .medRapportertPrÅr(BigDecimal.valueOf(1098318.12))
             .medAvvikPromilleNy(BigDecimal.valueOf(220L))
             .medSammenligningsgrunnlagType(sammenligningsgrunnlagType)
-            .build());
+            .build();
     }
 
     public static BeregningsgrunnlagPeriodeDto buildVLBGPeriode(BeregningsgrunnlagDto beregningsgrunnlag) {

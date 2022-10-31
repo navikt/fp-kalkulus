@@ -106,14 +106,6 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         // Act
         BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(koblingReferanse), grunnlag, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of()).build());
 
-        // Assert
-        SammenligningsgrunnlagDto sammenligningsgrunnlag = beregningsgrunnlagDto.getSammenligningsgrunnlag();
-        assertThat(sammenligningsgrunnlag).isNotNull();
-        assertThat(sammenligningsgrunnlag.getAvvikPromille()).isEqualTo(AVVIK_OVER_25_PROSENT);
-        assertThat(sammenligningsgrunnlag.getRapportertPrAar()).isEqualTo(RAPPORTERT_PR_AAR);
-        assertThat(sammenligningsgrunnlag.getSammenligningsgrunnlagFom()).isEqualTo(SAMMENLIGNING_FOM);
-        assertThat(sammenligningsgrunnlag.getSammenligningsgrunnlagTom()).isEqualTo(SAMMENLIGNING_TOM);
-
         SammenligningsgrunnlagDto sammenligningsgrunnlagPrStatus = beregningsgrunnlagDto.getSammenligningsgrunnlagPrStatus().get(0);
         assertThat(sammenligningsgrunnlagPrStatus).isNotNull();
         assertThat(sammenligningsgrunnlagPrStatus.getAvvikPromille()).isEqualTo(AVVIK_OVER_25_PROSENT);
@@ -284,26 +276,6 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         assertThat(beregningsgrunnlagPrStatusOgAndelDto.getSkalFastsetteGrunnlag()).isEqualTo(true);
     }
 
-    @Test
-    public void skalBenytteGammeltSammenligningsgrunnlagNårDetIkkeDetFinnesSammenligningsgrunnlagPrStatus() {
-        // Arrange
-        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
-        lagBehandlingMedBgOgOpprettFagsakRelasjon(arbeidsgiver);
-        grunnlag.getBeregningsgrunnlag().get().getSammenligningsgrunnlagPrStatusListe().clear();
-        // Act
-        BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(koblingReferanse), grunnlag, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of()).build());
-        // Assert
-        assertThat(beregningsgrunnlagDto.getSammenligningsgrunnlagPrStatus().size()).isOne();
-        SammenligningsgrunnlagDto sammenligningsgrunnlag = beregningsgrunnlagDto.getSammenligningsgrunnlagPrStatus().get(0);
-        assertThat(sammenligningsgrunnlag).isNotNull();
-        assertThat(sammenligningsgrunnlag.getAvvikPromille()).isEqualTo(AVVIK_OVER_25_PROSENT);
-        assertThat(sammenligningsgrunnlag.getRapportertPrAar()).isEqualTo(RAPPORTERT_PR_AAR);
-        assertThat(sammenligningsgrunnlag.getSammenligningsgrunnlagFom()).isEqualTo(SAMMENLIGNING_FOM);
-        assertThat(sammenligningsgrunnlag.getSammenligningsgrunnlagTom()).isEqualTo(SAMMENLIGNING_TOM);
-        assertThat(sammenligningsgrunnlag.getSammenligningsgrunnlagType()).isEqualTo(SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN);
-        assertThat(sammenligningsgrunnlag.getDifferanseBeregnet()).isEqualTo(BRUTTO_PR_AAR.subtract(RAPPORTERT_PR_AAR));
-    }
-
     private KoblingReferanse lagReferanseMedStp(KoblingReferanse koblingReferanse) {
         Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
                 .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
@@ -330,14 +302,9 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
     }
 
     private no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto lagBeregningsgrunnlag(Arbeidsgiver arbeidsgiver) {
-        no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto sammenligningsgrunnlagRestDto = no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto.builder()
-                .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM)
-                .medRapportertPrÅr(RAPPORTERT_PR_AAR)
-                .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT).build();
         var beregningsgrunnlag = no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
                 .medGrunnbeløp(GRUNNBELØP)
-                .medSammenligningsgrunnlag(sammenligningsgrunnlagRestDto)
                 .leggTilSammenligningsgrunnlag(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto.builder()
                         .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT)
                         .medRapportertPrÅr(RAPPORTERT_PR_AAR)
@@ -357,13 +324,8 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
     }
 
     private no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto lagBeregningsgrunnlagMedFlereAndeler(Arbeidsgiver arbeidsgiver) {
-        no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto sammenligningsgrunnlagDto = no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto.builder()
-                .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM)
-                .medRapportertPrÅr(RAPPORTERT_PR_AAR)
-                .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT).build();
         var beregningsgrunnlag = no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
-                .medSammenligningsgrunnlag(sammenligningsgrunnlagDto)
                 .medGrunnbeløp(GRUNNBELØP)
                 .leggTilSammenligningsgrunnlag(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto.builder()
                         .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT)

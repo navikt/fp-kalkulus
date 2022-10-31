@@ -26,7 +26,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
@@ -193,7 +192,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
     public void skalFastsetteGrunnlagForAtOgFlBasertPåSammenligningsgrunnlagNårAvvikStørreEnn25ProsentForAtAndelOgIngenSammenligningsgrunnlagPrStatus() {
         //Arange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
-        BeregningsgrunnlagDto Beregningsgrunnlag = lagBeregningsgrunnlagMedAvvikOver25ProsentMedKunSammenligningsgrunnlag();
+        BeregningsgrunnlagDto Beregningsgrunnlag = lagBeregningsgrunnlagMedAvvikOver25ProsentMedKunSammenligningsgrunnlag(SammenligningsgrunnlagType.SAMMENLIGNING_AT_FL);
         BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(Beregningsgrunnlag);
         byggAndelAt(bgPeriode, arbeidsgiver, 1L);
         byggAndelFl(bgPeriode, arbeidsgiver, 2L);
@@ -214,7 +213,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
     public void skalFastsetteGrunnlagForKunSnBasertPåSammenligningsgrunnlagNårAvvikStørreEnn25ProsentForAlleAndelerOgIngenSammenligningsgrunnlagPrStatus() {
         //Arange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
-        BeregningsgrunnlagDto Beregningsgrunnlag = lagBeregningsgrunnlagMedAvvikOver25ProsentMedKunSammenligningsgrunnlag();
+        BeregningsgrunnlagDto Beregningsgrunnlag = lagBeregningsgrunnlagMedAvvikOver25ProsentMedKunSammenligningsgrunnlag(SammenligningsgrunnlagType.SAMMENLIGNING_SN);
         BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(Beregningsgrunnlag);
         byggAndelAt(bgPeriode, arbeidsgiver, 1L);
         byggAndelFl(bgPeriode, arbeidsgiver, 2L);
@@ -267,15 +266,17 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
                 .build();
     }
 
-    private BeregningsgrunnlagDto lagBeregningsgrunnlagMedAvvikOver25ProsentMedKunSammenligningsgrunnlag() {
-        SammenligningsgrunnlagDto sammenligningsgrunnlagDto = SammenligningsgrunnlagDto.builder()
+    private BeregningsgrunnlagDto lagBeregningsgrunnlagMedAvvikOver25ProsentMedKunSammenligningsgrunnlag(SammenligningsgrunnlagType sammenligningsgrunnlagType) {
+        SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlagDto = SammenligningsgrunnlagPrStatusDto.builder()
                 .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM)
                 .medRapportertPrÅr(RAPPORTERT_PR_AAR)
-                .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT).build();
+                .medSammenligningsgrunnlagType(sammenligningsgrunnlagType)
+                .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT)
+                .build();
 
         return BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
-                .medSammenligningsgrunnlag(sammenligningsgrunnlagDto)
+                .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagDto)
                 .medGrunnbeløp(new Beløp(BigDecimal.valueOf(99_858)))
                 .build();
     }
@@ -289,14 +290,16 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
     }
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlagMedAvvikUnder25ProsentMedKunSammenligningsgrunnlag() {
-        SammenligningsgrunnlagDto sammenligningsgrunnlagDto = SammenligningsgrunnlagDto.builder()
+        SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlagDto = SammenligningsgrunnlagPrStatusDto.builder()
                 .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM)
                 .medRapportertPrÅr(RAPPORTERT_PR_AAR)
-                .medAvvikPromilleNy(AVVIK_UNDER_25_PROSENT).build();
+                .medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_AT_FL)
+                .medAvvikPromilleNy(AVVIK_UNDER_25_PROSENT)
+                .build();
 
         return BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
-                .medSammenligningsgrunnlag(sammenligningsgrunnlagDto)
+                .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagDto)
                 .medGrunnbeløp(new Beløp(BigDecimal.valueOf(99_858)))
                 .build();
     }

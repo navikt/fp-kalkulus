@@ -82,7 +82,7 @@ public class FortsettForeslåBeregningsgrunnlag {
     }
 
     private void verifiserBeregningsgrunnlag(BeregningsgrunnlagDto foreslåttBeregningsgrunnlag) {
-        BeregningsgrunnlagVerifiserer.verifiserForeslåttBeregningsgrunnlagDel2(foreslåttBeregningsgrunnlag);
+        BeregningsgrunnlagVerifiserer.verifiserFortsettForeslåttBeregningsgrunnlag(foreslåttBeregningsgrunnlag);
     }
 
     protected String toJson(Beregningsgrunnlag beregningsgrunnlagRegel) {

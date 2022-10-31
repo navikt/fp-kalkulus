@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.modell;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,7 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 
 public class SammenligningsgrunnlagTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
@@ -18,53 +18,43 @@ public class SammenligningsgrunnlagTest {
     private static final BigDecimal AVVIK_PROMILLE = BigDecimal.valueOf(240L);
     private final LocalDate PERIODE_FOM = LocalDate.now();
     private final LocalDate PERIODE_TOM = LocalDate.now().plusWeeks(6);
+    private static SammenligningsgrunnlagType SAMMENLIGNING_TYPE = SammenligningsgrunnlagType.SAMMENLIGNING_AT_FL;
 
-    private BeregningsgrunnlagDto beregningsgrunnlag;
-    private SammenligningsgrunnlagDto sammenligningsgrunnlag;
+    private SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlag;
 
     @BeforeEach
     public void setup() {
-        beregningsgrunnlag = lagBeregningsgrunnlag();
-        sammenligningsgrunnlag = lagSammenligningsgrunnlag();
+        sammenligningsgrunnlag = lagSammenligningsgrunnlagBuilder().build();
     }
 
     @Test
     public void skal_bygge_instans_med_påkrevde_felter() {
-        assertThat(sammenligningsgrunnlag.getBeregningsgrunnlag()).isEqualTo(beregningsgrunnlag);
         assertThat(sammenligningsgrunnlag.getSammenligningsperiodeFom()).isEqualTo(PERIODE_FOM);
         assertThat(sammenligningsgrunnlag.getSammenligningsperiodeTom()).isEqualTo(PERIODE_TOM);
         assertThat(sammenligningsgrunnlag.getRapportertPrÅr()).isEqualTo(RAPPORTERT_PR_ÅR);
+        assertThat(sammenligningsgrunnlag.getSammenligningsgrunnlagType()).isEqualTo(SAMMENLIGNING_TYPE);
     }
 
     @Test
     public void skal_ikke_bygge_instans_hvis_mangler_påkrevde_felter() {
-        SammenligningsgrunnlagDto.Builder sammenligningsgrunnlagBuilder = SammenligningsgrunnlagDto.builder();
+        SammenligningsgrunnlagPrStatusDto.Builder sammenligningsgrunnlagBuilder = SammenligningsgrunnlagPrStatusDto.builder();
         try {
-            sammenligningsgrunnlagBuilder.build(null);
+            sammenligningsgrunnlagBuilder.build();
         } catch (NullPointerException e) {
-            assertThat(e.getMessage()).contains("beregningsgrunnlag");
+            assertThat(e.getMessage()).contains("sammenligningsgrunnlagType");
         }
-
         try {
-            sammenligningsgrunnlagBuilder.build(beregningsgrunnlag);
+            sammenligningsgrunnlagBuilder.medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_AT_FL).build();
         } catch (NullPointerException e) {
             assertThat(e.getMessage()).contains("sammenligningsperiodePeriode");
         }
-
         try {
-            sammenligningsgrunnlagBuilder.medSammenligningsperiode(PERIODE_FOM, null);
+            sammenligningsgrunnlagBuilder.medSammenligningsperiode(PERIODE_FOM, null).build();
         } catch (IllegalArgumentException e) {
             assertThat(e.getMessage()).contains("Til og med dato må være satt");
         }
-
         try {
-            sammenligningsgrunnlagBuilder.medSammenligningsperiode(PERIODE_FOM, PERIODE_TOM);
-        } catch (IllegalArgumentException e) {
-            fail(e.getMessage());
-        }
-
-        try {
-            sammenligningsgrunnlagBuilder.build(beregningsgrunnlag);
+            sammenligningsgrunnlagBuilder.medSammenligningsperiode(PERIODE_FOM, PERIODE_TOM).build();
         } catch (NullPointerException e) {
             assertThat(e.getMessage()).contains("rapportertPrÅr");
         }
@@ -79,16 +69,16 @@ public class SammenligningsgrunnlagTest {
 
     @Test
     public void skal_ha_refleksiv_equalsOgHashCode() {
-        SammenligningsgrunnlagDto sammenligningsgrunnlag2 = lagSammenligningsgrunnlag();
+        SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlag2 = lagSammenligningsgrunnlagBuilder().build();
 
         assertThat(sammenligningsgrunnlag).isEqualTo(sammenligningsgrunnlag2);
         assertThat(sammenligningsgrunnlag2).isEqualTo(sammenligningsgrunnlag);
         assertThat(sammenligningsgrunnlag.hashCode()).isEqualTo(sammenligningsgrunnlag2.hashCode());
         assertThat(sammenligningsgrunnlag2.hashCode()).isEqualTo(sammenligningsgrunnlag.hashCode());
 
-        SammenligningsgrunnlagDto.Builder sammenligningsgrunnlagBuilder = lagSammenligningsgrunnlagBuilder();
+        SammenligningsgrunnlagPrStatusDto.Builder sammenligningsgrunnlagBuilder = lagSammenligningsgrunnlagBuilder();
         sammenligningsgrunnlagBuilder.medSammenligningsperiode(LocalDate.now().minusDays(1), PERIODE_TOM);
-        sammenligningsgrunnlag2 = sammenligningsgrunnlagBuilder.build(beregningsgrunnlag);
+        sammenligningsgrunnlag2 = sammenligningsgrunnlagBuilder.build();
         assertThat(sammenligningsgrunnlag).isNotEqualTo(sammenligningsgrunnlag2);
         assertThat(sammenligningsgrunnlag2).isNotEqualTo(sammenligningsgrunnlag);
         assertThat(sammenligningsgrunnlag.hashCode()).isNotEqualTo(sammenligningsgrunnlag2.hashCode());
@@ -96,30 +86,15 @@ public class SammenligningsgrunnlagTest {
     }
 
     @Test
-    public void skal_bruke_beregningsgrunnlag_i_equalsOgHashCode() {
-        SammenligningsgrunnlagDto.Builder builder = lagSammenligningsgrunnlagBuilder();
-        SammenligningsgrunnlagDto sammenligningsgrunnlag2 = builder.build(beregningsgrunnlag);
-
-        assertThat(sammenligningsgrunnlag).isEqualTo(sammenligningsgrunnlag2);
-        assertThat(sammenligningsgrunnlag.hashCode()).isEqualTo(sammenligningsgrunnlag2.hashCode());
-
-        BeregningsgrunnlagDto beregningsgrunnlag2 = lagBeregningsgrunnlagMedSkjæringstidspunkt(LocalDate.now().plusDays(4));
-        sammenligningsgrunnlag2 = builder.build(beregningsgrunnlag2);
-
-        assertThat(sammenligningsgrunnlag).isNotEqualTo(sammenligningsgrunnlag2);
-        assertThat(sammenligningsgrunnlag.hashCode()).isNotEqualTo(sammenligningsgrunnlag2.hashCode());
-    }
-
-    @Test
     public void skal_bruke_sammenligningsgrunnlagFom_i_equalsOgHashCode() {
-        SammenligningsgrunnlagDto sammenligningsgrunnlag2 = lagSammenligningsgrunnlag();
+        SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlag2 = lagSammenligningsgrunnlagBuilder().build();
 
         assertThat(sammenligningsgrunnlag).isEqualTo(sammenligningsgrunnlag2);
         assertThat(sammenligningsgrunnlag.hashCode()).isEqualTo(sammenligningsgrunnlag2.hashCode());
 
-        SammenligningsgrunnlagDto.Builder sammenligningsgrunnlagBuilder = lagSammenligningsgrunnlagBuilder();
+        SammenligningsgrunnlagPrStatusDto.Builder sammenligningsgrunnlagBuilder = lagSammenligningsgrunnlagBuilder();
         sammenligningsgrunnlagBuilder.medSammenligningsperiode(LocalDate.now().minusDays(1), PERIODE_TOM);
-        sammenligningsgrunnlag2 = sammenligningsgrunnlagBuilder.build(beregningsgrunnlag);
+        sammenligningsgrunnlag2 = sammenligningsgrunnlagBuilder.build();
 
         assertThat(sammenligningsgrunnlag).isNotEqualTo(sammenligningsgrunnlag2);
         assertThat(sammenligningsgrunnlag.hashCode()).isNotEqualTo(sammenligningsgrunnlag2.hashCode());
@@ -127,14 +102,14 @@ public class SammenligningsgrunnlagTest {
 
     @Test
     public void skal_bruke_sammenligningsgrunnlagTom_i_equalsOgHashCode() {
-        SammenligningsgrunnlagDto sammenligningsgrunnlag2 = lagSammenligningsgrunnlag();
+        SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlag2 = lagSammenligningsgrunnlagBuilder().build();
 
         assertThat(sammenligningsgrunnlag).isEqualTo(sammenligningsgrunnlag2);
         assertThat(sammenligningsgrunnlag.hashCode()).isEqualTo(sammenligningsgrunnlag2.hashCode());
 
-        SammenligningsgrunnlagDto.Builder sammenligningsgrunnlagBuilder = lagSammenligningsgrunnlagBuilder();
+        SammenligningsgrunnlagPrStatusDto.Builder sammenligningsgrunnlagBuilder = lagSammenligningsgrunnlagBuilder();
         sammenligningsgrunnlagBuilder.medSammenligningsperiode(PERIODE_FOM, LocalDate.now().plusWeeks(5));
-        sammenligningsgrunnlag2 = sammenligningsgrunnlagBuilder.build(beregningsgrunnlag);
+        sammenligningsgrunnlag2 = sammenligningsgrunnlagBuilder.build();
 
         assertThat(sammenligningsgrunnlag).isNotEqualTo(sammenligningsgrunnlag2);
         assertThat(sammenligningsgrunnlag.hashCode()).isNotEqualTo(sammenligningsgrunnlag2.hashCode());
@@ -142,25 +117,38 @@ public class SammenligningsgrunnlagTest {
 
     @Test
     public void skal_bruke_rapportertPrÅr_i_equalsOgHashCode() {
-        SammenligningsgrunnlagDto sammenligningsgrunnlag2 = lagSammenligningsgrunnlag();
+        SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlag2 = lagSammenligningsgrunnlagBuilder().build();
 
         assertThat(sammenligningsgrunnlag).isEqualTo(sammenligningsgrunnlag2);
         assertThat(sammenligningsgrunnlag.hashCode()).isEqualTo(sammenligningsgrunnlag2.hashCode());
 
-        SammenligningsgrunnlagDto.Builder sammenligningsgrunnlagBuilder = lagSammenligningsgrunnlagBuilder();
+        SammenligningsgrunnlagPrStatusDto.Builder sammenligningsgrunnlagBuilder = lagSammenligningsgrunnlagBuilder();
         sammenligningsgrunnlagBuilder.medRapportertPrÅr(RAPPORTERT_PR_ÅR.add(BigDecimal.valueOf(1)));
-        sammenligningsgrunnlag2 = sammenligningsgrunnlagBuilder.build(beregningsgrunnlag);
+        sammenligningsgrunnlag2 = sammenligningsgrunnlagBuilder.build();
 
         assertThat(sammenligningsgrunnlag).isNotEqualTo(sammenligningsgrunnlag2);
         assertThat(sammenligningsgrunnlag.hashCode()).isNotEqualTo(sammenligningsgrunnlag2.hashCode());
     }
 
-    private SammenligningsgrunnlagDto lagSammenligningsgrunnlag() {
-        return lagSammenligningsgrunnlagBuilder().build(beregningsgrunnlag);
+    @Test
+    public void skal_bruke_sammenligningtype_i_equalsOgHashCode() {
+        SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlag2 = lagSammenligningsgrunnlagBuilder().build();
+
+        assertThat(sammenligningsgrunnlag).isEqualTo(sammenligningsgrunnlag2);
+        assertThat(sammenligningsgrunnlag.hashCode()).isEqualTo(sammenligningsgrunnlag2.hashCode());
+
+        SammenligningsgrunnlagPrStatusDto.Builder sammenligningsgrunnlagBuilder = lagSammenligningsgrunnlagBuilder();
+        sammenligningsgrunnlagBuilder.medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_SN);
+        sammenligningsgrunnlag2 = sammenligningsgrunnlagBuilder.build();
+
+        assertThat(sammenligningsgrunnlag).isNotEqualTo(sammenligningsgrunnlag2);
+        assertThat(sammenligningsgrunnlag.hashCode()).isNotEqualTo(sammenligningsgrunnlag2.hashCode());
     }
 
-    private SammenligningsgrunnlagDto.Builder lagSammenligningsgrunnlagBuilder() {
-        return SammenligningsgrunnlagDto.builder()
+
+    private SammenligningsgrunnlagPrStatusDto.Builder lagSammenligningsgrunnlagBuilder() {
+        return SammenligningsgrunnlagPrStatusDto.builder()
+            .medSammenligningsgrunnlagType(SAMMENLIGNING_TYPE)
             .medSammenligningsperiode(PERIODE_FOM, PERIODE_TOM)
             .medRapportertPrÅr(RAPPORTERT_PR_ÅR)
             .medAvvikPromilleNy(AVVIK_PROMILLE);

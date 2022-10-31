@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.mapFraEntitet;
 
+import static no.nav.folketrygdloven.kalkulus.mapFraEntitet.BGMapperTilKalkulus.mapGammeltTilNyttSammenligningsgrunnlag;
 import static no.nav.folketrygdloven.kalkulus.mapFraEntitet.IAYMapperTilKalkulus.mapArbeidsforholdRef;
 import static no.nav.folketrygdloven.kalkulus.mapFraEntitet.IAYMapperTilKalkulus.mapArbeidsgiver;
 
@@ -96,9 +97,11 @@ public class BehandlingslagerTilKalkulusMapper {
 
         builder.medSkjæringstidspunkt(beregningsgrunnlagFraFagsystem.getSkjæringstidspunkt());
 
-        beregningsgrunnlagFraFagsystem.getSammenligningsgrunnlag()
-                .map(BGMapperTilKalkulus::mapSammenligningsgrunnlag)
-                .ifPresent(builder::medSammenligningsgrunnlag);
+        if (beregningsgrunnlagFraFagsystem.getSammenligningsgrunnlag().isPresent() && beregningsgrunnlagFraFagsystem.getSammenligningsgrunnlagPrStatusListe().isEmpty()) {
+            // Mapper gammmel sammenligningsgrunnlag til nytt dersom grunnlaget ikke har sammenligningsgrunnlag på nytt format
+            mapGammeltTilNyttSammenligningsgrunnlag(beregningsgrunnlagFraFagsystem)
+                    .forEach(builder::leggTilSammenligningsgrunnlag);
+        }
 
         //lister
         beregningsgrunnlagFraFagsystem.getAktivitetStatuser().forEach(beregningsgrunnlagAktivitetStatus -> builder.leggTilAktivitetStatus(BGMapperTilKalkulus.mapAktivitetStatus(beregningsgrunnlagAktivitetStatus)));

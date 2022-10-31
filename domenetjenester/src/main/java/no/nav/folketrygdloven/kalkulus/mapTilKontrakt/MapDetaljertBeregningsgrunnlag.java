@@ -177,6 +177,14 @@ public class MapDetaljertBeregningsgrunnlag {
     }
 
     public static Sammenligningsgrunnlag mapSammenligningsgrunnlag(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
+        // TODO Fjern denne
+        if (beregningsgrunnlagEntitet.getSammenligningsgrunnlag().isEmpty() && !beregningsgrunnlagEntitet.getSammenligningsgrunnlagPrStatusListe().isEmpty()) {
+            var sg = beregningsgrunnlagEntitet.getSammenligningsgrunnlagPrStatusListe().get(0);
+            return new Sammenligningsgrunnlag(
+                    new Periode(sg.getSammenligningsperiodeFom(), sg.getSammenligningsperiodeTom()),
+                    mapFraBeløp(sg.getRapportertPrÅr()),
+                    sg.getGjeldendeAvvik().getVerdi());
+        }
         return beregningsgrunnlagEntitet.getSammenligningsgrunnlag().map(sg ->
                 new Sammenligningsgrunnlag(
                         new Periode(sg.getSammenligningsperiodeFom(), sg.getSammenligningsperiodeTom()),

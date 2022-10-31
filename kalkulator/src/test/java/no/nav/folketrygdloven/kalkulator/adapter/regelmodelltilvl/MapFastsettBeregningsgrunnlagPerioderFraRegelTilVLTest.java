@@ -19,12 +19,13 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLTest {
@@ -89,8 +90,8 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLTest {
             .medOverstyring(true)
             .medGrunnbeløp(GRUNNBELØP)
             .leggTilFaktaOmBeregningTilfeller(FAKTA_OM_BEREGNING_TILFELLER)
+            .leggTilSammenligningsgrunnlag(lagSammenligningsgrunnlagPrStatus())
             .build();
-        lagSammenligningsgrunnlag(vlBeregningsgrunnlag);
         return vlBeregningsgrunnlag;
     }
 
@@ -122,10 +123,12 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLTest {
         BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER).build(vlBeregningsgrunnlag);
     }
 
-    private void lagSammenligningsgrunnlag(BeregningsgrunnlagDto vlBeregningsgrunnlag) {
-        SammenligningsgrunnlagDto.builder()
+    private SammenligningsgrunnlagPrStatusDto lagSammenligningsgrunnlagPrStatus() {
+        return SammenligningsgrunnlagPrStatusDto.builder()
             .medSammenligningsperiode(SKJÆRINGSTIDSPUNKT.minusMonths(3), SKJÆRINGSTIDSPUNKT)
             .medRapportertPrÅr(RAPPORTERT_PR_ÅR)
-            .medAvvikPromilleNy(AVVIK_PROMILLE).build(vlBeregningsgrunnlag);
+            .medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_AT_FL)
+            .medAvvikPromilleNy(AVVIK_PROMILLE)
+            .build();
     }
 }

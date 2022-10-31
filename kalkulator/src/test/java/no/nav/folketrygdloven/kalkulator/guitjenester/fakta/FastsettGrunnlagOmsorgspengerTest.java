@@ -11,8 +11,8 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.input.OmsorgspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
+import no.nav.folketrygdloven.kalkulator.input.OmsorgspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -23,7 +23,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
@@ -41,6 +41,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 public class FastsettGrunnlagOmsorgspengerTest {
@@ -258,27 +259,31 @@ public class FastsettGrunnlagOmsorgspengerTest {
     }
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlagMedAvvikOver25ProsentMedKunSammenligningsgrunnlag() {
-        SammenligningsgrunnlagDto sammenligningsgrunnlagDto = SammenligningsgrunnlagDto.builder()
+        SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlagDto = SammenligningsgrunnlagPrStatusDto.builder()
                 .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM)
                 .medRapportertPrÅr(RAPPORTERT_PR_AAR)
-                .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT).build();
+                .medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_AT_FL)
+                .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT)
+                .build();
 
         return BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
-                .medSammenligningsgrunnlag(sammenligningsgrunnlagDto)
+                .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagDto)
                 .medGrunnbeløp(new Beløp(BigDecimal.valueOf(99_858)))
                 .build();
     }
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlagMedAvvikUnder25ProsentMedKunSammenligningsgrunnlag() {
-        SammenligningsgrunnlagDto sammenligningsgrunnlagDto = SammenligningsgrunnlagDto.builder()
+        SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlagDto = SammenligningsgrunnlagPrStatusDto.builder()
                 .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM)
                 .medRapportertPrÅr(RAPPORTERT_PR_AAR)
-                .medAvvikPromilleNy(AVVIK_UNDER_25_PROSENT).build();
+                .medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_AT_FL)
+                .medAvvikPromilleNy(AVVIK_UNDER_25_PROSENT)
+                .build();
 
         return BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
-                .medSammenligningsgrunnlag(sammenligningsgrunnlagDto)
+                .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagDto)
                 .medGrunnbeløp(new Beløp(BigDecimal.valueOf(99_858)))
                 .build();
     }

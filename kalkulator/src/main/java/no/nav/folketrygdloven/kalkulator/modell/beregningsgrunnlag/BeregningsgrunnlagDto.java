@@ -22,7 +22,6 @@ public class BeregningsgrunnlagDto {
     private LocalDate skjæringstidspunkt;
     private List<BeregningsgrunnlagAktivitetStatusDto> aktivitetStatuser = new ArrayList<>();
     private List<BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPerioder = new ArrayList<>();
-    private SammenligningsgrunnlagDto sammenligningsgrunnlag;
     private List<SammenligningsgrunnlagPrStatusDto> sammenligningsgrunnlagPrStatusListe = new ArrayList<>();
     private Beløp grunnbeløp;
     private List<BeregningsgrunnlagFaktaOmBeregningTilfelleDto> faktaOmBeregningTilfeller = new ArrayList<>();
@@ -40,12 +39,6 @@ public class BeregningsgrunnlagDto {
             SammenligningsgrunnlagPrStatusDto build = builder.build();
             return build;
         }).collect(Collectors.toList());
-
-        if (kopiereFra.getSammenligningsgrunnlag() != null) {
-            SammenligningsgrunnlagDto sammenligningsgrunnlagDto = new SammenligningsgrunnlagDto(kopiereFra.getSammenligningsgrunnlag());
-            sammenligningsgrunnlagDto.setBeregningsgrunnlag(this);
-            this.sammenligningsgrunnlag = sammenligningsgrunnlagDto;
-        }
 
         this.beregningsgrunnlagPerioder = kopiereFra.getBeregningsgrunnlagPerioder().stream().map(p -> {
             BeregningsgrunnlagPeriodeDto.Builder builder = BeregningsgrunnlagPeriodeDto.Builder.kopier(p);
@@ -80,10 +73,6 @@ public class BeregningsgrunnlagDto {
                 .stream()
                 .sorted(Comparator.comparing(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPeriodeFom))
                 .collect(Collectors.toUnmodifiableList());
-    }
-
-    public SammenligningsgrunnlagDto getSammenligningsgrunnlag() {
-        return sammenligningsgrunnlag;
     }
 
     public Beløp getGrunnbeløp() {
@@ -257,12 +246,6 @@ public class BeregningsgrunnlagDto {
             this.kladd.faktaOmBeregningTilfeller.add(b);
         }
 
-        public Builder medSammenligningsgrunnlag(SammenligningsgrunnlagDto sammenligningsgrunnlag) {
-            verifiserKanModifisere();
-            kladd.sammenligningsgrunnlag = sammenligningsgrunnlag;
-            return this;
-        }
-
         public Builder leggTilSammenligningsgrunnlag(SammenligningsgrunnlagPrStatusDto sgPrStatus) {
             verifiserIngenLikeSammenligningsgrunnlag(sgPrStatus);
             kladd.sammenligningsgrunnlagPrStatusListe.add(sgPrStatus);
@@ -308,12 +291,6 @@ public class BeregningsgrunnlagDto {
 
         public void verifyStateForBuild() {
             Objects.requireNonNull(kladd.skjæringstidspunkt, "skjæringstidspunkt");
-        }
-
-        public Builder medSammenligningsgrunnlag(SammenligningsgrunnlagDto.Builder builder) {
-            SammenligningsgrunnlagDto sammenligningsgrunnlagDto = builder.build(kladd);
-            kladd.sammenligningsgrunnlag = sammenligningsgrunnlagDto;
-            return this;
         }
     }
 }

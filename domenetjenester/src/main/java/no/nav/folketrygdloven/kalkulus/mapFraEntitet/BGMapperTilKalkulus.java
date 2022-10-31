@@ -1,20 +1,20 @@
 package no.nav.folketrygdloven.kalkulus.mapFraEntitet;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Refusjon;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Sammenligningsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatus;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Promille;
@@ -28,14 +28,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 
 
 public class BGMapperTilKalkulus {
-    public static SammenligningsgrunnlagDto mapSammenligningsgrunnlag(Sammenligningsgrunnlag fraFagsystem) {
-        SammenligningsgrunnlagDto.Builder builder = SammenligningsgrunnlagDto.builder();
-        builder.medAvvikPromilleNy(mapFraPromille(fraFagsystem.getAvvikPromilleNy()));
-        builder.medRapportertPrÅr(mapFraBeløp(fraFagsystem.getRapportertPrÅr()));
-        builder.medSammenligningsperiode(fraFagsystem.getSammenligningsperiodeFom(), fraFagsystem.getSammenligningsperiodeTom());
-        return builder.build();
-    }
-
     public static BeregningsgrunnlagAktivitetStatusDto.Builder mapAktivitetStatus(BeregningsgrunnlagAktivitetStatus fraFagsystem) {
         BeregningsgrunnlagAktivitetStatusDto.Builder builder = new BeregningsgrunnlagAktivitetStatusDto.Builder();
         builder.medAktivitetStatus(AktivitetStatus.fraKode(fraFagsystem.getAktivitetStatus().getKode()));
@@ -121,6 +113,33 @@ public class BGMapperTilKalkulus {
         fraFagsystem.getNaturalytelseBortfaltPrÅr().map(Beløp::getVerdi).ifPresent(builder::medNaturalytelseBortfaltPrÅr);
         fraFagsystem.getNaturalytelseTilkommetPrÅr().map(Beløp::getVerdi).ifPresent(builder::medNaturalytelseTilkommetPrÅr);
         return builder;
+    }
+
+    public static List<SammenligningsgrunnlagPrStatusDto> mapGammeltTilNyttSammenligningsgrunnlag(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
+        if (beregningsgrunnlagEntitet.getSammenligningsgrunnlag().isEmpty()) {
+            return Collections.emptyList();
+        }
+        var gammeltSG = beregningsgrunnlagEntitet.getSammenligningsgrunnlag().get();
+        var sammenligningsgrunnlagType = finnSGType(beregningsgrunnlagEntitet);
+        return Collections.singletonList(SammenligningsgrunnlagPrStatusDto.builder()
+                .medSammenligningsgrunnlagType(sammenligningsgrunnlagType)
+                .medSammenligningsperiode(gammeltSG.getSammenligningsperiodeFom(), gammeltSG.getSammenligningsperiodeTom())
+                .medAvvikPromilleNy(mapFraPromille(gammeltSG.getAvvikPromilleNy()))
+                .medRapportertPrÅr(mapFraBeløp(gammeltSG.getRapportertPrÅr()))
+                .build());
+
+    }
+
+    private static SammenligningsgrunnlagType finnSGType(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
+        if (beregningsgrunnlagEntitet.getAktivitetStatuser().stream().anyMatch(st -> st.getAktivitetStatus().erSelvstendigNæringsdrivende())) {
+            return SammenligningsgrunnlagType.SAMMENLIGNING_SN;
+        } else if (beregningsgrunnlagEntitet.getAktivitetStatuser().stream().anyMatch(st -> st.getAktivitetStatus().erFrilanser()
+                || st.getAktivitetStatus().erArbeidstaker())) {
+            return SammenligningsgrunnlagType.SAMMENLIGNING_AT_FL;
+        } else if (beregningsgrunnlagEntitet.getAktivitetStatuser().stream().anyMatch(st -> st.getAktivitetStatus().equals(AktivitetStatus.MIDLERTIDIG_INAKTIV))) {
+            return SammenligningsgrunnlagType.SAMMENLIGNING_MIDL_INAKTIV;
+        }
+        throw new IllegalStateException("Klarte ikke utlede sammenligningstype for gammelt grunnlag. Aktivitetstatuser var " + beregningsgrunnlagEntitet.getAktivitetStatuser());
     }
 
     private static Refusjon mapRefusjon(no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Refusjon refusjon) {

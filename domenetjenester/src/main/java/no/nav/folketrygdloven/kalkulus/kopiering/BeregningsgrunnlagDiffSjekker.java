@@ -15,7 +15,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
@@ -74,31 +73,7 @@ public class BeregningsgrunnlagDiffSjekker {
         if (aktivt.getFaktaOmBeregningTilfeller().size() != forrige.getFaktaOmBeregningTilfeller().size() || !aktivt.getFaktaOmBeregningTilfeller().containsAll(forrige.getFaktaOmBeregningTilfeller())) {
             return true;
         }
-        if (harSammenligningsgrunnlagDiff(aktivt.getSammenligningsgrunnlag(), forrige.getSammenligningsgrunnlag())) {
-            return true;
-        }
-
         if (harSammenligningsgrunnlagPrStatusDiff(aktivt.getSammenligningsgrunnlagPrStatusListe(), forrige.getSammenligningsgrunnlagPrStatusListe())) {
-            return true;
-        }
-        return false;
-    }
-
-
-    private static boolean harSammenligningsgrunnlagDiff(SammenligningsgrunnlagDto aktivt, SammenligningsgrunnlagDto forrige) {
-        if (aktivt == null || forrige == null) {
-            return !Objects.equals(aktivt, forrige);
-        }
-        if (!erLike(aktivt.getAvvikPromilleNy(), forrige.getAvvikPromilleNy())) {
-            return true;
-        }
-        if (!erLike(aktivt.getRapportertPrÅr(), forrige.getRapportertPrÅr())) {
-            return true;
-        }
-        if (!Objects.equals(aktivt.getSammenligningsperiodeFom(), forrige.getSammenligningsperiodeFom())) {
-            return true;
-        }
-        if (!Objects.equals(aktivt.getSammenligningsperiodeTom(), forrige.getSammenligningsperiodeTom())) {
             return true;
         }
         return false;

@@ -40,6 +40,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.Sammen
 
 @ApplicationScoped
 public class BeregningsgrunnlagDtoTjeneste {
+    private static final String FREMSKYNDET_REGELENDRING = "fremskyndet.regelendring.toggle";
 
     private static final int SEKS = 6;
     private BeregningsgrunnlagPrStatusOgAndelDtoTjeneste beregningsgrunnlagPrStatusOgAndelDtoTjeneste;
@@ -72,7 +73,6 @@ public class BeregningsgrunnlagDtoTjeneste {
             mapSkjæringstidspunkt(input, dto);
             mapFaktaOmRefusjon(input, dto);
             mapFaktaOmFordeling(input, dto);
-            mapSammenligningsgrunnlag(input, dto);
             mapSammenlingingsgrunnlagPrStatus(input, dto);
             mapBeregningsgrunnlagAktivitetStatus(input, dto);
             mapBeregningsgrunnlagPerioder(input, dto);
@@ -131,15 +131,9 @@ public class BeregningsgrunnlagDtoTjeneste {
         faktaOmBeregningDtoTjeneste.lagDto(input).ifPresent(dto::setFaktaOmBeregning);
     }
 
-    private void mapSammenligningsgrunnlag(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
-        var beregningsgrunnlag = input.getBeregningsgrunnlag();
-        var sammenligningsgrunnlagDto = lagSammenligningsgrunnlagDto(beregningsgrunnlag);
-        sammenligningsgrunnlagDto.ifPresent(dto::setSammenligningsgrunnlag);
-    }
-
     private void mapSammenlingingsgrunnlagPrStatus(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
         var beregningsgrunnlag = input.getBeregningsgrunnlag();
-        List<SammenligningsgrunnlagDto> sammenligningsgrunnlagDto = lagSammenligningsgrunnlagDtoPrStatus(beregningsgrunnlag);
+        List<SammenligningsgrunnlagDto> sammenligningsgrunnlagDto = lagSammenligningsgrunnlagDtoPrStatus(beregningsgrunnlag, skalMappeNøyaktigSammenligningsgrunnlagType(input));
         if (dto.getSammenligningsgrunnlag() != null) {
             dto.getSammenligningsgrunnlag().setSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN);
             dto.getSammenligningsgrunnlag().setDifferanseBeregnet(finnDifferanseBeregnetGammeltSammenliningsgrunnlag(beregningsgrunnlag, dto.getSammenligningsgrunnlag().getRapportertPrAar()));
@@ -149,6 +143,13 @@ public class BeregningsgrunnlagDtoTjeneste {
         } else {
             dto.setSammenligningsgrunnlagPrStatus(sammenligningsgrunnlagDto);
         }
+    }
+
+    private boolean skalMappeNøyaktigSammenligningsgrunnlagType(BeregningsgrunnlagGUIInput input) {
+        return input.isEnabled(FREMSKYNDET_REGELENDRING, false) ||
+                KonfigurasjonVerdi.get("AVVIKSVURDER_MIDL_INAKTIV", false) ||
+                KonfigurasjonVerdi.get("SAMMENLIGNING_PR_STATUS_FRONTEND", false);
+
     }
 
     private void mapBeregningsgrunnlagAktivitetStatus(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
@@ -192,22 +193,8 @@ public class BeregningsgrunnlagDtoTjeneste {
         }
     }
 
-    private Optional<SammenligningsgrunnlagDto> lagSammenligningsgrunnlagDto(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag) {
-        if (beregningsgrunnlag.getSammenligningsgrunnlag() == null) {
-            return Optional.empty();
-        }
-        no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto sammenligningsgrunnlag = beregningsgrunnlag.getSammenligningsgrunnlag();
-        SammenligningsgrunnlagDto dto = new SammenligningsgrunnlagDto();
-        dto.setSammenligningsgrunnlagFom(sammenligningsgrunnlag.getSammenligningsperiodeFom());
-        dto.setSammenligningsgrunnlagTom(sammenligningsgrunnlag.getSammenligningsperiodeTom());
-        dto.setRapportertPrAar(sammenligningsgrunnlag.getRapportertPrÅr());
-        dto.setAvvikPromille(sammenligningsgrunnlag.getAvvikPromilleNy());
-        BigDecimal avvikProsent = sammenligningsgrunnlag.getAvvikPromilleNy() == null ? null : sammenligningsgrunnlag.getAvvikPromilleNy().scaleByPowerOfTen(-1);
-        dto.setAvvikProsent(avvikProsent);
-        return Optional.of(dto);
-    }
-
-    private List<SammenligningsgrunnlagDto> lagSammenligningsgrunnlagDtoPrStatus(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag) {
+    private List<SammenligningsgrunnlagDto> lagSammenligningsgrunnlagDtoPrStatus(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag,
+                                                                                 boolean skalMappeNøyaktigSammenligningstype) {
         List<SammenligningsgrunnlagDto> sammenligningsgrunnlagDtos = new ArrayList<>();
         beregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().forEach(s -> {
             SammenligningsgrunnlagDto dto = new SammenligningsgrunnlagDto();
@@ -218,7 +205,7 @@ public class BeregningsgrunnlagDtoTjeneste {
             BigDecimal avvikProsent = s.getAvvikPromilleNy() == null ? null : s.getAvvikPromilleNy().scaleByPowerOfTen(-1);
             dto.setAvvikProsent(avvikProsent);
             // Midltertidig hack siden dette er eneste type frontend støtter
-            dto.setSammenligningsgrunnlagType(KonfigurasjonVerdi.get("AVVIKSVURDER_MIDL_INAKTIV", false) || KonfigurasjonVerdi.get("SAMMENLIGNING_PR_STATUS_FRONTEND", false) ? s.getSammenligningsgrunnlagType() : SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN);
+            dto.setSammenligningsgrunnlagType(skalMappeNøyaktigSammenligningstype ? s.getSammenligningsgrunnlagType() : SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN);
             dto.setDifferanseBeregnet(finnDifferanseBeregnet(beregningsgrunnlag, s));
             sammenligningsgrunnlagDtos.add(dto);
         });

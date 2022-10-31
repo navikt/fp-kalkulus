@@ -66,9 +66,6 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
             .mapFastsettBeregningsgrunnlag(buildRegelBGForSN(), vlBG);
 
         assertThat(mappedBG).isNotSameAs(vlBG);
-        assertThat(mappedBG.getSammenligningsgrunnlag().getSammenligningsperiodeFom()).isEqualTo(MINUS_YEARS_1);
-        assertThat(mappedBG.getSammenligningsgrunnlag().getSammenligningsperiodeTom()).isEqualTo(MINUS_DAYS_20);
-        assertThat(mappedBG.getSammenligningsgrunnlag().getRapportertPrÅr().doubleValue()).isEqualTo(42.0);
         assertVLSammenligningsgrunnlagPrStatus(mappedBG.getSammenligningsgrunnlagPrStatusListe().get(0), SammenligningsgrunnlagType.SAMMENLIGNING_SN);
 
         final BeregningsgrunnlagPeriodeDto vlBGP = mappedBG.getBeregningsgrunnlagPerioder()
