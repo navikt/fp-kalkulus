@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrStatus;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.BeregningsgrunnlagPrArbeidsforhold;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.BeregningsgrunnlagPrStatus;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -15,12 +15,12 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 public class MapFastsattBeregningsgrunnlagFraRegelTilVL {
 
 
-    public BeregningsgrunnlagDto mapFastsettBeregningsgrunnlag(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatGrunnlag,
+    public BeregningsgrunnlagDto mapFastsettBeregningsgrunnlag(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.Beregningsgrunnlag resultatGrunnlag,
                                                                BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
         return map(resultatGrunnlag, eksisterendeVLGrunnlag);
     }
 
-    private BeregningsgrunnlagDto map(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatGrunnlag, BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
+    private BeregningsgrunnlagDto map(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.Beregningsgrunnlag resultatGrunnlag, BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
         BeregningsgrunnlagDto nyttBeregningsgrunnlag = BeregningsgrunnlagDto.builder(eksisterendeVLGrunnlag).build();
         Objects.requireNonNull(resultatGrunnlag, "resultatGrunnlag");
         mapPerioder(nyttBeregningsgrunnlag, resultatGrunnlag.getBeregningsgrunnlagPerioder());
@@ -28,7 +28,7 @@ public class MapFastsattBeregningsgrunnlagFraRegelTilVL {
     }
 
     private void mapPerioder(BeregningsgrunnlagDto eksisterendeVLGrunnlag,
-                             List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode> beregningsgrunnlagPerioder) {
+                             List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.BeregningsgrunnlagPeriode> beregningsgrunnlagPerioder) {
 
         int vlBGnummer = 0;
         for (var resultatBGPeriode : beregningsgrunnlagPerioder) {
@@ -57,7 +57,8 @@ public class MapFastsattBeregningsgrunnlagFraRegelTilVL {
         }
     }
 
-    private void mapEksisterendeAndelForArbeidsforhold(BeregningsgrunnlagPeriodeDto mappetPeriode, BeregningsgrunnlagPrArbeidsforhold regelAndelForArbeidsforhold) {
+    private void mapEksisterendeAndelForArbeidsforhold(BeregningsgrunnlagPeriodeDto mappetPeriode,
+                                                       BeregningsgrunnlagPrArbeidsforhold regelAndelForArbeidsforhold) {
         Optional<BeregningsgrunnlagPrStatusOgAndelDto> andelOpt = mappetPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(bgpsa -> regelAndelForArbeidsforhold.getAndelNr().equals(bgpsa.getAndelsnr()))
                 .findFirst();

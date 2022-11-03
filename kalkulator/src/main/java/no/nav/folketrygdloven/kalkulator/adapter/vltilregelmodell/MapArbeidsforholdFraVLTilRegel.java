@@ -16,7 +16,7 @@ public class MapArbeidsforholdFraVLTilRegel {
         // skjul public constructor
     }
 
-    static Arbeidsforhold arbeidsforholdFor(BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus) {
+    public static Arbeidsforhold arbeidsforholdFor(BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus) {
         if (erFrilanser(vlBGPStatus.getAktivitetStatus())) {
             return Arbeidsforhold.frilansArbeidsforhold();
         }
