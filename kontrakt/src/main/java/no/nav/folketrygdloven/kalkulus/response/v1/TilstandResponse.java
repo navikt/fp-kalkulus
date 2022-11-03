@@ -78,7 +78,7 @@ public class TilstandResponse implements KalkulusRespons {
     }
 
     @AssertTrue(message = "Krever vilkårsavslagsårsak når vilkåret ikke er oppfylt")
-    boolean sjekkOmHarAvslagsårsak() {
+    public boolean isSjekkOmHarAvslagsårsak() {
         if (vilkarOppfylt != null && !vilkarOppfylt) {
             return vilkårsavslagsårsak != null;
         }

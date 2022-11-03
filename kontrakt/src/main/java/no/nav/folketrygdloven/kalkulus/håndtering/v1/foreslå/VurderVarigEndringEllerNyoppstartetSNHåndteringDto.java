@@ -57,7 +57,7 @@ public class VurderVarigEndringEllerNyoppstartetSNHåndteringDto extends Håndte
     }
 
     @AssertTrue
-    public boolean skalHaVurderVarigEndringEllerNyoppstartetSatt() {
+    public boolean isSkalHaVurderVarigEndringEllerNyoppstartetSatt() {
         return vurderVarigEndringEllerNyoppstartetSNDto != null || vurderVarigEndringEllerNyoppstartetDto != null;
     }
 

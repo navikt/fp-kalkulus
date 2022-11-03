@@ -84,7 +84,7 @@ public class MigrerAksjonspunktRequest {
     }
 
     @AssertTrue(message = "Sjekk begrunnelse er satt om utført")
-    public boolean sjekkHarBegrunnelseOmUtført() {
+    public boolean isSjekkHarBegrunnelseOmUtført() {
         return !AvklaringsbehovStatus.UTFØRT.equals(AvklaringsbehovStatus.fraKode(avklaringsbehovStatus)) || begrunnelse != null;
     }
 

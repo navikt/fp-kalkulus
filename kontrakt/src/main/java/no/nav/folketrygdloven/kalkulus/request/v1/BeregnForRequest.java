@@ -69,7 +69,7 @@ public class BeregnForRequest {
     }
 
     @AssertTrue(message = "Kan ikke ha originalreferanse lik referanse som beregnes")
-    public boolean skalVereUnikeReferanser() {
+    public boolean isSkalVereUnikeReferanser() {
         if (originalEksternReferanser != null) {
             return originalEksternReferanser.stream().noneMatch(r -> r.equals(eksternReferanse));
         }

@@ -45,8 +45,8 @@ public class TilstandListeResponse {
     }
 
     @AssertTrue(message = "Sjekk tilstandresponer")
-    boolean sjekkOmHarAvslagsårsak() {
-        return tilstand.stream().allMatch(t -> t.sjekkOmHarAvslagsårsak());
+    public boolean isSjekkOmHarAvslagsårsak() {
+        return tilstand.stream().allMatch(TilstandResponse::isSjekkOmHarAvslagsårsak);
     }
 
     public List<TilstandResponse> getTilstand() {

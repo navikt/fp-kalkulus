@@ -46,7 +46,7 @@ public class KopierBeregningRequest {
     }
 
     @AssertTrue(message = "Kan ikke ha kopierFraReferanse lik eksternReferanse")
-    public boolean skalVereUlikeReferanser() {
+    public boolean isSkalVereUlikeReferanser() {
         return !kopierFraReferanse.equals(eksternReferanse);
     }
 

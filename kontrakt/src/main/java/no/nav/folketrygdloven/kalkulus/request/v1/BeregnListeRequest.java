@@ -111,7 +111,7 @@ public class BeregnListeRequest implements KalkulusRequest {
     }
 
     @AssertTrue
-    public boolean skalHaInputForFørsteSteg() {
+    public boolean isSkalHaInputForFørsteSteg() {
         return stegType != StegType.FASTSETT_STP_BER || beregnForListe.stream().noneMatch(r -> r.getKalkulatorInput() == null);
     }
 
