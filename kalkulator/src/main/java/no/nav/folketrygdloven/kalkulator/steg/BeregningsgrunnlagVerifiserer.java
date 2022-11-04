@@ -32,7 +32,8 @@ public final class BeregningsgrunnlagVerifiserer {
         verifiserIkkeTomListe(beregningsgrunnlag.getBeregningsgrunnlagPerioder(), "BeregningsgrunnlagPerioder");
         verifiserIkkeTomListe(beregningsgrunnlag.getAktivitetStatuser(), "Aktivitetstatuser");
         verfiserBeregningsgrunnlagPerioder(beregningsgrunnlag);
-        beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p, BeregningsgrunnlagVerifiserer::verifiserOpprettetAndel));
+        beregningsgrunnlag.getBeregningsgrunnlagPerioder()
+                .forEach(p -> verfiserBeregningsgrunnlagAndeler(p, BeregningsgrunnlagVerifiserer::verifiserOpprettetAndel));
     }
 
     private static void verfiserBeregningsgrunnlagPerioder(BeregningsgrunnlagDto beregningsgrunnlag) {
@@ -72,7 +73,7 @@ public final class BeregningsgrunnlagVerifiserer {
     }
 
     private static void verifiserSammenligningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
-        beregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().forEach(sg-> {
+        beregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().forEach(sg -> {
             Objects.requireNonNull(sg.getRapportertPrÅr(), "RapportertPrÅr");
             Objects.requireNonNull(sg.getAvvikPromilleNy(), "AvvikPromille");
             Objects.requireNonNull(sg.getSammenligningsgrunnlagType(), "sammenligningsgrunnlagType");
@@ -128,7 +129,8 @@ public final class BeregningsgrunnlagVerifiserer {
     private static Consumer<BeregningsgrunnlagPrStatusOgAndelDto> verifiserForeslåttDel1Andel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
         return (BeregningsgrunnlagPrStatusOgAndelDto andel) -> {
             if (andel.getAktivitetStatus().equals(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
-                    || andel.getAktivitetStatus().equals(AktivitetStatus.MILITÆR_ELLER_SIVIL)) {
+                    || andel.getAktivitetStatus().equals(AktivitetStatus.MILITÆR_ELLER_SIVIL)
+                    || andel.getAktivitetStatus().equals(AktivitetStatus.BRUKERS_ANDEL)) {
                 return;
             }
             Objects.requireNonNull(andel.getGjeldendeInntektskategori(), "Inntektskategori");
@@ -151,13 +153,25 @@ public final class BeregningsgrunnlagVerifiserer {
             Objects.requireNonNull(andel.getGjeldendeInntektskategori(), "Inntektskategori");
             if (andel.getAktivitetStatus().equals(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)) {
                 if (!periodeOppståttGrunnetGradering(beregningsgrunnlagPeriode.getPeriodeÅrsaker())) {
-                    Objects.requireNonNull(andel.getPgiSnitt(), "PgiSnitt");
-                    Objects.requireNonNull(andel.getPgi1(), "PgiÅr1");
-                    Objects.requireNonNull(andel.getPgi2(), "PgiÅr2");
-                    Objects.requireNonNull(andel.getPgi3(), "PgiÅr3");
+                    verifiserPGI(andel);
                 }
             }
+
+            if (andel.getAktivitetStatus().equals(AktivitetStatus.BRUKERS_ANDEL)) {
+                LocalDate bgPeriodeFom = beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom();
+                String andelBeskrivelse = lagAndelBeskrivelse(andel);
+                String feilBeskrivelse = "andel " + andelBeskrivelse + " i perioden fom " + bgPeriodeFom;
+                Objects.requireNonNull(andel.getBruttoPrÅr(), "BruttoPrÅr er null for " + feilBeskrivelse);
+                Objects.requireNonNull(andel.getBeregnetPrÅr(), "beregnetPrÅr er null for " + feilBeskrivelse);
+            }
         };
+    }
+
+    private static void verifiserPGI(BeregningsgrunnlagPrStatusOgAndelDto andel) {
+        Objects.requireNonNull(andel.getPgiSnitt(), "PgiSnitt");
+        Objects.requireNonNull(andel.getPgi1(), "PgiÅr1");
+        Objects.requireNonNull(andel.getPgi2(), "PgiÅr2");
+        Objects.requireNonNull(andel.getPgi3(), "PgiÅr3");
     }
 
     private static String lagAndelBeskrivelse(BeregningsgrunnlagPrStatusOgAndelDto andel) {
