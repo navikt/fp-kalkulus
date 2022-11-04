@@ -127,4 +127,4 @@ spec:
     - name: SAMMENLIGNING_PR_STATUS_FRONTEND
       value: "true"
     - name: FREMSKYNDET_REGELENDRING
-      value: "false"
+      value: "true"
