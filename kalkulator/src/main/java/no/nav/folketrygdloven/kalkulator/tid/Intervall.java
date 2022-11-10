@@ -8,6 +8,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
+import no.nav.fpsak.tidsserie.LocalDateSegment;
+
 public class Intervall implements Comparable<Intervall>, Serializable {
 
     static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -35,6 +37,11 @@ public class Intervall implements Comparable<Intervall>, Serializable {
     public static Intervall fraOgMed(LocalDate fomDato) {
         return new Intervall(fomDato, TIDENES_ENDE);
     }
+
+    public static <V> Intervall fraSegment(LocalDateSegment<V> segment) {
+        return new Intervall(segment.getFom(), segment.getTom());
+    }
+
 
     public LocalDate getFomDato() {
         return fomDato;

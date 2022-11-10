@@ -90,6 +90,15 @@ public class ForlengelseperioderEntitet extends BaseEntitet implements IndexKey 
     }
 
     @Override
+    public String toString() {
+        return "ForlengelseperioderEntitet{" +
+                "koblingId=" + koblingId +
+                ", aktiv=" + aktiv +
+                ", forlengelseperioder=" + forlengelseperioder +
+                '}';
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(koblingId, aktiv, forlengelseperioder);
     }

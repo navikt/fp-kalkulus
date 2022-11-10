@@ -244,7 +244,7 @@ public class BeregningStegTjeneste {
      */
     public TilstandResponse fastsettBeregningsgrunnlag(StegProsesseringInput input) {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.fastsettBeregningsgrunnlag(input);
-        repository.lagre(input.getKoblingId(), mapGrunnlag(beregningResultatAggregat.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
+        lagreOgKopier(input, beregningResultatAggregat);
         lagreRegelsporing(input.getKoblingId(), beregningResultatAggregat.getRegelSporingAggregat(), input.getStegTilstand());
         regelsporingRepository.slettAlleInaktiveRegelsporinger(input.getKoblingId());
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
@@ -252,16 +252,17 @@ public class BeregningStegTjeneste {
 
     private void lagreOgKopier(StegProsesseringInput input,
                                BeregningResultatAggregat resultat) {
-        // Validering ved forlengelse
-        forlengelseTjeneste.validerIngenEndringUtenforForlengelse(input, resultat.getBeregningsgrunnlag(), input.getForrigeGrunnlagFraSteg().flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag));
+        // Validering ved forlengelse og kopier bg utenfor forlengelseperioder
+        var forlengetGrunnlag = forlengelseTjeneste.forlengEksisterendeBeregningsgrunnlag(input.getForlengelseperioder(), resultat.getBeregningsgrunnlagGrunnlag(), input.getForrigeGrunnlagFraSteg());
+
         // Lagring av grunnlag fra steg
-        repository.lagre(input.getKoblingId(), mapGrunnlag(resultat.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
+        repository.lagre(input.getKoblingId(), mapGrunnlag(forlengetGrunnlag), input.getStegTilstand());
         lagreRegelsporing(input.getKoblingReferanse().getKoblingId(), resultat.getRegelSporingAggregat(), input.getStegTilstand());
         // Kopiering av data og spoling fram til neste tilstand
         SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(resultat.getBeregningAvklaringsbehovResultater(),
-                        resultat.getBeregningsgrunnlagGrunnlag(),
+                        forlengetGrunnlag,
                         input.getForrigeGrunnlagFraSteg(),
-                        input.getForrigeGrunnlagFraStegUt()).map(builder -> builder.build(input.getStegUtTilstand()))
+                        input.getForrigeGrunnlagFraStegUt())
                 .map(KalkulatorTilEntitetMapper::mapGrunnlag)
                 .ifPresent(gr -> repository.lagre(input.getKoblingId(), gr, input.getStegUtTilstand()));
     }

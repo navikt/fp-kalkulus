@@ -79,8 +79,6 @@ spec:
     # Feature-flag
     - name: PSB_TILKOMMET_INNTEKT
       value: "false"
-    - name: SKAL_VURDERE_FORLENGELSE
-      value: "true"
     - name: BEREGNE_DAGPENGER_FRA_SYKEPENGER
       value: "true"
     - name: AUTOMATISK_BEREGNE_LONNSENDRING
@@ -115,3 +113,5 @@ spec:
       value: "true"
     - name: FREMSKYNDET_REGELENDRING
       value: "false"
+    - name: KOPIERING_VED_FORLENGELSE
+      value: "true"

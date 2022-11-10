@@ -17,7 +17,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
-import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.MapRefusjonPerioderFraVLTilRegelUtbgrad;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
@@ -26,16 +25,17 @@ import no.nav.fpsak.tidsserie.StandardCombinators;
 
 public abstract class MapRefusjonPerioderFraVLTilRegelK9 extends MapRefusjonPerioderFraVLTilRegelUtbgrad {
 
+
     public MapRefusjonPerioderFraVLTilRegelK9(ArbeidsgiverRefusjonskravTjeneste arbeidsgiverRefusjonskravTjeneste) {
         super(arbeidsgiverRefusjonskravTjeneste);
     }
 
-    /** Finner gyldige perioder for refusjon basert på perioder med utbetalingsgrad og ansettelse
+    /**
+     * Finner gyldige perioder for refusjon basert på perioder med utbetalingsgrad og ansettelse
      *
-     *
-     * @param startdatoEtterPermisjon Startdato for permisjonen for ytelse søkt for
-     * @param ytelsespesifiktGrunnlag Ytelsesspesifikt grunnlag
-     * @param im inntektsmelding for refusjonskrav
+     * @param startdatoEtterPermisjon   Startdato for permisjonen for ytelse søkt for
+     * @param ytelsespesifiktGrunnlag   Ytelsesspesifikt grunnlag
+     * @param im                        inntektsmelding for refusjonskrav
      * @param relaterteYrkesaktiviteter Relaterte yrkesaktiviteter
      * @return Gyldige perioder for refusjon
      */

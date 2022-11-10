@@ -34,7 +34,7 @@ public final class SpolFramoverTjeneste {
      * @param forrigeGrunnlagFraStegUt forrige grunnlag fra steg ut
      * @return Builder for grunnlag som det skal spoles fram til
      */
-    public static Optional<BeregningsgrunnlagGrunnlagDtoBuilder> finnGrunnlagDetSkalSpolesTil(Collection<BeregningAvklaringsbehovResultat> avklaringsbehov,
+    public static Optional<BeregningsgrunnlagGrunnlagDto> finnGrunnlagDetSkalSpolesTil(Collection<BeregningAvklaringsbehovResultat> avklaringsbehov,
                                                                                               BeregningsgrunnlagGrunnlagDto nyttGrunnlag,
                                                                                               Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlagFraSteg,
                                                                                               Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlagFraStegUt) {
@@ -44,7 +44,7 @@ public final class SpolFramoverTjeneste {
                 nyttGrunnlag,
                 forrigeGrunnlagFraSteg);
         if (kanSpoleFramHeleGrunnlaget) {
-            return forrigeGrunnlagFraStegUt.map(BeregningsgrunnlagGrunnlagDtoBuilder::oppdatere);
+            return forrigeGrunnlagFraStegUt;
         } else if (!avklaringsbehov.isEmpty() && forrigeGrunnlagFraSteg.isPresent() && forrigeGrunnlagFraStegUt.isPresent()) {
             return spolFramLikePerioderOmMulig(nyttGrunnlag, forrigeGrunnlagFraSteg.get(), forrigeGrunnlagFraStegUt.get());
         }
@@ -52,7 +52,7 @@ public final class SpolFramoverTjeneste {
     }
 
 
-    private static Optional<BeregningsgrunnlagGrunnlagDtoBuilder> spolFramLikePerioderOmMulig(BeregningsgrunnlagGrunnlagDto nyttGrunnlag,
+    private static Optional<BeregningsgrunnlagGrunnlagDto> spolFramLikePerioderOmMulig(BeregningsgrunnlagGrunnlagDto nyttGrunnlag,
                                                                                               BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraSteg,
                                                                                               BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraStegUt) {
         Set<Intervall> intervallerSomKanKopieres = finnPerioderSomKanKopieres(
@@ -64,14 +64,20 @@ public final class SpolFramoverTjeneste {
         if (intervallerSomKanKopieres.isEmpty() || antallPerioderForrigeUt != antallPerioderForrige) {
             return Optional.empty();
         } else {
-            BeregningsgrunnlagDto nyttBg = nyttGrunnlag.getBeregningsgrunnlag().orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag om perioder skal kopieres"));
-            BeregningsgrunnlagDto.Builder bgBuilder = BeregningsgrunnlagDto.builder(nyttBg).fjernAllePerioder();
-            leggTilPerioder(forrigeGrunnlagFraStegUt, intervallerSomKanKopieres, nyttBg, bgBuilder);
-            var stegUtGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(nyttGrunnlag)
-                    .medBeregningsgrunnlag(bgBuilder.build());
-            return Optional.of(stegUtGrunnlag);
+            return Optional.of(kopierPerioderFraForrigeGrunnlag(nyttGrunnlag, forrigeGrunnlagFraStegUt, intervallerSomKanKopieres));
         }
 
+    }
+
+    public static BeregningsgrunnlagGrunnlagDto kopierPerioderFraForrigeGrunnlag(BeregningsgrunnlagGrunnlagDto nyttGrunnlag,
+                                                                                        BeregningsgrunnlagGrunnlagDto eksisterendeGrunnlag,
+                                                                                        Set<Intervall> intervallerSomKanKopieres) {
+        BeregningsgrunnlagDto nyttBg = nyttGrunnlag.getBeregningsgrunnlag().orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag om perioder skal kopieres"));
+        BeregningsgrunnlagDto.Builder bgBuilder = BeregningsgrunnlagDto.builder(nyttBg).fjernAllePerioder();
+        leggTilPerioder(eksisterendeGrunnlag, intervallerSomKanKopieres, nyttBg, bgBuilder);
+        return BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(nyttGrunnlag)
+                .medBeregningsgrunnlag(bgBuilder.build())
+                .build(eksisterendeGrunnlag.getBeregningsgrunnlagTilstand());
     }
 
     private static int finnAntallPerioder(BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraStegUt) {

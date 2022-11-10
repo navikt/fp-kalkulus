@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
 
 import java.util.List;
 
+import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -17,10 +18,13 @@ public class PerioderTilVurderingTjeneste {
     }
 
     public boolean erTilVurdering(Intervall periode) {
+        if (!KonfigurasjonVerdi.get("KOPIERING_VED_FORLENGELSE", false)) {
+            return true;
+        }
         return finnPerioderTilVurdering().stream().anyMatch(periode::overlapper);
     }
 
-    public List<Intervall> finnPerioderTilVurdering() {
+    private List<Intervall> finnPerioderTilVurdering() {
         return forlengelseperioder == null || forlengelseperioder.isEmpty() ? beregningsgrunnlagsperioder :
                 filtrerKunForlengelse(beregningsgrunnlagsperioder, forlengelseperioder);
     }

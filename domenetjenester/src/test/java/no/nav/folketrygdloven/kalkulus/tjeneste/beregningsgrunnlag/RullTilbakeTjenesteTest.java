@@ -57,7 +57,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
         repository = new BeregningsgrunnlagRepository(getEntityManager());
         regelsporingRepository = new RegelsporingRepository(getEntityManager());
         koblingRepository = new KoblingRepository(getEntityManager());
-        forlengelseTjeneste = new ForlengelseTjeneste(new ForlengelseRepository(getEntityManager()), true);
+        forlengelseTjeneste = new ForlengelseTjeneste(new ForlengelseRepository(getEntityManager()));
         AvklaringsbehovRepository avklaringsbehovRepository = new AvklaringsbehovRepository(getEntityManager());
         AvklaringsbehovKontrollTjeneste avklaringsbehovKontrollTjeneste = new AvklaringsbehovKontrollTjeneste();
         avklaringsbehovTjeneste = new AvklaringsbehovTjeneste(avklaringsbehovRepository, koblingRepository, avklaringsbehovKontrollTjeneste);

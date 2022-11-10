@@ -14,6 +14,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
 import no.nav.folketrygdloven.kalkulator.adapter.util.FinnArbeidsperiode;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapInntektskategoriFraVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.avklaringsbehov.PerioderTilVurderingTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -30,7 +31,9 @@ public class MapTilFordelingsmodell {
 
     public static List<FordelPeriodeModell> map(BeregningsgrunnlagDto beregningsgrunnlag,
                                                 BeregningsgrunnlagInput input) {
+        var perioderTilVurderingTjeneste = new PerioderTilVurderingTjeneste(input.getForlengelseperioder(), beregningsgrunnlag);
         return beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
+                .filter(p -> perioderTilVurderingTjeneste.erTilVurdering(p.getPeriode()))
                 .map(bgp -> mapPeriode(bgp, input))
                 .collect(Collectors.toList());
     }

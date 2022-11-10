@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import no.nav.folketrygdloven.kalkulator.KalkulatorException;
+import no.nav.folketrygdloven.kalkulator.avklaringsbehov.PerioderTilVurderingTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -16,6 +17,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.ytelse.fp.GraderingUtenBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
@@ -105,15 +107,20 @@ public final class BeregningsgrunnlagVerifiserer {
         }
     }
 
-    private static void verifiserFordeltBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
+    private static void verifiserFordeltBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag, List<Intervall> forlengelseperioder) {
+        var perioderTilVurderingTjeneste = new PerioderTilVurderingTjeneste(forlengelseperioder, beregningsgrunnlag);
         verifiserOppdatertBeregningsgrunnlag(beregningsgrunnlag);
-        beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p, BeregningsgrunnlagVerifiserer::verifiserFordeltAndel));
+        beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
+                .filter(p -> perioderTilVurderingTjeneste.erTilVurdering(p.getPeriode())).forEach(p -> verfiserBeregningsgrunnlagAndeler(p, BeregningsgrunnlagVerifiserer::verifiserFordeltAndel));
         verifiserSammenligningsgrunnlag(beregningsgrunnlag);
     }
 
-    public static void verifiserFastsattBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        verifiserFordeltBeregningsgrunnlag(beregningsgrunnlag);
-        beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p, BeregningsgrunnlagVerifiserer::verifiserFastsattAndel));
+    public static void verifiserFastsattBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, List<Intervall> forlengelseperioder) {
+        var perioderTilVurderingTjeneste = new PerioderTilVurderingTjeneste(forlengelseperioder, beregningsgrunnlag);
+        verifiserFordeltBeregningsgrunnlag(beregningsgrunnlag, forlengelseperioder);
+        beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
+                .filter(p -> perioderTilVurderingTjeneste.erTilVurdering(p.getPeriode()))
+                .forEach(p -> verfiserBeregningsgrunnlagAndeler(p, BeregningsgrunnlagVerifiserer::verifiserFastsattAndel));
         if (ytelsespesifiktGrunnlag instanceof ForeldrepengerGrunnlag) {
             verifiserAtAndelerSomGraderesHarGrunnlag(beregningsgrunnlag, ((ForeldrepengerGrunnlag) ytelsespesifiktGrunnlag).getAktivitetGradering());
         }

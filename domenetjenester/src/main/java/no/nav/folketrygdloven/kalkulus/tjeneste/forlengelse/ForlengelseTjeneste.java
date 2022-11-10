@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.tjeneste.forlengelse;
 
+import static java.lang.Boolean.TRUE;
 import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
 
 import java.util.Comparator;
@@ -10,11 +11,14 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
+import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.forlengelse.ForlengelseperiodeEntitet;
@@ -24,24 +28,23 @@ import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kopiering.BeregningsgrunnlagDiffSjekker;
+import no.nav.folketrygdloven.kalkulus.kopiering.SpolFramoverTjeneste;
 import no.nav.folketrygdloven.kalkulus.request.v1.BeregnForRequest;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
-import no.nav.k9.felles.konfigurasjon.konfig.KonfigVerdi;
 
 @ApplicationScoped
 public class ForlengelseTjeneste {
 
     private ForlengelseRepository forlengelseRepository;
-    private boolean skalVurdereForlengelse;
+    private Logger logger = LoggerFactory.getLogger(ForlengelseTjeneste.class);
 
     public ForlengelseTjeneste() {
     }
 
     @Inject
-    public ForlengelseTjeneste(ForlengelseRepository forlengelseRepository, @KonfigVerdi(value = "SKAL_VURDERE_FORLENGELSE", defaultVerdi = "false", required = false) boolean skalVurdereForlengelse) {
+    public ForlengelseTjeneste(ForlengelseRepository forlengelseRepository) {
         this.forlengelseRepository = forlengelseRepository;
-        this.skalVurdereForlengelse = skalVurdereForlengelse;
     }
 
     public Map<Long, Boolean> erForlengelser(Set<Long> koblingIder) {
@@ -51,22 +54,71 @@ public class ForlengelseTjeneste {
                         k -> forlengelser.stream().anyMatch(f -> f.getKoblingId().equals(k) && !f.getForlengelseperioder().isEmpty())));
     }
 
+    /**
+     * Forlenger eksisterende beregningsgrunnlag
+     * <p>
+     * Danner et nytt beregnningsgrunnlag som er kombinasjon mellom eksisterende og nytt grunnlag.
+     * Innenfor forlengelseperiodene er grunnlaget lik nyttGrunnlag, ellers er det kopi av eksisterende.
+     *
+     * @param forlengelseperioder  Perioder for forlengelse/viderbehandling
+     * @param nyttGrunnlag         Nytt grunnlag
+     * @param eksisterendeGrunnlag Forrige grunnlag produsert i samme steg som nyttGrunnlag
+     * @return Forlenget grunnlag
+     */
+    public BeregningsgrunnlagGrunnlagDto forlengEksisterendeBeregningsgrunnlag(List<Intervall> forlengelseperioder,
+                                                                               BeregningsgrunnlagGrunnlagDto nyttGrunnlag,
+                                                                               Optional<BeregningsgrunnlagGrunnlagDto> eksisterendeGrunnlag) {
+        var forlengetGrunnlag = kopierPerioderUtenforForlengelse(
+                nyttGrunnlag,
+                eksisterendeGrunnlag,
+                forlengelseperioder);
+
+        // Validerer ingen endring utenfor forlengelse
+        forlengetGrunnlag.getBeregningsgrunnlag().ifPresent(bg ->
+                validerIngenEndringUtenforForlengelse(
+                        bg,
+                        eksisterendeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag),
+                        forlengelseperioder)
+        );
+        return forlengetGrunnlag;
+    }
+
+    private BeregningsgrunnlagGrunnlagDto kopierPerioderUtenforForlengelse(BeregningsgrunnlagGrunnlagDto nyttGrunnlag,
+                                                                           Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlagFraStegOpt,
+                                                                           List<Intervall> forlengelseperioder) {
+
+        if (!KonfigurasjonVerdi.get("KOPIERING_VED_FORLENGELSE", false) || forrigeGrunnlagFraStegOpt.isEmpty() || forrigeGrunnlagFraStegOpt.get().getBeregningsgrunnlag().isEmpty()) {
+            return nyttGrunnlag;
+        }
+
+        var forrigeGrunnlag = forrigeGrunnlagFraStegOpt.get();
+        var forrigeBeregningsgrunnlag = forrigeGrunnlag.getBeregningsgrunnlag().orElseThrow();
+        var skjæringstidspunkt = forrigeBeregningsgrunnlag.getSkjæringstidspunkt();
+        var bgTidslinje = new LocalDateTimeline<>(skjæringstidspunkt, TIDENES_ENDE, TRUE);
+        var forlengelseTidslinje = new LocalDateTimeline<>(forlengelseperioder.stream().map(p -> new LocalDateSegment<>(p.getFomDato(), p.getTomDato(), TRUE)).toList());
+        var tidslinjeUtenForlengelse = bgTidslinje.disjoint(forlengelseTidslinje);
+        var intervallerSomKanKopieres = tidslinjeUtenForlengelse.toSegments().stream().map(Intervall::fraSegment).collect(Collectors.toSet());
+
+        logger.info("Kopierer perioder fra eksisterende grunnlag: " + intervallerSomKanKopieres);
+
+        return SpolFramoverTjeneste.kopierPerioderFraForrigeGrunnlag(nyttGrunnlag, forrigeGrunnlag, intervallerSomKanKopieres);
+    }
+
     public void lagrePerioderForForlengelse(BeregningSteg steg, List<BeregnForRequest> beregnForListe, List<KoblingEntitet> koblinger) {
-        if (skalVurdereForlengelse) {
-            var requesterMedForlengelse = beregnForListe.stream()
-                    .filter(r -> r.getForlengelsePerioder() != null && !r.getForlengelsePerioder().isEmpty())
-                    .toList();
-            var forlengelser = requesterMedForlengelse
-                    .stream()
-                    .map(r -> {
-                        var perioder = r.getForlengelsePerioder().stream().map(p -> new ForlengelseperiodeEntitet(IntervallEntitet.fraOgMedTilOgMed(p.getFom(), p.getTom()))).toList();
-                        return new ForlengelseperioderEntitet(finnKobligForRequest(koblinger, r).getId(), perioder);
-                    }).toList();
-            if (steg.erEtter(BeregningSteg.VURDER_REF_BERGRUNN)) {
-                validerIngenEndringer(steg, koblinger, requesterMedForlengelse, forlengelser);
-            } else {
-                forlengelseRepository.lagre(forlengelser);
-            }
+        var requesterMedForlengelse = beregnForListe.stream()
+                .filter(r -> r.getForlengelsePerioder() != null && !r.getForlengelsePerioder().isEmpty())
+                .toList();
+        var forlengelser = requesterMedForlengelse
+                .stream()
+                .map(r -> {
+                    var perioder = r.getForlengelsePerioder().stream().map(p -> new ForlengelseperiodeEntitet(IntervallEntitet.fraOgMedTilOgMed(p.getFom(), p.getTom()))).toList();
+                    return new ForlengelseperioderEntitet(finnKobligForRequest(koblinger, r).getId(), perioder);
+                }).toList();
+        if (steg.erEtter(BeregningSteg.VURDER_REF_BERGRUNN)) {
+            validerIngenEndringer(steg, koblinger, requesterMedForlengelse, forlengelser);
+        } else {
+            logger.info("Oppretter perioder med forlengelse " + forlengelser);
+            forlengelseRepository.lagre(forlengelser);
         }
     }
 
@@ -104,26 +156,25 @@ public class ForlengelseTjeneste {
         return koblinger.stream().filter(k -> k.getKoblingReferanse().getReferanse().equals(r.getEksternReferanse())).findFirst().orElseThrow(() -> new IllegalStateException("Forventer å finne kobling"));
     }
 
-    public void validerIngenEndringUtenforForlengelse(StegProsesseringInput input, BeregningsgrunnlagDto nyttBg, Optional<BeregningsgrunnlagDto> forrigeBg) {
-        if (!skalVurdereForlengelse) {
-            return;
-        }
-        if (input.getForlengelseperioder().isEmpty()) {
+    private void validerIngenEndringUtenforForlengelse(BeregningsgrunnlagDto nyttBg,
+                                                       Optional<BeregningsgrunnlagDto> forrigeBg,
+                                                       List<Intervall> forlengelseperioder) {
+        if (forlengelseperioder.isEmpty()) {
             return;
         }
         if (forrigeBg.isEmpty()) {
             throw new IllegalStateException("Forventer å finne forrige grunnlag ved forlengelse");
         }
         LocalDateTimeline<Boolean> noDiffTimeline = finnTidslinjeUtenDifferanse(nyttBg, forrigeBg);
-        LocalDateTimeline<Boolean> førForlengelseTimeline = finnTidslinjeFørForlengelse(nyttBg, input);
+        LocalDateTimeline<Boolean> førForlengelseTimeline = finnTidslinjeFørForlengelse(nyttBg, forlengelseperioder);
         boolean harDiffUtenforForlengelse = !førForlengelseTimeline.disjoint(noDiffTimeline).isEmpty();
         if (harDiffUtenforForlengelse) {
             throw new IllegalStateException("Fant differanse i beregnet grunnlag utenfor oppgitt periode for forlengelse.");
         }
     }
 
-    private LocalDateTimeline<Boolean> finnTidslinjeFørForlengelse(BeregningsgrunnlagDto nyttBg, BeregningsgrunnlagInput input) {
-        var førsteDagMedForlengelse = input.getForlengelseperioder().stream().map(Intervall::getFomDato)
+    private LocalDateTimeline<Boolean> finnTidslinjeFørForlengelse(BeregningsgrunnlagDto nyttBg, List<Intervall> forlengelseperioder) {
+        var førsteDagMedForlengelse = forlengelseperioder.stream().map(Intervall::getFomDato)
                 .min(Comparator.naturalOrder()).orElse(TIDENES_ENDE);
         var perioderFørForlengelse = nyttBg.getBeregningsgrunnlagPerioder().stream().map(BeregningsgrunnlagPeriodeDto::getPeriode)
                 .filter(p -> p.getTomDato().isBefore(førsteDagMedForlengelse))
@@ -141,10 +192,9 @@ public class ForlengelseTjeneste {
     }
 
     public void deaktiverVedTilbakerulling(Set<Long> koblingIder, BeregningsgrunnlagTilstand tilstand) {
-        if (skalVurdereForlengelse) {
-            if (tilstand.erFør(BeregningsgrunnlagTilstand.VURDERT_REFUSJON)) {
-                forlengelseRepository.deaktiverAlle(koblingIder);
-            }
+        if (tilstand.erFør(BeregningsgrunnlagTilstand.VURDERT_REFUSJON)) {
+            logger.info("Deaktiverer forlengelseperioder for koblinger " + koblingIder);
+            forlengelseRepository.deaktiverAlle(koblingIder);
         }
     }
 }

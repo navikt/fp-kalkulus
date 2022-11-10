@@ -48,7 +48,7 @@ class SpolFramoverTjenesteTest {
         BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraStegUt = lagGrunnlag(tilstandFraStegUt, SKJÆRINGSTIDSPUNKT);
 
         // Act
-        Optional<BeregningsgrunnlagGrunnlagDtoBuilder> spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(List.of(), nyttGrunnlag,
+        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(List.of(), nyttGrunnlag,
                 Optional.of(forrigeGrunnlagFraSteg),
                 Optional.of(forrigeGrunnlagFraStegUt)
         );
@@ -66,7 +66,7 @@ class SpolFramoverTjenesteTest {
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BEREGNINGSGRUNNLAG));
 
         // Act
-        Optional<BeregningsgrunnlagGrunnlagDtoBuilder> spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,
+        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,
                 Optional.of(forrigeGrunnlagFraSteg),
                 Optional.empty()
         );
@@ -86,7 +86,7 @@ class SpolFramoverTjenesteTest {
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BEREGNINGSGRUNNLAG));
 
         // Act
-        Optional<BeregningsgrunnlagGrunnlagDtoBuilder> spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,
+        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,
                 Optional.of(forrigeGrunnlagFraSteg),
                 Optional.of(forrigeGrunnlagFraStegUt)
         );
@@ -106,14 +106,14 @@ class SpolFramoverTjenesteTest {
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BEREGNINGSGRUNNLAG));
 
         // Act
-        Optional<BeregningsgrunnlagGrunnlagDtoBuilder> spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,
+        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,
                 Optional.of(forrigeGrunnlagFraSteg),
                 Optional.of(forrigeGrunnlagFraStegUt)
         );
 
         // Assert
         assertThat(spolFramGrunnlag).isPresent();
-        BeregningsgrunnlagGrunnlagDto gr = spolFramGrunnlag.get().build(FASTSATT_INN);
+        BeregningsgrunnlagGrunnlagDto gr = spolFramGrunnlag.get();
         assertThat(gr.getBeregningsgrunnlag().get().getSkjæringstidspunkt()).isEqualTo(SKJÆRINGSTIDSPUNKT.minusDays(1));
     }
 
@@ -149,14 +149,14 @@ class SpolFramoverTjenesteTest {
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BEREGNINGSGRUNNLAG));
 
         // Act
-        Optional<BeregningsgrunnlagGrunnlagDtoBuilder> spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,
+        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,
                 Optional.of(forrigeGrunnlagFraSteg),
                 Optional.of(forrigeGrunnlagFraStegUt)
         );
 
         // Assert
         assertThat(spolFramGrunnlag).isPresent();
-        BeregningsgrunnlagGrunnlagDto gr = spolFramGrunnlag.get().build(FASTSATT_INN);
+        BeregningsgrunnlagGrunnlagDto gr = spolFramGrunnlag.get();
         BeregningsgrunnlagDto bg = gr.getBeregningsgrunnlag().get();
         assertThat(bg.getSkjæringstidspunkt()).isEqualTo(SKJÆRINGSTIDSPUNKT);
         assertThat(bg.getBeregningsgrunnlagPerioder().size()).isEqualTo(4);
