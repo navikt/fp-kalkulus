@@ -74,33 +74,53 @@ public final class SpolFramoverTjeneste {
                                                                                         Set<Intervall> intervallerSomKanKopieres) {
         BeregningsgrunnlagDto nyttBg = nyttGrunnlag.getBeregningsgrunnlag().orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag om perioder skal kopieres"));
         BeregningsgrunnlagDto.Builder bgBuilder = BeregningsgrunnlagDto.builder(nyttBg).fjernAllePerioder();
-        leggTilPerioder(eksisterendeGrunnlag, intervallerSomKanKopieres, nyttBg, bgBuilder);
+        leggTilPerioder(eksisterendeGrunnlag, nyttBg, bgBuilder, intervallerSomKanKopieres);
         return BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(nyttGrunnlag)
                 .medBeregningsgrunnlag(bgBuilder.build())
                 .build(eksisterendeGrunnlag.getBeregningsgrunnlagTilstand());
     }
 
-    private static int finnAntallPerioder(BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraStegUt) {
-        return forrigeGrunnlagFraStegUt.getBeregningsgrunnlag().map(BeregningsgrunnlagDto::getBeregningsgrunnlagPerioder).orElse(Collections.emptyList()).size();
+    private static int finnAntallPerioder(BeregningsgrunnlagGrunnlagDto eksisterende) {
+        return eksisterende.getBeregningsgrunnlag().map(BeregningsgrunnlagDto::getBeregningsgrunnlagPerioder).orElse(Collections.emptyList()).size();
     }
 
-    private static void leggTilPerioder(BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraStegUt, Set<Intervall> intervallerSomKanKopieres, BeregningsgrunnlagDto nyttBg, BeregningsgrunnlagDto.Builder bgBuilder) {
-        List<BeregningsgrunnlagPeriodeDto> forrigePerioder = forrigeGrunnlagFraStegUt.getBeregningsgrunnlag()
+    private static void leggTilPerioder(BeregningsgrunnlagGrunnlagDto eksisterende,
+                                        BeregningsgrunnlagDto nyttBg, BeregningsgrunnlagDto.Builder bgBuilder,
+                                        Set<Intervall> intervallerSomKanKopieres) {
+        List<BeregningsgrunnlagPeriodeDto> eksisterendePerioder = eksisterende.getBeregningsgrunnlag()
                 .stream()
                 .flatMap(bg -> bg.getBeregningsgrunnlagPerioder().stream())
                 .collect(Collectors.toList());
 
         nyttBg.getBeregningsgrunnlagPerioder().forEach(periode -> {
             if (intervallerSomKanKopieres.contains(periode.getPeriode())) {
-                BeregningsgrunnlagPeriodeDto forrigePeriode = forrigePerioder.stream()
-                        .filter(p -> p.getPeriode().equals(periode.getPeriode()))
-                        .findFirst()
-                        .orElseThrow(() -> new IllegalStateException("Fant ikke periode som skulle kopieres i forrige grunnlag"));
-                bgBuilder.leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeDto.kopier(forrigePeriode));
+                bgBuilder.leggTilBeregningsgrunnlagPeriode(finnPeriodeFraEksisterende(eksisterendePerioder, periode.getPeriode()));
             } else {
                 bgBuilder.leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeDto.kopier(periode));
             }
         });
+    }
+
+    private static BeregningsgrunnlagPeriodeDto.Builder finnPeriodeFraEksisterende(List<BeregningsgrunnlagPeriodeDto> forrigePerioder,
+                                                                                   Intervall periodeSomSkalKopieres) {
+        var forrigePeriode = forrigePerioder.stream()
+                .filter(p -> p.getPeriode().equals(periodeSomSkalKopieres))
+                .findFirst();
+
+        if (forrigePeriode.isPresent()) {
+            return BeregningsgrunnlagPeriodeDto.kopier(forrigePeriode.get());
+        }
+
+        forrigePeriode = forrigePerioder.stream()
+                .filter(p -> p.getPeriode().inkluderer(periodeSomSkalKopieres))
+                .findFirst();
+
+        if (forrigePeriode.isPresent()) {
+            return BeregningsgrunnlagPeriodeDto.kopier(forrigePeriode.get())
+                    .medBeregningsgrunnlagPeriode(periodeSomSkalKopieres.getFomDato(), periodeSomSkalKopieres.getTomDato());
+        }
+
+        throw new IllegalStateException("Fant ikke periode fra forrige grunnlag som inkluderer " + periodeSomSkalKopieres);
     }
 
 

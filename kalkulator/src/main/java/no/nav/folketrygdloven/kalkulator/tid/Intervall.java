@@ -58,6 +58,12 @@ public class Intervall implements Comparable<Intervall>, Serializable {
         return overlapper;
     }
 
+    public boolean inkluderer(Intervall other) {
+        boolean fomBeforeOrEqualFom = this.getFomDato().isBefore(other.getFomDato()) || this.getFomDato().isEqual(other.getFomDato());
+        boolean tomAfterOrEqualTom = this.getTomDato().isAfter(other.getTomDato()) || this.getTomDato().isEqual(other.getTomDato());
+        return fomBeforeOrEqualFom && tomAfterOrEqualTom;
+    }
+
     public boolean erHelg() {
         return fomDato.getDayOfWeek().equals(DayOfWeek.SATURDAY) && fomDato.plusDays(1).equals(tomDato);
     }

@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.kopiering;
 
 import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FASTSATT;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FASTSATT_INN;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -175,6 +177,41 @@ class SpolFramoverTjenesteTest {
         assertThat(bg.getBeregningsgrunnlagPerioder().get(3).getPeriode().getFomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(8));
         assertThat(bg.getBeregningsgrunnlagPerioder().get(3).getPeriode().getTomDato()).isEqualTo(TIDENES_ENDE);
         assertThat(bg.getBeregningsgrunnlagPerioder().get(3).getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFordeltPrÅr()).isNull();
+    }
+
+
+
+    @Test
+    void skal_kopiere_kun_forlenget_periode() {
+        // Arrange
+        BeregningsgrunnlagTilstand tilstandFraSteg = FASTSATT;
+        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = lagGrunnlagUtenPerioder(tilstandFraSteg, SKJÆRINGSTIDSPUNKT);
+        BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraSteg = lagGrunnlagUtenPerioder(tilstandFraSteg, SKJÆRINGSTIDSPUNKT);
+
+        BigDecimal fordeltFørstePeriode = BigDecimal.valueOf(100_000);
+        lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(5)), fordeltFørstePeriode);
+
+        BigDecimal fordeltAndrePeriode = BigDecimal.valueOf(200_000);
+        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), BigDecimal.valueOf(50_000));
+        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), fordeltAndrePeriode);
+
+        // Act
+        var gr = SpolFramoverTjeneste.kopierPerioderFraForrigeGrunnlag(nyttGrunnlag,
+                forrigeGrunnlagFraSteg,
+                Set.of(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)))
+        );
+
+        // Assert
+        BeregningsgrunnlagDto bg = gr.getBeregningsgrunnlag().get();
+        assertThat(bg.getSkjæringstidspunkt()).isEqualTo(SKJÆRINGSTIDSPUNKT);
+        assertThat(bg.getBeregningsgrunnlagPerioder().size()).isEqualTo(2);
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getPeriode().getFomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT);
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getPeriode().getTomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(2));
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFordeltPrÅr()).isEqualTo(fordeltFørstePeriode);
+
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(1).getPeriode().getFomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(3));
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(1).getPeriode().getTomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(5));
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(1).getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFordeltPrÅr()).isEqualTo(fordeltAndrePeriode);
     }
 
 
