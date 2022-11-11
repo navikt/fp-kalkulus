@@ -63,4 +63,11 @@ public class ForlengelseperiodeEntitet extends BaseEntitet implements IndexKey {
     public int hashCode() {
         return Objects.hash(periode);
     }
+
+    @Override
+    public String toString() {
+        return "ForlengelseperiodeEntitet{" +
+                "periode=" + periode +
+                '}';
+    }
 }
