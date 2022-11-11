@@ -5,6 +5,7 @@ import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -136,7 +137,7 @@ public class BeregningsgrunnlagDtoTjeneste {
         List<SammenligningsgrunnlagDto> sammenligningsgrunnlagDto = lagSammenligningsgrunnlagDtoPrStatus(beregningsgrunnlag, skalMappeNøyaktigSammenligningsgrunnlagType(input));
         if (dto.getSammenligningsgrunnlag() != null) {
             dto.getSammenligningsgrunnlag().setSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN);
-            dto.getSammenligningsgrunnlag().setDifferanseBeregnet(finnDifferanseBeregnetGammeltSammenliningsgrunnlag(beregningsgrunnlag, dto.getSammenligningsgrunnlag().getRapportertPrAar()));
+            dto.getSammenligningsgrunnlag().setDifferanseBeregnet(finnBeregnetGammeltSammenliningsgrunnlag(beregningsgrunnlag).subtract(dto.getSammenligningsgrunnlag().getRapportertPrAar()));
         }
         if (sammenligningsgrunnlagDto.isEmpty() && dto.getSammenligningsgrunnlag() != null) {
             dto.setSammenligningsgrunnlagPrStatus(List.of(dto.getSammenligningsgrunnlag()));
@@ -213,44 +214,31 @@ public class BeregningsgrunnlagDtoTjeneste {
 
     }
 
-    private BigDecimal finnDifferanseBeregnetGammeltSammenliningsgrunnlag(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag, BigDecimal rapportertPrÅr) {
-        BigDecimal beregnet;
+    private BigDecimal finnBeregnetGammeltSammenliningsgrunnlag(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag) {
         if (finnesAndelMedSN(beregningsgrunnlag)) {
-            beregnet = hentBeregnetPGI(beregningsgrunnlag, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+            return hentBeregnetPGI(beregningsgrunnlag, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
         } else {
-            beregnet = hentBeregnetSamletArbeidstakerOgFrilanser(beregningsgrunnlag);
+            return hentBeregnetGrunnlag(beregningsgrunnlag, AktivitetStatus.ARBEIDSTAKER, AktivitetStatus.FRILANSER);
         }
-        return beregnet.subtract(rapportertPrÅr);
     }
 
     private BigDecimal finnDifferanseBeregnet(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag,
                                               SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlagPrStatus) {
-        BigDecimal beregnet;
-        if (SammenligningsgrunnlagType.SAMMENLIGNING_AT.equals(sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType())) {
-            beregnet = hentBeregnetArbeidstaker(beregningsgrunnlag);
-        } else if (SammenligningsgrunnlagType.SAMMENLIGNING_FL.equals(sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType())) {
-            beregnet = hentBeregnetFrilanser(beregningsgrunnlag);
-        } else if (SammenligningsgrunnlagType.SAMMENLIGNING_SN.equals(sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType())) {
-            beregnet = hentBeregnetPGI(beregningsgrunnlag, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
-        } else if (SammenligningsgrunnlagType.SAMMENLIGNING_MIDL_INAKTIV.equals(sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType())) {
-            beregnet = hentBeregnetPGI(beregningsgrunnlag, AktivitetStatus.BRUKERS_ANDEL);
-        } else {
-            return finnDifferanseBeregnetGammeltSammenliningsgrunnlag(beregningsgrunnlag, sammenligningsgrunnlagPrStatus.getRapportertPrÅr());
-        }
+        var beregnet = switch(sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType()) {
+            case SAMMENLIGNING_AT ->  hentBeregnetGrunnlag(beregningsgrunnlag, AktivitetStatus.ARBEIDSTAKER);
+            case SAMMENLIGNING_FL -> hentBeregnetGrunnlag(beregningsgrunnlag, AktivitetStatus.FRILANSER);
+            case SAMMENLIGNING_AT_FL -> hentBeregnetGrunnlag(beregningsgrunnlag, AktivitetStatus.ARBEIDSTAKER, AktivitetStatus.FRILANSER);
+            case SAMMENLIGNING_SN -> hentBeregnetPGI(beregningsgrunnlag, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+            case SAMMENLIGNING_MIDL_INAKTIV -> hentBeregnetPGI(beregningsgrunnlag, AktivitetStatus.BRUKERS_ANDEL);
+            case SAMMENLIGNING_ATFL_SN -> finnBeregnetGammeltSammenliningsgrunnlag(beregningsgrunnlag);
+        };
         return beregnet.subtract(sammenligningsgrunnlagPrStatus.getRapportertPrÅr());
     }
 
-    private BigDecimal hentBeregnetArbeidstaker(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag) {
+    private BigDecimal hentBeregnetGrunnlag(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag, AktivitetStatus... statuser) {
+        var statuserSomSkalAdderes = Arrays.asList(statuser);
         return beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
-                .filter(b -> b.getAktivitetStatus().equals(AktivitetStatus.ARBEIDSTAKER))
-                .map(BeregningsgrunnlagPrStatusOgAndelDto::getBeregnetPrÅr)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
-    }
-
-    private BigDecimal hentBeregnetFrilanser(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag) {
-        return beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
-                .filter(b -> b.getAktivitetStatus().equals(AktivitetStatus.FRILANSER))
+                .filter(b -> statuserSomSkalAdderes.contains(b.getAktivitetStatus()))
                 .map(BeregningsgrunnlagPrStatusOgAndelDto::getBeregnetPrÅr)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
@@ -260,14 +248,6 @@ public class BeregningsgrunnlagDtoTjeneste {
         return beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(b -> b.getAktivitetStatus().equals(status))
                 .map(BeregningsgrunnlagPrStatusOgAndelDto::getPgiSnitt)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
-    }
-
-    private BigDecimal hentBeregnetSamletArbeidstakerOgFrilanser(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag) {
-        return beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
-                .filter(b -> b.getAktivitetStatus().equals(AktivitetStatus.ARBEIDSTAKER) || b.getAktivitetStatus().equals(AktivitetStatus.FRILANSER))
-                .map(BeregningsgrunnlagPrStatusOgAndelDto::getBeregnetPrÅr)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
     }
