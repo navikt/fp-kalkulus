@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -68,25 +67,20 @@ class FinnTilkommetInntektTjeneste {
     private List<AktivitetDto> finnAktiviteterFraInntektsmelding(BeregningsgrunnlagDto beregningsgrunnlagDto, InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDate skjæringstidspunkt, YrkesaktivitetFilterDto yrkesaktivitetFilterDto) {
         var alleInntektsmeldinger = iayGrunnlag.getInntektsmeldinger().map(InntektsmeldingAggregatDto::getAlleInntektsmeldinger).orElse(Collections.emptyList());
         var yrkesaktiviteter = yrkesaktivitetFilterDto.getYrkesaktiviteterForBeregning();
-        var yrkesaktiviteterTilInntektsmeldingMap = alleInntektsmeldinger.stream().filter(im -> finnesIkkeIBeregningsgrunnlag(beregningsgrunnlagDto, im.getArbeidsgiver()))
-                .collect(Collectors.toMap(
-                        finnYrkesaktiviteter(skjæringstidspunkt, yrkesaktiviteter),
-                        Function.identity()));
-        return yrkesaktiviteterTilInntektsmeldingMap.entrySet().stream()
-                .filter(e -> !e.getKey().isEmpty())
-                .map(e -> new AktivitetDto(e.getKey(), e.getValue().getInntektBeløp()))
+        return alleInntektsmeldinger.stream().filter(im -> finnesIkkeIBeregningsgrunnlag(beregningsgrunnlagDto, im.getArbeidsgiver()))
+                .map(im -> new AktivitetDto(finnYrkesaktiviteter(im, skjæringstidspunkt, yrkesaktiviteter),
+                        im.getInntektBeløp()))
+                .filter(a -> !a.getYrkesaktivitetDto().isEmpty())
                 .collect(Collectors.toList());
     }
 
-    private Function<InntektsmeldingDto, List<YrkesaktivitetDto>> finnYrkesaktiviteter(LocalDate skjæringstidspunkt, Collection<YrkesaktivitetDto> yrkesaktiviteter) {
-        return im -> {
-            var aktiviteterForInntektsmelding = yrkesaktiviteter.stream()
-                    .filter(ya -> ya.gjelderFor(im))
-                    .collect(Collectors.toSet());
-            return aktiviteterForInntektsmelding.stream()
-                    .filter(ya -> ya.getAlleAnsettelsesperioder().stream().anyMatch(a -> a.getPeriode().getTomDato().isAfter(skjæringstidspunkt)))
-                    .collect(Collectors.toList());
-        };
+    private List<YrkesaktivitetDto> finnYrkesaktiviteter(InntektsmeldingDto im, LocalDate skjæringstidspunkt, Collection<YrkesaktivitetDto> yrkesaktiviteter) {
+        var aktiviteterForInntektsmelding = yrkesaktiviteter.stream()
+                .filter(ya -> ya.gjelderFor(im))
+                .collect(Collectors.toSet());
+        return aktiviteterForInntektsmelding.stream()
+                .filter(ya -> ya.getAlleAnsettelsesperioder().stream().anyMatch(a -> a.getPeriode().getTomDato().isAfter(skjæringstidspunkt)))
+                .collect(Collectors.toList());
     }
 
     private LocalDate finnSisteSøkteDato(List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet) {
