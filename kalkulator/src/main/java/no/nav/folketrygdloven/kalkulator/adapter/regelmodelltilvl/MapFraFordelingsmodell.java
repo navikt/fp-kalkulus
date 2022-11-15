@@ -36,7 +36,8 @@ public class MapFraFordelingsmodell {
     }
 
     private static BeregningsgrunnlagDto mapGrunnlag(List<FordelPeriodeModell> regelperioder, BeregningsgrunnlagDto eksisterendeBG) {
-        var mappedePerioder = regelperioder.stream().map(p -> mapPeriode(p, eksisterendeBG)).collect(Collectors.toList());
+        var mappedePerioder = eksisterendeBG.getBeregningsgrunnlagPerioder().stream()
+                .map(p -> mapPeriode(p, regelperioder)).collect(Collectors.toList());
         var nyttBG = BeregningsgrunnlagDto.builder(eksisterendeBG).fjernAllePerioder().build();
         mappedePerioder.forEach(p -> fastsettAgreggerteVerdier(p, nyttBG));
         return nyttBG;
@@ -52,17 +53,17 @@ public class MapFraFordelingsmodell {
                 .build(eksisterendeVLGrunnlag);
     }
 
-    private static BeregningsgrunnlagPeriodeDto mapPeriode(FordelPeriodeModell regelperiode, BeregningsgrunnlagDto eksisterendeBG) {
-        var eksisterendePeriode = finnEksisterendePeriode(regelperiode, eksisterendeBG.getBeregningsgrunnlagPerioder());
-        var nyPeriodeBuilder = BeregningsgrunnlagPeriodeDto.kopier(eksisterendePeriode);
-        regelperiode.getAndeler().forEach(regelAndel -> {
+    private static BeregningsgrunnlagPeriodeDto mapPeriode(BeregningsgrunnlagPeriodeDto bgPeriode, List<FordelPeriodeModell> regelperioder) {
+        var regelPeriode = finnRegelPeriode(bgPeriode, regelperioder);
+        var nyPeriodeBuilder = BeregningsgrunnlagPeriodeDto.kopier(bgPeriode);
+        regelPeriode.ifPresent(fordelPeriodeModell -> fordelPeriodeModell.getAndeler().forEach(regelAndel -> {
             if (regelAndel.erNytt()) {
-                var builder = mapNyAndel(eksisterendePeriode, regelAndel);
+                var builder = mapNyAndel(bgPeriode, regelAndel);
                 nyPeriodeBuilder.leggTilBeregningsgrunnlagPrStatusOgAndel(builder);
             } else {
                 oppdaterEksisterendeAndel(nyPeriodeBuilder, regelAndel);
             }
-        });
+        }));
         return nyPeriodeBuilder.build();
     }
 
@@ -102,17 +103,16 @@ public class MapFraFordelingsmodell {
         return Objects.equals(arbeidsgiverIdKalkulus, arbeidsgiverIdRegel);
     }
 
-    private static BeregningsgrunnlagPeriodeDto finnEksisterendePeriode(FordelPeriodeModell regelperiode, List<BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPerioder) {
-        return beregningsgrunnlagPerioder.stream()
-                .filter(bgp -> Objects.equals(bgp.getBeregningsgrunnlagPeriodeFom(), regelperiode.getBgPeriode().getFom())
-                        && Objects.equals(bgp.getBeregningsgrunnlagPeriodeTom(), regelperiode.getBgPeriode().getTom()))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Forventer å finne matchende beregningsgrunnlagperiode etter automatisk fordeling"));
+    private static Optional<FordelPeriodeModell> finnRegelPeriode(BeregningsgrunnlagPeriodeDto bgPeriode, List<FordelPeriodeModell> regelPerioder) {
+        return regelPerioder.stream()
+                .filter(bgp -> Objects.equals(bgPeriode.getBeregningsgrunnlagPeriodeFom(), bgp.getBgPeriode().getFom())
+                        && Objects.equals(bgPeriode.getBeregningsgrunnlagPeriodeTom(), bgp.getBgPeriode().getTom()))
+                .findFirst();
     }
 
     private static BeregningsgrunnlagPrStatusOgAndelDto.Builder mapNyAndel(BeregningsgrunnlagPeriodeDto kalkulusPeriode, FordelAndelModell regelAndel) {
         if (regelAndel.getAndelNr() != null) {
-            throw new IllegalStateException("Andelsnr er satt, men regelAndel er markert som ny. Ugyldig tilstand for andel" + regelAndel.toString());
+            throw new IllegalStateException("Andelsnr er satt, men regelAndel er markert som ny. Ugyldig tilstand for andel" + regelAndel);
         }
         var kalkulusAndel = kalkulusPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(bgpsa -> matcherAktivitetstatus(regelAndel, bgpsa)

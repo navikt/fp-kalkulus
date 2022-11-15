@@ -17,6 +17,7 @@ import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagFeil;
 import no.nav.folketrygdloven.kalkulator.JsonMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFraFordelingsmodell;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapTilFordelingsmodell;
+import no.nav.folketrygdloven.kalkulator.avklaringsbehov.PerioderTilVurderingTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -50,7 +51,10 @@ public class OmfordelBeregningsgrunnlagTjeneste {
             regelResultater.add(RegelmodellOversetter.getRegelResultat(evaluation, regelinput));
         }
         var fordeltBG = MapFraFordelingsmodell.map(outputPerioder, regelResultater, beregningsgrunnlag);
-        List<Intervall> perioder = fordeltBG.getBeregningsgrunnlagPerioder().stream().map(BeregningsgrunnlagPeriodeDto::getPeriode).collect(Collectors.toList());
+        List<Intervall> perioder = fordeltBG.getBeregningsgrunnlagPerioder().stream()
+                .map(BeregningsgrunnlagPeriodeDto::getPeriode)
+                .filter(periode -> new PerioderTilVurderingTjeneste(input.getForlengelseperioder(), beregningsgrunnlag).erTilVurdering(periode))
+                .collect(Collectors.toList());
         return new BeregningsgrunnlagRegelResultat(fordeltBG,
                 new RegelSporingAggregat(mapRegelsporingPerioder(regelResultater, perioder, BeregningsgrunnlagPeriodeRegelType.FORDEL)));
     }

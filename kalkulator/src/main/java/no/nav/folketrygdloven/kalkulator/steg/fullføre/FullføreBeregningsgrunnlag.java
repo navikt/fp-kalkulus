@@ -9,6 +9,7 @@ import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagFeil;
 import no.nav.folketrygdloven.kalkulator.JsonMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.fastsett.MapFastsattBeregningsgrunnlagFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.fastsett.MapBeregningsgrunnlagFraVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.avklaringsbehov.PerioderTilVurderingTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -46,15 +47,16 @@ public abstract class FullføreBeregningsgrunnlag {
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().orElse(null);
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = mapBeregningsgrunnlagFraRegelTilVL.mapFastsettBeregningsgrunnlag(beregningsgrunnlagRegel, beregningsgrunnlag);
 
-        List<RegelSporingPeriode> regelsporinger = mapRegelSporinger(regelResultater, fastsattBeregningsgrunnlag);
+        List<RegelSporingPeriode> regelsporinger = mapRegelSporinger(regelResultater, fastsattBeregningsgrunnlag, input.getForlengelseperioder());
         BeregningsgrunnlagVerifiserer.verifiserFastsattBeregningsgrunnlag(fastsattBeregningsgrunnlag, input.getYtelsespesifiktGrunnlag(), input.getForlengelseperioder());
         return new BeregningsgrunnlagRegelResultat(fastsattBeregningsgrunnlag, new RegelSporingAggregat(regelsporinger));
     }
 
-    private List<RegelSporingPeriode> mapRegelSporinger(List<RegelResultat> regelResultater, BeregningsgrunnlagDto fastsattBeregningsgrunnlag) {
-        return mapRegelsporingPerioder(
-                regelResultater,
-                fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().stream().map(BeregningsgrunnlagPeriodeDto::getPeriode).collect(Collectors.toList()));
+    private List<RegelSporingPeriode> mapRegelSporinger(List<RegelResultat> regelResultater, BeregningsgrunnlagDto fastsattBeregningsgrunnlag, List<Intervall> forlengelseperioder) {
+        var vurdertePerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().stream().map(BeregningsgrunnlagPeriodeDto::getPeriode)
+                .filter(p -> new PerioderTilVurderingTjeneste(forlengelseperioder, fastsattBeregningsgrunnlag).erTilVurdering(p))
+                .collect(Collectors.toList());
+        return mapRegelsporingPerioder(regelResultater, vurdertePerioder);
     }
 
     protected abstract List<RegelResultat> evaluerRegelmodell(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.Beregningsgrunnlag beregningsgrunnlagRegel, BeregningsgrunnlagInput input);
