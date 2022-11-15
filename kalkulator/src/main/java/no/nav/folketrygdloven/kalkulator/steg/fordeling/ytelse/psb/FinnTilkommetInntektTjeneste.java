@@ -68,9 +68,9 @@ class FinnTilkommetInntektTjeneste {
         var alleInntektsmeldinger = iayGrunnlag.getInntektsmeldinger().map(InntektsmeldingAggregatDto::getAlleInntektsmeldinger).orElse(Collections.emptyList());
         var yrkesaktiviteter = yrkesaktivitetFilterDto.getYrkesaktiviteterForBeregning();
         return alleInntektsmeldinger.stream().filter(im -> finnesIkkeIBeregningsgrunnlag(beregningsgrunnlagDto, im.getArbeidsgiver()))
+                .filter(im -> !finnYrkesaktiviteter(im, skjæringstidspunkt, yrkesaktiviteter).isEmpty())
                 .map(im -> new AktivitetDto(finnYrkesaktiviteter(im, skjæringstidspunkt, yrkesaktiviteter),
                         im.getInntektBeløp()))
-                .filter(a -> !a.getYrkesaktivitetDto().isEmpty())
                 .collect(Collectors.toList());
     }
 
