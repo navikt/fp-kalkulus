@@ -5,15 +5,15 @@ import java.math.RoundingMode;
 import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
-import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
@@ -59,11 +59,13 @@ public class KunYtelseDtoTjeneste implements FaktaOmBeregningTilfelleDtoTjeneste
 
     private void settVerdier(KunYtelseDto dto, BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
         BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
-        periode.getBeregningsgrunnlagPrStatusOgAndelList().forEach(andel -> {
-            AndelMedBeløpDto brukersAndel = initialiserStandardAndelProperties(andel, inntektArbeidYtelseGrunnlag);
-            brukersAndel.setFastsattBelopPrMnd(finnFastsattMånedsbeløp(andel));
-            dto.leggTilAndel(brukersAndel);
-        });
+        periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
+                .filter(andel -> andel.getKilde().equals(AndelKilde.PROSESS_START) || andel.getKilde().equals(AndelKilde.SAKSBEHANDLER_KOFAKBER))
+                .forEach(andel -> {
+                    AndelMedBeløpDto brukersAndel = initialiserStandardAndelProperties(andel, inntektArbeidYtelseGrunnlag);
+                    brukersAndel.setFastsattBelopPrMnd(finnFastsattMånedsbeløp(andel));
+                    dto.leggTilAndel(brukersAndel);
+                });
     }
 
     private BigDecimal finnFastsattMånedsbeløp(BeregningsgrunnlagPrStatusOgAndelDto andel) {
