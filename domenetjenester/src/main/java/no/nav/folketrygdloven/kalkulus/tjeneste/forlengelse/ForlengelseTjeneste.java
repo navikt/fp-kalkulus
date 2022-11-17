@@ -97,7 +97,7 @@ public class ForlengelseTjeneste {
         var bgTidslinje = new LocalDateTimeline<>(skjæringstidspunkt, TIDENES_ENDE, TRUE);
         var forlengelseTidslinje = new LocalDateTimeline<>(forlengelseperioder.stream().map(p -> new LocalDateSegment<>(p.getFomDato(), p.getTomDato(), TRUE)).toList());
         var tidslinjeUtenForlengelse = bgTidslinje.disjoint(forlengelseTidslinje);
-        var intervallerSomKanKopieres = tidslinjeUtenForlengelse.toSegments().stream().map(Intervall::fraSegment).collect(Collectors.toSet());
+        var intervallerSomKanKopieres = tidslinjeUtenForlengelse.compress().toSegments().stream().map(Intervall::fraSegment).collect(Collectors.toSet());
 
         logger.info("Kopierer perioder fra eksisterende grunnlag: " + intervallerSomKanKopieres);
 

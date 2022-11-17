@@ -16,6 +16,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 
 public final class SpolFramoverTjeneste {
 
@@ -94,7 +95,10 @@ public final class SpolFramoverTjeneste {
 
         nyttBg.getBeregningsgrunnlagPerioder().forEach(periode -> {
             if (intervallerSomKanKopieres.contains(periode.getPeriode())) {
-                bgBuilder.leggTilBeregningsgrunnlagPeriode(finnPeriodeFraEksisterende(eksisterendePerioder, periode.getPeriode()));
+                bgBuilder.leggTilBeregningsgrunnlagPeriode(finnPeriodeFraEksisterende(eksisterendePerioder,
+                        periode.getPeriodeÅrsaker(),
+                        periode.getPeriode(),
+                        intervallerSomKanKopieres));
             } else {
                 bgBuilder.leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeDto.kopier(periode));
             }
@@ -102,13 +106,19 @@ public final class SpolFramoverTjeneste {
     }
 
     private static BeregningsgrunnlagPeriodeDto.Builder finnPeriodeFraEksisterende(List<BeregningsgrunnlagPeriodeDto> forrigePerioder,
-                                                                                   Intervall periodeSomSkalKopieres) {
+                                                                                   List<PeriodeÅrsak> nyePeriodeÅrsaker,
+                                                                                   Intervall periodeSomSkalKopieres,
+                                                                                   Set<Intervall> intervallerSomKanKopieres) {
+        var tilstøterEndretIntervall = intervallerSomKanKopieres.stream().anyMatch(p -> periodeSomSkalKopieres.getTomDato().equals(p.getTomDato()) ||
+                periodeSomSkalKopieres.getFomDato().equals(p.getFomDato()));
         var forrigePeriode = forrigePerioder.stream()
                 .filter(p -> p.getPeriode().equals(periodeSomSkalKopieres))
                 .findFirst();
 
         if (forrigePeriode.isPresent()) {
-            return BeregningsgrunnlagPeriodeDto.kopier(forrigePeriode.get());
+            var periodeBuilder = BeregningsgrunnlagPeriodeDto.kopier(forrigePeriode.get());
+            leggTilManglendePeriodeårsaker(nyePeriodeÅrsaker, forrigePeriode.get(), periodeBuilder, tilstøterEndretIntervall);
+            return periodeBuilder;
         }
 
         forrigePeriode = forrigePerioder.stream()
@@ -116,11 +126,20 @@ public final class SpolFramoverTjeneste {
                 .findFirst();
 
         if (forrigePeriode.isPresent()) {
-            return BeregningsgrunnlagPeriodeDto.kopier(forrigePeriode.get())
+            var periodeBuilder = BeregningsgrunnlagPeriodeDto.kopier(forrigePeriode.get())
                     .medBeregningsgrunnlagPeriode(periodeSomSkalKopieres.getFomDato(), periodeSomSkalKopieres.getTomDato());
+            leggTilManglendePeriodeårsaker(nyePeriodeÅrsaker, forrigePeriode.get(), periodeBuilder, tilstøterEndretIntervall);
+            return periodeBuilder;
         }
 
         throw new IllegalStateException("Fant ikke periode fra forrige grunnlag som inkluderer " + periodeSomSkalKopieres);
+    }
+
+    private static void leggTilManglendePeriodeårsaker(List<PeriodeÅrsak> nyePeriodeÅrsaker, BeregningsgrunnlagPeriodeDto forrigePeriode, BeregningsgrunnlagPeriodeDto.Builder periodeBuilder, boolean tilstøterEndretIntervall) {
+        if (tilstøterEndretIntervall && !forrigePeriode.getPeriodeÅrsaker().containsAll(nyePeriodeÅrsaker)) {
+            nyePeriodeÅrsaker.stream().filter(p -> !forrigePeriode.getPeriodeÅrsaker().contains(p))
+                    .forEach(periodeBuilder::leggTilPeriodeÅrsak);
+        }
     }
 
 
