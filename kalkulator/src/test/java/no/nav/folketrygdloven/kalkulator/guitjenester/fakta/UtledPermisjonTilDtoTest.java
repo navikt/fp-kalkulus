@@ -76,7 +76,7 @@ public class UtledPermisjonTilDtoTest {
         YrkesaktivitetDtoBuilder yaBuilder = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty());
         AktivitetsAvtaleDtoBuilder aa = lagAktivitetsAvtaleBuilder(yaBuilder, fom, tom);
         YrkesaktivitetDtoBuilder ya = lagYrkesaktivitetBuilder(yaBuilder, aa, arbeidsgiver, ref);
-        ya.leggTilPermisjon(PermisjonDtoBuilder.ny().medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.VELFERDSPERMISJON).medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
+        ya.leggTilPermisjon(PermisjonDtoBuilder.ny().medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.ANNEN_PERMISJON_LOVFESTET).medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
                 .medProsentsats(BigDecimal.valueOf(100)));
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(List.of(ya));
 
@@ -103,7 +103,7 @@ public class UtledPermisjonTilDtoTest {
         YrkesaktivitetDtoBuilder yaBuilder = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty());
         AktivitetsAvtaleDtoBuilder aa = lagAktivitetsAvtaleBuilder(yaBuilder, fom, tom);
         YrkesaktivitetDtoBuilder ya = lagYrkesaktivitetBuilder(yaBuilder, aa, arbeidsgiver, ref);
-        ya.leggTilPermisjon(PermisjonDtoBuilder.ny().medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.VELFERDSPERMISJON).medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
+        ya.leggTilPermisjon(PermisjonDtoBuilder.ny().medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.ANNEN_PERMISJON_LOVFESTET).medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
                 .medProsentsats(BigDecimal.valueOf(100)));
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(List.of(ya));
 
@@ -131,7 +131,7 @@ public class UtledPermisjonTilDtoTest {
         YrkesaktivitetDtoBuilder yaBuilder = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty());
         AktivitetsAvtaleDtoBuilder aa = lagAktivitetsAvtaleBuilder(yaBuilder, fom, tom);
         YrkesaktivitetDtoBuilder ya = lagYrkesaktivitetBuilder(yaBuilder, aa, arbeidsgiver, ref);
-        ya.leggTilPermisjon(PermisjonDtoBuilder.ny().medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.VELFERDSPERMISJON).medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
+        ya.leggTilPermisjon(PermisjonDtoBuilder.ny().medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.ANNEN_PERMISJON_LOVFESTET).medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
                 .medProsentsats(BigDecimal.valueOf(99)));
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(List.of(ya));
 
@@ -158,7 +158,7 @@ public class UtledPermisjonTilDtoTest {
         YrkesaktivitetDtoBuilder yaBuilder = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty());
         AktivitetsAvtaleDtoBuilder aa = lagAktivitetsAvtaleBuilder(yaBuilder, fom, tom);
         YrkesaktivitetDtoBuilder ya = lagYrkesaktivitetBuilder(yaBuilder, aa, arbeidsgiver, ref);
-        ya.leggTilPermisjon(PermisjonDtoBuilder.ny().medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.VELFERDSPERMISJON).medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
+        ya.leggTilPermisjon(PermisjonDtoBuilder.ny().medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.ANNEN_PERMISJON_LOVFESTET).medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
                 .medProsentsats(BigDecimal.valueOf(100)));
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(List.of(ya));
 

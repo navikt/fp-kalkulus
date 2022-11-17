@@ -16,7 +16,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PermisjonsbeskrivelseType;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
@@ -57,7 +56,7 @@ public final class PermisjonPerYrkesaktivitet {
                     .map(LocalDateSegment::getLocalDateInterval)
                     .map(p -> Intervall.fraOgMedTilOgMed(p.getFomDato(), p.getTomDato()))
                     .collect(Collectors.toCollection(TreeSet::new));
-        } else if (Objects.equals(it.getPermisjonsbeskrivelseType(), PermisjonsbeskrivelseType.VELFERDSPERMISJON)) {
+        } else if (it.getPermisjonsbeskrivelseType() != null && PermisjonsbeskrivelseType.VELFERDSPERMISJONER.contains(it.getPermisjonsbeskrivelseType())) {
             var permisjonstidslinje = new LocalDateTimeline<>(List.of(new LocalDateSegment<>(it.getPeriode().getFomDato(), it.getPeriode().getTomDato(), true)));
             for (var aktivitetType : FagsakYtelseType.K9_YTELSER) {
                 var ytelsesTidslinje = tidslinjePerYtelse.getOrDefault(aktivitetType, new LocalDateTimeline<>(List.of()));

@@ -28,10 +28,10 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
@@ -469,7 +469,7 @@ class FastsettSkjæringstidspunktOgStatuserK14Test {
                 .medArbeidsforholdId(ref)
                 .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
 
-        var perm = PermisjonDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fomPerm, tomPerm)).medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.VELFERDSPERMISJON).medProsentsats(BigDecimal.valueOf(100));
+        var perm = PermisjonDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fomPerm, tomPerm)).medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.ANNEN_PERMISJON_LOVFESTET).medProsentsats(BigDecimal.valueOf(100));
         yaBuilder.leggTilPermisjon(perm);
 
         var aaBuilder = yaBuilder.getAktivitetsAvtaleBuilder().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom)).medErAnsettelsesPeriode(true);

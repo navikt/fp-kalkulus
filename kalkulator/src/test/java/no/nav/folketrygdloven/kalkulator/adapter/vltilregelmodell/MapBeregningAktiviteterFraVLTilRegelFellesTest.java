@@ -29,7 +29,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
@@ -102,7 +101,7 @@ class MapBeregningAktiviteterFraVLTilRegelFellesTest {
         // Arrange
         LocalDate ansettelsesDato = SKJÆRINGSTIDSPUNKT.minusYears(1);
         var permisjonsPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.plusDays(1));
-        List<PermisjonDtoBuilder> permisjonDtoBuilders = List.of(PermisjonDtoBuilder.ny().medPeriode(permisjonsPeriode).medProsentsats(BigDecimal.valueOf(100)).medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.VELFERDSPERMISJON));
+        List<PermisjonDtoBuilder> permisjonDtoBuilders = List.of(PermisjonDtoBuilder.ny().medPeriode(permisjonsPeriode).medProsentsats(BigDecimal.valueOf(100)).medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.ANNEN_PERMISJON_LOVFESTET));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = lagIAY(ansettelsesDato, NULL_REF, permisjonDtoBuilders);
         var opptjeningAktiviteterDto = lagOpptjeningsAktivitet(ansettelsesDato, NULL_REF);
 
@@ -309,7 +308,7 @@ class MapBeregningAktiviteterFraVLTilRegelFellesTest {
         var opptjeningAktiviteter2 = OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.ARBEID, periode, ORGNR2, null, null);
         var alleAktiviteter = new OpptjeningAktiviteterDto(opptjeningAktiviteter, opptjeningAktiviteter2);
         var ya1 = lagYA(opptjeningAktiviteter, null, null).orElseThrow();
-        var ya2 = lagYA(opptjeningAktiviteter2, PermisjonsbeskrivelseType.VELFERDSPERMISJON, Intervall.fraOgMedTilOgMed(periode.getFomDato(), SKJÆRINGSTIDSPUNKT.plusYears(12))).orElseThrow();
+        var ya2 = lagYA(opptjeningAktiviteter2, PermisjonsbeskrivelseType.ANNEN_PERMISJON_LOVFESTET, Intervall.fraOgMedTilOgMed(periode.getFomDato(), SKJÆRINGSTIDSPUNKT.plusYears(12))).orElseThrow();
 
         // Act
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
@@ -355,7 +354,7 @@ class MapBeregningAktiviteterFraVLTilRegelFellesTest {
         var opptjeningAktiviteter2 = OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.ARBEID, periode, ORGNR2, null, null);
         var alleAktiviteter = new OpptjeningAktiviteterDto(opptjeningAktiviteter, opptjeningAktiviteter2);
         var ya1 = lagYA(opptjeningAktiviteter, null, null).orElseThrow();
-        var ya2 = lagYA(opptjeningAktiviteter2, PermisjonsbeskrivelseType.VELFERDSPERMISJON, Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusDays(15), SKJÆRINGSTIDSPUNKT.minusDays(1))).orElseThrow();
+        var ya2 = lagYA(opptjeningAktiviteter2, PermisjonsbeskrivelseType.ANNEN_PERMISJON_LOVFESTET, Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusDays(15), SKJÆRINGSTIDSPUNKT.minusDays(1))).orElseThrow();
 
         // Act
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
