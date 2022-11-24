@@ -4,6 +4,7 @@ import static no.nav.folketrygdloven.kalkulus.mapFraEntitet.BGMapperTilKalkulus.
 import static no.nav.folketrygdloven.kalkulus.mapFraEntitet.IAYMapperTilKalkulus.mapArbeidsforholdRef;
 import static no.nav.folketrygdloven.kalkulus.mapFraEntitet.IAYMapperTilKalkulus.mapArbeidsgiver;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -38,9 +39,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Fakta
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaArbeidsforholdEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.FaktaVurdering;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAktivitetHandlingType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
-import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
 public class BehandlingslagerTilKalkulusMapper {
 
@@ -106,7 +104,7 @@ public class BehandlingslagerTilKalkulusMapper {
         //lister
         beregningsgrunnlagFraFagsystem.getAktivitetStatuser().forEach(beregningsgrunnlagAktivitetStatus -> builder.leggTilAktivitetStatus(BGMapperTilKalkulus.mapAktivitetStatus(beregningsgrunnlagAktivitetStatus)));
         beregningsgrunnlagFraFagsystem.getBeregningsgrunnlagPerioder().forEach(beregningsgrunnlagPeriode -> builder.leggTilBeregningsgrunnlagPeriode(BGMapperTilKalkulus.mapBeregningsgrunnlagPeriode(beregningsgrunnlagPeriode)));
-        builder.leggTilFaktaOmBeregningTilfeller(beregningsgrunnlagFraFagsystem.getFaktaOmBeregningTilfeller().stream().map(fakta -> FaktaOmBeregningTilfelle.fraKode(fakta.getKode())).collect(Collectors.toList()));
+        builder.leggTilFaktaOmBeregningTilfeller(new ArrayList<>(beregningsgrunnlagFraFagsystem.getFaktaOmBeregningTilfeller()));
         beregningsgrunnlagFraFagsystem.getSammenligningsgrunnlagPrStatusListe().forEach(sammenligningsgrunnlagPrStatus -> builder.leggTilSammenligningsgrunnlag(BGMapperTilKalkulus.mapSammenligningsgrunnlagMedStatus(sammenligningsgrunnlagPrStatus)));
 
         return builder.build();
@@ -137,7 +135,7 @@ public class BehandlingslagerTilKalkulusMapper {
             BeregningAktivitetDto.Builder builder = BeregningAktivitetDto.builder();
             builder.medArbeidsforholdRef(beregningAktivitet.getArbeidsforholdRef() == null ? null : IAYMapperTilKalkulus.mapArbeidsforholdRef(beregningAktivitet.getArbeidsforholdRef()));
             builder.medArbeidsgiver(beregningAktivitet.getArbeidsgiver() == null ? null : mapArbeidsgiver(beregningAktivitet.getArbeidsgiver()));
-            builder.medOpptjeningAktivitetType(OpptjeningAktivitetType.fraKode(beregningAktivitet.getOpptjeningAktivitetType().getKode()));
+            builder.medOpptjeningAktivitetType(beregningAktivitet.getOpptjeningAktivitetType());
             builder.medPeriode(mapDatoIntervall(beregningAktivitet.getPeriode()));
             dtoBuilder.leggTilAktivitet(builder.build());
         };
@@ -153,8 +151,8 @@ public class BehandlingslagerTilKalkulusMapper {
             BeregningAktivitetOverstyringDto.Builder builder = BeregningAktivitetOverstyringDto.builder();
             builder.medArbeidsforholdRef(overstyring.getArbeidsforholdRef() == null ? null : IAYMapperTilKalkulus.mapArbeidsforholdRef(overstyring.getArbeidsforholdRef()));
             overstyring.getArbeidsgiver().ifPresent(arbeidsgiver -> builder.medArbeidsgiver(mapArbeidsgiver(arbeidsgiver)));
-            builder.medHandling(overstyring.getHandling() == null ? null : BeregningAktivitetHandlingType.fraKode(overstyring.getHandling().getKode()));
-            builder.medOpptjeningAktivitetType(OpptjeningAktivitetType.fraKode(overstyring.getOpptjeningAktivitetType().getKode()));
+            builder.medHandling(overstyring.getHandling());
+            builder.medOpptjeningAktivitetType(overstyring.getOpptjeningAktivitetType());
             builder.medPeriode(mapDatoIntervall(overstyring.getPeriode()));
             dtoBuilder.leggTilOverstyring(builder.build());
         });

@@ -18,18 +18,13 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.FastsattIn
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Promille;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Refusjon;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Årsgrunnlag;
-import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
-import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
-import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 
 
 public class KalkulatorTilBGMapper {
     public static BeregningsgrunnlagAktivitetStatus.Builder mapAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto fraKalkulus) {
         BeregningsgrunnlagAktivitetStatus.Builder builder = new BeregningsgrunnlagAktivitetStatus.Builder();
-        builder.medAktivitetStatus(AktivitetStatus.fraKode(fraKalkulus.getAktivitetStatus().getKode()));
-        builder.medHjemmel(Hjemmel.fraKode(fraKalkulus.getHjemmel().getKode()));
+        builder.medAktivitetStatus(fraKalkulus.getAktivitetStatus());
+        builder.medHjemmel(fraKalkulus.getHjemmel());
 
         return builder;
     }
@@ -44,7 +39,7 @@ public class KalkulatorTilBGMapper {
         builder.medRedusertPrÅr(mapTilBeløp(fraKalkulus.getRedusertPrÅr()));
 
         //legg til
-        fraKalkulus.getPeriodeÅrsaker().forEach(periodeÅrsak -> builder.leggTilPeriodeÅrsak(PeriodeÅrsak.fraKode(periodeÅrsak.getKode())));
+        fraKalkulus.getPeriodeÅrsaker().forEach(builder::leggTilPeriodeÅrsak);
         fraKalkulus.getBeregningsgrunnlagPrStatusOgAndelList().forEach(statusOgAndel -> builder.leggTilBeregningsgrunnlagPrStatusOgAndel(mapStatusOgAndel(statusOgAndel)));
 
         return builder;
@@ -63,14 +58,14 @@ public class KalkulatorTilBGMapper {
 
     private static BeregningsgrunnlagPrStatusOgAndel.Builder mapStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelDto fraKalkulus) {
         BeregningsgrunnlagPrStatusOgAndel.Builder builder = BeregningsgrunnlagPrStatusOgAndel.builder()
-                .medAktivitetStatus(AktivitetStatus.fraKode(fraKalkulus.getAktivitetStatus().getKode()))
+                .medAktivitetStatus(fraKalkulus.getAktivitetStatus())
                 .medAndelsnr(fraKalkulus.getAndelsnr())
-                .medArbforholdType(fraKalkulus.getArbeidsforholdType() == null ? null : OpptjeningAktivitetType.fraKode(fraKalkulus.getArbeidsforholdType().getKode()))
+                .medArbforholdType(fraKalkulus.getArbeidsforholdType())
                 .medAvkortetBrukersAndelPrÅr(mapTilBeløp(fraKalkulus.getAvkortetBrukersAndelPrÅr()))
                 .medAvkortetPrÅr(mapTilBeløp(fraKalkulus.getAvkortetPrÅr()))
                 .medAvkortetRefusjonPrÅr(mapTilBeløp(fraKalkulus.getAvkortetRefusjonPrÅr()))
                 .medFastsattAvSaksbehandler(fraKalkulus.getFastsattAvSaksbehandler())
-                .medKilde(AndelKilde.fraKode(fraKalkulus.getKilde().getKode()))
+                .medKilde(fraKalkulus.getKilde())
                 .medGrunnlagPrÅr(map(fraKalkulus.getGrunnlagPrÅr()))
                 .medRedusertPrÅr(mapTilBeløp(fraKalkulus.getRedusertPrÅr()))
                 .medRedusertBrukersAndelPrÅr(mapTilBeløp(fraKalkulus.getRedusertBrukersAndelPrÅr()))

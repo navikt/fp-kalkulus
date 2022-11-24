@@ -5,10 +5,8 @@ import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstan
 import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilIAYMapper.mapArbeidsforholdRef;
 import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilIAYMapper.mapArbeidsgiver;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
@@ -36,10 +34,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Fakta
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAktivitetHandlingType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
-import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
 
 /**
@@ -75,7 +70,7 @@ public class KalkulatorTilEntitetMapper {
         //lister
         beregningsgrunnlagFraKalkulus.getAktivitetStatuser().forEach(beregningsgrunnlagAktivitetStatus -> builder.leggTilAktivitetStatus(KalkulatorTilBGMapper.mapAktivitetStatus(beregningsgrunnlagAktivitetStatus)));
         beregningsgrunnlagFraKalkulus.getBeregningsgrunnlagPerioder().forEach(beregningsgrunnlagPeriode -> builder.leggTilBeregningsgrunnlagPeriode(KalkulatorTilBGMapper.mapBeregningsgrunnlagPeriode(beregningsgrunnlagPeriode)));
-        builder.leggTilFaktaOmBeregningTilfeller(beregningsgrunnlagFraKalkulus.getFaktaOmBeregningTilfeller().stream().map(fakta -> FaktaOmBeregningTilfelle.fraKode(fakta.getKode())).collect(Collectors.toList()));
+        builder.leggTilFaktaOmBeregningTilfeller(new ArrayList<>(beregningsgrunnlagFraKalkulus.getFaktaOmBeregningTilfeller()));
         beregningsgrunnlagFraKalkulus.getSammenligningsgrunnlagPrStatusListe().forEach(sammenligningsgrunnlagPrStatus -> builder.leggTilSammenligningsgrunnlag(KalkulatorTilBGMapper.mapSammenligningsgrunnlagMedStatus(sammenligningsgrunnlagPrStatus)));
 
         return builder.build();
@@ -112,7 +107,7 @@ public class KalkulatorTilEntitetMapper {
             BeregningAktivitetEntitet.Builder builder = BeregningAktivitetEntitet.builder();
             builder.medArbeidsforholdRef(beregningAktivitet.getArbeidsforholdRef() == null ? null : mapArbeidsforholdRef(beregningAktivitet.getArbeidsforholdRef()));
             builder.medArbeidsgiver(beregningAktivitet.getArbeidsgiver() == null ? null : mapArbeidsgiver(beregningAktivitet.getArbeidsgiver()));
-            builder.medOpptjeningAktivitetType(OpptjeningAktivitetType.fraKode(beregningAktivitet.getOpptjeningAktivitetType().getKode()));
+            builder.medOpptjeningAktivitetType(beregningAktivitet.getOpptjeningAktivitetType());
             builder.medPeriode(mapDatoIntervall(beregningAktivitet.getPeriode()));
             entitetBuilder.leggTilAktivitet(builder.build());
         };
@@ -124,8 +119,8 @@ public class KalkulatorTilEntitetMapper {
             BeregningAktivitetOverstyringEntitet.Builder builder = BeregningAktivitetOverstyringEntitet.builder();
             builder.medArbeidsforholdRef(overstyring.getArbeidsforholdRef() == null ? null : mapArbeidsforholdRef(overstyring.getArbeidsforholdRef()));
             overstyring.getArbeidsgiver().ifPresent(arbeidsgiver -> builder.medArbeidsgiver(mapArbeidsgiver(arbeidsgiver)));
-            builder.medHandling(overstyring.getHandling() == null ? null : BeregningAktivitetHandlingType.fraKode(overstyring.getHandling().getKode()));
-            builder.medOpptjeningAktivitetType(OpptjeningAktivitetType.fraKode(overstyring.getOpptjeningAktivitetType().getKode()));
+            builder.medHandling(overstyring.getHandling());
+            builder.medOpptjeningAktivitetType(overstyring.getOpptjeningAktivitetType());
             builder.medPeriode(mapDatoIntervall(overstyring.getPeriode()));
             entitetBuilder.leggTilOverstyring(builder.build());
         });

@@ -11,7 +11,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
 import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
-import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningsgrunnlagPrStatusOgAndelEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.InntektEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.InntektskategoriEndring;
@@ -46,7 +45,7 @@ public class UtledEndringIAndel {
                 andelEndring = BeregningsgrunnlagPrStatusOgAndelEndring.opprettForArbeidstakerUtenArbeidsgiver(andel.getArbeidsforholdType(), andel.getAndelsnr());
             }
         } else {
-            andelEndring = new BeregningsgrunnlagPrStatusOgAndelEndring(andel.getAndelsnr(), AktivitetStatus.fraKode(andel.getAktivitetStatus().getKode()));
+            andelEndring = new BeregningsgrunnlagPrStatusOgAndelEndring(andel.getAndelsnr(), andel.getAktivitetStatus());
         }
         return andelEndring;
     }

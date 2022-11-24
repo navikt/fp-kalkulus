@@ -5,14 +5,14 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Pattern;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -20,26 +20,11 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
 public class BeregningAktivitetDto {
 
-    @Valid
-    @JsonProperty(value = "arbeidsgiverNavn")
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
-    private String arbeidsgiverNavn;
-
-    @Valid
-    @JsonProperty(value = "arbeidsgiverId")
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
-    private String arbeidsgiverId;
-
+    /** For virksomheter - orgnr. For personlige arbeidsgiver - aktørId. */
     @Valid
     @JsonProperty(value = "arbeidsgiverIdent")
     @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String arbeidsgiverIdent;
-
-    @Valid
-    @JsonProperty(value = "arbeidsgiverIdVisning")
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
-    private String arbeidsgiverIdVisning;
-
 
     @Valid
     @JsonProperty(value = "eksternArbeidsforholdId")
@@ -48,13 +33,14 @@ public class BeregningAktivitetDto {
 
     @Valid
     @JsonProperty(value = "fom")
+    @NotNull
     private LocalDate fom;
 
     @Valid
     @JsonProperty(value = "tom")
+    @NotNull
     private LocalDate tom;
 
-    /** For virksomheter - orgnr. For personlige arbeidsgiver - aktørId. */
     @Valid
     @JsonProperty(value = "arbeidsforholdId")
     @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
@@ -62,12 +48,8 @@ public class BeregningAktivitetDto {
 
     @Valid
     @JsonProperty(value = "arbeidsforholdType")
+    @NotNull
     private OpptjeningAktivitetType arbeidsforholdType;
-
-    @Valid
-    @JsonProperty(value = "aktørIdString")
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
-    private String aktørIdString;
 
     @Valid
     @JsonProperty(value = "skalBrukes")
@@ -83,20 +65,6 @@ public class BeregningAktivitetDto {
 
     public void setArbeidsforholdId(String arbeidsforholdId) {
         this.arbeidsforholdId = arbeidsforholdId;
-    }
-
-
-
-    public void setArbeidsgiverIdVisning(String arbeidsgiverIdVisning) {
-        this.arbeidsgiverIdVisning = arbeidsgiverIdVisning;
-    }
-
-    public String getArbeidsgiverId() {
-        return arbeidsgiverId;
-    }
-
-    public void setArbeidsgiverId(String arbeidsgiverId) {
-        this.arbeidsgiverId = arbeidsgiverId;
     }
 
     public String getArbeidsgiverIdent() {
@@ -131,14 +99,6 @@ public class BeregningAktivitetDto {
         this.arbeidsforholdType = arbeidsforholdType;
     }
 
-    public String getAktørIdString() {
-        return aktørIdString;
-    }
-
-    public void setAktørIdString(String aktørIdString) {
-        this.aktørIdString = aktørIdString;
-    }
-
     public Boolean getSkalBrukes() {
         return skalBrukes;
     }
@@ -160,17 +120,16 @@ public class BeregningAktivitetDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BeregningAktivitetDto that = (BeregningAktivitetDto) o;
-        return Objects.equals(arbeidsgiverId, that.arbeidsgiverId) &&
+        return Objects.equals(arbeidsgiverIdent, that.arbeidsgiverIdent) &&
             Objects.equals(fom, that.fom) &&
             Objects.equals(tom, that.tom) &&
             Objects.equals(arbeidsforholdId, that.arbeidsforholdId) &&
             Objects.equals(eksternArbeidsforholdId, that.eksternArbeidsforholdId) &&
-            Objects.equals(arbeidsforholdType, that.arbeidsforholdType) &&
-            Objects.equals(aktørIdString, that.aktørIdString);
+            Objects.equals(arbeidsforholdType, that.arbeidsforholdType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(arbeidsgiverId, fom, tom, arbeidsforholdId, eksternArbeidsforholdId, arbeidsforholdType, aktørIdString);
+        return Objects.hash(arbeidsgiverIdent, fom, tom, arbeidsforholdId, eksternArbeidsforholdId, arbeidsforholdType);
     }
 }

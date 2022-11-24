@@ -11,6 +11,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetOverstyringerEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningRefusjonOverstyringEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningRefusjonOverstyringerEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
@@ -24,7 +25,6 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
-import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BGAndelArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningAktivitetAggregatDto;
@@ -214,7 +214,7 @@ public class MapDetaljertBeregningsgrunnlag {
     private static BeregningsgrunnlagPrStatusOgAndelDto mapAndel(BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel) {
         return new BeregningsgrunnlagPrStatusOgAndelDto(
                 beregningsgrunnlagPrStatusOgAndel.getAndelsnr(),
-                AktivitetStatus.fraKode(beregningsgrunnlagPrStatusOgAndel.getAktivitetStatus().getKode()),
+                beregningsgrunnlagPrStatusOgAndel.getAktivitetStatus(),
                 mapBeregningsperiode(beregningsgrunnlagPrStatusOgAndel),
                 beregningsgrunnlagPrStatusOgAndel.getArbeidsforholdType(),
                 mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr()),
@@ -222,7 +222,7 @@ public class MapDetaljertBeregningsgrunnlag {
                 mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getRedusertBrukersAndelPrÅr()),
                 beregningsgrunnlagPrStatusOgAndel.getDagsatsBruker(),
                 beregningsgrunnlagPrStatusOgAndel.getDagsatsArbeidsgiver(),
-                Inntektskategori.fraKode(beregningsgrunnlagPrStatusOgAndel.getInntektskategori().getKode()),
+                beregningsgrunnlagPrStatusOgAndel.getInntektskategori(),
                 mapBgAndelArbeidsforhold(beregningsgrunnlagPrStatusOgAndel),
                 mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getOverstyrtPrÅr()),
                 mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getAvkortetPrÅr()),
@@ -265,7 +265,7 @@ public class MapDetaljertBeregningsgrunnlag {
     }
 
     private static List<AktivitetStatus> mapAktivitetstatuser(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
-        return beregningsgrunnlagEntitet.getAktivitetStatuser().stream().map(a -> AktivitetStatus.fraKode(a.getAktivitetStatus().getKode()))
+        return beregningsgrunnlagEntitet.getAktivitetStatuser().stream().map(BeregningsgrunnlagAktivitetStatus::getAktivitetStatus)
                 .collect(Collectors.toList());
     }
 

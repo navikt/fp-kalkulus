@@ -5,13 +5,14 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -21,12 +22,14 @@ public class FordelBeregningsgrunnlagDto {
 
     @Valid
     @JsonProperty(value = "fordelBeregningsgrunnlagPerioder")
-    @Size
+    @Size(max=5000)
+    @NotNull
     private List<FordelBeregningsgrunnlagPeriodeDto> fordelBeregningsgrunnlagPerioder = new ArrayList<>();
 
     @Valid
     @JsonProperty(value = "arbeidsforholdTilFordeling")
-    @Size
+    @Size(max=500)
+    @NotNull
     private List<FordelBeregningsgrunnlagArbeidsforholdDto> arbeidsforholdTilFordeling = new ArrayList<>();
 
     public List<FordelBeregningsgrunnlagPeriodeDto> getFordelBeregningsgrunnlagPerioder() {

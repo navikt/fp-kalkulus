@@ -19,7 +19,6 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetGraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.YtelsespesifiktGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
-import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 class ForeldrepengerGrunnlagMapper {
@@ -43,7 +42,7 @@ class ForeldrepengerGrunnlagMapper {
             AndelGradering.Builder builder = AndelGradering.builder();
             andel.getGraderinger()
                     .forEach(grad -> builder.medGradering(grad.getPeriode().getFom(), grad.getPeriode().getTom(), grad.getArbeidstidProsent().intValue()));
-            builder.medStatus(AktivitetStatus.fraKode(andel.getAktivitetStatus().getKode()));
+            builder.medStatus(andel.getAktivitetStatus());
             builder.medArbeidsgiver(mapArbeidsgiver(andel.getArbeidsgiver()));
             no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto arbeidsforholdRef = andel.getArbeidsforholdRef();
             if (arbeidsforholdRef != null) {

@@ -17,7 +17,7 @@ public class ForeldrepengerGrunnlagMapper implements YtelsesspesifikkRegelMapper
     @Override
     public YtelsesSpesifiktGrunnlag map(BeregningsgrunnlagDto beregningsgrunnlag, BeregningsgrunnlagInput input) {
         boolean harVærtBesteberegnet = beregningsgrunnlag.getFaktaOmBeregningTilfeller().stream()
-                .anyMatch(tilfelle -> FaktaOmBeregningTilfelle.FASTSETT_BESTEBEREGNING_FØDENDE_KVINNE.equals(FaktaOmBeregningTilfelle.fraKode(tilfelle.getKode())));
+                .anyMatch(FaktaOmBeregningTilfelle.FASTSETT_BESTEBEREGNING_FØDENDE_KVINNE::equals);
         return new ForeldrepengerGrunnlag(harVærtBesteberegnet);
     }
 

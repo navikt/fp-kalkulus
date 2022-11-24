@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittEgenNæringDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.VirksomhetType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.EgenNæringDto;
 
 public final class EgenNæringMapper {
@@ -13,7 +12,7 @@ public final class EgenNæringMapper {
     public static EgenNæringDto map(OppgittEgenNæringDto egenNæring) {
         EgenNæringDto dto = new EgenNæringDto();
         dto.setOrgnr(egenNæring.getOrgnr());
-        dto.setVirksomhetType(VirksomhetType.fraKode(egenNæring.getVirksomhetType().getKode()));
+        dto.setVirksomhetType(egenNæring.getVirksomhetType());
         dto.setBegrunnelse(egenNæring.getBegrunnelse());
         dto.setEndringsdato(egenNæring.getEndringDato());
         dto.setOppstartsdato(egenNæring.getPeriode() != null ? egenNæring.getFraOgMed()  : null);

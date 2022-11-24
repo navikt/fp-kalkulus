@@ -11,6 +11,7 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.konfig.DefaultKonfig;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
@@ -19,7 +20,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.brev.BGAndelArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.brev.BeregningsgrunnlagDto;
@@ -70,7 +70,7 @@ public class MapBrevBeregningsgrunnlag {
                                                                  YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         return new BeregningsgrunnlagPrStatusOgAndelDto(
                 andel.getAndelsnr(),
-                AktivitetStatus.fraKode(andel.getAktivitetStatus().getKode()),
+                andel.getAktivitetStatus(),
                 andel.getArbeidsforholdType(),
                 andel.getBeregningsperiodeFom() == null ? null : new Periode(andel.getBeregningsperiodeFom(), andel.getBeregningsperiodeTom()),
                 mapFraBeløp(andel.getBruttoPrÅr()),
@@ -78,7 +78,7 @@ public class MapBrevBeregningsgrunnlag {
                 andel.getDagsatsArbeidsgiver(),
                 finnUgradertDagsatsBruker(andel, periode, ytelsespesifiktGrunnlag),
                 finnUgradertDagsatsArbeidsgiver(andel, periode, ytelsespesifiktGrunnlag),
-                Inntektskategori.fraKode(andel.getInntektskategori().getKode()),
+                andel.getInntektskategori(),
                 mapBgAndelArbeidsforhold(andel),
                 mapFraBeløp(andel.getAvkortetFørGraderingPrÅr()),
                 mapFraBeløp(andel.getAvkortetPrÅr()),
@@ -147,7 +147,7 @@ public class MapBrevBeregningsgrunnlag {
     }
 
     private static List<AktivitetStatus> mapAktivitetstatuser(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
-        return beregningsgrunnlagEntitet.getAktivitetStatuser().stream().map(a -> AktivitetStatus.fraKode(a.getAktivitetStatus().getKode()))
+        return beregningsgrunnlagEntitet.getAktivitetStatuser().stream().map(BeregningsgrunnlagAktivitetStatus::getAktivitetStatus)
                 .collect(Collectors.toList());
     }
 

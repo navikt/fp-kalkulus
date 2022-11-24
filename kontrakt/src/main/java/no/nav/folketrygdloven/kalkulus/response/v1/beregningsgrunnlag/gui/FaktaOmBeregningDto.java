@@ -2,16 +2,16 @@ package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.fakta.Saksopplysninger;
 
@@ -22,12 +22,11 @@ public class FaktaOmBeregningDto {
 
     @Valid
     @JsonProperty(value = "saksopplysninger")
-    @Size
     private Saksopplysninger saksopplysninger;
 
     @Valid
     @JsonProperty(value = "kortvarigeArbeidsforhold")
-    @Size
+    @Size(max=100)
     private List<KortvarigeArbeidsforholdDto> kortvarigeArbeidsforhold;
 
     @Valid
@@ -40,17 +39,17 @@ public class FaktaOmBeregningDto {
 
     @Valid
     @JsonProperty(value = "faktaOmBeregningTilfeller")
-    @Size
+    @Size(max=15)
     private List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller;
 
     @Valid
     @JsonProperty(value = "arbeidstakerOgFrilanserISammeOrganisasjonListe")
-    @Size
+    @Size(max=100)
     private List<ATogFLISammeOrganisasjonDto> arbeidstakerOgFrilanserISammeOrganisasjonListe;
 
     @Valid
     @JsonProperty(value = "arbeidsforholdMedLønnsendringUtenIM")
-    @Size
+    @Size(max=100)
     private List<FaktaOmBeregningAndelDto> arbeidsforholdMedLønnsendringUtenIM;
 
     @Valid
@@ -68,7 +67,7 @@ public class FaktaOmBeregningDto {
     @Valid
     @JsonProperty(value = "andelerForFaktaOmBeregning")
     @Size
-    private List<AndelForFaktaOmBeregningDto> andelerForFaktaOmBeregning;
+    private List<AndelForFaktaOmBeregningDto> andelerForFaktaOmBeregning = new ArrayList<>();
 
     @Valid
     @JsonProperty(value = "vurderMilitaer")

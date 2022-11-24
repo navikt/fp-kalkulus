@@ -41,7 +41,6 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.mapFraEntitet.BehandlingslagerTilKalkulusMapper;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.MidlertidigInaktivType;
@@ -142,9 +141,8 @@ public class MapFraKalkulator {
                                                     KalkulatorInputDto input,
                                                     no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                     Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
-        var yt = YtelseTyperKalkulusStøtterKontrakt.fraKode(ytelseType.getKode());
         var ytelsespesifiktGrunnlag = input.getYtelsespesifiktGrunnlag();
-        return switch (yt) {
+        return switch (ytelseType) {
             case FORELDREPENGER -> mapForeldrepengerGrunnlag(ytelsespesifiktGrunnlag);
             case SVANGERSKAPSPENGER -> mapSvangerskapspengerGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.SvangerskapspengerGrunnlag) ytelsespesifiktGrunnlag);
             case PLEIEPENGER_SYKT_BARN -> mapPleiepengerSyktBarnGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.PleiepengerSyktBarnGrunnlag) ytelsespesifiktGrunnlag);
@@ -173,7 +171,7 @@ public class MapFraKalkulator {
         return new no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto(
                 opptjeningAktiviteter.getPerioder().stream()
                         .map(opptjeningPeriodeDto -> no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto.nyPeriode(
-                                OpptjeningAktivitetType.fraKode(opptjeningPeriodeDto.getOpptjeningAktivitetType().getKode()),
+                                opptjeningPeriodeDto.getOpptjeningAktivitetType(),
                                 mapPeriode(opptjeningPeriodeDto.getPeriode()),
                                 opptjeningPeriodeDto.getArbeidsgiver() != null && opptjeningPeriodeDto.getArbeidsgiver().getErOrganisasjon()
                                         ? opptjeningPeriodeDto.getArbeidsgiver().getIdent()

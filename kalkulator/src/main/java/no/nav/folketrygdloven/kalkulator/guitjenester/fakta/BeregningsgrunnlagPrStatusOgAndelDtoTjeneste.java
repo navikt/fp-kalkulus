@@ -21,7 +21,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsf
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
-import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPrStatusOgAndelDto;
 
 @ApplicationScoped
@@ -81,7 +80,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         dto.setRedusertPrAar(andel.getRedusertPrÅr());
         dto.setOverstyrtPrAar(andel.getOverstyrtPrÅr());
         dto.setBeregnetPrAar(andel.getBeregnetPrÅr());
-        dto.setInntektskategori(Inntektskategori.fraKode(andel.getGjeldendeInntektskategori().getKode()));
+        dto.setInntektskategori(andel.getGjeldendeInntektskategori());
         dto.setBesteberegningPrAar(andel.getBesteberegningPrÅr());
         dto.setFastsattAvSaksbehandler(andel.getFastsattAvSaksbehandler());
         faktaAggregat.flatMap(fa -> fa.getFaktaArbeidsforhold(andel))

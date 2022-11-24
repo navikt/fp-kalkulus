@@ -6,13 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -21,7 +22,8 @@ public class FordelBeregningsgrunnlagArbeidsforholdDto extends Beregningsgrunnla
 
     @Valid
     @JsonProperty(value = "perioderMedGraderingEllerRefusjon")
-    @Size
+    @Size(max=100)
+    @NotNull
     private List<NyPeriodeDto> perioderMedGraderingEllerRefusjon = new ArrayList<>();
 
     @Valid

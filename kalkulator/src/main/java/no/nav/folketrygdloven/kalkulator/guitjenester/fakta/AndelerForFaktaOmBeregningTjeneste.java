@@ -19,8 +19,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
-import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.AndelForFaktaOmBeregningDto;
 
 public class AndelerForFaktaOmBeregningTjeneste {
@@ -50,9 +48,9 @@ public class AndelerForFaktaOmBeregningTjeneste {
         var inntektsmeldingForAndel = finnInntektsmelding(andel, inntektsmeldinger);
         var dto = new AndelForFaktaOmBeregningDto();
         dto.setFastsattBelop(finnInntektForPreutfylling(andel));
-        dto.setInntektskategori(Inntektskategori.fraKode(andel.getGjeldendeInntektskategori().getKode()));
+        dto.setInntektskategori(andel.getGjeldendeInntektskategori());
         dto.setAndelsnr(andel.getAndelsnr());
-        dto.setAktivitetStatus(AktivitetStatus.fraKode(andel.getAktivitetStatus().getKode()));
+        dto.setAktivitetStatus(andel.getAktivitetStatus());
         var inntektArbeidYtelseGrunnlag = input.getIayGrunnlag();
         dto.setSkalKunneEndreAktivitet(skalKunneEndreAktivitet(andel, input.getBeregningsgrunnlag().isOverstyrt()));
         dto.setLagtTilAvSaksbehandler(andel.erLagtTilAvSaksbehandler());

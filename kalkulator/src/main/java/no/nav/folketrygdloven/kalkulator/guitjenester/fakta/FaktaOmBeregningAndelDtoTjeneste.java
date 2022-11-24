@@ -27,7 +27,6 @@ import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.KontrollerFaktaBer
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.LønnsendringTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaVurderingKilde;
-import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.ATogFLISammeOrganisasjonDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningAndelDto;
 
@@ -48,7 +47,7 @@ public class FaktaOmBeregningAndelDtoTjeneste {
             FaktaOmBeregningAndelDto dto = new FaktaOmBeregningAndelDto();
             BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(frilansAndel, Optional.empty(), inntektArbeidYtelseGrunnlag)
                     .ifPresent(dto::setArbeidsforhold);
-            dto.setInntektskategori(Inntektskategori.fraKode(frilansAndel.getGjeldendeInntektskategori().getKode()));
+            dto.setInntektskategori(frilansAndel.getGjeldendeInntektskategori());
             dto.setAndelsnr(frilansAndel.getAndelsnr());
             return Optional.of(dto);
         }
@@ -97,7 +96,7 @@ public class FaktaOmBeregningAndelDtoTjeneste {
         BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, Optional.empty(), inntektArbeidYtelseGrunnlag)
                 .ifPresent(dto::setArbeidsforhold);
         dto.setAndelsnr(andel.getAndelsnr());
-        dto.setInntektskategori(Inntektskategori.fraKode(andel.getGjeldendeInntektskategori().getKode()));
+        dto.setInntektskategori(andel.getGjeldendeInntektskategori());
 
         // Privapersoner sender ikke inntektsmelding, disse må alltid fastsettes
         if (andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver).map(Arbeidsgiver::getErVirksomhet).orElse(false)) {
@@ -152,7 +151,7 @@ public class FaktaOmBeregningAndelDtoTjeneste {
         BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, Optional.empty(), inntektArbeidYtelseGrunnlag)
                 .ifPresent(dto::setArbeidsforhold);
         dto.setAndelsnr(andel.getAndelsnr());
-        dto.setInntektskategori(Inntektskategori.fraKode(andel.getGjeldendeInntektskategori().getKode()));
+        dto.setInntektskategori(andel.getGjeldendeInntektskategori());
         return dto;
     }
 

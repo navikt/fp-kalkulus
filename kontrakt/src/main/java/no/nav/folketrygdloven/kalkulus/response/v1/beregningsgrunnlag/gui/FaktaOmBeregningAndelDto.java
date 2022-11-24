@@ -7,16 +7,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
@@ -30,6 +30,7 @@ public class FaktaOmBeregningAndelDto {
     @JsonProperty("andelsnr")
     @Min(0)
     @Max(1000)
+    @NotNull
     private Long andelsnr;
 
     @Valid
@@ -38,14 +39,17 @@ public class FaktaOmBeregningAndelDto {
 
     @Valid
     @JsonProperty("inntektskategori")
+    @NotNull
     private Inntektskategori inntektskategori;
 
     @Valid
     @JsonProperty("aktivitetStatus")
+    @NotNull
     private AktivitetStatus aktivitetStatus;
 
     @Valid
     @JsonProperty("kilde")
+    @NotNull
     private AndelKilde kilde;
 
     @Valid
@@ -58,7 +62,8 @@ public class FaktaOmBeregningAndelDto {
 
     @Valid
     @JsonProperty("andelIArbeid")
-    @Size
+    @Size(max = 100)
+    @NotNull
     private List<BigDecimal> andelIArbeid = new ArrayList<>();
 
     public FaktaOmBeregningAndelDto(Long andelsnr,
@@ -147,10 +152,6 @@ public class FaktaOmBeregningAndelDto {
 
     public List<BigDecimal> getAndelIArbeid() {
         return andelIArbeid;
-    }
-
-    public void setAndelIArbeid(List<BigDecimal> andelIArbeid) {
-        this.andelIArbeid = andelIArbeid;
     }
 
     public void leggTilAndelIArbeid(BigDecimal andelIArbeid) {

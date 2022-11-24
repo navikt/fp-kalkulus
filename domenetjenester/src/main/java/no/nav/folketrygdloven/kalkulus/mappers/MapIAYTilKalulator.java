@@ -47,11 +47,8 @@ import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.UtbetalingsPostDto;
 import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseDto;
 import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseFordelingDto;
 import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelserDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidsforholdHandlingType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.NaturalYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.NæringsinntektType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OffentligYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PensjonTrygdType;
@@ -59,7 +56,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltNæringsYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltPensjonTrygdType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltYtelseFraOffentligeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltYtelseType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.VirksomhetType;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittEgenNæringDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittFrilansInntekt;
@@ -168,7 +164,7 @@ public class MapIAYTilKalulator {
                 .medBruttoInntekt(oppgittEgenNæring.getBruttoInntekt())
                 .medNyIArbeidslivet(oppgittEgenNæring.getNyIArbeidslivet())
                 .medEndringDato(oppgittEgenNæring.getEndringDato())
-                .medVirksomhetType(VirksomhetType.fraKode(oppgittEgenNæring.getVirksomhetType().getKode()))
+                .medVirksomhetType(oppgittEgenNæring.getVirksomhetType())
                 .medVarigEndring(oppgittEgenNæring.getVarigEndring())
                 .medBegrunnelse(oppgittEgenNæring.getBegrunnelse())
                 .medNyoppstartet(oppgittEgenNæring.getNyoppstartet());
@@ -210,7 +206,7 @@ public class MapIAYTilKalulator {
         return new NaturalYtelseDto(naturalYtelse.getPeriode().getFom(),
                 naturalYtelse.getPeriode().getTom(),
                 naturalYtelse.getBeløp().getVerdi(),
-                NaturalYtelseType.fraKode(naturalYtelse.getType().getKode()));
+                naturalYtelse.getType());
     }
 
     private static RefusjonDto mapRefusjon(no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.RefusjonDto refusjon) {
@@ -240,7 +236,7 @@ public class MapIAYTilKalulator {
         }
         dtoBuilder.medArbeidsforholdId(mapArbeidsforholdRef(yrkesaktivitet.getAbakusReferanse()));
         dtoBuilder.medArbeidsgiver(MapFraKalkulator.mapArbeidsgiver(yrkesaktivitet.getArbeidsgiver()));
-        dtoBuilder.medArbeidType(ArbeidType.fraKode(yrkesaktivitet.getArbeidType().getKode()));
+        dtoBuilder.medArbeidType(yrkesaktivitet.getArbeidType());
         return dtoBuilder.build();
     }
 
@@ -254,7 +250,7 @@ public class MapIAYTilKalulator {
         InntektDtoBuilder builder = InntektDtoBuilder.oppdatere(Optional.empty());
         inntekt.getPoster().forEach(inntektspost -> builder.leggTilInntektspost(mapInntektspost(inntektspost)));
         builder.medArbeidsgiver(MapFraKalkulator.mapArbeidsgiver(inntekt.getUtbetaler()));
-        builder.medInntektsKilde(InntektskildeType.fraKode(inntekt.getKilde().getKode()));
+        builder.medInntektsKilde(inntekt.getKilde());
         return builder;
     }
 

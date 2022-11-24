@@ -19,19 +19,14 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Samme
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Promille;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
-import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
-import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
-import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 
 
 public class BGMapperTilKalkulus {
     public static BeregningsgrunnlagAktivitetStatusDto.Builder mapAktivitetStatus(BeregningsgrunnlagAktivitetStatus fraFagsystem) {
         BeregningsgrunnlagAktivitetStatusDto.Builder builder = new BeregningsgrunnlagAktivitetStatusDto.Builder();
-        builder.medAktivitetStatus(AktivitetStatus.fraKode(fraFagsystem.getAktivitetStatus().getKode()));
-        builder.medHjemmel(Hjemmel.fraKode(fraFagsystem.getHjemmel().getKode()));
+        builder.medAktivitetStatus(fraFagsystem.getAktivitetStatus());
+        builder.medHjemmel(fraFagsystem.getHjemmel());
 
         return builder;
     }
@@ -46,7 +41,7 @@ public class BGMapperTilKalkulus {
         builder.medRedusertPrÅr(mapFraBeløp(fraFagsystem.getRedusertPrÅr()));
 
         //legg til
-        fraFagsystem.getPeriodeÅrsaker().forEach(periodeÅrsak -> builder.leggTilPeriodeÅrsak(PeriodeÅrsak.fraKode(periodeÅrsak.getKode())));
+        fraFagsystem.getPeriodeÅrsaker().forEach(builder::leggTilPeriodeÅrsak);
         fraFagsystem.getBeregningsgrunnlagPrStatusOgAndelList().forEach(statusOgAndel -> builder.leggTilBeregningsgrunnlagPrStatusOgAndel(mapStatusOgAndel(statusOgAndel)));
 
         return builder;
@@ -56,16 +51,16 @@ public class BGMapperTilKalkulus {
         SammenligningsgrunnlagPrStatusDto.Builder builder = new SammenligningsgrunnlagPrStatusDto.Builder();
         builder.medAvvikPromilleNy(mapFraPromille(fraFagsystem.getGjeldendeAvvik()));
         builder.medRapportertPrÅr(mapFraBeløp(fraFagsystem.getRapportertPrÅr()));
-        builder.medSammenligningsgrunnlagType(SammenligningsgrunnlagType.fraKode(fraFagsystem.getSammenligningsgrunnlagType().getKode()));
+        builder.medSammenligningsgrunnlagType(fraFagsystem.getSammenligningsgrunnlagType());
         builder.medSammenligningsperiode(fraFagsystem.getSammenligningsperiodeFom(), fraFagsystem.getSammenligningsperiodeTom());
         return builder.build();
     }
 
     private static BeregningsgrunnlagPrStatusOgAndelDto.Builder mapStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel fraFagsystem) {
         BeregningsgrunnlagPrStatusOgAndelDto.Builder builder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
-                .medAktivitetStatus(AktivitetStatus.fraKode(fraFagsystem.getAktivitetStatus().getKode()))
+                .medAktivitetStatus(fraFagsystem.getAktivitetStatus())
                 .medAndelsnr(fraFagsystem.getAndelsnr())
-                .medArbforholdType(fraFagsystem.getArbeidsforholdType() == null ? null : OpptjeningAktivitetType.fraKode(fraFagsystem.getArbeidsforholdType().getKode()))
+                .medArbforholdType(fraFagsystem.getArbeidsforholdType())
                 .medAvkortetBrukersAndelPrÅr(mapFraBeløp(fraFagsystem.getAvkortetBrukersAndelPrÅr()))
                 .medAvkortetPrÅr(mapFraBeløp(fraFagsystem.getAvkortetPrÅr()))
                 .medAvkortetRefusjonPrÅr(mapFraBeløp(fraFagsystem.getAvkortetRefusjonPrÅr()))
@@ -80,8 +75,8 @@ public class BGMapperTilKalkulus {
                 .medMaksimalRefusjonPrÅr(mapFraBeløp(fraFagsystem.getMaksimalRefusjonPrÅr()))
                 .medRedusertRefusjonPrÅr(mapFraBeløp(fraFagsystem.getRedusertRefusjonPrÅr()))
                 .medÅrsbeløpFraTilstøtendeYtelse(mapFraBeløp(fraFagsystem.getÅrsbeløpFraTilstøtendeYtelse()))
-                .medInntektskategori(fraFagsystem.getInntektskategori() == null ? null : Inntektskategori.fraKode(fraFagsystem.getInntektskategori().getKode()))
-                .medKilde(AndelKilde.fraKode(fraFagsystem.getKilde().getKode()))
+                .medInntektskategori(fraFagsystem.getInntektskategori())
+                .medKilde(fraFagsystem.getKilde())
                 .medOrginalDagsatsFraTilstøtendeYtelse(fraFagsystem.getOrginalDagsatsFraTilstøtendeYtelse())
                 .medAvkortetFørGraderingPrÅr(mapFraBeløp(fraFagsystem.getAvkortetFørGraderingPrÅr()));
 

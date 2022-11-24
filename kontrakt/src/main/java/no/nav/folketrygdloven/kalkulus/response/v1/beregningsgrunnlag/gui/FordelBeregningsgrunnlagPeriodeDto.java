@@ -7,13 +7,14 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -22,6 +23,7 @@ public class FordelBeregningsgrunnlagPeriodeDto {
 
     @Valid
     @JsonProperty(value = "fom")
+    @NotNull
     private LocalDate fom;
 
     @Valid
@@ -30,7 +32,8 @@ public class FordelBeregningsgrunnlagPeriodeDto {
 
     @Valid
     @JsonProperty(value = "fordelBeregningsgrunnlagAndeler")
-    @Size
+    @Size(min = 1, max = 100)
+    @NotNull
     private List<FordelBeregningsgrunnlagAndelDto> fordelBeregningsgrunnlagAndeler = new ArrayList<>();
 
     @Valid
