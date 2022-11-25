@@ -114,4 +114,4 @@ spec:
     - name: FREMSKYNDET_REGELENDRING
       value: "false"
     - name: KOPIERING_VED_FORLENGELSE
-      value: "true"
+      value: "false"
