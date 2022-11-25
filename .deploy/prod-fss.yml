@@ -107,10 +107,6 @@ spec:
       value: "true"
     - name: TREKKE_OVERSTYRING_ENABLED
       value: "true"
-    - name: AVVIKSVURDER_MIDL_INAKTIV
-      value: "true"
-    - name: SAMMENLIGNING_PR_STATUS_FRONTEND
-      value: "true"
     - name: FREMSKYNDET_REGELENDRING
       value: "false"
     - name: KOPIERING_VED_FORLENGELSE

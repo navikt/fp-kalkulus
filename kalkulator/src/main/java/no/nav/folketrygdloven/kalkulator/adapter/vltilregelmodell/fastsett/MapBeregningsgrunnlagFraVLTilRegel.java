@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.fastsett;
 
 import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste.finnUtbetalingsgradForAndel;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +23,6 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.Beregnings
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.BeregningsgrunnlagPrStatus;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.YtelsesSpesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
-import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.adapter.util.BeregningsgrunnlagUtil;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapArbeidsforholdFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.PerioderTilVurderingTjeneste;
@@ -77,16 +75,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medYtelsesSpesifiktGrunnlag(mapYtelsesSpesifiktGrunnlag(input, beregningsgrunnlag))
                 .medAntallGØvreGrenseverdi(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi())
                 .medMidlertidigInaktivType(mapMidlertidigInaktivType(input))
-                .leggTilToggle("AVVIKSVURDER_MIDL_INAKTIV", KonfigurasjonVerdi.get("AVVIKSVURDER_MIDL_INAKTIV", false))
                 .build();
-    }
-
-
-    private BigDecimal getAntallGForOppfyltVilkår(BeregningsgrunnlagInput input) {
-        if (input.getBeregningsgrunnlag() != null && erMidlertidigInaktiv(input)) {
-            return KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGForOppfyltVilkårInaktiv();
-        }
-        return KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGForOppfyltVilkår();
     }
 
     private MidlertidigInaktivType mapMidlertidigInaktivType(BeregningsgrunnlagInput input) {
@@ -97,10 +86,6 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         return midlertidigInaktivType != null ?
                 MidlertidigInaktivType.valueOf(midlertidigInaktivType.name()) :
                 null;
-    }
-
-    private boolean erMidlertidigInaktiv(BeregningsgrunnlagInput input) {
-        return input.getBeregningsgrunnlag().getAktivitetStatuser().stream().anyMatch(a -> a.getAktivitetStatus().equals(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.MIDLERTIDIG_INAKTIV));
     }
 
     private YtelsesSpesifiktGrunnlag mapYtelsesSpesifiktGrunnlag(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
