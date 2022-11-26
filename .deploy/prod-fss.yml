@@ -111,3 +111,5 @@ spec:
       value: "false"
     - name: KOPIERING_VED_FORLENGELSE
       value: "false"
+    - name: GRADERING_MOT_INNTEKT
+      value: "false"

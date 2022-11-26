@@ -138,7 +138,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
                 input.getKoblingReferanse(),
                 nyttGrunnlag,
                 input.getYtelsespesifiktGrunnlag(),
-                input.getInntektsmeldinger(),
+                input.getIayGrunnlag(),
                 input.getForlengelseperioder());
         return Builder.fra(input)
                 .medAvklaringsbehov(avklaringsbehov)

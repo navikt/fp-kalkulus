@@ -1,9 +1,9 @@
 package no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
@@ -11,6 +11,8 @@ import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -25,11 +27,27 @@ public class AvklaringsbehovUtlederFordelBeregning {
     public static List<BeregningAvklaringsbehovResultat> utledAvklaringsbehovFor(KoblingReferanse ref,
                                                                                  BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag,
                                                                                  YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
-                                                                                 Collection<InntektsmeldingDto> inntektsmeldinger,
+                                                                                 InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                                  List<Intervall> forlengelseperioder) {
-        var perioderTilManuellVurdering = finnPerioderMedTilfellerForFordeling(ref, beregningsgrunnlagGrunnlag, ytelsespesifiktGrunnlag, inntektsmeldinger, forlengelseperioder);
-        return perioderTilManuellVurdering.isEmpty() ? Collections.emptyList():
-                List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BEREGNINGSGRUNNLAG));
+        var inntektsmeldinger = iayGrunnlag.getInntektsmeldinger().map(InntektsmeldingAggregatDto::getAlleInntektsmeldinger).orElse(Collections.emptyList());
+        var perioderTilManuellVurdering = finnPerioderMedTilfellerForFordeling(ref,
+                beregningsgrunnlagGrunnlag,
+                ytelsespesifiktGrunnlag,
+                inntektsmeldinger,
+                forlengelseperioder);
+        var skalVurdereNyttInntektsforhold = AvklaringsbehovUtlederNyttInntektsforhold.skalVurdereNyttInntektsforhold(
+                beregningsgrunnlagGrunnlag,
+                iayGrunnlag,
+                ytelsespesifiktGrunnlag,
+                forlengelseperioder);
+        var utledetbehovForAvklaring = new ArrayList<BeregningAvklaringsbehovResultat>();
+        if (skalVurdereNyttInntektsforhold) {
+            utledetbehovForAvklaring.add(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.VURDER_NYTT_INNTEKTSFORHOLD));
+        }
+        if (!perioderTilManuellVurdering.isEmpty()) {
+            utledetbehovForAvklaring.add(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BEREGNINGSGRUNNLAG));
+        }
+        return utledetbehovForAvklaring;
     }
 
     private static List<Intervall> finnPerioderMedTilfellerForFordeling(@SuppressWarnings("unused") KoblingReferanse ref,
