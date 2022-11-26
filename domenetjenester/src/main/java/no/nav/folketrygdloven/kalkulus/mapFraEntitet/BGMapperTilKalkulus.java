@@ -9,6 +9,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.TilkommetInntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Refusjon;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatus;
@@ -16,6 +17,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatus;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.TilkommetInntekt;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Promille;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
@@ -43,7 +45,7 @@ public class BGMapperTilKalkulus {
         //legg til
         fraFagsystem.getPeriodeÅrsaker().forEach(builder::leggTilPeriodeÅrsak);
         fraFagsystem.getBeregningsgrunnlagPrStatusOgAndelList().forEach(statusOgAndel -> builder.leggTilBeregningsgrunnlagPrStatusOgAndel(mapStatusOgAndel(statusOgAndel)));
-
+        fraFagsystem.getTilkomneInntekter().forEach(it -> builder.leggTilTilkommetInntekt(mapTilkommetInntekt(it)));
         return builder;
     }
 
@@ -148,6 +150,14 @@ public class BGMapperTilKalkulus {
                 mapFraBeløp(refusjon.getManueltFordeltRefusjonPrÅr()),
                 refusjon.getHjemmelForRefusjonskravfrist(),
                 refusjon.getRefusjonskravFristUtfall());
+    }
+
+    private static TilkommetInntektDto mapTilkommetInntekt(TilkommetInntekt it) {
+        return new TilkommetInntektDto(
+                it.getAktivitetStatus(),
+                it.getArbeidsgiver().map(IAYMapperTilKalkulus::mapArbeidsgiver).orElse(null),
+                mapFraBeløp(it.getBruttoInntektPrÅr()),
+                mapFraBeløp(it.getTilkommetInntektPrÅr()));
     }
 
     private static BigDecimal mapFraBeløp(Beløp beløp) {

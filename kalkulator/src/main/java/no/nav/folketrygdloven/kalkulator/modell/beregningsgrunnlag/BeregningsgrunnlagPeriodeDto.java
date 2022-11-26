@@ -20,6 +20,8 @@ public class BeregningsgrunnlagPeriodeDto {
 
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private List<BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList = new ArrayList<>();
+    private List<TilkommetInntektDto> tilkomneInntekter = new ArrayList<>();
+
     private Intervall periode;
     private BigDecimal bruttoPrÅr;
     private BigDecimal avkortetPrÅr;
@@ -38,6 +40,8 @@ public class BeregningsgrunnlagPeriodeDto {
                     return kopi;
                 }
         ).collect(Collectors.toList());
+
+        this.tilkomneInntekter = kopiereFra.tilkomneInntekter.stream().map(TilkommetInntektDto::new).collect(Collectors.toList());
 
         this.beregningsgrunnlagPeriodeÅrsaker = kopiereFra.beregningsgrunnlagPeriodeÅrsaker.stream().map(o ->
                 BeregningsgrunnlagPeriodeÅrsakDto.Builder.kopier(o).build(this)
@@ -64,6 +68,10 @@ public class BeregningsgrunnlagPeriodeDto {
 
     public List<BeregningsgrunnlagPrStatusOgAndelDto> getBeregningsgrunnlagPrStatusOgAndelList() {
         return Collections.unmodifiableList(beregningsgrunnlagPrStatusOgAndelList);
+    }
+
+    public List<TilkommetInntektDto> getTilkomneInntekter() {
+        return tilkomneInntekter;
     }
 
     public Intervall getPeriode() {
@@ -204,6 +212,13 @@ public class BeregningsgrunnlagPeriodeDto {
             kladd.beregningsgrunnlagPrStatusOgAndelList.add(beregningsgrunnlagPrStatusOgAndel);
             return this;
         }
+
+        public Builder leggTilTilkommetInntekt(TilkommetInntektDto tilkommetInntektDto) {
+            verifiserKanModifisere();
+            kladd.tilkomneInntekter.add(tilkommetInntektDto);
+            return this;
+        }
+
 
         public Builder fjernBeregningsgrunnlagPrStatusOgAndelerSomIkkeLiggerIListeAvAndelsnr(List<Long> listeAvAndelsnr) {
             verifiserKanModifisere();
