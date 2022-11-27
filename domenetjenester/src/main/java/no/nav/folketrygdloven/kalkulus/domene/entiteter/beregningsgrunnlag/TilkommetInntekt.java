@@ -20,6 +20,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.AktivitetStatusKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
@@ -49,6 +50,9 @@ public class TilkommetInntekt extends BaseEntitet {
     private Arbeidsgiver arbeidsgiver;
 
     @Embedded
+    private InternArbeidsforholdRef arbeidsforholdRef;
+
+    @Embedded
     @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "brutto_inntekt_pr_aar")))
     private Beløp bruttoInntektPrÅr;
 
@@ -62,15 +66,19 @@ public class TilkommetInntekt extends BaseEntitet {
     public TilkommetInntekt(TilkommetInntekt tilkommetInntekt) {
         this.aktivitetStatus = tilkommetInntekt.aktivitetStatus;
         this.arbeidsgiver = tilkommetInntekt.arbeidsgiver;
+        this.arbeidsforholdRef = tilkommetInntekt.arbeidsforholdRef;
         this.bruttoInntektPrÅr = tilkommetInntekt.bruttoInntektPrÅr;
         this.tilkommetInntektPrÅr = tilkommetInntekt.tilkommetInntektPrÅr;
     }
 
     public TilkommetInntekt(AktivitetStatus aktivitetStatus,
-                              Arbeidsgiver arbeidsgiver,
-                              Beløp bruttoInntektPrÅr, Beløp tilkommetInntektPrÅr) {
+                            Arbeidsgiver arbeidsgiver,
+                            InternArbeidsforholdRef arbeidsforholdRef,
+                            Beløp bruttoInntektPrÅr,
+                            Beløp tilkommetInntektPrÅr) {
         this.aktivitetStatus = aktivitetStatus;
         this.arbeidsgiver = arbeidsgiver;
+        this.arbeidsforholdRef = arbeidsforholdRef;
         this.bruttoInntektPrÅr = bruttoInntektPrÅr;
         this.tilkommetInntektPrÅr = tilkommetInntektPrÅr;
     }
@@ -95,6 +103,10 @@ public class TilkommetInntekt extends BaseEntitet {
         return tilkommetInntektPrÅr;
     }
 
+    public InternArbeidsforholdRef getArbeidsforholdRef() {
+        return arbeidsforholdRef;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -102,12 +114,13 @@ public class TilkommetInntekt extends BaseEntitet {
         TilkommetInntekt that = (TilkommetInntekt) o;
         return aktivitetStatus == that.aktivitetStatus &&
                 Objects.equals(arbeidsgiver, that.arbeidsgiver) &&
+                Objects.equals(arbeidsforholdRef, that.arbeidsforholdRef) &&
                 bruttoInntektPrÅr.equals(that.bruttoInntektPrÅr) &&
                 tilkommetInntektPrÅr.equals(that.tilkommetInntektPrÅr);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(aktivitetStatus, arbeidsgiver, bruttoInntektPrÅr, tilkommetInntektPrÅr);
+        return Objects.hash(aktivitetStatus, arbeidsgiver, arbeidsforholdRef, bruttoInntektPrÅr, tilkommetInntektPrÅr);
     }
 }

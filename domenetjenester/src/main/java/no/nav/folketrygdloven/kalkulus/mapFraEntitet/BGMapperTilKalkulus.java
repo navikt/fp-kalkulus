@@ -156,6 +156,7 @@ public class BGMapperTilKalkulus {
         return new TilkommetInntektDto(
                 it.getAktivitetStatus(),
                 it.getArbeidsgiver().map(IAYMapperTilKalkulus::mapArbeidsgiver).orElse(null),
+                IAYMapperTilKalkulus.mapArbeidsforholdRef(it.getArbeidsforholdRef()),
                 mapFraBeløp(it.getBruttoInntektPrÅr()),
                 mapFraBeløp(it.getTilkommetInntektPrÅr()));
     }

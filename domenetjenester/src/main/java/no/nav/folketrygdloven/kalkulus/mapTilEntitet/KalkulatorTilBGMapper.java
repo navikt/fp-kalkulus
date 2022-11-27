@@ -161,6 +161,7 @@ public class KalkulatorTilBGMapper {
         return new TilkommetInntekt(
                 it.getAktivitetStatus(),
                 it.getArbeidsgiver().map(KalkulatorTilIAYMapper::mapArbeidsgiver).orElse(null),
+                KalkulatorTilIAYMapper.mapArbeidsforholdRef(it.getArbeidsforholdRef()),
                 mapTilBeløp(it.getBruttoInntektPrÅr()),
                 mapTilBeløp(it.getTilkommetInntektPrÅr()));
     }
