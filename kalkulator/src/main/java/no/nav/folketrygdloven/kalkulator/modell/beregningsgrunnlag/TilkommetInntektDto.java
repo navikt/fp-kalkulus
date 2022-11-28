@@ -14,6 +14,7 @@ public class TilkommetInntektDto {
     private final InternArbeidsforholdRefDto arbeidsforholdRef;
     private final BigDecimal bruttoInntektPrÅr;
     private final BigDecimal tilkommetInntektPrÅr;
+    private final boolean erTilkommet;
 
 
     public TilkommetInntektDto(TilkommetInntektDto tilkommetInntektDto) {
@@ -22,6 +23,7 @@ public class TilkommetInntektDto {
         this.arbeidsforholdRef = tilkommetInntektDto.arbeidsforholdRef;
         this.bruttoInntektPrÅr = tilkommetInntektDto.bruttoInntektPrÅr;
         this.tilkommetInntektPrÅr = tilkommetInntektDto.tilkommetInntektPrÅr;
+        this.erTilkommet = tilkommetInntektDto.erTilkommet;
     }
 
 
@@ -29,12 +31,17 @@ public class TilkommetInntektDto {
                                Arbeidsgiver arbeidsgiver,
                                InternArbeidsforholdRefDto arbeidsforholdRef,
                                BigDecimal bruttoInntektPrÅr,
-                               BigDecimal tilkommetInntektPrÅr) {
+                               BigDecimal tilkommetInntektPrÅr,
+                               boolean erTilkommet) {
+        if (!erTilkommet && tilkommetInntektPrÅr != null) {
+            throw new IllegalStateException("Skal ikke sette tilkommet inntekt når ikke tilkommet");
+        }
         this.aktivitetStatus = aktivitetStatus;
         this.arbeidsgiver = arbeidsgiver;
         this.arbeidsforholdRef = arbeidsforholdRef;
         this.bruttoInntektPrÅr = bruttoInntektPrÅr;
         this.tilkommetInntektPrÅr = tilkommetInntektPrÅr;
+        this.erTilkommet = erTilkommet;
     }
 
     public AktivitetStatus getAktivitetStatus() {
@@ -55,5 +62,9 @@ public class TilkommetInntektDto {
 
     public BigDecimal getTilkommetInntektPrÅr() {
         return tilkommetInntektPrÅr;
+    }
+
+    public boolean erTilkommet() {
+        return erTilkommet;
     }
 }

@@ -60,6 +60,9 @@ public class TilkommetInntekt extends BaseEntitet {
     @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "tilkommet_inntekt_pr_aar")))
     private Beløp tilkommetInntektPrÅr;
 
+    @Column(name = "er_tilkommet")
+    private boolean erTilkommet;
+
     protected TilkommetInntekt() {
     }
 
@@ -75,12 +78,17 @@ public class TilkommetInntekt extends BaseEntitet {
                             Arbeidsgiver arbeidsgiver,
                             InternArbeidsforholdRef arbeidsforholdRef,
                             Beløp bruttoInntektPrÅr,
-                            Beløp tilkommetInntektPrÅr) {
+                            Beløp tilkommetInntektPrÅr,
+                            boolean erTilkommet) {
+        if (!erTilkommet && tilkommetInntektPrÅr != null) {
+            throw new IllegalStateException("Skal ikke sette tilkommet inntekt når ikke tilkommet");
+        }
         this.aktivitetStatus = aktivitetStatus;
         this.arbeidsgiver = arbeidsgiver;
         this.arbeidsforholdRef = arbeidsforholdRef;
         this.bruttoInntektPrÅr = bruttoInntektPrÅr;
         this.tilkommetInntektPrÅr = tilkommetInntektPrÅr;
+        this.erTilkommet = erTilkommet;
     }
 
     void setBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode) {
@@ -107,6 +115,10 @@ public class TilkommetInntekt extends BaseEntitet {
         return arbeidsforholdRef;
     }
 
+    public boolean erTilkommet() {
+        return erTilkommet;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -116,11 +128,12 @@ public class TilkommetInntekt extends BaseEntitet {
                 Objects.equals(arbeidsgiver, that.arbeidsgiver) &&
                 Objects.equals(arbeidsforholdRef, that.arbeidsforholdRef) &&
                 bruttoInntektPrÅr.equals(that.bruttoInntektPrÅr) &&
-                tilkommetInntektPrÅr.equals(that.tilkommetInntektPrÅr);
+                tilkommetInntektPrÅr.equals(that.tilkommetInntektPrÅr) &&
+                erTilkommet == that.erTilkommet;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(aktivitetStatus, arbeidsgiver, arbeidsforholdRef, bruttoInntektPrÅr, tilkommetInntektPrÅr);
+        return Objects.hash(aktivitetStatus, arbeidsgiver, arbeidsforholdRef, bruttoInntektPrÅr, tilkommetInntektPrÅr, erTilkommet);
     }
 }
