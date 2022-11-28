@@ -60,8 +60,8 @@ public class TilkommetInntekt extends BaseEntitet {
     @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "tilkommet_inntekt_pr_aar")))
     private Beløp tilkommetInntektPrÅr;
 
-    @Column(name = "er_tilkommet")
-    private boolean erTilkommet;
+    @Column(name = "skal_redusere_utbetaling")
+    private boolean skalRedusereUtbetaling;
 
     protected TilkommetInntekt() {
     }
@@ -79,16 +79,16 @@ public class TilkommetInntekt extends BaseEntitet {
                             InternArbeidsforholdRef arbeidsforholdRef,
                             Beløp bruttoInntektPrÅr,
                             Beløp tilkommetInntektPrÅr,
-                            boolean erTilkommet) {
-        if (!erTilkommet && tilkommetInntektPrÅr != null) {
-            throw new IllegalStateException("Skal ikke sette tilkommet inntekt når ikke tilkommet");
+                            boolean skalRedusereUtbetaling) {
+        if (!skalRedusereUtbetaling && tilkommetInntektPrÅr != null) {
+            throw new IllegalStateException("Skal ikke sette tilkommet inntekt når ikke redusert utbetaling");
         }
         this.aktivitetStatus = aktivitetStatus;
         this.arbeidsgiver = arbeidsgiver;
         this.arbeidsforholdRef = arbeidsforholdRef;
         this.bruttoInntektPrÅr = bruttoInntektPrÅr;
         this.tilkommetInntektPrÅr = tilkommetInntektPrÅr;
-        this.erTilkommet = erTilkommet;
+        this.skalRedusereUtbetaling = skalRedusereUtbetaling;
     }
 
     void setBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode) {
@@ -115,8 +115,8 @@ public class TilkommetInntekt extends BaseEntitet {
         return arbeidsforholdRef;
     }
 
-    public boolean erTilkommet() {
-        return erTilkommet;
+    public boolean skalRedusereUtbetaling() {
+        return skalRedusereUtbetaling;
     }
 
     @Override
@@ -129,11 +129,11 @@ public class TilkommetInntekt extends BaseEntitet {
                 Objects.equals(arbeidsforholdRef, that.arbeidsforholdRef) &&
                 bruttoInntektPrÅr.equals(that.bruttoInntektPrÅr) &&
                 tilkommetInntektPrÅr.equals(that.tilkommetInntektPrÅr) &&
-                erTilkommet == that.erTilkommet;
+                skalRedusereUtbetaling == that.skalRedusereUtbetaling;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(aktivitetStatus, arbeidsgiver, arbeidsforholdRef, bruttoInntektPrÅr, tilkommetInntektPrÅr, erTilkommet);
+        return Objects.hash(aktivitetStatus, arbeidsgiver, arbeidsforholdRef, bruttoInntektPrÅr, tilkommetInntektPrÅr, skalRedusereUtbetaling);
     }
 }

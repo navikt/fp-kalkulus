@@ -164,7 +164,7 @@ public class KalkulatorTilBGMapper {
                 KalkulatorTilIAYMapper.mapArbeidsforholdRef(it.getArbeidsforholdRef()),
                 mapTilBeløp(it.getBruttoInntektPrÅr()),
                 mapTilBeløp(it.getTilkommetInntektPrÅr()),
-                it.erTilkommet());
+                it.skalRedusereUtbetaling());
     }
 
 

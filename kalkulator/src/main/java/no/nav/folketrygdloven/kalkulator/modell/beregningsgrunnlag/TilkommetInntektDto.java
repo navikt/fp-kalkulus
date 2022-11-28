@@ -14,7 +14,7 @@ public class TilkommetInntektDto {
     private final InternArbeidsforholdRefDto arbeidsforholdRef;
     private final BigDecimal bruttoInntektPrÅr;
     private final BigDecimal tilkommetInntektPrÅr;
-    private final boolean erTilkommet;
+    private final boolean skalRedusereUtbetaling;
 
 
     public TilkommetInntektDto(TilkommetInntektDto tilkommetInntektDto) {
@@ -23,7 +23,7 @@ public class TilkommetInntektDto {
         this.arbeidsforholdRef = tilkommetInntektDto.arbeidsforholdRef;
         this.bruttoInntektPrÅr = tilkommetInntektDto.bruttoInntektPrÅr;
         this.tilkommetInntektPrÅr = tilkommetInntektDto.tilkommetInntektPrÅr;
-        this.erTilkommet = tilkommetInntektDto.erTilkommet;
+        this.skalRedusereUtbetaling = tilkommetInntektDto.skalRedusereUtbetaling;
     }
 
 
@@ -32,16 +32,16 @@ public class TilkommetInntektDto {
                                InternArbeidsforholdRefDto arbeidsforholdRef,
                                BigDecimal bruttoInntektPrÅr,
                                BigDecimal tilkommetInntektPrÅr,
-                               boolean erTilkommet) {
-        if (!erTilkommet && tilkommetInntektPrÅr != null) {
-            throw new IllegalStateException("Skal ikke sette tilkommet inntekt når ikke tilkommet");
+                               boolean skalRedusereUtbetaling) {
+        if (!skalRedusereUtbetaling && tilkommetInntektPrÅr != null) {
+            throw new IllegalStateException("Skal ikke sette tilkommet inntekt når ikke redusert utbetaling");
         }
         this.aktivitetStatus = aktivitetStatus;
         this.arbeidsgiver = arbeidsgiver;
         this.arbeidsforholdRef = arbeidsforholdRef;
         this.bruttoInntektPrÅr = bruttoInntektPrÅr;
         this.tilkommetInntektPrÅr = tilkommetInntektPrÅr;
-        this.erTilkommet = erTilkommet;
+        this.skalRedusereUtbetaling = skalRedusereUtbetaling;
     }
 
     public AktivitetStatus getAktivitetStatus() {
@@ -64,7 +64,7 @@ public class TilkommetInntektDto {
         return tilkommetInntektPrÅr;
     }
 
-    public boolean erTilkommet() {
-        return erTilkommet;
+    public boolean skalRedusereUtbetaling() {
+        return skalRedusereUtbetaling;
     }
 }

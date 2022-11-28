@@ -159,7 +159,7 @@ public class BGMapperTilKalkulus {
                 IAYMapperTilKalkulus.mapArbeidsforholdRef(it.getArbeidsforholdRef()),
                 mapFraBeløp(it.getBruttoInntektPrÅr()),
                 mapFraBeløp(it.getTilkommetInntektPrÅr()),
-                it.erTilkommet());
+                it.skalRedusereUtbetaling());
     }
 
     private static BigDecimal mapFraBeløp(Beløp beløp) {
