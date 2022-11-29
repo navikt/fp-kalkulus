@@ -25,7 +25,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class OverstyrBeregningsgrunnlagHåndteringDto extends HåndterBeregningDto {
 
-    public static final String IDENT_TYPE = "OVST_INNTEKT";
+    public static final String IDENT_TYPE = "6015";
+    public static final String AVKLARINGSBEHOV_KODE = "OVST_INNTEKT";
 
     @JsonProperty("fakta")
     @Valid
@@ -37,7 +38,7 @@ public class OverstyrBeregningsgrunnlagHåndteringDto extends HåndterBeregningD
     private List<FastsettBeregningsgrunnlagAndelDto> overstyrteAndeler;
 
     private OverstyrBeregningsgrunnlagHåndteringDto(boolean avbrutt) {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(IDENT_TYPE), avbrutt);
+        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE), avbrutt);
     }
 
     public static OverstyrBeregningsgrunnlagHåndteringDto avbryt() {
@@ -62,5 +63,10 @@ public class OverstyrBeregningsgrunnlagHåndteringDto extends HåndterBeregningD
     @Override
     public String getIdentType() {
         return IDENT_TYPE;
+    }
+
+    @Override
+    public String getAvklaringsbehovKode() {
+        return AVKLARINGSBEHOV_KODE;
     }
 }

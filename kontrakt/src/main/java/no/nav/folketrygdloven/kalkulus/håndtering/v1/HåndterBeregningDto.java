@@ -27,6 +27,7 @@ import no.nav.folketrygdloven.kalkulus.håndtering.v1.overstyring.OverstyrBeregn
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.overstyring.OverstyrBeregningsgrunnlagHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.refusjon.VurderRefusjonBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
+import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -51,14 +52,12 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 public abstract class HåndterBeregningDto {
 
     @JsonProperty(value = "avklaringsbehovDefinisjon")
-    @NotNull
     @Valid
     private AvklaringsbehovDefinisjon avklaringsbehovDefinisjon;
 
     @JsonProperty(value = "kode")
-    @NotNull
     @Valid
-    private AvklaringsbehovDefinisjon kode;
+    private HåndteringKode kode;
 
     @JsonProperty("begrunnelse")
     @Size(max = 4000)
@@ -85,15 +84,24 @@ public abstract class HåndterBeregningDto {
 
     public AvklaringsbehovDefinisjon getAvklaringsbehovDefinisjon() {
         if (kode != null) {
-            return kode;
+            return AvklaringsbehovDefinisjon.fraKode(kode.getKode());
         }
         return avklaringsbehovDefinisjon;
+    }
+
+    public HåndteringKode getKode() {
+        return kode;
     }
 
     /**
      * Type ident. (per ident fra subklasse).
      */
     public abstract String getIdentType();
+
+    /**
+     * Ny Type ident. (per ident fra subklasse).
+     */
+    public abstract String getAvklaringsbehovKode();
 
     public String getBegrunnelse() {
         return begrunnelse;

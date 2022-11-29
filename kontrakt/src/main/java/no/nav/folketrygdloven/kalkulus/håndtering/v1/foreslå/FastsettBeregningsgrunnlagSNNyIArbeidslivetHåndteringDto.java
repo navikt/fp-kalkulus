@@ -21,7 +21,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto extends HåndterBeregningDto {
 
-    public static final String IDENT_TYPE = "FASTSETT_BG_SN_NY_I_ARB_LIVT";
+    public static final String IDENT_TYPE = "5049";
+    public static final String AVKLARINGSBEHOV_KODE = "FASTSETT_BG_SN_NY_I_ARB_LIVT";
 
     @JsonProperty("fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto")
     @Valid
@@ -30,13 +31,18 @@ public class FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto extends H
 
     @JsonCreator
     public FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto(@JsonProperty("fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto") @Valid @NotNull FastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto) {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(IDENT_TYPE));
+        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE));
         this.fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto = fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto;
     }
 
     @Override
     public String getIdentType() {
         return IDENT_TYPE;
+    }
+
+    @Override
+    public String getAvklaringsbehovKode() {
+        return AVKLARINGSBEHOV_KODE;
     }
 
     public FastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto getFastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto() {

@@ -24,7 +24,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class OverstyrBeregningsaktiviteterDto extends HåndterBeregningDto {
 
-    public static final String IDENT_TYPE = "OVST_BEREGNINGSAKTIVITETER";
+    public static final String IDENT_TYPE = "6014";
+    public static final String AVKLARINGSBEHOV_KODE = "OVST_BEREGNINGSAKTIVITETER";
 
     @JsonProperty("beregningsaktivitetLagreDtoList")
     @Valid
@@ -32,14 +33,13 @@ public class OverstyrBeregningsaktiviteterDto extends HåndterBeregningDto {
     @Size(max = 1000)
     private List<BeregningsaktivitetLagreDto> beregningsaktivitetLagreDtoList;
 
-
     public OverstyrBeregningsaktiviteterDto() {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(IDENT_TYPE), false);
+        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE), false);
         // Json deserialisering
     }
 
     private OverstyrBeregningsaktiviteterDto(boolean avbryt) {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(IDENT_TYPE), avbryt);
+        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE), avbryt);
     }
 
     public static OverstyrBeregningsaktiviteterDto avbryt() {
@@ -58,5 +58,10 @@ public class OverstyrBeregningsaktiviteterDto extends HåndterBeregningDto {
     @Override
     public String getIdentType() {
         return IDENT_TYPE;
+    }
+
+    @Override
+    public String getAvklaringsbehovKode() {
+        return AVKLARINGSBEHOV_KODE;
     }
 }

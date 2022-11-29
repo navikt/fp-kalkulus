@@ -21,7 +21,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class FastsettBruttoBeregningsgrunnlagSNHåndteringDto extends HåndterBeregningDto implements FastsettBruttoBeregningsgrunnlag {
 
-    public static final String IDENT_TYPE = "FASTSETT_BG_SN";
+    public static final String IDENT_TYPE = "5042";
+    public static final String AVKLARINGSBEHOV_KODE = "FASTSETT_BG_SN";
 
     @JsonProperty("fastsettBruttoBeregningsgrunnlagSNDto")
     @Valid
@@ -30,13 +31,18 @@ public class FastsettBruttoBeregningsgrunnlagSNHåndteringDto extends HåndterBe
 
     @JsonCreator
     public FastsettBruttoBeregningsgrunnlagSNHåndteringDto(@JsonProperty("fastsettBruttoBeregningsgrunnlagSNDto") @Valid @NotNull FastsettBruttoBeregningsgrunnlagDto fastsettBruttoBeregningsgrunnlagSNDto) {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(IDENT_TYPE));
+        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE));
         this.fastsettBruttoBeregningsgrunnlagSNDto = fastsettBruttoBeregningsgrunnlagSNDto;
     }
 
     @Override
     public String getIdentType() {
         return IDENT_TYPE;
+    }
+
+    @Override
+    public String getAvklaringsbehovKode() {
+        return AVKLARINGSBEHOV_KODE;
     }
 
     public FastsettBruttoBeregningsgrunnlagDto getFastsettBruttoBeregningsgrunnlagSNDto() {

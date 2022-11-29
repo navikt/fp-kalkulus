@@ -19,7 +19,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class VurderVarigEndringEllerNyoppstartetSNHåndteringDto extends HåndterBeregningDto implements FastsettBruttoBeregningsgrunnlag {
 
-    public static final String IDENT_TYPE = "VURDER_VARIG_ENDRT_NYOPPSTR_NAERNG_SN";
+    public static final String IDENT_TYPE = "5039";
+    public static final String AVKLARINGSBEHOV_KODE = "VURDER_VARIG_ENDRT_NYOPPSTR_NAERNG_SN";
 
     @JsonProperty("vurderVarigEndringEllerNyoppstartetSNDto")
     @Valid
@@ -30,19 +31,24 @@ public class VurderVarigEndringEllerNyoppstartetSNHåndteringDto extends Håndte
     @Valid
     private VurderVarigEndringEllerNyoppstartetDto vurderVarigEndringEllerNyoppstartetDto;
 
+    public VurderVarigEndringEllerNyoppstartetSNHåndteringDto() {
+        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE));
+    }
+
+    public VurderVarigEndringEllerNyoppstartetSNHåndteringDto(@Valid VurderVarigEndringEllerNyoppstartetDto vurderVarigEndringEllerNyoppstartetDto) {
+        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE));
+        this.vurderVarigEndringEllerNyoppstartetSNDto = vurderVarigEndringEllerNyoppstartetDto;
+        this.vurderVarigEndringEllerNyoppstartetDto = vurderVarigEndringEllerNyoppstartetDto;
+    }
+
     @Override
     public String getIdentType() {
         return IDENT_TYPE;
     }
 
-    public VurderVarigEndringEllerNyoppstartetSNHåndteringDto() {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(IDENT_TYPE));
-    }
-
-    public VurderVarigEndringEllerNyoppstartetSNHåndteringDto(@Valid VurderVarigEndringEllerNyoppstartetDto vurderVarigEndringEllerNyoppstartetDto) {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(IDENT_TYPE));
-        this.vurderVarigEndringEllerNyoppstartetSNDto = vurderVarigEndringEllerNyoppstartetDto;
-        this.vurderVarigEndringEllerNyoppstartetDto = vurderVarigEndringEllerNyoppstartetDto;
+    @Override
+    public String getAvklaringsbehovKode() {
+        return AVKLARINGSBEHOV_KODE;
     }
 
     public VurderVarigEndringEllerNyoppstartetDto getVurderVarigEndringEllerNyoppstartetSNDto() {

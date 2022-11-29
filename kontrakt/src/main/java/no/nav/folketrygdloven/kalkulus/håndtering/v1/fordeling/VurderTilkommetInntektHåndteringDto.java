@@ -22,7 +22,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class VurderTilkommetInntektHåndteringDto extends HåndterBeregningDto {
 
-    public static final String IDENT_TYPE = "VURDER_NYTT_INNTKTSFRHLD";
+    public static final String IDENT_TYPE = "5067";
+    public static final String AVKLARINGSBEHOV_KODE = "VURDER_NYTT_INNTKTSFRHLD";
 
     @JsonProperty("tilkomneInntektsforhold")
     @Valid
@@ -34,13 +35,18 @@ public class VurderTilkommetInntektHåndteringDto extends HåndterBeregningDto {
     }
 
     public VurderTilkommetInntektHåndteringDto(@Valid @NotNull @Size() List<VurderTilkomneInntektsforholdPeriodeDto> tilkomneInntektsforholdPerioder) {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(IDENT_TYPE));
+        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE));
         this.tilkomneInntektsforholdPerioder = tilkomneInntektsforholdPerioder;
     }
 
     @Override
     public String getIdentType() {
         return IDENT_TYPE;
+    }
+
+    @Override
+    public String getAvklaringsbehovKode() {
+        return AVKLARINGSBEHOV_KODE;
     }
 
     public List<VurderTilkomneInntektsforholdPeriodeDto> getTilkomneInntektsforholdPerioder() {

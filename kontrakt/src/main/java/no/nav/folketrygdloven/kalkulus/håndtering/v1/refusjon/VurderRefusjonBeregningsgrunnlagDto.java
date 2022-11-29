@@ -22,7 +22,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class VurderRefusjonBeregningsgrunnlagDto extends HåndterBeregningDto {
 
-    public static final String IDENT_TYPE = "VURDER_REFUSJONSKRAV";
+    public static final String IDENT_TYPE = "5059";
+    public static final String AVKLARINGSBEHOV_KODE = "VURDER_REFUSJONSKRAV";
 
     @JsonProperty("fastsatteAndeler")
     @Valid
@@ -38,8 +39,13 @@ public class VurderRefusjonBeregningsgrunnlagDto extends HåndterBeregningDto {
         return IDENT_TYPE;
     }
 
+    @Override
+    public String getAvklaringsbehovKode() {
+        return AVKLARINGSBEHOV_KODE;
+    }
+
     public VurderRefusjonBeregningsgrunnlagDto(@Valid @Size(min = 1) List<VurderRefusjonAndelBeregningsgrunnlagDto> fastsatteAndeler) {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(IDENT_TYPE));
+        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE));
         this.fastsatteAndeler = fastsatteAndeler;
     }
 

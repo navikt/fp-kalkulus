@@ -13,14 +13,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
-import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class FaktaOmFordelingHåndteringDto extends HåndterBeregningDto {
 
-    public static final String IDENT_TYPE = "FORDEL_BG";
+    public static final String IDENT_TYPE = "5046";
+    public static final String AVKLARINGSBEHOV_KODE = "FORDEL_BG";
 
     @JsonProperty("fordelBeregningsgrunnlagDto")
     @Valid
@@ -32,13 +32,18 @@ public class FaktaOmFordelingHåndteringDto extends HåndterBeregningDto {
     }
 
     public FaktaOmFordelingHåndteringDto(@Valid @NotNull FordelBeregningsgrunnlagDto fordelBeregningsgrunnlagDto) {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(IDENT_TYPE));
+        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE));
         this.fordelBeregningsgrunnlagDto = fordelBeregningsgrunnlagDto;
     }
 
     @Override
     public String getIdentType() {
         return IDENT_TYPE;
+    }
+
+    @Override
+    public String getAvklaringsbehovKode() {
+        return AVKLARINGSBEHOV_KODE;
     }
 
     public FordelBeregningsgrunnlagDto getFordelBeregningsgrunnlagDto() {

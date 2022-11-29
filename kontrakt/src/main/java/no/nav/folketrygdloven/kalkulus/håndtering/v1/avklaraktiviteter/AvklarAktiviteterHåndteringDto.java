@@ -20,7 +20,9 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class AvklarAktiviteterHåndteringDto extends HåndterBeregningDto {
-    public static final String IDENT_TYPE = "AVKLAR_AKTIVITETER";
+
+    public static final String IDENT_TYPE = "5052";
+    public static final String AVKLARINGSBEHOV_KODE = "AVKLAR_AKTIVITETER";
 
     @JsonProperty("avklarteAktiviteterDto")
     @Valid
@@ -29,7 +31,7 @@ public class AvklarAktiviteterHåndteringDto extends HåndterBeregningDto {
 
     @JsonCreator
     public AvklarAktiviteterHåndteringDto(@JsonProperty("avklarteAktiviteterDto") AvklarteAktiviteterDto avklarteAktiviteterDto) {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(IDENT_TYPE));
+        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE));
         this.avklarteAktiviteterDto = avklarteAktiviteterDto;
     }
 
@@ -37,6 +39,12 @@ public class AvklarAktiviteterHåndteringDto extends HåndterBeregningDto {
     public String getIdentType() {
         return IDENT_TYPE;
     }
+
+    @Override
+    public String getAvklaringsbehovKode() {
+        return AVKLARINGSBEHOV_KODE;
+    }
+
 
     public AvklarteAktiviteterDto getAvklarteAktiviteterDto() {
         return avklarteAktiviteterDto;
