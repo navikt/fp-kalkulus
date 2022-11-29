@@ -35,7 +35,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
  * Se https://navno.sharepoint.com/sites/fag-og-ytelser-arbeid-sykefravarsoppfolging-og-sykepenger/SitePages/%C2%A7-8-13-Graderte-sykepenger.aspx
  *
  */
-class AvklaringsbehovUtlederNyttInntektsforhold {
+public class AvklaringsbehovUtlederNyttInntektsforhold {
 
     public static boolean skalVurdereNyttInntektsforhold(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag,
                                                          InntektArbeidYtelseGrunnlagDto iayGrunnlag,
@@ -97,7 +97,7 @@ class AvklaringsbehovUtlederNyttInntektsforhold {
      * @param utbetalingsgradGrunnlag Utbetalingsgradgrunnlag
      * @return Statuser/arbeidsgivere som skal regnes som tilkommet
      */
-    protected static HashSet<StatusOgArbeidsgiver> finnTilkomneInntektsforhold(LocalDate skjæringstidspunkt,
+    public static HashSet<StatusOgArbeidsgiver> finnTilkomneInntektsforhold(LocalDate skjæringstidspunkt,
                                                                                Collection<YrkesaktivitetDto> yrkesaktiviteter,
                                                                                List<BeregningsgrunnlagPrStatusOgAndelDto> andeler,
                                                                                Intervall periode,

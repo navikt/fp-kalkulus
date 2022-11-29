@@ -23,6 +23,8 @@ public class MapHåndteringskodeTilTilstand {
         map.put(HåndteringKode.VURDER_VARIG_ENDRET_ARBEIDSSITUASJON_KODE, BeregningsgrunnlagTilstand.FORESLÅTT_2_UT);
         map.put(HåndteringKode.VURDER_REFUSJON_BEREGNINGSGRUNNLAG, BeregningsgrunnlagTilstand.VURDERT_REFUSJON_UT);
         map.put(HåndteringKode.FAKTA_OM_FORDELING, BeregningsgrunnlagTilstand.FASTSATT_INN);
+        map.put(HåndteringKode.VURDER_NYTT_INNTEKTSFORHOLD, BeregningsgrunnlagTilstand.FASTSATT_INN);
+
     }
 
     public static BeregningsgrunnlagTilstand map(HåndteringKode kode) {

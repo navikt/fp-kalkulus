@@ -4,14 +4,14 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 import java.util.List;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -21,7 +21,15 @@ public class BeregningsgrunnlagPeriodeEndring {
 
     @JsonProperty(value = "beregningsgrunnlagPrStatusOgAndelEndringer")
     @Valid
+    @Size(max = 5000)
     private List<BeregningsgrunnlagPrStatusOgAndelEndring> beregningsgrunnlagPrStatusOgAndelEndringer;
+
+
+    @JsonProperty(value = "nyttInntektsforholdEndringer")
+    @Valid
+    @Size(max = 100)
+    private List<NyttInntektsforholdEndring> nyttInntektsforholdEndringer;
+
 
     @JsonProperty(value = "periode")
     @NotNull
@@ -32,13 +40,20 @@ public class BeregningsgrunnlagPeriodeEndring {
         // For json deserialisering
     }
 
-    public BeregningsgrunnlagPeriodeEndring(@Valid List<BeregningsgrunnlagPrStatusOgAndelEndring> beregningsgrunnlagPrStatusOgAndelEndringer, @NotNull @Valid Periode periode) {
+    public BeregningsgrunnlagPeriodeEndring(@Valid List<BeregningsgrunnlagPrStatusOgAndelEndring> beregningsgrunnlagPrStatusOgAndelEndringer,
+                                            @Valid List<NyttInntektsforholdEndring> nyttInntektsforholdEndringer,
+                                            @NotNull @Valid Periode periode) {
         this.beregningsgrunnlagPrStatusOgAndelEndringer = beregningsgrunnlagPrStatusOgAndelEndringer;
+        this.nyttInntektsforholdEndringer = nyttInntektsforholdEndringer;
         this.periode = periode;
     }
 
     public List<BeregningsgrunnlagPrStatusOgAndelEndring> getBeregningsgrunnlagPrStatusOgAndelEndringer() {
         return beregningsgrunnlagPrStatusOgAndelEndringer;
+    }
+
+    public List<NyttInntektsforholdEndring> getNyttInntektsforholdEndringer() {
+        return nyttInntektsforholdEndringer;
     }
 
     public Periode getPeriode() {

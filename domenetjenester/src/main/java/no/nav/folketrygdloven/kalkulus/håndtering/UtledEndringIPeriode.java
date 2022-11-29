@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+import no.nav.folketrygdloven.kalkulus.håndtering.faktafordeling.UtledEndringINyeInntektsforhold;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningsgrunnlagPeriodeEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningsgrunnlagPrStatusOgAndelEndring;
 
@@ -24,9 +25,10 @@ class UtledEndringIPeriode {
         List<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndeler = forrigePeriode.map(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPrStatusOgAndelList).orElse(Collections.emptyList());
         BeregningsgrunnlagPeriodeEndring periodeEndring = new BeregningsgrunnlagPeriodeEndring(
                 utledAndelEndringer(andeler, andelerFraSteg, forrigeAndeler),
+                UtledEndringINyeInntektsforhold.utledEndringer(periode, forrigePeriode),
                 new Periode(periode.getBeregningsgrunnlagPeriodeFom(), periode.getBeregningsgrunnlagPeriodeTom())
                 );
-        if (periodeEndring.getBeregningsgrunnlagPrStatusOgAndelEndringer().isEmpty()) {
+        if (periodeEndring.getBeregningsgrunnlagPrStatusOgAndelEndringer().isEmpty() && periodeEndring.getNyttInntektsforholdEndringer().isEmpty()) {
             return Optional.empty();
         }
         return Optional.of(periodeEndring);
@@ -51,4 +53,5 @@ class UtledEndringIPeriode {
         return forrigeAndeler.stream()
                 .filter(a -> a.getAktivitetStatus().equals(andel.getAktivitetStatus())).findFirst();
     }
+
 }

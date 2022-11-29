@@ -201,8 +201,8 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
 
         assertThat(tilkommetAktivitet.size()).isEqualTo(2);
         var iterator = tilkommetAktivitet.iterator();
-        assertThat(iterator.next().arbeidsgiver()).isEqualTo(arbeidsgiver3);
         assertThat(iterator.next().arbeidsgiver()).isEqualTo(arbeidsgiver2);
+        assertThat(iterator.next().arbeidsgiver()).isEqualTo(arbeidsgiver3);
     }
 
     @Test

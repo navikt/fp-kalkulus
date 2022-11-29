@@ -66,7 +66,7 @@ public class BeregningsgrunnlagInput {
                                    OpptjeningAktiviteterDto opptjeningAktiviteter,
                                    List<KravperioderPrArbeidsforholdDto> kravPrArbeidsgiver,
                                    YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        this.koblingReferanse = Objects.requireNonNull(koblingReferanse, "behandlingReferanse");
+        this.koblingReferanse = Objects.requireNonNull(koblingReferanse, "koblingReferanse");
         this.iayGrunnlag = iayGrunnlag;
         this.opptjeningAktiviteter = opptjeningAktiviteter;
         this.kravPrArbeidsgiver = kravPrArbeidsgiver;
