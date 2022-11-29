@@ -47,7 +47,7 @@ public class OverstyrBeregningsaktiviteterDto extends HåndterBeregningDto {
     }
 
     public OverstyrBeregningsaktiviteterDto(@Valid @NotNull @Size(max = 1000) List<BeregningsaktivitetLagreDto> beregningsaktivitetLagreDtoList) {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(IDENT_TYPE), false);
+        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE), false);
         this.beregningsaktivitetLagreDtoList = beregningsaktivitetLagreDtoList;
     }
 

@@ -28,7 +28,7 @@ public class VurderVarigEndretArbeidssituasjonHåndteringDto extends HåndterBer
     private VurderVarigEndringEllerNyoppstartetDto vurderVarigEndringEllerNyoppstartetDto;
 
     public VurderVarigEndretArbeidssituasjonHåndteringDto() {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(IDENT_TYPE));
+        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE));
     }
 
     public VurderVarigEndretArbeidssituasjonHåndteringDto(@Valid @NotNull VurderVarigEndringEllerNyoppstartetDto vurderVarigEndringEllerNyoppstartetDto) {
