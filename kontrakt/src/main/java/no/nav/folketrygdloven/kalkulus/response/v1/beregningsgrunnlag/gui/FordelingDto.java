@@ -16,6 +16,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class FordelingDto {
 
     @Valid
+    @JsonProperty(value = "vurderNyttInntektsforholdDto")
+    private VurderNyttInntektsforholdDto vurderNyttInntektsforholdDto;
+
+    @Valid
     @JsonProperty(value = "fordelBeregningsgrunnlag")
     private FordelBeregningsgrunnlagDto fordelBeregningsgrunnlag;
 
@@ -25,5 +29,13 @@ public class FordelingDto {
 
     public void setFordelBeregningsgrunnlag(FordelBeregningsgrunnlagDto fordelBeregningsgrunnlag) {
         this.fordelBeregningsgrunnlag = fordelBeregningsgrunnlag;
+    }
+
+    public VurderNyttInntektsforholdDto getVurderNyttInntektsforholdDto() {
+        return vurderNyttInntektsforholdDto;
+    }
+
+    public void setVurderNyttInntektsforholdDto(VurderNyttInntektsforholdDto vurderNyttInntektsforholdDto) {
+        this.vurderNyttInntektsforholdDto = vurderNyttInntektsforholdDto;
     }
 }
