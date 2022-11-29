@@ -57,12 +57,12 @@ public class MigrerAksjonspunktRestTjeneste {
         var avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.fraKode(spesifikasjon.getAvklaringsbehovKode());
         switch (avklaringsbehovDefinisjon) {
             case AVKLAR_AKTIVITETER -> migreringTjeneste.avklarAktiviteterMigrering(spesifikasjon.getAksjonspunktdata());
-            case VURDER_FAKTA_FOR_ATFL_SN -> migreringTjeneste.vurderFaktaBeregningMigrering(spesifikasjon.getAksjonspunktdata());
-            case FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS -> migreringTjeneste.vurderFastsettVedAvvikATFLMigrering(spesifikasjon.getAksjonspunktdata());
-            case FASTSETT_BEREGNINGSGRUNNLAG_FOR_SN_NY_I_ARBEIDSLIVET -> migreringTjeneste.nyIArbeidslivetSNMigrering(spesifikasjon.getAksjonspunktdata());
-            case FASTSETT_BEREGNINGSGRUNNLAG_TIDSBEGRENSET_ARBEIDSFORHOLD -> migreringTjeneste.fastsettForTidsbegrensetMigrering(spesifikasjon.getAksjonspunktdata());
-            case VURDER_VARIG_ENDRET_ELLER_NYOPPSTARTET_NÆRING_SELVSTENDIG_NÆRINGSDRIVENDE -> migreringTjeneste.vurderVarigEndringMigrering(spesifikasjon.getAksjonspunktdata());
-            case FORDEL_BEREGNINGSGRUNNLAG -> migreringTjeneste.fordelBeregningsgrunnlagMigrering(spesifikasjon.getAksjonspunktdata());
+            case VURDER_FAKTA_ATFL_SN -> migreringTjeneste.vurderFaktaBeregningMigrering(spesifikasjon.getAksjonspunktdata());
+            case FASTSETT_BG_AT_FL -> migreringTjeneste.vurderFastsettVedAvvikATFLMigrering(spesifikasjon.getAksjonspunktdata());
+            case FASTSETT_BG_SN_NY_I_ARB_LIVT -> migreringTjeneste.nyIArbeidslivetSNMigrering(spesifikasjon.getAksjonspunktdata());
+            case FASTSETT_BG_TB_ARB -> migreringTjeneste.fastsettForTidsbegrensetMigrering(spesifikasjon.getAksjonspunktdata());
+            case VURDER_VARIG_ENDRT_NYOPPSTR_NAERNG_SN -> migreringTjeneste.vurderVarigEndringMigrering(spesifikasjon.getAksjonspunktdata());
+            case FORDEL_BG -> migreringTjeneste.fordelBeregningsgrunnlagMigrering(spesifikasjon.getAksjonspunktdata());
             default -> throw new IllegalArgumentException("Ukjent aksjonspunktkode " + avklaringsbehovDefinisjon.getKode());
         }
         return Response.ok().build();

@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -18,7 +19,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class VurderVarigEndringEllerNyoppstartetSNHåndteringDto extends HåndterBeregningDto implements FastsettBruttoBeregningsgrunnlag {
 
-    public static final String IDENT_TYPE = "5039";
+    public static final String IDENT_TYPE = "VURDER_VARIG_ENDRT_NYOPPSTR_NAERNG_SN";
 
     @JsonProperty("vurderVarigEndringEllerNyoppstartetSNDto")
     @Valid
@@ -35,11 +36,11 @@ public class VurderVarigEndringEllerNyoppstartetSNHåndteringDto extends Håndte
     }
 
     public VurderVarigEndringEllerNyoppstartetSNHåndteringDto() {
-        super(HåndteringKode.fraKode(IDENT_TYPE));
+        super(AvklaringsbehovDefinisjon.fraKodeNy(IDENT_TYPE));
     }
 
     public VurderVarigEndringEllerNyoppstartetSNHåndteringDto(@Valid VurderVarigEndringEllerNyoppstartetDto vurderVarigEndringEllerNyoppstartetDto) {
-        super(HåndteringKode.fraKode(IDENT_TYPE));
+        super(AvklaringsbehovDefinisjon.fraKodeNy(IDENT_TYPE));
         this.vurderVarigEndringEllerNyoppstartetSNDto = vurderVarigEndringEllerNyoppstartetDto;
         this.vurderVarigEndringEllerNyoppstartetDto = vurderVarigEndringEllerNyoppstartetDto;
     }

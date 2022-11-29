@@ -13,13 +13,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class AvklarAktiviteterHåndteringDto extends HåndterBeregningDto {
-    public static final String IDENT_TYPE = "5052";
+    public static final String IDENT_TYPE = "AVKLAR_AKTIVITETER";
 
     @JsonProperty("avklarteAktiviteterDto")
     @Valid
@@ -28,7 +29,7 @@ public class AvklarAktiviteterHåndteringDto extends HåndterBeregningDto {
 
     @JsonCreator
     public AvklarAktiviteterHåndteringDto(@JsonProperty("avklarteAktiviteterDto") AvklarteAktiviteterDto avklarteAktiviteterDto) {
-        super(HåndteringKode.fraKode(IDENT_TYPE));
+        super(AvklaringsbehovDefinisjon.fraKodeNy(IDENT_TYPE));
         this.avklarteAktiviteterDto = avklarteAktiviteterDto;
     }
 

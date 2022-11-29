@@ -41,13 +41,13 @@ public class AvklaringsbehovUtlederFaktaOmBeregning {
         List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = faktaOmBeregningTilfelleTjeneste.finnTilfellerForFellesAvklaringsbehov(input, beregningsgrunnlagGrunnlag);
 
         if (erOverstyrt && !KonfigurasjonVerdi.get("TREKKE_OVERSTYRING_ENABLED", false)) {
-            return new FaktaOmBeregningAvklaringsbehovResultat(singletonList(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.OVERSTYRING_AV_BEREGNINGSGRUNNLAG)),
+            return new FaktaOmBeregningAvklaringsbehovResultat(singletonList(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.OVST_INNTEKT)),
                     faktaOmBeregningTilfeller);
         }
         if (faktaOmBeregningTilfeller.isEmpty()) {
             return FaktaOmBeregningAvklaringsbehovResultat.INGEN_AKSJONSPUNKTER;
         }
-        return new FaktaOmBeregningAvklaringsbehovResultat(singletonList(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.VURDER_FAKTA_FOR_ATFL_SN)),
+        return new FaktaOmBeregningAvklaringsbehovResultat(singletonList(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.VURDER_FAKTA_ATFL_SN)),
                 faktaOmBeregningTilfeller);
     }
 }

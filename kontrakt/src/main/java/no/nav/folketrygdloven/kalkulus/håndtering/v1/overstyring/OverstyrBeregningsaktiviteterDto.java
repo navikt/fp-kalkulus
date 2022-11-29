@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.avklaraktiviteter.BeregningsaktivitetLagreDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -23,7 +24,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class OverstyrBeregningsaktiviteterDto extends HåndterBeregningDto {
 
-    public static final String IDENT_TYPE = "6014";
+    public static final String IDENT_TYPE = "OVST_BEREGNINGSAKTIVITETER";
 
     @JsonProperty("beregningsaktivitetLagreDtoList")
     @Valid
@@ -33,12 +34,12 @@ public class OverstyrBeregningsaktiviteterDto extends HåndterBeregningDto {
 
 
     public OverstyrBeregningsaktiviteterDto() {
-        super(HåndteringKode.fraKode(IDENT_TYPE), false);
+        super(AvklaringsbehovDefinisjon.fraKodeNy(IDENT_TYPE), false);
         // Json deserialisering
     }
 
     private OverstyrBeregningsaktiviteterDto(boolean avbryt) {
-        super(HåndteringKode.fraKode(IDENT_TYPE), avbryt);
+        super(AvklaringsbehovDefinisjon.fraKodeNy(IDENT_TYPE), avbryt);
     }
 
     public static OverstyrBeregningsaktiviteterDto avbryt() {
@@ -46,7 +47,7 @@ public class OverstyrBeregningsaktiviteterDto extends HåndterBeregningDto {
     }
 
     public OverstyrBeregningsaktiviteterDto(@Valid @NotNull @Size(max = 1000) List<BeregningsaktivitetLagreDto> beregningsaktivitetLagreDtoList) {
-        super(HåndteringKode.fraKode(IDENT_TYPE), false);
+        super(AvklaringsbehovDefinisjon.fraKodeNy(IDENT_TYPE), false);
         this.beregningsaktivitetLagreDtoList = beregningsaktivitetLagreDtoList;
     }
 

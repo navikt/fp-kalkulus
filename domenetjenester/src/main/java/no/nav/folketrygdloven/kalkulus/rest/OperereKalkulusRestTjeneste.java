@@ -42,6 +42,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.PersonIdent;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
@@ -305,8 +306,8 @@ public class OperereKalkulusRestTjeneste {
 
         private List<String> getAksjonspunktKoder() {
             return getHåndterBeregningListe().stream().map(HåndterBeregningRequest::getHåndterBeregning)
-                    .map(HåndterBeregningDto::getKode)
-                    .map(HåndteringKode::getKode)
+                    .map(HåndterBeregningDto::getAvklaringsbehovDefinisjon)
+                    .map(AvklaringsbehovDefinisjon::getKodeNy)
                     .collect(Collectors.toList());
         }
 

@@ -178,7 +178,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
         String json = getTestJSON();
         KalkulatorInputEntitet input = new KalkulatorInputEntitet(koblingId, json);
         repository.lagreOgSjekkStatus(input);
-        AvklaringsbehovDefinisjon avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.VURDER_FAKTA_FOR_ATFL_SN;
+        AvklaringsbehovDefinisjon avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.VURDER_FAKTA_ATFL_SN;
         avklaringsbehovTjeneste.opprettEllerGjennopprettAvklaringsbehov(koblingId, avklaringsbehovDefinisjon);
         repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
@@ -208,7 +208,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
     public void skal_avbryte_avklaringsbehov() {
         prepareTestData();
         // Arrange
-        AvklaringsbehovDefinisjon avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.VURDER_FAKTA_FOR_ATFL_SN;
+        AvklaringsbehovDefinisjon avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.VURDER_FAKTA_ATFL_SN;
         avklaringsbehovTjeneste.opprettEllerGjennopprettAvklaringsbehov(koblingId, avklaringsbehovDefinisjon);
         avklaringsbehovTjeneste.løsAvklaringsbehov(koblingId, avklaringsbehovDefinisjon, "Begrunnelse");
         repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())

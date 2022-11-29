@@ -49,7 +49,7 @@ public class AvklaringsbehovUtlederForeslåBeregningTest {
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = AvklaringsbehovUtlederForeslåBeregning.utledAvklaringsbehov(lagInput(referanse), Collections.singletonList(regelResultat));
         // Assert
         var apDefs = avklaringsbehov.stream().map(BeregningAvklaringsbehovResultat::getBeregningAvklaringsbehovDefinisjon).collect(Collectors.toList());
-        assertThat(apDefs).containsExactly(AvklaringsbehovDefinisjon.VURDER_VARIG_ENDRET_ELLER_NYOPPSTARTET_NÆRING_SELVSTENDIG_NÆRINGSDRIVENDE);
+        assertThat(apDefs).containsExactly(AvklaringsbehovDefinisjon.VURDER_VARIG_ENDRT_NYOPPSTR_NAERNG_SN);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class AvklaringsbehovUtlederForeslåBeregningTest {
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = AvklaringsbehovUtlederForeslåBeregning.utledAvklaringsbehov(lagInput(referanse), Collections.singletonList(regelResultat));
         // Assert
         var apDefs = avklaringsbehov.stream().map(BeregningAvklaringsbehovResultat::getBeregningAvklaringsbehovDefinisjon).collect(Collectors.toList());
-        assertThat(apDefs).containsExactly(AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_FOR_SN_NY_I_ARBEIDSLIVET);
+        assertThat(apDefs).containsExactly(AvklaringsbehovDefinisjon.FASTSETT_BG_SN_NY_I_ARB_LIVT);
     }
 
     @Test
@@ -75,7 +75,7 @@ public class AvklaringsbehovUtlederForeslåBeregningTest {
         // Assert
         var apDefs = avklaringsbehov.stream().map(BeregningAvklaringsbehovResultat::getBeregningAvklaringsbehovDefinisjon).collect(Collectors.toList());
         assertThat(apDefs).containsExactlyInAnyOrder(
-            AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS
+            AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL
         );
     }
 

@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.rest;
 
 import static no.nav.folketrygdloven.kalkulus.beregning.MapStegTilTilstand.mapTilStegTilstand;
+import static no.nav.folketrygdloven.kalkulus.beregning.MapStegTilTilstand.mapTilStegUtTilstand;
 
 import java.util.List;
 import java.util.Map;
@@ -11,12 +12,10 @@ import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulus.beregning.BeregningStegTjeneste;
-import no.nav.folketrygdloven.kalkulus.beregning.MapHåndteringskodeTilTilstand;
 import no.nav.folketrygdloven.kalkulus.beregning.input.HåndteringInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.input.StegProsessInputTjeneste;
@@ -228,8 +227,8 @@ public class OperereKalkulusOrkestrerer {
 
 
         private BeregningsgrunnlagTilstand finnTilstandFraDto(Map<Long, HåndterBeregningDto> håndterBeregningDtoPrKobling) {
-            List<BeregningsgrunnlagTilstand> tilstander = håndterBeregningDtoPrKobling.values().stream().map(HåndterBeregningDto::getKode)
-                    .map(MapHåndteringskodeTilTilstand::map)
+            List<BeregningsgrunnlagTilstand> tilstander = håndterBeregningDtoPrKobling.values().stream().map(HåndterBeregningDto::getAvklaringsbehovDefinisjon)
+                    .map(a  -> mapTilStegUtTilstand(a.getStegFunnet()).orElseThrow())
                     .distinct()
                     .collect(Collectors.toList());
             if (tilstander.size() > 1) {

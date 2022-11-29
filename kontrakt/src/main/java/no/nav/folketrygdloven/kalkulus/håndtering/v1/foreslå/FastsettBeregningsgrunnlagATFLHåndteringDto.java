@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsattePerioderTidsbegrensetDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -24,7 +25,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class FastsettBeregningsgrunnlagATFLHåndteringDto extends HåndterBeregningDto {
 
-    public static final String IDENT_TYPE = "5038";
+    public static final String IDENT_TYPE = "FASTSETT_BG_AT_FL";
 
     @JsonProperty(value = "inntektPrAndelList")
     @Valid
@@ -49,7 +50,7 @@ public class FastsettBeregningsgrunnlagATFLHåndteringDto extends HåndterBeregn
     public FastsettBeregningsgrunnlagATFLHåndteringDto(@Valid @Size(max = 100) List<InntektPrAndelDto> inntektPrAndelList,
                                                        @JsonProperty(value = "inntektFrilanser") @Valid @Min(0) @Max(100 * 1000 * 1000) Integer inntektFrilanser,
                                                        @JsonProperty(value = "fastsatteTidsbegrensedePerioder") @Valid @Size(max = 100) List<FastsattePerioderTidsbegrensetDto> fastsatteTidsbegrensedePerioder) {
-        super(HåndteringKode.fraKode(IDENT_TYPE));
+        super(AvklaringsbehovDefinisjon.fraKodeNy(IDENT_TYPE));
         this.inntektPrAndelList = inntektPrAndelList;
         this.inntektFrilanser = inntektFrilanser;
         this.fastsatteTidsbegrensedePerioder = fastsatteTidsbegrensedePerioder;

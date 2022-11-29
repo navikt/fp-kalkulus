@@ -95,7 +95,7 @@ public class AksjonspunktMigreringTjeneste {
     }
 
     public void fordelBeregningsgrunnlagMigrering(List<MigrerAksjonspunktRequest> aksjonspunktdata) {
-        AvklaringsbehovDefinisjon avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.FORDEL_BEREGNINGSGRUNNLAG;
+        AvklaringsbehovDefinisjon avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.FORDEL_BG;
         for (MigrerAksjonspunktRequest data : aksjonspunktdata) {
             List<KoblingEntitet> koblinger = finnKoblingerUtenAksjonspunkt(data, avklaringsbehovDefinisjon);
             List<KoblingEntitet> koblingerMedFordelTilfelle = finnKoblingerMedFordelAksjonspunkt(koblinger);
@@ -104,7 +104,7 @@ public class AksjonspunktMigreringTjeneste {
     }
 
     public void vurderVarigEndringMigrering(List<MigrerAksjonspunktRequest> aksjonspunktdata) {
-        AvklaringsbehovDefinisjon avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.VURDER_VARIG_ENDRET_ELLER_NYOPPSTARTET_NÆRING_SELVSTENDIG_NÆRINGSDRIVENDE;
+        AvklaringsbehovDefinisjon avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.VURDER_VARIG_ENDRT_NYOPPSTR_NAERNG_SN;
         for (MigrerAksjonspunktRequest data : aksjonspunktdata) {
             List<KoblingEntitet> koblinger = finnKoblingerUtenAksjonspunkt(data, avklaringsbehovDefinisjon);
             List<KoblingEntitet> koblingerMedAvvik = finnKoblingerMedAvvik(koblinger);
@@ -113,7 +113,7 @@ public class AksjonspunktMigreringTjeneste {
     }
 
     public void fastsettForTidsbegrensetMigrering(List<MigrerAksjonspunktRequest> aksjonspunktdata) {
-        AvklaringsbehovDefinisjon avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_TIDSBEGRENSET_ARBEIDSFORHOLD;
+        AvklaringsbehovDefinisjon avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.FASTSETT_BG_TB_ARB;
         for (MigrerAksjonspunktRequest data : aksjonspunktdata) {
             List<KoblingEntitet> koblinger = finnKoblingerUtenAksjonspunkt(data, avklaringsbehovDefinisjon);
             List<KoblingEntitet> koblingerNyIArbeidslivet = finnKoblingerMedTidsbegrensetAksjonspunkt(koblinger);
@@ -122,7 +122,7 @@ public class AksjonspunktMigreringTjeneste {
     }
 
     public void nyIArbeidslivetSNMigrering(List<MigrerAksjonspunktRequest> aksjonspunktdata) {
-        AvklaringsbehovDefinisjon avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_FOR_SN_NY_I_ARBEIDSLIVET;
+        AvklaringsbehovDefinisjon avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.FASTSETT_BG_SN_NY_I_ARB_LIVT;
         for (MigrerAksjonspunktRequest data : aksjonspunktdata) {
             List<KoblingEntitet> koblinger = finnKoblingerUtenAksjonspunkt(data, avklaringsbehovDefinisjon);
             List<KoblingEntitet> koblingerNyIArbeidslivet = finnKoblingerMedNyIArbeidslivetAksjonspunkt(koblinger);
@@ -131,7 +131,7 @@ public class AksjonspunktMigreringTjeneste {
     }
 
     public void vurderFastsettVedAvvikATFLMigrering(List<MigrerAksjonspunktRequest> aksjonspunktdata) {
-        AvklaringsbehovDefinisjon avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS;
+        AvklaringsbehovDefinisjon avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL;
         for (MigrerAksjonspunktRequest data : aksjonspunktdata) {
             List<KoblingEntitet> koblinger = finnKoblingerUtenAksjonspunkt(data, avklaringsbehovDefinisjon);
             List<KoblingEntitet> koblingerMedAvvik = finnKoblingerMedAvviksvurdering(data, koblinger);
@@ -140,7 +140,7 @@ public class AksjonspunktMigreringTjeneste {
     }
 
     public void vurderFaktaBeregningMigrering(List<MigrerAksjonspunktRequest> aksjonspunktdata) {
-        AvklaringsbehovDefinisjon avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.VURDER_FAKTA_FOR_ATFL_SN;
+        AvklaringsbehovDefinisjon avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.VURDER_FAKTA_ATFL_SN;
         for (MigrerAksjonspunktRequest data : aksjonspunktdata) {
             List<KoblingEntitet> koblinger = finnKoblingerUtenAksjonspunkt(data, avklaringsbehovDefinisjon);
             List<KoblingEntitet> koblingerMedTilfeller = finnKoblingerMedFaktaBeregningAksjonspunkt(koblinger);

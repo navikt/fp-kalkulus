@@ -17,6 +17,7 @@ import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FaktaBeregningLagreDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsettBeregningsgrunnlagAndelDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -24,7 +25,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class OverstyrBeregningsgrunnlagHåndteringDto extends HåndterBeregningDto {
 
-    public static final String IDENT_TYPE = "6015";
+    public static final String IDENT_TYPE = "OVST_INNTEKT";
 
     @JsonProperty("fakta")
     @Valid
@@ -36,7 +37,7 @@ public class OverstyrBeregningsgrunnlagHåndteringDto extends HåndterBeregningD
     private List<FastsettBeregningsgrunnlagAndelDto> overstyrteAndeler;
 
     private OverstyrBeregningsgrunnlagHåndteringDto(boolean avbrutt) {
-        super(HåndteringKode.fraKode(IDENT_TYPE), avbrutt);
+        super(AvklaringsbehovDefinisjon.fraKodeNy(IDENT_TYPE), avbrutt);
     }
 
     public static OverstyrBeregningsgrunnlagHåndteringDto avbryt() {
@@ -45,7 +46,7 @@ public class OverstyrBeregningsgrunnlagHåndteringDto extends HåndterBeregningD
 
     @JsonCreator
     public OverstyrBeregningsgrunnlagHåndteringDto(@JsonProperty("fakta") @Valid FaktaBeregningLagreDto fakta, @JsonProperty("overstyrteAndeler") @Valid @NotNull List<FastsettBeregningsgrunnlagAndelDto> overstyrteAndeler) {
-        super(HåndteringKode.fraKode(IDENT_TYPE), false);
+        super(AvklaringsbehovDefinisjon.fraKodeNy(IDENT_TYPE), false);
         this.fakta = fakta;
         this.overstyrteAndeler = overstyrteAndeler;
     }

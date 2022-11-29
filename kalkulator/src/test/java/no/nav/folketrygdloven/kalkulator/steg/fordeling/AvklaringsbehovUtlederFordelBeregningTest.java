@@ -69,7 +69,7 @@ public class AvklaringsbehovUtlederFordelBeregningTest {
         List<BeregningAvklaringsbehovResultat> avklaringsbehovResultats = utledAvklaringsbehov(koblingReferanse, grunnlag);
 
         assertThat(avklaringsbehovResultats).hasSize(1);
-        assertThat(avklaringsbehovResultats.get(0).getBeregningAvklaringsbehovDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.FORDEL_BEREGNINGSGRUNNLAG);
+        assertThat(avklaringsbehovResultats.get(0).getBeregningAvklaringsbehovDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.FORDEL_BG);
     }
 
 

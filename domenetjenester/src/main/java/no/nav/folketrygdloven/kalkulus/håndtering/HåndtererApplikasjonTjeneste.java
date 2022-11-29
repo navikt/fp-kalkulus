@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.håndtering;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.Dependent;
@@ -11,12 +10,10 @@ import jakarta.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulus.beregning.MapHåndteringskodeTilTilstand;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
+import no.nav.folketrygdloven.kalkulus.beregning.MapStegTilTilstand;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
@@ -41,7 +38,7 @@ public class HåndtererApplikasjonTjeneste {
 
     public OppdateringRespons håndter(HåndterBeregningsgrunnlagInput håndterBeregningInput, HåndterBeregningDto håndterBeregningDto) {
         Long koblingId = håndterBeregningInput.getKoblingId();
-        AvklaringsbehovDefinisjon avklaringsbehovdefinisjon = AvklaringsbehovDefinisjon.fraHåndtering(håndterBeregningDto.getKode());
+        var avklaringsbehovdefinisjon = håndterBeregningDto.getAvklaringsbehovDefinisjon();
         if (avklaringsbehovdefinisjon.erOverstyring()) {
             if (håndterBeregningDto.skalAvbrytes()) {
                 var overstyring = avklaringsbehovTjeneste.hentAvklaringsbehov(koblingId, avklaringsbehovdefinisjon);
@@ -51,8 +48,8 @@ public class HåndtererApplikasjonTjeneste {
                 opprettOverstyringAvklaringsbehov(koblingId, avklaringsbehovdefinisjon);
             }
         }
-        BeregningsgrunnlagTilstand tilstand = MapHåndteringskodeTilTilstand.map(håndterBeregningDto.getKode());
-        HåndteringResultat resultat = håndterOgLagre(håndterBeregningInput, håndterBeregningDto, håndterBeregningDto.getKode(), tilstand);
+        BeregningsgrunnlagTilstand tilstand = MapStegTilTilstand.mapTilStegUtTilstand(håndterBeregningDto.getAvklaringsbehovDefinisjon().getStegFunnet()).orElseThrow();
+        HåndteringResultat resultat = håndterOgLagre(håndterBeregningInput, håndterBeregningDto, håndterBeregningDto.getAvklaringsbehovDefinisjon(), tilstand);
         løsAvklaringsbehov(koblingId, håndterBeregningDto);
         if (resultat.getEndring() != null) {
             return new OppdateringRespons(resultat.getEndring(), håndterBeregningInput.getKoblingReferanse().getKoblingUuid());
@@ -62,7 +59,7 @@ public class HåndtererApplikasjonTjeneste {
     }
 
     private void løsAvklaringsbehov(Long koblingId, HåndterBeregningDto håndterBeregningDto) {
-        AvklaringsbehovDefinisjon avklaringsbehov = AvklaringsbehovDefinisjon.fraHåndtering(håndterBeregningDto.getKode());
+        var avklaringsbehov = håndterBeregningDto.getAvklaringsbehovDefinisjon();
         avklaringsbehovTjeneste.avbrytAlleAvklaringsbehovEtter(koblingId, avklaringsbehov);
         avklaringsbehovTjeneste.settOpprettetVedBehov(koblingId, avklaringsbehov);
         avklaringsbehovTjeneste.løsAvklaringsbehov(koblingId, avklaringsbehov,
@@ -77,8 +74,8 @@ public class HåndtererApplikasjonTjeneste {
     }
 
 
-    private HåndteringResultat håndterOgLagre(HåndterBeregningsgrunnlagInput hånteringInput, HåndterBeregningDto håndterBeregningDto, HåndteringKode håndteringKode, BeregningsgrunnlagTilstand tilstand) {
-        BeregningHåndterer<HåndterBeregningDto> beregningHåndterer = finnBeregningHåndterer(håndterBeregningDto.getClass(), håndteringKode.getKode());
+    private HåndteringResultat håndterOgLagre(HåndterBeregningsgrunnlagInput hånteringInput, HåndterBeregningDto håndterBeregningDto, AvklaringsbehovDefinisjon avklaringsbehovDefinisjon, BeregningsgrunnlagTilstand tilstand) {
+        BeregningHåndterer<HåndterBeregningDto> beregningHåndterer = finnBeregningHåndterer(håndterBeregningDto.getClass(), avklaringsbehovDefinisjon.getKode());
         HåndteringResultat resultat = beregningHåndterer.håndter(håndterBeregningDto, hånteringInput);
         var beregningsgrunnlagGrunnlagBuilder = KalkulatorTilEntitetMapper.mapGrunnlag(resultat.getNyttGrunnlag());
         beregningsgrunnlagRepository.lagre(hånteringInput.getKoblingId(), beregningsgrunnlagGrunnlagBuilder, tilstand);

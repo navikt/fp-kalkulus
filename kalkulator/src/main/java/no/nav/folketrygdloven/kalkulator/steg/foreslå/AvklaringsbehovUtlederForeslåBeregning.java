@@ -1,10 +1,10 @@
 package no.nav.folketrygdloven.kalkulator.steg.foreslå;
 
-import static no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS;
-import static no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_FOR_SN_NY_I_ARBEIDSLIVET;
-import static no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_TIDSBEGRENSET_ARBEIDSFORHOLD;
-import static no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon.VURDER_VARIG_ENDRET_ARBEIDSSITUASJON_MIDLERTIDIG_INAKTIV;
-import static no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon.VURDER_VARIG_ENDRET_ELLER_NYOPPSTARTET_NÆRING_SELVSTENDIG_NÆRINGSDRIVENDE;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon.FASTSETT_BG_SN_NY_I_ARB_LIVT;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon.FASTSETT_BG_TB_ARB;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon.VURDER_VARIG_ENDRT_ARB_SITSJN_MDL_INAKTV;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon.VURDER_VARIG_ENDRT_NYOPPSTR_NAERNG_SN;
 
 import java.util.Collection;
 import java.util.List;
@@ -40,11 +40,11 @@ public class AvklaringsbehovUtlederForeslåBeregning {
     private static AvklaringsbehovDefinisjon mapRegelMerknad(RegelMerknad regelMerknad) {
         return switch (regelMerknad.utfallÅrsak()) {
             case FASTSETT_AVVIK_OVER_25_PROSENT, FASTSETT_AVVIK_OVER_25_PROSENT_ARBEIDSTAKER, FASTSETT_AVVIK_OVER_25_PROSENT_FRILANS,
-                    FASTSETT_AVVIK_TIDSBEGRENSET_ARBEIDSTAKER -> FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS;
-            case FASTSETT_AVVIK_TIDSBEGRENSET -> FASTSETT_BEREGNINGSGRUNNLAG_TIDSBEGRENSET_ARBEIDSFORHOLD;
-            case FASTSETT_SELVSTENDIG_NY_ARBEIDSLIVET -> FASTSETT_BEREGNINGSGRUNNLAG_FOR_SN_NY_I_ARBEIDSLIVET;
-            case VARIG_ENDRING_OG_AVVIK_STØRRE_ENN_25_PROSENT -> VURDER_VARIG_ENDRET_ELLER_NYOPPSTARTET_NÆRING_SELVSTENDIG_NÆRINGSDRIVENDE;
-            case VARIG_ENDRING_OG_AVVIK_STØRRE_ENN_25_PROSENT_MIDLERTIDIG_INAKTIV -> VURDER_VARIG_ENDRET_ARBEIDSSITUASJON_MIDLERTIDIG_INAKTIV;
+                    FASTSETT_AVVIK_TIDSBEGRENSET_ARBEIDSTAKER -> FASTSETT_BG_AT_FL;
+            case FASTSETT_AVVIK_TIDSBEGRENSET -> FASTSETT_BG_TB_ARB;
+            case FASTSETT_SELVSTENDIG_NY_ARBEIDSLIVET -> FASTSETT_BG_SN_NY_I_ARB_LIVT;
+            case VARIG_ENDRING_OG_AVVIK_STØRRE_ENN_25_PROSENT -> VURDER_VARIG_ENDRT_NYOPPSTR_NAERNG_SN;
+            case VARIG_ENDRING_OG_AVVIK_STØRRE_ENN_25_PROSENT_MIDLERTIDIG_INAKTIV -> VURDER_VARIG_ENDRT_ARB_SITSJN_MDL_INAKTV;
             default -> throw new IllegalArgumentException("Utviklerfeil: Uventet regelutfall " + regelMerknad.utfallÅrsak());
         };
     }

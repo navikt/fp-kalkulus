@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -66,7 +65,7 @@ public class VidereførOverstyringK9 implements VidereførOverstyring {
     private Optional<AvklaringsbehovDefinisjon> finnAktuellOverstyring(BeregningSteg beregningSteg) {
         return Arrays.stream(AvklaringsbehovDefinisjon.values())
                 .filter(it -> it.erOverstyring() && it.getStegFunnet().equals(beregningSteg))
-                .filter(it -> !it.equals(AvklaringsbehovDefinisjon.OVERSTYRING_AV_BEREGNINGSAKTIVITETER))
+                .filter(it -> !it.equals(AvklaringsbehovDefinisjon.OVST_BEREGNINGSAKTIVITETER))
                 .findFirst();
     }
 

@@ -42,10 +42,10 @@ public class AvklaringsbehovUtlederFordelBeregning {
                 forlengelseperioder);
         var utledetbehovForAvklaring = new ArrayList<BeregningAvklaringsbehovResultat>();
         if (skalVurdereNyttInntektsforhold) {
-            utledetbehovForAvklaring.add(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.VURDER_NYTT_INNTEKTSFORHOLD));
+            utledetbehovForAvklaring.add(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.VURDER_NYTT_INNTKTSFRHLD));
         }
         if (!perioderTilManuellVurdering.isEmpty()) {
-            utledetbehovForAvklaring.add(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BEREGNINGSGRUNNLAG));
+            utledetbehovForAvklaring.add(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BG));
         }
         return utledetbehovForAvklaring;
     }

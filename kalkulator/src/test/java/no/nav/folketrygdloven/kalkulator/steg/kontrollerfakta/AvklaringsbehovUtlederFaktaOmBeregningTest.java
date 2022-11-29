@@ -155,7 +155,7 @@ public class AvklaringsbehovUtlederFaktaOmBeregningTest {
 
         // Assert
         assertThat(resultat.getBeregningAvklaringsbehovResultatList()).hasSize(1);
-        assertThat(resultat.getBeregningAvklaringsbehovResultatList().get(0).getBeregningAvklaringsbehovDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.VURDER_FAKTA_FOR_ATFL_SN);
+        assertThat(resultat.getBeregningAvklaringsbehovResultatList().get(0).getBeregningAvklaringsbehovDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.VURDER_FAKTA_ATFL_SN);
         List<FaktaOmBeregningTilfelle> tilfeller = resultat.getFaktaOmBeregningTilfeller();
         assertThat(tilfeller).containsExactlyInAnyOrder(FaktaOmBeregningTilfelle.VURDER_SN_NY_I_ARBEIDSLIVET);
     }
@@ -196,7 +196,7 @@ public class AvklaringsbehovUtlederFaktaOmBeregningTest {
 
         // Assert
         assertThat(resultat.getBeregningAvklaringsbehovResultatList()).hasSize(1);
-        assertThat(resultat.getBeregningAvklaringsbehovResultatList().get(0).getBeregningAvklaringsbehovDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.VURDER_FAKTA_FOR_ATFL_SN);
+        assertThat(resultat.getBeregningAvklaringsbehovResultatList().get(0).getBeregningAvklaringsbehovDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.VURDER_FAKTA_ATFL_SN);
         List<FaktaOmBeregningTilfelle> tilfeller = resultat.getFaktaOmBeregningTilfeller();
         assertThat(tilfeller).containsExactlyInAnyOrder(
                 FaktaOmBeregningTilfelle.VURDER_AT_OG_FL_I_SAMME_ORGANISASJON,
@@ -260,7 +260,7 @@ public class AvklaringsbehovUtlederFaktaOmBeregningTest {
 
         // Assert
         assertThat(resultat.getBeregningAvklaringsbehovResultatList()).hasSize(1);
-        assertThat(resultat.getBeregningAvklaringsbehovResultatList().get(0).getBeregningAvklaringsbehovDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.VURDER_FAKTA_FOR_ATFL_SN);
+        assertThat(resultat.getBeregningAvklaringsbehovResultatList().get(0).getBeregningAvklaringsbehovDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.VURDER_FAKTA_ATFL_SN);
         List<FaktaOmBeregningTilfelle> tilfeller = resultat.getFaktaOmBeregningTilfeller();
         assertThat(tilfeller).containsExactlyInAnyOrder(
                 FaktaOmBeregningTilfelle.VURDER_TIDSBEGRENSET_ARBEIDSFORHOLD);
@@ -316,7 +316,7 @@ public class AvklaringsbehovUtlederFaktaOmBeregningTest {
         // Assert
         assertThat(resultater.getBeregningAvklaringsbehovResultatList()).hasSize(1);
         assertThat(resultater.getBeregningAvklaringsbehovResultatList())
-                .anySatisfy(resultat -> assertThat(resultat.getBeregningAvklaringsbehovDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.VURDER_FAKTA_FOR_ATFL_SN));
+                .anySatisfy(resultat -> assertThat(resultat.getBeregningAvklaringsbehovDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.VURDER_FAKTA_ATFL_SN));
     }
 
     @Test
@@ -346,7 +346,7 @@ public class AvklaringsbehovUtlederFaktaOmBeregningTest {
         // Assert
         assertThat(resultater.getBeregningAvklaringsbehovResultatList()).hasSize(1);
         assertThat(resultater.getBeregningAvklaringsbehovResultatList())
-                .anySatisfy(resultat -> assertThat(resultat.getBeregningAvklaringsbehovDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.OVERSTYRING_AV_BEREGNINGSGRUNNLAG));
+                .anySatisfy(resultat -> assertThat(resultat.getBeregningAvklaringsbehovDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.OVST_INNTEKT));
         assertThat(resultater.getFaktaOmBeregningTilfeller()).containsExactly(FaktaOmBeregningTilfelle.VURDER_SN_NY_I_ARBEIDSLIVET);
 
     }

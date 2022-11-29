@@ -49,32 +49,32 @@ class AvklaringsbehovTjenesteTest extends EntityManagerAwareTest {
 
     @Test
     public void skal_opprette_lagre_og_hente_avklaringsbehov() {
-        List<AvklaringsbehovDefinisjon> avklaringsbehov = Collections.singletonList(AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+        List<AvklaringsbehovDefinisjon> avklaringsbehov = Collections.singletonList(AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL);
 
         avklaringsbehovTjeneste.lagreAvklaringsresultater(kobling.getId(), avklaringsbehov);
 
-        AvklaringsbehovEntitet lagretAvklaringsbehov = avklaringsbehovTjeneste.hentAvklaringsbehov(kobling.getId(), AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS)
+        AvklaringsbehovEntitet lagretAvklaringsbehov = avklaringsbehovTjeneste.hentAvklaringsbehov(kobling.getId(), AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL)
                 .orElse(null);
 
         assertThat(lagretAvklaringsbehov).isNotNull();
-        assertThat(lagretAvklaringsbehov.getDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+        assertThat(lagretAvklaringsbehov.getDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL);
         assertThat(lagretAvklaringsbehov.getStatus()).isEqualTo(AvklaringsbehovStatus.OPPRETTET);
         assertThat(lagretAvklaringsbehov.getStegFunnet()).isEqualTo(BeregningSteg.FORS_BERGRUNN);
     }
 
     @Test
     public void skal_opprette_og_løse_avklaringsbehov() {
-        List<AvklaringsbehovDefinisjon> avklaringsbehov = Collections.singletonList(AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+        List<AvklaringsbehovDefinisjon> avklaringsbehov = Collections.singletonList(AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL);
 
         // Opprett
         avklaringsbehovTjeneste.lagreAvklaringsresultater(kobling.getId(), avklaringsbehov);
         // Løs
-        avklaringsbehovTjeneste.løsAvklaringsbehov(kobling.getId(), AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS, "Dette er en begrunnelse");
+        avklaringsbehovTjeneste.løsAvklaringsbehov(kobling.getId(), AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL, "Dette er en begrunnelse");
 
-        AvklaringsbehovEntitet løstAvklaringsbehov = avklaringsbehovTjeneste.hentAvklaringsbehov(kobling.getId(), AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS)
+        AvklaringsbehovEntitet løstAvklaringsbehov = avklaringsbehovTjeneste.hentAvklaringsbehov(kobling.getId(), AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL)
                 .orElse(null);
         assertThat(løstAvklaringsbehov).isNotNull();
-        assertThat(løstAvklaringsbehov.getDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+        assertThat(løstAvklaringsbehov.getDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL);
         assertThat(løstAvklaringsbehov.getStatus()).isEqualTo(AvklaringsbehovStatus.UTFØRT);
         assertThat(løstAvklaringsbehov.getStegFunnet()).isEqualTo(BeregningSteg.FORS_BERGRUNN);
         assertThat(løstAvklaringsbehov.getBegrunnelse()).isEqualTo("Dette er en begrunnelse");
@@ -83,36 +83,36 @@ class AvklaringsbehovTjenesteTest extends EntityManagerAwareTest {
     @Test
     public void skal_avbryte_avklaringsbehov_fra_og_med_oppgitt_avklaringsbehov_ved_tilbakerulling() {
         // Opprett
-        avklaringsbehovTjeneste.lagreAvklaringsresultater(kobling.getId(), Collections.singletonList(AvklaringsbehovDefinisjon.VURDER_FAKTA_FOR_ATFL_SN));
-        avklaringsbehovTjeneste.lagreAvklaringsresultater(kobling.getId(), Collections.singletonList(AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS));
-        avklaringsbehovTjeneste.lagreAvklaringsresultater(kobling.getId(), Collections.singletonList(AvklaringsbehovDefinisjon.FORDEL_BEREGNINGSGRUNNLAG));
+        avklaringsbehovTjeneste.lagreAvklaringsresultater(kobling.getId(), Collections.singletonList(AvklaringsbehovDefinisjon.VURDER_FAKTA_ATFL_SN));
+        avklaringsbehovTjeneste.lagreAvklaringsresultater(kobling.getId(), Collections.singletonList(AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL));
+        avklaringsbehovTjeneste.lagreAvklaringsresultater(kobling.getId(), Collections.singletonList(AvklaringsbehovDefinisjon.FORDEL_BG));
 
         // Løs
-        avklaringsbehovTjeneste.løsAvklaringsbehov(kobling.getId(), AvklaringsbehovDefinisjon.VURDER_FAKTA_FOR_ATFL_SN, "Dette er en begrunnelse");
-        avklaringsbehovTjeneste.løsAvklaringsbehov(kobling.getId(), AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS, "Dette er en begrunnelse");
-        avklaringsbehovTjeneste.løsAvklaringsbehov(kobling.getId(), AvklaringsbehovDefinisjon.FORDEL_BEREGNINGSGRUNNLAG, "Dette er en begrunnelse");
+        avklaringsbehovTjeneste.løsAvklaringsbehov(kobling.getId(), AvklaringsbehovDefinisjon.VURDER_FAKTA_ATFL_SN, "Dette er en begrunnelse");
+        avklaringsbehovTjeneste.løsAvklaringsbehov(kobling.getId(), AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL, "Dette er en begrunnelse");
+        avklaringsbehovTjeneste.løsAvklaringsbehov(kobling.getId(), AvklaringsbehovDefinisjon.FORDEL_BG, "Dette er en begrunnelse");
 
         // Rull tilbake fra og med avvikavklaringsbehov
-        avklaringsbehovTjeneste.avbrytAlleAvklaringsbehovEtter(kobling.getId(), AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+        avklaringsbehovTjeneste.avbrytAlleAvklaringsbehovEtter(kobling.getId(), AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL);
 
         List<AvklaringsbehovEntitet> avklaringsbehov = avklaringsbehovRepository.hentAvklaringsbehovForKobling(kobling);
 
         assertThat(avklaringsbehov).hasSize(3);
-        AvklaringsbehovEntitet faktaAP = avklaringsbehov.stream().filter(ap -> ap.getDefinisjon().equals(AvklaringsbehovDefinisjon.VURDER_FAKTA_FOR_ATFL_SN)).findFirst().orElse(null);
+        AvklaringsbehovEntitet faktaAP = avklaringsbehov.stream().filter(ap -> ap.getDefinisjon().equals(AvklaringsbehovDefinisjon.VURDER_FAKTA_ATFL_SN)).findFirst().orElse(null);
         assertThat(faktaAP).isNotNull();
-        assertThat(faktaAP.getDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.VURDER_FAKTA_FOR_ATFL_SN);
+        assertThat(faktaAP.getDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.VURDER_FAKTA_ATFL_SN);
         assertThat(faktaAP.getStatus()).isEqualTo(AvklaringsbehovStatus.UTFØRT);
         assertThat(faktaAP.getStegFunnet()).isEqualTo(BeregningSteg.KOFAKBER);
 
-        AvklaringsbehovEntitet avvikAP = avklaringsbehov.stream().filter(ap -> ap.getDefinisjon().equals(AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS)).findFirst().orElse(null);
+        AvklaringsbehovEntitet avvikAP = avklaringsbehov.stream().filter(ap -> ap.getDefinisjon().equals(AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL)).findFirst().orElse(null);
         assertThat(avvikAP).isNotNull();
-        assertThat(avvikAP.getDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+        assertThat(avvikAP.getDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL);
         assertThat(avvikAP.getStatus()).isEqualTo(AvklaringsbehovStatus.UTFØRT);
         assertThat(avvikAP.getStegFunnet()).isEqualTo(BeregningSteg.FORS_BERGRUNN);
 
-        AvklaringsbehovEntitet fordelAP = avklaringsbehov.stream().filter(ap -> ap.getDefinisjon().equals(AvklaringsbehovDefinisjon.FORDEL_BEREGNINGSGRUNNLAG)).findFirst().orElse(null);
+        AvklaringsbehovEntitet fordelAP = avklaringsbehov.stream().filter(ap -> ap.getDefinisjon().equals(AvklaringsbehovDefinisjon.FORDEL_BG)).findFirst().orElse(null);
         assertThat(fordelAP).isNotNull();
-        assertThat(fordelAP.getDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.FORDEL_BEREGNINGSGRUNNLAG);
+        assertThat(fordelAP.getDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.FORDEL_BG);
         assertThat(fordelAP.getStatus()).isEqualTo(AvklaringsbehovStatus.AVBRUTT);
         assertThat(fordelAP.getStegFunnet()).isEqualTo(BeregningSteg.FORDEL_BERGRUNN);
     }
@@ -120,30 +120,30 @@ class AvklaringsbehovTjenesteTest extends EntityManagerAwareTest {
     @Test
     public void skal_kaste_feil_om_vi_prøver_å_løse_avklaringsbehov_som_ikke_er_utledet() {
         assertThatThrownBy(() ->
-                avklaringsbehovTjeneste.løsAvklaringsbehov(kobling.getId(), AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS, "Dette er en begrunnelse"))
+                avklaringsbehovTjeneste.løsAvklaringsbehov(kobling.getId(), AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL, "Dette er en begrunnelse"))
                 .isInstanceOf(TekniskException.class);
     }
 
     @Test
     public void skal_kaste_feil_hvis_vi_prøver_å_løse_allerede_løst_avklaringsbehov() {
-        List<AvklaringsbehovDefinisjon> avklaringsbehov = Collections.singletonList(AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+        List<AvklaringsbehovDefinisjon> avklaringsbehov = Collections.singletonList(AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL);
 
         // Opprett
         avklaringsbehovTjeneste.lagreAvklaringsresultater(kobling.getId(), avklaringsbehov);
         // Løs
-        avklaringsbehovTjeneste.løsAvklaringsbehov(kobling.getId(), AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS, "Dette er en begrunnelse");
+        avklaringsbehovTjeneste.løsAvklaringsbehov(kobling.getId(), AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL, "Dette er en begrunnelse");
 
-        AvklaringsbehovEntitet løstAvklaringsbehov = avklaringsbehovTjeneste.hentAvklaringsbehov(kobling.getId(), AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS)
+        AvklaringsbehovEntitet løstAvklaringsbehov = avklaringsbehovTjeneste.hentAvklaringsbehov(kobling.getId(), AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL)
                 .orElse(null);
         assertThat(løstAvklaringsbehov).isNotNull();
-        assertThat(løstAvklaringsbehov.getDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+        assertThat(løstAvklaringsbehov.getDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL);
         assertThat(løstAvklaringsbehov.getStatus()).isEqualTo(AvklaringsbehovStatus.UTFØRT);
         assertThat(løstAvklaringsbehov.getStegFunnet()).isEqualTo(BeregningSteg.FORS_BERGRUNN);
         assertThat(løstAvklaringsbehov.getBegrunnelse()).isEqualTo("Dette er en begrunnelse");
 
         // Prøv å løse igjen
         assertThatThrownBy(() ->
-                avklaringsbehovTjeneste.løsAvklaringsbehov(kobling.getId(), AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS, "Dette er en begrunnelse"))
+                avklaringsbehovTjeneste.løsAvklaringsbehov(kobling.getId(), AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL, "Dette er en begrunnelse"))
                 .isInstanceOf(TekniskException.class);
 
     }

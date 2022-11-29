@@ -65,7 +65,7 @@ class SpolFramoverTjenesteTest {
         BeregningsgrunnlagTilstand tilstandFraSteg = OPPDATERT_MED_REFUSJON_OG_GRADERING;
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = lagGrunnlag(tilstandFraSteg, SKJÆRINGSTIDSPUNKT);
         BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraSteg = lagGrunnlag(tilstandFraSteg, SKJÆRINGSTIDSPUNKT);
-        List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BEREGNINGSGRUNNLAG));
+        List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BG));
 
         // Act
         var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,
@@ -85,7 +85,7 @@ class SpolFramoverTjenesteTest {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = lagGrunnlag(tilstandFraSteg, SKJÆRINGSTIDSPUNKT);
         BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraSteg = lagGrunnlag(tilstandFraSteg, SKJÆRINGSTIDSPUNKT.minusDays(1));
         BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraStegUt = lagGrunnlag(tilstandFraStegUt, SKJÆRINGSTIDSPUNKT.minusDays(1));
-        List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BEREGNINGSGRUNNLAG));
+        List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BG));
 
         // Act
         var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,
@@ -105,7 +105,7 @@ class SpolFramoverTjenesteTest {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = lagGrunnlag(tilstandFraSteg, SKJÆRINGSTIDSPUNKT);
         BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraSteg = lagGrunnlag(tilstandFraSteg, SKJÆRINGSTIDSPUNKT);
         BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraStegUt = lagGrunnlag(tilstandFraStegUt, SKJÆRINGSTIDSPUNKT.minusDays(1));
-        List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BEREGNINGSGRUNNLAG));
+        List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BG));
 
         // Act
         var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,
@@ -148,7 +148,7 @@ class SpolFramoverTjenesteTest {
         // Fjerde periode eksisterer kun i siste grunnlag
         lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT.plusDays(8), TIDENES_ENDE), null);
 
-        List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BEREGNINGSGRUNNLAG));
+        List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BG));
 
         // Act
         var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,

@@ -2,6 +2,8 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov;
 
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -13,9 +15,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.AvklaringsbehovDefinisjonKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.AvklaringsbehovStatusDefinisjonKodeverdiConverter;
@@ -125,7 +124,7 @@ public class AvklaringsbehovEntitet extends BaseEntitet implements Comparable<Av
 
     private void kastFeilHvisAvbrutt() {
         if (AvklaringsbehovStatus.AVBRUTT.equals(status)) {
-           throw new IllegalStateException("Prøver å løse avklaringsbehov som er avbrutt: " + this);
+            throw new IllegalStateException("Prøver å løse avklaringsbehov som er avbrutt: " + this);
         }
     }
 

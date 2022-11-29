@@ -96,7 +96,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterPleiepengerTest 
         assertThat(resultater).hasSize(1);
         BeregningAvklaringsbehovResultat beregningAvklaringsbehovResultat = resultater.get(0);
 
-        assertThat(beregningAvklaringsbehovResultat.getBeregningAvklaringsbehovDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.AUTO_VENT_PÅ_INNTEKT_RAPPORTERINGSFRIST);
+        assertThat(beregningAvklaringsbehovResultat.getBeregningAvklaringsbehovDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.AUTO_VENT_PÅ_INNTKT_RAP_FRST);
 
         assertThat(beregningAvklaringsbehovResultat.getVenteårsak())
                 .isNotNull()
@@ -189,7 +189,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterPleiepengerTest 
         // Assert
         assertThat(resultater).hasSize(1);
         assertThat(resultater).anySatisfy(resultat ->
-            assertThat(resultat.getBeregningAvklaringsbehovDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.AUTO_VENT_PÅ_SISTE_AAP_ELLER_DP_MELDEKORT)
+            assertThat(resultat.getBeregningAvklaringsbehovDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.AUTO_VENT_PÅ_SISTE_AAP_DP_MELDKRT)
         );
     }
 
@@ -209,7 +209,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterPleiepengerTest 
         // Assert
         assertThat(resultater).hasSize(1);
         assertThat(resultater).anySatisfy(resultat ->
-            assertThat(resultat.getBeregningAvklaringsbehovDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.AUTO_VENT_PÅ_INNTEKT_RAPPORTERINGSFRIST)
+            assertThat(resultat.getBeregningAvklaringsbehovDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.AUTO_VENT_PÅ_INNTKT_RAP_FRST)
         );
     }
 
@@ -330,7 +330,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterPleiepengerTest 
         // Assert
         assertThat(resultater).hasSize(1);
         assertThat(resultater).anySatisfy(resultat ->
-                assertThat(resultat.getBeregningAvklaringsbehovDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.AUTO_VENT_PÅ_SISTE_AAP_ELLER_DP_MELDEKORT)
+                assertThat(resultat.getBeregningAvklaringsbehovDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.AUTO_VENT_PÅ_SISTE_AAP_DP_MELDKRT)
         );
     }
 

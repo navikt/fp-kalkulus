@@ -43,18 +43,18 @@ class AvklaringsbehovRepositoryTest extends EntityManagerAwareTest {
 
     @Test
     public void skal_lagre_og_hente_avklaringsbehov() {
-        AvklaringsbehovEntitet ap = avklaringsbehovKontrollTjeneste.opprettForKobling(kobling, AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+        AvklaringsbehovEntitet ap = avklaringsbehovKontrollTjeneste.opprettForKobling(kobling, AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL);
         avklaringsbehovRepository.lagre(ap);
 
-        Optional<AvklaringsbehovEntitet> hentetAP = avklaringsbehovRepository.hentAvklaringsbehovForKobling(kobling, AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+        Optional<AvklaringsbehovEntitet> hentetAP = avklaringsbehovRepository.hentAvklaringsbehovForKobling(kobling, AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL);
 
         assertThat(hentetAP).isNotEmpty();
-        assertThat(hentetAP.get().getDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+        assertThat(hentetAP.get().getDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL);
     }
 
     @Test
     public void skal_hente_ap_som_ikke_finnes() {
-        Optional<AvklaringsbehovEntitet> hentetAP = avklaringsbehovRepository.hentAvklaringsbehovForKobling(kobling, AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+        Optional<AvklaringsbehovEntitet> hentetAP = avklaringsbehovRepository.hentAvklaringsbehovForKobling(kobling, AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL);
 
         assertThat(hentetAP).isEmpty();
     }

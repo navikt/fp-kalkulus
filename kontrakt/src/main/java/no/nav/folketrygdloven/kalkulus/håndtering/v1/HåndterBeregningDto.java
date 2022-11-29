@@ -26,7 +26,7 @@ import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.VurderVarigEndrin
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.overstyring.OverstyrBeregningsaktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.overstyring.OverstyrBeregningsgrunnlagHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.refusjon.VurderRefusjonBeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -50,10 +50,15 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public abstract class HåndterBeregningDto {
 
+    @JsonProperty(value = "avklaringsbehovDefinisjon")
+    @NotNull
+    @Valid
+    private AvklaringsbehovDefinisjon avklaringsbehovDefinisjon;
+
     @JsonProperty(value = "kode")
     @NotNull
     @Valid
-    private HåndteringKode kode;
+    private AvklaringsbehovDefinisjon kode;
 
     @JsonProperty("begrunnelse")
     @Size(max = 4000)
@@ -65,12 +70,12 @@ public abstract class HåndterBeregningDto {
     private boolean avbrutt;
 
 
-    public HåndterBeregningDto(@NotNull @Valid HåndteringKode kode) {
-        this.kode = kode;
+    public HåndterBeregningDto(@NotNull @Valid AvklaringsbehovDefinisjon avklaringsbehovDefinisjon) {
+        this.avklaringsbehovDefinisjon = avklaringsbehovDefinisjon;
     }
 
-    public HåndterBeregningDto(@NotNull @Valid HåndteringKode kode, boolean avbrutt) {
-        this.kode = kode;
+    public HåndterBeregningDto(@NotNull @Valid AvklaringsbehovDefinisjon avklaringsbehovDefinisjon, boolean avbrutt) {
+        this.avklaringsbehovDefinisjon = avklaringsbehovDefinisjon;
         this.avbrutt = avbrutt;
     }
 
@@ -78,8 +83,11 @@ public abstract class HåndterBeregningDto {
         // default ctor
     }
 
-    public HåndteringKode getKode() {
-        return kode;
+    public AvklaringsbehovDefinisjon getAvklaringsbehovDefinisjon() {
+        if (kode != null) {
+            return kode;
+        }
+        return avklaringsbehovDefinisjon;
     }
 
     /**

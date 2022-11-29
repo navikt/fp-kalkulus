@@ -699,7 +699,7 @@ public class ForeslåBeregningsgrunnlagTest {
         // Assert
         List<BeregningAvklaringsbehovResultat> aps = resultat.getAvklaringsbehov();
         List<AvklaringsbehovDefinisjon> apDefs = aps.stream().map(BeregningAvklaringsbehovResultat::getBeregningAvklaringsbehovDefinisjon).collect(Collectors.toList());
-        assertThat(apDefs).containsExactly(AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+        assertThat(apDefs).containsExactly(AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL);
     }
 
     @Test
@@ -729,7 +729,7 @@ public class ForeslåBeregningsgrunnlagTest {
         // Assert
         List<BeregningAvklaringsbehovResultat> aps = resultat.getAvklaringsbehov();
         List<AvklaringsbehovDefinisjon> apDefs = aps.stream().map(BeregningAvklaringsbehovResultat::getBeregningAvklaringsbehovDefinisjon).collect(Collectors.toList());
-        assertThat(apDefs).containsExactly(AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+        assertThat(apDefs).containsExactly(AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL);
     }
 
     @Test

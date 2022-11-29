@@ -28,46 +28,47 @@ public
 enum AvklaringsbehovDefinisjon implements Kodeverdi {
 
     // 5000 vanlig saksbehandlig
-    FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS("5038", MANUELL, BeregningSteg.FORS_BERGRUNN, "Fastsette beregningsgrunnlag for arbeidstaker/frilanser skjønnsmessig"),
-    VURDER_VARIG_ENDRET_ELLER_NYOPPSTARTET_NÆRING_SELVSTENDIG_NÆRINGSDRIVENDE("5039", MANUELL, BeregningSteg.FORTS_FORS_BERGRUNN, "Vurder varig endret/nyoppstartet næring selvstendig næringsdrivende"),
-    VURDER_VARIG_ENDRET_ARBEIDSSITUASJON_MIDLERTIDIG_INAKTIV("5054", MANUELL, BeregningSteg.FORTS_FORS_BERGRUNN, "Vurder varig endret arbeidssituasjon for bruker som er midlertidig inaktiv"),
-    FASTSETT_BEREGNINGSGRUNNLAG_SELVSTENDIG_NÆRINGSDRIVENDE("5042", MANUELL, BeregningSteg.FORTS_FORS_BERGRUNN, "Fastsett beregningsgrunnlag for selvstendig næringsdrivende"),
-    FORDEL_BEREGNINGSGRUNNLAG("5046", MANUELL, BeregningSteg.FORDEL_BERGRUNN, "Fordel beregningsgrunnlag"),
-    FASTSETT_BEREGNINGSGRUNNLAG_TIDSBEGRENSET_ARBEIDSFORHOLD("5047", MANUELL, BeregningSteg.FORS_BERGRUNN, "Fastsett beregningsgrunnlag for tidsbegrenset arbeidsforhold"),
-    VURDER_NYTT_INNTEKTSFORHOLD("5067", MANUELL, BeregningSteg.FORDEL_BERGRUNN, "Vurder nytt inntektsforhold"),
+    FASTSETT_BG_AT_FL("5038", "FASTSETT_BG_AT_FL" , MANUELL, BeregningSteg.FORS_BERGRUNN, "Fastsette beregningsgrunnlag for arbeidstaker/frilanser skjønnsmessig"),
+    VURDER_VARIG_ENDRT_NYOPPSTR_NAERNG_SN("5039", "VURDER_VARIG_ENDRT_NYOPPSTR_NAERNG_SN", MANUELL, BeregningSteg.FORTS_FORS_BERGRUNN, "Vurder varig endret/nyoppstartet næring selvstendig næringsdrivende"),
+    VURDER_VARIG_ENDRT_ARB_SITSJN_MDL_INAKTV("5054", "VURDER_VARIG_ENDRT_ARB_SITSJN_MDL_INAKTV", MANUELL, BeregningSteg.FORTS_FORS_BERGRUNN, "Vurder varig endret arbeidssituasjon for bruker som er midlertidig inaktiv"),
+    FASTSETT_BG_SN("5042","FASTSETT_BG_SN", MANUELL, BeregningSteg.FORTS_FORS_BERGRUNN, "Fastsett beregningsgrunnlag for selvstendig næringsdrivende"),
+    FORDEL_BG("5046", "FORDEL_BG", MANUELL, BeregningSteg.FORDEL_BERGRUNN, "Fordel beregningsgrunnlag"),
+    FASTSETT_BG_TB_ARB("5047", "FASTSETT_BG_TB_ARB", MANUELL, BeregningSteg.FORS_BERGRUNN, "Fastsett beregningsgrunnlag for tidsbegrenset arbeidsforhold"),
+    VURDER_NYTT_INNTKTSFRHLD("5067", "VURDER_NYTT_INNTKTSFRHLD", MANUELL, BeregningSteg.FORDEL_BERGRUNN, "Vurder nytt inntektsforhold"),
 
-    FASTSETT_BEREGNINGSGRUNNLAG_FOR_SN_NY_I_ARBEIDSLIVET("5049", MANUELL, BeregningSteg.FORTS_FORS_BERGRUNN, "Fastsett beregningsgrunnlag for SN som er ny i arbeidslivet"),
-    VURDER_GRADERING_UTEN_BEREGNINGSGRUNNLAG("5050", MANUELL, BeregningSteg.FAST_BERGRUNN, "Vurder gradering på andel uten beregningsgrunnlag"),
-    AVKLAR_AKTIVITETER("5052", MANUELL, BeregningSteg.FASTSETT_STP_BER, "Avklar aktivitet for beregning"),
-    VURDER_FAKTA_FOR_ATFL_SN("5058", MANUELL, BeregningSteg.KOFAKBER, "Vurder fakta for arbeidstaker, frilans og selvstendig næringsdrivende"),
-    VURDER_REFUSJONSKRAV("5059", MANUELL, BeregningSteg.VURDER_REF_BERGRUNN, "Vurder refusjonskrav for beregningen"),
+    FASTSETT_BG_SN_NY_I_ARB_LIVT("5049", "FASTSETT_BG_SN_NY_I_ARB_LIVT", MANUELL, BeregningSteg.FORTS_FORS_BERGRUNN, "Fastsett beregningsgrunnlag for SN som er ny i arbeidslivet"),
+    VURDER_GRADERING_UTEN_BG("5050", "VURDER_GRADERING_UTEN_BG", MANUELL, BeregningSteg.FAST_BERGRUNN, "Vurder gradering på andel uten beregningsgrunnlag"),
+    AVKLAR_AKTIVITETER("5052", "AVKLAR_AKTIVITETER", MANUELL, BeregningSteg.FASTSETT_STP_BER, "Avklar aktivitet for beregning"),
+    VURDER_FAKTA_ATFL_SN("5058", "VURDER_FAKTA_ATFL_SN", MANUELL, BeregningSteg.KOFAKBER, "Vurder fakta for arbeidstaker, frilans og selvstendig næringsdrivende"),
+    VURDER_REFUSJONSKRAV("5059", "VURDER_REFUSJONSKRAV", MANUELL, BeregningSteg.VURDER_REF_BERGRUNN, "Vurder refusjonskrav for beregningen"),
 
     // 6000 overstyring
-    OVERSTYRING_AV_BEREGNINGSAKTIVITETER("6014", OVERSTYRING, BeregningSteg.FASTSETT_STP_BER, "Overstyring av beregningsaktiviteter"),
-    OVERSTYRING_AV_BEREGNINGSGRUNNLAG("6015", OVERSTYRING, BeregningSteg.KOFAKBER, "Overstyring av beregningsgrunnlag"),
+    OVST_BEREGNINGSAKTIVITETER("6014", "OVST_BEREGNINGSAKTIVITETER", OVERSTYRING, BeregningSteg.FASTSETT_STP_BER, "Overstyring av beregningsaktiviteter"),
+    OVST_INNTEKT("6015", "OVST_INNTEKT", OVERSTYRING, BeregningSteg.KOFAKBER, "Overstyring av beregningsgrunnlag"),
 
     // 7000 automatisk satt på vent
-    AUTO_VENT_PÅ_INNTEKT_RAPPORTERINGSFRIST("7014", AUTOPUNKT, BeregningSteg.FASTSETT_STP_BER, "Vent på rapporteringsfrist for inntekt"),
-    AUTO_VENT_PÅ_SISTE_AAP_ELLER_DP_MELDEKORT("7020", AUTOPUNKT, BeregningSteg.FASTSETT_STP_BER, "Vent på siste meldekort for AAP eller DP-mottaker"),
+    AUTO_VENT_PÅ_INNTKT_RAP_FRST("7014", "AUTO_VENT_PÅ_INNTKT_RAP_FRST", AUTOPUNKT, BeregningSteg.FASTSETT_STP_BER, "Vent på rapporteringsfrist for inntekt"),
+    AUTO_VENT_PÅ_SISTE_AAP_DP_MELDKRT("7020", "AUTO_VENT_PÅ_SISTE_AAP_DP_MELDKRT", AUTOPUNKT, BeregningSteg.FASTSETT_STP_BER, "Vent på siste meldekort for AAP eller DP-mottaker"),
 
     // 8000 frisinn
-    AUTO_VENT_FRISINN("8000", AUTOPUNKT, BeregningSteg.FASTSETT_STP_BER, "Sak settes på vent på grunn av manglende funksjonalitet"),
-    INGEN_AKTIVITETER("8001", AUTOPUNKT, BeregningSteg.FASTSETT_STP_BER, "Gir avslag"),
+    AUTO_VENT_FRISINN("8000", "AUTO_VENT_FRISINN", AUTOPUNKT, BeregningSteg.FASTSETT_STP_BER, "Sak settes på vent på grunn av manglende funksjonalitet"),
+    INGEN_AKTIVITETER("8001", "INGEN_AKTIVITETER", AUTOPUNKT, BeregningSteg.FASTSETT_STP_BER, "Gir avslag"),
 
     UNDEFINED,
 
     // Punkter som ikke lenger utledes, tas vare på så vi vet hvilke koder kalkulus har brukt før
     @Deprecated
-    AUTO_VENT_ULIKE_STARTDATOER_SVP("7026", AUTOPUNKT, null, "Autopunkt ulike startdatoer svangerskapspenger"),
+    AUTO_VENT_ULIKE_STARTDTR_SVP("7026", "AUTO_VENT_ULIKE_STARTDTR_SVP", AUTOPUNKT, null, "Autopunkt ulike startdatoer svangerskapspenger"),
     @Deprecated
-    AUTO_VENT_DELVIS_TILRETTELEGGING_OG_REFUSJON_SVP("7027", AUTOPUNKT, null, "Autopunkt delvis SVP og refusjon"),
+    AUTO_VENT_DELVS_TILRTLGGNG_REFSJN_SVP("7027", "AUTO_VENT_DELVS_TILRTLGGNG_REFSJN_SVP", AUTOPUNKT, null, "Autopunkt delvis SVP og refusjon"),
     @Deprecated
-    AUTO_VENT_PÅ_MANGLENDE_ARBEIDSFORHOLD_KOMMUNEREFORM("7036", AUTOPUNKT, null ,"Sak settes på vent pga kommune- og fylkesammenslåing."),
+    AUTO_VENT_PÅ_MANGLND_ARB_FHLD_KOMNRFRM("7036", "AUTO_VENT_PÅ_MANGLND_ARB_FHLD_KOMNRFRM", AUTOPUNKT, null, "Sak settes på vent pga kommune- og fylkesammenslåing."),
     ;
 
     static final String KODEVERK = "AVKLARINGSBEHOV_DEF";
 
-    private static final Map<String, AvklaringsbehovDefinisjon> KODER = new LinkedHashMap<>();
+    public static final Map<String, AvklaringsbehovDefinisjon> KODER = new LinkedHashMap<>();
+    private static final Map<String, AvklaringsbehovDefinisjon> KODER_NY = new LinkedHashMap<>();
 
     static {
         for (var v : values()) {
@@ -77,7 +78,17 @@ enum AvklaringsbehovDefinisjon implements Kodeverdi {
         }
     }
 
+    static {
+        for (var v : values()) {
+            if (KODER_NY.putIfAbsent(v.kodeNy, v) != null) {
+                throw new IllegalArgumentException("Duplikat : " + v.kodeNy);
+            }
+        }
+    }
+
     private String kode;
+
+    private String kodeNy;
 
     @JsonIgnore
     private String navn;
@@ -90,8 +101,9 @@ enum AvklaringsbehovDefinisjon implements Kodeverdi {
         // for hibernate
     }
 
-    private AvklaringsbehovDefinisjon(String kode, AvklaringsbehovType avklaringsbehovType, BeregningSteg stegFunnet, String navn) {
+    private AvklaringsbehovDefinisjon(String kode, String kodeNy, AvklaringsbehovType avklaringsbehovType, BeregningSteg stegFunnet, String navn) {
         this.kode = Objects.requireNonNull(kode);
+        this.kodeNy = kodeNy;
         this.stegFunnet = stegFunnet;
         this.navn = navn;
         this.avklaringsbehovType = avklaringsbehovType;
@@ -101,6 +113,11 @@ enum AvklaringsbehovDefinisjon implements Kodeverdi {
     @Override
     public String getKode() {
         return kode;
+    }
+
+    @JsonProperty
+    public String getKodeNy() {
+        return kodeNy;
     }
 
     @JsonProperty
@@ -123,6 +140,7 @@ enum AvklaringsbehovDefinisjon implements Kodeverdi {
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
+    @Deprecated
     public static AvklaringsbehovDefinisjon fraKode(Object node) {
         if (node == null) {
             return null;
@@ -135,8 +153,16 @@ enum AvklaringsbehovDefinisjon implements Kodeverdi {
         return ad;
     }
 
-    public static AvklaringsbehovDefinisjon fraHåndtering(HåndteringKode håndteringKode) {
-        return fraKode(håndteringKode.getKode());
+    public static AvklaringsbehovDefinisjon fraKodeNy(Object node) {
+        if (node == null) {
+            return null;
+        }
+        String kodeNy = TempAvledeKode.getVerdi(AvklaringsbehovDefinisjon.class, node, "kodeNy");
+        var ad = KODER_NY.get(kodeNy);
+        if (ad == null) {
+            throw new IllegalArgumentException("Ukjent BeregningAvklaringsbehovDefinisjon: " + kodeNy);
+        }
+        return ad;
     }
 
     public static Map<String, AvklaringsbehovDefinisjon> kodeMap() {

@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -20,7 +21,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto extends HåndterBeregningDto {
 
-    public static final String IDENT_TYPE = "5049";
+    public static final String IDENT_TYPE = "FASTSETT_BG_SN_NY_I_ARB_LIVT";
 
     @JsonProperty("fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto")
     @Valid
@@ -29,7 +30,7 @@ public class FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto extends H
 
     @JsonCreator
     public FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto(@JsonProperty("fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto") @Valid @NotNull FastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto) {
-        super(HåndteringKode.fraKode(IDENT_TYPE));
+        super(AvklaringsbehovDefinisjon.fraKodeNy(IDENT_TYPE));
         this.fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto = fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto;
     }
 

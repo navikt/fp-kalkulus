@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -19,7 +20,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class FaktaOmBeregningHåndteringDto extends HåndterBeregningDto {
 
-    public static final String IDENT_TYPE = "5058";
+    public static final String IDENT_TYPE = "VURDER_FAKTA_ATFL_SN";
 
     @JsonProperty("fakta")
     @Valid
@@ -30,7 +31,7 @@ public class FaktaOmBeregningHåndteringDto extends HåndterBeregningDto {
     }
 
     public FaktaOmBeregningHåndteringDto(@Valid @NotNull FaktaBeregningLagreDto fakta) {
-        super(HåndteringKode.fraKode(IDENT_TYPE));
+        super(AvklaringsbehovDefinisjon.fraKodeNy(IDENT_TYPE));
         this.fakta = fakta;
     }
 
