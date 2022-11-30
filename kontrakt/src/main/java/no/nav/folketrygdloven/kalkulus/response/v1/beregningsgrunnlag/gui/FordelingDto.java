@@ -20,6 +20,10 @@ public class FordelingDto {
     private VurderNyttInntektsforholdDto vurderNyttInntektsforholdDto;
 
     @Valid
+    @JsonProperty(value = "vurderRepresentererStortinget")
+    private VurderRepresentererStortingetDto vurderRepresentererStortinget;
+
+    @Valid
     @JsonProperty(value = "fordelBeregningsgrunnlag")
     private FordelBeregningsgrunnlagDto fordelBeregningsgrunnlag;
 
@@ -37,5 +41,13 @@ public class FordelingDto {
 
     public void setVurderNyttInntektsforholdDto(VurderNyttInntektsforholdDto vurderNyttInntektsforholdDto) {
         this.vurderNyttInntektsforholdDto = vurderNyttInntektsforholdDto;
+    }
+
+    public VurderRepresentererStortingetDto getVurderRepresentererStortinget() {
+        return vurderRepresentererStortinget;
+    }
+
+    public void setVurderRepresentererStortinget(VurderRepresentererStortingetDto vurderRepresentererStortinget) {
+        this.vurderRepresentererStortinget = vurderRepresentererStortinget;
     }
 }

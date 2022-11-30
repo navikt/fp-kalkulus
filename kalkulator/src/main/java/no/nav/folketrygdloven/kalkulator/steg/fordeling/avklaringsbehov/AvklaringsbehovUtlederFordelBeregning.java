@@ -44,6 +44,9 @@ public class AvklaringsbehovUtlederFordelBeregning {
         if (skalVurdereNyttInntektsforhold) {
             utledetbehovForAvklaring.add(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.VURDER_NYTT_INNTKTSFRHLD));
         }
+        if (AvklaringsbehovUtlederRepresentererStortinget.skalVurderePeriodeForStortingsrepresentasjon(beregningsgrunnlagGrunnlag, iayGrunnlag, forlengelseperioder)) {
+            utledetbehovForAvklaring.add(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.VURDER_REPRESENTERER_STORTINGET));
+        }
         if (!perioderTilManuellVurdering.isEmpty()) {
             utledetbehovForAvklaring.add(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BG));
         }

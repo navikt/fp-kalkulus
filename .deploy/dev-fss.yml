@@ -129,3 +129,5 @@ spec:
       value: "true"
     - name: GRADERING_MOT_INNTEKT
       value: "true"
+    - name: AKSJONSPUNKT_VURDER_STORTINGET
+      value: "true"
