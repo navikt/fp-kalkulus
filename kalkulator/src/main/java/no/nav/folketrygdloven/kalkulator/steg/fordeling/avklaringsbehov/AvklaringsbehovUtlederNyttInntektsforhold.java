@@ -6,8 +6,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
@@ -29,11 +31,10 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 
 /**
  * Ved nye inntektsforhold skal beregningsgrunnlaget graderes mot inntekt.
- *
+ * <p>
  * Utleder her om det er potensielle nye inntektsforhold.
- *
+ * <p>
  * Se https://navno.sharepoint.com/sites/fag-og-ytelser-arbeid-sykefravarsoppfolging-og-sykepenger/SitePages/%C2%A7-8-13-Graderte-sykepenger.aspx
- *
  */
 public class AvklaringsbehovUtlederNyttInntektsforhold {
 
@@ -77,31 +78,31 @@ public class AvklaringsbehovUtlederNyttInntektsforhold {
         return finnTilkomneInntektsforhold(skjæringstidspunkt, yrkesaktiviteter, andeler, periode, utbetalingsgradGrunnlag);
     }
 
-    /** Bestemmer hvilke statuser/arbeidsgivere som skal regnes som nytt
-     *
+    /**
+     * Bestemmer hvilke statuser/arbeidsgivere som skal regnes som nytt
+     * <p>
      * Dersom en inntekt/aktivitet regnes som nytt skal beregningsgrunnlaget graderes mot inntekt i denne perioden. Dette betyr at inntekt i tillegg til ytelsen kan føre til nedjustering av utbetalt ytelse.
-     *
+     * <p>
      * Et inntektsforhold regnes som nytt dersom:
      * - Den fører til at bruker har en ekstra inntekt i tillegg til det hen ville ha hatt om hen ikke mottok ytelse
      * - Inntekten ikke erstatter inntekt i et arbeidsforhold som er avsluttet
      * - Det ikke er fullt fravær i arbeidsforholdet/aktiviteten (har opprettholdt noe arbeid og dermed sannsynligvis inntekt)
-     *
+     * <p>
      * Vi antar bruker ville opprettholdt arbeid hos arbeidsgivere der bruker fortsatt er innregistrert i aareg, og at dette regner som en løpende aktivitet.
      * Dersom antall løpende aktiviteter øker, skal saksbehandler vurdere om de tilkomne aktivitetene skal føre til reduksjon i utbetaling.
      *
-     *
-     * @param skjæringstidspunkt skjæringstidspunkt
-     * @param yrkesaktiviteter  yrkesaktiviteter
-     * @param andeler Andeler
-     * @param periode Beregningsgrunnlagperiode
+     * @param skjæringstidspunkt      skjæringstidspunkt
+     * @param yrkesaktiviteter        yrkesaktiviteter
+     * @param andeler                 Andeler
+     * @param periode                 Beregningsgrunnlagperiode
      * @param utbetalingsgradGrunnlag Utbetalingsgradgrunnlag
      * @return Statuser/arbeidsgivere som skal regnes som tilkommet
      */
-    public static HashSet<StatusOgArbeidsgiver> finnTilkomneInntektsforhold(LocalDate skjæringstidspunkt,
-                                                                               Collection<YrkesaktivitetDto> yrkesaktiviteter,
-                                                                               List<BeregningsgrunnlagPrStatusOgAndelDto> andeler,
-                                                                               Intervall periode,
-                                                                               YtelsespesifiktGrunnlag utbetalingsgradGrunnlag) {
+    public static Set<StatusOgArbeidsgiver> finnTilkomneInntektsforhold(LocalDate skjæringstidspunkt,
+                                                                        Collection<YrkesaktivitetDto> yrkesaktiviteter,
+                                                                        List<BeregningsgrunnlagPrStatusOgAndelDto> andeler,
+                                                                        Intervall periode,
+                                                                        YtelsespesifiktGrunnlag utbetalingsgradGrunnlag) {
 
         var aktiviteterVedStart = andeler.stream()
                 .filter(a -> a.getKilde().equals(AndelKilde.PROSESS_START))
@@ -109,8 +110,8 @@ public class AvklaringsbehovUtlederNyttInntektsforhold {
                 .collect(Collectors.toSet());
         var antallGodkjenteInntektsforhold = aktiviteterVedStart.size();
 
-        var eksisterendeInntektsforhold = new HashSet<StatusOgArbeidsgiver>();
-        var tilkommetInntektsforhold = new HashSet<StatusOgArbeidsgiver>();
+        var eksisterendeInntektsforhold = new LinkedHashSet<StatusOgArbeidsgiver>();
+        var tilkommetInntektsforhold = new LinkedHashSet<StatusOgArbeidsgiver>();
 
         var sortertAndelsliste = andeler
                 .stream()

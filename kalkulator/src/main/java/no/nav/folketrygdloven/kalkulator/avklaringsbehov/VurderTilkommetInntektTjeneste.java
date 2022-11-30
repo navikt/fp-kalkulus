@@ -2,8 +2,8 @@ package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,7 +71,7 @@ public class VurderTilkommetInntektTjeneste {
                 .forEach(periodeBuilder::leggTilTilkommetInntekt);
     }
 
-    private static boolean skalVurderesForPeriode(HashSet<AvklaringsbehovUtlederNyttInntektsforhold.StatusOgArbeidsgiver> vurderInntektsforhold, NyttInntektsforholdDto i) {
+    private static boolean skalVurderesForPeriode(Collection<AvklaringsbehovUtlederNyttInntektsforhold.StatusOgArbeidsgiver> vurderInntektsforhold, NyttInntektsforholdDto i) {
         return vurderInntektsforhold.stream().anyMatch(v ->
                 v.aktivitetStatus().equals(i.getAktivitetStatus()) &&
                         v.arbeidsgiver().getIdentifikator().equals(i.getArbeidsgiverIdentifikator()));
