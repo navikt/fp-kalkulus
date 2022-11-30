@@ -2,25 +2,19 @@ package no.nav.folketrygdloven.kalkulator.guitjenester;
 
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering.Gradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.FordelingGraderingTjeneste;
-import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Organisasjonstype;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagArbeidsforholdDto;
@@ -35,26 +29,36 @@ public class BeregningsgrunnlagDtoUtil {
     }
 
     static FaktaOmBeregningAndelDto lagFaktaOmBeregningAndel(BeregningsgrunnlagPrStatusOgAndelDto andel,
-                                                             AktivitetGradering aktivitetGradering,
-                                                             InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag, BeregningsgrunnlagPeriodeDto periode) {
-        FaktaOmBeregningAndelDto andelDto = settVerdierForAndel(andel, aktivitetGradering, inntektArbeidYtelseGrunnlag, periode);
+                                                             YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
+                                                             InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
+                                                             BeregningsgrunnlagPeriodeDto periode) {
+        FaktaOmBeregningAndelDto andelDto = settVerdierForAndel(andel, ytelsespesifiktGrunnlag, inntektArbeidYtelseGrunnlag, periode);
         andelDto.setAndelsnr(andel.getAndelsnr());
         return andelDto;
     }
 
-    private static FaktaOmBeregningAndelDto settVerdierForAndel(BeregningsgrunnlagPrStatusOgAndelDto andel, AktivitetGradering aktivitetGradering, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag, BeregningsgrunnlagPeriodeDto periode) {
+    private static FaktaOmBeregningAndelDto settVerdierForAndel(BeregningsgrunnlagPrStatusOgAndelDto andel,
+                                                                YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
+                                                                InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
+                                                                BeregningsgrunnlagPeriodeDto periode) {
         FaktaOmBeregningAndelDto andelDto = new FaktaOmBeregningAndelDto();
         andelDto.setAktivitetStatus(andel.getAktivitetStatus());
         andelDto.setInntektskategori(andel.getGjeldendeInntektskategori());
         andelDto.setFastsattAvSaksbehandler(andel.getFastsattAvSaksbehandler());
         andelDto.setLagtTilAvSaksbehandler(andel.erLagtTilAvSaksbehandler());
         andelDto.setKilde(andel.getKilde());
-        List<Gradering> graderingForAndelIPeriode = FordelingGraderingTjeneste.hentGraderingerForAndelIPeriode(andel, aktivitetGradering, periode.getPeriode()).stream()
-                .sorted().collect(Collectors.toList());
-        finnArbeidsprosenterIPeriode(graderingForAndelIPeriode, andel.getBeregningsgrunnlagPeriode().getPeriode()).forEach(andelDto::leggTilAndelIArbeid);
+        finnArbeidsprosentTjeneste(ytelsespesifiktGrunnlag).finnArbeidsprosenterIPeriode(andel, ytelsespesifiktGrunnlag, periode.getPeriode())
+                .forEach(andelDto::leggTilAndelIArbeid);
         lagArbeidsforholdDto(andel, Optional.empty(), inntektArbeidYtelseGrunnlag)
                 .ifPresent(andelDto::setArbeidsforhold);
         return andelDto;
+    }
+
+    private static FinnArbeidsprosenter finnArbeidsprosentTjeneste(YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+        if (ytelsespesifiktGrunnlag instanceof ForeldrepengerGrunnlag) {
+            return new FinnArbeidsprosenterFP();
+        }
+        return new FinnArbeidsprosenterUtbetalingsgrad();
     }
 
 
@@ -127,55 +131,6 @@ public class BeregningsgrunnlagDtoUtil {
                 .flatMap(BGAndelArbeidsforholdDto::getArbeidsperiodeTom)
                 .filter(tom -> !TIDENES_ENDE.equals(tom))
                 .orElse(null);
-    }
-
-    public static List<BigDecimal> finnArbeidsprosenterIPeriode(List<Gradering> graderingForAndelIPeriode, Intervall periode) {
-        List<BigDecimal> prosentAndelerIPeriode = new ArrayList<>();
-        if (graderingForAndelIPeriode.isEmpty()) {
-            leggTilNullProsent(prosentAndelerIPeriode);
-            return prosentAndelerIPeriode;
-        }
-        Gradering gradering = graderingForAndelIPeriode.get(0);
-        prosentAndelerIPeriode.add(gradering.getArbeidstidProsent());
-        if (graderingForAndelIPeriode.size() == 1) {
-            if (graderingDekkerHeilePerioden(gradering, periode)) {
-                return prosentAndelerIPeriode;
-            }
-            prosentAndelerIPeriode.add(BigDecimal.ZERO);
-            return prosentAndelerIPeriode;
-        }
-
-        for (int i = 1; i < graderingForAndelIPeriode.size(); i++) {
-            Gradering nesteGradering = graderingForAndelIPeriode.get(i);
-            prosentAndelerIPeriode.add(nesteGradering.getArbeidstidProsent());
-            if (!gradering.getPeriode().getFomDato().isBefore(periode.getTomDato())) {
-                break;
-            }
-            if (gradering.getPeriode().getTomDato().isBefore(nesteGradering.getPeriode().getFomDato()) &&
-                    !gradering.getPeriode().getTomDato().equals(nesteGradering.getPeriode().getFomDato().minusDays(1))) {
-                leggTilNullProsent(prosentAndelerIPeriode);
-            }
-            gradering = nesteGradering;
-        }
-
-        if (periode.getTomDato() == null || gradering.getPeriode().getTomDato().isBefore(periode.getTomDato())) {
-            leggTilNullProsent(prosentAndelerIPeriode);
-        }
-
-        return prosentAndelerIPeriode;
-    }
-
-    private static void leggTilNullProsent(List<BigDecimal> prosentAndelerIPeriode) {
-        if (!prosentAndelerIPeriode.contains(BigDecimal.ZERO)) {
-            prosentAndelerIPeriode.add(BigDecimal.ZERO);
-        }
-    }
-
-    private static boolean graderingDekkerHeilePerioden(Gradering gradering, Intervall periode) {
-        return !gradering.getPeriode().getFomDato().isAfter(periode.getFomDato()) &&
-                (gradering.getPeriode().getTomDato().equals(TIDENES_ENDE) ||
-                        (periode.getTomDato() != null &&
-                                !gradering.getPeriode().getTomDato().isBefore(periode.getTomDato())));
     }
 
 }
