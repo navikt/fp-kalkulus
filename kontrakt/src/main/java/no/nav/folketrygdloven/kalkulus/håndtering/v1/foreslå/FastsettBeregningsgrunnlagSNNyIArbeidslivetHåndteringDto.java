@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.constraints.Pattern;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
@@ -23,6 +24,11 @@ public class FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto extends H
 
     public static final String IDENT_TYPE = "5049";
     public static final String AVKLARINGSBEHOV_KODE = "FASTSETT_BG_SN_NY_I_ARB_LIVT";
+
+    @JsonProperty("avklaringsbehovKode")
+    @Valid
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}§]+$", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
+    private String avklaringsbehovKode = AVKLARINGSBEHOV_KODE;
 
     @JsonProperty("fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto")
     @Valid

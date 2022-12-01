@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
@@ -24,6 +25,11 @@ public class VurderTilkommetInntektHåndteringDto extends HåndterBeregningDto {
 
     public static final String IDENT_TYPE = "5067";
     public static final String AVKLARINGSBEHOV_KODE = "VURDER_NYTT_INNTKTSFRHLD";
+
+    @JsonProperty("avklaringsbehovKode")
+    @Valid
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}§]+$", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
+    private String avklaringsbehovKode = AVKLARINGSBEHOV_KODE;
 
     @JsonProperty("tilkomneInntektsforhold")
     @Valid

@@ -10,7 +10,10 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+import jakarta.validation.constraints.Pattern;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 
@@ -26,6 +29,12 @@ public class FaktaOmFordelingHåndteringDto extends HåndterBeregningDto {
     @Valid
     @NotNull
     private FordelBeregningsgrunnlagDto fordelBeregningsgrunnlagDto;
+
+
+    @JsonProperty("avklaringsbehovKode")
+    @Valid
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}§]+$", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
+    private String avklaringsbehovKode = AVKLARINGSBEHOV_KODE;
 
     public FaktaOmFordelingHåndteringDto() {
         // For Json deserialisering

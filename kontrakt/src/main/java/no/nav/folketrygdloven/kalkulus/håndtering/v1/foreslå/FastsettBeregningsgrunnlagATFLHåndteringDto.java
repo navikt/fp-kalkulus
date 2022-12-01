@@ -8,6 +8,7 @@ import java.util.List;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -27,6 +28,11 @@ public class FastsettBeregningsgrunnlagATFLHåndteringDto extends HåndterBeregn
 
     public static final String IDENT_TYPE = "5038";
     public static final String AVKLARINGSBEHOV_KODE = "FASTSETT_BG_AT_FL";
+
+    @JsonProperty("avklaringsbehovKode")
+    @Valid
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}§]+$", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
+    private String avklaringsbehovKode = AVKLARINGSBEHOV_KODE;
 
     @JsonProperty(value = "inntektPrAndelList")
     @Valid

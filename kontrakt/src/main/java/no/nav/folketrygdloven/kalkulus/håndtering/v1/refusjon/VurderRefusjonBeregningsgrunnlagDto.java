@@ -6,6 +6,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import java.util.List;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -24,6 +25,11 @@ public class VurderRefusjonBeregningsgrunnlagDto extends HåndterBeregningDto {
 
     public static final String IDENT_TYPE = "5059";
     public static final String AVKLARINGSBEHOV_KODE = "VURDER_REFUSJONSKRAV";
+
+    @JsonProperty("avklaringsbehovKode")
+    @Valid
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}§]+$", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
+    private String avklaringsbehovKode = AVKLARINGSBEHOV_KODE;
 
     @JsonProperty("fastsatteAndeler")
     @Valid

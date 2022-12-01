@@ -7,6 +7,7 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -26,6 +27,11 @@ public class OverstyrBeregningsaktiviteterDto extends HåndterBeregningDto {
 
     public static final String IDENT_TYPE = "6014";
     public static final String AVKLARINGSBEHOV_KODE = "OVST_BEREGNINGSAKTIVITETER";
+
+    @JsonProperty("avklaringsbehovKode")
+    @Valid
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}§]+$", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
+    private String avklaringsbehovKode = AVKLARINGSBEHOV_KODE;
 
     @JsonProperty("beregningsaktivitetLagreDtoList")
     @Valid

@@ -115,3 +115,4 @@ public abstract class HåndterBeregningDto {
         return avbrutt;
     }
 }
+
