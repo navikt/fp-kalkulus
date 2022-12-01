@@ -48,8 +48,8 @@ enum AvklaringsbehovDefinisjon implements Kodeverdi {
     OVST_INNTEKT("6015", "OVST_INNTEKT", OVERSTYRING, BeregningSteg.KOFAKBER, "Overstyring av beregningsgrunnlag"),
 
     // 7000 automatisk satt på vent
-    AUTO_VENT_PÅ_INNTKT_RAP_FRST("7014", "AUTO_VENT_PÅ_INNTKT_RAP_FRST", AUTOPUNKT, BeregningSteg.FASTSETT_STP_BER, "Vent på rapporteringsfrist for inntekt"),
-    AUTO_VENT_PÅ_SISTE_AAP_DP_MELDKRT("7020", "AUTO_VENT_PÅ_SISTE_AAP_DP_MELDKRT", AUTOPUNKT, BeregningSteg.FASTSETT_STP_BER, "Vent på siste meldekort for AAP eller DP-mottaker"),
+    AUTO_VENT_PÅ_INNTKT_RAP_FRST("7014", "AUTO_VENT_PAA_INNTKT_RAP_FRST", AUTOPUNKT, BeregningSteg.FASTSETT_STP_BER, "Vent på rapporteringsfrist for inntekt"),
+    AUTO_VENT_PÅ_SISTE_AAP_DP_MELDKRT("7020", "AUTO_VENT_PAA_SISTE_AAP_DP_MELDKRT", AUTOPUNKT, BeregningSteg.FASTSETT_STP_BER, "Vent på siste meldekort for AAP eller DP-mottaker"),
 
     // 8000 frisinn
     AUTO_VENT_FRISINN("8000", "AUTO_VENT_FRISINN", AUTOPUNKT, BeregningSteg.FASTSETT_STP_BER, "Sak settes på vent på grunn av manglende funksjonalitet"),
@@ -63,7 +63,7 @@ enum AvklaringsbehovDefinisjon implements Kodeverdi {
     @Deprecated
     AUTO_VENT_DELVS_TILRTLGGNG_REFSJN_SVP("7027", "AUTO_VENT_DELVS_TILRTLGGNG_REFSJN_SVP", AUTOPUNKT, null, "Autopunkt delvis SVP og refusjon"),
     @Deprecated
-    AUTO_VENT_PÅ_MANGLND_ARB_FHLD_KOMNRFRM("7036", "AUTO_VENT_PÅ_MANGLND_ARB_FHLD_KOMNRFRM", AUTOPUNKT, null, "Sak settes på vent pga kommune- og fylkesammenslåing."),
+    AUTO_VENT_PÅ_MANGLND_ARB_FHLD_KOMNRFRM("7036", "AUTO_VENT_PAA_MANGLND_ARB_FHLD_KOMNRFRM", AUTOPUNKT, null, "Sak settes på vent pga kommune- og fylkesammenslåing."),
     ;
 
     static final String KODEVERK = "AVKLARINGSBEHOV_DEF";
