@@ -17,6 +17,7 @@ public class FaktaOmFordelingDtoTjeneste {
         if (!tilstandForAktivtGrunnlag.erFør(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING)) {
             FordelingDto dto = new FordelingDto();
             FordelBeregningsgrunnlagDtoTjeneste.lagDto(input, dto);
+            dto.setVurderNyttInntektsforholdDto(VurderNyeInntektsforholdDtoTjeneste.lagDto(input));
             VurderStortingsperiodeDtoTjeneste.lagDto(input).ifPresent(dto::setVurderRepresentererStortinget);
             return Optional.of(dto);
         }

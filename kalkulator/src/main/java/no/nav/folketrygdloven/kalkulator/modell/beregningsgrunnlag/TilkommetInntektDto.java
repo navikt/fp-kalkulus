@@ -53,7 +53,7 @@ public class TilkommetInntektDto {
     }
 
     public InternArbeidsforholdRefDto getArbeidsforholdRef() {
-        return arbeidsforholdRef;
+        return arbeidsforholdRef == null ? InternArbeidsforholdRefDto.nullRef() : arbeidsforholdRef;
     }
 
     public BigDecimal getBruttoInntektPrÅr() {

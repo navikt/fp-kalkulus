@@ -2,6 +2,8 @@ package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -46,9 +48,21 @@ public class InntektsforholdDto {
     @Max(178956970)
     private Integer bruttoInntektPrÅr;
 
+    @JsonProperty("harInntektsmelding")
+    @Valid
+    @NotNull
+    private boolean harInntektsmelding;
+
     @JsonProperty("skalRedusereUtbetaling")
     @Valid
     private Boolean skalRedusereUtbetaling;
+
+    public InntektsforholdDto(AktivitetStatus aktivitetStatus, String arbeidsgiverIdentifikator, String arbeidsforholdId, String eksternArbeidsforholdId) {
+        this.aktivitetStatus = aktivitetStatus;
+        this.arbeidsgiverIdentifikator = arbeidsgiverIdentifikator;
+        this.arbeidsforholdId = arbeidsforholdId;
+        this.eksternArbeidsforholdId = eksternArbeidsforholdId;
+    }
 
     public AktivitetStatus getAktivitetStatus() {
         return aktivitetStatus;
@@ -98,5 +112,24 @@ public class InntektsforholdDto {
         this.skalRedusereUtbetaling = skalRedusereUtbetaling;
     }
 
+    public boolean getHarInntektsmelding() {
+        return harInntektsmelding;
+    }
 
+    public void setHarInntektsmelding(boolean harInntektsmelding) {
+        this.harInntektsmelding = harInntektsmelding;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        InntektsforholdDto that = (InntektsforholdDto) o;
+        return aktivitetStatus == that.aktivitetStatus && Objects.equals(arbeidsgiverIdentifikator, that.arbeidsgiverIdentifikator) && Objects.equals(arbeidsforholdId, that.arbeidsforholdId) && Objects.equals(eksternArbeidsforholdId, that.eksternArbeidsforholdId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(aktivitetStatus, arbeidsgiverIdentifikator, arbeidsforholdId, eksternArbeidsforholdId);
+    }
 }

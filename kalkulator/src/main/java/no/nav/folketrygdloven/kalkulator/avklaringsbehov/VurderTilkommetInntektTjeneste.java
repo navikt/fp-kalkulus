@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste;
@@ -17,6 +18,8 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.TilkommetInntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørArbeidDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.AvklaringsbehovUtlederNyttInntektsforhold;
@@ -82,14 +85,28 @@ public class VurderTilkommetInntektTjeneste {
                 i.getAktivitetStatus(),
                 mapArbeidsgiver(i),
                 InternArbeidsforholdRefDto.ref(i.getArbeidsforholdId()),
-                finnBruttoPrÅr(i),
+                finnBruttoPrÅr(i, input.getIayGrunnlag()),
                 utledTilkommetFraBrutto(i, p.getPeriode(), input.getYtelsespesifiktGrunnlag()),
                 i.skalRedusereUtbetaling()
         );
     }
 
-    private static BigDecimal finnBruttoPrÅr(NyttInntektsforholdDto i) {
-        return i.getBruttoInntektPrÅr() != null ? BigDecimal.valueOf(i.getBruttoInntektPrÅr()) : null;
+    private static BigDecimal finnBruttoPrÅr(NyttInntektsforholdDto i, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+        var inntektsmelding = finnInntektsmelding(i, iayGrunnlag);
+        return inntektsmelding.map(VurderTilkommetInntektTjeneste::mapTilÅrsinntekt)
+                .orElseGet(() -> i.getBruttoInntektPrÅr() != null ? BigDecimal.valueOf(i.getBruttoInntektPrÅr()) : null);
+    }
+
+    private static Optional<InntektsmeldingDto> finnInntektsmelding(NyttInntektsforholdDto i, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+        return iayGrunnlag.getInntektsmeldinger().stream()
+                .flatMap(ims -> ims.getAlleInntektsmeldinger().stream())
+                .filter(im -> Objects.equals(im.getArbeidsgiver().getIdentifikator(), i.getArbeidsgiverIdentifikator())
+                        && InternArbeidsforholdRefDto.ref(i.getArbeidsforholdId()).gjelderFor(im.getArbeidsforholdRef()))
+                .findFirst();
+    }
+
+    private static BigDecimal mapTilÅrsinntekt(InntektsmeldingDto inntektsmeldingDto) {
+        return inntektsmeldingDto.getInntektBeløp().getVerdi().multiply(BigDecimal.valueOf(12));
     }
 
     private static Arbeidsgiver mapArbeidsgiver(NyttInntektsforholdDto i) {

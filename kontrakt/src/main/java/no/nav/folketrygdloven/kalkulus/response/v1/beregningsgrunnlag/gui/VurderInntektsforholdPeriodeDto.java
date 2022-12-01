@@ -37,6 +37,15 @@ public class VurderInntektsforholdPeriodeDto {
     @NotNull
     private List<InntektsforholdDto> inntektsforholdListe = new ArrayList<>();
 
+    public VurderInntektsforholdPeriodeDto() {
+    }
+
+    public VurderInntektsforholdPeriodeDto(LocalDate fom, LocalDate tom, List<InntektsforholdDto> inntektsforholdListe) {
+        this.fom = fom;
+        this.tom = tom;
+        this.inntektsforholdListe = inntektsforholdListe;
+    }
+
     public LocalDate getFom() {
         return fom;
     }

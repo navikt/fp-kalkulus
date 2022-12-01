@@ -25,6 +25,12 @@ public class VurderNyttInntektsforholdDto {
     @NotNull
     private List<VurderInntektsforholdPeriodeDto> vurderInntektsforholdPerioder = new ArrayList<>();
 
+    public VurderNyttInntektsforholdDto() {
+    }
+
+    public VurderNyttInntektsforholdDto(List<VurderInntektsforholdPeriodeDto> vurderInntektsforholdPerioder) {
+        this.vurderInntektsforholdPerioder = vurderInntektsforholdPerioder;
+    }
 
     public List<VurderInntektsforholdPeriodeDto> getVurderInntektsforholdPerioder() {
         return vurderInntektsforholdPerioder;
