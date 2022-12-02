@@ -173,12 +173,15 @@ public class AvklaringsbehovTjeneste {
         return avklaringsbehovRepository.hentAvklaringsbehovForKobling(koblingEntitet);
     }
 
-    public void avbrytAlleAvklaringsbehovEtterEllerISteg(Set<Long> koblingIder, BeregningSteg steg) {
+    public void avbrytAlleAvklaringsbehovEtterEllerISteg(Set<Long> koblingIder, BeregningSteg steg, boolean skalKjøreSteget) {
         List<AvklaringsbehovEntitet> alleApPåKobling = avklaringsbehovRepository.hentAvklaringsbehovforKoblinger(koblingIder);
         alleApPåKobling.forEach(ap -> {
-                    if (!ap.getStegFunnet().erFør(steg)) {
+                    if (skalKjøreSteget && !ap.getStegFunnet().erFør(steg)) {
+                        avbrytAvklaringsbehov(ap.getKoblingId(), ap);
+                    } else if (!skalKjøreSteget && ap.getStegFunnet().erEtter(steg)) {
                         avbrytAvklaringsbehov(ap.getKoblingId(), ap);
                     }
+
                 });
     }
 

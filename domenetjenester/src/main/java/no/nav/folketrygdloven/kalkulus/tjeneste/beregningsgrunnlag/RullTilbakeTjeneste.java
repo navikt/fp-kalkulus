@@ -1,10 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,13 +35,13 @@ public class RullTilbakeTjeneste {
         this.forlengelseTjeneste = forlengelseTjeneste;
     }
 
-    public void rullTilbakeTilForrigeTilstandVedBehov(Set<Long> koblingIder, BeregningsgrunnlagTilstand tilstand) {
+    public void rullTilbakeTilForrigeTilstandVedBehov(Set<Long> koblingIder, BeregningsgrunnlagTilstand tilstand, boolean skalKjøreSteget) {
         List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntiteter = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingIder);
-        var rullTilbakeListe = finnGrunnlagSomSkalRullesTilbake(beregningsgrunnlagGrunnlagEntiteter, tilstand);
+        var rullTilbakeListe = finnGrunnlagSomSkalRullesTilbake(beregningsgrunnlagGrunnlagEntiteter, tilstand, skalKjøreSteget);
         if (!rullTilbakeListe.isEmpty()) {
             rullTilbakeGrunnlag(tilstand, rullTilbakeListe);
         }
-        avklaringsbehovTjeneste.avbrytAlleAvklaringsbehovEtterEllerISteg(koblingIder, MapTilstandTilSteg.mapTilSteg(tilstand));
+        avklaringsbehovTjeneste.avbrytAlleAvklaringsbehovEtterEllerISteg(koblingIder, MapTilstandTilSteg.mapTilSteg(tilstand), skalKjøreSteget);
         forlengelseTjeneste.deaktiverVedTilbakerulling(koblingIder, tilstand);
 
     }
@@ -59,9 +55,17 @@ public class RullTilbakeTjeneste {
         }
     }
 
-    private List<BeregningsgrunnlagGrunnlagEntitet> finnGrunnlagSomSkalRullesTilbake(List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet, BeregningsgrunnlagTilstand tilstand) {
+    private List<BeregningsgrunnlagGrunnlagEntitet> finnGrunnlagSomSkalRullesTilbake(List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet,
+                                                                                     BeregningsgrunnlagTilstand tilstand,
+                                                                                     boolean skalKjøreSteget) {
         return beregningsgrunnlagGrunnlagEntitet.stream()
-                .filter(gr -> !gr.getBeregningsgrunnlagTilstand().erFør(tilstand))
+                .filter(gr -> {
+                    if (skalKjøreSteget) {
+                        return !gr.getBeregningsgrunnlagTilstand().erFør(tilstand);
+                    } else {
+                        return gr.getBeregningsgrunnlagTilstand().erEtter(tilstand);
+                    }
+                })
                 .collect(Collectors.toList());
     }
 

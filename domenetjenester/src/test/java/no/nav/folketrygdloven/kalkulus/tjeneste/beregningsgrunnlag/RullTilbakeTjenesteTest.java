@@ -77,7 +77,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
                         .build()), BeregningsgrunnlagTilstand.FORESLÅTT);
         regelsporingRepository.lagre(koblingId, Map.of(BeregningsgrunnlagPeriodeRegelType.FORESLÅ, List.of(RegelSporingPeriodeEntitet.ny().medRegelEvaluering(getTestJSON()).medRegelInput(getTestJSON()).medPeriode(IntervallEntitet.fraOgMed(LocalDate.now())))));
-        rullTilbakeTjeneste.rullTilbakeTilForrigeTilstandVedBehov(Set.of(koblingId), BeregningsgrunnlagTilstand.KOFAKBER_UT);
+        rullTilbakeTjeneste.rullTilbakeTilForrigeTilstandVedBehov(Set.of(koblingId), BeregningsgrunnlagTilstand.KOFAKBER_UT, true);
 
         // Act
         Optional<BeregningsgrunnlagGrunnlagEntitet> aktivtGrunnlag = repository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
@@ -107,7 +107,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
                         .build()), BeregningsgrunnlagTilstand.FORESLÅTT);
         regelsporingRepository.lagre(koblingId, Map.of(BeregningsgrunnlagPeriodeRegelType.FORESLÅ, List.of(RegelSporingPeriodeEntitet.ny().medRegelEvaluering(getTestJSON()).medRegelInput(getTestJSON()).medPeriode(IntervallEntitet.fraOgMed(LocalDate.now())))));
-        rullTilbakeTjeneste.rullTilbakeTilForrigeTilstandVedBehov(Set.of(koblingId), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+        rullTilbakeTjeneste.rullTilbakeTilForrigeTilstandVedBehov(Set.of(koblingId), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, true);
 
         // Act
         Optional<BeregningsgrunnlagGrunnlagEntitet> aktivtGrunnlag = repository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
@@ -134,7 +134,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
                         .build()), BeregningsgrunnlagTilstand.FORESLÅTT);
         regelsporingRepository.lagre(koblingId, Map.of(BeregningsgrunnlagPeriodeRegelType.FORESLÅ, List.of(RegelSporingPeriodeEntitet.ny().medRegelEvaluering(getTestJSON()).medRegelInput(getTestJSON()).medPeriode(IntervallEntitet.fraOgMed(LocalDate.now())))));
-        rullTilbakeTjeneste.rullTilbakeTilForrigeTilstandVedBehov(Set.of(koblingId), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+        rullTilbakeTjeneste.rullTilbakeTilForrigeTilstandVedBehov(Set.of(koblingId), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, true);
 
         // Act
         Optional<BeregningsgrunnlagGrunnlagEntitet> aktivtGrunnlag = repository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
@@ -161,7 +161,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
                         .build()), BeregningsgrunnlagTilstand.FORESLÅTT);
-        rullTilbakeTjeneste.rullTilbakeTilForrigeTilstandVedBehov(Set.of(koblingId), BeregningsgrunnlagTilstand.FORESLÅTT_UT);
+        rullTilbakeTjeneste.rullTilbakeTilForrigeTilstandVedBehov(Set.of(koblingId), BeregningsgrunnlagTilstand.FORESLÅTT_UT, true);
 
         // Act
         Optional<BeregningsgrunnlagGrunnlagEntitet> aktivtGrunnlag = repository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
@@ -217,7 +217,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
                         .build()), BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
 
         // Act
-        rullTilbakeTjeneste.rullTilbakeTilForrigeTilstandVedBehov(Set.of(koblingId), BeregningsgrunnlagTilstand.OPPRETTET);
+        rullTilbakeTjeneste.rullTilbakeTilForrigeTilstandVedBehov(Set.of(koblingId), BeregningsgrunnlagTilstand.OPPRETTET, true);
 
         // Assert
         Optional<AvklaringsbehovEntitet> avklaringsbehovEntitet = avklaringsbehovTjeneste.hentAvklaringsbehov(koblingId, avklaringsbehovDefinisjon);

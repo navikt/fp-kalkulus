@@ -89,7 +89,7 @@ public class OperereKalkulusOrkestrerer {
         var hentInputResultat = kalkulatorInputTjeneste.hentOgLagreForSteg(inputPrReferanse, koblingIder, steg);
         var stegInputPrKobling = lagInputOgRullTilbakeVedBehov(koblingIder,
                 hentInputResultat,
-                new InputForSteg(steg, koblingRelasjonEntiteter));
+                new InputForSteg(steg, koblingRelasjonEntiteter), true);
 
         // Operer
         return opererAlle(stegInputPrKobling, new Beregner(steg));
@@ -114,7 +114,10 @@ public class OperereKalkulusOrkestrerer {
         Set<Long> koblingIder = koblingTilDto.keySet();
         // Lag input
         var hentInputResultat = kalkulatorInputTjeneste.hentOgLagre(inputPrReferanse, koblingIder);
-        var håndterInputPrKobling = lagInputOgRullTilbakeVedBehov(koblingIder, hentInputResultat, new InputForHåndtering(koblingTilDto));
+        var håndterInputPrKobling = lagInputOgRullTilbakeVedBehov(
+                koblingIder,
+                hentInputResultat,
+                new InputForHåndtering(koblingTilDto), false);
         // Operer
         return opererAlle(håndterInputPrKobling, new Håndterer(koblingTilDto));
     }
@@ -131,8 +134,9 @@ public class OperereKalkulusOrkestrerer {
 
     private Map<Long, BeregningsgrunnlagInput> lagInputOgRullTilbakeVedBehov(Set<Long> koblingIder,
                                                                              Map<Long, KalkulatorInputDto> kalkulatorInputPrKobling,
-                                                                             LagInputTjeneste lagInputTjeneste) {
-        rullTilbakeTjeneste.rullTilbakeTilForrigeTilstandVedBehov(koblingIder, lagInputTjeneste.getTilstand());
+                                                                             LagInputTjeneste lagInputTjeneste,
+                                                                             boolean skalKjøreSteget) {
+        rullTilbakeTjeneste.rullTilbakeTilForrigeTilstandVedBehov(koblingIder, lagInputTjeneste.getTilstand(), skalKjøreSteget);
         return lagInput(koblingIder, lagInputTjeneste, kalkulatorInputPrKobling);
     }
 
