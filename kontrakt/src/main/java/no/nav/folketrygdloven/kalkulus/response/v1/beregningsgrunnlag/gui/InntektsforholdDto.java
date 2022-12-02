@@ -57,6 +57,9 @@ public class InntektsforholdDto {
     @Valid
     private Boolean skalRedusereUtbetaling;
 
+    public InntektsforholdDto() {
+    }
+
     public InntektsforholdDto(AktivitetStatus aktivitetStatus, String arbeidsgiverIdentifikator, String arbeidsforholdId, String eksternArbeidsforholdId) {
         this.aktivitetStatus = aktivitetStatus;
         this.arbeidsgiverIdentifikator = arbeidsgiverIdentifikator;
