@@ -13,6 +13,6 @@ public class AvklaringsbehovDefinisjonNyKodeverdiConverter implements AttributeC
 
     @Override
     public AvklaringsbehovDefinisjon convertToEntityAttribute(String dbData) {
-        return dbData == null ? null : AvklaringsbehovDefinisjon.fraKodeNy(dbData);
+        return dbData == null ? null : AvklaringsbehovDefinisjon.fraKode(dbData);
     }
 }

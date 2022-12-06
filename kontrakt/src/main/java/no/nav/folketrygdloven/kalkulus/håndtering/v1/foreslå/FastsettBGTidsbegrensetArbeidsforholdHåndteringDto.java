@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 
@@ -19,7 +18,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class FastsettBGTidsbegrensetArbeidsforholdHåndteringDto extends HåndterBeregningDto {
 
-    public static final String IDENT_TYPE = "5047";
     public static final String AVKLARINGSBEHOV_KODE = "FASTSETT_BG_TB_ARB";
 
     @JsonProperty("fastsettBGTidsbegrensetArbeidsforholdDto")
@@ -27,23 +25,13 @@ public class FastsettBGTidsbegrensetArbeidsforholdHåndteringDto extends Håndte
     @NotNull
     private FastsettBGTidsbegrensetArbeidsforholdDto fastsettBGTidsbegrensetArbeidsforholdDto;
 
-    @JsonProperty("avklaringsbehovKode")
-    @Valid
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}§]+$", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
-    private String avklaringsbehovKode = AVKLARINGSBEHOV_KODE;
-
     public FastsettBGTidsbegrensetArbeidsforholdHåndteringDto() {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE));
+        super(AvklaringsbehovDefinisjon.FASTSETT_BG_TB_ARB);
     }
 
     public FastsettBGTidsbegrensetArbeidsforholdHåndteringDto(@Valid @NotNull FastsettBGTidsbegrensetArbeidsforholdDto fastsettBGTidsbegrensetArbeidsforholdDto) {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE));
+        super(AvklaringsbehovDefinisjon.FASTSETT_BG_TB_ARB);
         this.fastsettBGTidsbegrensetArbeidsforholdDto = fastsettBGTidsbegrensetArbeidsforholdDto;
-    }
-
-    @Override
-    public String getIdentType() {
-        return IDENT_TYPE;
     }
 
     @Override

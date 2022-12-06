@@ -18,20 +18,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.avklaraktiviteter.BeregningsaktivitetLagreDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
-import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class OverstyrBeregningsaktiviteterDto extends HåndterBeregningDto {
 
-    public static final String IDENT_TYPE = "6014";
     public static final String AVKLARINGSBEHOV_KODE = "OVST_BEREGNINGSAKTIVITETER";
 
-    @JsonProperty("avklaringsbehovKode")
-    @Valid
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}§]+$", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
-    private String avklaringsbehovKode = AVKLARINGSBEHOV_KODE;
 
     @JsonProperty("beregningsaktivitetLagreDtoList")
     @Valid
@@ -40,12 +34,12 @@ public class OverstyrBeregningsaktiviteterDto extends HåndterBeregningDto {
     private List<BeregningsaktivitetLagreDto> beregningsaktivitetLagreDtoList;
 
     public OverstyrBeregningsaktiviteterDto() {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE), false);
+        super(AvklaringsbehovDefinisjon.OVST_BEREGNINGSAKTIVITETER, false);
         // Json deserialisering
     }
 
     private OverstyrBeregningsaktiviteterDto(boolean avbryt) {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE), avbryt);
+        super(AvklaringsbehovDefinisjon.OVST_BEREGNINGSAKTIVITETER, avbryt);
     }
 
     public static OverstyrBeregningsaktiviteterDto avbryt() {
@@ -53,17 +47,12 @@ public class OverstyrBeregningsaktiviteterDto extends HåndterBeregningDto {
     }
 
     public OverstyrBeregningsaktiviteterDto(@Valid @NotNull @Size(max = 1000) List<BeregningsaktivitetLagreDto> beregningsaktivitetLagreDtoList) {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE), false);
+        super(AvklaringsbehovDefinisjon.OVST_BEREGNINGSAKTIVITETER, false);
         this.beregningsaktivitetLagreDtoList = beregningsaktivitetLagreDtoList;
     }
 
     public List<BeregningsaktivitetLagreDto> getBeregningsaktivitetLagreDtoList() {
         return beregningsaktivitetLagreDtoList;
-    }
-
-    @Override
-    public String getIdentType() {
-        return IDENT_TYPE;
     }
 
     @Override

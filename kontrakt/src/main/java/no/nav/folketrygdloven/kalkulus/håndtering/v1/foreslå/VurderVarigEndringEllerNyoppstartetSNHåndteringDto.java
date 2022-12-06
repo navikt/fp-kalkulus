@@ -13,21 +13,13 @@ import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Pattern;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
-import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class VurderVarigEndringEllerNyoppstartetSNHåndteringDto extends HåndterBeregningDto implements FastsettBruttoBeregningsgrunnlag {
 
-    public static final String IDENT_TYPE = "5039";
     public static final String AVKLARINGSBEHOV_KODE = "VURDER_VARIG_ENDRT_NYOPPSTR_NAERNG_SN";
-
-    @JsonProperty("avklaringsbehovKode")
-    @Valid
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}§]+$", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
-    private String avklaringsbehovKode = AVKLARINGSBEHOV_KODE;
-
 
     @JsonProperty("vurderVarigEndringEllerNyoppstartetSNDto")
     @Valid
@@ -39,18 +31,13 @@ public class VurderVarigEndringEllerNyoppstartetSNHåndteringDto extends Håndte
     private VurderVarigEndringEllerNyoppstartetDto vurderVarigEndringEllerNyoppstartetDto;
 
     public VurderVarigEndringEllerNyoppstartetSNHåndteringDto() {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE));
+        super(AvklaringsbehovDefinisjon.fraKode(AVKLARINGSBEHOV_KODE));
     }
 
     public VurderVarigEndringEllerNyoppstartetSNHåndteringDto(@Valid VurderVarigEndringEllerNyoppstartetDto vurderVarigEndringEllerNyoppstartetDto) {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE));
+        super(AvklaringsbehovDefinisjon.VURDER_VARIG_ENDRT_NYOPPSTR_NAERNG_SN);
         this.vurderVarigEndringEllerNyoppstartetSNDto = vurderVarigEndringEllerNyoppstartetDto;
         this.vurderVarigEndringEllerNyoppstartetDto = vurderVarigEndringEllerNyoppstartetDto;
-    }
-
-    @Override
-    public String getIdentType() {
-        return IDENT_TYPE;
     }
 
     @Override

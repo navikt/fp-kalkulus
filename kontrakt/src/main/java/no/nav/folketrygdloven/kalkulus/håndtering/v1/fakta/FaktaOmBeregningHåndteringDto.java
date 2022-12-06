@@ -20,7 +20,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class FaktaOmBeregningHåndteringDto extends HåndterBeregningDto {
 
-    public static final String IDENT_TYPE = "5058";
     public static final String AVKLARINGSBEHOV_KODE = "VURDER_FAKTA_ATFL_SN";
 
     @JsonProperty("fakta")
@@ -28,22 +27,12 @@ public class FaktaOmBeregningHåndteringDto extends HåndterBeregningDto {
     @NotNull
     private FaktaBeregningLagreDto fakta;
 
-    @JsonProperty("avklaringsbehovKode")
-    @Valid
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}§]+$", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
-    private String avklaringsbehovKode = AVKLARINGSBEHOV_KODE;
-
     public FaktaOmBeregningHåndteringDto() {
     }
 
     public FaktaOmBeregningHåndteringDto(@Valid @NotNull FaktaBeregningLagreDto fakta) {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE));
+        super(AvklaringsbehovDefinisjon.VURDER_FAKTA_ATFL_SN);
         this.fakta = fakta;
-    }
-
-    @Override
-    public String getIdentType() {
-        return IDENT_TYPE;
     }
 
     @Override

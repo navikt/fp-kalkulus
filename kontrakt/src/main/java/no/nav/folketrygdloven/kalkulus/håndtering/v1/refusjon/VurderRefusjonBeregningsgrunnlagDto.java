@@ -5,31 +5,22 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
 import java.util.List;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
-import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class VurderRefusjonBeregningsgrunnlagDto extends HåndterBeregningDto {
 
-    public static final String IDENT_TYPE = "5059";
     public static final String AVKLARINGSBEHOV_KODE = "VURDER_REFUSJONSKRAV";
-
-    @JsonProperty("avklaringsbehovKode")
-    @Valid
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}§]+$", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
-    private String avklaringsbehovKode = AVKLARINGSBEHOV_KODE;
 
     @JsonProperty("fastsatteAndeler")
     @Valid
@@ -41,17 +32,12 @@ public class VurderRefusjonBeregningsgrunnlagDto extends HåndterBeregningDto {
     }
 
     @Override
-    public String getIdentType() {
-        return IDENT_TYPE;
-    }
-
-    @Override
     public String getAvklaringsbehovKode() {
         return AVKLARINGSBEHOV_KODE;
     }
 
     public VurderRefusjonBeregningsgrunnlagDto(@Valid @Size(min = 1) List<VurderRefusjonAndelBeregningsgrunnlagDto> fastsatteAndeler) {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE));
+        super(AvklaringsbehovDefinisjon.VURDER_REFUSJONSKRAV);
         this.fastsatteAndeler = fastsatteAndeler;
     }
 

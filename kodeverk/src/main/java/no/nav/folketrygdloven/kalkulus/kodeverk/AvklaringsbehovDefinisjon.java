@@ -28,14 +28,14 @@ public
 enum AvklaringsbehovDefinisjon implements Kodeverdi {
 
     // 5000 vanlig saksbehandlig
-    FASTSETT_BG_AT_FL("5038", "FASTSETT_BG_AT_FL" , MANUELL, BeregningSteg.FORS_BERGRUNN, "Fastsette beregningsgrunnlag for arbeidstaker/frilanser skjønnsmessig"),
+    FASTSETT_BG_AT_FL("5038", "FASTSETT_BG_AT_FL", MANUELL, BeregningSteg.FORS_BERGRUNN, "Fastsette beregningsgrunnlag for arbeidstaker/frilanser skjønnsmessig"),
     VURDER_VARIG_ENDRT_NYOPPSTR_NAERNG_SN("5039", "VURDER_VARIG_ENDRT_NYOPPSTR_NAERNG_SN", MANUELL, BeregningSteg.FORTS_FORS_BERGRUNN, "Vurder varig endret/nyoppstartet næring selvstendig næringsdrivende"),
     VURDER_VARIG_ENDRT_ARB_SITSJN_MDL_INAKTV("5054", "VURDER_VARIG_ENDRT_ARB_SITSJN_MDL_INAKTV", MANUELL, BeregningSteg.FORTS_FORS_BERGRUNN, "Vurder varig endret arbeidssituasjon for bruker som er midlertidig inaktiv"),
-    FASTSETT_BG_SN("5042","FASTSETT_BG_SN", MANUELL, BeregningSteg.FORTS_FORS_BERGRUNN, "Fastsett beregningsgrunnlag for selvstendig næringsdrivende"),
+    FASTSETT_BG_SN("5042", "FASTSETT_BG_SN", MANUELL, BeregningSteg.FORTS_FORS_BERGRUNN, "Fastsett beregningsgrunnlag for selvstendig næringsdrivende"),
     FORDEL_BG("5046", "FORDEL_BG", MANUELL, BeregningSteg.FORDEL_BERGRUNN, "Fordel beregningsgrunnlag"),
     FASTSETT_BG_TB_ARB("5047", "FASTSETT_BG_TB_ARB", MANUELL, BeregningSteg.FORS_BERGRUNN, "Fastsett beregningsgrunnlag for tidsbegrenset arbeidsforhold"),
     VURDER_NYTT_INNTKTSFRHLD("5067", "VURDER_NYTT_INNTKTSFRHLD", MANUELL, BeregningSteg.FORDEL_BERGRUNN, "Vurder nytt inntektsforhold"),
-    VURDER_REPRESENTERER_STORTINGET("5087","VURDER_REPRSNTR_STORTNGT", MANUELL, BeregningSteg.FORDEL_BERGRUNN, "Vurder om bruker representerer stortinget i perioden"),
+    VURDER_REPRESENTERER_STORTINGET("5087", "VURDER_REPRSNTR_STORTNGT", MANUELL, BeregningSteg.FORDEL_BERGRUNN, "Vurder om bruker representerer stortinget i perioden"),
 
     FASTSETT_BG_SN_NY_I_ARB_LIVT("5049", "FASTSETT_BG_SN_NY_I_ARB_LIVT", MANUELL, BeregningSteg.FORTS_FORS_BERGRUNN, "Fastsett beregningsgrunnlag for SN som er ny i arbeidslivet"),
     VURDER_GRADERING_UTEN_BG("5050", "VURDER_GRADERING_UTEN_BG", MANUELL, BeregningSteg.FAST_BERGRUNN, "Vurder gradering på andel uten beregningsgrunnlag"),
@@ -102,6 +102,7 @@ enum AvklaringsbehovDefinisjon implements Kodeverdi {
         // for hibernate
     }
 
+
     private AvklaringsbehovDefinisjon(String kode, String kodeNy, AvklaringsbehovType avklaringsbehovType, BeregningSteg stegFunnet, String navn) {
         this.kode = Objects.requireNonNull(kode);
         this.kodeNy = kodeNy;
@@ -147,23 +148,12 @@ enum AvklaringsbehovDefinisjon implements Kodeverdi {
             return null;
         }
         String kode = TempAvledeKode.getVerdi(AvklaringsbehovDefinisjon.class, node, "kode");
-        var ad = KODER.get(kode);
-        if (ad == null) {
+        var ny = KODER_NY.get(kode);
+        var gammel = KODER.get(kode);
+        if (ny == null && gammel == null) {
             throw new IllegalArgumentException("Ukjent BeregningAvklaringsbehovDefinisjon: " + kode);
         }
-        return ad;
-    }
-
-    public static AvklaringsbehovDefinisjon fraKodeNy(Object node) {
-        if (node == null) {
-            return null;
-        }
-        String kodeNy = TempAvledeKode.getVerdi(AvklaringsbehovDefinisjon.class, node, "kodeNy");
-        var ad = KODER_NY.get(kodeNy);
-        if (ad == null) {
-            throw new IllegalArgumentException("Ukjent BeregningAvklaringsbehovDefinisjon: " + kodeNy);
-        }
-        return ad;
+        return ny != null ? ny : gammel;
     }
 
     public static Map<String, AvklaringsbehovDefinisjon> kodeMap() {

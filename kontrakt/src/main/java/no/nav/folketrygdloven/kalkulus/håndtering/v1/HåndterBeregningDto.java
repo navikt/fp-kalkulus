@@ -27,24 +27,23 @@ import no.nav.folketrygdloven.kalkulus.håndtering.v1.overstyring.OverstyrBeregn
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.overstyring.OverstyrBeregningsgrunnlagHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.refusjon.VurderRefusjonBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
-import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "identType", defaultImpl = Void.class)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "avklaringsbehovKode", defaultImpl = Void.class)
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = AvklarAktiviteterHåndteringDto.class, name = AvklarAktiviteterHåndteringDto.IDENT_TYPE),
-        @JsonSubTypes.Type(value = FaktaOmBeregningHåndteringDto.class, name = FaktaOmBeregningHåndteringDto.IDENT_TYPE),
-        @JsonSubTypes.Type(value = OverstyrBeregningsaktiviteterDto.class, name = OverstyrBeregningsaktiviteterDto.IDENT_TYPE),
-        @JsonSubTypes.Type(value = OverstyrBeregningsgrunnlagHåndteringDto.class, name = OverstyrBeregningsgrunnlagHåndteringDto.IDENT_TYPE),
-        @JsonSubTypes.Type(value = FaktaOmFordelingHåndteringDto.class, name = FaktaOmFordelingHåndteringDto.IDENT_TYPE),
-        @JsonSubTypes.Type(value = FastsettBeregningsgrunnlagATFLHåndteringDto.class, name = FastsettBeregningsgrunnlagATFLHåndteringDto.IDENT_TYPE),
-        @JsonSubTypes.Type(value = FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto.class, name = FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto.IDENT_TYPE),
-        @JsonSubTypes.Type(value = FastsettBGTidsbegrensetArbeidsforholdHåndteringDto.class, name = FastsettBGTidsbegrensetArbeidsforholdHåndteringDto.IDENT_TYPE),
-        @JsonSubTypes.Type(value = FastsettBruttoBeregningsgrunnlagSNHåndteringDto.class, name = FastsettBruttoBeregningsgrunnlagSNHåndteringDto.IDENT_TYPE),
-        @JsonSubTypes.Type(value = VurderRefusjonBeregningsgrunnlagDto.class, name = VurderRefusjonBeregningsgrunnlagDto.IDENT_TYPE),
-        @JsonSubTypes.Type(value = VurderVarigEndringEllerNyoppstartetSNHåndteringDto.class, name = VurderVarigEndringEllerNyoppstartetSNHåndteringDto.IDENT_TYPE),
-        @JsonSubTypes.Type(value = VurderVarigEndretArbeidssituasjonHåndteringDto.class, name = VurderVarigEndretArbeidssituasjonHåndteringDto.IDENT_TYPE),
+        @JsonSubTypes.Type(value = AvklarAktiviteterHåndteringDto.class, name = AvklarAktiviteterHåndteringDto.AVKLARINGSBEHOV_KODE),
+        @JsonSubTypes.Type(value = FaktaOmBeregningHåndteringDto.class, name = FaktaOmBeregningHåndteringDto.AVKLARINGSBEHOV_KODE),
+        @JsonSubTypes.Type(value = OverstyrBeregningsaktiviteterDto.class, name = OverstyrBeregningsaktiviteterDto.AVKLARINGSBEHOV_KODE),
+        @JsonSubTypes.Type(value = OverstyrBeregningsgrunnlagHåndteringDto.class, name = OverstyrBeregningsgrunnlagHåndteringDto.AVKLARINGSBEHOV_KODE),
+        @JsonSubTypes.Type(value = FaktaOmFordelingHåndteringDto.class, name = FaktaOmFordelingHåndteringDto.AVKLARINGSBEHOV_KODE),
+        @JsonSubTypes.Type(value = FastsettBeregningsgrunnlagATFLHåndteringDto.class, name = FastsettBeregningsgrunnlagATFLHåndteringDto.AVKLARINGSBEHOV_KODE),
+        @JsonSubTypes.Type(value = FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto.class, name = FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto.AVKLARINGSBEHOV_KODE),
+        @JsonSubTypes.Type(value = FastsettBGTidsbegrensetArbeidsforholdHåndteringDto.class, name = FastsettBGTidsbegrensetArbeidsforholdHåndteringDto.AVKLARINGSBEHOV_KODE),
+        @JsonSubTypes.Type(value = FastsettBruttoBeregningsgrunnlagSNHåndteringDto.class, name = FastsettBruttoBeregningsgrunnlagSNHåndteringDto.AVKLARINGSBEHOV_KODE),
+        @JsonSubTypes.Type(value = VurderRefusjonBeregningsgrunnlagDto.class, name = VurderRefusjonBeregningsgrunnlagDto.AVKLARINGSBEHOV_KODE),
+        @JsonSubTypes.Type(value = VurderVarigEndringEllerNyoppstartetSNHåndteringDto.class, name = VurderVarigEndringEllerNyoppstartetSNHåndteringDto.AVKLARINGSBEHOV_KODE),
+        @JsonSubTypes.Type(value = VurderVarigEndretArbeidssituasjonHåndteringDto.class, name = VurderVarigEndretArbeidssituasjonHåndteringDto.AVKLARINGSBEHOV_KODE),
 
 })
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
@@ -54,10 +53,6 @@ public abstract class HåndterBeregningDto {
     @JsonProperty(value = "avklaringsbehovDefinisjon")
     @Valid
     private AvklaringsbehovDefinisjon avklaringsbehovDefinisjon;
-
-    @JsonProperty(value = "kode")
-    @Valid
-    private HåndteringKode kode;
 
     @JsonProperty("begrunnelse")
     @Size(max = 4000)
@@ -83,23 +78,13 @@ public abstract class HåndterBeregningDto {
     }
 
     public AvklaringsbehovDefinisjon getAvklaringsbehovDefinisjon() {
-        if (kode != null) {
-            return AvklaringsbehovDefinisjon.fraKode(kode.getKode());
-        }
         return avklaringsbehovDefinisjon;
     }
 
-    public HåndteringKode getKode() {
-        return kode;
-    }
+
 
     /**
      * Type ident. (per ident fra subklasse).
-     */
-    public abstract String getIdentType();
-
-    /**
-     * Ny Type ident. (per ident fra subklasse).
      */
     public abstract String getAvklaringsbehovKode();
 

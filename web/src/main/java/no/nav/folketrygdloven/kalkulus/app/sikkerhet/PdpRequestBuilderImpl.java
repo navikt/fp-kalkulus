@@ -65,7 +65,7 @@ public class PdpRequestBuilderImpl implements PdpRequestBuilder {
         }
 
         var aksjonspunktTyper = attributter.getVerdier(StandardAbacAttributtType.AKSJONSPUNKT_KODE).stream()
-                .map(AvklaringsbehovDefinisjon::fraKodeNy)
+                .map(AvklaringsbehovDefinisjon::fraKode)
                 .map(AvklaringsbehovDefinisjon::getAvklaringsbehovType)
                 .map(AvklaringsbehovType::getNavn) // Antar her at AvklaringsbehovType stemmer overens med offisiellKode fra AksjonspunktType
                 .collect(Collectors.toSet());

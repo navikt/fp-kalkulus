@@ -3,32 +3,24 @@ package no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
-import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class FastsettBruttoBeregningsgrunnlagSNHåndteringDto extends HåndterBeregningDto implements FastsettBruttoBeregningsgrunnlag {
 
-    public static final String IDENT_TYPE = "5042";
     public static final String AVKLARINGSBEHOV_KODE = "FASTSETT_BG_SN";
-
-    @JsonProperty("avklaringsbehovKode")
-    @Valid
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}§]+$", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
-    private String avklaringsbehovKode = AVKLARINGSBEHOV_KODE;
 
     @JsonProperty("fastsettBruttoBeregningsgrunnlagSNDto")
     @Valid
@@ -37,13 +29,8 @@ public class FastsettBruttoBeregningsgrunnlagSNHåndteringDto extends HåndterBe
 
     @JsonCreator
     public FastsettBruttoBeregningsgrunnlagSNHåndteringDto(@JsonProperty("fastsettBruttoBeregningsgrunnlagSNDto") @Valid @NotNull FastsettBruttoBeregningsgrunnlagDto fastsettBruttoBeregningsgrunnlagSNDto) {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE));
+        super(AvklaringsbehovDefinisjon.FASTSETT_BG_SN);
         this.fastsettBruttoBeregningsgrunnlagSNDto = fastsettBruttoBeregningsgrunnlagSNDto;
-    }
-
-    @Override
-    public String getIdentType() {
-        return IDENT_TYPE;
     }
 
     @Override

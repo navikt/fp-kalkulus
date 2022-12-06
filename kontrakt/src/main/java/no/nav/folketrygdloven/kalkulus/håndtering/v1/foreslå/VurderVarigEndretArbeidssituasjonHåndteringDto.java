@@ -10,23 +10,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
-import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class VurderVarigEndretArbeidssituasjonHåndteringDto extends HåndterBeregningDto implements FastsettBruttoBeregningsgrunnlag {
 
-    public static final String IDENT_TYPE = "5054";
     public static final String AVKLARINGSBEHOV_KODE = "VURDER_VARIG_ENDRT_ARB_SITSJN_MDL_INAKTV";
-
-    @JsonProperty("avklaringsbehovKode")
-    @Valid
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}§]+$", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
-    private String avklaringsbehovKode = AVKLARINGSBEHOV_KODE;
 
     @JsonProperty("vurderVarigEndringEllerNyoppstartetDto")
     @Valid
@@ -34,17 +26,12 @@ public class VurderVarigEndretArbeidssituasjonHåndteringDto extends HåndterBer
     private VurderVarigEndringEllerNyoppstartetDto vurderVarigEndringEllerNyoppstartetDto;
 
     public VurderVarigEndretArbeidssituasjonHåndteringDto() {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE));
+        super(AvklaringsbehovDefinisjon.VURDER_VARIG_ENDRT_ARB_SITSJN_MDL_INAKTV);
     }
 
     public VurderVarigEndretArbeidssituasjonHåndteringDto(@Valid @NotNull VurderVarigEndringEllerNyoppstartetDto vurderVarigEndringEllerNyoppstartetDto) {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE));
+        super(AvklaringsbehovDefinisjon.VURDER_VARIG_ENDRT_ARB_SITSJN_MDL_INAKTV);
         this.vurderVarigEndringEllerNyoppstartetDto = vurderVarigEndringEllerNyoppstartetDto;
-    }
-
-    @Override
-    public String getIdentType() {
-        return IDENT_TYPE;
     }
 
     @Override

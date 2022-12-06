@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Pattern;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 
@@ -20,15 +19,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class VurderRepresentererStortingetHåndteringDto extends HåndterBeregningDto {
 
-    public static final String IDENT_TYPE = "5087";
     public static final String AVKLARINGSBEHOV_KODE = "VURDER_REPRSNTR_STORTNGT";
-
-
-    @JsonProperty("avklaringsbehovKode")
-    @Valid
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}§]+$", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
-    private String avklaringsbehovKode = AVKLARINGSBEHOV_KODE;
-
 
     @JsonProperty("fom")
     @Valid
@@ -43,19 +34,14 @@ public class VurderRepresentererStortingetHåndteringDto extends HåndterBeregni
     private boolean representererStortinget;
 
     public VurderRepresentererStortingetHåndteringDto() {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE));
+        super(AvklaringsbehovDefinisjon.VURDER_REPRESENTERER_STORTINGET);
     }
 
     public VurderRepresentererStortingetHåndteringDto(LocalDate fom, LocalDate tom, boolean representererStortinget) {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE));
+        super(AvklaringsbehovDefinisjon.VURDER_REPRESENTERER_STORTINGET);
         this.fom = fom;
         this.tom = tom;
         this.representererStortinget = representererStortinget;
-    }
-
-    @Override
-    public String getIdentType() {
-        return IDENT_TYPE;
     }
 
     @Override

@@ -13,26 +13,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FaktaBeregningLagreDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsettBeregningsgrunnlagAndelDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
-import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class OverstyrBeregningsgrunnlagHåndteringDto extends HåndterBeregningDto {
 
-    public static final String IDENT_TYPE = "6015";
     public static final String AVKLARINGSBEHOV_KODE = "OVST_INNTEKT";
-
-    @JsonProperty("avklaringsbehovKode")
-    @Valid
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}§]+$", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
-    private String avklaringsbehovKode = AVKLARINGSBEHOV_KODE;
 
     @JsonProperty("fakta")
     @Valid
@@ -44,7 +36,7 @@ public class OverstyrBeregningsgrunnlagHåndteringDto extends HåndterBeregningD
     private List<FastsettBeregningsgrunnlagAndelDto> overstyrteAndeler;
 
     private OverstyrBeregningsgrunnlagHåndteringDto(boolean avbrutt) {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE), avbrutt);
+        super(AvklaringsbehovDefinisjon.OVST_INNTEKT, avbrutt);
     }
 
     public static OverstyrBeregningsgrunnlagHåndteringDto avbryt() {
@@ -52,8 +44,9 @@ public class OverstyrBeregningsgrunnlagHåndteringDto extends HåndterBeregningD
     }
 
     @JsonCreator
-    public OverstyrBeregningsgrunnlagHåndteringDto(@JsonProperty("fakta") @Valid FaktaBeregningLagreDto fakta, @JsonProperty("overstyrteAndeler") @Valid @NotNull List<FastsettBeregningsgrunnlagAndelDto> overstyrteAndeler) {
-        super(AvklaringsbehovDefinisjon.fraKodeNy(AVKLARINGSBEHOV_KODE), false);
+    public OverstyrBeregningsgrunnlagHåndteringDto(@JsonProperty("fakta") @Valid FaktaBeregningLagreDto fakta,
+                                                   @JsonProperty("overstyrteAndeler") @Valid @NotNull List<FastsettBeregningsgrunnlagAndelDto> overstyrteAndeler) {
+        super(AvklaringsbehovDefinisjon.OVST_INNTEKT, false);
         this.fakta = fakta;
         this.overstyrteAndeler = overstyrteAndeler;
     }
@@ -64,11 +57,6 @@ public class OverstyrBeregningsgrunnlagHåndteringDto extends HåndterBeregningD
 
     public List<FastsettBeregningsgrunnlagAndelDto> getOverstyrteAndeler() {
         return overstyrteAndeler;
-    }
-
-    @Override
-    public String getIdentType() {
-        return IDENT_TYPE;
     }
 
     @Override

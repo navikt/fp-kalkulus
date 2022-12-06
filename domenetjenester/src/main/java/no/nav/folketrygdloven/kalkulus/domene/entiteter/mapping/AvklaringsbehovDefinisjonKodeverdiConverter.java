@@ -19,6 +19,6 @@ public class AvklaringsbehovDefinisjonKodeverdiConverter implements AttributeCon
         if (AvklaringsbehovDefinisjon.KODER.containsKey(dbData)) {
             return AvklaringsbehovDefinisjon.fraKode(dbData);
         }
-        return  AvklaringsbehovDefinisjon.fraKodeNy(dbData);
+        return  AvklaringsbehovDefinisjon.fraKode(dbData);
     }
 }
