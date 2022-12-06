@@ -46,6 +46,19 @@ spec:
         kvPath: /apikey/appdynamics/prod
       - mountPath: /var/run/secrets/nais.io/vault
         kvPath: /kv/prod/fss/ftkalkulus/k9saksbehandling
+  azure:
+    application:
+      enabled: true
+      claims:
+        extra:
+          - "NAVident"
+  accessPolicy:
+      inbound:
+        rules:
+          - application: k9-sak
+            namespace: k9saksbehandling
+          - application: k9-formidling
+            namespace: k9saksbehandling
   env:
     - name: LOADBALANCER_URL
       value: https://ftkalkulus.nais.adeo.no
