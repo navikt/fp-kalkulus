@@ -49,7 +49,7 @@ public class MatchBeregningsgrunnlagTjeneste {
         return gjeldendeBeregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
                 .filter(bgPeriode -> inkludererBeregningsgrunnlagPeriodeDato(bgPeriode, periode.getBeregningsgrunnlagPeriodeFom()))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Finner ingen korresponderende periode i det fastsatte grunnlaget"));
+                .orElseThrow(() -> new IllegalStateException("Finner ingen korresponderende periode " + periode.getPeriode() + " i det fastsatte grunnlaget"));
     }
 
     private static boolean inkludererBeregningsgrunnlagPeriodeDato(BeregningsgrunnlagPeriodeDto periode, LocalDate dato) {
