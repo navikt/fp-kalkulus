@@ -1,11 +1,15 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester;
 
-import static no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.AvklaringsbehovUtlederNyttInntektsforhold.finnTilkomneInntektsforhold;
+
+import static no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt.TilkommetInntektsforholdTjeneste.finnTilkomneInntektsforhold;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -25,7 +29,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.AvklaringsbehovUtlederNyttInntektsforhold;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt.TilkommetInntektsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.InntektsforholdDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.VurderInntektsforholdPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.VurderNyttInntektsforholdDto;
@@ -56,24 +60,24 @@ class VurderNyeInntektsforholdDtoTjeneste {
     }
 
     private static List<VurderInntektsforholdPeriodeDto> mapTilPerioderForNyeInntektsforhold(InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                                                                             Map<BeregningsgrunnlagPeriodeDto, Set<AvklaringsbehovUtlederNyttInntektsforhold.StatusOgArbeidsgiver>> nyeArbeidsforholdPrPeriode) {
+                                                                                             Map<BeregningsgrunnlagPeriodeDto, Set<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver>> nyeArbeidsforholdPrPeriode) {
         return nyeArbeidsforholdPrPeriode.entrySet().stream()
                 .filter(e -> !e.getValue().isEmpty())
                 .map(e -> mapPeriode(iayGrunnlag, e))
                 .collect(Collectors.toList());
     }
 
-    private static Map<BeregningsgrunnlagPeriodeDto, Set<AvklaringsbehovUtlederNyttInntektsforhold.StatusOgArbeidsgiver>> utledNyeInntektsforholdPrPeriode(List<BeregningsgrunnlagPeriodeDto> bgPerioder,
-                                                                                                                                                           YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
-                                                                                                                                                           Collection<YrkesaktivitetDto> yrkesaktiviteter, LocalDate skjæringstidspunktForBeregning) {
+    private static Map<BeregningsgrunnlagPeriodeDto, Set<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver>> utledNyeInntektsforholdPrPeriode(List<BeregningsgrunnlagPeriodeDto> bgPerioder,
+                                                                                                                                                  YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
+                                                                                                                                                  Collection<YrkesaktivitetDto> yrkesaktiviteter, LocalDate skjæringstidspunktForBeregning) {
         return bgPerioder.stream().collect(
                 Collectors.toMap(Function.identity(), p -> finnInntektsforholdForPeriode(ytelsespesifiktGrunnlag, yrkesaktiviteter, skjæringstidspunktForBeregning, p)));
     }
 
-    private static Set<AvklaringsbehovUtlederNyttInntektsforhold.StatusOgArbeidsgiver> finnInntektsforholdForPeriode(YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
-                                                                                                                         Collection<YrkesaktivitetDto> yrkesaktiviteter,
-                                                                                                                         LocalDate skjæringstidspunktForBeregning,
-                                                                                                                         BeregningsgrunnlagPeriodeDto p) {
+    private static Set<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver> finnInntektsforholdForPeriode(YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
+                                                                                                            Collection<YrkesaktivitetDto> yrkesaktiviteter,
+                                                                                                            LocalDate skjæringstidspunktForBeregning,
+                                                                                                            BeregningsgrunnlagPeriodeDto p) {
         return finnTilkomneInntektsforhold(skjæringstidspunktForBeregning,
                 yrkesaktiviteter,
                 p.getBeregningsgrunnlagPrStatusOgAndelList(),
@@ -82,17 +86,36 @@ class VurderNyeInntektsforholdDtoTjeneste {
     }
 
     private static VurderInntektsforholdPeriodeDto mapPeriode(InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                                              Map.Entry<BeregningsgrunnlagPeriodeDto, Set<AvklaringsbehovUtlederNyttInntektsforhold.StatusOgArbeidsgiver>> e) {
+                                                              Map.Entry<BeregningsgrunnlagPeriodeDto, Set<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver>> e) {
         var periode = e.getKey();
-        var nyeInntektsforholdListe = e.getValue();
+        var nyeInntektsforholdListe = new LinkedHashSet<>(e.getValue());
+        var innteksforholdListe = new ArrayList<InntektsforholdDto>();
+        innteksforholdListe.addAll(mapAndelerTilInntektsforholdDto(iayGrunnlag, periode, nyeInntektsforholdListe));
+        innteksforholdListe.addAll(mapResterendeUtenAndel(nyeInntektsforholdListe, innteksforholdListe));
         var tilkomneInntekter = periode.getTilkomneInntekter();
-        var tilkomneInntektsforhold = mapAndelerTilInntektsforholdDto(iayGrunnlag, periode, nyeInntektsforholdListe);
-        setFelterForBekreftetVerdi(tilkomneInntekter, tilkomneInntektsforhold);
-        setInnteksmeldingFelter(iayGrunnlag, tilkomneInntektsforhold);
-        return new VurderInntektsforholdPeriodeDto(periode.getBeregningsgrunnlagPeriodeFom(), periode.getBeregningsgrunnlagPeriodeTom(), tilkomneInntektsforhold.stream().toList());
+        setFelterForBekreftetVerdi(tilkomneInntekter, innteksforholdListe);
+        setInnteksmeldingFelter(iayGrunnlag, innteksforholdListe);
+        return new VurderInntektsforholdPeriodeDto(periode.getBeregningsgrunnlagPeriodeFom(), periode.getBeregningsgrunnlagPeriodeTom(), innteksforholdListe.stream().toList());
     }
 
-    private static void setInnteksmeldingFelter(InntektArbeidYtelseGrunnlagDto iayGrunnlag, Set<InntektsforholdDto> tilkomneInntektsforhold) {
+
+    private static Set<InntektsforholdDto> mapResterendeUtenAndel(LinkedHashSet<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver> nyeInntektsforholdListe, Collection<InntektsforholdDto> tilkomneInntektsforhold) {
+        var tilkomneInntekterUtenAndel = finnTilkomneUtenAndel(nyeInntektsforholdListe, tilkomneInntektsforhold);
+        return tilkomneInntekterUtenAndel.stream().map(it -> new InntektsforholdDto(it.aktivitetStatus(), it.arbeidsgiver() != null ? it.arbeidsgiver().getIdentifikator() : null, null, null)).collect(Collectors.toSet());
+    }
+
+    private static List<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver> finnTilkomneUtenAndel(LinkedHashSet<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver> nyeInntektsforholdListe, Collection<InntektsforholdDto> tilkomneInntektsforhold) {
+        return nyeInntektsforholdListe.stream()
+                .filter(it -> tilkomneInntektsforhold.stream().noneMatch(ti -> ti.getAktivitetStatus().equals(it.aktivitetStatus()) &&
+                        Objects.equals(ti.getArbeidsgiverIdentifikator(), finnArbeidsgiverIdentifikator(it))))
+                .toList();
+    }
+
+    private static String finnArbeidsgiverIdentifikator(TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver it) {
+        return it.arbeidsgiver() != null ? it.arbeidsgiver().getIdentifikator() : null;
+    }
+
+    private static void setInnteksmeldingFelter(InntektArbeidYtelseGrunnlagDto iayGrunnlag, Collection<InntektsforholdDto> tilkomneInntektsforhold) {
         tilkomneInntektsforhold.forEach(ti -> {
             var inntektsmelding = iayGrunnlag.getInntektsmeldinger().stream()
                     .flatMap(it -> it.getAlleInntektsmeldinger().stream())
@@ -106,7 +129,7 @@ class VurderNyeInntektsforholdDtoTjeneste {
         });
     }
 
-    private static void setFelterForBekreftetVerdi(List<TilkommetInntektDto> tilkomneInntekter, Set<InntektsforholdDto> tilkomneInntektsforhold) {
+    private static void setFelterForBekreftetVerdi(List<TilkommetInntektDto> tilkomneInntekter, Collection<InntektsforholdDto> tilkomneInntektsforhold) {
         tilkomneInntektsforhold.forEach(inntektsforholdDto -> settBekreftetVerdiHvisFinnes(tilkomneInntekter, inntektsforholdDto));
     }
 
@@ -119,17 +142,21 @@ class VurderNyeInntektsforholdDtoTjeneste {
 
     private static Set<InntektsforholdDto> mapAndelerTilInntektsforholdDto(InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                            BeregningsgrunnlagPeriodeDto periode,
-                                                                           Set<AvklaringsbehovUtlederNyttInntektsforhold.StatusOgArbeidsgiver> nyeInntektsforholdListe) {
+                                                                           Set<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver> nyeInntektsforholdListe) {
         return periode.getBeregningsgrunnlagPrStatusOgAndelList()
                 .stream()
                 .filter(a -> erNyttArbeidsforhold(nyeInntektsforholdListe, a))
                 .map(a -> mapTilInntektsforhold(a, iayGrunnlag))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(HashSet::new));
     }
 
-    private static boolean erNyttArbeidsforhold(Set<AvklaringsbehovUtlederNyttInntektsforhold.StatusOgArbeidsgiver> nyeInntektsforholdListe, BeregningsgrunnlagPrStatusOgAndelDto a) {
-        return nyeInntektsforholdListe.stream().anyMatch(sa -> sa.aktivitetStatus().equals(a.getAktivitetStatus()) &&
-                Objects.equals(sa.arbeidsgiver(), a.getArbeidsgiver().orElse(null)));
+    private static boolean erNyttArbeidsforhold(Set<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver> nyeInntektsforholdListe, BeregningsgrunnlagPrStatusOgAndelDto a) {
+        return finnMatchendeNyttInntektsforhold(nyeInntektsforholdListe, a).isPresent();
+    }
+
+    private static Optional<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver> finnMatchendeNyttInntektsforhold(Set<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver> nyeInntektsforholdListe, BeregningsgrunnlagPrStatusOgAndelDto a) {
+        return nyeInntektsforholdListe.stream().filter(sa -> sa.aktivitetStatus().equals(a.getAktivitetStatus()) &&
+                Objects.equals(sa.arbeidsgiver(), a.getArbeidsgiver().orElse(null))).findFirst();
     }
 
     private static InntektsforholdDto mapTilInntektsforhold(BeregningsgrunnlagPrStatusOgAndelDto a, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {

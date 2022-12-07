@@ -22,7 +22,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.AvklaringsbehovUtlederNyttInntektsforhold;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt.TilkommetInntektsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.NyttInntektsforholdDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.VurderTilkommetInntektHåndteringDto;
@@ -63,7 +63,7 @@ public class VurderTilkommetInntektTjeneste {
 
         var vurderteInntektsforhold = vurdertPeriode.get().getTilkomneInntektsforhold();
         var periodeBuilder = bgBuilder.getPeriodeBuilderFor(p.getPeriode()).orElseThrow();
-        var vurderInntektsforhold = AvklaringsbehovUtlederNyttInntektsforhold.finnTilkomneInntektsforhold(input.getSkjæringstidspunktForBeregning(),
+        var vurderInntektsforhold = TilkommetInntektsforholdTjeneste.finnTilkomneInntektsforhold(input.getSkjæringstidspunktForBeregning(),
                 input.getIayGrunnlag().getAktørArbeidFraRegister().map(AktørArbeidDto::hentAlleYrkesaktiviteter).orElse(Collections.emptyList()),
                 p.getBeregningsgrunnlagPrStatusOgAndelList(),
                 p.getPeriode(),
@@ -74,7 +74,7 @@ public class VurderTilkommetInntektTjeneste {
                 .forEach(periodeBuilder::leggTilTilkommetInntekt);
     }
 
-    private static boolean skalVurderesForPeriode(Collection<AvklaringsbehovUtlederNyttInntektsforhold.StatusOgArbeidsgiver> vurderInntektsforhold, NyttInntektsforholdDto i) {
+    private static boolean skalVurderesForPeriode(Collection<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver> vurderInntektsforhold, NyttInntektsforholdDto i) {
         return vurderInntektsforhold.stream().anyMatch(v ->
                 v.aktivitetStatus().equals(i.getAktivitetStatus()) &&
                         v.arbeidsgiver().getIdentifikator().equals(i.getArbeidsgiverIdentifikator()));

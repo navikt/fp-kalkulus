@@ -17,7 +17,7 @@ public class PSBFordelBeregningsgrunnlagTjeneste implements FordelBeregningsgrun
 
     private final TilkommetInntektPeriodeTjeneste periodeTjeneste = new TilkommetInntektPeriodeTjeneste();
     private OmfordelBeregningsgrunnlagTjeneste omfordelTjeneste;
-    private boolean tilkommetInntektAktivert;
+    private boolean graderingMotInntektEnabled;
     private boolean fordelingUtenKravEnabled;
 
     public PSBFordelBeregningsgrunnlagTjeneste() {
@@ -27,7 +27,7 @@ public class PSBFordelBeregningsgrunnlagTjeneste implements FordelBeregningsgrun
     @Inject
     public PSBFordelBeregningsgrunnlagTjeneste(OmfordelBeregningsgrunnlagTjeneste omfordelTjeneste) {
         this.omfordelTjeneste = omfordelTjeneste;
-        this.tilkommetInntektAktivert = KonfigurasjonVerdi.get("PSB_TILKOMMET_INNTEKT", false);
+        this.graderingMotInntektEnabled = KonfigurasjonVerdi.get("GRADERING_MOT_INNTEKT", false);
         this.fordelingUtenKravEnabled = KonfigurasjonVerdi.get("FORDELING_UTEN_KRAV", false);
 
     }
@@ -39,7 +39,7 @@ public class PSBFordelBeregningsgrunnlagTjeneste implements FordelBeregningsgrun
             resultatFraOmfordeling = new BeregningsgrunnlagRegelResultat(OmfordelingUtenRefusjonskravTjeneste.omfordel(resultatFraOmfordeling.getBeregningsgrunnlag(), input.getYtelsespesifiktGrunnlag()),
                     resultatFraOmfordeling.getRegelsporinger().orElse(null));
         }
-        if (!tilkommetInntektAktivert) {
+        if (!graderingMotInntektEnabled) {
             return new BeregningsgrunnlagRegelResultat(resultatFraOmfordeling.getBeregningsgrunnlag(),
                     resultatFraOmfordeling.getRegelsporinger().orElse(null));
         } else {

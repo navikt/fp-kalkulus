@@ -67,4 +67,16 @@ public class TilkommetInntektDto {
     public boolean skalRedusereUtbetaling() {
         return skalRedusereUtbetaling;
     }
+
+    @Override
+    public String toString() {
+        return "TilkommetInntektDto{" +
+                "aktivitetStatus=" + aktivitetStatus +
+                ", arbeidsgiver=" + arbeidsgiver +
+                ", arbeidsforholdRef=" + arbeidsforholdRef +
+                ", bruttoInntektPrÅr=" + bruttoInntektPrÅr +
+                ", tilkommetInntektPrÅr=" + tilkommetInntektPrÅr +
+                ", skalRedusereUtbetaling=" + skalRedusereUtbetaling +
+                '}';
+    }
 }

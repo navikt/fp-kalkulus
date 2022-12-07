@@ -90,8 +90,6 @@ spec:
       value: "no.nav.abac.attributter.resource.k9.sak.saksstatus"
 
     # Feature-flag
-    - name: PSB_TILKOMMET_INNTEKT
-      value: "false"
     - name: BEREGNE_DAGPENGER_FRA_SYKEPENGER
       value: "true"
     - name: AUTOMATISK_BEREGNE_LONNSENDRING

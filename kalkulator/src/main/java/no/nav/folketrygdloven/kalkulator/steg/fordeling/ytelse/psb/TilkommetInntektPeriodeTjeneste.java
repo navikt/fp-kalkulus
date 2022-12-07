@@ -1,23 +1,24 @@
 package no.nav.folketrygdloven.kalkulator.steg.fordeling.ytelse.psb;
 
-import java.util.List;
+import java.util.Collections;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.input.PleiepengerSyktBarnGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.AktørArbeidDto;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt.TilkommetInntektsforholdTjeneste;
+import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 
 public class TilkommetInntektPeriodeTjeneste {
 
-    private final FinnTilkommetInntektTjeneste finnTilkommetInntektTjeneste = new FinnTilkommetInntektTjeneste();
-    private final OpprettPerioderOgAndelerForTilkommetInntekt opprettPerioderTjeneste = new OpprettPerioderOgAndelerForTilkommetInntekt();
 
     public BeregningsgrunnlagDto splittPerioderVedTilkommetInntekt(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
-        PleiepengerSyktBarnGrunnlag psbGrunnlag = input.getYtelsespesifiktGrunnlag();
-        List<AktivitetDto> tilkomneAktiviteter = finnTilkommetInntektTjeneste.finnAktiviteterMedTilkommetInntekt(
-                beregningsgrunnlag,
-                input.getIayGrunnlag(),
-                psbGrunnlag.getUtbetalingsgradPrAktivitet());
-        return opprettPerioderTjeneste.opprettPerioderOgAndeler(beregningsgrunnlag, tilkomneAktiviteter);
+
+        var tilkommetAktivitetTidslinje = TilkommetInntektsforholdTjeneste.finnTilkommetInntektsforholdTidslinje(
+                beregningsgrunnlag.getSkjæringstidspunkt(),
+                input.getIayGrunnlag().getAktørArbeidFraRegister().map(AktørArbeidDto::hentAlleYrkesaktiviteter).orElse(Collections.emptyList()),
+                beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
+                input.getYtelsespesifiktGrunnlag());
+        return SplittBGPerioder.splittPerioderOgSettPeriodeårsak(beregningsgrunnlag, input.getForlengelseperioder(), tilkommetAktivitetTidslinje.compress(), PeriodeÅrsak.TILKOMMET_INNTEKT);
     }
 
 }

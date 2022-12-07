@@ -10,6 +10,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
 public class MapArbeidsforholdFraVLTilRegel {
     private MapArbeidsforholdFraVLTilRegel() {
@@ -17,14 +18,24 @@ public class MapArbeidsforholdFraVLTilRegel {
     }
 
     public static Arbeidsforhold arbeidsforholdFor(BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus) {
-        if (erFrilanser(vlBGPStatus.getAktivitetStatus())) {
+        var arbeidsgiver = vlBGPStatus.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver);
+        var arbeidsforholdType = vlBGPStatus.getArbeidsforholdType();
+        var arbeidsforholdRef = arbeidsforholdRefFor(vlBGPStatus);
+        return arbeidsforholdFor(vlBGPStatus.getAktivitetStatus(), arbeidsgiver, arbeidsforholdType, arbeidsforholdRef);
+    }
+
+
+    public static Arbeidsforhold arbeidsforholdFor(AktivitetStatus aktivitetStatus,
+                                                   Optional<Arbeidsgiver> arbeidsgiver,
+                                                   OpptjeningAktivitetType arbeidsforholdType,
+                                                   String arbeidsforholdRef) {
+        if (erFrilanser(aktivitetStatus)) {
             return Arbeidsforhold.frilansArbeidsforhold();
         }
-        Optional<Arbeidsgiver> arbeidsgiver = vlBGPStatus.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver);
         if (arbeidsgiver.isPresent()) {
-            return lagArbeidsforholdHosArbeidsgiver(arbeidsgiver.get(), vlBGPStatus);
+            return lagArbeidsforholdHosArbeidsgiver(arbeidsgiver.get(), arbeidsforholdRef);
         } else {
-            return Arbeidsforhold.anonymtArbeidsforhold(MapOpptjeningAktivitetTypeFraVLTilRegel.map(vlBGPStatus.getArbeidsforholdType()));
+            return Arbeidsforhold.anonymtArbeidsforhold(MapOpptjeningAktivitetTypeFraVLTilRegel.map(arbeidsforholdType));
         }
     }
 
@@ -32,8 +43,8 @@ public class MapArbeidsforholdFraVLTilRegel {
         return AktivitetStatus.FRILANSER.equals(aktivitetStatus);
     }
 
-    private static Arbeidsforhold lagArbeidsforholdHosArbeidsgiver(Arbeidsgiver arbeidsgiver, BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus) {
-        String arbRef = arbeidsforholdRefFor(vlBGPStatus);
+    private static Arbeidsforhold lagArbeidsforholdHosArbeidsgiver(Arbeidsgiver arbeidsgiver, String arbeidsforholdRef) {
+        String arbRef = arbeidsforholdRef;
         if (arbeidsgiver.getErVirksomhet()) {
             return Arbeidsforhold.nyttArbeidsforholdHosVirksomhet(arbeidsgiver.getOrgnr(), arbRef);
         }
