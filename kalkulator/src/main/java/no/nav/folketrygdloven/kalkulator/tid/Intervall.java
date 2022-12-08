@@ -65,7 +65,14 @@ public class Intervall implements Comparable<Intervall>, Serializable {
     }
 
     public boolean erHelg() {
-        return fomDato.getDayOfWeek().equals(DayOfWeek.SATURDAY) && fomDato.plusDays(1).equals(tomDato);
+        var starterLørdag = fomDato.getDayOfWeek().equals(DayOfWeek.SATURDAY);
+        var slutterLørdag = tomDato.getDayOfWeek().equals(DayOfWeek.SATURDAY);
+
+        var starterSøndag = fomDato.getDayOfWeek().equals(DayOfWeek.SUNDAY);
+        var slutterSøndag = tomDato.getDayOfWeek().equals(DayOfWeek.SUNDAY);
+        var antallDager = fomDato.datesUntil(tomDato.plusDays(1)).count();
+        return (starterLørdag || starterSøndag) && (slutterLørdag || slutterSøndag) &&
+                antallDager <= 2;
     }
 
     public boolean inkluderer(LocalDate dato) {

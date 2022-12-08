@@ -78,6 +78,9 @@ public class TilkommetInntektsforholdTjeneste {
                                                                                         YtelsespesifiktGrunnlag utbetalingsgradGrunnlag,
                                                                                         LinkedHashSet<StatusOgArbeidsgiver> eksisterendeInntektsforhold) {
 
+        if (periode.erHelg()) {
+            return Collections.emptySet();
+        }
         var aktiviteterVedStart = andeler.stream()
                 .filter(a -> a.getKilde().equals(AndelKilde.PROSESS_START))
                 .map(a -> new StatusOgArbeidsgiver(a.getAktivitetStatus(), a.getArbeidsgiver().orElse(null)))

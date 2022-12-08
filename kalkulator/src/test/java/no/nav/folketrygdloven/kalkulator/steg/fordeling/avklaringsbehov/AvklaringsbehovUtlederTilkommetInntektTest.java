@@ -33,7 +33,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
     public static final String ARBEIDSGIVER_ORGNR2 = "123456719";
     public static final String ARBEIDSGIVER_ORGNR3 = "123423429";
 
-    public static final LocalDate STP = LocalDate.now();
+    public static final LocalDate STP = LocalDate.of(2022, 12, 8);
 
     @Test
     void skal_ikke_finne_tilkommet_andel_dersom_kun_en_andel_fra_start() {
@@ -86,6 +86,35 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
                 utbetalingsgradGrunnlag);
 
         assertThat(tilkomneAndeler.isEmpty()).isTrue();
+    }
+
+    @Test
+    void skal_ikke_finne_tilkommet_andel_i_helg() {
+
+        var arbeidsgiver = Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR);
+        var arbeidstakerandelFraStart = lagArbeidstakerandel(arbeidsgiver, 1L, AndelKilde.PROSESS_START, InternArbeidsforholdRefDto.nullRef());
+
+        var arbeidsgiver2 = Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR2);
+        var nyAndel = lagArbeidstakerandel(arbeidsgiver2, 2L, AndelKilde.PROSESS_PERIODISERING, InternArbeidsforholdRefDto.nullRef());
+
+        var yrkesaktivitet = lagYrkesaktivitet(arbeidsgiver, STP.minusMonths(10), STP.plusDays(15), InternArbeidsforholdRefDto.nullRef());
+        var nyYrkesaktivitet = lagYrkesaktivitet(arbeidsgiver2, STP.plusDays(1), STP.plusDays(20), InternArbeidsforholdRefDto.nullRef());
+
+        var utbetalingsgradFraStart = new UtbetalingsgradPrAktivitetDto(lagAktivitet(arbeidsgiver, InternArbeidsforholdRefDto.nullRef()), lagUtbetalingsgrader(100, STP, STP.plusDays(20)));
+        var utbetalingsgradNyAndel = new UtbetalingsgradPrAktivitetDto(lagAktivitet(arbeidsgiver2, InternArbeidsforholdRefDto.nullRef()),
+                List.of(lagPeriodeMedUtbetalingsgrad(50, STP.plusDays(1), STP.plusDays(1)),
+                        lagPeriodeMedUtbetalingsgrad(50, STP.plusDays(4), STP.plusDays(20))));
+
+        var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(2), STP.plusDays(3));
+
+        var tilkommetAktivitet = TilkommetInntektsforholdTjeneste.finnTilkomneInntektsforhold(
+                STP,
+                List.of(yrkesaktivitet, nyYrkesaktivitet),
+                List.of(arbeidstakerandelFraStart, nyAndel),
+                periode,
+                new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel)));
+
+        assertThat(tilkommetAktivitet.size()).isEqualTo(0);
     }
 
     @Test
@@ -418,7 +447,11 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
 
 
     private List<PeriodeMedUtbetalingsgradDto> lagUtbetalingsgrader(int i, LocalDate fom, LocalDate tom) {
-        return List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(fom, tom), BigDecimal.valueOf(i)));
+        return List.of(lagPeriodeMedUtbetalingsgrad(i, fom, tom));
+    }
+
+    private PeriodeMedUtbetalingsgradDto lagPeriodeMedUtbetalingsgrad(int i, LocalDate fom, LocalDate tom) {
+        return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(fom, tom), BigDecimal.valueOf(i));
     }
 
     private AktivitetDto lagAktivitet(Arbeidsgiver arbeidsgiver2, InternArbeidsforholdRefDto ref) {
