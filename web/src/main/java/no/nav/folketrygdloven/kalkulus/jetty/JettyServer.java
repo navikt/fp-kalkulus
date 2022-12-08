@@ -115,7 +115,7 @@ public class JettyServer {
 
         OidcAuthModule serverAuthModule = enabledAzureAd ? azureAdEnabledAuthModule(azureAdDomain) : new OidcAuthModule();
 
-        factory.registerConfigProvider(new JaspiAuthConfigProvider(new OidcAuthModule()),
+        factory.registerConfigProvider(new JaspiAuthConfigProvider(serverAuthModule),
                 "HttpServlet",
                 "server /ftkalkulus",
                 "OIDC Authentication");
