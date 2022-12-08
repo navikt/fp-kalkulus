@@ -9,8 +9,7 @@ spec:
   image: {{ image }}
   port: 8080
   ingresses:
-    - "https://ftkalkulus.nais.preprod.local/"
-    - "https://ftkalkulus.dev.adeo.no/"
+    - "https://ftkalkulus.dev.intern.nav.no/"
   liveness:
     path: "/ftkalkulus/internal/isAlive"
     initialDelay: 30
@@ -50,6 +49,8 @@ spec:
   azure:
     application:
       enabled: true
+      replyURLs:
+        - "https://ftkalkulus.dev.intern.nav.no/ftkalkulus/cb"
       claims:
         extra:
           - "NAVident"
@@ -62,7 +63,7 @@ spec:
             namespace: k9saksbehandling
   env:
     - name: LOADBALANCER_URL
-      value: https://ftkalkulus.nais.preprod.local
+      value: https://ftkalkulus.dev.intern.nav.no
     - name: ABAC_PDP_ENDPOINT_URL
       value: http://abac-k9.k9saksbehandling/application/authorize
     - name: SECURITYTOKENSERVICE_URL
@@ -74,6 +75,11 @@ spec:
       value: https://isso-q.adeo.no:443/isso/oauth2
     - name: OIDC_OPENAM_CLIENT_ID
       value: ftkalkulus-q1
+
+    - name: APP_AUTH_SCHEMA_AZUREAD_ENABLED
+      value: "true"
+    - name: APP_AUTH_SCHEMA_AZUREAD_DOMAIN
+      value: "ftkalkulus.dev.intern.nav.no"
 
     - name: ABAC_DOMAIN
       value: "k9"
