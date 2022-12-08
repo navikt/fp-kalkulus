@@ -36,9 +36,8 @@ public enum PermisjonsbeskrivelseType implements Kodeverdi {
 
     public static final String KODEVERK = "PERMISJONSBESKRIVELSE_TYPE";
 
-    public static final Set<PermisjonsbeskrivelseType> VELFERDSPERMISJONER = Set.of(
+    public static final Set<PermisjonsbeskrivelseType> K9_VELFERDSPERMISJON = Set.of(
             PermisjonsbeskrivelseType.VELFERDSPERMISJON,
-            PermisjonsbeskrivelseType.ANNEN_PERMISJON_IKKE_LOVFESTET,
             PermisjonsbeskrivelseType.ANNEN_PERMISJON_LOVFESTET
     );
 

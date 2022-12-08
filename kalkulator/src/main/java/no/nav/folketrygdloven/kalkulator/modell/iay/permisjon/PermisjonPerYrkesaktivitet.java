@@ -56,7 +56,7 @@ public final class PermisjonPerYrkesaktivitet {
                     .map(LocalDateSegment::getLocalDateInterval)
                     .map(p -> Intervall.fraOgMedTilOgMed(p.getFomDato(), p.getTomDato()))
                     .collect(Collectors.toCollection(TreeSet::new));
-        } else if (it.getPermisjonsbeskrivelseType() != null && PermisjonsbeskrivelseType.VELFERDSPERMISJONER.contains(it.getPermisjonsbeskrivelseType())) {
+        } else if (it.getPermisjonsbeskrivelseType() != null && PermisjonsbeskrivelseType.K9_VELFERDSPERMISJON.contains(it.getPermisjonsbeskrivelseType())) {
             var permisjonstidslinje = new LocalDateTimeline<>(List.of(new LocalDateSegment<>(it.getPeriode().getFomDato(), it.getPeriode().getTomDato(), true)));
             for (var aktivitetType : FagsakYtelseType.K9_YTELSER) {
                 var ytelsesTidslinje = tidslinjePerYtelse.getOrDefault(aktivitetType, new LocalDateTimeline<>(List.of()));
