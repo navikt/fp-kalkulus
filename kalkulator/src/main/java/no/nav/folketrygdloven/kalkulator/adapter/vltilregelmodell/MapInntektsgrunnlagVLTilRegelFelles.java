@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektsgrunnlag;
@@ -54,7 +53,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 @ApplicationScoped
 @FagsakYtelseTypeRef()
 public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTilRegel {
-    private static final String TOGGLE_SPLITTE_SAMMENLIGNING = "fpsak.splitteSammenligningATFL";
     private static final String INNTEKT_RAPPORTERING_FRIST_DATO = "inntekt.rapportering.frist.dato";
 
     @Inject
@@ -278,36 +276,6 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
                 .build()));
     }
 
-    private void lagInntektSammenligningPrStatus(Inntektsgrunnlag inntektsgrunnlag, InntektFilterDto filter, Collection<YrkesaktivitetDto> yrkesaktiviteter) {
-        Map<LocalDate, BigDecimal> månedsinntekterFrilans = filter.filterSammenligningsgrunnlag().getAlleInntektSammenligningsgrunnlag().stream()
-                .filter(inntekt -> inntekt.getArbeidsgiver() != null)
-                .filter(inntekt -> erFrilanser(inntekt.getArbeidsgiver(), yrkesaktiviteter))
-                .flatMap(i -> i.getAlleInntektsposter().stream())
-                .collect(Collectors.groupingBy(ip -> ip.getPeriode().getFomDato(), Collectors.reducing(BigDecimal.ZERO,
-                        ip -> ip.getBeløp().getVerdi(), BigDecimal::add)));
-
-        månedsinntekterFrilans.forEach((måned, inntekt) -> inntektsgrunnlag.leggTilPeriodeinntekt(Periodeinntekt.builder()
-                .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSKOMPONENTEN_SAMMENLIGNING)
-                .medMåned(måned)
-                .medInntekt(inntekt)
-                .medAktivitetStatus(AktivitetStatus.FL)
-                .build()));
-
-        Map<LocalDate, BigDecimal> månedsinntekterArbeidstaker = filter.filterSammenligningsgrunnlag().getAlleInntektSammenligningsgrunnlag().stream()
-                .filter(inntekt -> inntekt.getArbeidsgiver() != null)
-                .filter(inntekt -> !erFrilanser(inntekt.getArbeidsgiver(), yrkesaktiviteter))
-                .flatMap(i -> i.getAlleInntektsposter().stream())
-                .collect(Collectors.groupingBy(ip -> ip.getPeriode().getFomDato(), Collectors.reducing(BigDecimal.ZERO,
-                        ip -> ip.getBeløp().getVerdi(), BigDecimal::add)));
-
-        månedsinntekterArbeidstaker.forEach((måned, inntekt) -> inntektsgrunnlag.leggTilPeriodeinntekt(Periodeinntekt.builder()
-                .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSKOMPONENTEN_SAMMENLIGNING)
-                .medMåned(måned)
-                .medInntekt(inntekt)
-                .medAktivitetStatus(AktivitetStatus.AT)
-                .build()));
-    }
-
     private void lagInntekterSN(Inntektsgrunnlag inntektsgrunnlag, InntektFilterDto filter) {
         filter.filterBeregnetSkatt().getFiltrertInntektsposter()
                 .forEach(inntektspost -> inntektsgrunnlag.leggTilPeriodeinntekt(Periodeinntekt.builder()
@@ -336,11 +304,7 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
             yrkesaktiviteter.addAll(filterYaBekreftetAnnenOpptjening.getYrkesaktiviteterForBeregning());
 
             lagInntektBeregning(inntektsgrunnlag, filter, yrkesaktiviteter);
-            if (!input.isEnabled(TOGGLE_SPLITTE_SAMMENLIGNING, false)) {
-                lagInntektSammenligning(inntektsgrunnlag, filter);
-            } else {
-                lagInntektSammenligningPrStatus(inntektsgrunnlag, filter, yrkesaktiviteter);
-            }
+            lagInntektSammenligning(inntektsgrunnlag, filter);
             lagInntekterSN(inntektsgrunnlag, filter);
 
         }

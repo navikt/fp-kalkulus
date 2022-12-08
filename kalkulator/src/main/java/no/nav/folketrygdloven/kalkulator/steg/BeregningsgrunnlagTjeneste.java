@@ -210,8 +210,8 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
      */
     @Override
     public BesteberegningResultat foreslåBesteberegning(ForeslåBesteberegningInput input) {
-        if (!input.isEnabled("automatisk-besteberegning", false) || input.getBeregningsgrunnlag().isOverstyrt()) {
-            // Skal ikkje gjere noko i steget om togglet av eller overstyrt inntekt
+        if (input.getBeregningsgrunnlag().isOverstyrt()) {
+            // Skal ikkje gjere noko i steget om overstyrt inntekt
             return BesteberegningResultat.Builder.fra(input)
                     .medBeregningsgrunnlag(new BeregningsgrunnlagDto(input.getBeregningsgrunnlag()))
                     .build();

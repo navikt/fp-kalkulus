@@ -95,7 +95,6 @@ public class ForeslåBeregningsgrunnlagTest {
     private static final LocalDate MINUS_YEARS_1 = SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1);
     private static final LocalDate ARBEIDSPERIODE_FOM = SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1);
     private static final LocalDate ARBEIDSPERIODE_TOM = SKJÆRINGSTIDSPUNKT_OPPTJENING.plusYears(2);
-    private static final String TOGGLE_SPLITTE_SAMMENLIGNING = "fpsak.splitteSammenligningATFL";
     private final UnitTestLookupInstanceImpl<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper = new UnitTestLookupInstanceImpl<>(new ForeldrepengerGrunnlagMapper());
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
     private AktørId beregningsAkrød1 = AktørId.dummy();
@@ -130,32 +129,6 @@ public class ForeslåBeregningsgrunnlagTest {
                         .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
                         .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(3).withDayOfMonth(1),
                                 SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1))));
-        return beregningsgrunnlagBuilder.build();
-    }
-
-    private BeregningsgrunnlagDto lagBeregningsgrunnlagATFL_SN() {
-        BeregningsgrunnlagDto.Builder beregningsgrunnlagBuilder = BeregningsgrunnlagDto.builder();
-        beregningsgrunnlagBuilder.medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_BEREGNING)
-                .medGrunnbeløp(GRUNNBELØP);
-        beregningsgrunnlagBuilder.leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder()
-                .medAktivitetStatus(AktivitetStatus.KOMBINERT_AT_SN));
-        beregningsgrunnlagBuilder.leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeDto.ny()
-                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, null)
-                .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
-                        .medArbforholdType(OpptjeningAktivitetType.ARBEID)
-                        .medBGAndelArbeidsforhold(lagBgAndelArbeidsforhold(ARBEIDSPERIODE_FOM, ARBEIDSPERIODE_TOM, Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1)))
-                        .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-                        .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
-                        .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(3).withDayOfMonth(1),
-                                SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1)))
-                .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
-                        .medArbforholdType(OpptjeningAktivitetType.UDEFINERT)
-                        .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
-                        .medInntektskategori(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE)
-                        .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
-                                .medArbeidsgiver(Arbeidsgiver.virksomhet(ORGNR))
-                                .medArbeidsperiodeFom(LocalDate.now().minusYears(1))
-                                .medArbeidsperiodeTom(LocalDate.now().plusYears(2)))));
         return beregningsgrunnlagBuilder.build();
     }
 
@@ -289,7 +262,6 @@ public class ForeslåBeregningsgrunnlagTest {
                 .medRegisterAktiviteter(BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING, OpptjeningAktivitetType.ARBEID));
         ForeslåBeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagForeslåttBeregningsgrunnlagInput(koblingReferanse, bgGrunnlagBuilder, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag);
         Map<String, Boolean> toggles = input.getToggles();
-        toggles.put(TOGGLE_SPLITTE_SAMMENLIGNING, false);
         return foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
     }
 
@@ -301,7 +273,6 @@ public class ForeslåBeregningsgrunnlagTest {
         ForeslåBeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagForeslåttBeregningsgrunnlagInput(koblingReferanse, bgGrunnlagBuilder,
                 BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag, omsorgspengerGrunnlag);
         Map<String, Boolean> toggles = input.getToggles();
-        toggles.put(TOGGLE_SPLITTE_SAMMENLIGNING, false);
         UnitTestLookupInstanceImpl<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper = new UnitTestLookupInstanceImpl<>(new OmsorgspengerGrunnlagMapper());
         var mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(
                 new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel),

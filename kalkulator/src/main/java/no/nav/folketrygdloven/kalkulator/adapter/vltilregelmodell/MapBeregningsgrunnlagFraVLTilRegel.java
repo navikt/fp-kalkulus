@@ -62,7 +62,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
 @ApplicationScoped
 public class MapBeregningsgrunnlagFraVLTilRegel {
-    private static final String FREMSKYNDET_REGELENDRING = "fremskyndet.regelendring.toggle";
     private Instance<MapInntektsgrunnlagVLTilRegel> alleInntektMappere;
     private Instance<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper;
 
@@ -116,15 +115,8 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medUregulertGrunnbeløp(mapUregulertGrunnbeløp(input, beregningsgrunnlag))
                 .medMidlertidigInaktivType(mapMidlertidigInaktivType(input))
                 .medGrunnbeløpSatser(grunnbeløpSatser(input))
-                .medFomDatoForIndividuellSammenligningATFL_SN(finnFomForIndividuellSammenligning(input))
+                .medFomDatoForIndividuellSammenligningATFL_SN(LocalDate.of(2023,1,1))
                 .build();
-    }
-
-    private LocalDate finnFomForIndividuellSammenligning(BeregningsgrunnlagInput input) {
-        var regelendringErFremskyndet = input.isEnabled(FREMSKYNDET_REGELENDRING, false);
-        return regelendringErFremskyndet
-                ? LocalDate.of(2022,11,1)
-                : LocalDate.of(2023,1,1);
     }
 
     private List<Grunnbeløp> grunnbeløpSatser(BeregningsgrunnlagInput input) {

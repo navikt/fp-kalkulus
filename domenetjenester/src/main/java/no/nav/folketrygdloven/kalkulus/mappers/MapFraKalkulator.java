@@ -15,7 +15,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AktivitetStatusV2;
-import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.StandardGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
@@ -49,10 +48,7 @@ import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 public class MapFraKalkulator {
 
-    private static final String TOGGLE_SPLITTE_SAMMENLIGNINGSGRUNNLAG = "fpsak.splitteSammenligningATFL";
-    private static final String TOGGLE_AUTOMATISK_BESTEBEREGNING = "automatisk-besteberegning";
     private static final String TOGGLE_TSF_1715 = "feilretting-tsf-1715";
-    private static final String FREMSKYNDET_REGELENDRING = "fremskyndet.regelendring.toggle";
 
     public static Arbeidsgiver mapArbeidsgiver(Aktør arbeidsgiver) {
         if (arbeidsgiver == null) {
@@ -92,10 +88,7 @@ public class MapFraKalkulator {
                         beregningsgrunnlagGrunnlagEntitet));
 
         utenGrunnbeløp.leggTilKonfigverdi(BeregningsperiodeTjeneste.INNTEKT_RAPPORTERING_FRIST_DATO, 5);
-        utenGrunnbeløp.leggTilToggle(TOGGLE_SPLITTE_SAMMENLIGNINGSGRUNNLAG, false);
         utenGrunnbeløp.leggTilToggle(TOGGLE_TSF_1715, false);
-        utenGrunnbeløp.leggTilToggle(TOGGLE_AUTOMATISK_BESTEBEREGNING, true); // Legger til toggle for å kunne teste verdikjede
-        utenGrunnbeløp.leggTilToggle(FREMSKYNDET_REGELENDRING, KonfigurasjonVerdi.get("FREMSKYNDET_REGELENDRING", false));
         utenGrunnbeløp.setForlengelseperioder(mapPerioder(forlengelseperioder));
         return beregningsgrunnlagGrunnlagEntitet.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag)
                 .map(utenGrunnbeløp::medBeregningsgrunnlagGrunnlag)

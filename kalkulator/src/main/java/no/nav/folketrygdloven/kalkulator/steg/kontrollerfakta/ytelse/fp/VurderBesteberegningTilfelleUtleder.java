@@ -24,14 +24,13 @@ public class VurderBesteberegningTilfelleUtleder implements TilfelleUtleder {
     private static final Set<OpptjeningAktivitetType> AKTIVITETER_SOM_KAN_AUTOMATISK_BESTEBEREGNES = Set.of(OpptjeningAktivitetType.ARBEID, OpptjeningAktivitetType.DAGPENGER, OpptjeningAktivitetType.SYKEPENGER,
             OpptjeningAktivitetType.FORELDREPENGER, OpptjeningAktivitetType.SVANGERSKAPSPENGER);
 
-    public static final String TOGGLE_BESTEBEREGNING = "automatisk-besteberegning";
 
     @Override
     public Optional<FaktaOmBeregningTilfelle> utled(FaktaOmBeregningInput input,
                                                     BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
         boolean kanAutomatiskBesteberegnes = input.getOpptjeningAktiviteterForBeregning().stream()
                 .allMatch(a -> AKTIVITETER_SOM_KAN_AUTOMATISK_BESTEBEREGNES.contains(a.getOpptjeningAktivitetType()));
-        if (input.isEnabled(TOGGLE_BESTEBEREGNING, false) && kanAutomatiskBesteberegnes) {
+        if (kanAutomatiskBesteberegnes) {
             return Optional.empty();
         }
         boolean harKunYtelse = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElseThrow(() -> new IllegalArgumentException("Skal ha beregningsgrunnlag"))

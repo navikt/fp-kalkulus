@@ -9,9 +9,9 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -92,7 +92,7 @@ class VurderBesteberegningTilfelleUtlederTest {
     }
 
     @Test
-    void skal_ikkje_få_besteberegning_kun_arbeidstaker_og_dagpenger_i_opptjeningsperioden_med_toggle_på() {
+    void skal_ikkje_få_besteberegning_kun_arbeidstaker_og_dagpenger_i_opptjeningsperioden_da_dette_tas_automatisk() {
         // Arrange
         Arbeidsgiver virksomhet = Arbeidsgiver.virksomhet("28794923");
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
@@ -127,7 +127,6 @@ class VurderBesteberegningTilfelleUtlederTest {
                 OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.DAGPENGER, Intervall.fraOgMed(STP.minusMonths(10)))));
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, opptjeningAktiviteter, null, new ForeldrepengerGrunnlag(100, true));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        input.leggTilToggle("automatisk-besteberegning", true);
 
         // Act
         Optional<FaktaOmBeregningTilfelle> tilfelle = tilfelleUtleder.utled(new FaktaOmBeregningInput(new StegProsesseringInput(input, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER)), grunnlag);
@@ -135,53 +134,6 @@ class VurderBesteberegningTilfelleUtlederTest {
         // Assert
         assertThat(tilfelle).isEmpty();
     }
-
-
-    @Test
-    void skal_få_besteberegning_kun_arbeidstaker_og_dagpenger_i_opptjeningsperioden_med_toggle_av() {
-        // Arrange
-        Arbeidsgiver virksomhet = Arbeidsgiver.virksomhet("28794923");
-        BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
-                .medSkjæringstidspunkt(STP)
-                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
-                .build();
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
-                .medBeregningsgrunnlagPeriode(STP, null)
-                .build(bg);
-        BeregningsgrunnlagPrStatusOgAndelDto.ny()
-                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-                .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
-                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(virksomhet))
-                .build(periode);
-        BeregningsgrunnlagGrunnlagDto grunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
-                .medRegisterAktiviteter(BeregningAktivitetAggregatDto.builder()
-                        .medSkjæringstidspunktOpptjening(STP)
-                        .leggTilAktivitet(BeregningAktivitetDto.builder()
-                                .medPeriode(Intervall.fraOgMedTilOgMed(STP.minusMonths(12), STP))
-                                .medOpptjeningAktivitetType(OpptjeningAktivitetType.DAGPENGER)
-                                .build())
-                        .leggTilAktivitet(BeregningAktivitetDto.builder()
-                                .medPeriode(Intervall.fraOgMedTilOgMed(STP.minusMonths(12), STP))
-                                .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID)
-                                .medArbeidsgiver(virksomhet)
-                                .build())
-                        .build())
-                .medBeregningsgrunnlag(bg)
-                .build(BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
-        var opptjeningAktiviteter = new OpptjeningAktiviteterDto(List.of(
-                OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, Intervall.fraOgMed(STP.minusMonths(10)), virksomhet.getIdentifikator()),
-                OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.DAGPENGER, Intervall.fraOgMed(STP.minusMonths(10)))));
-        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, opptjeningAktiviteter, null, new ForeldrepengerGrunnlag(100, true));
-        input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        input.leggTilToggle("automatisk-besteberegning", false);
-
-        // Act
-        Optional<FaktaOmBeregningTilfelle> tilfelle = tilfelleUtleder.utled(new FaktaOmBeregningInput(new StegProsesseringInput(input, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER)), grunnlag);
-
-        // Assert
-        assertThat(tilfelle).isNotEmpty();
-    }
-
 
     @Test
     void skal_få_besteberegning_frilans_arbeid_og_dagpenger_i_opptjeningsperioden() {

@@ -8,7 +8,6 @@ import java.time.Month;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -71,7 +70,6 @@ public class FortsettForeslåBeregningsgrunnlagTest {
     private static final String ARBEIDSFORHOLD_ORGNR1 = "654";
     private static final LocalDate ARBEIDSPERIODE_FOM = SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1);
     private static final LocalDate ARBEIDSPERIODE_TOM = SKJÆRINGSTIDSPUNKT_OPPTJENING.plusYears(2);
-    private static final String TOGGLE_SPLITTE_SAMMENLIGNING = "fpsak.splitteSammenligningATFL";
     private final UnitTestLookupInstanceImpl<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper = new UnitTestLookupInstanceImpl<>(new ForeldrepengerGrunnlagMapper());
     private final KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
     private final TestHjelper testHjelper = new TestHjelper();
@@ -176,8 +174,6 @@ public class FortsettForeslåBeregningsgrunnlagTest {
                 .medBeregningsgrunnlag(beregningsgrunnlag)
                 .medRegisterAktiviteter(BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING, OpptjeningAktivitetType.ARBEID));
         FortsettForeslåBeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagFortsettForeslåttBeregningsgrunnlagInput(koblingReferanse, bgGrunnlagBuilder, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag);
-        Map<String, Boolean> toggles = input.getToggles();
-        toggles.put(TOGGLE_SPLITTE_SAMMENLIGNING, false);
         return fortsettForeslåBeregningsgrunnlag.fortsettForeslåBeregningsgrunnlag(input);
     }
 

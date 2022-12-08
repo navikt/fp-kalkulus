@@ -32,7 +32,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
-import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.AvklaringsbehovDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPeriodeDto;
@@ -40,8 +39,6 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.Sammen
 
 @ApplicationScoped
 public class BeregningsgrunnlagDtoTjeneste {
-    private static final String FREMSKYNDET_REGELENDRING = "fremskyndet.regelendring.toggle";
-
     private static final int SEKS = 6;
     private BeregningsgrunnlagPrStatusOgAndelDtoTjeneste beregningsgrunnlagPrStatusOgAndelDtoTjeneste;
     private FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste;

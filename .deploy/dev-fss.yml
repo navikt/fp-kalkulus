@@ -125,8 +125,6 @@ spec:
       value: "true"
     - name: TREKKE_OVERSTYRING_ENABLED
       value: "true"
-    - name: FREMSKYNDET_REGELENDRING
-      value: "true"
     - name: KOPIERING_VED_FORLENGELSE
       value: "true"
     - name: GRADERING_MOT_INNTEKT
