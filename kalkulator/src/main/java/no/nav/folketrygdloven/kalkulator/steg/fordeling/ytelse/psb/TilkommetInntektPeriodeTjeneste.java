@@ -18,7 +18,7 @@ public class TilkommetInntektPeriodeTjeneste {
                 input.getIayGrunnlag().getAktørArbeidFraRegister().map(AktørArbeidDto::hentAlleYrkesaktiviteter).orElse(Collections.emptyList()),
                 beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
                 input.getYtelsespesifiktGrunnlag());
-        return SplittBGPerioder.splittPerioderOgSettPeriodeårsak(beregningsgrunnlag, input.getForlengelseperioder(), tilkommetAktivitetTidslinje.compress(), PeriodeÅrsak.TILKOMMET_INNTEKT);
+        return SplittBGPerioder.splittPerioderOgSettPeriodeårsak(beregningsgrunnlag, tilkommetAktivitetTidslinje.compress(), PeriodeÅrsak.TILKOMMET_INNTEKT);
     }
 
 }

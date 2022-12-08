@@ -1,11 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.steg.fordeling.ytelse.psb;
 
-import java.util.List;
-
-import no.nav.folketrygdloven.kalkulator.avklaringsbehov.PerioderTilVurderingTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
-import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
@@ -18,13 +14,10 @@ public class SplittBGPerioder {
     }
 
     public static <V> BeregningsgrunnlagDto splittPerioderOgSettPeriodeårsak(BeregningsgrunnlagDto beregningsgrunnlag,
-                                                                             List<Intervall> forlengelseperioder,
                                                                              LocalDateTimeline<V> nyePerioderTidslinje,
                                                                              PeriodeÅrsak periodeårsak) {
 
-        var perioderTilVurderingTjeneste = new PerioderTilVurderingTjeneste(forlengelseperioder, beregningsgrunnlag);
-        var eksisterendePerioder = beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
-                .filter(p -> perioderTilVurderingTjeneste.erTilVurdering(p.getPeriode())).toList();
+        var eksisterendePerioder = beregningsgrunnlag.getBeregningsgrunnlagPerioder();
 
         var eksisterendePerioderTidslinje = new LocalDateTimeline<>(eksisterendePerioder.stream()
                 .map(p -> new LocalDateSegment<>(new LocalDateInterval(p.getPeriode().getFomDato(), p.getPeriode().getTomDato()), p)).toList());

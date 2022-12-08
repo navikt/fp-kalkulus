@@ -18,7 +18,6 @@ public class VurderRepresentererStortingetTjeneste {
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
         if (vurderDto.getRepresentererStortinget()) {
             var nyttBg = SplittBGPerioder.splittPerioderOgSettPeriodeårsak(input.getBeregningsgrunnlag(),
-                    input.getForlengelseperioder(),
                     new LocalDateTimeline<>(List.of(new LocalDateSegment<>(vurderDto.getFom(), vurderDto.getTom(), true))),
                     PeriodeÅrsak.REPRESENTERER_STORTINGET);
             grunnlagBuilder.medBeregningsgrunnlag(nyttBg);
