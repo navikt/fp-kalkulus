@@ -10,6 +10,8 @@ spec:
   port: 8080
   ingresses:
     - "https://ftkalkulus.dev.intern.nav.no/"
+    - "https://ftkalkulus.nais.preprod.local/"
+    - "https://ftkalkulus.dev.adeo.no/"
   liveness:
     path: "/ftkalkulus/internal/isAlive"
     initialDelay: 30
