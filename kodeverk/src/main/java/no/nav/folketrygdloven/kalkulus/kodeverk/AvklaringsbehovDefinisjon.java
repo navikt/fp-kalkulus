@@ -103,7 +103,7 @@ enum AvklaringsbehovDefinisjon implements Kodeverdi {
     @JsonProperty
     @Override
     public String getKode() {
-        return kodeNy;
+        return kode;
     }
 
     @JsonProperty
