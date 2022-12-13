@@ -306,7 +306,7 @@ public class OperereKalkulusRestTjeneste {
         private List<String> getAksjonspunktKoder() {
             return getHåndterBeregningListe().stream().map(HåndterBeregningRequest::getHåndterBeregning)
                     .map(HåndterBeregningDto::getAvklaringsbehovDefinisjon)
-                    .map(AvklaringsbehovDefinisjon::getKode)
+                    .map(AvklaringsbehovDefinisjon::getKodeNy)
                     .collect(Collectors.toList());
         }
 

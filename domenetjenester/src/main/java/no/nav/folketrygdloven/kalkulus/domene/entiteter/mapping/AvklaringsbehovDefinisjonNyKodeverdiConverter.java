@@ -5,7 +5,7 @@ import jakarta.persistence.Converter;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 
 @Converter(autoApply = true)
-public class AvklaringsbehovDefinisjonKodeverdiConverter implements AttributeConverter<AvklaringsbehovDefinisjon, String> {
+public class AvklaringsbehovDefinisjonNyKodeverdiConverter implements AttributeConverter<AvklaringsbehovDefinisjon, String> {
     @Override
     public String convertToDatabaseColumn(AvklaringsbehovDefinisjon attribute) {
         return attribute == null ? null : attribute.getKodeNy();
@@ -13,9 +13,6 @@ public class AvklaringsbehovDefinisjonKodeverdiConverter implements AttributeCon
 
     @Override
     public AvklaringsbehovDefinisjon convertToEntityAttribute(String dbData) {
-        if (dbData == null) {
-            return null;
-        }
-        return  AvklaringsbehovDefinisjon.fraKode(dbData);
+        return dbData == null ? null : AvklaringsbehovDefinisjon.fraKode(dbData);
     }
 }
