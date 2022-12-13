@@ -68,8 +68,16 @@ enum AvklaringsbehovDefinisjon implements Kodeverdi {
 
     static final String KODEVERK = "AVKLARINGSBEHOV_DEF";
 
-    public static final Map<String, AvklaringsbehovDefinisjon> KODER = new LinkedHashMap<>();
-    private static final Map<String, AvklaringsbehovDefinisjon> KODER_NY = new LinkedHashMap<>();
+    public static final Map<String, AvklaringsbehovDefinisjon> KODER_GAMMEL = new LinkedHashMap<>();
+    private static final Map<String, AvklaringsbehovDefinisjon> KODER = new LinkedHashMap<>();
+
+    static {
+        for (var v : values()) {
+            if (KODER_GAMMEL.putIfAbsent(v.kodeGammel, v) != null) {
+                throw new IllegalArgumentException("Duplikat : " + v.kodeGammel);
+            }
+        }
+    }
 
     static {
         for (var v : values()) {
@@ -79,17 +87,11 @@ enum AvklaringsbehovDefinisjon implements Kodeverdi {
         }
     }
 
-    static {
-        for (var v : values()) {
-            if (KODER_NY.putIfAbsent(v.kodeNy, v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.kodeNy);
-            }
-        }
-    }
-
     private String kode;
 
     private String kodeNy;
+
+    private String kodeGammel;
 
     @JsonIgnore
     private String navn;
@@ -103,9 +105,10 @@ enum AvklaringsbehovDefinisjon implements Kodeverdi {
     }
 
 
-    private AvklaringsbehovDefinisjon(String kode, String kodeNy, AvklaringsbehovType avklaringsbehovType, BeregningSteg stegFunnet, String navn) {
+    private AvklaringsbehovDefinisjon(String kodeGammel, String kode, AvklaringsbehovType avklaringsbehovType, BeregningSteg stegFunnet, String navn) {
         this.kode = Objects.requireNonNull(kode);
-        this.kodeNy = kodeNy;
+        this.kodeNy = kode;
+        this.kodeGammel = kodeGammel;
         this.stegFunnet = stegFunnet;
         this.navn = navn;
         this.avklaringsbehovType = avklaringsbehovType;
@@ -114,7 +117,7 @@ enum AvklaringsbehovDefinisjon implements Kodeverdi {
     @JsonProperty
     @Override
     public String getKode() {
-        return kodeNy;
+        return kode;
     }
 
     @JsonProperty
@@ -148,8 +151,8 @@ enum AvklaringsbehovDefinisjon implements Kodeverdi {
             return null;
         }
         String kode = TempAvledeKode.getVerdi(AvklaringsbehovDefinisjon.class, node, "kode");
-        var ny = KODER_NY.get(kode);
-        var gammel = KODER.get(kode);
+        var ny = KODER.get(kode);
+        var gammel = KODER_GAMMEL.get(kode);
         if (ny == null && gammel == null) {
             throw new IllegalArgumentException("Ukjent BeregningAvklaringsbehovDefinisjon: " + kode);
         }
@@ -157,7 +160,7 @@ enum AvklaringsbehovDefinisjon implements Kodeverdi {
     }
 
     public static Map<String, AvklaringsbehovDefinisjon> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
+        return Collections.unmodifiableMap(KODER_GAMMEL);
     }
 
     public boolean erVentepunkt() {

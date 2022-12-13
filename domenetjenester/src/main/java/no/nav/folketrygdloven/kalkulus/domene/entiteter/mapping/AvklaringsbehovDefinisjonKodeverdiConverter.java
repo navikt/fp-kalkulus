@@ -8,16 +8,13 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 public class AvklaringsbehovDefinisjonKodeverdiConverter implements AttributeConverter<AvklaringsbehovDefinisjon, String> {
     @Override
     public String convertToDatabaseColumn(AvklaringsbehovDefinisjon attribute) {
-        return attribute == null ? null : attribute.getKodeNy();
+        return attribute == null ? null : attribute.getKode();
     }
 
     @Override
     public AvklaringsbehovDefinisjon convertToEntityAttribute(String dbData) {
         if (dbData == null) {
             return null;
-        }
-        if (AvklaringsbehovDefinisjon.KODER.containsKey(dbData)) {
-            return AvklaringsbehovDefinisjon.fraKode(dbData);
         }
         return  AvklaringsbehovDefinisjon.fraKode(dbData);
     }
