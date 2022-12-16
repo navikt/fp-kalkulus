@@ -83,7 +83,7 @@ public class NyttInntektsforholdDto {
         this.arbeidsforholdId = arbeidsforholdId;
     }
 
-    public boolean skalRedusereUtbetaling() {
+    public boolean getSkalRedusereUtbetaling() {
         return skalRedusereUtbetaling;
     }
 
