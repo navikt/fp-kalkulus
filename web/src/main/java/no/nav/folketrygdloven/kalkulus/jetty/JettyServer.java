@@ -48,7 +48,6 @@ import no.nav.k9.felles.sikkerhet.jaspic.OidcAuthModule;
 public class JettyServer {
 
     private static final Environment ENV = Environment.current();
-    private static final Logger log = LoggerFactory.getLogger(JettyServer.class);
     private AppKonfigurasjon appKonfigurasjon;
 
     public JettyServer() {
@@ -109,24 +108,13 @@ public class JettyServer {
 
     protected void konfigurerSikkerhet() {
         var factory = new DefaultAuthConfigFactory();
-        var enabledAzureAd = Boolean.parseBoolean(Environment.current().getProperty("app.auth.schema.azuread.enabled", String.class, "false").replace("\"", ""));
-        var azureAdDomain = Environment.current().getProperty("app.auth.schema.azuread.domain", String.class, "").replace("\"", "");
-        log.info("AzureAD-status :: enabled={}, domain={}", enabledAzureAd, azureAdDomain);
 
-        OidcAuthModule serverAuthModule = enabledAzureAd ? azureAdEnabledAuthModule(azureAdDomain) : new OidcAuthModule();
-
-        factory.registerConfigProvider(new JaspiAuthConfigProvider(serverAuthModule),
+        factory.registerConfigProvider(new JaspiAuthConfigProvider(new OidcAuthModule()),
                 "HttpServlet",
                 "server /ftkalkulus",
                 "OIDC Authentication");
 
         AuthConfigFactory.setFactory(factory);
-    }
-
-    private OidcAuthModule azureAdEnabledAuthModule(String azureAdDomain) {
-        var oidcAuthModule = new OidcAuthModule();
-        oidcAuthModule.enableAzureAd(azureAdDomain);
-        return oidcAuthModule;
     }
 
     protected void migrerDatabaser() throws IOException {
@@ -219,8 +207,8 @@ public class JettyServer {
     @SuppressWarnings("resource")
     protected ResourceCollection createResourceCollection() throws IOException {
         return new ResourceCollection(
-            Resource.newClassPathResource("META-INF/resources/webjars/"),
-            Resource.newClassPathResource("/web"));
+                Resource.newClassPathResource("META-INF/resources/webjars/"),
+                Resource.newClassPathResource("/web"));
     }
 
     /**

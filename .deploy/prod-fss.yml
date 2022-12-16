@@ -77,13 +77,6 @@ spec:
     - name: OIDC_OPENAM_CLIENT_ID
       value: ftkalkulus-p
 
-
-    - name: APP_AUTH_SCHEMA_AZUREAD_ENABLED
-      value: "true"
-    - name: APP_AUTH_SCHEMA_AZUREAD_DOMAIN
-      value: "ftkalkulus.intern.nav.no"
-
-
     - name: ABAC_DOMAIN
       value: "k9"
     - name: ABAC_ATTRIBUTT_DRIFT
