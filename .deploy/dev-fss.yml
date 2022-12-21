@@ -73,10 +73,6 @@ spec:
     #OpenID
     - name: OIDC_STS_HOST_URL
       value: https://security-token-service.nais.preprod.local
-    - name: OIDC_OPENAM_HOST_URL
-      value: https://isso-q.adeo.no:443/isso/oauth2
-    - name: OIDC_OPENAM_CLIENT_ID
-      value: ftkalkulus-q1
 
     - name: ABAC_DOMAIN
       value: "k9"
