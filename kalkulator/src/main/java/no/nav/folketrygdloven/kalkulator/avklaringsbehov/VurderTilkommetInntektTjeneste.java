@@ -85,8 +85,8 @@ public class VurderTilkommetInntektTjeneste {
                 i.getAktivitetStatus(),
                 mapArbeidsgiver(i),
                 InternArbeidsforholdRefDto.ref(i.getArbeidsforholdId()),
-                finnBruttoPrÅr(i, input.getIayGrunnlag()),
-                utledTilkommetFraBrutto(i, p.getPeriode(), input.getYtelsespesifiktGrunnlag()),
+                i.getSkalRedusereUtbetaling() ? finnBruttoPrÅr(i, input.getIayGrunnlag()) : null,
+                i.getSkalRedusereUtbetaling() ? utledTilkommetFraBrutto(i, p.getPeriode(), input.getYtelsespesifiktGrunnlag()) : null,
                 i.getSkalRedusereUtbetaling()
         );
     }
