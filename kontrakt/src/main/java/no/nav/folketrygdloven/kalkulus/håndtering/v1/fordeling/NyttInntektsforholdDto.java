@@ -9,11 +9,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
@@ -37,7 +39,6 @@ public class NyttInntektsforholdDto {
 
     @JsonProperty("bruttoInntektPrÅr")
     @Valid
-    @NotNull
     @Min(0)
     @Max(178956970)
     private Integer bruttoInntektPrÅr;
@@ -49,6 +50,18 @@ public class NyttInntektsforholdDto {
 
 
     public NyttInntektsforholdDto() {
+    }
+
+    public NyttInntektsforholdDto(AktivitetStatus aktivitetStatus,
+                                  String arbeidsgiverIdentifikator,
+                                  String arbeidsforholdId,
+                                  Integer bruttoInntektPrÅr,
+                                  boolean skalRedusereUtbetaling) {
+        this.aktivitetStatus = aktivitetStatus;
+        this.arbeidsgiverIdentifikator = arbeidsgiverIdentifikator;
+        this.arbeidsforholdId = arbeidsforholdId;
+        this.bruttoInntektPrÅr = bruttoInntektPrÅr;
+        this.skalRedusereUtbetaling = skalRedusereUtbetaling;
     }
 
     public AktivitetStatus getAktivitetStatus() {
@@ -91,15 +104,9 @@ public class NyttInntektsforholdDto {
         this.skalRedusereUtbetaling = skalRedusereUtbetaling;
     }
 
-    public NyttInntektsforholdDto(AktivitetStatus aktivitetStatus,
-                                  String arbeidsgiverIdentifikator,
-                                  String arbeidsforholdId,
-                                  Integer bruttoInntektPrÅr,
-                                  boolean skalRedusereUtbetaling) {
-        this.aktivitetStatus = aktivitetStatus;
-        this.arbeidsgiverIdentifikator = arbeidsgiverIdentifikator;
-        this.arbeidsforholdId = arbeidsforholdId;
-        this.bruttoInntektPrÅr = bruttoInntektPrÅr;
-        this.skalRedusereUtbetaling = skalRedusereUtbetaling;
+    @AssertTrue(message = "Brutto må være satt dersom inntekten skal redusere grunnlaget")
+    public boolean isHarBruttoDersomSkalRedusere() {
+        return  !skalRedusereUtbetaling|| bruttoInntektPrÅr != null;
     }
+
 }
