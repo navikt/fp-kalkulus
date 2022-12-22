@@ -91,7 +91,7 @@ class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelGraderingUtbgradTest {
 
 
         InntektsmeldingDto im = InntektsmeldingDtoBuilder.builder()
-                .medBeløp(BigDecimal.TEN).medRefusjon(BigDecimal.TEN)
+                .medBeløp(BigDecimal.valueOf(11)).medRefusjon(BigDecimal.valueOf(11))
                 .medArbeidsgiver(virksomhet)
                 .medStartDatoPermisjon(LocalDate.of(2019, 10, 22)).build();
 

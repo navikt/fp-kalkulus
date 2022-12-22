@@ -43,7 +43,7 @@ public class MapRefusjonskravFraVLTilRegelTest {
         LocalDate endringFom = skjæringstidspunkt.plusMonths(1);
         InntektsmeldingDto inntektsmeldingEntitet = InntektsmeldingDtoBuilder.builder()
                 .medRefusjon(BigDecimal.ZERO)
-                .leggTil(new RefusjonDto(BigDecimal.TEN, endringFom))
+                .leggTil(new RefusjonDto(BigDecimal.valueOf(11), endringFom))
                 .build();
 
         // Act
@@ -60,9 +60,58 @@ public class MapRefusjonskravFraVLTilRegelTest {
         });
         assertThat(resultat).anySatisfy(endring -> {
             assertThat(endring.getPeriode()).isEqualTo(Periode.of(endringFom, null));
-            assertThat(endring.getMånedsbeløp()).isEqualByComparingTo(BigDecimal.TEN);
+            assertThat(endring.getMånedsbeløp()).isEqualByComparingTo(BigDecimal.valueOf(11));
         });
     }
+
+    @Test
+    public void refusjonFraSenereDatoUnderGyldigGrense() {
+        // Arrange
+        LocalDate skjæringstidspunkt = LocalDate.now();
+        LocalDate endringFom = skjæringstidspunkt.plusMonths(1);
+        InntektsmeldingDto inntektsmeldingEntitet = InntektsmeldingDtoBuilder.builder()
+                .medRefusjon(BigDecimal.ZERO)
+                .leggTil(new RefusjonDto(BigDecimal.valueOf(10), endringFom))
+                .build();
+
+        // Act
+        List<Refusjonskrav> resultat = MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(inntektsmeldingEntitet,
+                skjæringstidspunkt,
+                Optional.empty(),
+                List.of(Intervall.fraOgMed(skjæringstidspunkt.minusMonths(12))));
+
+        // Assert
+        assertThat(resultat).hasSize(1);
+        assertThat(resultat).anySatisfy(start -> {
+            assertThat(start.getPeriode()).isEqualTo(Periode.of(skjæringstidspunkt, null));
+            assertThat(start.getMånedsbeløp()).isEqualByComparingTo(BigDecimal.ZERO);
+        });
+    }
+
+
+    @Test
+    public void refusjonFraStpUnderGyldigGrense() {
+        // Arrange
+        LocalDate skjæringstidspunkt = LocalDate.now();
+        InntektsmeldingDto inntektsmeldingEntitet = InntektsmeldingDtoBuilder.builder()
+                .medRefusjon(BigDecimal.TEN)
+                .build();
+
+        // Act
+        List<Refusjonskrav> resultat = MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(inntektsmeldingEntitet,
+                skjæringstidspunkt,
+                Optional.empty(),
+                List.of(Intervall.fraOgMed(skjæringstidspunkt.minusMonths(12))));
+
+        // Assert
+        assertThat(resultat).hasSize(1);
+        assertThat(resultat).anySatisfy(start -> {
+            assertThat(start.getPeriode()).isEqualTo(Periode.of(skjæringstidspunkt, null));
+            assertThat(start.getMånedsbeløp()).isEqualByComparingTo(BigDecimal.ZERO);
+        });
+    }
+
+
 
     @Test
     public void skal_finne_refusjonskrav_på_stp_med_uten_refusjon_fra_start() {
@@ -142,7 +191,7 @@ public class MapRefusjonskravFraVLTilRegelTest {
         InternArbeidsforholdRefDto ref = InternArbeidsforholdRefDto.nyRef();
         LocalDate overstyrtDato = skjæringstidspunkt.plusDays(15);
         InntektsmeldingDto inntektsmeldingEntitet = InntektsmeldingDtoBuilder.builder()
-                .medRefusjon(BigDecimal.TEN)
+                .medRefusjon(BigDecimal.valueOf(11))
                 .medArbeidsgiver(ARBEIDSGIVER1)
                 .medArbeidsforholdId(ref)
                 .build();
@@ -158,7 +207,7 @@ public class MapRefusjonskravFraVLTilRegelTest {
         assertThat(resultat).hasSize(2);
         assertThat(resultat).anySatisfy(start -> {
             assertThat(start.getPeriode()).isEqualTo(Periode.of(overstyrtDato, TIDENES_ENDE));
-            assertThat(start.getMånedsbeløp()).isEqualByComparingTo(BigDecimal.TEN);
+            assertThat(start.getMånedsbeløp()).isEqualByComparingTo(BigDecimal.valueOf(11));
         });
     }
 
@@ -170,7 +219,7 @@ public class MapRefusjonskravFraVLTilRegelTest {
         InternArbeidsforholdRefDto refOverstyring = InternArbeidsforholdRefDto.nyRef();
         LocalDate overstyrtDato = skjæringstidspunkt.plusDays(15);
         InntektsmeldingDto inntektsmeldingEntitet = InntektsmeldingDtoBuilder.builder()
-                .medRefusjon(BigDecimal.TEN)
+                .medRefusjon(BigDecimal.valueOf(11))
                 .medArbeidsgiver(ARBEIDSGIVER1)
                 .medArbeidsforholdId(refIM)
                 .build();
@@ -185,7 +234,7 @@ public class MapRefusjonskravFraVLTilRegelTest {
         assertThat(resultat).hasSize(1);
         assertThat(resultat).anySatisfy(start -> {
             assertThat(start.getPeriode()).isEqualTo(Periode.of(skjæringstidspunkt, TIDENES_ENDE));
-            assertThat(start.getMånedsbeløp()).isEqualByComparingTo(BigDecimal.TEN);
+            assertThat(start.getMånedsbeløp()).isEqualByComparingTo(BigDecimal.valueOf(11));
         });
     }
 
@@ -196,8 +245,8 @@ public class MapRefusjonskravFraVLTilRegelTest {
         LocalDate skjæringstidspunkt = LocalDate.now();
         LocalDate endringFom = skjæringstidspunkt.plusMonths(1);
         InntektsmeldingDto inntektsmeldingEntitet = InntektsmeldingDtoBuilder.builder()
-                .medRefusjon(BigDecimal.ONE)
-                .leggTil(new RefusjonDto(BigDecimal.TEN, endringFom))
+                .medRefusjon(BigDecimal.valueOf(15))
+                .leggTil(new RefusjonDto(BigDecimal.valueOf(11), endringFom))
                 .build();
 
         // Act
@@ -213,7 +262,7 @@ public class MapRefusjonskravFraVLTilRegelTest {
         assertThat(resultat).hasSize(3);
         assertThat(resultat).anySatisfy(start -> {
             assertThat(start.getPeriode()).isEqualTo(Periode.of(skjæringstidspunkt, skjæringstidspunkt.plusWeeks(2)));
-            assertThat(start.getMånedsbeløp()).isEqualByComparingTo(BigDecimal.ONE);
+            assertThat(start.getMånedsbeløp()).isEqualByComparingTo(BigDecimal.valueOf(15));
         });
         assertThat(resultat).anySatisfy(endring -> {
             assertThat(endring.getPeriode()).isEqualTo(Periode.of(skjæringstidspunkt.plusWeeks(2).plusDays(1), skjæringstidspunkt.plusMonths(2).minusDays(1)));
@@ -221,7 +270,7 @@ public class MapRefusjonskravFraVLTilRegelTest {
         });
         assertThat(resultat).anySatisfy(endring -> {
             assertThat(endring.getPeriode()).isEqualTo(Periode.of(skjæringstidspunkt.plusMonths(2), null));
-            assertThat(endring.getMånedsbeløp()).isEqualByComparingTo(BigDecimal.TEN);
+            assertThat(endring.getMånedsbeløp()).isEqualByComparingTo(BigDecimal.valueOf(11));
         });
     }
 

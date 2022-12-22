@@ -35,14 +35,20 @@ import no.nav.fpsak.tidsserie.LocalDateTimeline;
 import no.nav.fpsak.tidsserie.StandardCombinators;
 
 public class MapRefusjonskravFraVLTilRegel {
+
+    /**
+     * Vi utbetaler kun refusjon dersom det utgjør en dagsats på 50 øre eller mer, dvs et årsbeløp på 130 kroner eller månedsbeløp på 10 kroner og 83 øre
+     */
+    public static final BigDecimal MINSTE_UTBETALTE_REFUSJONSKRAV_PR_MÅNED = BigDecimal.valueOf(10.83);
+
     private MapRefusjonskravFraVLTilRegel() {
         // skjul public constructor
     }
 
     public static List<Refusjonskrav> periodiserRefusjonsbeløp(InntektsmeldingDto inntektsmelding,
-                                                        LocalDate startdatoPermisjon,
-                                                        Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer,
-                                                        List<Intervall> gyldigeRefusjonPerioder) {
+                                                               LocalDate startdatoPermisjon,
+                                                               Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer,
+                                                               List<Intervall> gyldigeRefusjonPerioder) {
 
         if (gyldigeRefusjonPerioder.isEmpty()) {
             return Collections.emptyList();
@@ -196,7 +202,12 @@ public class MapRefusjonskravFraVLTilRegel {
             LocalDate fom = entry.getKey();
             LocalDate tom = utledTom(entryList, listIterator);
             BigDecimal refusjonPrMåned = entry.getValue().getVerdi();
-            refusjonskravListe.add(new Refusjonskrav(refusjonPrMåned, fom, tom));
+            // Mapper kun refusjonskrav som fører til utbetaling
+            if (refusjonPrMåned.compareTo(MINSTE_UTBETALTE_REFUSJONSKRAV_PR_MÅNED) > 0) {
+                refusjonskravListe.add(new Refusjonskrav(refusjonPrMåned, fom, tom));
+            } else {
+                refusjonskravListe.add(new Refusjonskrav(BigDecimal.ZERO, fom, tom));
+            }
         }
         return refusjonskravListe;
     }
