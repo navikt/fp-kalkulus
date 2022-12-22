@@ -42,6 +42,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OffentligYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
+import static no.nav.folketrygdloven.kalkulus.kodeverk.Arbeidskategori.SJØMANN;
+
 public class MapTilBesteberegningRegelmodell {
 
     public static BesteberegningRegelmodell map(ForeslåBesteberegningInput input) {
@@ -109,7 +111,7 @@ public class MapTilBesteberegningRegelmodell {
         }
         else {
             return switch (andel.getArbeidskategori()) {
-                case ARBEIDSTAKER, KOMBINASJON_ARBEIDSTAKER_OG_DAGPENGER, FISKER -> YtelseAktivitetType.YTELSE_FOR_ARBEID;
+                case ARBEIDSTAKER, KOMBINASJON_ARBEIDSTAKER_OG_DAGPENGER, FISKER, SJØMANN -> YtelseAktivitetType.YTELSE_FOR_ARBEID;
                 case SELVSTENDIG_NÆRINGSDRIVENDE, JORDBRUKER, DAGMAMMA -> YtelseAktivitetType.YTELSE_FOR_NÆRING;
                 case FRILANSER -> YtelseAktivitetType.YTELSE_FOR_FRILANS;
                 case DAGPENGER, INAKTIV -> YtelseAktivitetType.YTELSE_FOR_DAGPENGER;
