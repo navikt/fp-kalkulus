@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,6 +42,9 @@ public class FordelBeregningsgrunnlagHåndterer {
         for (FordelBeregningsgrunnlagPeriodeDto endretPeriode : dto.getEndretBeregningsgrunnlagPerioder()) {
             fastsettVerdierForPeriode(input, perioder, endretPeriode);
         }
+
+
+
         return grunnlagBuilder.build(BeregningsgrunnlagTilstand.FASTSATT_INN);
     }
 
@@ -53,28 +57,47 @@ public class FordelBeregningsgrunnlagHåndterer {
         BeregningsgrunnlagPeriodeDto.Builder perioderBuilder = BeregningsgrunnlagPeriodeDto.oppdater(korrektPeriode);
         // Må sortere med eksisterende først for å sette andelsnr på disse først
         List<FordelBeregningsgrunnlagAndelDto> sorted = sorterMedNyesteSist(endretPeriode);
+
+        var andelerSomErLagtTilTidligere = korrektPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
+                .filter(a -> a.getKilde().equals(AndelKilde.SAKSBEHANDLER_FORDELING))
+                .collect(Collectors.toList());
+
+        var fordelteAndelsnr = new HashSet<Long>();
         for (FordelBeregningsgrunnlagAndelDto endretAndel : sorted) {
             var builderFraAktivtGrunnlag = perioderBuilder.getBuilderForAndel(endretAndel.getAndelsnr(), !endretAndel.erNyAndel());
             if (builderFraAktivtGrunnlag.isPresent()) {
                 fordel(refusjonMap, perioderBuilder, endretAndel, builderFraAktivtGrunnlag.get(), endretAndel.erNyAndel());
+                fordelteAndelsnr.add(endretAndel.getAndelsnr());
             } else {
                 LOGGER.info("Fant ikke andel med andelsnr + " + endretAndel.getAndelsnr() + " i periode " + korrektPeriode.getPeriode());
                 var builderFraForrigeGrunnlag = lagBuilderFraForrigeGrunnlagEllerNy(input.getForrigeGrunnlagFraHåndteringTilstand(), endretPeriode.getFom(), endretAndel);
-                fordel(refusjonMap, perioderBuilder, endretAndel, builderFraForrigeGrunnlag, true);
+                var nyAndel = fordel(refusjonMap, perioderBuilder, endretAndel, builderFraForrigeGrunnlag, true);
+                fordelteAndelsnr.add(nyAndel.getAndelsnr());
             }
         }
+
+        var andelerSomSkalFjernes = andelerSomErLagtTilTidligere.stream()
+                .filter(a -> !fordelteAndelsnr.contains(a.getAndelsnr()))
+                .collect(Collectors.toList());
+        andelerSomSkalFjernes.forEach(a -> BeregningsgrunnlagPeriodeDto.oppdater(korrektPeriode).fjernBeregningsgrunnlagPrStatusOgAndel(a));
     }
 
-    private static void fordel(Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> refusjonMap,
-                               BeregningsgrunnlagPeriodeDto.Builder perioderBuilder,
-                               FordelBeregningsgrunnlagAndelDto endretAndel,
-                               BeregningsgrunnlagPrStatusOgAndelDto.Builder builderForAndel, boolean skalLeggeTilAndel) {
+    private static BeregningsgrunnlagPrStatusOgAndelDto fordel(Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> refusjonMap,
+                                                               BeregningsgrunnlagPeriodeDto.Builder perioderBuilder,
+                                                               FordelBeregningsgrunnlagAndelDto endretAndel,
+                                                               BeregningsgrunnlagPrStatusOgAndelDto.Builder builderForAndel, boolean skalLeggeTilAndel) {
         fastsettVerdierForAndel(builderForAndel, refusjonMap, endretAndel);
         if (skalLeggeTilAndel) {
             builderForAndel.medAndelsnr(null);
             builderForAndel.medKilde(AndelKilde.SAKSBEHANDLER_FORDELING);
+            builderForAndel.medBeregnetPrÅr(null);
+            builderForAndel.medOverstyrtPrÅr(null);
+            builderForAndel.medBesteberegningPrÅr(null);
+            builderForAndel.medFordeltPrÅr(null);
+            builderForAndel.medInntektskategoriAutomatiskFordeling(null);
             perioderBuilder.leggTilBeregningsgrunnlagPrStatusOgAndel(builderForAndel);
         }
+        return builderForAndel.build();
     }
 
     private static BeregningsgrunnlagPrStatusOgAndelDto.Builder lagBuilderFraForrigeGrunnlagEllerNy(Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlagFraHåndteringTilstand,
