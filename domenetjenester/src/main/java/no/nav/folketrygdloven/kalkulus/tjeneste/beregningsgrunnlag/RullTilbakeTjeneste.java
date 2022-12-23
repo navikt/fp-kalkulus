@@ -6,9 +6,7 @@ import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import no.nav.folketrygdloven.kalkulus.beregning.MapStegTilTilstand;
 import no.nav.folketrygdloven.kalkulus.beregning.MapTilstandTilSteg;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
@@ -41,35 +39,20 @@ public class RullTilbakeTjeneste {
         List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntiteter = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingIder);
         var rullTilbakeListe = finnGrunnlagSomSkalRullesTilbake(beregningsgrunnlagGrunnlagEntiteter, tilstand, skalKjøreSteget);
         if (!rullTilbakeListe.isEmpty()) {
-            rullTilbakeGrunnlag(tilstand, rullTilbakeListe, skalKjøreSteget);
+            rullTilbakeGrunnlag(tilstand, rullTilbakeListe);
         }
         avklaringsbehovTjeneste.avbrytAlleAvklaringsbehovEtterEllerISteg(koblingIder, MapTilstandTilSteg.mapTilSteg(tilstand), skalKjøreSteget);
         forlengelseTjeneste.deaktiverVedTilbakerulling(koblingIder, tilstand);
 
     }
 
-    private void rullTilbakeGrunnlag(BeregningsgrunnlagTilstand tilstand, List<BeregningsgrunnlagGrunnlagEntitet> rullTilbakeListe, boolean skalKjøreSteget) {
+    private void rullTilbakeGrunnlag(BeregningsgrunnlagTilstand tilstand, List<BeregningsgrunnlagGrunnlagEntitet> rullTilbakeListe) {
         Set<Long> rullTilbakeKoblinger = rullTilbakeListe.stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId).collect(Collectors.toSet());
         beregningsgrunnlagRepository.deaktiverBeregningsgrunnlagGrunnlagEntiteter(rullTilbakeListe);
         regelsporingRepository.ryddRegelsporingForTilstand(rullTilbakeKoblinger, tilstand);
         if (BeregningsgrunnlagTilstand.finnFørste().erFør(tilstand)) {
-            if (skalKjøreSteget) {
-                beregningsgrunnlagRepository.reaktiverForrigeGrunnlagForKoblinger(rullTilbakeKoblinger, tilstand);
-            } else {
-                var koblingerMedAvklaringsbehovIStegUt = finnKoblingerMedAvklaringsbehovIStegUt(tilstand, rullTilbakeKoblinger);
-                beregningsgrunnlagRepository.reaktiverSisteMedTilstand(tilstand, koblingerMedAvklaringsbehovIStegUt);
-
-                var koblingerUtenAvklaringsbehovIStegUt = rullTilbakeKoblinger.stream().filter(k -> !koblingerMedAvklaringsbehovIStegUt.contains(k)).collect(Collectors.toSet());
-                beregningsgrunnlagRepository.reaktiverForrigeGrunnlagForKoblinger(koblingerUtenAvklaringsbehovIStegUt, tilstand);
-            }
+            beregningsgrunnlagRepository.reaktiverForrigeGrunnlagForKoblinger(rullTilbakeKoblinger, tilstand);
         }
-    }
-
-    private Set<Long> finnKoblingerMedAvklaringsbehovIStegUt(BeregningsgrunnlagTilstand tilstand, Set<Long> rullTilbakeKoblinger) {
-        return avklaringsbehovTjeneste.hentAlleAvklaringsbehovForKoblinger(rullTilbakeKoblinger).stream()
-                .filter(a -> MapStegTilTilstand.mapTilStegUtTilstand(a.getStegFunnet()).map(tilstand::equals).orElse(false))
-                .map(AvklaringsbehovEntitet::getKoblingId)
-                .collect(Collectors.toSet());
     }
 
     private List<BeregningsgrunnlagGrunnlagEntitet> finnGrunnlagSomSkalRullesTilbake(List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet,

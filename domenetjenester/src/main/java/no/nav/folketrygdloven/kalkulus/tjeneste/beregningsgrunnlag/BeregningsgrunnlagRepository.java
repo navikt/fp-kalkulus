@@ -68,7 +68,7 @@ public class BeregningsgrunnlagRepository {
      * eller ikke.
      * Om revurderingen ikke har grunnlag opprettet i denne tilstanden returneres grunnlaget fra originalbehandlingen for samme tilstand.
      *
-     * @param kobling                    en kobling
+     * @param kobling                  en kobling
      * @param beregningsgrunnlagTilstand steget {@link BeregningsgrunnlagGrunnlagEntitet} er opprettet i
      * @return Hvis det finnes et eller fler BeregningsgrunnlagGrunnlagEntitet som har blitt opprettet i {@code stegOpprettet} returneres den
      * som ble opprettet sist
@@ -479,12 +479,6 @@ public class BeregningsgrunnlagRepository {
         entityManager.flush();
     }
 
-    public void reaktiverSisteMedTilstand(BeregningsgrunnlagTilstand tilstand, Collection<Long> koblingId) {
-        var grunnlagForKobling = hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingId, tilstand, null);
-        endreAktivOgLagre(grunnlagForKobling, true);
-        entityManager.flush();
-    }
-
     /**
      * Reaktiverer grunnlag til forrige tilstand før gjeldende tilstand.
      * <p>
@@ -531,7 +525,7 @@ public class BeregningsgrunnlagRepository {
 
         // Koblinger kan mangle grunnlag med gitt tilstand dersom steget er opprettet etter at koblingen ble behandlet forrige gang
         // Dersom dette skjer ser vi på neste tilstand i loop til alle koblingene er dekket
-        var nesteTilstand = tilstand;
+        var nesteTilstand =  tilstand;
         while (!manglendeKoblinger.isEmpty()) {
             nesteTilstand = BeregningsgrunnlagTilstand.finnNesteTilstand(nesteTilstand).orElseThrow(() -> new IllegalStateException("Kunne ikke finne neste tilstand fordi siste tilstand er nådd"));
             sisteGrunnlagFraTilstand = hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(manglendeKoblinger,
