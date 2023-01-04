@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.hibernate.annotations.BatchSize;
 
@@ -98,14 +97,14 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
     public List<BeregningsgrunnlagAktivitetStatus> getAktivitetStatuser() {
         return aktivitetStatuser.stream()
                 .sorted(Comparator.comparing(BeregningsgrunnlagAktivitetStatus::getAktivitetStatus))
-                .collect(Collectors.toUnmodifiableList());
+                .toList();
     }
 
     public List<BeregningsgrunnlagPeriode> getBeregningsgrunnlagPerioder() {
         return beregningsgrunnlagPerioder
                 .stream()
                 .sorted(Comparator.comparing(BeregningsgrunnlagPeriode::getBeregningsgrunnlagPeriodeFom))
-                .collect(Collectors.toUnmodifiableList());
+                .toList();
     }
 
     public Optional<Sammenligningsgrunnlag> getSammenligningsgrunnlag() {
@@ -143,7 +142,7 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
                 .stream()
                 .sorted(Comparator.comparing(BeregningsgrunnlagFaktaOmBeregningTilfelle::getFaktaOmBeregningTilfelle))
                 .map(BeregningsgrunnlagFaktaOmBeregningTilfelle::getFaktaOmBeregningTilfelle)
-                .collect(Collectors.toUnmodifiableList());
+                .toList();
     }
 
 
@@ -159,7 +158,7 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
     public List<SammenligningsgrunnlagPrStatus> getSammenligningsgrunnlagPrStatusListe() {
         return sammenligningsgrunnlagPrStatusListe.stream()
                 .sorted(Comparator.comparing(SammenligningsgrunnlagPrStatus::getSammenligningsgrunnlagType))
-                .collect(Collectors.toUnmodifiableList());
+                .toList();
     }
 
     void leggTilSammenligningsgrunnlagPrStatus(SammenligningsgrunnlagPrStatus sammenligningsgrunnlagPrStatus) {

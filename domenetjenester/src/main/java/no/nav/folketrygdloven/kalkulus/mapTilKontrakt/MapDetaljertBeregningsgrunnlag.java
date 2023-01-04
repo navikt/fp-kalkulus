@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.mapTilKontrakt;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,6 +26,7 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
+import no.nav.folketrygdloven.kalkulus.mapFraEntitet.SammenligningTypeMapper;
 import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BGAndelArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningAktivitetAggregatDto;
@@ -161,8 +163,14 @@ public class MapDetaljertBeregningsgrunnlag {
     }
 
     private static List<SammenligningsgrunnlagPrStatusDto> mapSammenligningsgrunnlagPrStatusListe(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
-        if (beregningsgrunnlagEntitet.getSammenligningsgrunnlagPrStatusListe() == null) {
-            return null;
+        if (beregningsgrunnlagEntitet.getSammenligningsgrunnlagPrStatusListe().isEmpty() && beregningsgrunnlagEntitet.getSammenligningsgrunnlag().isPresent()) {
+            // Mapper gammel sammenligningsgrunnlag over til nytt frem til vi har migrert
+            var gammeltSG = beregningsgrunnlagEntitet.getSammenligningsgrunnlag().get();
+            return Collections.singletonList(new SammenligningsgrunnlagPrStatusDto(
+                    new Periode(gammeltSG.getSammenligningsperiodeFom(), gammeltSG.getSammenligningsperiodeTom()),
+                    SammenligningTypeMapper.finnSammenligningtypeFraAktivitetstatus(beregningsgrunnlagEntitet),
+                    mapFraBeløp(gammeltSG.getRapportertPrÅr()),
+                    gammeltSG.getAvvikPromilleNy().getVerdi()));
         }
         return beregningsgrunnlagEntitet.getSammenligningsgrunnlagPrStatusListe().stream().map(MapDetaljertBeregningsgrunnlag::mapSammeligningsgrunnlagPrStatus)
                 .collect(Collectors.toList());
