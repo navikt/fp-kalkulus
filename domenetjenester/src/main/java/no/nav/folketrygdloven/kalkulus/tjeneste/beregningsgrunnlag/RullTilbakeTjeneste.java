@@ -39,24 +39,24 @@ public class RullTilbakeTjeneste {
         List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntiteter = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingIder);
         var rullTilbakeListe = finnGrunnlagSomSkalRullesTilbake(beregningsgrunnlagGrunnlagEntiteter, tilstand, skalKjøreSteget);
         if (!rullTilbakeListe.isEmpty()) {
-            rullTilbakeGrunnlag(tilstand, rullTilbakeListe, skalKjøreSteget);
+            rullTilbakeGrunnlag(tilstand, rullTilbakeListe);
         }
         avklaringsbehovTjeneste.avbrytAlleAvklaringsbehovEtterEllerISteg(koblingIder, MapTilstandTilSteg.mapTilSteg(tilstand), skalKjøreSteget);
         forlengelseTjeneste.deaktiverVedTilbakerulling(koblingIder, tilstand);
 
     }
 
-    private void rullTilbakeGrunnlag(BeregningsgrunnlagTilstand tilstand, List<BeregningsgrunnlagGrunnlagEntitet> rullTilbakeListe, boolean skalKjøreSteget) {
+    private void rullTilbakeGrunnlag(BeregningsgrunnlagTilstand tilstand, List<BeregningsgrunnlagGrunnlagEntitet> rullTilbakeListe) {
         Set<Long> rullTilbakeKoblinger = rullTilbakeListe.stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId).collect(Collectors.toSet());
         beregningsgrunnlagRepository.deaktiverBeregningsgrunnlagGrunnlagEntiteter(rullTilbakeListe);
         regelsporingRepository.ryddRegelsporingForTilstand(rullTilbakeKoblinger, tilstand);
         var rullTilbake = finnRullTilbakeBeregningsgrunnlagTjeneste(tilstand);
-        rullTilbake.rullTilbakeGrunnlag(tilstand, rullTilbakeKoblinger, skalKjøreSteget);
+        rullTilbake.rullTilbakeGrunnlag(tilstand, rullTilbakeKoblinger);
     }
 
     private RullTilbakeBeregningsgrunnlag finnRullTilbakeBeregningsgrunnlagTjeneste(BeregningsgrunnlagTilstand tilstand) {
-        if (tilstand.equals(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING)) {
-            return new RullTilbakeTilFordel(beregningsgrunnlagRepository, avklaringsbehovTjeneste);
+        if (tilstand.equals(BeregningsgrunnlagTilstand.FASTSATT_INN)) {
+            return new RullTilbakeTilFastsattInn(beregningsgrunnlagRepository, avklaringsbehovTjeneste);
         } else {
             return new RullTilbakeBeregningsgrunnlagFelles(beregningsgrunnlagRepository);
         }

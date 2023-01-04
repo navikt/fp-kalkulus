@@ -13,7 +13,7 @@ class RullTilbakeBeregningsgrunnlagFelles implements RullTilbakeBeregningsgrunnl
     }
 
     @Override
-    public void rullTilbakeGrunnlag(BeregningsgrunnlagTilstand tilstand, Set<Long> rullTilbakeKoblinger, boolean skalKjøreSteget) {
+    public void rullTilbakeGrunnlag(BeregningsgrunnlagTilstand tilstand, Set<Long> rullTilbakeKoblinger) {
         if (BeregningsgrunnlagTilstand.finnFørste().erFør(tilstand)) {
                 beregningsgrunnlagRepository.reaktiverForrigeGrunnlagForKoblinger(rullTilbakeKoblinger, tilstand);
         }

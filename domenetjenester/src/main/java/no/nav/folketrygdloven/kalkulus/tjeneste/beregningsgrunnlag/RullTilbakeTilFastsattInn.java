@@ -9,28 +9,24 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 
 
-class RullTilbakeTilFordel implements RullTilbakeBeregningsgrunnlag {
+class RullTilbakeTilFastsattInn implements RullTilbakeBeregningsgrunnlag {
 
     private final BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private final AvklaringsbehovTjeneste avklaringsbehovTjeneste;
 
 
-    public RullTilbakeTilFordel(BeregningsgrunnlagRepository beregningsgrunnlagRepository, AvklaringsbehovTjeneste avklaringsbehovTjeneste) {
+    public RullTilbakeTilFastsattInn(BeregningsgrunnlagRepository beregningsgrunnlagRepository, AvklaringsbehovTjeneste avklaringsbehovTjeneste) {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.avklaringsbehovTjeneste = avklaringsbehovTjeneste;
     }
 
     @Override
-    public void rullTilbakeGrunnlag(BeregningsgrunnlagTilstand tilstand, Set<Long> rullTilbakeKoblinger, boolean skalKjøreSteget) {
-        if (skalKjøreSteget) {
-            beregningsgrunnlagRepository.reaktiverForrigeGrunnlagForKoblinger(rullTilbakeKoblinger, tilstand);
-        } else {
+    public void rullTilbakeGrunnlag(BeregningsgrunnlagTilstand tilstand, Set<Long> rullTilbakeKoblinger) {
             var koblingerMedAvklaringsbehovIStegUt = finnKoblingerMedAvklaringsbehovIStegUt(tilstand, rullTilbakeKoblinger);
             beregningsgrunnlagRepository.reaktiverSisteMedTilstand(tilstand, koblingerMedAvklaringsbehovIStegUt);
 
             var koblingerUtenAvklaringsbehovIStegUt = rullTilbakeKoblinger.stream().filter(k -> !koblingerMedAvklaringsbehovIStegUt.contains(k)).collect(Collectors.toSet());
             beregningsgrunnlagRepository.reaktiverForrigeGrunnlagForKoblinger(koblingerUtenAvklaringsbehovIStegUt, tilstand);
-        }
     }
 
 
