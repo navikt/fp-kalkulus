@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
@@ -66,6 +67,30 @@ public class TilkommetInntektDto {
 
     public boolean skalRedusereUtbetaling() {
         return skalRedusereUtbetaling;
+    }
+
+    public boolean matcher(TilkommetInntektDto annet) {
+        return this.aktivitetStatus.equals(annet.getAktivitetStatus()) &&
+                Objects.equals(this.arbeidsgiver, annet.arbeidsgiver) &
+                        Objects.equals(this.arbeidsforholdRef, annet.arbeidsforholdRef);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TilkommetInntektDto that = (TilkommetInntektDto) o;
+        return skalRedusereUtbetaling == that.skalRedusereUtbetaling &&
+                aktivitetStatus == that.aktivitetStatus &&
+                Objects.equals(arbeidsgiver, that.arbeidsgiver) &&
+                Objects.equals(arbeidsforholdRef, that.arbeidsforholdRef) &&
+                Objects.equals(bruttoInntektPrÅr, that.bruttoInntektPrÅr) &&
+                Objects.equals(tilkommetInntektPrÅr, that.tilkommetInntektPrÅr);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(aktivitetStatus, arbeidsgiver, arbeidsforholdRef, bruttoInntektPrÅr, tilkommetInntektPrÅr, skalRedusereUtbetaling);
     }
 
     @Override

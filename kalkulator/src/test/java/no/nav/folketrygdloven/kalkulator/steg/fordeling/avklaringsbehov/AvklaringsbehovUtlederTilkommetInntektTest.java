@@ -89,7 +89,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
     }
 
     @Test
-    void skal_ikke_finne_tilkommet_andel_i_helg() {
+    void skal_ikke_finne_tilkommet_andel_dersom_det_ikke_er_søkt_utbetalign_for_noen_aktiviteter() {
 
         var arbeidsgiver = Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR);
         var arbeidstakerandelFraStart = lagArbeidstakerandel(arbeidsgiver, 1L, AndelKilde.PROSESS_START, InternArbeidsforholdRefDto.nullRef());
@@ -100,7 +100,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
         var yrkesaktivitet = lagYrkesaktivitet(arbeidsgiver, STP.minusMonths(10), STP.plusDays(15), InternArbeidsforholdRefDto.nullRef());
         var nyYrkesaktivitet = lagYrkesaktivitet(arbeidsgiver2, STP.plusDays(1), STP.plusDays(20), InternArbeidsforholdRefDto.nullRef());
 
-        var utbetalingsgradFraStart = new UtbetalingsgradPrAktivitetDto(lagAktivitet(arbeidsgiver, InternArbeidsforholdRefDto.nullRef()), lagUtbetalingsgrader(100, STP, STP.plusDays(20)));
+        var utbetalingsgradFraStart = new UtbetalingsgradPrAktivitetDto(lagAktivitet(arbeidsgiver, InternArbeidsforholdRefDto.nullRef()), lagUtbetalingsgrader(0, STP.plusDays(2), STP.plusDays(3)));
         var utbetalingsgradNyAndel = new UtbetalingsgradPrAktivitetDto(lagAktivitet(arbeidsgiver2, InternArbeidsforholdRefDto.nullRef()),
                 List.of(lagPeriodeMedUtbetalingsgrad(50, STP.plusDays(1), STP.plusDays(1)),
                         lagPeriodeMedUtbetalingsgrad(50, STP.plusDays(4), STP.plusDays(20))));

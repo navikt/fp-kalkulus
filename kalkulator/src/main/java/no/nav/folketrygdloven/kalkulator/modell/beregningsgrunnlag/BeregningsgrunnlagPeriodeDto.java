@@ -215,6 +215,8 @@ public class BeregningsgrunnlagPeriodeDto {
 
         public Builder leggTilTilkommetInntekt(TilkommetInntektDto tilkommetInntektDto) {
             verifiserKanModifisere();
+            var eksisterende = kladd.tilkomneInntekter.stream().filter(tilkommetInntektDto::matcher).findFirst();
+            eksisterende.ifPresent(kladd.tilkomneInntekter::remove);
             kladd.tilkomneInntekter.add(tilkommetInntektDto);
             return this;
         }

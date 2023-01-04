@@ -16,10 +16,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste;
+import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -78,7 +80,11 @@ public class TilkommetInntektsforholdTjeneste {
                                                                                         YtelsespesifiktGrunnlag utbetalingsgradGrunnlag,
                                                                                         LinkedHashSet<StatusOgArbeidsgiver> eksisterendeInntektsforhold) {
 
-        if (periode.erHelg()) {
+        var utbetalinger = (UtbetalingsgradGrunnlag) utbetalingsgradGrunnlag;
+        var harUtbetalingIPeriode = utbetalinger.getUtbetalingsgradPrAktivitet().stream()
+                .flatMap(a -> a.getPeriodeMedUtbetalingsgrad().stream())
+                .anyMatch(p -> p.getPeriode().overlapper(periode) && p.getUtbetalingsgrad().compareTo(BigDecimal.ZERO) > 0);
+        if (!harUtbetalingIPeriode) {
             return Collections.emptySet();
         }
         var aktiviteterVedStart = andeler.stream()

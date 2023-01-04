@@ -128,8 +128,8 @@ public class TilkommetInntekt extends BaseEntitet {
         return aktivitetStatus == that.aktivitetStatus &&
                 Objects.equals(arbeidsgiver, that.arbeidsgiver) &&
                 Objects.equals(arbeidsforholdRef, that.arbeidsforholdRef) &&
-                bruttoInntektPrÅr.equals(that.bruttoInntektPrÅr) &&
-                tilkommetInntektPrÅr.equals(that.tilkommetInntektPrÅr) &&
+                Objects.equals(bruttoInntektPrÅr, that.bruttoInntektPrÅr) &&
+                Objects.equals(tilkommetInntektPrÅr, that.tilkommetInntektPrÅr) &&
                 skalRedusereUtbetaling == that.skalRedusereUtbetaling;
     }
 
