@@ -39,19 +39,26 @@ public class RullTilbakeTjeneste {
         List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntiteter = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingIder);
         var rullTilbakeListe = finnGrunnlagSomSkalRullesTilbake(beregningsgrunnlagGrunnlagEntiteter, tilstand, skalKjøreSteget);
         if (!rullTilbakeListe.isEmpty()) {
-            rullTilbakeGrunnlag(tilstand, rullTilbakeListe);
+            rullTilbakeGrunnlag(tilstand, rullTilbakeListe, skalKjøreSteget);
         }
         avklaringsbehovTjeneste.avbrytAlleAvklaringsbehovEtterEllerISteg(koblingIder, MapTilstandTilSteg.mapTilSteg(tilstand), skalKjøreSteget);
         forlengelseTjeneste.deaktiverVedTilbakerulling(koblingIder, tilstand);
 
     }
 
-    private void rullTilbakeGrunnlag(BeregningsgrunnlagTilstand tilstand, List<BeregningsgrunnlagGrunnlagEntitet> rullTilbakeListe) {
+    private void rullTilbakeGrunnlag(BeregningsgrunnlagTilstand tilstand, List<BeregningsgrunnlagGrunnlagEntitet> rullTilbakeListe, boolean skalKjøreSteget) {
         Set<Long> rullTilbakeKoblinger = rullTilbakeListe.stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId).collect(Collectors.toSet());
         beregningsgrunnlagRepository.deaktiverBeregningsgrunnlagGrunnlagEntiteter(rullTilbakeListe);
         regelsporingRepository.ryddRegelsporingForTilstand(rullTilbakeKoblinger, tilstand);
-        if (BeregningsgrunnlagTilstand.finnFørste().erFør(tilstand)) {
-            beregningsgrunnlagRepository.reaktiverForrigeGrunnlagForKoblinger(rullTilbakeKoblinger, tilstand);
+        var rullTilbake = finnRullTilbakeBeregningsgrunnlagTjeneste(tilstand);
+        rullTilbake.rullTilbakeGrunnlag(tilstand, rullTilbakeKoblinger, skalKjøreSteget);
+    }
+
+    private RullTilbakeBeregningsgrunnlag finnRullTilbakeBeregningsgrunnlagTjeneste(BeregningsgrunnlagTilstand tilstand) {
+        if (tilstand.equals(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING)) {
+            return new RullTilbakeTilFordel(beregningsgrunnlagRepository, avklaringsbehovTjeneste);
+        } else {
+            return new RullTilbakeBeregningsgrunnlagFelles(beregningsgrunnlagRepository);
         }
     }
 
