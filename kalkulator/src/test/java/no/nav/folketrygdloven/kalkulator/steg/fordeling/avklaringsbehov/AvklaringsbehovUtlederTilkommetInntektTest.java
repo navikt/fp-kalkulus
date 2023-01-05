@@ -370,6 +370,30 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
     }
 
     @Test
+    void skal_finne_tilkommet_næring_dersom_en_arbeidstakerandel_fra_start_med_overlapp_til_næring() {
+
+        var arbeidsgiver = Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR);
+        var arbeidstakerandelFraStart = lagArbeidstakerandel(arbeidsgiver, 1L, AndelKilde.PROSESS_START, InternArbeidsforholdRefDto.nullRef());
+        var yrkesaktivitet = lagYrkesaktivitet(arbeidsgiver, STP.minusMonths(10), STP.plusDays(15), InternArbeidsforholdRefDto.nullRef());
+        var utbetalingsgradFraStart = new UtbetalingsgradPrAktivitetDto(lagAktivitet(arbeidsgiver, InternArbeidsforholdRefDto.nullRef()), lagUtbetalingsgrader(100, STP, STP.plusDays(20)));
+
+        var nyAndel = lagNæringsandel(2L, AndelKilde.PROSESS_PERIODISERING);
+        var utbetalingsgradNyAndel = new UtbetalingsgradPrAktivitetDto(lagNæringsAktivitet(), lagUtbetalingsgrader(50, STP.plusDays(10), STP.plusDays(20)));
+
+        var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(10), STP.plusDays(15));
+
+        var tilkommetAktivitet = TilkommetInntektsforholdTjeneste.finnTilkomneInntektsforhold(
+                STP,
+                List.of(yrkesaktivitet),
+                List.of(arbeidstakerandelFraStart, nyAndel),
+                periode,
+                new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel)));
+
+        assertThat(tilkommetAktivitet.size()).isEqualTo(1);
+        assertThat(tilkommetAktivitet.iterator().next().aktivitetStatus()).isEqualTo(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+    }
+
+    @Test
     void skal_finne_tilkommet_andel_dersom_en_dagpengeandel_fra_start_og_direkte_overgang_til_arbeid() {
 
         var frilansandelFraStart = lagDagpengeAndel(1L, AndelKilde.PROSESS_START);
@@ -413,6 +437,16 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
                 .medAktivitetStatus(AktivitetStatus.FRILANSER)
                 .build();
     }
+
+
+    private BeregningsgrunnlagPrStatusOgAndelDto lagNæringsandel(long andelsnr, AndelKilde kilde) {
+        return BeregningsgrunnlagPrStatusOgAndelDto.ny()
+                .medAndelsnr(andelsnr)
+                .medKilde(kilde)
+                .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
+                .build();
+    }
+
 
     private BeregningsgrunnlagPrStatusOgAndelDto lagDagpengeAndel(long andelsnr, AndelKilde kilde) {
         return BeregningsgrunnlagPrStatusOgAndelDto.ny()
@@ -461,6 +495,11 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
     private AktivitetDto lagFrilansAktivitet() {
         return new AktivitetDto(null, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.FRILANS);
     }
+
+    private AktivitetDto lagNæringsAktivitet() {
+        return new AktivitetDto(null, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE);
+    }
+
 
     private AktivitetDto lagDagpengeAktivitet() {
         return new AktivitetDto(null, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.DAGPENGER);
