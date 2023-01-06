@@ -92,6 +92,50 @@ class VurderTilkommetInntektTjenesteTest {
 
     }
 
+    @Test
+    void skal_sette_verdier_for_vurdert_næring() {
+        // Arrange
+        var arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
+        var arbeidstakerandelFraStart = lagArbeidstakerandel(arbeidsgiver, 1L, AndelKilde.PROSESS_START, InternArbeidsforholdRefDto.nullRef());
+
+        var nyAndel = lagNæringsandel(2L, AndelKilde.PROSESS_PERIODISERING);
+
+        var yrkesaktivitet = lagYrkesaktivitet(arbeidsgiver, STP.minusMonths(10), STP.plusDays(15), InternArbeidsforholdRefDto.nullRef());
+
+        var utbetalingsgradFraStart = new UtbetalingsgradPrAktivitetDto(lagAktivitet(arbeidsgiver, InternArbeidsforholdRefDto.nullRef()), lagUtbetalingsgrader(100, STP, STP.plusDays(20)));
+        var utbetalingsgradNyAndel = new UtbetalingsgradPrAktivitetDto(new AktivitetDto(null, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE), lagUtbetalingsgrader(50, STP.plusDays(10), STP.plusDays(20)));
+
+        var yrkesaktiviteter = List.of(yrkesaktivitet);
+        var utbetalingsgrader = List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel);
+        var andeler = List.of(arbeidstakerandelFraStart, nyAndel);
+
+        var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(10), STP.plusDays(15));
+
+        var vurderteInntektsforhold = List.of(new NyttInntektsforholdDto(
+                AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE,
+                null, null, 100_000, true));
+
+        var vudertPeride = new VurderTilkomneInntektsforholdPeriodeDto(vurderteInntektsforhold, periode.getFomDato(), periode.getTomDato());
+
+        VurderTilkommetInntektHåndteringDto dto = new VurderTilkommetInntektHåndteringDto(List.of(vudertPeride));
+
+        BeregningsgrunnlagInput input = lagInput(periode, yrkesaktiviteter, utbetalingsgrader, andeler);
+
+        // Act
+        var nyttGr = VurderTilkommetInntektTjeneste.løsAvklaringsbehov(dto, new HåndterBeregningsgrunnlagInput(input, BeregningsgrunnlagTilstand.FASTSATT_INN));
+
+        var tilkomneInntekter = nyttGr.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0)
+                .getTilkomneInntekter();
+
+        // Assert
+        assertThat(tilkomneInntekter.size()).isEqualTo(1);
+        assertThat(tilkomneInntekter.get(0).getArbeidsgiver()).isEmpty();
+        assertThat(tilkomneInntekter.get(0).getAktivitetStatus()).isEqualTo(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+        assertThat(tilkomneInntekter.get(0).getBruttoInntektPrÅr().compareTo(BigDecimal.valueOf(100_000))).isEqualTo(0);
+
+
+    }
+
     private BeregningsgrunnlagInput lagInput(Intervall periode, List<YrkesaktivitetDto> yrkesaktiviteter, List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader, List<BeregningsgrunnlagPrStatusOgAndelDto> andeler) {
         var input = new BeregningsgrunnlagInput(
                 new KoblingReferanseMock(STP),
@@ -125,11 +169,11 @@ class VurderTilkommetInntektTjenesteTest {
         periodeBuilder.medBeregningsgrunnlagPeriode(fom, tom);
         andeler.forEach(periodeBuilder::leggTilBeregningsgrunnlagPrStatusOgAndel);
         return BeregningsgrunnlagGrunnlagDtoBuilder.nytt()
-                        .medBeregningsgrunnlag(BeregningsgrunnlagDto.builder()
-                                .leggTilBeregningsgrunnlagPeriode(periodeBuilder)
-                                .medSkjæringstidspunkt(fom)
-                                .medGrunnbeløp(BigDecimal.valueOf(100_000))
-                                .build())
+                .medBeregningsgrunnlag(BeregningsgrunnlagDto.builder()
+                        .leggTilBeregningsgrunnlagPeriode(periodeBuilder)
+                        .medSkjæringstidspunkt(fom)
+                        .medGrunnbeløp(BigDecimal.valueOf(100_000))
+                        .build())
                 .build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
     }
 
@@ -139,6 +183,14 @@ class VurderTilkommetInntektTjenesteTest {
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver2).medArbeidsforholdRef(arbeidsforholdRef))
                 .medKilde(kilde)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .build();
+    }
+
+    private BeregningsgrunnlagPrStatusOgAndelDto lagNæringsandel(long andelsnr, AndelKilde kilde) {
+        return BeregningsgrunnlagPrStatusOgAndelDto.ny()
+                .medAndelsnr(andelsnr)
+                .medKilde(kilde)
+                .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
                 .build();
     }
 

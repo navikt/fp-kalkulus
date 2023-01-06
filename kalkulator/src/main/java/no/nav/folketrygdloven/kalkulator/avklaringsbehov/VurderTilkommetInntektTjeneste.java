@@ -77,7 +77,7 @@ public class VurderTilkommetInntektTjeneste {
     private static boolean skalVurderesForPeriode(Collection<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver> vurderInntektsforhold, NyttInntektsforholdDto i) {
         return vurderInntektsforhold.stream().anyMatch(v ->
                 v.aktivitetStatus().equals(i.getAktivitetStatus()) &&
-                        v.arbeidsgiver().getIdentifikator().equals(i.getArbeidsgiverIdentifikator()));
+                        (v.arbeidsgiver() == null && i.getArbeidsgiverIdentifikator() == null || v.arbeidsgiver() != null &&  v.arbeidsgiver().getIdentifikator().equals(i.getArbeidsgiverIdentifikator())));
     }
 
     private static TilkommetInntektDto mapTilkommetInntekt(HåndterBeregningsgrunnlagInput input, BeregningsgrunnlagPeriodeDto p, NyttInntektsforholdDto i) {
