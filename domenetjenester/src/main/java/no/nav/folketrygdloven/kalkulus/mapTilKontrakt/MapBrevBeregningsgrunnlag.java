@@ -4,6 +4,7 @@ import static no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapDetaljertBeregni
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,16 +17,19 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatus;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.mapFraEntitet.SammenligningTypeMapper;
 import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.brev.BGAndelArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.brev.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.brev.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.brev.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.brev.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.SammenligningsgrunnlagPrStatusDto;
 
 public class MapBrevBeregningsgrunnlag {
 
@@ -45,7 +49,30 @@ public class MapBrevBeregningsgrunnlag {
                 mapAktivitetstatuser(beregningsgrunnlagEntitet),
                 mapBeregningsgrunnlagPerioder(beregningsgrunnlagEntitet, ytelsespesifiktGrunnlag),
                 mapSammenligningsgrunnlag(beregningsgrunnlagEntitet),
+                mapSammenligningsgrunnlagPrStatusListe(beregningsgrunnlagEntitet),
                 beregningsgrunnlagEntitet.getGrunnbeløp() == null ? null : beregningsgrunnlagEntitet.getGrunnbeløp().getVerdi());
+    }
+
+    private static List<SammenligningsgrunnlagPrStatusDto> mapSammenligningsgrunnlagPrStatusListe(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
+        if (beregningsgrunnlagEntitet.getSammenligningsgrunnlagPrStatusListe().isEmpty() && beregningsgrunnlagEntitet.getSammenligningsgrunnlag().isPresent()) {
+            // Mapper gammel sammenligningsgrunnlag over til nytt frem til vi har migrert
+            var gammeltSG = beregningsgrunnlagEntitet.getSammenligningsgrunnlag().get();
+            return Collections.singletonList(new SammenligningsgrunnlagPrStatusDto(
+                    new Periode(gammeltSG.getSammenligningsperiodeFom(), gammeltSG.getSammenligningsperiodeTom()),
+                    SammenligningTypeMapper.finnSammenligningtypeFraAktivitetstatus(beregningsgrunnlagEntitet),
+                    mapFraBeløp(gammeltSG.getRapportertPrÅr()),
+                    gammeltSG.getAvvikPromilleNy().getVerdi()));
+        }
+        return beregningsgrunnlagEntitet.getSammenligningsgrunnlagPrStatusListe().stream().map(MapBrevBeregningsgrunnlag::mapSammeligningsgrunnlagPrStatus)
+                .collect(Collectors.toList());
+    }
+
+    private static SammenligningsgrunnlagPrStatusDto mapSammeligningsgrunnlagPrStatus(SammenligningsgrunnlagPrStatus sammenligningsgrunnlagPrStatus) {
+        return new SammenligningsgrunnlagPrStatusDto(
+                new Periode(sammenligningsgrunnlagPrStatus.getSammenligningsperiodeFom(), sammenligningsgrunnlagPrStatus.getSammenligningsperiodeTom()),
+                sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType(),
+                mapFraBeløp(sammenligningsgrunnlagPrStatus.getRapportertPrÅr()),
+                sammenligningsgrunnlagPrStatus.getGjeldendeAvvik().getVerdi());
     }
 
     private static List<BeregningsgrunnlagPeriodeDto> mapBeregningsgrunnlagPerioder(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
