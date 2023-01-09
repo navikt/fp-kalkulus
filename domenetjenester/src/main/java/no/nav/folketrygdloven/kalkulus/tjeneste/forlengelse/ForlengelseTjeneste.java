@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulus.tjeneste.forlengelse;
 import static java.lang.Boolean.TRUE;
 import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
 
+import java.time.DayOfWeek;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kopiering.BeregningsgrunnlagDiffSjekker;
 import no.nav.folketrygdloven.kalkulus.kopiering.SpolFramoverTjeneste;
 import no.nav.folketrygdloven.kalkulus.request.v1.BeregnForRequest;
+import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
@@ -167,12 +169,22 @@ public class ForlengelseTjeneste {
         }
         LocalDateTimeline<Boolean> noDiffTimeline = finnTidslinjeUtenDifferanse(nyttBg, forrigeBg);
         LocalDateTimeline<Boolean> førForlengelseTimeline = finnTidslinjeFørForlengelse(nyttBg, forlengelseperioder);
-        var disjoint = førForlengelseTimeline.disjoint(noDiffTimeline);
-        boolean harDiffUtenforForlengelse = !disjoint.isEmpty();
-        if (harDiffUtenforForlengelse) {
-            logger.info("Perioder med diff:" + disjoint.toSegments().stream().map(LocalDateSegment::getLocalDateInterval).toList());
+        var tidslinjeMedDiff = førForlengelseTimeline.disjoint(noDiffTimeline);
+        boolean harDiffUtenforForlengelse = !tidslinjeMedDiff.isEmpty();
+        if (harDiffUtenforForlengelse && !erKunHelg(tidslinjeMedDiff)) {
+            logger.info("Perioder med diff:" + tidslinjeMedDiff.toSegments().stream().map(LocalDateSegment::getLocalDateInterval).toList());
             throw new IllegalStateException("Fant differanse i beregnet grunnlag utenfor oppgitt periode for forlengelse. Forlengelseperioder: " + forlengelseperioder);
         }
+    }
+
+    private boolean erKunHelg(LocalDateTimeline<Boolean> tidslinjeMedDiff) {
+        return tidslinjeMedDiff.getLocalDateIntervals().stream().allMatch(this::erHelg);
+    }
+
+    private boolean erHelg(LocalDateInterval p) {
+        return (p.getFomDato().getDayOfWeek().equals(DayOfWeek.SATURDAY) || p.getFomDato().getDayOfWeek().equals(DayOfWeek.SUNDAY)) &&
+                (p.getTomDato().getDayOfWeek().equals(DayOfWeek.SATURDAY) || p.getTomDato().getDayOfWeek().equals(DayOfWeek.SUNDAY)) &&
+                p.days() <= 2;
     }
 
     private LocalDateTimeline<Boolean> finnTidslinjeFørForlengelse(BeregningsgrunnlagDto nyttBg, List<Intervall> forlengelseperioder) {
