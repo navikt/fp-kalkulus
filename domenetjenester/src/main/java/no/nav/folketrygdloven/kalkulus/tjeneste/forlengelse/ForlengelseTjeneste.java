@@ -169,7 +169,7 @@ public class ForlengelseTjeneste {
         LocalDateTimeline<Boolean> førForlengelseTimeline = finnTidslinjeFørForlengelse(nyttBg, forlengelseperioder);
         boolean harDiffUtenforForlengelse = !førForlengelseTimeline.disjoint(noDiffTimeline).isEmpty();
         if (harDiffUtenforForlengelse) {
-            throw new IllegalStateException("Fant differanse i beregnet grunnlag utenfor oppgitt periode for forlengelse.");
+            throw new IllegalStateException("Fant differanse i beregnet grunnlag utenfor oppgitt periode for forlengelse. Forlengelseperioder: " + forlengelseperioder);
         }
     }
 
