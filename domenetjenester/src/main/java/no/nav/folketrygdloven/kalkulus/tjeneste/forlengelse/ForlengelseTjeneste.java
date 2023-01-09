@@ -167,8 +167,10 @@ public class ForlengelseTjeneste {
         }
         LocalDateTimeline<Boolean> noDiffTimeline = finnTidslinjeUtenDifferanse(nyttBg, forrigeBg);
         LocalDateTimeline<Boolean> førForlengelseTimeline = finnTidslinjeFørForlengelse(nyttBg, forlengelseperioder);
-        boolean harDiffUtenforForlengelse = !førForlengelseTimeline.disjoint(noDiffTimeline).isEmpty();
+        var disjoint = førForlengelseTimeline.disjoint(noDiffTimeline);
+        boolean harDiffUtenforForlengelse = !disjoint.isEmpty();
         if (harDiffUtenforForlengelse) {
+            logger.info("Perioder med diff:" + disjoint.toSegments().stream().map(LocalDateSegment::getLocalDateInterval).toList());
             throw new IllegalStateException("Fant differanse i beregnet grunnlag utenfor oppgitt periode for forlengelse. Forlengelseperioder: " + forlengelseperioder);
         }
     }
