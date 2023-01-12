@@ -30,9 +30,8 @@ public class MapFastsattBeregningsgrunnlagFraRegelTilVL {
     private void mapPerioder(BeregningsgrunnlagDto eksisterendeVLGrunnlag,
                              List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.BeregningsgrunnlagPeriode> beregningsgrunnlagPerioder) {
 
-        int vlBGnummer = 0;
         for (var resultatBGPeriode : beregningsgrunnlagPerioder) {
-            BeregningsgrunnlagPeriodeDto eksisterendePeriode = eksisterendeVLGrunnlag.getBeregningsgrunnlagPerioder().get(vlBGnummer);
+            BeregningsgrunnlagPeriodeDto eksisterendePeriode = eksisterendeVLGrunnlag.getBeregningsgrunnlagPerioder().stream().filter(p -> p.getPeriode().getFomDato().equals(resultatBGPeriode.getPeriodeFom())).findFirst().orElseThrow();
             for (BeregningsgrunnlagPrStatus regelAndel : resultatBGPeriode.getBeregningsgrunnlagPrStatus()) {
                 if (regelAndel.getAndelNr() == null) {
                     mapAndelMedArbeidsforhold(eksisterendePeriode, regelAndel);
@@ -40,7 +39,6 @@ public class MapFastsattBeregningsgrunnlagFraRegelTilVL {
                     mapAndel(eksisterendePeriode, regelAndel);
                 }
             }
-            vlBGnummer++;
             fastsettAgreggerteVerdier(eksisterendePeriode, eksisterendeVLGrunnlag);
         }
     }

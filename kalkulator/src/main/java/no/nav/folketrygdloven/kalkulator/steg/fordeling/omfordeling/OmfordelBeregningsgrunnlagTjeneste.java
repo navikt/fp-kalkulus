@@ -51,9 +51,9 @@ public class OmfordelBeregningsgrunnlagTjeneste {
             regelResultater.add(RegelmodellOversetter.getRegelResultat(evaluation, regelinput));
         }
         var fordeltBG = MapFraFordelingsmodell.map(outputPerioder, regelResultater, beregningsgrunnlag);
-        List<Intervall> perioder = fordeltBG.getBeregningsgrunnlagPerioder().stream()
-                .map(BeregningsgrunnlagPeriodeDto::getPeriode)
-                .filter(periode -> new PerioderTilVurderingTjeneste(input.getForlengelseperioder(), beregningsgrunnlag).erTilVurdering(periode))
+        List<Intervall> perioder = inputPerioder.stream()
+                .map(FordelPeriodeModell::getBgPeriode)
+                .map(p -> Intervall.fraOgMedTilOgMed(p.getFom(), p.getTom()))
                 .collect(Collectors.toList());
         return new BeregningsgrunnlagRegelResultat(fordeltBG,
                 new RegelSporingAggregat(mapRegelsporingPerioder(regelResultater, perioder, BeregningsgrunnlagPeriodeRegelType.FORDEL)));

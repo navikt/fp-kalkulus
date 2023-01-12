@@ -245,7 +245,6 @@ public class BeregningStegTjeneste {
     public TilstandResponse fastsettBeregningsgrunnlag(StegProsesseringInput input) {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.fastsettBeregningsgrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
-        lagreRegelsporing(input.getKoblingId(), beregningResultatAggregat.getRegelSporingAggregat(), input.getStegTilstand());
         regelsporingRepository.slettAlleInaktiveRegelsporinger(input.getKoblingId());
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }

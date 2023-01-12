@@ -36,9 +36,9 @@ public class MapFraFordelingsmodell {
     }
 
     private static BeregningsgrunnlagDto mapGrunnlag(List<FordelPeriodeModell> regelperioder, BeregningsgrunnlagDto eksisterendeBG) {
-        var mappedePerioder = eksisterendeBG.getBeregningsgrunnlagPerioder().stream()
-                .map(p -> mapPeriode(p, regelperioder)).collect(Collectors.toList());
-        var nyttBG = BeregningsgrunnlagDto.builder(eksisterendeBG).fjernAllePerioder().build();
+        var nyttBG = BeregningsgrunnlagDto.builder(eksisterendeBG).build();
+        var mappedePerioder = regelperioder.stream()
+                .map(p -> mapPeriode(p, nyttBG.getBeregningsgrunnlagPerioder())).collect(Collectors.toList());
         mappedePerioder.forEach(p -> fastsettAgreggerteVerdier(p, nyttBG));
         return nyttBG;
     }
@@ -53,18 +53,18 @@ public class MapFraFordelingsmodell {
                 .build(eksisterendeVLGrunnlag);
     }
 
-    private static BeregningsgrunnlagPeriodeDto mapPeriode(BeregningsgrunnlagPeriodeDto bgPeriode, List<FordelPeriodeModell> regelperioder) {
-        var regelPeriode = finnRegelPeriode(bgPeriode, regelperioder);
-        var nyPeriodeBuilder = BeregningsgrunnlagPeriodeDto.kopier(bgPeriode);
-        regelPeriode.ifPresent(fordelPeriodeModell -> fordelPeriodeModell.getAndeler().forEach(regelAndel -> {
+    private static BeregningsgrunnlagPeriodeDto mapPeriode(FordelPeriodeModell regelPeriode, List<BeregningsgrunnlagPeriodeDto> bgPerioder) {
+        var bgPeriode = finnBgPeriode(regelPeriode, bgPerioder).orElseThrow();
+        var bgPeriodeBuilder = new BeregningsgrunnlagPeriodeDto.Builder(bgPeriode, true);
+        regelPeriode.getAndeler().forEach(regelAndel -> {
             if (regelAndel.erNytt()) {
                 var builder = mapNyAndel(bgPeriode, regelAndel);
-                nyPeriodeBuilder.leggTilBeregningsgrunnlagPrStatusOgAndel(builder);
+                bgPeriodeBuilder.leggTilBeregningsgrunnlagPrStatusOgAndel(builder);
             } else {
-                oppdaterEksisterendeAndel(nyPeriodeBuilder, regelAndel);
+                oppdaterEksisterendeAndel(bgPeriodeBuilder, regelAndel);
             }
-        }));
-        return nyPeriodeBuilder.build();
+        });
+        return bgPeriodeBuilder.build();
     }
 
     private static void oppdaterEksisterendeAndel(BeregningsgrunnlagPeriodeDto.Builder eksisterendePeriode, FordelAndelModell regelAndel) {
@@ -103,10 +103,10 @@ public class MapFraFordelingsmodell {
         return Objects.equals(arbeidsgiverIdKalkulus, arbeidsgiverIdRegel);
     }
 
-    private static Optional<FordelPeriodeModell> finnRegelPeriode(BeregningsgrunnlagPeriodeDto bgPeriode, List<FordelPeriodeModell> regelPerioder) {
-        return regelPerioder.stream()
-                .filter(bgp -> Objects.equals(bgPeriode.getBeregningsgrunnlagPeriodeFom(), bgp.getBgPeriode().getFom())
-                        && Objects.equals(bgPeriode.getBeregningsgrunnlagPeriodeTom(), bgp.getBgPeriode().getTom()))
+    private static Optional<BeregningsgrunnlagPeriodeDto> finnBgPeriode(FordelPeriodeModell regelPeriode, List<BeregningsgrunnlagPeriodeDto> bgPerioder) {
+        return bgPerioder.stream()
+                .filter(bgp -> Objects.equals(bgp.getBeregningsgrunnlagPeriodeFom(), regelPeriode.getBgPeriode().getFom())
+                        && Objects.equals(bgp.getBeregningsgrunnlagPeriodeTom(), regelPeriode.getBgPeriode().getTom()))
                 .findFirst();
     }
 
