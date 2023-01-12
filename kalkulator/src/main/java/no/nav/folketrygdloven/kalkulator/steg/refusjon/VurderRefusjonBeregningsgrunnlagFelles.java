@@ -8,6 +8,7 @@ import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
@@ -33,10 +34,11 @@ public class VurderRefusjonBeregningsgrunnlagFelles implements VurderRefusjonBer
     public BeregningsgrunnlagRegelResultat vurderRefusjon(BeregningsgrunnlagInput input) {
         BeregningsgrunnlagRegelResultat resultatFraRefusjonPeriodisering = fordelPerioderTjeneste.fastsettPerioderForRefusjon(input);
         BeregningsgrunnlagRegelResultat resultatFraPeriodisering = fordelPerioderTjeneste.fastsettPerioderForUtbetalingsgradEllerGradering(input, resultatFraRefusjonPeriodisering.getBeregningsgrunnlag());
+        var splittetVedForlengelse = ForlengelsePeriodeTjeneste.splittVedStartAvForlengelse(input, resultatFraPeriodisering.getBeregningsgrunnlag());
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = FagsakYtelseTypeRef.Lookup.find(aksjonspunkutledere, input.getFagsakYtelseType())
                 .orElseThrow(() -> new IllegalStateException("Fant ikke AksjonspunkutledertjenesteVurderRefusjon for ytelsetype " + input.getFagsakYtelseType().getKode()))
-                .utledAvklaringsbehov(input, resultatFraPeriodisering.getBeregningsgrunnlag());
-        return new BeregningsgrunnlagRegelResultat(resultatFraPeriodisering.getBeregningsgrunnlag(),
+                .utledAvklaringsbehov(input, splittetVedForlengelse);
+        return new BeregningsgrunnlagRegelResultat(splittetVedForlengelse,
                 avklaringsbehov,
                 RegelSporingAggregat.konkatiner(resultatFraRefusjonPeriodisering.getRegelsporinger().orElse(null), resultatFraPeriodisering.getRegelsporinger().orElse(null)));
     }
