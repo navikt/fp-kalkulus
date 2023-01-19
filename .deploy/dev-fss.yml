@@ -34,7 +34,7 @@ spec:
   preStopHookPath: "/ftkalkulus/internal/preStop"
   resources:
     limits:
-      cpu: "2000m"
+      cpu: "4"
       memory: "2048Mi"
     requests:
       cpu: "600m"

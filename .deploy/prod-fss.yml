@@ -33,10 +33,10 @@ spec:
   preStopHookPath: "/ftkalkulus/internal/preStop"
   resources:
     limits:
-      cpu: "2000m"
+      cpu: "8"
       memory: "4096Mi"
     requests:
-      cpu: "600m"
+      cpu: "4"
       memory: "1024Mi"
   vault:
     enabled: true

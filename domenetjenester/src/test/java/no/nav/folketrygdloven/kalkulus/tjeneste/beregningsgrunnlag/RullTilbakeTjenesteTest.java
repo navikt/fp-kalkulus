@@ -13,6 +13,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import no.nav.folketrygdloven.kalkulator.output.RegelSporingPeriode;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovKontrollTjeneste;
@@ -37,6 +39,7 @@ import no.nav.folketrygdloven.kalkulus.tjeneste.extensions.JpaExtension;
 import no.nav.folketrygdloven.kalkulus.tjeneste.forlengelse.ForlengelseRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.forlengelse.ForlengelseTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
+import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelSporingTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.k9.felles.testutilities.db.EntityManagerAwareTest;
@@ -50,12 +53,14 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
     private RullTilbakeTjeneste rullTilbakeTjeneste;
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
     private ForlengelseTjeneste forlengelseTjeneste;
+    private RegelSporingTjeneste regelSporingTjeneste;
     private Long koblingId;
 
     @BeforeEach
     public void setUp() {
         repository = new BeregningsgrunnlagRepository(getEntityManager());
         regelsporingRepository = new RegelsporingRepository(getEntityManager());
+        regelSporingTjeneste = new RegelSporingTjeneste(regelsporingRepository);
         koblingRepository = new KoblingRepository(getEntityManager());
         forlengelseTjeneste = new ForlengelseTjeneste(new ForlengelseRepository(getEntityManager()));
         AvklaringsbehovRepository avklaringsbehovRepository = new AvklaringsbehovRepository(getEntityManager());
@@ -76,7 +81,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
                         .build()), BeregningsgrunnlagTilstand.FORESLÅTT);
-        regelsporingRepository.lagre(koblingId, Map.of(BeregningsgrunnlagPeriodeRegelType.FORESLÅ, List.of(RegelSporingPeriodeEntitet.ny().medRegelEvaluering(getTestJSON()).medRegelInput(getTestJSON()).medPeriode(IntervallEntitet.fraOgMed(LocalDate.now())))));
+        regelSporingTjeneste.lagre(koblingId, List.of(new RegelSporingPeriode(getTestJSON(), getTestJSON(), Intervall.fraOgMed(LocalDate.now()), BeregningsgrunnlagPeriodeRegelType.FORESLÅ)));
         rullTilbakeTjeneste.rullTilbakeTilForrigeTilstandVedBehov(Set.of(koblingId), BeregningsgrunnlagTilstand.KOFAKBER_UT, true);
 
         // Act
@@ -106,7 +111,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
                         .build()), BeregningsgrunnlagTilstand.FORESLÅTT);
-        regelsporingRepository.lagre(koblingId, Map.of(BeregningsgrunnlagPeriodeRegelType.FORESLÅ, List.of(RegelSporingPeriodeEntitet.ny().medRegelEvaluering(getTestJSON()).medRegelInput(getTestJSON()).medPeriode(IntervallEntitet.fraOgMed(LocalDate.now())))));
+        regelSporingTjeneste.lagre(koblingId, List.of(new RegelSporingPeriode(getTestJSON(), getTestJSON(), Intervall.fraOgMed(LocalDate.now()), BeregningsgrunnlagPeriodeRegelType.FORESLÅ)));
         rullTilbakeTjeneste.rullTilbakeTilForrigeTilstandVedBehov(Set.of(koblingId), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, true);
 
         // Act
@@ -133,7 +138,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
                         .build()), BeregningsgrunnlagTilstand.FORESLÅTT);
-        regelsporingRepository.lagre(koblingId, Map.of(BeregningsgrunnlagPeriodeRegelType.FORESLÅ, List.of(RegelSporingPeriodeEntitet.ny().medRegelEvaluering(getTestJSON()).medRegelInput(getTestJSON()).medPeriode(IntervallEntitet.fraOgMed(LocalDate.now())))));
+        regelSporingTjeneste.lagre(koblingId, List.of(new RegelSporingPeriode(getTestJSON(), getTestJSON(), Intervall.fraOgMed(LocalDate.now()), BeregningsgrunnlagPeriodeRegelType.FORESLÅ)));
         rullTilbakeTjeneste.rullTilbakeTilForrigeTilstandVedBehov(Set.of(koblingId), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, true);
 
         // Act

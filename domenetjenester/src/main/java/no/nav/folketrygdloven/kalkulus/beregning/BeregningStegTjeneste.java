@@ -23,7 +23,6 @@ import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.input.VurderBeregningsgrunnlagvilkårInput;
 import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
@@ -31,8 +30,6 @@ import no.nav.folketrygdloven.kalkulator.output.RegelSporingPeriode;
 import no.nav.folketrygdloven.kalkulator.steg.BeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AvklaringsbehovMedTilstandDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrunnlagEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
@@ -46,6 +43,7 @@ import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovT
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.VidereførOverstyring;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.forlengelse.ForlengelseTjeneste;
+import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelSporingTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
 
 @ApplicationScoped
@@ -57,6 +55,7 @@ public class BeregningStegTjeneste {
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
     private ForlengelseTjeneste forlengelseTjeneste;
     private Instance<VidereførOverstyring> videreførOverstyring;
+    private RegelSporingTjeneste regelSporingTjeneste;
 
     BeregningStegTjeneste() {
         // CDI
@@ -67,13 +66,15 @@ public class BeregningStegTjeneste {
                                  RegelsporingRepository regelsporingRepository,
                                  AvklaringsbehovTjeneste avklaringsbehovTjeneste,
                                  ForlengelseTjeneste forlengelseTjeneste,
-                                 @Any Instance<VidereførOverstyring> videreførOverstyring) {
+                                 @Any Instance<VidereførOverstyring> videreførOverstyring,
+                                 RegelSporingTjeneste regelSporingTjeneste) {
         this.beregningsgrunnlagTjeneste = beregningsgrunnlagTjeneste;
         this.repository = repository;
         this.regelsporingRepository = regelsporingRepository;
         this.avklaringsbehovTjeneste = avklaringsbehovTjeneste;
         this.forlengelseTjeneste = forlengelseTjeneste;
         this.videreførOverstyring = videreførOverstyring;
+        this.regelSporingTjeneste = regelSporingTjeneste;
     }
 
     /**
@@ -314,9 +315,7 @@ public class BeregningStegTjeneste {
                     .stream()
                     .collect(Collectors.groupingBy(RegelSporingPeriode::getRegelType));
             validerRiktigTilstandForPeriodeSporing(stegTilstand, sporingPerioderPrType);
-            Map<BeregningsgrunnlagPeriodeRegelType, List<RegelSporingPeriodeEntitet.Builder>> builderMap = sporingPerioderPrType.entrySet().stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey, this::lagRegelSporingPeriodeBuilders));
-            regelsporingRepository.lagre(koblingId, builderMap);
+            regelSporingTjeneste.lagre(koblingId, regelsporinger.getRegelsporingPerioder());
         }
     }
 
@@ -345,15 +344,6 @@ public class BeregningStegTjeneste {
     private boolean erGrunnlagRegelLagretIGyldigTilstand(BeregningsgrunnlagTilstand
                                                                  stegTilstand, BeregningsgrunnlagRegelType regelType) {
         return regelType.getLagretTilstand().equals(stegTilstand);
-    }
-
-    private List<RegelSporingPeriodeEntitet.Builder> lagRegelSporingPeriodeBuilders
-            (Map.Entry<BeregningsgrunnlagPeriodeRegelType, List<RegelSporingPeriode>> e) {
-        return e.getValue().stream().map(sporing -> RegelSporingPeriodeEntitet.ny()
-                        .medRegelEvaluering(sporing.getRegelEvaluering())
-                        .medRegelInput(sporing.getRegelInput())
-                        .medPeriode(IntervallEntitet.fraOgMedTilOgMed(sporing.getPeriode().getFomDato(), sporing.getPeriode().getTomDato())))
-                .collect(Collectors.toList());
     }
 
     private void lagreAvklaringsbehov(StegProsesseringInput input, BeregningResultatAggregat

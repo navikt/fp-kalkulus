@@ -43,6 +43,7 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
     private String regelEvaluering;
 
     @Column(name = "regel_input_json", columnDefinition="TEXT")
+    @Deprecated(forRemoval = true)
     private String regelInput;
 
     @Convert(converter= BeregningsgrunnlagPeriodeRegelTypeKodeverdiConverter.class)
@@ -114,15 +115,15 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
             kladd = new RegelSporingPeriodeEntitet();
         }
 
-        public Builder medRegelInput(String regelInput) {
-            Objects.requireNonNull(regelInput, "regelInput");
-            kladd.regelInput = regelInput;
-            return this;
-        }
-
         public Builder medRegelEvaluering(String regelEvaluering) {
             Objects.requireNonNull(regelEvaluering, "regelInput");
             kladd.regelEvaluering = regelEvaluering;
+            return this;
+        }
+
+        public Builder medRegelInputHash(String hash) {
+            Objects.requireNonNull(hash, "hash");
+            kladd.regelInputHash = hash;
             return this;
         }
 
@@ -136,7 +137,7 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
             Objects.requireNonNull(koblingId, "koblingId");
             Objects.requireNonNull(regelType, "regelType");
             Objects.requireNonNull(kladd.regelEvaluering, "regelEvaluering");
-            Objects.requireNonNull(kladd.regelInput, "regelInput");
+            Objects.requireNonNull(kladd.regelInputHash, "regelInputHash");
             Objects.requireNonNull(kladd.periode, "periode");
             kladd.koblingId = koblingId;
             kladd.regelType = regelType;

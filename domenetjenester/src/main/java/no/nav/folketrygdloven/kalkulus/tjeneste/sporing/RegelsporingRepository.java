@@ -19,9 +19,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
+import no.nav.folketrygdloven.kalkulator.output.RegelSporingPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
@@ -41,30 +42,31 @@ public class RegelsporingRepository {
     @Inject
     public RegelsporingRepository(EntityManager entityManager) {
         Objects.requireNonNull(entityManager, "entityManager"); //$NON-NLS-1$
+        entityManager.setProperty("hibernate.jdbc.batch_size", 50);
         this.entityManager = entityManager;
     }
 
-    /**
-     * Lagrer regelsporing for periode
-     *
-     * @param regelSporingPerioder reglsporingperioder som skal lagres
-     */
-    public void lagre(Long koblingId, Map<BeregningsgrunnlagPeriodeRegelType, List<RegelSporingPeriodeEntitet.Builder>> regelSporingPerioder) {
-        regelSporingPerioder.forEach((key, value) -> value.stream()
-                .map(builder -> builder.build(koblingId, key)).forEach(sporing -> {
-                    if (!sporing.erAktiv()) {
-                        throw new IllegalArgumentException("Kan ikke lagre en inaktivt reglsporing");
-                    }
-                    if (KonfigurasjonVerdi.get("REGEL_INPUT_HASHING_ENABLED", true)) {
-                        var hash = kjørRegelInputHashing(sporing.getRegelInput());
-                        sporing.setRegelInputHash(hash);
-                        if (KonfigurasjonVerdi.get("REGEL_INPUT_KOMPRIMERING_ENABLED", true)) {
-                            sporing.setRegelInput(null);
-                        }
-                    }
-                    entityManager.persist(sporing);
-                }));
+    public void lagreSporinger(Map<String, List<RegelSporingPeriode>> perioderPrRegelInputHash, Long koblingId) {
+        int antall = 0;
+        int størrelseRegelEvaluering = 0;
+
+        for (var entry : perioderPrRegelInputHash.entrySet()) {
+            String hash = entry.getKey();
+            for (RegelSporingPeriode sporing : entry.getValue()) {
+                RegelSporingPeriodeEntitet entitet = RegelSporingPeriodeEntitet.ny()
+                        .medRegelEvaluering(sporing.getRegelEvaluering())
+                        .medRegelInputHash(hash)
+                        .medPeriode(IntervallEntitet.fraOgMedTilOgMed(sporing.getPeriode().getFomDato(), sporing.getPeriode().getTomDato()))
+                        .build(koblingId, sporing.getRegelType());
+                entityManager.persist(entitet);
+
+                antall++;
+                størrelseRegelEvaluering += sporing.getRegelEvaluering().length();
+            }
+        }
         entityManager.flush();
+
+        log.info("Lagret {} regelsporingperioder med {} kb regelevaluering", antall, (størrelseRegelEvaluering + 512) / 1024);
     }
 
     /**
@@ -127,6 +129,12 @@ public class RegelsporingRepository {
 
     private String kjørRegelInputHashing(String regelInput) {
         String regelInputHash = lagMD5Hash(regelInput);
+        lagreRegelInputKomprimert(regelInputHash, regelInput);
+        entityManager.flush();
+        return regelInputHash;
+    }
+
+    private void lagreRegelInputKomprimert(String regelInputHash, String regelInput) {
         var insertQuery = entityManager.createNativeQuery(
                         "INSERT INTO REGEL_INPUT_KOMPRIMERING (REGEL_INPUT_HASH, REGEL_INPUT_JSON) " +
                                 "VALUES (:md5_hash, :sporing_json) " +
@@ -134,7 +142,27 @@ public class RegelsporingRepository {
                 .setParameter("sporing_json", regelInput)
                 .setParameter("md5_hash", regelInputHash);
         insertQuery.executeUpdate();
-        return regelInputHash;
+    }
+
+    public void lagreRegelInputKomprimert(Map<String, String> regelInputPrHash) {
+        List<String> eksisterendeHasher = entityManager.createNativeQuery("select regel_input_hash from REGEL_INPUT_KOMPRIMERING where regel_input_hash in (:hashene)")
+                .setParameter("hashene", regelInputPrHash.keySet())
+                .getResultList();
+
+        log.info("Fant {} overlappende hasher fra {} i input", eksisterendeHasher.size(), regelInputPrHash.size());
+
+        Map<String, String> regelInputPrHashFiltrert = regelInputPrHash.entrySet().stream()
+                .filter(e -> !eksisterendeHasher.contains(e.getKey()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        regelInputPrHashFiltrert.forEach(this::lagreRegelInputKomprimert);
+        entityManager.flush();
+
+        log.info("Lagret {} ({} kb) av {} ({} kb) regelinput etter hash-sjekk", regelInputPrHashFiltrert.size(), kbSizeOfValues(regelInputPrHashFiltrert), regelInputPrHash.size(), kbSizeOfValues(regelInputPrHash));
+    }
+
+    private static int kbSizeOfValues(Map<String, String> verdier) {
+        return (verdier.values().stream().map(String::length).reduce(Integer::sum).orElse(0) + 512) / 1024;
     }
 
     private String lagMD5Hash(String regelInput) {
@@ -256,24 +284,6 @@ public class RegelsporingRepository {
                         "and sporing.aktiv = :aktiv " +
                         "and sporing.regelType in :regeltype", RegelSporingPeriodeEntitet.class); //$NON-NLS-1$
         query.setParameter(KOBLING_ID, koblingId); //$NON-NLS-1$
-        query.setParameter("aktiv", true); //$NON-NLS-1$
-        query.setParameter("regeltype", regelTyper);
-        return query.getResultList();
-    }
-
-    /**
-     * Henter aktiv RegelsporingPeriode med gitt type
-     *
-     * @param koblingIder et sett med koblingIder
-     * @return Alle aktive {@link no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet}
-     */
-    public List<RegelSporingPeriodeEntitet> hentRegelSporingerPeriodeMedGittType(Set<Long> koblingIder, List<BeregningsgrunnlagPeriodeRegelType> regelTyper) {
-        TypedQuery<RegelSporingPeriodeEntitet> query = entityManager.createQuery(
-                "from RegelSporingPeriodeEntitet sporing " +
-                        "where sporing.koblingId in :koblingId " +
-                        "and sporing.aktiv = :aktiv " +
-                        "and sporing.regelType in :regeltype", RegelSporingPeriodeEntitet.class); //$NON-NLS-1$
-        query.setParameter(KOBLING_ID, koblingIder); //$NON-NLS-1$
         query.setParameter("aktiv", true); //$NON-NLS-1$
         query.setParameter("regeltype", regelTyper);
         return query.getResultList();
