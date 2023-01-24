@@ -24,7 +24,7 @@ public class SaksnummerDto implements AbacDto {
     @JsonProperty(value = "saksnummer", required = true)
     @NotNull
     @Size(max = 19)
-    @Pattern(regexp = "^[a-zA-Z0-9]*$")
+    @Pattern(regexp = "^[A-Za-z0-9_.\\-:]+$")
     private final String saksnummer;
 
 

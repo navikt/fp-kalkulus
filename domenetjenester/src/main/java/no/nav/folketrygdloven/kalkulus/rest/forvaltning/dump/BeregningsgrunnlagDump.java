@@ -2,9 +2,6 @@ package no.nav.folketrygdloven.kalkulus.rest.forvaltning.dump;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -13,8 +10,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer
 
 @ApplicationScoped
 public class BeregningsgrunnlagDump implements DebugDumpSak {
-
-    private static final Logger log = LoggerFactory.getLogger(BeregningsgrunnlagDump.class);
 
     private EntityManager entityManager;
 

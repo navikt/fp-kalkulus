@@ -1,11 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.rest.forvaltning.dump;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -14,24 +10,21 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Tuple;
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
-import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 
 @ApplicationScoped
 public class KalkulatorInputDump implements DebugDumpSak {
 
     private EntityManager entityManager;
     private KalkulatorInputTjeneste kalkulatorInputTjeneste;
-    private KoblingTjeneste koblingTjeneste;
 
     public KalkulatorInputDump() {
         // for proxys
     }
 
     @Inject
-    public KalkulatorInputDump(EntityManager entityManager, KalkulatorInputTjeneste kalkulatorInputTjeneste, KoblingTjeneste koblingTjeneste) {
+    public KalkulatorInputDump(EntityManager entityManager, KalkulatorInputTjeneste kalkulatorInputTjeneste) {
         this.entityManager = entityManager;
         this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
-        this.koblingTjeneste = koblingTjeneste;
     }
 
     @Override
