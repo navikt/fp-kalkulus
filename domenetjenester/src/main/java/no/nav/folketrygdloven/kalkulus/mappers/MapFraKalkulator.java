@@ -101,7 +101,7 @@ public class MapFraKalkulator {
 
     public static List<KravperioderPrArbeidsforholdDto> mapFraDto(List<KravperioderPrArbeidsforhold> kravPrArbeidsforhold, List<RefusjonskravDatoDto> refusjonskravDatoer, InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDate stp) {
         if (kravPrArbeidsforhold == null) {
-            // TODO: Fjern når alle konsumenter har tatt i bruk ny struktur
+            // For å kunne mappe kall for å hente gui-dto for gamle saker
             kravPrArbeidsforhold = LagKravperioder.lagKravperioderPrArbeidsforhold(refusjonskravDatoer, iayGrunnlag, stp);
         }
         ;

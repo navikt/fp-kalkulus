@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import no.nav.folketrygdloven.kalkulus.beregning.v1.KravperioderPrArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.PerioderForKrav;
@@ -21,7 +23,6 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidDto;
-import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
@@ -29,12 +30,17 @@ import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
 class LagKravperioder {
 
-    @Deprecated
+    private static final Logger LOG = LoggerFactory.getLogger(LagKravperioder.class);
+
     public static List<KravperioderPrArbeidsforhold> lagKravperioderPrArbeidsforhold(List<RefusjonskravDatoDto> refusjonskravDatoer,
                                                                                      InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                                      LocalDate skjæringstidspunktBeregning) {
         List<KravperioderPrArbeidsforhold> perioderPrArbeidsgiver = new ArrayList<>();
         if (iayGrunnlag.getInntektsmeldingDto() == null) {
+            return Collections.emptyList();
+        }
+        if (iayGrunnlag.getArbeidDto() == null) {
+            LOG.warn("Fant inntektsmelding uten registrerte arbeidsforhold. Ignorerer inntektsmelding.");
             return Collections.emptyList();
         }
         iayGrunnlag.getInntektsmeldingDto().getInntektsmeldinger()
@@ -71,11 +77,11 @@ class LagKravperioder {
                 .findFirst();
         eksisterende.ifPresentOrElse(e -> e.getAlleSøktePerioder().add(perioderForKravDto),
                 () ->
-                    perioderPrArbeidsgiver.add(new KravperioderPrArbeidsforhold(im.getArbeidsgiver(),
-                            im.getArbeidsforholdRef(),
-                            new ArrayList<>(List.of(perioderForKravDto)),
-                            perioderForKravDto))
-                );
+                        perioderPrArbeidsgiver.add(new KravperioderPrArbeidsforhold(im.getArbeidsgiver(),
+                                im.getArbeidsforholdRef(),
+                                new ArrayList<>(List.of(perioderForKravDto)),
+                                perioderForKravDto))
+        );
     }
 
     private static PerioderForKrav lagPerioderForKrav(InntektsmeldingDto im, LocalDate innsendingsdato,
