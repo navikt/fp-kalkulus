@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -17,12 +16,10 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.TilkommetInntektDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.AktørArbeidDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt.TilkommetInntektsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.NyttInntektsforholdDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.VurderTilkommetInntektHåndteringDto;
@@ -38,58 +35,56 @@ public class VurderTilkommetInntektTjeneste {
         var bgBuilder = grunnlagBuilder.getBeregningsgrunnlagBuilder();
         var perioder = finnBgPerioder(input);
         var vurderteInntektsforholdPerioder = vurderDto.getTilkomneInntektsforholdPerioder();
-        perioder.forEach(p -> leggTilTilkommetInntektDersomRelevant(
-                input,
-                bgBuilder,
-                finnVurdertPeriode(vurderteInntektsforholdPerioder, p),
-                p
-        ));
+        vurderteInntektsforholdPerioder.forEach(p -> leggTilInntektsforhold(input, bgBuilder, perioder, p));
         return grunnlagBuilder.build(BeregningsgrunnlagTilstand.FASTSATT_INN);
     }
 
-    private static Optional<VurderTilkomneInntektsforholdPeriodeDto> finnVurdertPeriode(List<VurderTilkomneInntektsforholdPeriodeDto> vurderteInntektsforholdPerioder, BeregningsgrunnlagPeriodeDto p) {
-        return vurderteInntektsforholdPerioder.stream()
-                .filter(vp -> Intervall.fraOgMedTilOgMed(vp.getFom(), vp.getTom()).overlapper(p.getPeriode()))
-                .findFirst();
-    }
-
-    private static void leggTilTilkommetInntektDersomRelevant(HåndterBeregningsgrunnlagInput input,
-                                                              BeregningsgrunnlagDto.Builder bgBuilder,
-                                                              Optional<VurderTilkomneInntektsforholdPeriodeDto> vurdertPeriode,
-                                                              BeregningsgrunnlagPeriodeDto p) {
-        if (vurdertPeriode.isEmpty()) {
-            return;
+    private static void leggTilInntektsforhold(HåndterBeregningsgrunnlagInput input,
+                                               BeregningsgrunnlagDto.Builder bgBuilder,
+                                               List<BeregningsgrunnlagPeriodeDto> perioder,
+                                               VurderTilkomneInntektsforholdPeriodeDto p) {
+        var bgPerioder = perioder.stream().filter(bgp -> bgp.getPeriode().overlapper(Intervall.fraOgMedTilOgMed(p.getFom(), p.getTom()))).toList();
+        if (bgPerioder.size() > 1) {
+            throw new IllegalStateException("Forventer maksimalt 1 periode fant " + bgPerioder);
         }
+        if (!bgPerioder.isEmpty()) {
+            var bgPeriode = bgPerioder.get(0);
+            var periodeBuilder = bgBuilder.getPeriodeBuilderFor(bgPeriode.getPeriode()).orElseThrow();
+            p.getTilkomneInntektsforhold().stream()
+                    .map(i -> {
+                        var tilkommetInntektDto = finnTilkommetInntektTilVurdering(bgPeriode.getTilkomneInntekter(), i).orElseThrow();
+                        return new TilkommetInntektDto(tilkommetInntektDto.getAktivitetStatus(),
+                                tilkommetInntektDto.getArbeidsgiver().orElse(null),
+                                tilkommetInntektDto.getArbeidsforholdRef(),
+                                i.getSkalRedusereUtbetaling() ? finnBruttoPrÅr(i, input.getIayGrunnlag()) : null,
+                                i.getSkalRedusereUtbetaling() ? utledTilkommetFraBrutto(i, bgPeriode.getPeriode(), input.getYtelsespesifiktGrunnlag()) : null,
+                                i.getSkalRedusereUtbetaling());
+                    }).
+                    forEach(periodeBuilder::leggTilTilkommetInntekt);
 
-        var vurderteInntektsforhold = vurdertPeriode.get().getTilkomneInntektsforhold();
-        var periodeBuilder = bgBuilder.getPeriodeBuilderFor(p.getPeriode()).orElseThrow();
-        var vurderInntektsforhold = TilkommetInntektsforholdTjeneste.finnTilkomneInntektsforhold(input.getSkjæringstidspunktForBeregning(),
-                input.getIayGrunnlag().getAktørArbeidFraRegister().map(AktørArbeidDto::hentAlleYrkesaktiviteter).orElse(Collections.emptyList()),
-                p.getBeregningsgrunnlagPrStatusOgAndelList(),
-                p.getPeriode(),
-                input.getYtelsespesifiktGrunnlag());
-        vurderteInntektsforhold.stream()
-                .filter(i -> skalVurderesForPeriode(vurderInntektsforhold, i))
-                .map(i -> mapTilkommetInntekt(input, p, i))
-                .forEach(periodeBuilder::leggTilTilkommetInntekt);
+
+            if (bgPeriode.getTilkomneInntekter().stream()
+                    .anyMatch(it -> it.skalRedusereUtbetaling() == null)) {
+                throw new IllegalStateException(String.format("Periode %s har tilkomne inntektsforhold som ikke har blitt vurdert", bgPeriode.getPeriode()));
+            }
+        }
     }
 
-    private static boolean skalVurderesForPeriode(Collection<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver> vurderInntektsforhold, NyttInntektsforholdDto i) {
-        return vurderInntektsforhold.stream().anyMatch(v ->
-                v.aktivitetStatus().equals(i.getAktivitetStatus()) &&
-                        (v.arbeidsgiver() == null && i.getArbeidsgiverIdentifikator() == null || v.arbeidsgiver() != null &&  v.arbeidsgiver().getIdentifikator().equals(i.getArbeidsgiverIdentifikator())));
+    private static Optional<TilkommetInntektDto> finnTilkommetInntektTilVurdering(Collection<TilkommetInntektDto> vurderInntektsforhold, NyttInntektsforholdDto i) {
+        return vurderInntektsforhold.stream().filter(v ->
+                v.getAktivitetStatus().equals(i.getAktivitetStatus()) &&
+                        (ingenHarArbeidsgiver(i, v) || harLikArbeidsgiver(i, v)) &&
+                        v.getArbeidsforholdRef().gjelderFor(InternArbeidsforholdRefDto.ref(i.getArbeidsforholdId()))).findFirst();
     }
 
-    private static TilkommetInntektDto mapTilkommetInntekt(HåndterBeregningsgrunnlagInput input, BeregningsgrunnlagPeriodeDto p, NyttInntektsforholdDto i) {
-        return new TilkommetInntektDto(
-                i.getAktivitetStatus(),
-                mapArbeidsgiver(i),
-                InternArbeidsforholdRefDto.ref(i.getArbeidsforholdId()),
-                i.getSkalRedusereUtbetaling() ? finnBruttoPrÅr(i, input.getIayGrunnlag()) : null,
-                i.getSkalRedusereUtbetaling() ? utledTilkommetFraBrutto(i, p.getPeriode(), input.getYtelsespesifiktGrunnlag()) : null,
-                i.getSkalRedusereUtbetaling()
-        );
+    private static boolean harLikArbeidsgiver(NyttInntektsforholdDto i, TilkommetInntektDto v) {
+        return v.getArbeidsgiver().isPresent() && v.getArbeidsgiver().get().getIdentifikator().equals(i.getArbeidsgiverIdentifikator());
     }
+
+    private static boolean ingenHarArbeidsgiver(NyttInntektsforholdDto i, TilkommetInntektDto v) {
+        return v.getArbeidsgiver().isEmpty() && i.getArbeidsgiverIdentifikator() == null;
+    }
+
 
     private static BigDecimal finnBruttoPrÅr(NyttInntektsforholdDto i, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         var inntektsmelding = finnInntektsmelding(i, iayGrunnlag);
@@ -141,10 +136,13 @@ public class VurderTilkommetInntektTjeneste {
     }
 
     private static List<BeregningsgrunnlagPeriodeDto> finnBgPerioder(HåndterBeregningsgrunnlagInput input) {
+        var tilVurderingTjeneste = new PerioderTilVurderingTjeneste(input.getForlengelseperioder(), input.getBeregningsgrunnlag());
         return input.getBeregningsgrunnlagGrunnlag()
                 .getBeregningsgrunnlag()
-                .map(BeregningsgrunnlagDto::getBeregningsgrunnlagPerioder)
-                .orElse(Collections.emptyList());
+                .stream()
+                .flatMap(bg -> bg.getBeregningsgrunnlagPerioder().stream())
+                .filter(p -> tilVurderingTjeneste.erTilVurdering(p.getPeriode()))
+                .toList();
     }
 
 }

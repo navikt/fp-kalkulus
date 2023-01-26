@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.steg.fordeling.ytelse.psb;
+package no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -15,7 +15,14 @@ public class SplittBGPerioder {
 
     public static <V> BeregningsgrunnlagDto splittPerioderOgSettPeriodeårsak(BeregningsgrunnlagDto beregningsgrunnlag,
                                                                              LocalDateTimeline<V> nyePerioderTidslinje,
-                                                                             PeriodeÅrsak periodeårsak) {
+                                                                             PeriodeÅrsak periodeÅrsak) {
+        return splittPerioder(beregningsgrunnlag, nyePerioderTidslinje, SplittBGPerioder.splittPerioderOgSettÅrsakCombinator(periodeÅrsak));
+    }
+
+
+    public static <V> BeregningsgrunnlagDto splittPerioder(BeregningsgrunnlagDto beregningsgrunnlag,
+                                                           LocalDateTimeline<V> nyePerioderTidslinje,
+                                                           LocalDateSegmentCombinator<BeregningsgrunnlagPeriodeDto, V, BeregningsgrunnlagPeriodeDto.Builder> nyePerioderCombinator) {
 
         var eksisterendePerioder = beregningsgrunnlag.getBeregningsgrunnlagPerioder();
 
@@ -23,7 +30,7 @@ public class SplittBGPerioder {
                 .map(p -> new LocalDateSegment<>(new LocalDateInterval(p.getPeriode().getFomDato(), p.getPeriode().getTomDato()), p)).toList());
 
 
-        var resultatPerioder = eksisterendePerioderTidslinje.combine(nyePerioderTidslinje, splittPerioderOgSettÅrsak(periodeårsak), LocalDateTimeline.JoinStyle.LEFT_JOIN);
+        var resultatPerioder = eksisterendePerioderTidslinje.combine(nyePerioderTidslinje, nyePerioderCombinator, LocalDateTimeline.JoinStyle.LEFT_JOIN);
 
         var nyttBg = BeregningsgrunnlagDto.builder(beregningsgrunnlag).fjernAllePerioder().build();
 
@@ -37,7 +44,7 @@ public class SplittBGPerioder {
         return nyttBg;
     }
 
-    private static <V> LocalDateSegmentCombinator<BeregningsgrunnlagPeriodeDto, V, BeregningsgrunnlagPeriodeDto.Builder> splittPerioderOgSettÅrsak(PeriodeÅrsak periodeårsak) {
+    public static <V> LocalDateSegmentCombinator<BeregningsgrunnlagPeriodeDto, V, BeregningsgrunnlagPeriodeDto.Builder> splittPerioderOgSettÅrsakCombinator(PeriodeÅrsak periodeårsak) {
         return (di, lhs, rhs) -> {
             if (lhs != null && rhs != null) {
                 var nyPeriode = BeregningsgrunnlagPeriodeDto.kopier(lhs.getValue())

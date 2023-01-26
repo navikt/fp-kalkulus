@@ -13,9 +13,9 @@ public class TilkommetInntektDto {
     private final AktivitetStatus aktivitetStatus;
     private final Arbeidsgiver arbeidsgiver;
     private final InternArbeidsforholdRefDto arbeidsforholdRef;
-    private final BigDecimal bruttoInntektPrÅr;
-    private final BigDecimal tilkommetInntektPrÅr;
-    private final boolean skalRedusereUtbetaling;
+    private BigDecimal bruttoInntektPrÅr;
+    private BigDecimal tilkommetInntektPrÅr;
+    private Boolean skalRedusereUtbetaling;
 
 
     public TilkommetInntektDto(TilkommetInntektDto tilkommetInntektDto) {
@@ -28,13 +28,19 @@ public class TilkommetInntektDto {
     }
 
 
+    public TilkommetInntektDto(AktivitetStatus aktivitetStatus, Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRef) {
+        this.aktivitetStatus = aktivitetStatus;
+        this.arbeidsgiver = arbeidsgiver;
+        this.arbeidsforholdRef = arbeidsforholdRef;
+    }
+
     public TilkommetInntektDto(AktivitetStatus aktivitetStatus,
                                Arbeidsgiver arbeidsgiver,
                                InternArbeidsforholdRefDto arbeidsforholdRef,
                                BigDecimal bruttoInntektPrÅr,
                                BigDecimal tilkommetInntektPrÅr,
-                               boolean skalRedusereUtbetaling) {
-        if (!skalRedusereUtbetaling && tilkommetInntektPrÅr != null) {
+                               Boolean skalRedusereUtbetaling) {
+        if (skalRedusereUtbetaling != null && !skalRedusereUtbetaling && tilkommetInntektPrÅr != null) {
             throw new IllegalStateException("Skal ikke sette tilkommet inntekt når ikke redusert utbetaling");
         }
         this.aktivitetStatus = aktivitetStatus;
@@ -65,9 +71,10 @@ public class TilkommetInntektDto {
         return tilkommetInntektPrÅr;
     }
 
-    public boolean skalRedusereUtbetaling() {
+    public Boolean skalRedusereUtbetaling() {
         return skalRedusereUtbetaling;
     }
+
 
     public boolean matcher(TilkommetInntektDto annet) {
         return this.aktivitetStatus.equals(annet.getAktivitetStatus()) &&

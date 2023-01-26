@@ -40,6 +40,8 @@ import no.nav.fpsak.tidsserie.StandardCombinators;
 public class TilkommetInntektsforholdTjeneste {
 
     /**
+     * Utleder tidslinje over tilkommet inntektsforhold
+     * <p>
      * Bestemmer hvilke statuser/arbeidsgivere som skal regnes som nytt
      * <p>
      * Dersom en inntekt/aktivitet regnes som nytt skal beregningsgrunnlaget graderes mot inntekt i denne perioden. Dette betyr at inntekt i tillegg til ytelsen kan føre til nedjustering av utbetalt ytelse.
@@ -52,46 +54,17 @@ public class TilkommetInntektsforholdTjeneste {
      * Vi antar bruker ville opprettholdt arbeid hos arbeidsgivere der bruker fortsatt er innregistrert i aareg, og at dette regner som en løpende aktivitet.
      * Dersom antall løpende aktiviteter øker, skal saksbehandler vurdere om de tilkomne aktivitetene skal føre til reduksjon i utbetaling.
      *
-     * @param skjæringstidspunkt      skjæringstidspunkt
-     * @param yrkesaktiviteter        yrkesaktiviteter
-     * @param andeler                 Andeler
-     * @param periode                 Beregningsgrunnlagperiode
-     * @param utbetalingsgradGrunnlag Utbetalingsgradgrunnlag
-     * @return Statuser/arbeidsgivere som skal regnes som tilkommet
-     */
-    public static LinkedHashSet<StatusOgArbeidsgiver> finnTilkomneInntektsforhold(LocalDate skjæringstidspunkt,
-                                                                                  Collection<YrkesaktivitetDto> yrkesaktiviteter,
-                                                                                  Collection<BeregningsgrunnlagPrStatusOgAndelDto> andeler,
-                                                                                  Intervall periode,
-                                                                                  YtelsespesifiktGrunnlag utbetalingsgradGrunnlag) {
-
-
-        var overlappendeSegmenter = finnTilkommetInntektsforholdTidslinje(skjæringstidspunkt, yrkesaktiviteter, andeler, utbetalingsgradGrunnlag)
-                .intersection(new LocalDateTimeline<>(periode.getFomDato(), periode.getTomDato(), Boolean.TRUE), StandardCombinators::leftOnly).compress().toSegments();
-        if (overlappendeSegmenter.size() > 1) {
-            throw new IllegalStateException("Forventer maks ett overlappende segment.");
-        }
-        if (overlappendeSegmenter.isEmpty()) {
-            return new LinkedHashSet<>();
-        }
-        return overlappendeSegmenter.iterator().next().getValue();
-    }
-
-
-    /**
-     * Utleder tidslinje over tilkommet inntektsforhold
-     *
      * @param skjæringstidspunkt      Skjæringstidspunkt for beregning
      * @param yrkesaktiviteter        Yrkesaktiviteter
-     * @param andeler                 Andeler i første periode
+     * @param andelerFraStart         Andeler i første periode
      * @param utbetalingsgradGrunnlag Ytelsesspesifikt grunnlag
      * @return Tidslinje for tilkommet aktivitet/inntektsforhold
      */
-    public static LocalDateTimeline<LinkedHashSet<StatusOgArbeidsgiver>> finnTilkommetInntektsforholdTidslinje(LocalDate skjæringstidspunkt,
+    public static LocalDateTimeline<Set<StatusOgArbeidsgiver>> finnTilkommetInntektsforholdTidslinje(LocalDate skjæringstidspunkt,
                                                                                                                Collection<YrkesaktivitetDto> yrkesaktiviteter,
-                                                                                                               Collection<BeregningsgrunnlagPrStatusOgAndelDto> andeler,
+                                                                                                               Collection<BeregningsgrunnlagPrStatusOgAndelDto> andelerFraStart,
                                                                                                                YtelsespesifiktGrunnlag utbetalingsgradGrunnlag) {
-        var antallGodkjenteInntektsforhold = andeler.stream().filter(a -> a.getKilde().equals(AndelKilde.PROSESS_START)).count();
+        var antallGodkjenteInntektsforhold = andelerFraStart.stream().filter(a -> a.getKilde().equals(AndelKilde.PROSESS_START)).count();
         var yrkesaktivitetTidslinje = finnInntektsforholdFraYrkesaktiviteter(skjæringstidspunkt, yrkesaktiviteter);
         var næringTidslinje = finnInntektsforholdForStatusFraFravær((UtbetalingsgradGrunnlag) utbetalingsgradGrunnlag, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
         var frilansTidslinje = finnInntektsforholdForStatusFraFravær((UtbetalingsgradGrunnlag) utbetalingsgradGrunnlag, AktivitetStatus.FRILANSER);
@@ -100,7 +73,7 @@ public class TilkommetInntektsforholdTjeneste {
         var utbetalingTidslinje = finnUtbetalingTidslinje((UtbetalingsgradGrunnlag) utbetalingsgradGrunnlag);
         return aktivitetTidslinje
                 .intersection(utbetalingTidslinje, StandardCombinators::leftOnly)
-                .map(s -> mapTilkommetTidslinje(skjæringstidspunkt, andeler, yrkesaktiviteter, utbetalingsgradGrunnlag, antallGodkjenteInntektsforhold, s));
+                .map(s -> mapTilkommetTidslinje(skjæringstidspunkt, andelerFraStart, yrkesaktiviteter, utbetalingsgradGrunnlag, antallGodkjenteInntektsforhold, s));
 
     }
 
@@ -113,21 +86,22 @@ public class TilkommetInntektsforholdTjeneste {
         return new LocalDateTimeline<>(utbetalingSegmenter, StandardCombinators::alwaysTrueForMatch);
     }
 
-    private static List<LocalDateSegment<LinkedHashSet<StatusOgArbeidsgiver>>> mapTilkommetTidslinje(LocalDate skjæringstidspunkt,
-                                                                                                     Collection<BeregningsgrunnlagPrStatusOgAndelDto> andeler, Collection<YrkesaktivitetDto> yrkesaktiviteter,
-                                                                                                     YtelsespesifiktGrunnlag utbetalingsgradGrunnlag,
-                                                                                                     long antallGodkjenteInntektsforhold, LocalDateSegment<Set<Inntektsforhold>> s) {
+    private static List<LocalDateSegment<Set<StatusOgArbeidsgiver>>> mapTilkommetTidslinje(LocalDate skjæringstidspunkt,
+                                                                                           Collection<BeregningsgrunnlagPrStatusOgAndelDto> andeler,
+                                                                                           Collection<YrkesaktivitetDto> yrkesaktiviteter,
+                                                                                           YtelsespesifiktGrunnlag utbetalingsgradGrunnlag,
+                                                                                           long antallGodkjenteInntektsforhold, LocalDateSegment<Set<Inntektsforhold>> s) {
         var periode = Intervall.fraOgMedTilOgMed(s.getFom(), s.getTom());
         return List.of(new LocalDateSegment<>(s.getFom(), s.getTom(),
                 mapTilkomne(yrkesaktiviteter, andeler, utbetalingsgradGrunnlag, antallGodkjenteInntektsforhold, periode, s.getValue(), skjæringstidspunkt)));
     }
 
-    private static LinkedHashSet<StatusOgArbeidsgiver> mapTilkomne(Collection<YrkesaktivitetDto> yrkesaktiviteter,
-                                                                   Collection<BeregningsgrunnlagPrStatusOgAndelDto> andeler, YtelsespesifiktGrunnlag utbetalingsgradGrunnlag,
-                                                                   long antallGodkjenteInntektsforhold,
-                                                                   Intervall periode,
-                                                                   Set<Inntektsforhold> inntektsforholdListe,
-                                                                   LocalDate skjæringstidspunkt) {
+    private static Set<StatusOgArbeidsgiver> mapTilkomne(Collection<YrkesaktivitetDto> yrkesaktiviteter,
+                                                         Collection<BeregningsgrunnlagPrStatusOgAndelDto> andeler, YtelsespesifiktGrunnlag utbetalingsgradGrunnlag,
+                                                         long antallGodkjenteInntektsforhold,
+                                                         Intervall periode,
+                                                         Set<Inntektsforhold> inntektsforholdListe,
+                                                         LocalDate skjæringstidspunkt) {
         var tilkommetInntektsforhold = new LinkedHashSet<StatusOgArbeidsgiver>();
         // Legger til inntektsforhold som ikke er AT til eksisterende inntektsforhold siden vi ikke kan definere en sluttdato for disse, de anses dermed som aktive i hele perioden
         var eksisterendeInntektsforhold = new LinkedHashSet<>(finnIkkeArbeidstakerStatuserFraStart(andeler));

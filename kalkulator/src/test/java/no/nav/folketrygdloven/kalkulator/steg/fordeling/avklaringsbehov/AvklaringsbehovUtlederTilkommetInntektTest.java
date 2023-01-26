@@ -4,8 +4,11 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.NavigableSet;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -26,6 +29,9 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
+import no.nav.fpsak.tidsserie.LocalDateInterval;
+import no.nav.fpsak.tidsserie.LocalDateSegment;
+import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
 class AvklaringsbehovUtlederTilkommetInntektTest {
 
@@ -47,13 +53,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
         var yrkesaktivitet = lagYrkesaktivitet(arbeidsgiver, STP.minusMonths(10), STP.plusMonths(10), InternArbeidsforholdRefDto.nullRef());
 
         var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(10), STP.plusDays(15));
-        var tilkomneAndeler = TilkommetInntektsforholdTjeneste.finnTilkomneInntektsforhold(
-                STP,
-                List.of(yrkesaktivitet),
-                List.of(arbeidstakerandelFraStart),
-                periode,
-                new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart))
-        );
+        var tilkomneAndeler = finnTilkomneAndeler(periode, List.of(yrkesaktivitet), List.of(arbeidstakerandelFraStart), new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart)), STP);
 
         assertThat(tilkomneAndeler.isEmpty()).isTrue();
 
@@ -78,12 +78,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
 
         var utbetalingsgradGrunnlag = new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel));
         var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(10), STP.plusDays(15));
-        var tilkomneAndeler = TilkommetInntektsforholdTjeneste.finnTilkomneInntektsforhold(
-                STP,
-                List.of(yrkesaktivitet, nyYrkesaktivitet),
-                List.of(arbeidstakerandelFraStart, nyAndel),
-                periode,
-                utbetalingsgradGrunnlag);
+        var tilkomneAndeler = finnTilkomneAndeler(periode, List.of(yrkesaktivitet, nyYrkesaktivitet), List.of(arbeidstakerandelFraStart, nyAndel), utbetalingsgradGrunnlag, STP);
 
         assertThat(tilkomneAndeler.isEmpty()).isTrue();
     }
@@ -107,12 +102,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
 
         var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(2), STP.plusDays(3));
 
-        var tilkommetAktivitet = TilkommetInntektsforholdTjeneste.finnTilkomneInntektsforhold(
-                STP,
-                List.of(yrkesaktivitet, nyYrkesaktivitet),
-                List.of(arbeidstakerandelFraStart, nyAndel),
-                periode,
-                new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel)));
+        var tilkommetAktivitet = finnTilkomneAndeler(periode, List.of(yrkesaktivitet, nyYrkesaktivitet), List.of(arbeidstakerandelFraStart, nyAndel), new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel)), STP);
 
         assertThat(tilkommetAktivitet.size()).isEqualTo(0);
     }
@@ -134,12 +124,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
 
         var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(10), STP.plusDays(15));
 
-        var tilkommetAktivitet = TilkommetInntektsforholdTjeneste.finnTilkomneInntektsforhold(
-                STP,
-                List.of(yrkesaktivitet, nyYrkesaktivitet),
-                List.of(arbeidstakerandelFraStart, nyAndel),
-                periode,
-                new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel)));
+        var tilkommetAktivitet = finnTilkomneAndeler(periode, List.of(yrkesaktivitet, nyYrkesaktivitet), List.of(arbeidstakerandelFraStart, nyAndel), new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel)), STP);
 
         assertThat(tilkommetAktivitet.size()).isEqualTo(1);
         assertThat(tilkommetAktivitet.iterator().next().arbeidsgiver()).isEqualTo(arbeidsgiver2);
@@ -162,12 +147,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
 
         var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(10), STP.plusDays(15));
 
-        var tilkommetAktivitet = TilkommetInntektsforholdTjeneste.finnTilkomneInntektsforhold(
-                STP,
-                List.of(yrkesaktivitet, nyYrkesaktivitet),
-                List.of(arbeidstakerandelFraStart, nyAndel),
-                periode,
-                new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel)));
+        var tilkommetAktivitet = finnTilkomneAndeler(periode, List.of(yrkesaktivitet, nyYrkesaktivitet), List.of(arbeidstakerandelFraStart, nyAndel), new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel)), STP);
 
         assertThat(tilkommetAktivitet.isEmpty()).isTrue();
     }
@@ -190,12 +170,10 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
 
         var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(5), STP.plusDays(9));
 
-        var tilkomneAndeler = TilkommetInntektsforholdTjeneste.finnTilkomneInntektsforhold(
-                STP,
-                List.of(yrkesaktivitet, nyYrkesaktivitet),
-                List.of(arbeidstakerandelFraStart, nyAndel),
-                periode,
-                new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel)));
+        var yrkesaktiviteter = List.of(yrkesaktivitet, nyYrkesaktivitet);
+        var andelerFraStart = List.of(arbeidstakerandelFraStart, nyAndel);
+        var utbetalingsgradGrunnlag = new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel));
+        var tilkomneAndeler = finnTilkomneAndeler(periode, yrkesaktiviteter, andelerFraStart, utbetalingsgradGrunnlag, STP);
 
         assertThat(tilkomneAndeler.isEmpty()).isTrue();
     }
@@ -222,12 +200,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
 
         var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(12), STP.plusDays(15));
 
-        var tilkommetAktivitet = TilkommetInntektsforholdTjeneste.finnTilkomneInntektsforhold(
-                STP,
-                List.of(yrkesaktivitet, nyYrkesaktivitet, nyYrkesaktivitet2),
-                List.of(arbeidstakerandelFraStart, nyAndel, nyAndel2),
-                periode,
-                new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel, utbetalingsgradNyAndel2)));
+        var tilkommetAktivitet = finnTilkomneAndeler(periode, List.of(yrkesaktivitet, nyYrkesaktivitet, nyYrkesaktivitet2), List.of(arbeidstakerandelFraStart, nyAndel, nyAndel2), new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel, utbetalingsgradNyAndel2)), STP);
 
         assertThat(tilkommetAktivitet.size()).isEqualTo(2);
         var iterator = tilkommetAktivitet.iterator();
@@ -253,12 +226,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
 
         var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(12), STP.plusDays(15));
 
-        var tilkomneAndeler = TilkommetInntektsforholdTjeneste.finnTilkomneInntektsforhold(
-                STP,
-                List.of(yrkesaktivitet, nyYrkesaktivitet),
-                List.of(arbeidstakerandelFraStart, nyAndel),
-                periode,
-                new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel)));
+        var tilkomneAndeler = finnTilkomneAndeler(periode, List.of(yrkesaktivitet, nyYrkesaktivitet), List.of(arbeidstakerandelFraStart, nyAndel), new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel)), STP);
 
         assertThat(tilkomneAndeler.isEmpty()).isTrue();
     }
@@ -285,12 +253,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
 
         var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(12), STP.plusDays(20));
 
-        var tilkommetAktivitet = TilkommetInntektsforholdTjeneste.finnTilkomneInntektsforhold(
-                STP,
-                List.of(yrkesaktivitet, nyYrkesaktivitet, nyYrkesaktivitet2),
-                List.of(arbeidstakerandelFraStart, nyAndel, nyAndel2),
-                periode,
-                new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel, utbetalingsgradNyAndel2)));
+        var tilkommetAktivitet = finnTilkomneAndeler(periode, List.of(yrkesaktivitet, nyYrkesaktivitet, nyYrkesaktivitet2), List.of(arbeidstakerandelFraStart, nyAndel, nyAndel2), new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel, utbetalingsgradNyAndel2)), STP);
 
         assertThat(tilkommetAktivitet.size()).isEqualTo(1);
         var iterator = tilkommetAktivitet.iterator();
@@ -303,13 +266,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
         var utbetalingsgradFraStart = new UtbetalingsgradPrAktivitetDto(lagFrilansAktivitet(), lagUtbetalingsgrader(100, STP, STP.plusDays(20)));
 
         var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(10), STP.plusDays(15));
-        var tilkomneAndeler = TilkommetInntektsforholdTjeneste.finnTilkomneInntektsforhold(
-                STP,
-                List.of(),
-                List.of(frilansandelFraStart),
-                periode,
-                new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart))
-        );
+        var tilkomneAndeler = finnTilkomneAndeler(periode, List.of(), List.of(frilansandelFraStart), new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart)), STP);
 
         assertThat(tilkomneAndeler.isEmpty()).isTrue();
     }
@@ -330,12 +287,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
 
         var utbetalingsgradGrunnlag = new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel));
         var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(10), STP.plusDays(15));
-        var tilkommetAktivitet = TilkommetInntektsforholdTjeneste.finnTilkomneInntektsforhold(
-                STP,
-                List.of(nyYrkesaktivitet),
-                List.of(frilansandelFraStart, nyAndel),
-                periode,
-                utbetalingsgradGrunnlag);
+        var tilkommetAktivitet = finnTilkomneAndeler(periode, List.of(nyYrkesaktivitet), List.of(frilansandelFraStart, nyAndel), utbetalingsgradGrunnlag, STP);
 
         assertThat(tilkommetAktivitet.size()).isEqualTo(1);
         var iterator = tilkommetAktivitet.iterator();
@@ -358,12 +310,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
 
         var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(10), STP.plusDays(15));
 
-        var tilkommetAktivitet = TilkommetInntektsforholdTjeneste.finnTilkomneInntektsforhold(
-                STP,
-                List.of(yrkesaktivitet, yrkesaktivitet2),
-                List.of(arbeidstakerandelFraStart, nyAndel),
-                periode,
-                new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel)));
+        var tilkommetAktivitet = finnTilkomneAndeler(periode, List.of(yrkesaktivitet, yrkesaktivitet2), List.of(arbeidstakerandelFraStart, nyAndel), new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel)), STP);
 
         assertThat(tilkommetAktivitet.size()).isEqualTo(1);
         assertThat(tilkommetAktivitet.iterator().next().aktivitetStatus()).isEqualTo(AktivitetStatus.FRILANSER);
@@ -382,12 +329,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
 
         var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(10), STP.plusDays(15));
 
-        var tilkommetAktivitet = TilkommetInntektsforholdTjeneste.finnTilkomneInntektsforhold(
-                STP,
-                List.of(yrkesaktivitet),
-                List.of(arbeidstakerandelFraStart, nyAndel),
-                periode,
-                new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel)));
+        var tilkommetAktivitet = finnTilkomneAndeler(periode, List.of(yrkesaktivitet), List.of(arbeidstakerandelFraStart, nyAndel), new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel)), STP);
 
         assertThat(tilkommetAktivitet.size()).isEqualTo(1);
         assertThat(tilkommetAktivitet.iterator().next().aktivitetStatus()).isEqualTo(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
@@ -408,18 +350,23 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
 
         var utbetalingsgradGrunnlag = new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel));
         var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(10), STP.plusDays(15));
-        var tilkommetAktivitet = TilkommetInntektsforholdTjeneste.finnTilkomneInntektsforhold(
-                STP,
-                List.of(nyYrkesaktivitet),
-                List.of(frilansandelFraStart, nyAndel),
-                periode,
-                utbetalingsgradGrunnlag);
+        var tilkommetAktivitet = finnTilkomneAndeler(periode, List.of(nyYrkesaktivitet), List.of(frilansandelFraStart, nyAndel), utbetalingsgradGrunnlag, STP);
 
         assertThat(tilkommetAktivitet.size()).isEqualTo(1);
         var iterator = tilkommetAktivitet.iterator();
         assertThat(iterator.next().arbeidsgiver()).isEqualTo(arbeidsgiver2);
     }
 
+
+    private Set<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver> finnTilkomneAndeler(Intervall periode,
+                                                                                           List<YrkesaktivitetDto> yrkesaktiviteter,
+                                                                                           List<BeregningsgrunnlagPrStatusOgAndelDto> andelerFraStart,
+                                                                                           PleiepengerSyktBarnGrunnlag utbetalingsgradGrunnlag,
+                                                                                           LocalDate skjæringstidspunkt) {
+        var tidslinje = TilkommetInntektsforholdTjeneste.finnTilkommetInntektsforholdTidslinje(skjæringstidspunkt, yrkesaktiviteter, andelerFraStart, utbetalingsgradGrunnlag);
+        var segmenter = tidslinje.intersection(new LocalDateInterval(periode.getFomDato(), periode.getTomDato())).compress().toSegments();
+        return segmenter.isEmpty() ? new LinkedHashSet<>() : segmenter.first().getValue();
+    }
 
     private BeregningsgrunnlagPrStatusOgAndelDto lagArbeidstakerandel(Arbeidsgiver arbeidsgiver2, long andelsnr, AndelKilde kilde, InternArbeidsforholdRefDto arbeidsforholdRef) {
         return BeregningsgrunnlagPrStatusOgAndelDto.ny()

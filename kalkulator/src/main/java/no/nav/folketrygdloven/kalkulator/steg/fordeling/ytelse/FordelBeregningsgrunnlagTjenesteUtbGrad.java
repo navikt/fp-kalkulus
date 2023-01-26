@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.steg.fordeling.ytelse.svp;
+package no.nav.folketrygdloven.kalkulator.steg.fordeling.ytelse;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -9,27 +9,31 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.FordelBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.omfordeling.OmfordelBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.omfordeling.OmfordelingUtenRefusjonskravTjeneste;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.ytelse.psb.TilkommetInntektPeriodeTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt.TilkommetInntektPeriodeTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 @ApplicationScoped
+@FagsakYtelseTypeRef(FagsakYtelseType.PLEIEPENGER_SYKT_BARN)
+@FagsakYtelseTypeRef(FagsakYtelseType.PLEIEPENGER_NÆRSTÅENDE)
+@FagsakYtelseTypeRef(FagsakYtelseType.OPPLÆRINGSPENGER)
 @FagsakYtelseTypeRef(FagsakYtelseType.SVANGERSKAPSPENGER)
-public class SVPFordelBeregningsgrunnlagTjeneste implements FordelBeregningsgrunnlagTjeneste {
+public class FordelBeregningsgrunnlagTjenesteUtbGrad implements FordelBeregningsgrunnlagTjeneste {
 
-    private OmfordelBeregningsgrunnlagTjeneste omfordelTjeneste;
     private final TilkommetInntektPeriodeTjeneste periodeTjeneste = new TilkommetInntektPeriodeTjeneste();
+    private OmfordelBeregningsgrunnlagTjeneste omfordelTjeneste;
     private boolean graderingMotInntektEnabled;
     private boolean fordelingUtenKravEnabled;
 
-    public SVPFordelBeregningsgrunnlagTjeneste() {
+    public FordelBeregningsgrunnlagTjenesteUtbGrad() {
         // CDI
     }
 
     @Inject
-    public SVPFordelBeregningsgrunnlagTjeneste(OmfordelBeregningsgrunnlagTjeneste omfordelTjeneste) {
+    public FordelBeregningsgrunnlagTjenesteUtbGrad(OmfordelBeregningsgrunnlagTjeneste omfordelTjeneste) {
         this.omfordelTjeneste = omfordelTjeneste;
         this.graderingMotInntektEnabled = KonfigurasjonVerdi.get("GRADERING_MOT_INNTEKT", false);
         this.fordelingUtenKravEnabled = KonfigurasjonVerdi.get("FORDELING_UTEN_KRAV", false);
+
     }
 
     @Override
@@ -47,7 +51,6 @@ public class SVPFordelBeregningsgrunnlagTjeneste implements FordelBeregningsgrun
             return new BeregningsgrunnlagRegelResultat(splittetTilkommetInntektBg,
                     resultatFraOmfordeling.getRegelsporinger().orElse(null));
         }
-
     }
 
 }

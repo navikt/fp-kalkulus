@@ -19,6 +19,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.TilkommetInntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
@@ -75,7 +76,7 @@ class VurderTilkommetInntektTjenesteTest {
 
         VurderTilkommetInntektHåndteringDto dto = new VurderTilkommetInntektHåndteringDto(List.of(vudertPeride));
 
-        BeregningsgrunnlagInput input = lagInput(periode, yrkesaktiviteter, utbetalingsgrader, andeler);
+        BeregningsgrunnlagInput input = lagInput(periode, yrkesaktiviteter, utbetalingsgrader, andeler, vurderteInntektsforhold);
 
         // Act
         var nyttGr = VurderTilkommetInntektTjeneste.løsAvklaringsbehov(dto, new HåndterBeregningsgrunnlagInput(input, BeregningsgrunnlagTilstand.FASTSATT_INN));
@@ -119,7 +120,7 @@ class VurderTilkommetInntektTjenesteTest {
 
         VurderTilkommetInntektHåndteringDto dto = new VurderTilkommetInntektHåndteringDto(List.of(vudertPeride));
 
-        BeregningsgrunnlagInput input = lagInput(periode, yrkesaktiviteter, utbetalingsgrader, andeler);
+        BeregningsgrunnlagInput input = lagInput(periode, yrkesaktiviteter, utbetalingsgrader, andeler, vurderteInntektsforhold);
 
         // Act
         var nyttGr = VurderTilkommetInntektTjeneste.løsAvklaringsbehov(dto, new HåndterBeregningsgrunnlagInput(input, BeregningsgrunnlagTilstand.FASTSATT_INN));
@@ -136,7 +137,7 @@ class VurderTilkommetInntektTjenesteTest {
 
     }
 
-    private BeregningsgrunnlagInput lagInput(Intervall periode, List<YrkesaktivitetDto> yrkesaktiviteter, List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader, List<BeregningsgrunnlagPrStatusOgAndelDto> andeler) {
+    private BeregningsgrunnlagInput lagInput(Intervall periode, List<YrkesaktivitetDto> yrkesaktiviteter, List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader, List<BeregningsgrunnlagPrStatusOgAndelDto> andeler, List<NyttInntektsforholdDto> vurderteInntektsforhold) {
         var input = new BeregningsgrunnlagInput(
                 new KoblingReferanseMock(STP),
                 lagIAYGrunnlag(yrkesaktiviteter),
@@ -146,7 +147,7 @@ class VurderTilkommetInntektTjenesteTest {
         );
 
         input = input.medBeregningsgrunnlagGrunnlag(lagBeregningsgrunnlag(periode.getFomDato(), periode.getTomDato(),
-                andeler));
+                andeler, vurderteInntektsforhold));
         return input;
     }
 
@@ -164,10 +165,12 @@ class VurderTilkommetInntektTjenesteTest {
                         .leggTilAktørArbeid(aktørArbeidBuilder)).build();
     }
 
-    private BeregningsgrunnlagGrunnlagDto lagBeregningsgrunnlag(LocalDate fom, LocalDate tom, List<BeregningsgrunnlagPrStatusOgAndelDto> andeler) {
+    private BeregningsgrunnlagGrunnlagDto lagBeregningsgrunnlag(LocalDate fom, LocalDate tom, List<BeregningsgrunnlagPrStatusOgAndelDto> andeler, List<NyttInntektsforholdDto> vurderteInntektsforhold) {
         var periodeBuilder = new BeregningsgrunnlagPeriodeDto.Builder();
         periodeBuilder.medBeregningsgrunnlagPeriode(fom, tom);
         andeler.forEach(periodeBuilder::leggTilBeregningsgrunnlagPrStatusOgAndel);
+        vurderteInntektsforhold.stream().map(v -> new TilkommetInntektDto(v.getAktivitetStatus(), v.getArbeidsgiverIdentifikator() != null ? Arbeidsgiver.virksomhet(v.getArbeidsgiverIdentifikator()) : null, InternArbeidsforholdRefDto.ref(v.getArbeidsforholdId()), null, null, null))
+                .forEach(periodeBuilder::leggTilTilkommetInntekt);
         return BeregningsgrunnlagGrunnlagDtoBuilder.nytt()
                 .medBeregningsgrunnlag(BeregningsgrunnlagDto.builder()
                         .leggTilBeregningsgrunnlagPeriode(periodeBuilder)

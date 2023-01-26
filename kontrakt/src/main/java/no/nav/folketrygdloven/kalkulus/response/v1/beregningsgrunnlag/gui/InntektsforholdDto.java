@@ -60,11 +60,14 @@ public class InntektsforholdDto {
     public InntektsforholdDto() {
     }
 
-    public InntektsforholdDto(AktivitetStatus aktivitetStatus, String arbeidsgiverIdentifikator, String arbeidsforholdId, String eksternArbeidsforholdId) {
+    public InntektsforholdDto(AktivitetStatus aktivitetStatus, String arbeidsgiverIdentifikator, String arbeidsforholdId, String eksternArbeidsforholdId, Integer bruttoInntektPrÅr, Boolean skalRedusereUtbetaling, boolean harInntektsmelding) {
         this.aktivitetStatus = aktivitetStatus;
         this.arbeidsgiverIdentifikator = arbeidsgiverIdentifikator;
         this.arbeidsforholdId = arbeidsforholdId;
         this.eksternArbeidsforholdId = eksternArbeidsforholdId;
+        this.bruttoInntektPrÅr = bruttoInntektPrÅr;
+        this.skalRedusereUtbetaling = skalRedusereUtbetaling;
+        this.harInntektsmelding = harInntektsmelding;
     }
 
     public AktivitetStatus getAktivitetStatus() {
@@ -111,7 +114,7 @@ public class InntektsforholdDto {
         return skalRedusereUtbetaling;
     }
 
-    public void setSkalRedusereUtbetaling(boolean skalRedusereUtbetaling) {
+    public void setSkalRedusereUtbetaling(Boolean skalRedusereUtbetaling) {
         this.skalRedusereUtbetaling = skalRedusereUtbetaling;
     }
 

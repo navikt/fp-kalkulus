@@ -60,7 +60,7 @@ public class TilkommetInntekt extends BaseEntitet {
     @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "tilkommet_inntekt_pr_aar")))
     private Beløp tilkommetInntektPrÅr;
 
-    @Column(name = "skal_redusere_utbetaling", nullable = false)
+    @Column(name = "skal_redusere_utbetaling", nullable = true)
     private Boolean skalRedusereUtbetaling;
 
     protected TilkommetInntekt() {
@@ -80,7 +80,7 @@ public class TilkommetInntekt extends BaseEntitet {
                             InternArbeidsforholdRef arbeidsforholdRef,
                             Beløp bruttoInntektPrÅr,
                             Beløp tilkommetInntektPrÅr,
-                            boolean skalRedusereUtbetaling) {
+                            Boolean skalRedusereUtbetaling) {
         if (!skalRedusereUtbetaling && tilkommetInntektPrÅr != null) {
             throw new IllegalStateException("Skal ikke sette tilkommet inntekt når ikke redusert utbetaling");
         }
@@ -116,7 +116,7 @@ public class TilkommetInntekt extends BaseEntitet {
         return arbeidsforholdRef == null ? InternArbeidsforholdRef.nullRef() : arbeidsforholdRef;
     }
 
-    public boolean skalRedusereUtbetaling() {
+    public Boolean skalRedusereUtbetaling() {
         return skalRedusereUtbetaling;
     }
 
