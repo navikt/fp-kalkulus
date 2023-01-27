@@ -18,6 +18,7 @@ import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonPerYrkesaktivitet;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
@@ -25,7 +26,6 @@ import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
-import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 import no.nav.fpsak.tidsserie.StandardCombinators;
@@ -61,9 +61,9 @@ public class TilkommetInntektsforholdTjeneste {
      * @return Tidslinje for tilkommet aktivitet/inntektsforhold
      */
     public static LocalDateTimeline<Set<StatusOgArbeidsgiver>> finnTilkommetInntektsforholdTidslinje(LocalDate skjæringstidspunkt,
-                                                                                                               Collection<YrkesaktivitetDto> yrkesaktiviteter,
-                                                                                                               Collection<BeregningsgrunnlagPrStatusOgAndelDto> andelerFraStart,
-                                                                                                               YtelsespesifiktGrunnlag utbetalingsgradGrunnlag) {
+                                                                                                     Collection<YrkesaktivitetDto> yrkesaktiviteter,
+                                                                                                     Collection<BeregningsgrunnlagPrStatusOgAndelDto> andelerFraStart,
+                                                                                                     YtelsespesifiktGrunnlag utbetalingsgradGrunnlag) {
         var antallGodkjenteInntektsforhold = andelerFraStart.stream().filter(a -> a.getKilde().equals(AndelKilde.PROSESS_START)).count();
         var yrkesaktivitetTidslinje = finnInntektsforholdFraYrkesaktiviteter(skjæringstidspunkt, yrkesaktiviteter);
         var næringTidslinje = finnInntektsforholdForStatusFraFravær((UtbetalingsgradGrunnlag) utbetalingsgradGrunnlag, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
@@ -137,12 +137,18 @@ public class TilkommetInntektsforholdTjeneste {
         var yrkesaktivitetSegmenter = yrkesaktiviteter
                 .stream()
                 .filter(ya -> !mapTilAktivitetStatus(ya).equals(AktivitetStatus.UDEFINERT))
-                .flatMap(ya -> ya.getAlleAnsettelsesperioder().stream()
-                        .filter(p -> p.getPeriode().getTomDato().isAfter(skjæringstidspunkt.minusDays(1)))
-                        .map(p -> new LocalDateSegment<>(
-                                p.getPeriode().getFomDato(),
-                                p.getPeriode().getTomDato(),
-                                Set.of(mapTilInntektsforhold(ya))))
+                .flatMap(ya -> {
+                            var ansettelsesTidslinje = finnAnsettelseTidslinje(ya);
+                            var permisjonTidslinje = PermisjonPerYrkesaktivitet.utledPermisjonPerYrkesaktivitet(ya, Collections.emptyMap(), skjæringstidspunkt);
+                            return ansettelsesTidslinje.disjoint(permisjonTidslinje)
+                                    .toSegments().stream()
+                                    .map(LocalDateSegment::getLocalDateInterval)
+                                    .filter(p -> p.getTomDato().isAfter(skjæringstidspunkt.minusDays(1)))
+                                    .map(p -> new LocalDateSegment<>(
+                                            p.getFomDato(),
+                                            p.getTomDato(),
+                                            Set.of(mapTilInntektsforhold(ya))));
+                        }
                 )
                 .collect(Collectors.toList());
 
@@ -171,7 +177,8 @@ public class TilkommetInntektsforholdTjeneste {
         return switch (status) {
             case SELVSTENDIG_NÆRINGSDRIVENDE -> UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE;
             case FRILANSER -> UttakArbeidType.FRILANS;
-            default -> throw new IllegalStateException("Støtter ikke tilkommet inntektsforhold fra fravær for status " + status);
+            default ->
+                    throw new IllegalStateException("Støtter ikke tilkommet inntektsforhold fra fravær for status " + status);
         };
     }
 
@@ -209,7 +216,8 @@ public class TilkommetInntektsforholdTjeneste {
 
     private static AktivitetStatus mapTilAktivitetStatus(YrkesaktivitetDto yrkesaktivitet) {
         return switch (yrkesaktivitet.getArbeidType()) {
-            case FORENKLET_OPPGJØRSORDNING, MARITIMT_ARBEIDSFORHOLD, ORDINÆRT_ARBEIDSFORHOLD -> AktivitetStatus.ARBEIDSTAKER;
+            case FORENKLET_OPPGJØRSORDNING, MARITIMT_ARBEIDSFORHOLD, ORDINÆRT_ARBEIDSFORHOLD ->
+                    AktivitetStatus.ARBEIDSTAKER;
             case FRILANSER_OPPDRAGSTAKER_MED_MER -> AktivitetStatus.FRILANSER;
             case SELVSTENDIG_NÆRINGSDRIVENDE -> AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE;
             default -> AktivitetStatus.UDEFINERT;
@@ -238,6 +246,13 @@ public class TilkommetInntektsforholdTjeneste {
                 .filter(it -> it.getArbeidsgiver().equals(aktivitet.arbeidsgiver()))
                 .flatMap(it -> it.getAlleAnsettelsesperioder().stream())
                 .toList();
+    }
+
+    private static LocalDateTimeline<Boolean> finnAnsettelseTidslinje(YrkesaktivitetDto it) {
+        return new LocalDateTimeline<>(it.getAlleAnsettelsesperioder()
+                .stream()
+                .map(p -> new LocalDateSegment<>(p.getPeriode().getFomDato(), p.getPeriode().getTomDato(), Boolean.TRUE))
+                .toList());
     }
 
     private static Comparator<Inntektsforhold> sorterPåStartdato(Collection<BeregningsgrunnlagPrStatusOgAndelDto> andeler, Collection<YrkesaktivitetDto> yrkesaktiviteter,

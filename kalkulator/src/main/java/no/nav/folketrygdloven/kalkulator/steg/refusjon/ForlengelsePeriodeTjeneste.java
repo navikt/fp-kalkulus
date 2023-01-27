@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulator.steg.refusjon;
 import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.ytelse.psb.SplittBGPerioder;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt.SplittBGPerioder;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
