@@ -15,7 +15,7 @@ import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 /**
  * Angir kopi av grunnlag fra en kobling til en annen
  */
-@Entity(name = "KoblingGrunnlagskopi")
+@Entity(name = "KoblingGrunnlagskopiSporing")
 @Table(name = "KOBLING_GRUNNLAGSKOPI_SPORING")
 public class KoblingGrunnlagskopiSporing extends BaseEntitet implements IndexKey {
 

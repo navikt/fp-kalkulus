@@ -123,7 +123,7 @@ public class KoblingRepository {
 
     public Optional<KoblingGrunnlagskopiSporing> hentGrunnlagskopiForKobling(Long koblingId) {
         TypedQuery<KoblingGrunnlagskopiSporing> query = entityManager.createQuery(
-                "SELECT k FROM KoblingGrunnlagskopi k WHERE k.kopiertTilKoblingId = :koblingId and aktiv = true", KoblingGrunnlagskopiSporing.class);
+                "SELECT k FROM KoblingGrunnlagskopiSporing k WHERE k.kopiertTilKoblingId = :koblingId and aktiv = true", KoblingGrunnlagskopiSporing.class);
         query.setParameter("koblingId", koblingId);
         return HibernateVerktøy.hentUniktResultat(query);
     }
