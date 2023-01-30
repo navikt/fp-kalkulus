@@ -99,9 +99,9 @@ spec:
     - name: BEREGNE_DAGPENGER_FRA_PLEIEPENGER
       value: "true"
     - name: FORDELING_UTEN_KRAV
-      value: "true"
+      value: "false"
     - name: MELDEKORT_DELVIS_PERIODE
-      value: "true"
+      value: "false"
     - name: BEREGNE_FRA_YTELSE_VEDTAK
       value: "true"
     - name: VURDER_MOTTAR_YTELSE_FL_FILTRERING
@@ -109,10 +109,6 @@ spec:
     - name: VURDER_MOTTAR_YTELSE_AT_FILTRERING
       value: "true"
     - name: MAP_YTELSE_DAGPENGER_FRA_ANDELER
-      value: "true"
-    - name: REGEL_INPUT_KOMPRIMMERING_ENABLED
-      value: "true"
-    - name: REGEL_INPUT_HASHING_ENABLED
       value: "true"
     - name: REKURSIV_TASK_KOMPRIMERING_ENABLED
       value: "true"

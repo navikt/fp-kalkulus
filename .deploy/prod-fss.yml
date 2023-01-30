@@ -109,10 +109,6 @@ spec:
       value: "true"
     - name: MAP_YTELSE_DAGPENGER_FRA_ANDELER
       value: "true"
-    - name: REGEL_INPUT_KOMPRIMMERING_ENABLED
-      value: "true"
-    - name: REGEL_INPUT_HASHING_ENABLED
-      value: "true"
     - name: REKURSIV_TASK_KOMPRIMERING_ENABLED
       value: "true"
     - name: TREKKE_OVERSTYRING_ENABLED
