@@ -135,6 +135,7 @@ public class KopierBeregningsgrunnlagTjeneste {
             var nyKoblingId = finnNyKoblingId(koblingId, eksisterendeKoblinger, nyeKoblinger, kopiRequests);
             var kopi = BeregningsgrunnlagGrunnlagBuilder.kopiere(gr);
             beregningsgrunnlagRepository.lagre(nyKoblingId, kopi, MapStegTilTilstand.mapTilStegTilstand(steg));
+            koblingTjeneste.lagreGrunnlagskopiSporing(nyKoblingId, gr.getKoblingId(), gr.getId());
         });
     }
 

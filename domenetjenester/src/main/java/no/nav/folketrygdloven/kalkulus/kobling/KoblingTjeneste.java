@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingGrunnlagskopiSporing;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
@@ -50,6 +51,10 @@ public class KoblingTjeneste {
             alleKoblinger.addAll(nyeKoblinger);
         }
         return alleKoblinger;
+    }
+
+    public void lagreGrunnlagskopiSporing(Long koblingId, Long originalKoblingId, Long grunnlagsId) {
+        repository.lagre(new KoblingGrunnlagskopiSporing(koblingId, originalKoblingId, grunnlagsId));
     }
 
     public List<KoblingRelasjon> finnOgOpprettKoblingRelasjoner(Map<UUID, List<UUID>> koblingrelasjoner) {

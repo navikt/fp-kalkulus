@@ -18,6 +18,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbe
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingGrunnlagskopiSporing;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
 import no.nav.folketrygdloven.kalkulus.felles.diff.DiffEntity;
 import no.nav.folketrygdloven.kalkulus.felles.diff.DiffResult;
@@ -120,6 +121,14 @@ public class KoblingRepository {
         return query.getResultList();
     }
 
+    public Optional<KoblingGrunnlagskopiSporing> hentGrunnlagskopiForKobling(Long koblingId) {
+        TypedQuery<KoblingGrunnlagskopiSporing> query = entityManager.createQuery(
+                "SELECT k FROM KoblingGrunnlagskopi k WHERE k.kopiertTilKoblingId = :koblingId and aktiv = true", KoblingGrunnlagskopiSporing.class);
+        query.setParameter("koblingId", koblingId);
+        return HibernateVerktøy.hentUniktResultat(query);
+    }
+
+
     public List<KoblingRelasjon> hentRelasjonerFor(Collection<Long> ider) {
         TypedQuery<KoblingRelasjon> query = entityManager.createQuery(
                 "SELECT k FROM KoblingRelasjon k WHERE k.koblingId IN (:ider)", KoblingRelasjon.class);
@@ -147,6 +156,24 @@ public class KoblingRepository {
             entityManager.flush();
         }
     }
+
+    public void lagre(KoblingGrunnlagskopiSporing grunnlagskopi) {
+        var eksisterendeRelasjon = hentGrunnlagskopiForKobling(grunnlagskopi.getKopiertTilKoblingId());
+
+        if (eksisterendeRelasjon.isEmpty()) {
+            entityManager.persist(grunnlagskopi);
+            entityManager.flush();
+        } else {
+            var gammel = eksisterendeRelasjon.get();
+            if (!gammel.getKopiertGrunnlagId().equals(grunnlagskopi.getKopiertGrunnlagId())) {
+                gammel.setAktiv(false);
+                entityManager.persist(gammel);
+                entityManager.persist(grunnlagskopi);
+                entityManager.flush();
+            }
+        }
+    }
+
 
     public void lagre(KoblingRelasjon koblingRelasjon) {
         var eksisterendeRelasjon = hentRelasjon(koblingRelasjon.getKoblingId(), koblingRelasjon.getOriginalKoblingId());
