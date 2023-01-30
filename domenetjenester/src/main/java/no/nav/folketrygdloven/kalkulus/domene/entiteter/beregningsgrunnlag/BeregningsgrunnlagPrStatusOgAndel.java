@@ -164,7 +164,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
         this.aktivitetStatus = beregningsgrunnlagPrStatusOgAndel.getAktivitetStatus();
         this.andelsnr = beregningsgrunnlagPrStatusOgAndel.getAndelsnr();
         this.arbeidsforholdType = beregningsgrunnlagPrStatusOgAndel.getArbeidsforholdType();
-        this.grunnlagPrÅr = new Årsgrunnlag(beregningsgrunnlagPrStatusOgAndel.grunnlagPrÅr);
+        this.grunnlagPrÅr = beregningsgrunnlagPrStatusOgAndel.grunnlagPrÅr != null ? new Årsgrunnlag(beregningsgrunnlagPrStatusOgAndel.grunnlagPrÅr) : null;
         this.avkortetBrukersAndelPrÅr = beregningsgrunnlagPrStatusOgAndel.getAvkortetBrukersAndelPrÅr();
         this.avkortetPrÅr = beregningsgrunnlagPrStatusOgAndel.getAvkortetPrÅr();
         this.avkortetRefusjonPrÅr = beregningsgrunnlagPrStatusOgAndel.getAvkortetRefusjonPrÅr();
