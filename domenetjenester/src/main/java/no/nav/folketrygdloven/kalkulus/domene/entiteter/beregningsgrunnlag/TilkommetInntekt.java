@@ -81,7 +81,7 @@ public class TilkommetInntekt extends BaseEntitet {
                             Beløp bruttoInntektPrÅr,
                             Beløp tilkommetInntektPrÅr,
                             Boolean skalRedusereUtbetaling) {
-        if (!skalRedusereUtbetaling && tilkommetInntektPrÅr != null) {
+        if (skalRedusereUtbetaling != null && !skalRedusereUtbetaling && tilkommetInntektPrÅr != null) {
             throw new IllegalStateException("Skal ikke sette tilkommet inntekt når ikke redusert utbetaling");
         }
         this.aktivitetStatus = aktivitetStatus;
