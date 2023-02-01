@@ -45,7 +45,7 @@ public class HåndtererApplikasjonTjeneste {
                 overstyring.ifPresent(o -> avklaringsbehovTjeneste.trekkOverstyring(koblingId, o));
                 return OppdateringRespons.TOM_RESPONS();
             } else {
-                opprettOverstyringAvklaringsbehov(koblingId, avklaringsbehovdefinisjon);
+                opprettOverstyringAvklaringsbehov(koblingId, avklaringsbehovdefinisjon, håndterBeregningDto.getBegrunnelse());
             }
         }
         BeregningsgrunnlagTilstand tilstand = MapStegTilTilstand.mapTilStegUtTilstand(håndterBeregningDto.getAvklaringsbehovDefinisjon().getStegFunnet()).orElseThrow();
@@ -66,9 +66,12 @@ public class HåndtererApplikasjonTjeneste {
                 håndterBeregningDto.getBegrunnelse());
     }
 
-    private void opprettOverstyringAvklaringsbehov(Long koblingId, AvklaringsbehovDefinisjon avklaringsbehovdefinisjon) {
+    private void opprettOverstyringAvklaringsbehov(Long koblingId, AvklaringsbehovDefinisjon avklaringsbehovdefinisjon, String begrunnelse) {
         if (!KonfigurasjonVerdi.get("TREKKE_OVERSTYRING_ENABLED", false)) {
             avklaringsbehovTjeneste.avbrytAndreAvklaringsbehovISammeSteg(koblingId, avklaringsbehovdefinisjon);
+        } else {
+            avklaringsbehovTjeneste.løsAndreAvklaringsbehovISammeSteg(koblingId, avklaringsbehovdefinisjon, begrunnelse);
+
         }
         avklaringsbehovTjeneste.opprettEllerGjennopprettAvklaringsbehov(koblingId, avklaringsbehovdefinisjon);
     }

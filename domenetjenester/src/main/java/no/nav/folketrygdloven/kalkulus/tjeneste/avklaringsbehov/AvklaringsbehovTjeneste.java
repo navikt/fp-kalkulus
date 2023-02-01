@@ -97,6 +97,18 @@ public class AvklaringsbehovTjeneste {
         });
     }
 
+    public void løsAndreAvklaringsbehovISammeSteg(Long koblingId, AvklaringsbehovDefinisjon definisjon, String begrunnelse) {
+        hentAlleAvklaringsbehovForKobling(koblingId).forEach(ap -> {
+            if (erÅpentAksjonspunktISammeSteg(definisjon, ap)) {
+                løsAvklaringsbehov(koblingId, ap.getDefinisjon(), begrunnelse);
+            }
+        });
+    }
+
+    private static boolean erÅpentAksjonspunktISammeSteg(AvklaringsbehovDefinisjon definisjon, AvklaringsbehovEntitet ap) {
+        return !definisjon.equals(ap.getDefinisjon()) && ap.getStegFunnet().equals(definisjon.getStegFunnet()) && ap.getStatus().equals(AvklaringsbehovStatus.OPPRETTET);
+    }
+
     /**
      * @param stegSomSkalBeregnes beregningsteget vi nå skal beregne
      * @param koblingId           koblingen som skal beregnes
