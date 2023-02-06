@@ -193,7 +193,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         return BeregningsgrunnlagPrStatus.builder()
                 .medAktivitetStatus(regelAktivitetStatus)
                 .medBruttoPrÅr(vlBGPStatus.getBruttoPrÅr())
-                .medBeregnetPrÅr(vlBGPStatus.getBeregnetPrÅr() != null ? vlBGPStatus.getBeregnetPrÅr() : BigDecimal.ZERO)
+                .medInntektsgrunnlagPrÅr(vlBGPStatus.getGrunnlagPrÅr().getBruttoUtenFordelt() != null ? vlBGPStatus.getGrunnlagPrÅr().getBruttoUtenFordelt() : BigDecimal.ZERO)
                 .medAndelNr(vlBGPStatus.getAndelsnr())
                 .medUtbetalingsprosent(finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false))
                 .build();
@@ -220,7 +220,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         BeregningsgrunnlagPrArbeidsforhold.Builder builder = BeregningsgrunnlagPrArbeidsforhold.builder();
         builder
                 .medBruttoPrÅr(vlBGPStatus.getBruttoPrÅr())
-                .medBeregnetPrÅr(vlBGPStatus.getBeregnetPrÅr() != null ? vlBGPStatus.getBeregnetPrÅr() : BigDecimal.ZERO)
+                .medInntektsgrunnlagPrÅr(vlBGPStatus.getGrunnlagPrÅr().getBruttoUtenFordelt() != null ? vlBGPStatus.getGrunnlagPrÅr().getBruttoUtenFordelt() : BigDecimal.ZERO)
                 .medAndelNr(vlBGPStatus.getAndelsnr())
                 .medArbeidsforhold(MapArbeidsforholdFraVLTilRegel.arbeidsforholdFor(vlBGPStatus))
                 .medUtbetalingsprosent(finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false));

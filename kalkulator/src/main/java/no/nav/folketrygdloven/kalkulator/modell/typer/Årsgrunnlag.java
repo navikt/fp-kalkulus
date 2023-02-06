@@ -61,6 +61,15 @@ public class Årsgrunnlag implements Serializable, Comparable<Årsgrunnlag> {
         return beregnetPrÅr;
     }
 
+    public BigDecimal getBruttoUtenFordelt() {
+        if (besteberegningPrÅr != null) {
+            return besteberegningPrÅr;
+        }
+        if (overstyrtPrÅr != null) {
+            return overstyrtPrÅr;
+        }
+        return beregnetPrÅr;
+    }
 
     public BigDecimal getBesteberegningPrÅr() {
         return besteberegningPrÅr;
