@@ -98,13 +98,6 @@ public class BeregningsgrunnlagDto {
     @Valid
     private FordelingDto faktaOmFordeling;
 
-    @JsonProperty(value = "årsinntektVisningstall")
-    @Valid
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal årsinntektVisningstall;
-
     @JsonProperty(value = "dekningsgrad")
     @Valid
     @Min(0)
@@ -154,7 +147,6 @@ public class BeregningsgrunnlagDto {
         this.skjæringstidspunkt = beregningsgrunnlagDto.skjæringstidspunkt;
         this.vilkårsperiodeFom = beregningsgrunnlagDto.vilkårsperiodeFom;
         this.ytelsesspesifiktGrunnlag = beregningsgrunnlagDto.ytelsesspesifiktGrunnlag;
-        this.årsinntektVisningstall = beregningsgrunnlagDto.årsinntektVisningstall;
         this.inntektsgrunnlag = beregningsgrunnlagDto.inntektsgrunnlag;
     }
 
@@ -235,15 +227,7 @@ public class BeregningsgrunnlagDto {
     public void setFaktaOmFordeling(FordelingDto faktaOmFordelingDto) {
         this.faktaOmFordeling = faktaOmFordelingDto;
     }
-
-    public BigDecimal getÅrsinntektVisningstall() {
-        return årsinntektVisningstall;
-    }
-
-    public void setÅrsinntektVisningstall(BigDecimal årsinntektVisningstall) {
-        this.årsinntektVisningstall = årsinntektVisningstall;
-    }
-
+    
     public int getDekningsgrad() {
         return dekningsgrad;
     }

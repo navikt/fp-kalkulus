@@ -156,10 +156,6 @@ public class BeregningsgrunnlagDtoTjeneste {
         dto.setHalvG(halvG);
         dto.setGrunnbeløp(grunnbeløp.getVerdi());
         dto.setHjemmel(beregningsgrunnlag.getHjemmel());
-
-        // Det skal vises et tall som "oppsumering" av årsinntekt i GUI, innebærer nok logikk til at det bør utledes backend
-        FinnÅrsinntektvisningstall.finn(beregningsgrunnlag,
-                input.getBeregningsgrunnlagGrunnlag().getFaktaAggregat().flatMap(FaktaAggregatDto::getFaktaAktør)).ifPresent(dto::setÅrsinntektVisningstall);
     }
 
     private void mapAktivitetGradering(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
