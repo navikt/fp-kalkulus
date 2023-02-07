@@ -94,7 +94,7 @@ public final class SpolFramoverTjeneste {
                 .collect(Collectors.toList());
 
         nyttBg.getBeregningsgrunnlagPerioder().forEach(periode -> {
-            if (intervallerSomKanKopieres.contains(periode.getPeriode())) {
+            if (intervallerSomKanKopieres.stream().anyMatch(it -> it.inkluderer(periode.getPeriode()))) {
                 bgBuilder.leggTilBeregningsgrunnlagPeriode(finnPeriodeFraEksisterende(eksisterendePerioder,
                         periode.getPeriodeÅrsaker(),
                         periode.getPeriode(),
