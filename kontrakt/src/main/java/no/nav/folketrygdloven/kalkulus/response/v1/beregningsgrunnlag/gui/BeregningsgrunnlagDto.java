@@ -20,6 +20,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.InntektsgrunnlagDto;
@@ -125,6 +126,11 @@ public class BeregningsgrunnlagDto {
     @Valid
     private InntektsgrunnlagDto inntektsgrunnlag;
 
+    @JsonProperty(value = "forlengelseperioder")
+    @Valid
+    @Size(max = 100)
+    private List<Periode> forlengelseperioder;
+
     public BeregningsgrunnlagDto() {
         // trengs for deserialisering av JSON
     }
@@ -148,6 +154,8 @@ public class BeregningsgrunnlagDto {
         this.vilkårsperiodeFom = beregningsgrunnlagDto.vilkårsperiodeFom;
         this.ytelsesspesifiktGrunnlag = beregningsgrunnlagDto.ytelsesspesifiktGrunnlag;
         this.inntektsgrunnlag = beregningsgrunnlagDto.inntektsgrunnlag;
+        this.forlengelseperioder = beregningsgrunnlagDto.forlengelseperioder;
+
     }
 
 
@@ -227,7 +235,7 @@ public class BeregningsgrunnlagDto {
     public void setFaktaOmFordeling(FordelingDto faktaOmFordelingDto) {
         this.faktaOmFordeling = faktaOmFordelingDto;
     }
-    
+
     public int getDekningsgrad() {
         return dekningsgrad;
     }
@@ -302,5 +310,13 @@ public class BeregningsgrunnlagDto {
 
     public void setAvklaringsbehov(List<AvklaringsbehovDto> avklaringsbehov) {
         this.avklaringsbehov = avklaringsbehov;
+    }
+
+    public List<Periode> getForlengelseperioder() {
+        return forlengelseperioder;
+    }
+
+    public void setForlengelseperioder(List<Periode> forlengelseperioder) {
+        this.forlengelseperioder = forlengelseperioder;
     }
 }

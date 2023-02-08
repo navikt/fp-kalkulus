@@ -29,6 +29,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregat
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
@@ -65,6 +66,7 @@ public class BeregningsgrunnlagDtoTjeneste {
         BeregningsgrunnlagDto dto = new BeregningsgrunnlagDto();
         mapAvklaringsbehov(input, dto);
         mapFaktaOmBeregning(input, dto);
+        mapForlengelsePerioder(input, dto);
         if (input.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlag().isPresent()) {
             mapOverstyring(input, dto);
             mapSkjæringstidspunkt(input, dto);
@@ -80,6 +82,12 @@ public class BeregningsgrunnlagDtoTjeneste {
             mapInntektsgrunnlag(input, dto);
         }
         return dto;
+    }
+
+    private static void mapForlengelsePerioder(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
+        if (dto.getForlengelseperioder() != null) {
+            dto.setForlengelseperioder(input.getForlengelseperioder().stream().map(p -> new Periode(p.getFomDato(), p.getFomDato())).toList());
+        }
     }
 
     private void mapAvklaringsbehov(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
