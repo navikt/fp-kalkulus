@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.kopiering;
 
+import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
 import static no.nav.folketrygdloven.kalkulus.kopiering.KanKopierBeregningsgrunnlag.finnPerioderSomKanKopieres;
 import static no.nav.folketrygdloven.kalkulus.kopiering.KanKopierBeregningsgrunnlag.kanKopiereForrigeGrunnlagAvklartIStegUt;
 
@@ -109,8 +110,8 @@ public final class SpolFramoverTjeneste {
                                                                                    List<PeriodeÅrsak> nyePeriodeÅrsaker,
                                                                                    Intervall periodeSomSkalKopieres,
                                                                                    Set<Intervall> intervallerSomKanKopieres) {
-        var tilstøterEndretIntervall = intervallerSomKanKopieres.stream().anyMatch(p -> periodeSomSkalKopieres.getTomDato().equals(p.getTomDato()) ||
-                periodeSomSkalKopieres.getFomDato().equals(p.getFomDato()));
+        var tilstøterEndretIntervall = intervallerSomKanKopieres.stream().noneMatch(p -> p.inkluderer(periodeSomSkalKopieres.getFomDato().minusDays(1)) ||
+                (!periodeSomSkalKopieres.getTomDato().equals(TIDENES_ENDE) && p.inkluderer(periodeSomSkalKopieres.getTomDato().plusDays(1))));
         var forrigePeriode = forrigePerioder.stream()
                 .filter(p -> p.getPeriode().equals(periodeSomSkalKopieres))
                 .findFirst();

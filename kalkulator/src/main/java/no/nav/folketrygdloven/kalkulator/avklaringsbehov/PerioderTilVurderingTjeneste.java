@@ -6,6 +6,7 @@ import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.fpsak.tidsserie.LocalDateSegment;
 
 public class PerioderTilVurderingTjeneste {
 
@@ -17,12 +18,23 @@ public class PerioderTilVurderingTjeneste {
         this.beregningsgrunnlagsperioder = beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream().map(BeregningsgrunnlagPeriodeDto::getPeriode).toList();
     }
 
+    public PerioderTilVurderingTjeneste(List<Intervall> forlengelseperioder, List<Intervall> beregningsgrunnlagsperioder) {
+        this.forlengelseperioder = forlengelseperioder;
+        this.beregningsgrunnlagsperioder = beregningsgrunnlagsperioder;
+    }
+
+
     public boolean erTilVurdering(Intervall periode) {
         if (!KonfigurasjonVerdi.get("KOPIERING_VED_FORLENGELSE", false)) {
             return true;
         }
         return finnPerioderTilVurdering().stream().anyMatch(periode::overlapper);
     }
+
+    public <V> boolean erTilVurdering(LocalDateSegment<V> segment) {
+        return erTilVurdering(Intervall.fraOgMedTilOgMed(segment.getFom(), segment.getTom()));
+    }
+
 
     private List<Intervall> finnPerioderTilVurdering() {
         return forlengelseperioder == null || forlengelseperioder.isEmpty() ? beregningsgrunnlagsperioder :

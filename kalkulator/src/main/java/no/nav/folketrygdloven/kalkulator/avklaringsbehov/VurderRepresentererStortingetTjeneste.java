@@ -20,7 +20,8 @@ public class VurderRepresentererStortingetTjeneste {
             var nyttBg = SplittBGPerioder.splittPerioderOgSettPeriodeårsak(input.getBeregningsgrunnlag(),
                     new LocalDateTimeline<>(List.of(new LocalDateSegment<>(vurderDto.getFom(), vurderDto.getTom(), true))),
                     PeriodeÅrsak.REPRESENTERER_STORTINGET,
-                    PeriodeÅrsak.REPRESENTERER_STORTINGET_AVSLUTTET);
+                    PeriodeÅrsak.REPRESENTERER_STORTINGET_AVSLUTTET,
+                    input.getForlengelseperioder());
             grunnlagBuilder.medBeregningsgrunnlag(nyttBg);
         }
         return grunnlagBuilder.build(BeregningsgrunnlagTilstand.FASTSATT_INN);

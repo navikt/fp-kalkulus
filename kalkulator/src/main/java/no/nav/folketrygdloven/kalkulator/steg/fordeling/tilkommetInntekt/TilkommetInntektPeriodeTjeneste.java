@@ -20,6 +20,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
+import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
 /**
  * Ved nye inntektsforhold skal beregningsgrunnlaget graderes mot inntekt.
@@ -38,17 +39,18 @@ public class TilkommetInntektPeriodeTjeneste {
                 input.getIayGrunnlag().getAktørArbeidFraRegister().map(AktørArbeidDto::hentAlleYrkesaktiviteter).orElse(Collections.emptyList()),
                 beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
                 input.getYtelsespesifiktGrunnlag());
+        var tidlinjeMedTilkommetAktivitet = tilkommetAktivitetTidslinje.filterValue(v -> !v.isEmpty()).compress();
         return SplittBGPerioder.splittPerioder(beregningsgrunnlag,
-                tilkommetAktivitetTidslinje.compress(),
+                tidlinjeMedTilkommetAktivitet,
                 TilkommetInntektPeriodeTjeneste::opprettTilkommetInntekt,
-                SplittBGPerioder.getSettAvsluttetPeriodeårsakMapper(PeriodeÅrsak.TILKOMMET_INNTEKT, PeriodeÅrsak.TILKOMMET_INNTEKT_AVSLUTTET));
+                SplittBGPerioder.getSettAvsluttetPeriodeårsakMapper(tidlinjeMedTilkommetAktivitet, input.getForlengelseperioder(), PeriodeÅrsak.TILKOMMET_INNTEKT_AVSLUTTET));
     }
 
 
     public static LocalDateSegment<BeregningsgrunnlagPeriodeDto> opprettTilkommetInntekt(LocalDateInterval di,
                                                                                                  LocalDateSegment<BeregningsgrunnlagPeriodeDto> lhs,
                                                                                                  LocalDateSegment<Set<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver>> rhs) {
-        if (lhs != null && rhs != null && rhs.getValue().size() > 0) {
+        if (lhs != null && rhs != null) {
             var nyPeriode = BeregningsgrunnlagPeriodeDto.kopier(lhs.getValue())
                     .leggTilPeriodeÅrsak(PeriodeÅrsak.TILKOMMET_INNTEKT)
                     .medBeregningsgrunnlagPeriode(di.getFomDato(), di.getTomDato());

@@ -18,7 +18,8 @@ public class ForlengelsePeriodeTjeneste {
             var forlengelseTidslinje = new LocalDateTimeline<>(forlengelseSegmenter);
             return SplittBGPerioder.splittPerioderOgSettPeriodeårsak(beregningsgrunnlag, forlengelseTidslinje.compress(),
                     PeriodeÅrsak.ENDRING_I_AKTIVITETER_SØKT_FOR,
-                    PeriodeÅrsak.ENDRING_I_AKTIVITETER_SØKT_FOR);
+                    PeriodeÅrsak.ENDRING_I_AKTIVITETER_SØKT_FOR,
+                    input.getForlengelseperioder());
         }
         return beregningsgrunnlag;
     }
