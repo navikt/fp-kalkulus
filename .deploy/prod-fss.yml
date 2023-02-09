@@ -55,6 +55,7 @@ spec:
       claims:
         extra:
           - "NAVident"
+      allowAllUsers: true
   accessPolicy:
       inbound:
         rules:
