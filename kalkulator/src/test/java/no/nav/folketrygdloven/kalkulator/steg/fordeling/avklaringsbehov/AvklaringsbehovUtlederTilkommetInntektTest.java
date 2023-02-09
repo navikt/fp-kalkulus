@@ -258,7 +258,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
     }
 
     @Test
-    void skal_finne_tilkommet_andel_dersom_en_andel_fra_start_uten_overlapp_til_to_overlappende_arbeidsforhold_hos_ulike_arbeidsgivere() {
+    void skal_finne_to_tilkommne_andeler_dersom_en_andel_fra_start_uten_overlapp_til_to_overlappende_arbeidsforhold_hos_ulike_arbeidsgivere() {
 
         var arbeidsgiver = Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR);
         var arbeidstakerandelFraStart = lagArbeidstakerandel(arbeidsgiver, 1L, AndelKilde.PROSESS_START, InternArbeidsforholdRefDto.nullRef());
@@ -281,9 +281,11 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
 
         var tilkommetAktivitet = finnTilkomneAndeler(periode, List.of(yrkesaktivitet, nyYrkesaktivitet, nyYrkesaktivitet2), List.of(arbeidstakerandelFraStart, nyAndel, nyAndel2), new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel, utbetalingsgradNyAndel2)), STP);
 
-        assertThat(tilkommetAktivitet.size()).isEqualTo(1);
+        assertThat(tilkommetAktivitet.size()).isEqualTo(2);
         var iterator = tilkommetAktivitet.iterator();
+        assertThat(iterator.next().arbeidsgiver()).isEqualTo(arbeidsgiver2);
         assertThat(iterator.next().arbeidsgiver()).isEqualTo(arbeidsgiver3);
+
     }
 
     @Test
@@ -293,6 +295,37 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
 
         var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(10), STP.plusDays(15));
         var tilkomneAndeler = finnTilkomneAndeler(periode, List.of(), List.of(frilansandelFraStart), new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart)), STP);
+
+        assertThat(tilkomneAndeler.isEmpty()).isTrue();
+    }
+
+    @Test
+    void skal_ikke_finne_tilkommet_andel_dersom_en_frilansandel_og_en_arbeidstakerandel_fra_start_med_direkte_overgang_til_nytt_arbeid() {
+        var frilansandelFraStart = lagFrilansandel(1L, AndelKilde.PROSESS_START);
+        var utbetalingsgradFraStart = new UtbetalingsgradPrAktivitetDto(lagFrilansAktivitet(), lagUtbetalingsgrader(50, STP, STP.plusDays(20)));
+
+        var arbeidsgiver = Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR);
+        var yrkesaktivitet = lagYrkesaktivitet(arbeidsgiver, STP.minusMonths(10), STP.plusDays(9), InternArbeidsforholdRefDto.nullRef());
+
+        var atFraStart = lagArbeidstakerandel(arbeidsgiver, 2L, AndelKilde.PROSESS_START, InternArbeidsforholdRefDto.nullRef());
+        var utbetalingsgradATFraStart = new UtbetalingsgradPrAktivitetDto(lagAktivitet(arbeidsgiver, InternArbeidsforholdRefDto.nullRef()),
+                lagUtbetalingsgrader(50, STP, STP.plusDays(20)));
+
+
+
+        var arbeidsgiver2 = Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR2);
+        var nyAndel = lagArbeidstakerandel(arbeidsgiver2, 3L, AndelKilde.PROSESS_PERIODISERING, InternArbeidsforholdRefDto.nullRef());
+        var utbetalingsgradNyAndel = new UtbetalingsgradPrAktivitetDto(lagAktivitet(arbeidsgiver2, InternArbeidsforholdRefDto.nullRef()),
+                lagUtbetalingsgrader(50, STP, STP.plusDays(20)));
+
+        var nyYrkesaktivitet = lagYrkesaktivitet(arbeidsgiver2, STP.plusDays(10), STP.plusDays(20), InternArbeidsforholdRefDto.nullRef());
+
+
+
+
+        var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(10), STP.plusDays(15));
+        var tilkomneAndeler = finnTilkomneAndeler(periode, List.of(yrkesaktivitet, nyYrkesaktivitet), List.of(frilansandelFraStart, atFraStart, nyAndel),
+                new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradATFraStart, utbetalingsgradNyAndel)), STP);
 
         assertThat(tilkomneAndeler.isEmpty()).isTrue();
     }
