@@ -38,11 +38,14 @@ public class TilkommetInntektPeriodeTjeneste {
                 input.getIayGrunnlag().getAktørArbeidFraRegister().map(AktørArbeidDto::hentAlleYrkesaktiviteter).orElse(Collections.emptyList()),
                 beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
                 input.getYtelsespesifiktGrunnlag());
-        return SplittBGPerioder.splittPerioder(beregningsgrunnlag, tilkommetAktivitetTidslinje.compress(), TilkommetInntektPeriodeTjeneste::opprettTilkommetInntekt);
+        return SplittBGPerioder.splittPerioder(beregningsgrunnlag,
+                tilkommetAktivitetTidslinje.compress(),
+                TilkommetInntektPeriodeTjeneste::opprettTilkommetInntekt,
+                SplittBGPerioder.getSettAvsluttetPeriodeårsakMapper(PeriodeÅrsak.TILKOMMET_INNTEKT, PeriodeÅrsak.TILKOMMET_INNTEKT_AVSLUTTET));
     }
 
 
-    public static LocalDateSegment<BeregningsgrunnlagPeriodeDto.Builder> opprettTilkommetInntekt(LocalDateInterval di,
+    public static LocalDateSegment<BeregningsgrunnlagPeriodeDto> opprettTilkommetInntekt(LocalDateInterval di,
                                                                                                  LocalDateSegment<BeregningsgrunnlagPeriodeDto> lhs,
                                                                                                  LocalDateSegment<Set<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver>> rhs) {
         if (lhs != null && rhs != null && rhs.getValue().size() > 0) {
@@ -50,10 +53,11 @@ public class TilkommetInntektPeriodeTjeneste {
                     .leggTilPeriodeÅrsak(PeriodeÅrsak.TILKOMMET_INNTEKT)
                     .medBeregningsgrunnlagPeriode(di.getFomDato(), di.getTomDato());
             mapTilkomneInntekter(lhs.getValue(), rhs.getValue()).forEach(nyPeriode::leggTilTilkommetInntekt);
-            return new LocalDateSegment<>(di, nyPeriode);
+            return new LocalDateSegment<>(di, nyPeriode.build());
         } else if (lhs != null) {
             var nyPeriode = BeregningsgrunnlagPeriodeDto.kopier(lhs.getValue())
-                    .medBeregningsgrunnlagPeriode(di.getFomDato(), di.getTomDato());
+                    .medBeregningsgrunnlagPeriode(di.getFomDato(), di.getTomDato())
+                    .build();
             return new LocalDateSegment<>(di, nyPeriode);
         }
         return null;

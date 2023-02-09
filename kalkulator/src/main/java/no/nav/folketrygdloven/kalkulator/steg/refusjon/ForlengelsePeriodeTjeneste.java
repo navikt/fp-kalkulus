@@ -16,7 +16,9 @@ public class ForlengelsePeriodeTjeneste {
                     .map(p -> new LocalDateSegment<>(p.getFomDato(), p.getTomDato(), Boolean.TRUE))
                     .toList();
             var forlengelseTidslinje = new LocalDateTimeline<>(forlengelseSegmenter);
-            return SplittBGPerioder.splittPerioderOgSettPeriodeårsak(beregningsgrunnlag, forlengelseTidslinje.compress(), PeriodeÅrsak.ENDRING_I_AKTIVITETER_SØKT_FOR);
+            return SplittBGPerioder.splittPerioderOgSettPeriodeårsak(beregningsgrunnlag, forlengelseTidslinje.compress(),
+                    PeriodeÅrsak.ENDRING_I_AKTIVITETER_SØKT_FOR,
+                    PeriodeÅrsak.ENDRING_I_AKTIVITETER_SØKT_FOR);
         }
         return beregningsgrunnlag;
     }

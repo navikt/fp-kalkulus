@@ -65,7 +65,9 @@ class VurderRepresentererStortingetTjenesteTest {
         assertThat(perioder.size()).isEqualTo(2);
         assertThat(perioder.get(0).getPeriodeÅrsaker().size()).isEqualTo(1);
         assertThat(perioder.get(0).getPeriodeÅrsaker().get(0)).isEqualTo(PeriodeÅrsak.REPRESENTERER_STORTINGET);
-        assertThat(perioder.get(1).getPeriodeÅrsaker().size()).isEqualTo(0);
+        assertThat(perioder.get(1).getPeriodeÅrsaker().size()).isEqualTo(1);
+        assertThat(perioder.get(1).getPeriodeÅrsaker().get(0)).isEqualTo(PeriodeÅrsak.REPRESENTERER_STORTINGET_AVSLUTTET);
+
 
     }
 
@@ -108,7 +110,9 @@ class VurderRepresentererStortingetTjenesteTest {
 
         assertThat(perioder.get(1).getPeriode().getFomDato()).isEqualTo(STP.plusDays(11));
         assertThat(perioder.get(1).getPeriode().getTomDato()).isEqualTo(TIDENES_ENDE);
-        assertThat(perioder.get(1).getPeriodeÅrsaker().size()).isEqualTo(0);
+        assertThat(perioder.get(1).getPeriodeÅrsaker().size()).isEqualTo(1);
+        assertThat(perioder.get(1).getPeriodeÅrsaker().get(0)).isEqualTo(PeriodeÅrsak.REPRESENTERER_STORTINGET_AVSLUTTET);
+
     }
 
     @Test
@@ -158,7 +162,9 @@ class VurderRepresentererStortingetTjenesteTest {
 
         assertThat(perioder.get(2).getPeriode().getFomDato()).isEqualTo(STP.plusDays(9));
         assertThat(perioder.get(2).getPeriode().getTomDato()).isEqualTo(STP.plusDays(10));
-        assertThat(perioder.get(2).getPeriodeÅrsaker().size()).isEqualTo(0);
+        assertThat(perioder.get(2).getPeriodeÅrsaker().size()).isEqualTo(1);
+        assertThat(perioder.get(2).getPeriodeÅrsaker().get(0)).isEqualTo(PeriodeÅrsak.REPRESENTERER_STORTINGET_AVSLUTTET);
+
     }
 
     @Test
