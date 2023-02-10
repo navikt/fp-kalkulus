@@ -2,8 +2,6 @@ package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
-import java.util.Objects;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -14,6 +12,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -42,32 +41,41 @@ public class InntektsforholdDto {
     @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String eksternArbeidsforholdId;
 
+    @JsonProperty("periode")
+    @Valid
+    @NotNull
+    private Periode periode;
+
+    @JsonProperty("inntektFraInntektsmeldingPrÅr")
+    @Valid
+    @Min(0)
+    @Max(178956970)
+    private Integer inntektFraInntektsmeldingPrÅr;
+
     @JsonProperty("bruttoInntektPrÅr")
     @Valid
     @Min(0)
     @Max(178956970)
     private Integer bruttoInntektPrÅr;
-
-    @JsonProperty("harInntektsmelding")
-    @Valid
-    @NotNull
-    private boolean harInntektsmelding;
-
     @JsonProperty("skalRedusereUtbetaling")
     @Valid
     private Boolean skalRedusereUtbetaling;
 
-    public InntektsforholdDto() {
-    }
-
-    public InntektsforholdDto(AktivitetStatus aktivitetStatus, String arbeidsgiverIdentifikator, String arbeidsforholdId, String eksternArbeidsforholdId, Integer bruttoInntektPrÅr, Boolean skalRedusereUtbetaling, boolean harInntektsmelding) {
+    public InntektsforholdDto(AktivitetStatus aktivitetStatus,
+                              String arbeidsgiverIdentifikator,
+                              String arbeidsforholdId,
+                              String eksternArbeidsforholdId, Periode periode,
+                              Integer inntektFraInntektsmeldingPrÅr,
+                              Integer bruttoInntektPrÅr,
+                              Boolean skalRedusereUtbetaling) {
         this.aktivitetStatus = aktivitetStatus;
         this.arbeidsgiverIdentifikator = arbeidsgiverIdentifikator;
         this.arbeidsforholdId = arbeidsforholdId;
         this.eksternArbeidsforholdId = eksternArbeidsforholdId;
+        this.periode = periode;
+        this.inntektFraInntektsmeldingPrÅr = inntektFraInntektsmeldingPrÅr;
         this.bruttoInntektPrÅr = bruttoInntektPrÅr;
         this.skalRedusereUtbetaling = skalRedusereUtbetaling;
-        this.harInntektsmelding = harInntektsmelding;
     }
 
     public AktivitetStatus getAktivitetStatus() {
@@ -118,24 +126,21 @@ public class InntektsforholdDto {
         this.skalRedusereUtbetaling = skalRedusereUtbetaling;
     }
 
-    public boolean getHarInntektsmelding() {
-        return harInntektsmelding;
+    public Periode getPeriode() {
+        return periode;
     }
 
-    public void setHarInntektsmelding(boolean harInntektsmelding) {
-        this.harInntektsmelding = harInntektsmelding;
+    public void setPeriode(Periode periode) {
+        this.periode = periode;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        InntektsforholdDto that = (InntektsforholdDto) o;
-        return aktivitetStatus == that.aktivitetStatus && Objects.equals(arbeidsgiverIdentifikator, that.arbeidsgiverIdentifikator) && Objects.equals(arbeidsforholdId, that.arbeidsforholdId) && Objects.equals(eksternArbeidsforholdId, that.eksternArbeidsforholdId);
+    public Integer getInntektFraInntektsmeldingPrÅr() {
+        return inntektFraInntektsmeldingPrÅr;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(aktivitetStatus, arbeidsgiverIdentifikator, arbeidsforholdId, eksternArbeidsforholdId);
+    public void setInntektFraInntektsmeldingPrÅr(Integer inntektFraInntektsmeldingPrÅr) {
+        this.inntektFraInntektsmeldingPrÅr = inntektFraInntektsmeldingPrÅr;
     }
+
+
 }
