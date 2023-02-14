@@ -7,14 +7,13 @@ import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.time.Month;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
@@ -32,6 +31,8 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.Fordel
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.NyPeriodeDto;
 
 public class RefusjonEllerGraderingArbeidsforholdDtoTjeneste {
+
+    private static final LocalDate START_TIDSREGNING = LocalDate.of(2000, Month.JANUARY, 1);
 
     private RefusjonEllerGraderingArbeidsforholdDtoTjeneste() {
         // Skjul
@@ -87,17 +88,6 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjeneste {
 
     private static void settEndretArbeidsforholdForNyttRefusjonskrav(BeregningsgrunnlagPrStatusOgAndelDto distinctAndel,
                                                                      FordelBeregningsgrunnlagArbeidsforholdDto endretArbeidsforhold, List<BeregningsgrunnlagPeriodeDto> perioder) {
-        List<Periode> refusjonsperioder = finnRefusjonsperioderForAndel(distinctAndel, perioder);
-        refusjonsperioder.forEach(refusjonsperiode -> {
-            NyPeriodeDto refusjonDto = new NyPeriodeDto(true, false, false);
-            refusjonDto.setFom(refusjonsperiode.getFomOrNull());
-            refusjonDto.setTom(TIDENES_ENDE.minusDays(2).isBefore(refusjonsperiode.getTom()) ? null : refusjonsperiode.getTom());
-            endretArbeidsforhold.leggTilPeriodeMedGraderingEllerRefusjon(refusjonDto);
-        });
-    }
-
-    private static List<Periode> finnRefusjonsperioderForAndel(BeregningsgrunnlagPrStatusOgAndelDto distinctAndel, List<BeregningsgrunnlagPeriodeDto> perioder) {
-        List<Periode> refusjonsperioder = new ArrayList<>();
         LocalDate sluttDatoRefusjon = TIDENES_BEGYNNELSE;
         for (int i = 0; i < perioder.size(); i++) {
             BeregningsgrunnlagPeriodeDto periode = perioder.get(i);
@@ -108,11 +98,20 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjeneste {
                 if (refusjonBeløpOpt.isPresent()) {
                     LocalDate startdatoRefusjon = periode.getBeregningsgrunnlagPeriodeFom();
                     sluttDatoRefusjon = finnSluttdato(distinctAndel, perioder, i, refusjonBeløpOpt.get());
-                    refusjonsperioder.add(new Periode(startdatoRefusjon, sluttDatoRefusjon));
+                    endretArbeidsforhold.leggTilPeriodeMedGraderingEllerRefusjon(lagNyPeriodeDtoForRefusjon(startdatoRefusjon, sluttDatoRefusjon));
                 }
             }
         }
-        return refusjonsperioder;
+    }
+
+    private static NyPeriodeDto lagNyPeriodeDtoForRefusjon(LocalDate fom, LocalDate tom) {
+        if (fom != null && tom != null && tom.isBefore(fom)) {
+            throw new IllegalStateException("Periode: tom kan ikke være før fom: " + fom + " " + tom);
+        }
+        var dto = new NyPeriodeDto(true, false, false);
+        dto.setFom(fom == null || !fom.isAfter(START_TIDSREGNING) ? null : fom);
+        dto.setTom(tom == null || TIDENES_ENDE.minusDays(2).isBefore(tom) ? null : tom);
+        return dto;
     }
 
     private static LocalDate finnSluttdato(BeregningsgrunnlagPrStatusOgAndelDto distinctAndel, List<BeregningsgrunnlagPeriodeDto> perioder, int i, BigDecimal refusjonBeløp) {

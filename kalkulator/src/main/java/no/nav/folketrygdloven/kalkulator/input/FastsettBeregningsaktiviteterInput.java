@@ -17,6 +17,7 @@ public class FastsettBeregningsaktiviteterInput extends StegProsesseringInput {
      * Grunnbeløpsatser
      */
     private List<Grunnbeløp> grunnbeløpsatser = new ArrayList<>();
+    private List<GrunnbeløpInput> grunnbeløpInput = new ArrayList<>();
 
 
     public FastsettBeregningsaktiviteterInput(StegProsesseringInput input) {
@@ -36,15 +37,28 @@ public class FastsettBeregningsaktiviteterInput extends StegProsesseringInput {
     protected FastsettBeregningsaktiviteterInput(FastsettBeregningsaktiviteterInput input) {
         super(input);
         this.grunnbeløpsatser = input.getGrunnbeløpsatser();
+        this.grunnbeløpInput = input.getGrunnbeløpInput();
     }
 
+    @Deprecated(forRemoval = true)
     public List<Grunnbeløp> getGrunnbeløpsatser() {
         return grunnbeløpsatser;
     }
 
+    @Deprecated(forRemoval = true)
     public FastsettBeregningsaktiviteterInput medGrunnbeløpsatser(List<Grunnbeløp> grunnbeløpsatser) {
         var newInput = new FastsettBeregningsaktiviteterInput(this);
         newInput.grunnbeløpsatser = grunnbeløpsatser;
+        return newInput;
+    }
+
+    public List<GrunnbeløpInput> getGrunnbeløpInput() {
+        return grunnbeløpInput;
+    }
+
+    public FastsettBeregningsaktiviteterInput medGrunnbeløpInput(List<GrunnbeløpInput> grunnbeløpInput) {
+        var newInput = new FastsettBeregningsaktiviteterInput(this);
+        newInput.grunnbeløpInput = grunnbeløpInput;
         return newInput;
     }
 

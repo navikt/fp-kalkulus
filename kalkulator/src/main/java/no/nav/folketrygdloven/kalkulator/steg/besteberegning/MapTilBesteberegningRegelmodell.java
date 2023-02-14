@@ -26,6 +26,7 @@ import no.nav.folketrygdloven.besteberegning.modell.input.YtelsegrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
+import no.nav.folketrygdloven.kalkulator.input.GrunnbeløpMapper;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDto;
@@ -42,8 +43,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OffentligYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
-import static no.nav.folketrygdloven.kalkulus.kodeverk.Arbeidskategori.SJØMANN;
-
 public class MapTilBesteberegningRegelmodell {
 
     public static BesteberegningRegelmodell map(ForeslåBesteberegningInput input) {
@@ -58,7 +57,7 @@ public class MapTilBesteberegningRegelmodell {
         List<Periode> perioderMedNæringsvirksomhet = finnPerioderMedOppgittNæring(input);
         BesteberegningInput.Builder inputBuilder = BesteberegningInput.builder()
                 .medInntektsgrunnlag(inntektsgrunnlag)
-                .medGrunnbeløpSatser(input.getGrunnbeløpsatser())
+                .medGrunnbeløpSatser(GrunnbeløpMapper.mapGrunnbeløpInput(input.getGrunnbeløpsatser(), input.getGrunnbeløpInput()))
                 .medGjeldendeGVerdi(finnGrunnbeløp(input))
                 .medSkjæringstidspunktOpptjening(input.getSkjæringstidspunktOpptjening())
                 .medPerioderMedNæringsvirksomhet(perioderMedNæringsvirksomhet)

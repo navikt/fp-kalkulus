@@ -13,6 +13,7 @@ import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
+import no.nav.folketrygdloven.kalkulator.input.GrunnbeløpMapper;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -64,7 +65,7 @@ public class OpprettBeregningsgrunnlagTjeneste {
         // Fastsetter andeler, status og endelig skjæringstidpsunkt
         var resultatMedAndeler = FagsakYtelseTypeRef.Lookup.find(fastsettSkjæringstidspunktOgStatuser, input.getFagsakYtelseType())
                 .orElseThrow(() -> new IllegalStateException("Fant ikke FastsettSkjæringstidspunktOgStatuser for ytelsetype " + input.getFagsakYtelseType().getKode()))
-                .fastsett(input, beregningAktiviteter, input.getGrunnbeløpsatser());
+                .fastsett(input, beregningAktiviteter, GrunnbeløpMapper.mapGrunnbeløpInput(input.getGrunnbeløpsatser(), input.getGrunnbeløpInput()));
 
         // Oppdaterer koblinginformasjon for videre prosessering
         KoblingReferanse refMedSkjæringstidspunkt = ref
@@ -104,7 +105,7 @@ public class OpprettBeregningsgrunnlagTjeneste {
     public BeregningsgrunnlagRegelResultat fastsettSkjæringstidspunktOgStatuser(FastsettBeregningsaktiviteterInput input, BeregningAktivitetAggregatDto beregningAktiviteter) {
         return FagsakYtelseTypeRef.Lookup.find(fastsettSkjæringstidspunktOgStatuser, input.getFagsakYtelseType())
                 .orElseThrow(() -> new IllegalStateException("Fant ikke FastsettSkjæringstidspunktOgStatuser for ytelsetype " + input.getFagsakYtelseType().getKode()))
-                .fastsett(input, beregningAktiviteter, input.getGrunnbeløpsatser());
+                .fastsett(input, beregningAktiviteter, GrunnbeløpMapper.mapGrunnbeløpInput(input.getGrunnbeløpsatser(), input.getGrunnbeløpInput()));
     }
 
 }

@@ -18,6 +18,7 @@ public class FaktaOmBeregningInput extends StegProsesseringInput {
      * Grunnbeløpsatser
      */
     private List<Grunnbeløp> grunnbeløpsatser = new ArrayList<>();
+    private List<GrunnbeløpInput> grunnbeløpInput = new ArrayList<>();
 
 
     public FaktaOmBeregningInput(StegProsesseringInput input) {
@@ -38,15 +39,28 @@ public class FaktaOmBeregningInput extends StegProsesseringInput {
     protected FaktaOmBeregningInput(FaktaOmBeregningInput input) {
         super(input);
         this.grunnbeløpsatser = input.getGrunnbeløpsatser();
+        this.grunnbeløpInput = input.getGrunnbeløpInput();
     }
 
+    @Deprecated(forRemoval = true)
     public List<Grunnbeløp> getGrunnbeløpsatser() {
         return grunnbeløpsatser;
     }
 
+    @Deprecated(forRemoval = true)
     public FaktaOmBeregningInput medGrunnbeløpsatser(List<Grunnbeløp> grunnbeløpsatser) {
         var newInput = new FaktaOmBeregningInput(this);
         newInput.grunnbeløpsatser = grunnbeløpsatser;
+        return newInput;
+    }
+
+    public List<GrunnbeløpInput> getGrunnbeløpInput() {
+        return grunnbeløpInput;
+    }
+
+    public FaktaOmBeregningInput medGrunnbeløpInput(List<GrunnbeløpInput> grunnbeløpInput) {
+        var newInput = new FaktaOmBeregningInput(this);
+        newInput.grunnbeløpInput = grunnbeløpInput;
         return newInput;
     }
 

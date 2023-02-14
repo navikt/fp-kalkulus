@@ -13,6 +13,7 @@ public class FortsettForeslåBeregningsgrunnlagInput extends StegProsesseringInp
      * Grunnbeløpsatser
      */
     private List<Grunnbeløp> grunnbeløpsatser = new ArrayList<>();
+    private List<GrunnbeløpInput> grunnbeløpInput = new ArrayList<>();
 
     public FortsettForeslåBeregningsgrunnlagInput(StegProsesseringInput input) {
         super(input);
@@ -20,13 +21,25 @@ public class FortsettForeslåBeregningsgrunnlagInput extends StegProsesseringInp
         super.stegUtTilstand = BeregningsgrunnlagTilstand.FORESLÅTT_2_UT;
     }
 
+    @Deprecated(forRemoval = true)
     public List<Grunnbeløp> getGrunnbeløpsatser() {
         return grunnbeløpsatser;
     }
 
+    @Deprecated(forRemoval = true)
     public FortsettForeslåBeregningsgrunnlagInput medGrunnbeløpsatser(List<Grunnbeløp> grunnbeløpsatser) {
         var newInput = new FortsettForeslåBeregningsgrunnlagInput(this);
         newInput.grunnbeløpsatser = grunnbeløpsatser;
+        return newInput;
+    }
+
+    public List<GrunnbeløpInput> getGrunnbeløpInput() {
+        return grunnbeløpInput;
+    }
+
+    public FortsettForeslåBeregningsgrunnlagInput medGrunnbeløpInput(List<GrunnbeløpInput> grunnbeløpInput) {
+        var newInput = new FortsettForeslåBeregningsgrunnlagInput(this);
+        newInput.grunnbeløpInput = grunnbeløpInput;
         return newInput;
     }
 

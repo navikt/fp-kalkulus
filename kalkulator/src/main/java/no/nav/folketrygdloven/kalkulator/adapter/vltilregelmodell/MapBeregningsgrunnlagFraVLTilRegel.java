@@ -37,6 +37,7 @@ import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FortsettForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FullføreBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.GrunnbeløpMapper;
 import no.nav.folketrygdloven.kalkulator.input.VurderBeregningsgrunnlagvilkårInput;
 import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
@@ -120,10 +121,10 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
     }
 
     private List<Grunnbeløp> grunnbeløpSatser(BeregningsgrunnlagInput input) {
-        if (input instanceof ForeslåBeregningsgrunnlagInput) {
-            return ((ForeslåBeregningsgrunnlagInput) input).getGrunnbeløpsatser();
-        } else if (input instanceof FortsettForeslåBeregningsgrunnlagInput) {
-            return ((FortsettForeslåBeregningsgrunnlagInput) input).getGrunnbeløpsatser();
+        if (input instanceof ForeslåBeregningsgrunnlagInput foreslåBeregningsgrunnlagInput) {
+            return GrunnbeløpMapper.mapGrunnbeløpInput(foreslåBeregningsgrunnlagInput.getGrunnbeløpsatser(), foreslåBeregningsgrunnlagInput.getGrunnbeløpInput());
+        } else if (input instanceof FortsettForeslåBeregningsgrunnlagInput fortsettForeslåBeregningsgrunnlagInput) {
+            return GrunnbeløpMapper.mapGrunnbeløpInput(fortsettForeslåBeregningsgrunnlagInput.getGrunnbeløpsatser(), fortsettForeslåBeregningsgrunnlagInput.getGrunnbeløpInput());
         }
         return Collections.emptyList();
     }

@@ -11,6 +11,7 @@ import jakarta.inject.Inject;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.GrunnbeløpMapper;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
@@ -59,7 +60,7 @@ public class KontrollerBeregningsinputTjeneste {
         BeregningsgrunnlagInput beregningsgrunnlagInput = input.medBeregningsgrunnlagGrunnlag(bgDto);
         StegProsesseringInput stegProsesseringInput = new StegProsesseringInput(beregningsgrunnlagInput, BeregningsgrunnlagTilstand.FORESLÅTT);
         ForeslåBeregningsgrunnlagInput foreslåBeregningsgrunnlagInput = new ForeslåBeregningsgrunnlagInput(stegProsesseringInput)
-                .medGrunnbeløpsatser(input.getGrunnbeløpsatser());
+                .medGrunnbeløpInput(GrunnbeløpMapper.mapTilGrunnbeløpInput(input.getGrunnbeløpsatser(), input.getGrunnbeløpInput()));
         foreslåBeregningsgrunnlagInput.leggTilToggle("feilretting-tsf-1715", true);
         BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(foreslåBeregningsgrunnlagInput);
         BeregningsgrunnlagDto reberegnetGrunnlag = beregningsgrunnlagRegelResultat.getBeregningsgrunnlag();

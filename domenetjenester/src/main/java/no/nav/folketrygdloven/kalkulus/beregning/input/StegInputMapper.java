@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
@@ -18,6 +17,7 @@ import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
 import no.nav.folketrygdloven.kalkulator.input.FortsettForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FullføreBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.GrunnbeløpInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.input.VurderBeregningsgrunnlagvilkårInput;
 import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
@@ -55,9 +55,9 @@ class StegInputMapper {
                                                  List<IntervallEntitet> forlengelseperioder) {
         StegProsesseringInput stegProsesseringInput = lagStegProsesseringInput(kobling, input, grunnlagEntitet, stegType, forlengelseperioder);
         if (stegType.equals(BeregningSteg.FASTSETT_STP_BER)) {
-            return new FastsettBeregningsaktiviteterInput(stegProsesseringInput).medGrunnbeløpsatser(finnSatser());
+            return new FastsettBeregningsaktiviteterInput(stegProsesseringInput).medGrunnbeløpInput(finnInputSatser());
         } else if (stegType.equals(BeregningSteg.KOFAKBER)) {
-            return new FaktaOmBeregningInput(stegProsesseringInput).medGrunnbeløpsatser(finnSatser());
+            return new FaktaOmBeregningInput(stegProsesseringInput).medGrunnbeløpInput(finnInputSatser());
         } else if (stegType.equals(BeregningSteg.FORS_BESTEBEREGNING)) {
             return lagInputForeslåBesteberegning(stegProsesseringInput);
         } else if (stegType.equals(BeregningSteg.FORS_BERGRUNN)) {
@@ -138,18 +138,18 @@ class StegInputMapper {
 
     private ForeslåBesteberegningInput lagInputForeslåBesteberegning(StegProsesseringInput stegProsesseringInput) {
         var input = new ForeslåBesteberegningInput(stegProsesseringInput);
-        return input.medGrunnbeløpsatser(finnSatser());
+        return input.medGrunnbeløpInput(finnInputSatser());
     }
 
     private FortsettForeslåBeregningsgrunnlagInput lagInputFortsettForeslå(StegProsesseringInput stegProsesseringInput) {
         var foreslåBeregningsgrunnlagInput = new FortsettForeslåBeregningsgrunnlagInput(stegProsesseringInput);
-        return foreslåBeregningsgrunnlagInput.medGrunnbeløpsatser(finnSatser());
+        return foreslåBeregningsgrunnlagInput.medGrunnbeløpInput(finnInputSatser());
     }
 
 
     private ForeslåBeregningsgrunnlagInput lagInputForeslå(StegProsesseringInput stegProsesseringInput) {
         var foreslåBeregningsgrunnlagInput = new ForeslåBeregningsgrunnlagInput(stegProsesseringInput);
-        return foreslåBeregningsgrunnlagInput.medGrunnbeløpsatser(finnSatser());
+        return foreslåBeregningsgrunnlagInput.medGrunnbeløpInput(finnInputSatser());
     }
 
     private FordelBeregningsgrunnlagInput lagInputFordel(StegProsesseringInput stegProsesseringInput,
@@ -183,8 +183,8 @@ class StegInputMapper {
     }
 
 
-    private List<Grunnbeløp> finnSatser() {
-        return new GrunnbeløpMapper(beregningsgrunnlagRepository.finnAlleSatser()).mapGrunnbeløpSatser();
+    private List<GrunnbeløpInput> finnInputSatser() {
+        return GrunnbeløpMapper.mapGrunnbeløpInput(beregningsgrunnlagRepository.finnAlleSatser());
     }
 
     private Optional<BeregningsgrunnlagGrunnlagEntitet> finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(KoblingEntitet koblingEntitet,

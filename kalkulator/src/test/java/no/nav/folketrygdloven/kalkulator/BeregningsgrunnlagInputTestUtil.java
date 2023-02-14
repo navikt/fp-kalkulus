@@ -112,7 +112,7 @@ public class BeregningsgrunnlagInputTestUtil {
         BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
         inputMedBeregningsgrunnlag.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
         return new ForeslåBeregningsgrunnlagInput(new StegProsesseringInput(inputMedBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT))
-                .medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER);
+                .medGrunnbeløpInput(GrunnbeløpMock.GRUNNBELØPINPUT);
     }
 
     public static FortsettForeslåBeregningsgrunnlagInput lagFortsettForeslåttBeregningsgrunnlagInput(KoblingReferanse koblingReferanse,
@@ -127,7 +127,7 @@ public class BeregningsgrunnlagInputTestUtil {
         BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
         inputMedBeregningsgrunnlag.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
         return new FortsettForeslåBeregningsgrunnlagInput(new StegProsesseringInput(inputMedBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT))
-                .medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER);
+                .medGrunnbeløpInput(GrunnbeløpMock.GRUNNBELØPINPUT);
     }
 
     public static BeregningsgrunnlagInput lagInputMedBeregningsgrunnlagOgIAY(KoblingReferanse koblingReferanse,
@@ -182,7 +182,7 @@ public class BeregningsgrunnlagInputTestUtil {
         BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
         inputMedBeregningsgrunnlag.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
         return new ForeslåBeregningsgrunnlagInput(new StegProsesseringInput(inputMedBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT))
-                .medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER);
+                .medGrunnbeløpInput(GrunnbeløpMock.GRUNNBELØPINPUT);
     }
 
     public static BeregningsgrunnlagInput lagInputMedBeregningsgrunnlagOgIAY(KoblingReferanse koblingReferanse,

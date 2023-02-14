@@ -16,11 +16,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import jakarta.inject.Inject;
-import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.input.GrunnbeløpInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
@@ -105,7 +105,7 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
         var opptjening = new OpptjeningAktiviteterDto(Arrays.asList(ventelønnOpptjening, arbeidOpptjening));
 
         var input = new FastsettBeregningsaktiviteterInput(lagKoblingRefDto(kobling), iay, opptjening, Collections.emptyList(), null);
-        var inputMedG = input.medGrunnbeløpsatser(List.of(new Grunnbeløp(Tid.TIDENES_BEGYNNELSE, Tid.TIDENES_ENDE, 100000L, 100000L)));
+        var inputMedG = input.medGrunnbeløpInput(List.of(new GrunnbeløpInput(Tid.TIDENES_BEGYNNELSE, Tid.TIDENES_ENDE, 100000L, 100000L)));
         inputMedG.leggTilKonfigverdi("inntekt.rapportering.frist.dato", 5);
 
         // Act
@@ -132,7 +132,7 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
         var opptjening = new OpptjeningAktiviteterDto(Arrays.asList(ventelønnOpptjening, arbeidOpptjening));
 
         var input = new StegProsesseringInput(BeregningsgrunnlagTilstand.OPPRETTET, lagKoblingRefDto(kobling), iay, opptjening, Collections.emptyList(), null);
-        var stegInput = new FastsettBeregningsaktiviteterInput(input).medGrunnbeløpsatser(List.of(new Grunnbeløp(Tid.TIDENES_BEGYNNELSE, Tid.TIDENES_ENDE, 100000L, 100000L)));
+        var stegInput = new FastsettBeregningsaktiviteterInput(input).medGrunnbeløpInput(List.of(new GrunnbeløpInput(Tid.TIDENES_BEGYNNELSE, Tid.TIDENES_ENDE, 100000L, 100000L)));
         stegInput.leggTilKonfigverdi("inntekt.rapportering.frist.dato", 5);
 
         // Act
@@ -147,7 +147,7 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
         avbrytAvklaringsBehov(kobling);
         var saksbehandletGrunnlag = lagreSaksbehandletFjernArbeidOgDeaktiver(kobling, bg);
         var inputMedTidligereGrunnlag = input.medForrigeGrunnlagFraSteg(BehandlingslagerTilKalkulusMapper.mapGrunnlag(bg.get())).medForrigeGrunnlagFraStegUt(BehandlingslagerTilKalkulusMapper.mapGrunnlag(saksbehandletGrunnlag));
-        var stegInput2 = new FastsettBeregningsaktiviteterInput(inputMedTidligereGrunnlag).medGrunnbeløpsatser(List.of(new Grunnbeløp(Tid.TIDENES_BEGYNNELSE, Tid.TIDENES_ENDE, 100000L, 100000L)));
+        var stegInput2 = new FastsettBeregningsaktiviteterInput(inputMedTidligereGrunnlag).medGrunnbeløpInput(List.of(new GrunnbeløpInput(Tid.TIDENES_BEGYNNELSE, Tid.TIDENES_ENDE, 100000L, 100000L)));
         var resultat2 = beregningStegTjeneste.beregnFor(BeregningSteg.FASTSETT_STP_BER, stegInput2);
 
         // Assert 2
@@ -167,7 +167,7 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
         var opptjening = new OpptjeningAktiviteterDto(Arrays.asList(arbeidOpptjening));
 
         var input = new FastsettBeregningsaktiviteterInput(lagKoblingRefDto(kobling), iay, opptjening, Collections.emptyList(), null);
-        var inputMedG = input.medGrunnbeløpsatser(List.of(new Grunnbeløp(Tid.TIDENES_BEGYNNELSE, Tid.TIDENES_ENDE, 100000L, 100000L)));
+        var inputMedG = input.medGrunnbeløpInput(List.of(new GrunnbeløpInput(Tid.TIDENES_BEGYNNELSE, Tid.TIDENES_ENDE, 100000L, 100000L)));
         inputMedG.leggTilKonfigverdi("inntekt.rapportering.frist.dato", 5);
 
         // Act
@@ -197,7 +197,7 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
         var opptjening = new OpptjeningAktiviteterDto(Arrays.asList(ventelønnOpptjening, arbeidOpptjening));
 
         var input = new StegProsesseringInput(BeregningsgrunnlagTilstand.OPPRETTET, lagKoblingRefDto(kobling), iay, opptjening, Collections.emptyList(), null);
-        var stegInput = new FastsettBeregningsaktiviteterInput(input).medGrunnbeløpsatser(List.of(new Grunnbeløp(Tid.TIDENES_BEGYNNELSE, Tid.TIDENES_ENDE, 100000L, 100000L)));
+        var stegInput = new FastsettBeregningsaktiviteterInput(input).medGrunnbeløpInput(List.of(new GrunnbeløpInput(Tid.TIDENES_BEGYNNELSE, Tid.TIDENES_ENDE, 100000L, 100000L)));
         stegInput.leggTilKonfigverdi("inntekt.rapportering.frist.dato", 5);
 
         // Act
@@ -216,7 +216,7 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
         var input2 = new StegProsesseringInput(BeregningsgrunnlagTilstand.OPPRETTET, lagKoblingRefDto(kobling), iay, opptjening2, Collections.emptyList(), null);
         input2.leggTilKonfigverdi("inntekt.rapportering.frist.dato", 5);
         var inputMedTidligereGrunnlag = input2.medForrigeGrunnlagFraSteg(BehandlingslagerTilKalkulusMapper.mapGrunnlag(bg.get())).medForrigeGrunnlagFraStegUt(BehandlingslagerTilKalkulusMapper.mapGrunnlag(saksbehandletGrunnlag));
-        var stegInput2 = new FastsettBeregningsaktiviteterInput(inputMedTidligereGrunnlag).medGrunnbeløpsatser(List.of(new Grunnbeløp(Tid.TIDENES_BEGYNNELSE, Tid.TIDENES_ENDE, 100000L, 100000L)));
+        var stegInput2 = new FastsettBeregningsaktiviteterInput(inputMedTidligereGrunnlag).medGrunnbeløpInput(List.of(new GrunnbeløpInput(Tid.TIDENES_BEGYNNELSE, Tid.TIDENES_ENDE, 100000L, 100000L)));
         var resultat2 = beregningStegTjeneste.beregnFor(BeregningSteg.FASTSETT_STP_BER, stegInput2);
 
         // Assert 2
@@ -241,7 +241,7 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
         input.leggTilKonfigverdi("inntekt.rapportering.frist.dato", 5);
         var inputMedBG = input.medBeregningsgrunnlagGrunnlag(bg);
         var faktaInput = new FaktaOmBeregningInput(new StegProsesseringInput(inputMedBG, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER))
-                .medGrunnbeløpsatser(List.of(new Grunnbeløp(Tid.TIDENES_BEGYNNELSE, Tid.TIDENES_ENDE, 100000L, 100000L)));
+                .medGrunnbeløpInput(List.of(new GrunnbeløpInput(Tid.TIDENES_BEGYNNELSE, Tid.TIDENES_ENDE, 100000L, 100000L)));
 
         // Act
         var resultat = beregningStegTjeneste.beregnFor(BeregningSteg.KOFAKBER, faktaInput);
@@ -274,7 +274,7 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
         var inputMedBG = input.medBeregningsgrunnlagGrunnlag(bg);
 
         var faktaInput = new FaktaOmBeregningInput(new StegProsesseringInput(inputMedBG, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER))
-                .medGrunnbeløpsatser(List.of(new Grunnbeløp(Tid.TIDENES_BEGYNNELSE, Tid.TIDENES_ENDE, 100000L, 100000L)));
+                .medGrunnbeløpInput(List.of(new GrunnbeløpInput(Tid.TIDENES_BEGYNNELSE, Tid.TIDENES_ENDE, 100000L, 100000L)));
 
         // Act
         var resultat1 = beregningStegTjeneste.beregnFor(BeregningSteg.KOFAKBER, faktaInput);
@@ -293,7 +293,7 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
         var bekreftetBG = lagBG(ORGNR, true).build(BeregningsgrunnlagTilstand.KOFAKBER_UT);
         var faktaInput2 = new FaktaOmBeregningInput(new StegProsesseringInput(inputMedBG, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER)
                 .medForrigeGrunnlagFraSteg(BehandlingslagerTilKalkulusMapper.mapGrunnlag(nyttBG.get())).medForrigeGrunnlagFraStegUt(bekreftetBG))
-                .medGrunnbeløpsatser(List.of(new Grunnbeløp(Tid.TIDENES_BEGYNNELSE, Tid.TIDENES_ENDE, 100000L, 100000L)));
+                .medGrunnbeløpInput(List.of(new GrunnbeløpInput(Tid.TIDENES_BEGYNNELSE, Tid.TIDENES_ENDE, 100000L, 100000L)));
         var resultat2 = beregningStegTjeneste.beregnFor(BeregningSteg.KOFAKBER, faktaInput2);
 
         // Assert 2
