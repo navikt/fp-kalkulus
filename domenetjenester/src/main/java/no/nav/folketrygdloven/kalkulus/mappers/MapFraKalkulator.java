@@ -11,10 +11,8 @@ import static no.nav.folketrygdloven.kalkulus.mappers.SvangerskapspengerGrunnlag
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AktivitetStatusV2;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.StandardGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
@@ -31,7 +29,6 @@ import no.nav.folketrygdloven.kalkulus.beregning.v1.KravperioderPrArbeidsforhold
 import no.nav.folketrygdloven.kalkulus.beregning.v1.PerioderForKrav;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.RefusjonskravDatoDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.Refusjonsperiode;
-import no.nav.folketrygdloven.kalkulus.beregning.v1.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
@@ -47,8 +44,6 @@ import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 public class MapFraKalkulator {
-
-    private static final String TOGGLE_TSF_1715 = "feilretting-tsf-1715";
 
     public static Arbeidsgiver mapArbeidsgiver(Aktør arbeidsgiver) {
         if (arbeidsgiver == null) {
@@ -88,7 +83,6 @@ public class MapFraKalkulator {
                         beregningsgrunnlagGrunnlagEntitet));
 
         utenGrunnbeløp.leggTilKonfigverdi(BeregningsperiodeTjeneste.INNTEKT_RAPPORTERING_FRIST_DATO, 5);
-        utenGrunnbeløp.leggTilToggle(TOGGLE_TSF_1715, false);
         utenGrunnbeløp.setForlengelseperioder(mapPerioder(forlengelseperioder));
         return beregningsgrunnlagGrunnlagEntitet.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag)
                 .map(utenGrunnbeløp::medBeregningsgrunnlagGrunnlag)
@@ -145,19 +139,6 @@ public class MapFraKalkulator {
             case OMSORGSPENGER -> mapOmsorgspengegrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.OmsorgspengerGrunnlag) ytelsespesifiktGrunnlag);
             default -> new StandardGrunnlag();
         };
-    }
-
-    public static void validerForMidlertidigInaktivTypeA(List<UtbetalingsgradPrAktivitetDto> utbPrAktList) {
-        boolean innholderMinstEnInaktivStatus = utbPrAktList.stream().anyMatch(matchMedAktivitetstatusInaktiv());
-        boolean innholderKunInaktivStatus = utbPrAktList.stream().allMatch(matchMedAktivitetstatusInaktiv());
-
-        if (innholderMinstEnInaktivStatus && !innholderKunInaktivStatus) {
-            throw new IllegalArgumentException("Det skal ikke være mulig å ha status INAKTIV med i kombinasjon med andre aktiviteter: " + utbPrAktList);
-        }
-    }
-
-    private static Predicate<UtbetalingsgradPrAktivitetDto> matchMedAktivitetstatusInaktiv() {
-        return dto -> dto.getUtbetalingsgradArbeidsforholdDto().getUttakArbeidType().getKode().equals(AktivitetStatusV2.IN.getBeskrivelse());
     }
 
     public static no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto mapFraDto(OpptjeningAktiviteterDto opptjeningAktiviteter) {

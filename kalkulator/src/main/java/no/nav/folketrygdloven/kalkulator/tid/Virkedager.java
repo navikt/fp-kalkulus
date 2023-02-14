@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.ytelse.frisinn;
+package no.nav.folketrygdloven.kalkulator.tid;
 
 import static java.lang.Math.toIntExact;
 

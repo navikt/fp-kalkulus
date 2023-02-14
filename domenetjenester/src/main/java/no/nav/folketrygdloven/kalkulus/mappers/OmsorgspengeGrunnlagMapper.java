@@ -1,7 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.mappers;
 
-import static no.nav.folketrygdloven.kalkulus.mappers.MapFraKalkulator.validerForMidlertidigInaktivTypeA;
-
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
@@ -18,7 +16,6 @@ class OmsorgspengeGrunnlagMapper {
      * @return Mappet omsorgspengegrunnlag til kalkulus
      */
     public static YtelsespesifiktGrunnlag mapOmsorgspengegrunnlag(no.nav.folketrygdloven.kalkulus.beregning.v1.OmsorgspengerGrunnlag omsorgspengerGrunnlag) {
-        validerForMidlertidigInaktivTypeA(omsorgspengerGrunnlag.getUtbetalingsgradPrAktivitet());
         no.nav.folketrygdloven.kalkulator.input.OmsorgspengerGrunnlag kalkulatorGrunnlag = new no.nav.folketrygdloven.kalkulator.input.OmsorgspengerGrunnlag(
                 UtbetalingsgradMapper.mapUtbetalingsgrad(omsorgspengerGrunnlag.getUtbetalingsgradPrAktivitet()));
         kalkulatorGrunnlag.setGrunnbeløpMilitærHarKravPå(KonfigTjeneste.forYtelse(FagsakYtelseType.OMSORGSPENGER).getAntallGMilitærHarKravPå().intValue());

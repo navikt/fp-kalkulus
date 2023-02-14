@@ -18,7 +18,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.Virkedager;
+import no.nav.folketrygdloven.kalkulator.tid.Virkedager;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 public class MeldekortUtils {

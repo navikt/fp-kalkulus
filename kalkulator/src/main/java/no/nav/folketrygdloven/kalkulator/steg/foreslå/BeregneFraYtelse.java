@@ -23,7 +23,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsf
 import no.nav.folketrygdloven.kalkulator.modell.iay.AnvistAndel;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.Virkedager;
+import no.nav.folketrygdloven.kalkulator.tid.Virkedager;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 

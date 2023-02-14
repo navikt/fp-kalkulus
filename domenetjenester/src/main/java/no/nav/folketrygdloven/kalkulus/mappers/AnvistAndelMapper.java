@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.util.Virkedager;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AnvistAndel;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
+import no.nav.folketrygdloven.kalkulator.tid.Virkedager;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 
