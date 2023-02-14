@@ -212,7 +212,8 @@ public class MapDetaljertBeregningsgrunnlag {
                 mapFraBeløp(beregningsgrunnlagPeriode.getAvkortetPrÅr()),
                 mapFraBeløp(beregningsgrunnlagPeriode.getRedusertPrÅr()),
                 beregningsgrunnlagPeriode.getDagsats(),
-                beregningsgrunnlagPeriode.getPeriodeÅrsaker());
+                beregningsgrunnlagPeriode.getPeriodeÅrsaker(),
+                beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto() != null ? beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto().getVerdi() : null);
     }
 
     private static List<BeregningsgrunnlagPrStatusOgAndelDto> mapAndeler(List<BeregningsgrunnlagPrStatusOgAndel> beregningsgrunnlagPrStatusOgAndelList) {

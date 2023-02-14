@@ -18,6 +18,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Tilko
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.FastsattInntektskategori;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Promille;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Prosent;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Refusjon;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Årsgrunnlag;
 
@@ -39,6 +40,7 @@ public class KalkulatorTilBGMapper {
         builder.medBeregningsgrunnlagPeriode(fraKalkulus.getBeregningsgrunnlagPeriodeFom(), fraKalkulus.getBeregningsgrunnlagPeriodeTom());
         builder.medBruttoPrÅr(mapTilBeløp(fraKalkulus.getBruttoPrÅr()));
         builder.medRedusertPrÅr(mapTilBeløp(fraKalkulus.getRedusertPrÅr()));
+        builder.medInntektGraderingsprosentBrutto(fraKalkulus.getInntektgraderingsprosentBrutto() != null ? new Prosent(fraKalkulus.getInntektgraderingsprosentBrutto()) : null);
 
         //legg til
         fraKalkulus.getPeriodeÅrsaker().forEach(builder::leggTilPeriodeÅrsak);

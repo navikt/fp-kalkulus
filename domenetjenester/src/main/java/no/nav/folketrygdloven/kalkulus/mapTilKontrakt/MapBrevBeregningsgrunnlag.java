@@ -85,7 +85,7 @@ public class MapBrevBeregningsgrunnlag {
                 new Periode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom()),
                 mapFraBeløp(beregningsgrunnlagPeriode.getBruttoPrÅr()),
                 mapFraBeløp(beregningsgrunnlagPeriode.getAvkortetPrÅr()),
-                beregningsgrunnlagPeriode.getDagsats());
+                beregningsgrunnlagPeriode.getDagsats(), beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto() != null ? beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto().getVerdi() : null);
     }
 
     private static List<BeregningsgrunnlagPrStatusOgAndelDto> mapAndeler(List<BeregningsgrunnlagPrStatusOgAndel> beregningsgrunnlagPrStatusOgAndelList, BeregningsgrunnlagPeriode periode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {

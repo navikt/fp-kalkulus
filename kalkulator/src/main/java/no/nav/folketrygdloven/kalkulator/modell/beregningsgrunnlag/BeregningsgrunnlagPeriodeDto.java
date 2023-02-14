@@ -29,6 +29,9 @@ public class BeregningsgrunnlagPeriodeDto {
     private Long dagsats;
     private List<BeregningsgrunnlagPeriodeÅrsakDto> beregningsgrunnlagPeriodeÅrsaker = new ArrayList<>();
 
+    private BigDecimal inntektgraderingsprosentBrutto;
+
+
     private BeregningsgrunnlagPeriodeDto() {
     }
 
@@ -52,6 +55,7 @@ public class BeregningsgrunnlagPeriodeDto {
         this.avkortetPrÅr = kopiereFra.avkortetPrÅr;
         this.redusertPrÅr = kopiereFra.redusertPrÅr;
         this.dagsats = kopiereFra.dagsats;
+        this.inntektgraderingsprosentBrutto = kopiereFra.inntektgraderingsprosentBrutto;
     }
 
     public static Builder ny() {
@@ -141,6 +145,10 @@ public class BeregningsgrunnlagPeriodeDto {
         if (!beregningsgrunnlagPeriodeÅrsaker.contains(bgPeriodeÅrsak)) {
             beregningsgrunnlagPeriodeÅrsaker.add(bgPeriodeÅrsak);
         }
+    }
+
+    public BigDecimal getInntektgraderingsprosentBrutto() {
+        return inntektgraderingsprosentBrutto;
     }
 
     @Override
@@ -281,6 +289,13 @@ public class BeregningsgrunnlagPeriodeDto {
             kladd.redusertPrÅr = redusertPrÅr;
             return this;
         }
+
+        public Builder medInntektsgraderingsprosentBrutto(BigDecimal graderinsprosent) {
+            verifiserKanModifisere();
+            kladd.inntektgraderingsprosentBrutto = graderinsprosent;
+            return this;
+        }
+
 
         public Builder leggTilPeriodeÅrsak(PeriodeÅrsak periodeÅrsak) {
             verifiserKanModifisere();

@@ -70,10 +70,22 @@ public class BeregningsgrunnlagPeriodeDto {
     @Valid
     private List<PeriodeÅrsak> periodeÅrsaker;
 
+
+    /**
+     * Gradering av beregningsgrunnlaget ved tilkommet inntekt (gradering mot inntekt)
+     * Angir total bortfalt inntekt av totalt beregningsgrunnlag.
+     */
+    @JsonProperty(value = "inntektGraderingsprosent")
+    @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "100.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
+    private BigDecimal inntektGraderingsprosent;
+
     public BeregningsgrunnlagPeriodeDto() {
     }
 
-    public BeregningsgrunnlagPeriodeDto(@NotNull @Valid List<BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList, @NotNull @Valid Periode periode, @Valid BigDecimal bruttoPrÅr, @Valid BigDecimal avkortetPrÅr, @Valid BigDecimal redusertPrÅr, @Valid Long dagsats, @NotNull @Valid List<PeriodeÅrsak> periodeÅrsaker) {
+    public BeregningsgrunnlagPeriodeDto(@NotNull @Valid List<BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList, @NotNull @Valid Periode periode, @Valid BigDecimal bruttoPrÅr, @Valid BigDecimal avkortetPrÅr, @Valid BigDecimal redusertPrÅr, @Valid Long dagsats, @NotNull @Valid List<PeriodeÅrsak> periodeÅrsaker, BigDecimal inntektGraderingsprosent) {
         this.beregningsgrunnlagPrStatusOgAndelList = beregningsgrunnlagPrStatusOgAndelList;
         this.periode = periode;
         this.bruttoPrÅr = bruttoPrÅr;
@@ -81,6 +93,7 @@ public class BeregningsgrunnlagPeriodeDto {
         this.redusertPrÅr = redusertPrÅr;
         this.dagsats = dagsats;
         this.periodeÅrsaker = periodeÅrsaker;
+        this.inntektGraderingsprosent = inntektGraderingsprosent;
     }
 
     public LocalDate getBeregningsgrunnlagPeriodeFom() {
@@ -117,5 +130,9 @@ public class BeregningsgrunnlagPeriodeDto {
 
     public Periode getPeriode() {
         return periode;
+    }
+
+    public BigDecimal getInntektGraderingsprosent() {
+        return inntektGraderingsprosent;
     }
 }

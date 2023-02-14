@@ -40,6 +40,8 @@ public class MapFastsattBeregningsgrunnlagFraRegelTilVL {
                 }
             }
             fastsettAgreggerteVerdier(eksisterendePeriode, eksisterendeVLGrunnlag);
+            BeregningsgrunnlagPeriodeDto.oppdater(eksisterendePeriode)
+                    .medInntektsgraderingsprosentBrutto(resultatBGPeriode.getInntektsgraderingFraBruttoBeregningsgrunnlag());
         }
     }
 
@@ -91,9 +93,9 @@ public class MapFastsattBeregningsgrunnlagFraRegelTilVL {
     private void mapBeregningsgrunnlagPrStatusForATKombinert(BeregningsgrunnlagPeriodeDto vlBGPeriode,
                                                              BeregningsgrunnlagPrStatusOgAndelDto vlBGPAndel,
                                                              BeregningsgrunnlagPrArbeidsforhold regelArbeidsforhold) {
-            BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(Optional.of(vlBGPAndel));
-            settVerdierFraFastsettRegel(andelBuilder, regelArbeidsforhold);
-            andelBuilder.build(vlBGPeriode);
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(Optional.of(vlBGPAndel));
+        settVerdierFraFastsettRegel(andelBuilder, regelArbeidsforhold);
+        andelBuilder.build(vlBGPeriode);
     }
 
     protected static void settVerdierFraFastsettRegel(BeregningsgrunnlagPrStatusOgAndelDto.Builder builder, BeregningsgrunnlagPrArbeidsforhold regelResultat) {

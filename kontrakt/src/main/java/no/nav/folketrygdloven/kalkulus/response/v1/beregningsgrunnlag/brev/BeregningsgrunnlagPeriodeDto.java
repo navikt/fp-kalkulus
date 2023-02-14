@@ -58,6 +58,17 @@ public class BeregningsgrunnlagPeriodeDto {
     @Max(178956970)
     private Long dagsats;
 
+    /**
+     * Gradering av beregningsgrunnlaget ved tilkommet inntekt (gradering mot inntekt)
+     * Angir total bortfalt inntekt av totalt beregningsgrunnlag.
+     */
+    @JsonProperty(value = "inntektGraderingsprosent")
+    @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "199.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
+    private BigDecimal inntektGraderingsprosent;
+
     public BeregningsgrunnlagPeriodeDto() {
     }
 
@@ -65,12 +76,13 @@ public class BeregningsgrunnlagPeriodeDto {
                                         @NotNull @Valid Periode periode,
                                         @Valid BigDecimal bruttoPrÅr,
                                         @Valid BigDecimal avkortetPrÅr,
-                                        @Valid Long dagsats) {
+                                        @Valid Long dagsats, BigDecimal inntektGraderingsprosent) {
         this.beregningsgrunnlagPrStatusOgAndelList = beregningsgrunnlagPrStatusOgAndelList;
         this.periode = periode;
         this.bruttoPrÅr = bruttoPrÅr;
         this.avkortetPrÅr = avkortetPrÅr;
         this.dagsats = dagsats;
+        this.inntektGraderingsprosent = inntektGraderingsprosent;
     }
 
     public LocalDate getBeregningsgrunnlagPeriodeFom() {
@@ -101,4 +113,7 @@ public class BeregningsgrunnlagPeriodeDto {
         return periode;
     }
 
+    public BigDecimal getInntektGraderingsprosent() {
+        return inntektGraderingsprosent;
+    }
 }

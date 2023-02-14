@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
 import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,7 +31,10 @@ import org.hibernate.annotations.BatchSize;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Promille;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Prosent;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
@@ -82,6 +86,10 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
     @Column(name = "dagsats")
     private Long dagsats;
 
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "inntekt_graderingsprosent_brutto")))
+    private Prosent inntektgraderingsprosentBrutto;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlagPeriode", cascade = CascadeType.PERSIST, orphanRemoval = true)
     @BatchSize(size=20)
     private final List<BeregningsgrunnlagPeriodeÅrsak> beregningsgrunnlagPeriodeÅrsaker = new ArrayList<>();
@@ -92,6 +100,7 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
         this.dagsats = beregningsgrunnlagPeriode.getDagsats();
         this.periode = beregningsgrunnlagPeriode.getPeriode();
         this.redusertPrÅr = beregningsgrunnlagPeriode.getRedusertPrÅr();
+        this.inntektgraderingsprosentBrutto = beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto();
         beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeÅrsaker().stream().map(BeregningsgrunnlagPeriodeÅrsak::new)
                 .forEach(this::addBeregningsgrunnlagPeriodeÅrsak);
         beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream().map(BeregningsgrunnlagPrStatusOgAndel::new)
@@ -157,6 +166,10 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
 
     public Long getDagsats() {
         return dagsats;
+    }
+
+    public Prosent getInntektgraderingsprosentBrutto() {
+        return inntektgraderingsprosentBrutto;
     }
 
     public List<BeregningsgrunnlagPeriodeÅrsak> getBeregningsgrunnlagPeriodeÅrsaker() {
@@ -294,6 +307,18 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
             return this;
         }
 
+        public Builder medInntektGraderingsprosentBrutto(Prosent inntektgraderingsprosent) {
+            verifiserKanModifisere();
+            if (inntektgraderingsprosent != null && inntektgraderingsprosent.getVerdi().compareTo(BigDecimal.ZERO) < 0) {
+                throw new IllegalStateException("Graderingsprosent må vere større enn eller lik 0. Var " + inntektgraderingsprosent);
+            }
+            if (inntektgraderingsprosent != null && inntektgraderingsprosent.getVerdi().compareTo(BigDecimal.valueOf(100)) > 0) {
+                throw new IllegalStateException("Graderingsprosent må vere mindre enn eller lik 100. Var " + inntektgraderingsprosent);
+            }
+            kladd.inntektgraderingsprosentBrutto = inntektgraderingsprosent;
+            return this;
+        }
+
         public Builder leggTilPeriodeÅrsak(PeriodeÅrsak periodeÅrsak) {
             verifiserKanModifisere();
             if (!kladd.getPeriodeÅrsaker().contains(periodeÅrsak)) {
@@ -301,12 +326,6 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
                 bgPeriodeÅrsakBuilder.medPeriodeÅrsak(periodeÅrsak);
                 bgPeriodeÅrsakBuilder.build(kladd);
             }
-            return this;
-        }
-
-        public Builder leggTilPeriodeÅrsaker(Collection<PeriodeÅrsak> periodeÅrsaker) {
-            verifiserKanModifisere();
-            periodeÅrsaker.forEach(this::leggTilPeriodeÅrsak);
             return this;
         }
 
