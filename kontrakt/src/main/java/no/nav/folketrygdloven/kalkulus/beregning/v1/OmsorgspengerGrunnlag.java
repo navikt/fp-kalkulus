@@ -27,17 +27,27 @@ public class OmsorgspengerGrunnlag extends YtelsespesifiktGrunnlagDto {
     @Valid
     private List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet;
 
+    @JsonProperty(value = "søktePerioder", required = false)
+    @Size(min = 1)
+    @Valid
+    private List<SøktPeriode> søktePerioder;
+
     protected OmsorgspengerGrunnlag() {
         // default ctor
     }
 
 
-    public OmsorgspengerGrunnlag(@NotNull @Valid List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet) {
+    public OmsorgspengerGrunnlag(@NotNull @Valid List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet, List<SøktPeriode> søktePerioder) {
         this.utbetalingsgradPrAktivitet = utbetalingsgradPrAktivitet;
+        this.søktePerioder = søktePerioder;
     }
 
     public List<UtbetalingsgradPrAktivitetDto> getUtbetalingsgradPrAktivitet() {
         return utbetalingsgradPrAktivitet;
+    }
+
+    public List<SøktPeriode> getSøktePerioder() {
+        return søktePerioder;
     }
 
     public static String getYtelseType() {
@@ -49,6 +59,7 @@ public class OmsorgspengerGrunnlag extends YtelsespesifiktGrunnlagDto {
     public String toString() {
         return "OmsorgspengerGrunnlag{" +
                 "utbetalingsgradPrAktivitet=" + utbetalingsgradPrAktivitet +
+                "søktePerioder=" + søktePerioder +
                 '}';
     }
 
@@ -58,12 +69,12 @@ public class OmsorgspengerGrunnlag extends YtelsespesifiktGrunnlagDto {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         OmsorgspengerGrunnlag that = (OmsorgspengerGrunnlag) o;
-        return Objects.equals(utbetalingsgradPrAktivitet, that.utbetalingsgradPrAktivitet);
+        return Objects.equals(utbetalingsgradPrAktivitet, that.utbetalingsgradPrAktivitet) && Objects.equals(søktePerioder, that.søktePerioder);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), utbetalingsgradPrAktivitet);
+        return Objects.hash(super.hashCode(), utbetalingsgradPrAktivitet, søktePerioder);
     }
 
     @AssertTrue(message = "Liste med utbetalingsgrader skal ikke ha duplikate arbeidsforhold")

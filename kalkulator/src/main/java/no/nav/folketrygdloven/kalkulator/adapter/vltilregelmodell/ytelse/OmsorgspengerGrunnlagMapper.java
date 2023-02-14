@@ -1,7 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse;
 
-import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapRefusjonskravFraVLTilRegel.finnGradertRefusjonskravPåSkjæringstidspunktet;
-
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
@@ -30,21 +28,27 @@ public class OmsorgspengerGrunnlagMapper implements YtelsesspesifikkRegelMapper 
     @Override
     public YtelsesSpesifiktGrunnlag map(BeregningsgrunnlagDto beregningsgrunnlagDto, BeregningsgrunnlagInput input) {
         YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag = input.getYtelsespesifiktGrunnlag();
-        if (ytelsespesifiktGrunnlag instanceof no.nav.folketrygdloven.kalkulator.input.OmsorgspengerGrunnlag) {
-            no.nav.folketrygdloven.kalkulator.input.OmsorgspengerGrunnlag omsorspengegrunnlag = (no.nav.folketrygdloven.kalkulator.input.OmsorgspengerGrunnlag) ytelsespesifiktGrunnlag;
+        if (ytelsespesifiktGrunnlag instanceof no.nav.folketrygdloven.kalkulator.input.OmsorgspengerGrunnlag omsorspengegrunnlag) {
             List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = omsorspengegrunnlag.getUtbetalingsgradPrAktivitet();
-            boolean harSøktFLEllerSN = utbetalingsgradPrAktivitet.stream()
-                    .filter(this::erFrilansEllerNæring)
-                    .anyMatch(this::harUtbetaling);
-            BigDecimal gradertRefusjonVedSkjæringstidspunkt = finnGradertRefusjonskravPåSkjæringstidspunktet(input.getInntektsmeldinger(), beregningsgrunnlagDto.getSkjæringstidspunkt(), input.getYtelsespesifiktGrunnlag());
-            return new OmsorgspengerGrunnlag(gradertRefusjonVedSkjæringstidspunkt, harSøktFLEllerSN, finnesArbeidsandelIkkeSøktOm(utbetalingsgradPrAktivitet, beregningsgrunnlagDto), harRefusjonskrav(input.getInntektsmeldinger()));
+            var finnesArbeidsandelIkkeSøktOm = finnesArbeidsandelIkkeSøktOm(utbetalingsgradPrAktivitet, beregningsgrunnlagDto);
+            if (omsorspengegrunnlag.getBrukerSøkerPerioder().isPresent()) {
+                return new OmsorgspengerGrunnlag(finnesArbeidsandelIkkeSøktOm, !omsorspengegrunnlag.getBrukerSøkerPerioder().get().isEmpty());
+            } else {
+                boolean harSøktFLEllerSN = utbetalingsgradPrAktivitet.stream()
+                        .filter(this::erFrilansEllerNæring)
+                        .anyMatch(this::harUtbetaling);
+                return new OmsorgspengerGrunnlag(finnesArbeidsandelIkkeSøktOm,
+                        harSøktFLEllerSN || !harAlleInntektsmeldingerFulltRefusjonskrav(input.getInntektsmeldinger())
+                );
+            }
         }
 
         throw new IllegalStateException("Forventer OmsorgspengerGrunnlag for OMP");
     }
 
-    private boolean harRefusjonskrav(Collection<InntektsmeldingDto> inntektsmeldinger) {
-        return inntektsmeldinger.stream().anyMatch(im -> im.getRefusjonBeløpPerMnd() != null && !im.getRefusjonBeløpPerMnd().erNullEllerNulltall());
+    private boolean harAlleInntektsmeldingerFulltRefusjonskrav(Collection<InntektsmeldingDto> inntektsmeldinger) {
+        return inntektsmeldinger.stream().allMatch(im -> im.getRefusjonBeløpPerMnd() != null &&
+                im.getRefusjonBeløpPerMnd().equals(im.getInntektBeløp()));
     }
 
     private boolean harUtbetaling(UtbetalingsgradPrAktivitetDto aktivitet) {

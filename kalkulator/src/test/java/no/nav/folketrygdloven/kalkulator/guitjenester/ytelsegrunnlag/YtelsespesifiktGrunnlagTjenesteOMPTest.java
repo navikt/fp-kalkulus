@@ -85,7 +85,7 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
         AktivitetDto aktivitetDto = new AktivitetDto(arbeidsgiver,
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
-        OmsorgspengerGrunnlag omsorgspengeGrunnlagDto = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
+        OmsorgspengerGrunnlag omsorgspengeGrunnlagDto = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), List.of());
         InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
                 .medRefusjon(refusjon)
                 .medBeløp(beregnet)
@@ -139,7 +139,7 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
         AktivitetDto aktivitetDto = new AktivitetDto(arbeidsgiver,
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
-        OmsorgspengerGrunnlag omsorgspengeGrunnlagDto = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
+        OmsorgspengerGrunnlag omsorgspengeGrunnlagDto = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), List.of());
         InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
                 .medRefusjon(refusjon)
                 .medBeløp(beregnet)

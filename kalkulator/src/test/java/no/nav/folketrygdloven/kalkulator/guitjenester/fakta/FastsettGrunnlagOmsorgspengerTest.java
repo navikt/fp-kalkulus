@@ -77,7 +77,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
         AktivitetDto aktivitetDto = new AktivitetDto(arbeidsgiver,
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
-        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
+        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), List.of());
         InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
                 .medRefusjon(BRUTTO_PR_AAR.divide(BigDecimal.valueOf(12)))
                 .medBeløp(BRUTTO_PR_AAR.divide(BigDecimal.valueOf(12)))
@@ -123,7 +123,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
         AktivitetDto aktivitetDto = new AktivitetDto(arbeidsgiver,
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
-        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
+        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), List.of());
         InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
                 .medRefusjon(BigDecimal.valueOf(60_000))
                 .medBeløp(BigDecimal.valueOf(1_200_000).divide(BigDecimal.valueOf(12)))
@@ -156,7 +156,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
         AktivitetDto aktivitetDto = new AktivitetDto(arbeidsgiver,
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
-        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
+        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), List.of());
         InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
                 .medBeløp(BRUTTO_PR_AAR.divide(BigDecimal.valueOf(12)))
                 .medArbeidsgiver(arbeidsgiver)
@@ -188,7 +188,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
         AktivitetDto aktivitetDto = new AktivitetDto(arbeidsgiver,
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
-        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
+        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), List.of());
         InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
                 .medRefusjon(BRUTTO_PR_AAR.divide(BigDecimal.valueOf(30), RoundingMode.HALF_EVEN))
                 .medBeløp(BRUTTO_PR_AAR.divide(BigDecimal.valueOf(12), RoundingMode.HALF_EVEN))
@@ -239,7 +239,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
         AktivitetDto aktivitetDto = new AktivitetDto(arbeidsgiver,
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
-        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
+        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), List.of());
         InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
                 .medRefusjon(BigDecimal.valueOf(10_000))
                 .medBeløp(BigDecimal.valueOf(20_000))

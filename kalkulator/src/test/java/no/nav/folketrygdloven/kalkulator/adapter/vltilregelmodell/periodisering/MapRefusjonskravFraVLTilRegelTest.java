@@ -139,7 +139,7 @@ public class MapRefusjonskravFraVLTilRegelTest {
                         List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMed(idag), BigDecimal.valueOf(100)))),
                 new UtbetalingsgradPrAktivitetDto(
                         new AktivitetDto(ARBEIDSGIVER2, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID),
-                        List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMed(idag), BigDecimal.valueOf(50))))));
+                        List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMed(idag), BigDecimal.valueOf(50))))), List.of());
 
         // Act
         BigDecimal refusjonPåStp = MapRefusjonskravFraVLTilRegel.finnGradertRefusjonskravPåSkjæringstidspunktet(inntektsmeldingAggregatDto.getInntektsmeldingerSomSkalBrukes(), idag, omsorgspengerGrunnlag);
@@ -175,7 +175,7 @@ public class MapRefusjonskravFraVLTilRegelTest {
                         List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMed(idag), BigDecimal.valueOf(100)))),
                 new UtbetalingsgradPrAktivitetDto(
                         new AktivitetDto(ARBEIDSGIVER2, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID),
-                        List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMed(idag), BigDecimal.valueOf(50))))));
+                        List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMed(idag), BigDecimal.valueOf(50))))), List.of());
 
         // Act
         BigDecimal refusjonPåStp = MapRefusjonskravFraVLTilRegel.finnGradertRefusjonskravPåSkjæringstidspunktet(inntektsmeldingAggregatDto.getInntektsmeldingerSomSkalBrukes(), idag, omsorgspengerGrunnlag);
