@@ -40,9 +40,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <fpsak.nare.version>2.4.0</fpsak.nare.version>
-
-        <beregningsgrunnlag.regelmodell.version>3.2.3</beregningsgrunnlag.regelmodell.version>
+        <beregningsgrunnlag.regelmodell.version>3.3.0</beregningsgrunnlag.regelmodell.version>
 
         <felles.version>1.0.10</felles.version>
 
@@ -163,12 +161,6 @@
                 <groupId>jakarta.persistence</groupId>
                 <artifactId>jakarta.persistence-api</artifactId>
                 <version>3.1.0</version>
-            </dependency>
-
-            <dependency>
-                <groupId>no.nav.fpsak.nare</groupId>
-                <artifactId>fpsak-nare-core</artifactId>
-                <version>${fpsak.nare.version}</version>
             </dependency>
 
             <dependency>

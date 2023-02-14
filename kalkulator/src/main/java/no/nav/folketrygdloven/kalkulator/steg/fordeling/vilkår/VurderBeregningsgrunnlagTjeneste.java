@@ -9,16 +9,12 @@ import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BeregningUtfallÅrsak;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelMerknad;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode;
-import no.nav.folketrygdloven.beregningsgrunnlag.vurder.RegelVurderBeregningsgrunnlag;
-import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagFeil;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
-import no.nav.folketrygdloven.kalkulator.JsonMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapRegelSporingFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
@@ -34,7 +30,7 @@ import no.nav.folketrygdloven.kalkulator.output.RegelSporingPeriode;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Vilkårsavslagsårsak;
-import no.nav.fpsak.nare.evaluation.Evaluation;
+import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef
@@ -95,18 +91,12 @@ public class VurderBeregningsgrunnlagTjeneste {
     }
 
     protected List<RegelResultat> kjørRegel(BeregningsgrunnlagInput input, Beregningsgrunnlag beregningsgrunnlagRegel) {
-        String jsonInput = toJson(beregningsgrunnlagRegel);
         // Evaluerer hver BeregningsgrunnlagPeriode fra foreslått Beregningsgrunnlag
         List<RegelResultat> regelResultater = new ArrayList<>();
         for (BeregningsgrunnlagPeriode periode : beregningsgrunnlagRegel.getBeregningsgrunnlagPerioder()) {
-            RegelVurderBeregningsgrunnlag regel = new RegelVurderBeregningsgrunnlag();
-            Evaluation evaluation = regel.evaluer(periode);
-            regelResultater.add(RegelmodellOversetter.getRegelResultat(evaluation, jsonInput));
+            regelResultater.add(KalkulusRegler.vurderBeregningsgrunnlag(periode));
         }
         return regelResultater;
     }
 
-    protected String toJson(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag beregningsgrunnlagRegel) {
-        return JsonMapper.toJson(beregningsgrunnlagRegel, BeregningsgrunnlagFeil::kanIkkeSerialisereRegelinput);
-    }
 }

@@ -6,17 +6,13 @@ import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
-import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
-import no.nav.folketrygdloven.beregningsgrunnlag.fastsette.RegelFullføreBeregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.Beregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.BeregningsgrunnlagPeriode;
-import no.nav.folketrygdloven.beregningsgrunnlag.ytelse.svp.RegelFinnGrenseverdi;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.fastsett.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.steg.fullføre.FullføreBeregningsgrunnlag;
-import no.nav.fpsak.nare.evaluation.Evaluation;
+import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
 
 @ApplicationScoped
 public class FullføreBeregningsgrunnlagUtbgrad extends FullføreBeregningsgrunnlag {
@@ -36,10 +32,8 @@ public class FullføreBeregningsgrunnlagUtbgrad extends FullføreBeregningsgrunn
         // Regel for å finne grenseverdi for andre gjennomkjøring
         List<String> sporingerFinnGrenseverdi = kjørRegelFinnGrenseverdi(beregningsgrunnlagRegel);
 
-        String inputNrTo = toJson(beregningsgrunnlagRegel);
-
         //Andre gjennomkjøring av regel
-        List<RegelResultat> regelResultater = kjørRegelFullførberegningsgrunnlag(beregningsgrunnlagRegel, inputNrTo);
+        List<RegelResultat> regelResultater = kjørRegelFullførberegningsgrunnlag(beregningsgrunnlagRegel);
 
         leggTilSporingerForFinnGrenseverdi(input, sporingerFinnGrenseverdi, regelResultater);
 
@@ -57,23 +51,18 @@ public class FullføreBeregningsgrunnlagUtbgrad extends FullføreBeregningsgrunn
         }
     }
 
-    protected List<RegelResultat> kjørRegelFullførberegningsgrunnlag(Beregningsgrunnlag beregningsgrunnlagRegel, String input) {
+    protected List<RegelResultat> kjørRegelFullførberegningsgrunnlag(Beregningsgrunnlag beregningsgrunnlagRegel) {
         List<RegelResultat> regelResultater = new ArrayList<>();
         for (BeregningsgrunnlagPeriode periode : beregningsgrunnlagRegel.getBeregningsgrunnlagPerioder()) {
-            RegelFullføreBeregningsgrunnlag regel = new RegelFullføreBeregningsgrunnlag(periode);
-            Evaluation evaluation = regel.evaluer(periode);
-            regelResultater.add(RegelmodellOversetter.getRegelResultat(evaluation, input));
+            regelResultater.add(KalkulusRegler.fullføreBeregningsgrunnlag(periode));
         }
         return regelResultater;
     }
 
     protected List<String> kjørRegelFinnGrenseverdi(Beregningsgrunnlag beregningsgrunnlagRegel) {
         return beregningsgrunnlagRegel.getBeregningsgrunnlagPerioder().stream()
-            .map(periode -> {
-                RegelFinnGrenseverdi regel = new RegelFinnGrenseverdi(periode);
-                Evaluation evaluering = regel.evaluer(periode);
-                return RegelmodellOversetter.getSporing(evaluering);
-            }).collect(Collectors.toList());
+            .map(periode -> KalkulusRegler.finnGrenseverdi(periode).getRegelSporing().sporing())
+            .collect(Collectors.toList());
     }
 
 }

@@ -32,10 +32,6 @@
         </dependency>
 
         <dependency>
-            <groupId>no.nav.fpsak.nare</groupId>
-            <artifactId>fpsak-nare-core</artifactId>
-        </dependency>
-        <dependency>
             <groupId>no.nav.fpsak.tidsserie</groupId>
             <artifactId>fpsak-tidsserie</artifactId>
         </dependency>

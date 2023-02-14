@@ -7,14 +7,10 @@ import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
-import no.nav.folketrygdloven.beregningsgrunnlag.fortsettForeslå.RegelFortsettForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode;
-import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagFeil;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
-import no.nav.folketrygdloven.kalkulator.JsonMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapBeregningsgrunnlagFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapRegelSporingFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
@@ -29,7 +25,7 @@ import no.nav.folketrygdloven.kalkulator.output.RegelSporingPeriode;
 import no.nav.folketrygdloven.kalkulator.steg.BeregningsgrunnlagVerifiserer;
 import no.nav.folketrygdloven.kalkulator.steg.foreslå.AvklaringsbehovUtlederForeslåBeregning;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
-import no.nav.fpsak.nare.evaluation.Evaluation;
+import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef()
@@ -60,11 +56,9 @@ public class FortsettForeslåBeregningsgrunnlag {
 
         // Oversetter initielt Beregningsgrunnlag -> regelmodell
         Beregningsgrunnlag regelmodellBeregningsgrunnlag = mapBeregningsgrunnlagFraVLTilRegel.map(input, grunnlag);
-        String jsonInput = toJson(regelmodellBeregningsgrunnlag);
         List<RegelResultat> regelResultater = new ArrayList<>();
         for (BeregningsgrunnlagPeriode periode : regelmodellBeregningsgrunnlag.getBeregningsgrunnlagPerioder()) {
-            Evaluation evaluation = new RegelFortsettForeslåBeregningsgrunnlag(periode).evaluer(periode);
-            regelResultater.add(RegelmodellOversetter.getRegelResultat(evaluation, jsonInput));
+            regelResultater.add(KalkulusRegler.fortsettForeslåBeregningsgrunnlag(periode));
         }
 
         // Oversett endelig resultat av regelmodell til foreslått Beregningsgrunnlag  (+ spore input -> evaluation)
@@ -83,10 +77,6 @@ public class FortsettForeslåBeregningsgrunnlag {
 
     private void verifiserBeregningsgrunnlag(BeregningsgrunnlagDto foreslåttBeregningsgrunnlag) {
         BeregningsgrunnlagVerifiserer.verifiserFortsettForeslåttBeregningsgrunnlag(foreslåttBeregningsgrunnlag);
-    }
-
-    protected String toJson(Beregningsgrunnlag beregningsgrunnlagRegel) {
-        return JsonMapper.toJson(beregningsgrunnlagRegel, BeregningsgrunnlagFeil::kanIkkeSerialisereRegelinput);
     }
 
 }

@@ -7,12 +7,9 @@ import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.Beregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.BeregningsgrunnlagPeriode;
-import no.nav.folketrygdloven.beregningsgrunnlag.ytelse.frisinn.RegelFinnGrenseverdiFRISINN;
-import no.nav.folketrygdloven.beregningsgrunnlag.ytelse.frisinn.RegelFullføreBeregningsgrunnlagFRISINN;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.fastsett.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
@@ -21,7 +18,7 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.steg.fullføre.ytelse.utbgrad.FullføreBeregningsgrunnlagUtbgrad;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
-import no.nav.fpsak.nare.evaluation.Evaluation;
+import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
 
 @FagsakYtelseTypeRef(FagsakYtelseType.FRISINN)
 @ApplicationScoped
@@ -53,7 +50,7 @@ public class FullføreBeregningsgrunnlagFRISINN extends FullføreBeregningsgrunn
 
         // Fullfører grenseverdi
         String inputNrTo = toJson(beregningsgrunnlagRegel);
-        List<RegelResultat> regelResultater = kjørRegelFullførberegningsgrunnlag(beregningsgrunnlagRegel, inputNrTo);
+        List<RegelResultat> regelResultater = kjørRegelFullførberegningsgrunnlag(beregningsgrunnlagRegel);
 
         leggTilSporingerForFinnGrenseverdi(input, sporingerFinnGrenseverdi, regelResultater);
 
@@ -66,12 +63,10 @@ public class FullføreBeregningsgrunnlagFRISINN extends FullføreBeregningsgrunn
     }
 
     @Override
-    protected List<RegelResultat> kjørRegelFullførberegningsgrunnlag(Beregningsgrunnlag beregningsgrunnlagRegel, String input) {
+    protected List<RegelResultat> kjørRegelFullførberegningsgrunnlag(Beregningsgrunnlag beregningsgrunnlagRegel) {
         List<RegelResultat> regelResultater = new ArrayList<>();
         for (BeregningsgrunnlagPeriode periode : beregningsgrunnlagRegel.getBeregningsgrunnlagPerioder()) {
-            RegelFullføreBeregningsgrunnlagFRISINN regel = new RegelFullføreBeregningsgrunnlagFRISINN();
-            Evaluation evaluation = regel.evaluer(periode);
-            regelResultater.add(RegelmodellOversetter.getRegelResultat(evaluation, input));
+            regelResultater.add(KalkulusRegler.fullføreBeregningsgrunnlagFRISINN(periode));
         }
         return regelResultater;
     }
@@ -82,9 +77,7 @@ public class FullføreBeregningsgrunnlagFRISINN extends FullføreBeregningsgrunn
                 .map(periode -> {
                     Boolean erVilkårOppfylt = erVilkårOppfyltForSøknadsperiode(beregningVilkårResultatListe, søknadsperioder, periode);
                     BeregningsgrunnlagPeriode.oppdater(periode).medErVilkårOppfylt(erVilkårOppfylt);
-                    RegelFinnGrenseverdiFRISINN regel = new RegelFinnGrenseverdiFRISINN();
-                    Evaluation evaluering = regel.evaluer(periode);
-                    return RegelmodellOversetter.getSporing(evaluering);
+                    return KalkulusRegler.finnGrenseverdiFRISINN(periode).getRegelSporing().sporing();
                 }).collect(Collectors.toList());
     }
 

@@ -12,8 +12,6 @@ import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
-import no.nav.folketrygdloven.beregningsgrunnlag.foreslå.frisinn.RegelForeslåBeregningsgrunnlagFRISINN;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag;
@@ -28,7 +26,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittPeriodeInntekt;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.steg.foreslå.ForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
-import no.nav.fpsak.nare.evaluation.Evaluation;
+import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef(FagsakYtelseType.FRISINN)
@@ -49,12 +47,11 @@ public class ForeslåBeregningsgrunnlagFRISINN extends ForeslåBeregningsgrunnla
     }
 
     @Override
-    protected List<RegelResultat> kjørRegelForeslåBeregningsgrunnlag(Beregningsgrunnlag regelmodellBeregningsgrunnlag, String jsonInput, ForeslåBeregningsgrunnlagInput input) {
+    protected List<RegelResultat> kjørRegelForeslåBeregningsgrunnlag(Beregningsgrunnlag regelmodellBeregningsgrunnlag) {
         // Evaluerer hver BeregningsgrunnlagPeriode fra initielt Beregningsgrunnlag
         List<RegelResultat> regelResultater = new ArrayList<>();
         for (BeregningsgrunnlagPeriode periode : regelmodellBeregningsgrunnlag.getBeregningsgrunnlagPerioder()) {
-            Evaluation evaluation = new RegelForeslåBeregningsgrunnlagFRISINN(periode).evaluer(periode);
-            regelResultater.add(RegelmodellOversetter.getRegelResultat(evaluation, jsonInput));
+            regelResultater.add(KalkulusRegler.foreslåBeregningsgrunnlagFRISINN(periode));
         }
         return regelResultater;
     }

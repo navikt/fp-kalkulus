@@ -22,15 +22,10 @@ import org.junit.jupiter.api.Test;
 
 import jakarta.enterprise.inject.Instance;
 import no.nav.folketrygdloven.beregningsgrunnlag.fastsette.RegelFullføreBeregningsgrunnlag;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.YtelsesSpesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegel;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelFelles;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.fastsett.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.fastsett.YtelsesspesifikkRegelMapper;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.frisinn.FrisinnGrunnlagMapperFastsett;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.SvangerskapspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
