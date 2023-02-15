@@ -28,7 +28,7 @@ public class OmsorgspengerGrunnlag extends YtelsespesifiktGrunnlagDto {
     private List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet;
 
     @JsonProperty(value = "søktePerioder", required = false)
-    @Size(min = 1)
+    @Size(min = 0, max = 365)
     @Valid
     private List<SøktPeriode> søktePerioder;
 
