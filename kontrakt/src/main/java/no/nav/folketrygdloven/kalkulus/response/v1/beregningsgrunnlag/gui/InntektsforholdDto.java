@@ -78,6 +78,9 @@ public class InntektsforholdDto {
         this.skalRedusereUtbetaling = skalRedusereUtbetaling;
     }
 
+    public InntektsforholdDto() {
+    }
+
     public AktivitetStatus getAktivitetStatus() {
         return aktivitetStatus;
     }
