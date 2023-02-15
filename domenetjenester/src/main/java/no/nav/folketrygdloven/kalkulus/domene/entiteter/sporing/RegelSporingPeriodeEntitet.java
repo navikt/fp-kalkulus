@@ -116,7 +116,7 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
         }
 
         public Builder medRegelEvaluering(String regelEvaluering) {
-            Objects.requireNonNull(regelEvaluering, "regelInput");
+            Objects.requireNonNull(regelEvaluering, "regelEvaluering");
             kladd.regelEvaluering = regelEvaluering;
             return this;
         }
