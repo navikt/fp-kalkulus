@@ -83,7 +83,7 @@ public class SimulerTilkommetInntektRestTjeneste {
         var koblinger = koblingRepository.hentKoblingerOpprettetIPeriode(spesifikasjon.getPeriode(), YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN);
 
         var koblingIder = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
-        var beregningsgrunnlag = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingIder, BeregningsgrunnlagTilstand.FASTSATT, null);
+        var beregningsgrunnlag = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingIder);
 
         var inputer = kalkulatorInputTjeneste.hentForKoblinger(beregningsgrunnlag.stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId).collect(Collectors.toSet()));
 
