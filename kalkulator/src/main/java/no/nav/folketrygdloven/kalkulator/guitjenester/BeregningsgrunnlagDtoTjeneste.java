@@ -85,7 +85,7 @@ public class BeregningsgrunnlagDtoTjeneste {
     }
 
     private static void mapForlengelsePerioder(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
-        if (dto.getForlengelseperioder() != null) {
+        if (input.getForlengelseperioder() != null) {
             dto.setForlengelseperioder(input.getForlengelseperioder().stream().map(p -> new Periode(p.getFomDato(), p.getTomDato())).toList());
         }
     }
