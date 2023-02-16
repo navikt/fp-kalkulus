@@ -30,6 +30,7 @@ import jakarta.ws.rs.core.Response;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørArbeidDto;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt.TilkommetInntektsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
@@ -84,7 +85,7 @@ public class SimulerTilkommetInntektRestTjeneste {
         var koblingIder = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
         var beregningsgrunnlag = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingIder, BeregningsgrunnlagTilstand.FASTSATT, null);
 
-        var inputer = kalkulatorInputTjeneste.hentForKoblinger(koblingIder);
+        var inputer = kalkulatorInputTjeneste.hentForKoblinger(beregningsgrunnlag.stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId).collect(Collectors.toSet()));
 
 
         var gruppertPåSaksnummer = koblinger.stream().collect(Collectors.groupingBy(KoblingEntitet::getSaksnummer));
