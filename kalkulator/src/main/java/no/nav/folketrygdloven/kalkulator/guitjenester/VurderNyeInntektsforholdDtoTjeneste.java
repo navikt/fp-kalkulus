@@ -105,7 +105,7 @@ class VurderNyeInntektsforholdDtoTjeneste {
 
     private static <V> Periode utledPeriode(List<LocalDateSegment<V>> segmenter) {
         var fom = segmenter.stream().map(LocalDateSegment::getFom).min(Comparator.naturalOrder()).orElseThrow();
-        var tom = segmenter.stream().map(LocalDateSegment::getTom).min(Comparator.naturalOrder()).orElseThrow();
+        var tom = segmenter.stream().map(LocalDateSegment::getTom).max(Comparator.naturalOrder()).orElseThrow();
         return new Periode(fom, tom);
     }
 
