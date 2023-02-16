@@ -24,6 +24,7 @@ import no.nav.folketrygdloven.kalkulus.felles.diff.DiffEntity;
 import no.nav.folketrygdloven.kalkulus.felles.diff.DiffResult;
 import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseGraph;
 import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseJpaEntityGraphConfig;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
@@ -90,6 +91,17 @@ public class KoblingRepository {
         TypedQuery<KoblingEntitet> query = entityManager.createQuery(
                 "SELECT k FROM Kobling k WHERE k.saksnummer = :saksnummer order by k.opprettetTidspunkt desc", KoblingEntitet.class);
         query.setParameter("saksnummer", saksnummer);
+        return query.getResultList();
+    }
+
+    public List<KoblingEntitet> hentKoblingerOpprettetIPeriode(Periode periode, YtelseTyperKalkulusStøtterKontrakt ytelsetype) {
+        TypedQuery<KoblingEntitet> query = entityManager.createQuery(
+                "SELECT k FROM Kobling k WHERE k.opprettetTidspunkt >= :fom " +
+                        "and k.opprettetTidspunkt < :tom " +
+                        "and k.ytelseTyperKalkulusStøtter = :ytelsetype order by k.opprettetTidspunkt desc", KoblingEntitet.class);
+        query.setParameter("fom", periode.getFom().atStartOfDay());
+        query.setParameter("tom", periode.getTom().plusDays(1).atStartOfDay());
+        query.setParameter("ytelsetype", ytelsetype);
         return query.getResultList();
     }
 
