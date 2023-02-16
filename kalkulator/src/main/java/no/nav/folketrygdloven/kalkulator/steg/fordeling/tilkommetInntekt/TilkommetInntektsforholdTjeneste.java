@@ -230,7 +230,7 @@ public class TilkommetInntektsforholdTjeneste {
         return new LocalDateTimeline<>(it.getAlleAnsettelsesperioder()
                 .stream()
                 .map(p -> new LocalDateSegment<>(p.getPeriode().getFomDato(), p.getPeriode().getTomDato(), Boolean.TRUE))
-                .toList());
+                .toList(), StandardCombinators::alwaysTrueForMatch);
     }
 
     private static Comparator<Inntektsforhold> sorterPåStartdato(Collection<YrkesaktivitetDto> yrkesaktiviteter) {
