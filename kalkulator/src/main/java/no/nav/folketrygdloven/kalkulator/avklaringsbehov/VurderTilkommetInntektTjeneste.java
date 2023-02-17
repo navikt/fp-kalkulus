@@ -87,9 +87,11 @@ public class VurderTilkommetInntektTjeneste {
 
 
     private static BigDecimal finnBruttoPrÅr(NyttInntektsforholdDto i, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+        if (i.getBruttoInntektPrÅr() != null) {
+            return BigDecimal.valueOf(i.getBruttoInntektPrÅr());
+        }
         var inntektsmelding = finnInntektsmelding(i, iayGrunnlag);
-        return inntektsmelding.map(VurderTilkommetInntektTjeneste::mapTilÅrsinntekt)
-                .orElseGet(() -> i.getBruttoInntektPrÅr() != null ? BigDecimal.valueOf(i.getBruttoInntektPrÅr()) : null);
+        return inntektsmelding.map(VurderTilkommetInntektTjeneste::mapTilÅrsinntekt).orElse(null);
     }
 
     private static Optional<InntektsmeldingDto> finnInntektsmelding(NyttInntektsforholdDto i, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
