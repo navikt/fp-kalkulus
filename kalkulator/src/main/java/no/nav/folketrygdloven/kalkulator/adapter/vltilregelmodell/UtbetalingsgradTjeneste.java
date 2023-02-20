@@ -6,6 +6,7 @@ import static no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.AktivitetSt
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
@@ -51,8 +52,8 @@ public class UtbetalingsgradTjeneste {
             if (status.erArbeidstaker()) {
                 throw new IllegalStateException("Bruk Arbeidsforhold-mapper");
             }
-            return utbetalingsgradGrunnlag.getUtbetalingsgradPrAktivitet().stream()
-                    .filter(ubtGrad -> matcherStatus(status, ubtGrad.getUtbetalingsgradArbeidsforhold().getUttakArbeidType()))
+            return finnPerioderForStatus(status, utbetalingsgradGrunnlag)
+                    .stream()
                     .flatMap(utb -> utb.getPeriodeMedUtbetalingsgrad().stream())
                     .filter(p -> p.getPeriode().inkluderer(periode.getFomDato()))
                     .map(PeriodeMedUtbetalingsgradDto::getUtbetalingsgrad)
@@ -60,6 +61,11 @@ public class UtbetalingsgradTjeneste {
                     .orElse(BigDecimal.ZERO);
         }
         return BigDecimal.valueOf(100);
+    }
+
+    public static Optional<UtbetalingsgradPrAktivitetDto> finnPerioderForStatus(AktivitetStatus status, UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
+        return utbetalingsgradGrunnlag.getUtbetalingsgradPrAktivitet().stream()
+                .filter(ubtGrad -> matcherStatus(status, ubtGrad.getUtbetalingsgradArbeidsforhold().getUttakArbeidType())).findFirst();
     }
 
     public static BigDecimal finnUtbetalingsgradForArbeid(Arbeidsgiver arbeidsgiver,

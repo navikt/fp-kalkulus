@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.rest;
 
 import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste.finnPerioderForArbeid;
+import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste.finnPerioderForStatus;
 import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributtMiljøvariabel.DRIFT;
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.READ;
 
@@ -56,6 +57,8 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.AktørArbeidDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt.SplittBGPerioder;
@@ -69,6 +72,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
@@ -313,6 +317,11 @@ public class SimulerTilkommetInntektRestTjeneste {
                     iay,
                     ytelsespesifiktGrunnlag);
 
+        } else if (it.getAktivitetStatus().equals(AktivitetStatus.FRILANSER)) {
+            inntekt = finnInntektForFrilans(
+                    p.getPeriode(),
+                    iay,
+                    ytelsespesifiktGrunnlag);
         } else {
             LOG.info("Fant tilkommet inntekt for status {}. Setter 0 i brutto inntekt.", it.getAktivitetStatus().getKode());
             inntekt = BigDecimal.ZERO;
@@ -347,12 +356,12 @@ public class SimulerTilkommetInntektRestTjeneste {
         throw new IllegalStateException("Kun gyldig ved utbetalingsgradgrunnlag");
     }
 
-    private static BigDecimal utledBruttoInntektFraTilkommet(BigDecimal tilkommetInntekt,
-                                                             Arbeidsgiver arbeidsgiver,
-                                                             InternArbeidsforholdRefDto internArbeidsforholdRefDto,
-                                                             Intervall periode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+    private static BigDecimal utledBruttoInntektFraTilkommetForArbeidstaker(BigDecimal tilkommetInntekt,
+                                                                            Arbeidsgiver arbeidsgiver,
+                                                                            InternArbeidsforholdRefDto internArbeidsforholdRefDto,
+                                                                            Intervall periode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
-            var snittFraværVektet = finnVektetSnittfravær(arbeidsgiver, internArbeidsforholdRefDto, periode, utbetalingsgradGrunnlag);
+            var snittFraværVektet = finnVektetSnittfraværForArbeidstaker(arbeidsgiver, internArbeidsforholdRefDto, periode, utbetalingsgradGrunnlag);
             var utbetalingsgrad = snittFraværVektet.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP);
             if (utbetalingsgrad.equals(BigDecimal.ONE)) {
                 return BigDecimal.ZERO;
@@ -362,13 +371,38 @@ public class SimulerTilkommetInntektRestTjeneste {
         return BigDecimal.ZERO;
     }
 
-    private static BigDecimal finnVektetSnittfravær(Arbeidsgiver arbeidsgiver,
-                                                    InternArbeidsforholdRefDto internArbeidsforholdRefDto,
-                                                    Intervall periode, UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
-        return finnPerioderForArbeid(utbetalingsgradGrunnlag,
+    private static BigDecimal utledBruttoInntektFraTilkommetForFrilans(BigDecimal tilkommetInntekt,
+                                                                       Intervall periode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+        if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
+            var snittFraværVektet = finnVektetSnittfraværForFrilans(periode, utbetalingsgradGrunnlag);
+            var utbetalingsgrad = snittFraværVektet.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP);
+            if (utbetalingsgrad.equals(BigDecimal.ONE)) {
+                return BigDecimal.ZERO;
+            }
+            return tilkommetInntekt.divide(BigDecimal.ONE.subtract(utbetalingsgrad), 10, RoundingMode.HALF_UP);
+        }
+        return BigDecimal.ZERO;
+    }
+
+
+    private static BigDecimal finnVektetSnittfraværForArbeidstaker(Arbeidsgiver arbeidsgiver,
+                                                                   InternArbeidsforholdRefDto internArbeidsforholdRefDto,
+                                                                   Intervall periode, UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
+        var utbetalingsgradPrAktivitetDtos = finnPerioderForArbeid(utbetalingsgradGrunnlag,
                 arbeidsgiver,
                 internArbeidsforholdRefDto,
-                true)
+                true);
+        return finnVektetSnittfravær(periode, utbetalingsgradPrAktivitetDtos);
+    }
+
+    private static BigDecimal finnVektetSnittfraværForFrilans(Intervall periode, UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
+        var utbetalingsgradPrAktivitetDtos = finnPerioderForStatus(AktivitetStatus.FRILANSER, utbetalingsgradGrunnlag);
+        return finnVektetSnittfravær(periode, utbetalingsgradPrAktivitetDtos.map(List::of).orElse(Collections.emptyList()));
+    }
+
+
+    private static BigDecimal finnVektetSnittfravær(Intervall periode, List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitetDtos) {
+        return utbetalingsgradPrAktivitetDtos
                 .stream()
                 .flatMap(utb -> utb.getPeriodeMedUtbetalingsgrad().stream())
                 .filter(p -> p.getPeriode().inkluderer(periode.getFomDato()))
@@ -413,6 +447,43 @@ public class SimulerTilkommetInntektRestTjeneste {
                 .divide(BigDecimal.valueOf(antallPoster), 10, RoundingMode.HALF_UP);
     }
 
+    private BigDecimal finnInntektForFrilans(Intervall periode,
+                                             InntektArbeidYtelseGrunnlagDto iay,
+                                             YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+        var inntektFilterDto = new InntektFilterDto(iay.getAktørInntektFraRegister());
+        var frilansArbeidstaker = iay.getAktørArbeidFraRegister().map(AktørArbeidDto::hentAlleYrkesaktiviteter)
+                .orElse(Collections.emptyList())
+                .stream()
+                .filter(ya -> ya.getArbeidType().equals(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER))
+                .map(YrkesaktivitetDto::getArbeidsgiver)
+                .distinct();
+        return frilansArbeidstaker.map(a -> finnBeregnetÅrsinntekForArbeidSomFrilanser(periode, ytelsespesifiktGrunnlag, inntektFilterDto, a))
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO);
+
+
+    }
+
+    private static BigDecimal finnBeregnetÅrsinntekForArbeidSomFrilanser(Intervall periode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, InntektFilterDto inntektFilterDto, Arbeidsgiver a) {
+        var inntektsposter = inntektFilterDto.filterBeregningsgrunnlag()
+                .filter(a)
+                .getFiltrertInntektsposter();
+
+        var aktuellePoster = inntektsposter.stream().filter(i -> i.getPeriode().overlapper(
+                        Intervall.fraOgMedTilOgMed(periode.getFomDato().minusMonths(1), periode.getTomDato().plusMonths(1))))
+                .toList();
+
+        var antallPoster = aktuellePoster.size();
+        if (antallPoster == 0) {
+            LOG.info("Fant ingen inntektsposter for arbeidsgiver {} i periode {}", a, periode);
+            return BigDecimal.ZERO;
+        }
+        return aktuellePoster.stream().map(post -> finnBruttoInntektFraInntektspostForFrilans(ytelsespesifiktGrunnlag, post))
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO)
+                .divide(BigDecimal.valueOf(antallPoster), 10, RoundingMode.HALF_UP);
+    }
+
     private static BigDecimal finnBruttoInntektFraInntektspost(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRef, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, InntektspostDto post) {
         var postPeriode = post.getPeriode();
         var virkedagerIPeriode = getBeregnVirkedager(postPeriode);
@@ -420,9 +491,20 @@ public class SimulerTilkommetInntektRestTjeneste {
             LOG.info("Fant inntektspost uten virkedager for arbeidsgiver {} i periode {}", arbeidsgiver, post.getPeriode());
             return BigDecimal.ZERO;
         }
-        var bruttoInntekt = utledBruttoInntektFraTilkommet(post.getBeløp().getVerdi(), arbeidsgiver, arbeidsforholdRef, postPeriode, ytelsespesifiktGrunnlag);
+        var bruttoInntekt = utledBruttoInntektFraTilkommetForArbeidstaker(post.getBeløp().getVerdi(), arbeidsgiver, arbeidsforholdRef, postPeriode, ytelsespesifiktGrunnlag);
         return bruttoInntekt.divide(BigDecimal.valueOf(virkedagerIPeriode), 10, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(260));
     }
+
+    private static BigDecimal finnBruttoInntektFraInntektspostForFrilans(YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, InntektspostDto post) {
+        var postPeriode = post.getPeriode();
+        var virkedagerIPeriode = getBeregnVirkedager(postPeriode);
+        if (virkedagerIPeriode == 0) {
+            return BigDecimal.ZERO;
+        }
+        var bruttoInntekt = utledBruttoInntektFraTilkommetForFrilans(post.getBeløp().getVerdi(), postPeriode, ytelsespesifiktGrunnlag);
+        return bruttoInntekt.divide(BigDecimal.valueOf(virkedagerIPeriode), 10, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(260));
+    }
+
 
     private static int getBeregnVirkedager(Intervall postPeriode) {
         return Virkedager.beregnVirkedager(postPeriode.getFomDato(), postPeriode.getTomDato());
