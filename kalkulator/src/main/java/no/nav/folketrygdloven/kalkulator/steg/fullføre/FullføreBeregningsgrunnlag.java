@@ -38,7 +38,7 @@ public abstract class FullføreBeregningsgrunnlag {
         var grunnlag = input.getBeregningsgrunnlagGrunnlag();
 
         // Oversetter foreslått Beregningsgrunnlag -> regelmodell
-        var beregningsgrunnlagRegel = mapBeregningsgrunnlagFraVLTilRegel.map(input, grunnlag);
+        var beregningsgrunnlagRegel = mapBeregningsgrunnlagFraVLTilRegel.map(input, grunnlag.getBeregningsgrunnlag().orElse(null));
 
         // Evaluerer hver BeregningsgrunnlagPeriode fra foreslått Beregningsgrunnlag
         List<RegelResultat> regelResultater = evaluerRegelmodell(beregningsgrunnlagRegel, input);

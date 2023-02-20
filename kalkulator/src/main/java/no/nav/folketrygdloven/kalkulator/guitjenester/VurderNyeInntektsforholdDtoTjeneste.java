@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
+import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.TilkommetInntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørArbeidDto;
@@ -37,16 +39,22 @@ class VurderNyeInntektsforholdDtoTjeneste {
         if (input.getAvklaringsbehov().stream().noneMatch(a -> a.getDefinisjon().equals(AvklaringsbehovDefinisjon.VURDER_NYTT_INNTKTSFRHLD))) {
             return null;
         }
-
+        var beregningsgrunnlag = input.getBeregningsgrunnlag();
         var iayGrunnlag = input.getIayGrunnlag();
-        var bgPerioder = input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
+        var ytelsespesifiktGrunnlag = input.getYtelsespesifiktGrunnlag();
 
-        var tidslinje = TilkommetInntektsforholdTjeneste.finnTilkommetInntektsforholdTidslinje(input.getSkjæringstidspunktForBeregning(),
-                input.getIayGrunnlag().getAktørArbeidFraRegister().map(AktørArbeidDto::hentAlleYrkesaktiviteter).orElse(Collections.emptyList()),
-                input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
-                input.getYtelsespesifiktGrunnlag()
+        var tidslinje = TilkommetInntektsforholdTjeneste.finnTilkommetInntektsforholdTidslinje(beregningsgrunnlag.getSkjæringstidspunkt(),
+                iayGrunnlag.getAktørArbeidFraRegister().map(AktørArbeidDto::hentAlleYrkesaktiviteter).orElse(Collections.emptyList()),
+                beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
+                ytelsespesifiktGrunnlag
         );
 
+
+        return getVurderNyttInntektsforholdDto(beregningsgrunnlag, iayGrunnlag, tidslinje);
+    }
+
+    public static VurderNyttInntektsforholdDto getVurderNyttInntektsforholdDto(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDateTimeline<Set<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver>> tidslinje) {
+        var bgPerioder = beregningsgrunnlag.getBeregningsgrunnlagPerioder();
         var periodeListe = bgPerioder.stream()
                 .filter(it -> !it.getTilkomneInntekter().isEmpty())
                 .map(it -> mapPeriode(iayGrunnlag, it, tidslinje))

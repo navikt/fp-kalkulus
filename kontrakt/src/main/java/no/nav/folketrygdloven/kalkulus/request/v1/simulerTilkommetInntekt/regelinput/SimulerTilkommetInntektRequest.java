@@ -18,14 +18,24 @@ public class SimulerTilkommetInntektRequest {
     @Valid
     private Periode periode;
 
+    @JsonProperty(value = "dagsatsFeiltoleranse")
+    @Valid
+    private Long dagsatsFeiltoleranse;
+
+
     public SimulerTilkommetInntektRequest() {
     }
 
     @JsonCreator
-    public SimulerTilkommetInntektRequest(@JsonProperty(value = "periode") Periode saksnummer) {
+    public SimulerTilkommetInntektRequest(@JsonProperty(value = "periode") Periode saksnummer, Long dagsatsFeiltoleranse) {
         this.periode = saksnummer;
+        this.dagsatsFeiltoleranse = dagsatsFeiltoleranse;
     }
 
+
+    public Long getDagsatsFeiltoleranse() {
+        return dagsatsFeiltoleranse;
+    }
 
     public Periode getPeriode() {
         return periode;

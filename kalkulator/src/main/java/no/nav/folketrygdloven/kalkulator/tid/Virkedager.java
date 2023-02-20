@@ -33,7 +33,7 @@ public class Virkedager {
         return beregnVirkedager(fom, tom);
     }
 
-    private static int beregnVirkedager(LocalDate fom, LocalDate tom) {
+    public static int beregnVirkedager(LocalDate fom, LocalDate tom) {
         try {
             // Utvid til nærmeste mandag tilbake i tid fra og med begynnelse (fom) (0-6 dager)
             int padBefore = fom.getDayOfWeek().getValue() - DayOfWeek.MONDAY.getValue();

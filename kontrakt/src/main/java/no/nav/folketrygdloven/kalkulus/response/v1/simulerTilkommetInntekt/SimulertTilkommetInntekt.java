@@ -27,14 +27,22 @@ public class SimulertTilkommetInntekt {
     @Max(1000000)
     private long antallSakerMedAksjonspunkt;
 
+    @JsonProperty(value = "antallSakerMedReduksjon")
+    @Valid
+    @Min(0)
+    @Max(1000000)
+    private long antallSakerMedReduksjon;
+
+
     @JsonProperty(value = "antallSakerSimulert")
     @Valid
     @Min(0)
     @Max(1000000)
     private long antallSakerSimulert;
 
-    public SimulertTilkommetInntekt(long antallSakerMedAksjonspunkt, long antallSakerSimulert) {
+    public SimulertTilkommetInntekt(long antallSakerMedAksjonspunkt, long antallSakerMedReduksjon, long antallSakerSimulert) {
         this.antallSakerMedAksjonspunkt = antallSakerMedAksjonspunkt;
+        this.antallSakerMedReduksjon = antallSakerMedReduksjon;
         this.antallSakerSimulert = antallSakerSimulert;
     }
 
@@ -47,5 +55,9 @@ public class SimulertTilkommetInntekt {
 
     public long getAntallSakerSimulert() {
         return antallSakerSimulert;
+    }
+
+    public long getAntallSakerMedReduksjon() {
+        return antallSakerMedReduksjon;
     }
 }
