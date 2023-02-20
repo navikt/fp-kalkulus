@@ -10,9 +10,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -65,6 +68,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
@@ -127,23 +131,55 @@ public class SimulerTilkommetInntektRestTjeneste {
                 .collect(Collectors.toMap(finnSaksnummer(koblinger),
                         List::of, velgNyestePrSkjæringstidspunkt()));
 
-        var saksnummerMedReduksjon = bgPrSaksnummer.entrySet().stream().collect(Collectors.toMap(
+        var saksnummerMedReduksjonsinfo = bgPrSaksnummer.entrySet().stream().collect(Collectors.toMap(
                 Map.Entry::getKey,
                 e -> mapReduksjoner(koblinger, inputer, e)));
 
+        return Response.ok(new SimulertTilkommetInntekt(
+                finnAntallSakerMedTilkommetInntektAksjonspunkt(saksnummerMedReduksjonsinfo),
+                finnAntallSakerMedManuellFordeling(saksnummerMedReduksjonsinfo),
+                finnAntallSakerMedReduksjon(spesifikasjon, saksnummerMedReduksjonsinfo),
+                bgPrSaksnummer.size(),
+                finnAntallSakerPrTilkommetStatus(saksnummerMedReduksjonsinfo))).build();
+    }
+
+    private static long finnAntallSakerMedTilkommetInntektAksjonspunkt(Map<Saksnummer, List<ReduksjonVedGradering>> saksnummerMedReduksjon) {
+        return saksnummerMedReduksjon.entrySet().stream().filter(e -> !e.getValue().isEmpty()).count();
+    }
+
+    private static long finnAntallSakerMedReduksjon(SimulerTilkommetInntektRequestAbacDto spesifikasjon, Map<Saksnummer, List<ReduksjonVedGradering>> saksnummerMedReduksjon) {
         var dagsatsFeiltoleranse = spesifikasjon.getDagsatsFeiltoleranse() != null ? spesifikasjon.getDagsatsFeiltoleranse() : 0L;
 
         var antallSaksnummerMedReduksjon = saksnummerMedReduksjon.entrySet().stream()
                 .filter(e -> e.getValue().stream().anyMatch(r -> (r.gammelDagsats - r.gradertDagsats) > dagsatsFeiltoleranse))
                 .count();
-        var antallSaksnummerMedAksjonspunkt = saksnummerMedReduksjon.entrySet().stream().filter(e -> !e.getValue().isEmpty()).count();
+        return antallSaksnummerMedReduksjon;
+    }
 
+    private static long finnAntallSakerMedManuellFordeling(Map<Saksnummer, List<ReduksjonVedGradering>> saksnummerMedReduksjon) {
         var antallSaksnummerMedManuellFordelingOgAksjonspunkt = saksnummerMedReduksjon.entrySet().stream()
                 .filter(e -> !e.getValue().isEmpty() && e.getValue().stream().anyMatch(ReduksjonVedGradering::erFordelt)).count();
+        return antallSaksnummerMedManuellFordelingOgAksjonspunkt;
+    }
 
-        return Response.ok(new SimulertTilkommetInntekt(antallSaksnummerMedAksjonspunkt,
-                antallSaksnummerMedManuellFordelingOgAksjonspunkt,
-                antallSaksnummerMedReduksjon, bgPrSaksnummer.size())).build();
+    private static Map<String, Integer> finnAntallSakerPrTilkommetStatus(Map<Saksnummer, List<ReduksjonVedGradering>> saksnummerMedReduksjon) {
+        var antallPrStatus = saksnummerMedReduksjon.entrySet().stream()
+                .filter(e -> !e.getValue().isEmpty())
+                .collect(
+                        Collectors.toMap(
+                                e -> e.getValue().stream().flatMap(r -> r.tilkommetStatuser().stream()).distinct()
+                                        .map(AktivitetStatus::getKode)
+                                        .sorted(Comparator.naturalOrder())
+                                        .reduce("", (s1, s2) -> {
+                                            if (!Objects.equals(s1, "")) {
+                                                return s1 + "_" + s2;
+                                            }
+                                            return s2;
+                                        }),
+                                e -> 1,
+                                Integer::sum)
+                );
+        return antallPrStatus;
     }
 
     private List<ReduksjonVedGradering> mapReduksjoner(List<KoblingEntitet> koblinger, Map<Long, KalkulatorInputDto> inputer, Map.Entry<Saksnummer, List<BeregningsgrunnlagGrunnlagEntitet>> e) {
@@ -205,7 +241,8 @@ public class SimulerTilkommetInntektRestTjeneste {
                             p.getPeriode().getFomDato(),
                             p.getPeriode().getTomDato(),
                             virkedager,
-                            erFordelt);
+                            erFordelt,
+                            p.getTilkomneInntekter().stream().map(TilkommetInntektDto::getAktivitetStatus).collect(Collectors.toSet()));
                 }).toList();
     }
 
@@ -420,7 +457,8 @@ public class SimulerTilkommetInntektRestTjeneste {
                                         LocalDate fom,
                                         LocalDate tom,
                                         int antallVirkedager,
-                                        boolean erFordelt) {
+                                        boolean erFordelt,
+                                        Set<AktivitetStatus> tilkommetStatuser) {
     }
 
 

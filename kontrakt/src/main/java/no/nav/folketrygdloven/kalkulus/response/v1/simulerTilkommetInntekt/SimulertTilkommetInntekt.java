@@ -2,6 +2,8 @@ package no.nav.folketrygdloven.kalkulus.response.v1.simulerTilkommetInntekt;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -42,11 +44,17 @@ public class SimulertTilkommetInntekt {
     @Max(1000000)
     private long antallSakerSimulert;
 
-    public SimulertTilkommetInntekt(long antallSakerMedAksjonspunkt, long antallSakerMedManuellFordelingOgTilkommetInntekt,  long antallSakerMedReduksjon, long antallSakerSimulert) {
+    @JsonProperty(value = "antallSakerPrTilkommetStatus")
+    @Valid
+    private Map<String, Integer> antallSakerPrTilkommetStatus;
+
+
+    public SimulertTilkommetInntekt(long antallSakerMedAksjonspunkt, long antallSakerMedManuellFordelingOgTilkommetInntekt, long antallSakerMedReduksjon, long antallSakerSimulert, Map<String, Integer> antallSakerPrTilkommetStatus) {
         this.antallSakerMedAksjonspunkt = antallSakerMedAksjonspunkt;
         this.antallSakerMedReduksjon = antallSakerMedReduksjon;
         this.antallSakerSimulert = antallSakerSimulert;
         this.antallSakerMedManuellFordelingOgTilkommetInntekt = antallSakerMedManuellFordelingOgTilkommetInntekt;
+        this.antallSakerPrTilkommetStatus = antallSakerPrTilkommetStatus;
     }
 
     public SimulertTilkommetInntekt() {
@@ -66,5 +74,9 @@ public class SimulertTilkommetInntekt {
 
     public long getAntallSakerMedManuellFordelingOgTilkommetInntekt() {
         return antallSakerMedManuellFordelingOgTilkommetInntekt;
+    }
+
+    public Map<String, Integer> getAntallSakerPrTilkommetStatus() {
+        return antallSakerPrTilkommetStatus;
     }
 }
