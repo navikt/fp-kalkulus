@@ -94,7 +94,7 @@ public class MapFraFordelingsmodell {
     private static boolean gjelderSammeArbeidsforhold(FordelAndelModell regelAndel, BeregningsgrunnlagPrStatusOgAndelDto kalkulusAndel) {
         var kalkulusRef = kalkulusAndel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsforholdRef).orElse(InternArbeidsforholdRefDto.nullRef());
         var regelRef = InternArbeidsforholdRefDto.ref(regelAndel.getArbeidsforhold().map(Arbeidsforhold::getArbeidsforholdId).orElse(null));
-        return kalkulusRef.gjelderFor(regelRef);
+        return Objects.equals(kalkulusRef, regelRef);
     }
 
     private static boolean matcherArbeidsgiver(FordelAndelModell regelAndel, BeregningsgrunnlagPrStatusOgAndelDto kalkulusAndel) {
