@@ -2,8 +2,6 @@ package no.nav.folketrygdloven.kalkulus.response.v1.simulerTilkommetInntekt;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -12,9 +10,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.BeregningsgrunnlagPrReferanse;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -26,6 +21,13 @@ public class SimulertTilkommetInntekt {
     @Min(0)
     @Max(1000000)
     private long antallSakerMedAksjonspunkt;
+
+
+    @JsonProperty(value = "antallSakerMedManuellFordelingOgTilkommetInntekt")
+    @Valid
+    @Min(0)
+    @Max(1000000)
+    private long antallSakerMedManuellFordelingOgTilkommetInntekt;
 
     @JsonProperty(value = "antallSakerMedReduksjon")
     @Valid
@@ -40,10 +42,11 @@ public class SimulertTilkommetInntekt {
     @Max(1000000)
     private long antallSakerSimulert;
 
-    public SimulertTilkommetInntekt(long antallSakerMedAksjonspunkt, long antallSakerMedReduksjon, long antallSakerSimulert) {
+    public SimulertTilkommetInntekt(long antallSakerMedAksjonspunkt, long antallSakerMedManuellFordelingOgTilkommetInntekt,  long antallSakerMedReduksjon, long antallSakerSimulert) {
         this.antallSakerMedAksjonspunkt = antallSakerMedAksjonspunkt;
         this.antallSakerMedReduksjon = antallSakerMedReduksjon;
         this.antallSakerSimulert = antallSakerSimulert;
+        this.antallSakerMedManuellFordelingOgTilkommetInntekt = antallSakerMedManuellFordelingOgTilkommetInntekt;
     }
 
     public SimulertTilkommetInntekt() {
@@ -59,5 +62,9 @@ public class SimulertTilkommetInntekt {
 
     public long getAntallSakerMedReduksjon() {
         return antallSakerMedReduksjon;
+    }
+
+    public long getAntallSakerMedManuellFordelingOgTilkommetInntekt() {
+        return antallSakerMedManuellFordelingOgTilkommetInntekt;
     }
 }

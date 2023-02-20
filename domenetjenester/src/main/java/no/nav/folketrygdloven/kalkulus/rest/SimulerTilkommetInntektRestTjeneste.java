@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.rest;
 
+import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste.finnPerioderForArbeid;
 import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributtMiljøvariabel.DRIFT;
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.READ;
 
@@ -15,6 +16,9 @@ import java.util.Optional;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -48,6 +52,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.TilkommetInnt
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørArbeidDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt.SplittBGPerioder;
@@ -81,6 +86,8 @@ import no.nav.k9.felles.sikkerhet.abac.BeskyttetRessurs;
 @ApplicationScoped
 @Transactional
 public class SimulerTilkommetInntektRestTjeneste {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SimulerTilkommetInntektRestTjeneste.class);
 
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
 
@@ -118,7 +125,7 @@ public class SimulerTilkommetInntektRestTjeneste {
         var bgPrSaksnummer = beregningsgrunnlag.stream()
                 .filter(bg -> bg.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.FASTSATT))
                 .collect(Collectors.toMap(finnSaksnummer(koblinger),
-                List::of, velgNyestePrSkjæringstidspunkt()));
+                        List::of, velgNyestePrSkjæringstidspunkt()));
 
         var saksnummerMedReduksjon = bgPrSaksnummer.entrySet().stream().collect(Collectors.toMap(
                 Map.Entry::getKey,
@@ -130,7 +137,13 @@ public class SimulerTilkommetInntektRestTjeneste {
                 .filter(e -> e.getValue().stream().anyMatch(r -> (r.gammelDagsats - r.gradertDagsats) > dagsatsFeiltoleranse))
                 .count();
         var antallSaksnummerMedAksjonspunkt = saksnummerMedReduksjon.entrySet().stream().filter(e -> !e.getValue().isEmpty()).count();
-        return Response.ok(new SimulertTilkommetInntekt(antallSaksnummerMedAksjonspunkt, antallSaksnummerMedReduksjon, bgPrSaksnummer.size())).build();
+
+        var antallSaksnummerMedManuellFordelingOgAksjonspunkt = saksnummerMedReduksjon.entrySet().stream()
+                .filter(e -> !e.getValue().isEmpty() && e.getValue().stream().anyMatch(ReduksjonVedGradering::erFordelt)).count();
+
+        return Response.ok(new SimulertTilkommetInntekt(antallSaksnummerMedAksjonspunkt,
+                antallSaksnummerMedManuellFordelingOgAksjonspunkt,
+                antallSaksnummerMedReduksjon, bgPrSaksnummer.size())).build();
     }
 
     private List<ReduksjonVedGradering> mapReduksjoner(List<KoblingEntitet> koblinger, Map<Long, KalkulatorInputDto> inputer, Map.Entry<Saksnummer, List<BeregningsgrunnlagGrunnlagEntitet>> e) {
@@ -181,17 +194,26 @@ public class SimulerTilkommetInntektRestTjeneste {
 
     private List<ReduksjonVedGradering> finnReduksjon(HåndterBeregningsgrunnlagInput beregningsgrunnlagInput, BeregningsgrunnlagDto nyttBg) {
         var regelResultatPerioder = kjørRegel(beregningsgrunnlagInput, nyttBg);
+        var erFordelt = erFordelt(nyttBg);
         return nyttBg.getBeregningsgrunnlagPerioder().stream()
                 .filter(p -> !p.getTilkomneInntekter().isEmpty())
                 .map(p -> {
                     var dagsatsFørGradering = p.getDagsats();
                     var dagsatsEtterGradering = finnDagsatsEtterGradering(regelResultatPerioder, p, dagsatsFørGradering);
-                    var virkedager = Virkedager.beregnVirkedager(p.getPeriode().getFomDato(), p.getPeriode().getTomDato());
+                    var virkedager = getBeregnVirkedager(p.getPeriode());
                     return new ReduksjonVedGradering(dagsatsFørGradering, dagsatsEtterGradering,
                             p.getPeriode().getFomDato(),
                             p.getPeriode().getTomDato(),
-                            virkedager);
+                            virkedager,
+                            erFordelt);
                 }).toList();
+    }
+
+    private static boolean erFordelt(BeregningsgrunnlagDto nyttBg) {
+        return nyttBg.getBeregningsgrunnlagPerioder().stream()
+                .filter(p -> !p.getTilkomneInntekter().isEmpty())
+                .flatMap(p -> p.getBeregningsgrunnlagPrStatusOgAndelList().stream())
+                .anyMatch(a -> a.getFordeltPrÅr() != null || a.getManueltFordeltPrÅr() != null);
     }
 
     private List<BeregningsgrunnlagPeriode> kjørRegel(HåndterBeregningsgrunnlagInput beregningsgrunnlagInput, BeregningsgrunnlagDto nyttBg) {
@@ -251,9 +273,11 @@ public class SimulerTilkommetInntektRestTjeneste {
                     it.getArbeidsgiver().get(),
                     it.getArbeidsforholdRef(),
                     p.getPeriode(),
-                    iay);
+                    iay,
+                    ytelsespesifiktGrunnlag);
 
         } else {
+            LOG.info("Fant tilkommet inntekt for status {}. Setter 0 i brutto inntekt.", it.getAktivitetStatus().getKode());
             inntekt = BigDecimal.ZERO;
         }
         return new TilkommetInntektDto(
@@ -286,8 +310,44 @@ public class SimulerTilkommetInntektRestTjeneste {
         throw new IllegalStateException("Kun gyldig ved utbetalingsgradgrunnlag");
     }
 
-    private BigDecimal finnInntektForArbeidsgiver(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRef,
-                                                  Intervall periode, InntektArbeidYtelseGrunnlagDto iay) {
+    private static BigDecimal utledBruttoInntektFraTilkommet(BigDecimal tilkommetInntekt,
+                                                             Arbeidsgiver arbeidsgiver,
+                                                             InternArbeidsforholdRefDto internArbeidsforholdRefDto,
+                                                             Intervall periode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+        if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
+            var snittFraværVektet = finnVektetSnittfravær(arbeidsgiver, internArbeidsforholdRefDto, periode, utbetalingsgradGrunnlag);
+            var utbetalingsgrad = snittFraværVektet.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP);
+            if (utbetalingsgrad.equals(BigDecimal.ONE)) {
+                return BigDecimal.ZERO;
+            }
+            return tilkommetInntekt.divide(BigDecimal.ONE.subtract(utbetalingsgrad), 10, RoundingMode.HALF_UP);
+        }
+        return BigDecimal.ZERO;
+    }
+
+    private static BigDecimal finnVektetSnittfravær(Arbeidsgiver arbeidsgiver,
+                                                    InternArbeidsforholdRefDto internArbeidsforholdRefDto,
+                                                    Intervall periode, UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
+        return finnPerioderForArbeid(utbetalingsgradGrunnlag,
+                arbeidsgiver,
+                internArbeidsforholdRefDto,
+                true)
+                .stream()
+                .flatMap(utb -> utb.getPeriodeMedUtbetalingsgrad().stream())
+                .filter(p -> p.getPeriode().inkluderer(periode.getFomDato()))
+                .map(p -> {
+                    var virkedager = getBeregnVirkedager(p.getPeriode());
+                    return BigDecimal.valueOf(virkedager).multiply(p.getUtbetalingsgrad());
+                })
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO)
+                .divide(BigDecimal.valueOf(getBeregnVirkedager(periode)), 10, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal finnInntektForArbeidsgiver(Arbeidsgiver arbeidsgiver,
+                                                  InternArbeidsforholdRefDto arbeidsforholdRef,
+                                                  Intervall periode,
+                                                  InntektArbeidYtelseGrunnlagDto iay, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         var im = iay.getInntektsmeldinger().stream()
                 .flatMap(ims -> ims.getAlleInntektsmeldinger().stream())
                 .filter(it -> it.getArbeidsgiver().equals(arbeidsgiver) && it.getArbeidsforholdRef().gjelderFor(arbeidsforholdRef))
@@ -300,11 +360,35 @@ public class SimulerTilkommetInntektRestTjeneste {
         var inntektsposter = inntektFilterDto.filterBeregningsgrunnlag()
                 .filter(arbeidsgiver)
                 .getFiltrertInntektsposter();
-        var inntektspost = inntektsposter.stream().filter(i -> i.getPeriode().inkluderer(periode.getFomDato())).findFirst();
-        if (inntektspost.isPresent()) {
-            return inntektspost.get().getBeløp().multipliser(12).getVerdi();
+
+        var aktuellePoster = inntektsposter.stream().filter(i -> i.getPeriode().overlapper(
+                        Intervall.fraOgMedTilOgMed(periode.getFomDato().minusMonths(3), periode.getFomDato().plusMonths(3))))
+                .toList();
+
+        var antallPoster = aktuellePoster.size();
+        if (antallPoster == 0) {
+            LOG.info("Fant ingen inntektsposter for arbeidsgiver {} i periode {}", arbeidsgiver, periode);
+            return BigDecimal.ZERO;
         }
-        return BigDecimal.ZERO;
+        return aktuellePoster.stream().map(post -> finnBruttoInntektFraInntektspost(arbeidsgiver, arbeidsforholdRef, ytelsespesifiktGrunnlag, post))
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO)
+                .divide(BigDecimal.valueOf(antallPoster), 10, RoundingMode.HALF_UP);
+    }
+
+    private static BigDecimal finnBruttoInntektFraInntektspost(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRef, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, InntektspostDto post) {
+        var postPeriode = post.getPeriode();
+        var virkedagerIPeriode = getBeregnVirkedager(postPeriode);
+        if (virkedagerIPeriode == 0) {
+            LOG.info("Fant inntektspost uten virkedager for arbeidsgiver {} i periode {}", arbeidsgiver, post.getPeriode());
+            return BigDecimal.ZERO;
+        }
+        var bruttoInntekt = utledBruttoInntektFraTilkommet(post.getBeløp().getVerdi(), arbeidsgiver, arbeidsforholdRef, postPeriode, ytelsespesifiktGrunnlag);
+        return bruttoInntekt.divide(BigDecimal.valueOf(virkedagerIPeriode), 10, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(260));
+    }
+
+    private static int getBeregnVirkedager(Intervall postPeriode) {
+        return Virkedager.beregnVirkedager(postPeriode.getFomDato(), postPeriode.getTomDato());
     }
 
     private HåndterBeregningsgrunnlagInput lagHåndteringBeregningsgrunnlagInput(KoblingEntitet kobling,
@@ -331,10 +415,12 @@ public class SimulerTilkommetInntektRestTjeneste {
         }
     }
 
-    public record ReduksjonVedGradering(long gammelDagsats, long gradertDagsats,
+    public record ReduksjonVedGradering(long gammelDagsats,
+                                        long gradertDagsats,
                                         LocalDate fom,
                                         LocalDate tom,
-                                        int antallVirkedager) {
+                                        int antallVirkedager,
+                                        boolean erFordelt) {
     }
 
 
