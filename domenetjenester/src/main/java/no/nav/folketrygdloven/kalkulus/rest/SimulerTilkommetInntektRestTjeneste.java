@@ -90,6 +90,30 @@ public class SimulerTilkommetInntektRestTjeneste {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Path("simulerTilkommetInntektForSak")
+    @Operation(description = "Simulerer tilkommet inntekt vurdering for sak", tags = "simulerTilkommetInntekt", summary = ("Simulerer tilkommet inntekt vurdering for sak"))
+    @BeskyttetRessurs(action = READ, property = DRIFT)
+    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
+    public Response simulerTilkommetInntektForSak(@NotNull @Valid FinnSimulerTilkommetInntektInputRequestAbacDto spesifikasjon) {
+        var koblinger = koblingRepository.hentAlleKoblingerForSaksnummer(new Saksnummer(spesifikasjon.getSaksnummer()));
+        var koblingIder = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
+        var beregningsgrunnlag = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingIder);
+        var inputer = kalkulatorInputTjeneste.hentForKoblinger(beregningsgrunnlag.stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId).collect(Collectors.toSet()));
+        var fastsatteGrunnlag = beregningsgrunnlag.stream()
+                .filter(bg -> bg.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.FASTSATT))
+                .map(List::of)
+                .reduce(velgNyestePrSkjæringstidspunkt())
+                .orElse(Collections.emptyList());
+        var simuleringer = fastsatteGrunnlag.stream().map(bg -> {
+            var kobling = koblinger.stream().filter(it -> it.getId().equals(bg.getKoblingId())).findFirst().orElseThrow();
+            var input = inputer.get(kobling.getId());
+            var beregningsgrunnlagInput = lagBeregningsgrunnlagInput(kobling, input, bg);
+            return simulerGraderingMotInntektTjeneste.simulerGraderingMotInntekt(beregningsgrunnlagInput);
+        }).flatMap(Collection::stream).toList();
+        return Response.ok(simuleringer).build();
+    }
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("simulerTilkommetInntektInput")
     @Operation(description = "Finn input som brukes til simulerering av tilkommet inntekt", tags = "simulerTilkommetInntekt", summary = ("Finn input som brukes til simulerering av tilkommet inntekt"))
     @BeskyttetRessurs(action = READ, property = DRIFT)
@@ -158,7 +182,7 @@ public class SimulerTilkommetInntektRestTjeneste {
         var dagsatsFeiltoleranse = spesifikasjon.getDagsatsFeiltoleranse() != null ? spesifikasjon.getDagsatsFeiltoleranse() : 0L;
 
         return saksnummerMedReduksjon.entrySet().stream()
-                .filter(e -> e.getValue().stream().anyMatch(r -> (r.gammelDagsats() - r.gradertDagsats()) > dagsatsFeiltoleranse))
+                .filter(e -> e.getValue().stream().anyMatch(r -> (r.gjeldendeDagsats() - r.gradertDagsats()) > dagsatsFeiltoleranse))
                 .count();
     }
 

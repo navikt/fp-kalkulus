@@ -349,7 +349,7 @@ public class SimulerGraderingMotInntektTjeneste {
     }
 
 
-    public record ReduksjonVedGradering(long gammelDagsats,
+    public record ReduksjonVedGradering(long gjeldendeDagsats,
                                         long gradertDagsats,
                                         LocalDate fom,
                                         LocalDate tom,
