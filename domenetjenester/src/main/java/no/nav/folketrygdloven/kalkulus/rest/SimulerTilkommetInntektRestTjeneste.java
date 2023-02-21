@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -108,6 +109,7 @@ public class SimulerTilkommetInntektRestTjeneste {
 
         return Response.ok(new SimulertTilkommetInntekt(
                 finnAntallSakerMedTilkommetInntektAksjonspunkt(saksnummerMedReduksjonsinfo),
+                finnSakerMedTilkommetInntektAksjonspunkt(saksnummerMedReduksjonsinfo),
                 finnAntallSakerMedManuellFordeling(saksnummerMedReduksjonsinfo),
                 finnAntallSakerMedReduksjon(spesifikasjon, saksnummerMedReduksjonsinfo),
                 bgPrSaksnummer.size(),
@@ -116,6 +118,12 @@ public class SimulerTilkommetInntektRestTjeneste {
 
     private static long finnAntallSakerMedTilkommetInntektAksjonspunkt(Map<Saksnummer, List<ReduksjonVedGradering>> saksnummerMedReduksjon) {
         return saksnummerMedReduksjon.entrySet().stream().filter(e -> !e.getValue().isEmpty()).count();
+    }
+
+    private static Set<String> finnSakerMedTilkommetInntektAksjonspunkt(Map<Saksnummer, List<ReduksjonVedGradering>> saksnummerMedReduksjon) {
+        return saksnummerMedReduksjon.entrySet().stream().filter(e -> !e.getValue().isEmpty()).map(Map.Entry::getKey)
+                .map(Saksnummer::getVerdi)
+                .collect(Collectors.toSet());
     }
 
     private static long finnAntallSakerMedReduksjon(SimulerTilkommetInntektRequestAbacDto spesifikasjon, Map<Saksnummer, List<ReduksjonVedGradering>> saksnummerMedReduksjon) {

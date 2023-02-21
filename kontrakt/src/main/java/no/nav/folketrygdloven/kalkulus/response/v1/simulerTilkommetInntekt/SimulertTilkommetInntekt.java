@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulus.response.v1.simulerTilkommetInntekt;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -12,6 +13,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
+import no.nav.folketrygdloven.kalkulus.response.v1.regelinput.Saksnummer;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -24,6 +27,10 @@ public class SimulertTilkommetInntekt {
     @Max(1000000)
     private long antallSakerMedAksjonspunkt;
 
+    @JsonProperty(value = "saksnummerMedAksjonspunkt")
+    @Valid
+    @Size(min = 0, max = 10000)
+    private Set<String> saksnummerMedAksjonspunkt;
 
     @JsonProperty(value = "antallSakerMedManuellFordelingOgTilkommetInntekt")
     @Valid
@@ -49,8 +56,14 @@ public class SimulertTilkommetInntekt {
     private Map<String, Integer> antallSakerPrTilkommetStatus;
 
 
-    public SimulertTilkommetInntekt(long antallSakerMedAksjonspunkt, long antallSakerMedManuellFordelingOgTilkommetInntekt, long antallSakerMedReduksjon, long antallSakerSimulert, Map<String, Integer> antallSakerPrTilkommetStatus) {
+    public SimulertTilkommetInntekt(long antallSakerMedAksjonspunkt,
+                                    Set<String> saksnummerMedAksjonspunkt,
+                                    long antallSakerMedManuellFordelingOgTilkommetInntekt,
+                                    long antallSakerMedReduksjon,
+                                    long antallSakerSimulert,
+                                    Map<String, Integer> antallSakerPrTilkommetStatus) {
         this.antallSakerMedAksjonspunkt = antallSakerMedAksjonspunkt;
+        this.saksnummerMedAksjonspunkt = saksnummerMedAksjonspunkt;
         this.antallSakerMedReduksjon = antallSakerMedReduksjon;
         this.antallSakerSimulert = antallSakerSimulert;
         this.antallSakerMedManuellFordelingOgTilkommetInntekt = antallSakerMedManuellFordelingOgTilkommetInntekt;
@@ -78,5 +91,9 @@ public class SimulertTilkommetInntekt {
 
     public Map<String, Integer> getAntallSakerPrTilkommetStatus() {
         return antallSakerPrTilkommetStatus;
+    }
+
+    public Set<String> getSaksnummerMedAksjonspunkt() {
+        return saksnummerMedAksjonspunkt;
     }
 }
