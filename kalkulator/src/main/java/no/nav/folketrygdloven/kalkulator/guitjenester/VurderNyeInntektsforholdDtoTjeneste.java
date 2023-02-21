@@ -32,7 +32,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.Vurder
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
-class VurderNyeInntektsforholdDtoTjeneste {
+public class VurderNyeInntektsforholdDtoTjeneste {
 
     public static VurderNyttInntektsforholdDto lagDto(BeregningsgrunnlagGUIInput input) {
 
@@ -43,12 +43,15 @@ class VurderNyeInntektsforholdDtoTjeneste {
         var iayGrunnlag = input.getIayGrunnlag();
         var ytelsespesifiktGrunnlag = input.getYtelsespesifiktGrunnlag();
 
+        return lagVurderNyttInntektsforholdDto(beregningsgrunnlag, iayGrunnlag, ytelsespesifiktGrunnlag);
+    }
+
+    public static VurderNyttInntektsforholdDto lagVurderNyttInntektsforholdDto(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         var tidslinje = TilkommetInntektsforholdTjeneste.finnTilkommetInntektsforholdTidslinje(beregningsgrunnlag.getSkjæringstidspunkt(),
                 iayGrunnlag.getAktørArbeidFraRegister().map(AktørArbeidDto::hentAlleYrkesaktiviteter).orElse(Collections.emptyList()),
                 beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
                 ytelsespesifiktGrunnlag
         );
-
 
         return getVurderNyttInntektsforholdDto(beregningsgrunnlag, iayGrunnlag, tidslinje);
     }

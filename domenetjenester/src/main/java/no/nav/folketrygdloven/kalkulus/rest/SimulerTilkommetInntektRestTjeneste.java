@@ -35,6 +35,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import no.nav.folketrygdloven.kalkulator.felles.inntektgradering.SimulerGraderingMotInntektTjeneste;
+import no.nav.folketrygdloven.kalkulator.guitjenester.VurderNyeInntektsforholdDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
@@ -44,9 +45,8 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
-import no.nav.folketrygdloven.kalkulus.mapFraEntitet.BehandlingslagerTilKalkulusMapper;
 import no.nav.folketrygdloven.kalkulus.mappers.MapFraKalkulator;
-import no.nav.folketrygdloven.kalkulus.mappers.MapIAYTilKalulator;
+import no.nav.folketrygdloven.kalkulus.request.v1.simulerTilkommetInntekt.regelinput.FinnSimulerTilkommetInntektInputRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.simulerTilkommetInntekt.regelinput.SimulerTilkommetInntektRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.simulerTilkommetInntekt.SimulertTilkommetInntekt;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
@@ -85,6 +85,33 @@ public class SimulerTilkommetInntektRestTjeneste {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.koblingRepository = koblingRepository;
         this.simulerGraderingMotInntektTjeneste = simulerGraderingMotInntektTjeneste;
+    }
+
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("simulerTilkommetInntektInput")
+    @Operation(description = "Finn input som brukes til simulerering av tilkommet inntekt", tags = "simulerTilkommetInntekt", summary = ("Finn input som brukes til simulerering av tilkommet inntekt"))
+    @BeskyttetRessurs(action = READ, property = DRIFT)
+    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
+    public Response simulerTilkommetInntektInput(@NotNull @Valid FinnSimulerTilkommetInntektInputRequestAbacDto spesifikasjon) {
+        var koblinger = koblingRepository.hentAlleKoblingerForSaksnummer(new Saksnummer(spesifikasjon.getSaksnummer()));
+        var koblingIder = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
+        var beregningsgrunnlag = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingIder);
+        var inputer = kalkulatorInputTjeneste.hentForKoblinger(beregningsgrunnlag.stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId).collect(Collectors.toSet()));
+        var fastsatteGrunnlag = beregningsgrunnlag.stream()
+                .filter(bg -> bg.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.FASTSATT))
+                .map(List::of)
+                .reduce(velgNyestePrSkjæringstidspunkt())
+                .orElse(Collections.emptyList());
+        var vurderDtoer = fastsatteGrunnlag.stream().map(bg -> {
+            var kobling = koblinger.stream().filter(it -> it.getId().equals(bg.getKoblingId())).findFirst().orElseThrow();
+            var input = inputer.get(kobling.getId());
+            var beregningsgrunnlagInput = lagBeregningsgrunnlagInput(kobling, input, bg);
+            var inputGrunnlag = simulerGraderingMotInntektTjeneste.lagInputGrunnlag(beregningsgrunnlagInput);
+            return VurderNyeInntektsforholdDtoTjeneste.lagVurderNyttInntektsforholdDto(inputGrunnlag, beregningsgrunnlagInput.getIayGrunnlag(), beregningsgrunnlagInput.getYtelsespesifiktGrunnlag());
+        }).toList();
+        return Response.ok(vurderDtoer).build();
     }
 
     @POST
@@ -126,7 +153,8 @@ public class SimulerTilkommetInntektRestTjeneste {
                 .collect(Collectors.toSet());
     }
 
-    private static long finnAntallSakerMedReduksjon(SimulerTilkommetInntektRequestAbacDto spesifikasjon, Map<Saksnummer, List<ReduksjonVedGradering>> saksnummerMedReduksjon) {
+    private static long finnAntallSakerMedReduksjon(SimulerTilkommetInntektRequestAbacDto spesifikasjon,
+                                                    Map<Saksnummer, List<ReduksjonVedGradering>> saksnummerMedReduksjon) {
         var dagsatsFeiltoleranse = spesifikasjon.getDagsatsFeiltoleranse() != null ? spesifikasjon.getDagsatsFeiltoleranse() : 0L;
 
         return saksnummerMedReduksjon.entrySet().stream()
@@ -191,16 +219,8 @@ public class SimulerTilkommetInntektRestTjeneste {
     private List<ReduksjonVedGradering> finnPerioderMedReduksjonForBeregningsgrunnlag(BeregningsgrunnlagGrunnlagEntitet bg,
                                                                                       KoblingEntitet k,
                                                                                       KalkulatorInputDto input) {
-        var iay = MapIAYTilKalulator.mapGrunnlag(input.getIayGrunnlag());
-        var mappetGrunnlag = BehandlingslagerTilKalkulusMapper.mapBeregningsgrunnlag(bg.getBeregningsgrunnlag().get());
-        var ytelsespesifiktGrunnlag = MapFraKalkulator.mapFraDto(
-                YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN,
-                input,
-                iay,
-                Optional.of(bg));
         var beregningsgrunnlagInput = lagBeregningsgrunnlagInput(k, input, bg);
-
-        return simulerGraderingMotInntektTjeneste.simulerGraderingMotInntekt(iay, mappetGrunnlag, ytelsespesifiktGrunnlag, beregningsgrunnlagInput);
+        return simulerGraderingMotInntektTjeneste.simulerGraderingMotInntekt(beregningsgrunnlagInput);
     }
 
 
@@ -223,6 +243,22 @@ public class SimulerTilkommetInntektRestTjeneste {
     public static class SimulerTilkommetInntektRequestAbacDto extends SimulerTilkommetInntektRequest implements AbacDto {
 
         public SimulerTilkommetInntektRequestAbacDto() {
+            // Jackson
+        }
+
+        @Override
+        public AbacDataAttributter abacAttributter() {
+            final var abacDataAttributter = AbacDataAttributter.opprett();
+            return abacDataAttributter;
+        }
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
+    public static class FinnSimulerTilkommetInntektInputRequestAbacDto extends FinnSimulerTilkommetInntektInputRequest implements AbacDto {
+
+        public FinnSimulerTilkommetInntektInputRequestAbacDto() {
             // Jackson
         }
 

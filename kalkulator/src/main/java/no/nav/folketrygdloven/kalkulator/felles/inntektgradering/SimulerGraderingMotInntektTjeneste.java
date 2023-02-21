@@ -65,16 +65,14 @@ public class SimulerGraderingMotInntektTjeneste {
         this.mapBeregningsgrunnlagFraVLTilRegel = mapBeregningsgrunnlagFraVLTilRegel;
     }
 
-    public List<ReduksjonVedGradering> simulerGraderingMotInntekt(InntektArbeidYtelseGrunnlagDto iay, BeregningsgrunnlagDto mappetGrunnlag, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, BeregningsgrunnlagInput beregningsgrunnlagInput) {
-        var nyttBg = lagInputGrunnlag(iay, mappetGrunnlag, ytelsespesifiktGrunnlag);
+    public List<ReduksjonVedGradering> simulerGraderingMotInntekt(BeregningsgrunnlagInput beregningsgrunnlagInput) {
+        var nyttBg = lagInputGrunnlag(beregningsgrunnlagInput);
         return finnReduksjon(beregningsgrunnlagInput, nyttBg);
     }
 
-    private BeregningsgrunnlagDto lagInputGrunnlag(InntektArbeidYtelseGrunnlagDto iay,
-                                                   BeregningsgrunnlagDto mappetGrunnlag,
-                                                   YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        var splittetGrunnlag = splittBeregningsgrunnlagOgLagTilkommet(iay, mappetGrunnlag, ytelsespesifiktGrunnlag);
-        settInntektPåTilkomneInntektsforhold(iay, ytelsespesifiktGrunnlag, splittetGrunnlag);
+    public BeregningsgrunnlagDto lagInputGrunnlag(BeregningsgrunnlagInput beregningsgrunnlagInput) {
+        var splittetGrunnlag = splittBeregningsgrunnlagOgLagTilkommet(beregningsgrunnlagInput.getIayGrunnlag(), beregningsgrunnlagInput.getBeregningsgrunnlag(), beregningsgrunnlagInput.getYtelsespesifiktGrunnlag());
+        settInntektPåTilkomneInntektsforhold(beregningsgrunnlagInput.getIayGrunnlag(), beregningsgrunnlagInput.getYtelsespesifiktGrunnlag(), splittetGrunnlag);
         return splittetGrunnlag;
     }
 
