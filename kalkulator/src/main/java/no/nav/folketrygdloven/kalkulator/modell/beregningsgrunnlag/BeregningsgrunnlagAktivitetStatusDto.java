@@ -2,13 +2,17 @@ package no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag;
 
 import java.util.Objects;
 
+import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
+import no.nav.folketrygdloven.kalkulator.modell.diff.DiffIgnore;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 
 
 public class BeregningsgrunnlagAktivitetStatusDto {
 
+    @DiffIgnore
     private BeregningsgrunnlagDto beregningsgrunnlag;
+    @SjekkVedKopiering
     private AktivitetStatus aktivitetStatus;
     private Hjemmel hjemmel;
 

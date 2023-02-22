@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
+import no.nav.folketrygdloven.kalkulator.modell.diff.DiffIgnore;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Refusjon;
@@ -15,11 +17,15 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 
 public class BGAndelArbeidsforholdDto {
 
+    @DiffIgnore
     private BeregningsgrunnlagPrStatusOgAndelDto beregningsgrunnlagPrStatusOgAndel;
     private Arbeidsgiver arbeidsgiver;
     private InternArbeidsforholdRefDto arbeidsforholdRef;
+    @SjekkVedKopiering
     private Refusjon refusjon;
+    @SjekkVedKopiering
     private BigDecimal naturalytelseBortfaltPrÅr;
+    @SjekkVedKopiering
     private BigDecimal naturalytelseTilkommetPrÅr;
     private LocalDate arbeidsperiodeFom;
     private LocalDate arbeidsperiodeTom;

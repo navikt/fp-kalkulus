@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
@@ -19,11 +20,17 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 
 public class BeregningsgrunnlagDto {
 
+    @SjekkVedKopiering
     private LocalDate skjæringstidspunkt;
+    @SjekkVedKopiering
     private List<BeregningsgrunnlagAktivitetStatusDto> aktivitetStatuser = new ArrayList<>();
+    @SjekkVedKopiering
     private List<BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPerioder = new ArrayList<>();
+    @SjekkVedKopiering
     private List<SammenligningsgrunnlagPrStatusDto> sammenligningsgrunnlagPrStatusListe = new ArrayList<>();
+    @SjekkVedKopiering
     private Beløp grunnbeløp;
+    @SjekkVedKopiering
     private List<BeregningsgrunnlagFaktaOmBeregningTilfelleDto> faktaOmBeregningTilfeller = new ArrayList<>();
     private boolean overstyrt = false;
 

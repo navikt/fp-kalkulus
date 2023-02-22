@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.modell.diff.DiffIgnore;
+import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -11,9 +13,10 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAktivitetHandlingType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
 
-public class BeregningAktivitetDto {
+public class BeregningAktivitetDto implements IndexKey {
 
     private Intervall periode;
+    @DiffIgnore
     private BeregningAktivitetAggregatDto beregningAktiviteter;
     private Arbeidsgiver arbeidsgiver;
     private InternArbeidsforholdRefDto arbeidsforholdRef;
@@ -118,6 +121,11 @@ public class BeregningAktivitetDto {
 
     public static Builder kopier(BeregningAktivitetDto beregningAktivitetDto) {
         return new Builder(beregningAktivitetDto);
+    }
+
+    @Override
+    public String getIndexKey() {
+        return IndexKey.createKey(periode, arbeidsgiver, arbeidsforholdRef, opptjeningAktivitetType);
     }
 
     public static class Builder {

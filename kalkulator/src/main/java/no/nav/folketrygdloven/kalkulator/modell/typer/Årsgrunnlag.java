@@ -4,16 +4,24 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
+
 /**
  * Årsgrunnlag representerer inntektsgrunnlaget for en andel
  */
 public class Årsgrunnlag implements Serializable, Comparable<Årsgrunnlag> {
 
+    @SjekkVedKopiering
     private BigDecimal beregnetPrÅr;
+    @SjekkVedKopiering
     private BigDecimal fordeltPrÅr;
+    @SjekkVedKopiering
     private BigDecimal manueltFordeltPrÅr;
+    @SjekkVedKopiering
     private BigDecimal overstyrtPrÅr;
+    @SjekkVedKopiering
     private BigDecimal besteberegningPrÅr;
+    @SjekkVedKopiering
     private BigDecimal bruttoPrÅr;
 
     public Årsgrunnlag() {

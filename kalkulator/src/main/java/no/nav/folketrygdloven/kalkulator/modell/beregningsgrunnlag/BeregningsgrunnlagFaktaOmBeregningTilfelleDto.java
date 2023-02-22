@@ -2,11 +2,16 @@ package no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag;
 
 import java.util.Objects;
 
+import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
+import no.nav.folketrygdloven.kalkulator.modell.diff.DiffIgnore;
+import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 
-public class BeregningsgrunnlagFaktaOmBeregningTilfelleDto {
+public class BeregningsgrunnlagFaktaOmBeregningTilfelleDto implements IndexKey {
 
+    @DiffIgnore
     private BeregningsgrunnlagDto beregningsgrunnlag;
+    @SjekkVedKopiering
     private FaktaOmBeregningTilfelle faktaOmBeregningTilfelle = FaktaOmBeregningTilfelle.UDEFINERT;
 
     public BeregningsgrunnlagFaktaOmBeregningTilfelleDto() {
@@ -37,6 +42,11 @@ public class BeregningsgrunnlagFaktaOmBeregningTilfelleDto {
 
     public static Builder builder() {
         return new Builder();
+    }
+
+    @Override
+    public String getIndexKey() {
+        return faktaOmBeregningTilfelle.getIndexKey();
     }
 
     public static class Builder {

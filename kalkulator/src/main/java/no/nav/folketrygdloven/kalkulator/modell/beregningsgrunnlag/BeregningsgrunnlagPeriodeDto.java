@@ -13,22 +13,33 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
+import no.nav.folketrygdloven.kalkulator.modell.diff.DiffIgnore;
+import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 
-public class BeregningsgrunnlagPeriodeDto {
+public class BeregningsgrunnlagPeriodeDto implements IndexKey {
 
+    @DiffIgnore
     private BeregningsgrunnlagDto beregningsgrunnlag;
+    @SjekkVedKopiering
     private List<BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList = new ArrayList<>();
+    @SjekkVedKopiering
     private List<TilkommetInntektDto> tilkomneInntekter = new ArrayList<>();
 
     private Intervall periode;
+    @SjekkVedKopiering
     private BigDecimal bruttoPrÅr;
+    @SjekkVedKopiering
     private BigDecimal avkortetPrÅr;
+    @SjekkVedKopiering
     private BigDecimal redusertPrÅr;
+    @SjekkVedKopiering
     private Long dagsats;
+    @SjekkVedKopiering
     private List<BeregningsgrunnlagPeriodeÅrsakDto> beregningsgrunnlagPeriodeÅrsaker = new ArrayList<>();
-
+    @SjekkVedKopiering
     private BigDecimal inntektgraderingsprosentBrutto;
 
 
@@ -183,6 +194,11 @@ public class BeregningsgrunnlagPeriodeDto {
                 ", dagsats=" + dagsats +
                 ", beregningsgrunnlagPeriodeÅrsaker=" + beregningsgrunnlagPeriodeÅrsaker +
                 '}';
+    }
+
+    @Override
+    public String getIndexKey() {
+        return periode.getFomDato() + "_" + periode.getTomDato();
     }
 
     public static class Builder {

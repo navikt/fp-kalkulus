@@ -9,6 +9,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
+import no.nav.folketrygdloven.kalkulator.modell.diff.DiffIgnore;
+import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.FastsattInntektskategori;
@@ -20,13 +23,18 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
-public class BeregningsgrunnlagPrStatusOgAndelDto {
+public class BeregningsgrunnlagPrStatusOgAndelDto implements IndexKey {
 
     private Long andelsnr;
+    @DiffIgnore
     private BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode;
+
+    @SjekkVedKopiering
     private AktivitetStatus aktivitetStatus;
+    @SjekkVedKopiering
     private Intervall beregningsperiode;
     private OpptjeningAktivitetType arbeidsforholdType;
+    @SjekkVedKopiering
     private Årsgrunnlag grunnlagPrÅr = new Årsgrunnlag();
     private BigDecimal avkortetPrÅr;
     private BigDecimal redusertPrÅr;
@@ -37,14 +45,21 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     private BigDecimal redusertBrukersAndelPrÅr;
     private Long dagsatsBruker;
     private Long dagsatsArbeidsgiver;
+    @SjekkVedKopiering
     private BigDecimal pgiSnitt;
+    @SjekkVedKopiering
     private BigDecimal pgi1;
+    @SjekkVedKopiering
     private BigDecimal pgi2;
+    @SjekkVedKopiering
     private BigDecimal pgi3;
     private Beløp årsbeløpFraTilstøtendeYtelse;
     private Boolean fastsattAvSaksbehandler = false;
+    @SjekkVedKopiering
     private FastsattInntektskategori fastsattInntektskategori = new FastsattInntektskategori();
+    @SjekkVedKopiering
     private AndelKilde kilde = AndelKilde.PROSESS_START;
+    @SjekkVedKopiering
     private BGAndelArbeidsforholdDto bgAndelArbeidsforhold;
     private Long orginalDagsatsFraTilstøtendeYtelse;
     private BigDecimal avkortetFørGraderingPrÅr;
@@ -373,6 +388,11 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
     void setBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriodeDto) {
         this.beregningsgrunnlagPeriode = beregningsgrunnlagPeriodeDto;
+    }
+
+    @Override
+    public String getIndexKey() {
+        return andelsnr.toString();
     }
 
     public static class Builder {

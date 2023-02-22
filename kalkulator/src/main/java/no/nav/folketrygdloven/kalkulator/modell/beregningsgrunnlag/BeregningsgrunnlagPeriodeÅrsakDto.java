@@ -3,12 +3,17 @@ package no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag;
 
 import java.util.Objects;
 
+import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
+import no.nav.folketrygdloven.kalkulator.modell.diff.DiffIgnore;
+import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 
 
-public class BeregningsgrunnlagPeriodeÅrsakDto {
+public class BeregningsgrunnlagPeriodeÅrsakDto implements IndexKey {
 
+    @DiffIgnore
     private BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode;
+    @SjekkVedKopiering
     private PeriodeÅrsak periodeÅrsak = PeriodeÅrsak.UDEFINERT;
 
     private BeregningsgrunnlagPeriodeÅrsakDto() {
@@ -46,6 +51,11 @@ public class BeregningsgrunnlagPeriodeÅrsakDto {
         BeregningsgrunnlagPeriodeÅrsakDto other = (BeregningsgrunnlagPeriodeÅrsakDto) obj;
         return Objects.equals(this.getBeregningsgrunnlagPeriode(), other.getBeregningsgrunnlagPeriode())
                 && Objects.equals(this.getPeriodeÅrsak(), other.getPeriodeÅrsak());
+    }
+
+    @Override
+    public String getIndexKey() {
+        return periodeÅrsak.getIndexKey();
     }
 
     public static class Builder {

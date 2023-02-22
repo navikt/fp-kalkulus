@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 
@@ -11,11 +12,17 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 public class Refusjon implements Serializable, Comparable<Refusjon> {
 
 
+    @SjekkVedKopiering
     private BigDecimal refusjonskravPrÅr;
+    @SjekkVedKopiering
     private BigDecimal saksbehandletRefusjonPrÅr;
+    @SjekkVedKopiering
     private BigDecimal fordeltRefusjonPrÅr;
+    @SjekkVedKopiering
     private BigDecimal manueltFordeltRefusjonPrÅr;
+    @SjekkVedKopiering
     private Hjemmel hjemmelForRefusjonskravfrist;
+    @SjekkVedKopiering
     private final Utfall refusjonskravFristUtfall;
 
     public Refusjon(BigDecimal refusjonskravPrÅr,

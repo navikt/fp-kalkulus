@@ -4,17 +4,22 @@ import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
+import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
-public class TilkommetInntektDto {
+public class TilkommetInntektDto implements IndexKey {
 
     private final AktivitetStatus aktivitetStatus;
     private final Arbeidsgiver arbeidsgiver;
     private final InternArbeidsforholdRefDto arbeidsforholdRef;
+    @SjekkVedKopiering
     private BigDecimal bruttoInntektPrÅr;
+    @SjekkVedKopiering
     private BigDecimal tilkommetInntektPrÅr;
+    @SjekkVedKopiering
     private Boolean skalRedusereUtbetaling;
 
 
@@ -110,5 +115,10 @@ public class TilkommetInntektDto {
                 ", tilkommetInntektPrÅr=" + tilkommetInntektPrÅr +
                 ", skalRedusereUtbetaling=" + skalRedusereUtbetaling +
                 '}';
+    }
+
+    @Override
+    public String getIndexKey() {
+        return IndexKey.createKey(aktivitetStatus, arbeidsgiver, arbeidsforholdRef);
     }
 }

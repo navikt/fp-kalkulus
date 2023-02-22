@@ -5,12 +5,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
+
+import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
 
 public class BeregningAktivitetAggregatDto {
 
 
+    @SjekkVedKopiering
     private List<BeregningAktivitetDto> aktiviteter = new ArrayList<>();
+    @SjekkVedKopiering
     private LocalDate skjæringstidspunktOpptjening;
 
     public BeregningAktivitetAggregatDto() {

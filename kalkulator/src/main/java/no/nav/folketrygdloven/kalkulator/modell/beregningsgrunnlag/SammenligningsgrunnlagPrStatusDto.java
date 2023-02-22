@@ -4,15 +4,20 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 
 
 public class SammenligningsgrunnlagPrStatusDto {
 
+    @SjekkVedKopiering
     private Intervall sammenligningsperiode;
+    @SjekkVedKopiering
     private SammenligningsgrunnlagType sammenligningsgrunnlagType;
+    @SjekkVedKopiering
     private BigDecimal rapportertPrÅr;
+    @SjekkVedKopiering
     private BigDecimal avvikPromilleNy = BigDecimal.ZERO;
 
     public SammenligningsgrunnlagPrStatusDto() {

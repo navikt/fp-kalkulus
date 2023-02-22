@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulator.modell.typer;
 
 import java.util.Objects;
 
+import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 
 /**
@@ -10,8 +11,11 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 public class FastsattInntektskategori implements Comparable<FastsattInntektskategori> {
 
 
+    @SjekkVedKopiering
     private Inntektskategori inntektskategori = Inntektskategori.UDEFINERT;
+    @SjekkVedKopiering
     private Inntektskategori inntektskategoriAutomatiskFordeling;
+    @SjekkVedKopiering
     private Inntektskategori inntektskategoriManuellFordeling;
 
 

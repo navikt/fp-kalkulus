@@ -5,13 +5,15 @@ import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.UUID;
 
+import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
+
 /**
  * Intern arbeidsforhold referanse.
  * <p>
  * Hvis null gjelder det flere arbeidsforhold, ellers for et spesifikt forhold
  */
 
-public class InternArbeidsforholdRefDto implements Serializable {
+public class InternArbeidsforholdRefDto implements Serializable, IndexKey {
 
     /**
      * Instans som representerer alle arbeidsforhold (for en arbeidsgiver).
@@ -91,5 +93,10 @@ public class InternArbeidsforholdRefDto implements Serializable {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "<" + (referanse == null ? "" : referanse.toString()) + ">";
+    }
+
+    @Override
+    public String getIndexKey() {
+        return referanse != null ? getReferanse() : "-";
     }
 }
