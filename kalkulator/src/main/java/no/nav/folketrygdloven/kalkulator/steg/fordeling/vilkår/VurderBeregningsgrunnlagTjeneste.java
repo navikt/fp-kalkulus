@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,8 +37,11 @@ import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
 @FagsakYtelseTypeRef
 public class VurderBeregningsgrunnlagTjeneste {
 
-    protected static final Set<BeregningUtfallÅrsak> AVSLAGSÅRSAKER = Set.of(BeregningUtfallÅrsak.AVSLAG_UNDER_HALV_G,
-            BeregningUtfallÅrsak.AVSLAG_UNDER_TREKVART_G, BeregningUtfallÅrsak.FRISINN_FRILANS_UTEN_INNTEKT);
+    protected static final Set<BeregningUtfallÅrsak> AVSLAGSÅRSAKER = Set.of(
+            BeregningUtfallÅrsak.AVSLAG_UNDER_HALV_G,
+            BeregningUtfallÅrsak.AVSLAG_UNDER_EN_G,
+            BeregningUtfallÅrsak.AVSLAG_UNDER_TREKVART_G,
+            BeregningUtfallÅrsak.FRISINN_FRILANS_UTEN_INNTEKT);
 
     protected MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel;
 
@@ -85,9 +89,16 @@ public class VurderBeregningsgrunnlagTjeneste {
     }
 
     private BeregningVilkårResultat lagVilkårResultatForPeriode(RegelResultat regelResultat, Intervall periode) {
-        boolean erVilkårOppfylt = regelResultat.getMerknader().stream().map(RegelMerknad::utfallÅrsak)
-                .noneMatch(AVSLAGSÅRSAKER::contains);
-        return new BeregningVilkårResultat(erVilkårOppfylt, erVilkårOppfylt ? null : Vilkårsavslagsårsak.FOR_LAVT_BG, periode);
+        Optional<BeregningUtfallÅrsak> utfallÅrsak = regelResultat.getMerknader().stream().map(RegelMerknad::utfallÅrsak).filter(AVSLAGSÅRSAKER::contains).findFirst();
+        boolean erVilkårOppfylt = utfallÅrsak.isEmpty();
+        if (erVilkårOppfylt){
+            return new BeregningVilkårResultat(true, null, periode);
+        } else {
+            Vilkårsavslagsårsak avslagsårsak = utfallÅrsak.get() == BeregningUtfallÅrsak.AVSLAG_UNDER_EN_G
+                    ? Vilkårsavslagsårsak.FOR_LAVT_BG_8_47
+                    : Vilkårsavslagsårsak.FOR_LAVT_BG;
+            return new BeregningVilkårResultat(false, avslagsårsak, periode);
+        }
     }
 
     protected List<RegelResultat> kjørRegel(BeregningsgrunnlagInput input, Beregningsgrunnlag beregningsgrunnlagRegel) {

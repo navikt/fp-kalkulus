@@ -13,9 +13,6 @@ public abstract class Konfigverdier {
     private final BigDecimal antallGØvreGrenseverdi = BigDecimal.valueOf(6);
     private final Period meldekortPeriode = Period.parse("P30D");
 
-    protected BigDecimal antallGForOppfyltVilkår = BigDecimal.valueOf(0.5);
-    protected BigDecimal antallGForOppfyltVilkårInaktiv = BigDecimal.valueOf(1);
-
     // Verdier som ikke skal endres
     private final BigDecimal ytelsesdagerIÅr = BigDecimal.valueOf(260);
 
@@ -37,14 +34,6 @@ public abstract class Konfigverdier {
 
     public BigDecimal getAntallGØvreGrenseverdi() {
         return antallGØvreGrenseverdi;
-    }
-
-    public BigDecimal getAntallGForOppfyltVilkår() {
-        return antallGForOppfyltVilkår;
-    }
-
-    public BigDecimal getAntallGForOppfyltVilkårInaktiv() {
-        return antallGForOppfyltVilkårInaktiv;
     }
 
     public Period getMeldekortPeriode() {

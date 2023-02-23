@@ -18,6 +18,7 @@ public enum Vilkårsavslagsårsak implements Kodeverdi{
     ATFL_SAMME_ORG("ATFL_SAMME_ORG"),
     SØKT_FL_INGEN_FL_INNTEKT("SØKT_FL_INGEN_FL_INNTEKT"),
     FOR_LAVT_BG("FOR_LAVT_BG"),
+    FOR_LAVT_BG_8_47("FOR_LAVT_BG_8_47"),
     AVKORTET_GRUNNET_ANNEN_INNTEKT("AVKORTET_GRUNNET_ANNEN_INNTEKT");
 
     private static final String KODEVERK = "AVSLAGSÅRSAK";
@@ -30,7 +31,7 @@ public enum Vilkårsavslagsårsak implements Kodeverdi{
             }
         }
     }
-    
+
     private final String kode;
 
     Vilkårsavslagsårsak(String kode) {
@@ -42,13 +43,13 @@ public enum Vilkårsavslagsårsak implements Kodeverdi{
     public String getKode() {
         return kode;
     }
-    
+
     @JsonProperty
     @Override
     public String getKodeverk() {
         return KODEVERK;
     }
-    
+
     @JsonCreator(mode = Mode.DELEGATING)
     public static Vilkårsavslagsårsak fraKode(Object node) {
         if (node == null) {

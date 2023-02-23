@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.konfig.FRISINNKonfig;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -223,10 +224,7 @@ public class MapTilAvslagsårsakerFRISINN {
             grunnlagFraSøkteStatuser = grunnlagFraSøkteStatuser.add(næringBrutto);
         }
 
-        BigDecimal antallGForOppfyltVilkår = KonfigTjeneste.forYtelse(FagsakYtelseType.FRISINN).getAntallGForOppfyltVilkår();
-        if (grunnlagFraSøkteStatuser.compareTo(gbeløp.multiply(antallGForOppfyltVilkår)) < 0) {
-            return true;
-        }
-        return false;
+        BigDecimal antallGForOppfyltVilkår = FRISINNKonfig.getAntallGForOppfyltVilkår();
+        return grunnlagFraSøkteStatuser.compareTo(gbeløp.multiply(antallGForOppfyltVilkår)) < 0;
     }
 }

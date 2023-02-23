@@ -111,7 +111,6 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medYtelsesSpesifiktGrunnlag(mapYtelsesSpesifiktGrunnlag(input, beregningsgrunnlag))
                 // Verdier som kun brukes av FORESLÅ (skille ut i egen mapping?)
                 .medAntallGMilitærHarKravPå(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGMilitærHarKravPå().intValue())
-                .medAntallGMinstekravVilkår(getAntallGForOppfyltVilkår(input))
                 .medAntallGØvreGrenseverdi(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi())
                 .medUregulertGrunnbeløp(mapUregulertGrunnbeløp(input, beregningsgrunnlag))
                 .medMidlertidigInaktivType(mapMidlertidigInaktivType(input))
@@ -129,13 +128,6 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         return Collections.emptyList();
     }
 
-    private BigDecimal getAntallGForOppfyltVilkår(BeregningsgrunnlagInput input) {
-        if (input.getBeregningsgrunnlag() != null && erMidlertidigInaktiv(input)) {
-            return KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGForOppfyltVilkårInaktiv();
-        }
-        return KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGForOppfyltVilkår();
-    }
-
     private MidlertidigInaktivType mapMidlertidigInaktivType(BeregningsgrunnlagInput input) {
         if (input.getOpptjeningAktiviteter() == null) {
             return null;
@@ -144,10 +136,6 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         return midlertidigInaktivType != null ?
                 MidlertidigInaktivType.valueOf(midlertidigInaktivType.name()) :
                 null;
-    }
-
-    private boolean erMidlertidigInaktiv(BeregningsgrunnlagInput input) {
-        return input.getBeregningsgrunnlag().getAktivitetStatuser().stream().anyMatch(a -> a.getAktivitetStatus().equals(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.MIDLERTIDIG_INAKTIV));
     }
 
     private BigDecimal mapUregulertGrunnbeløp(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>no.nav.folketrygdloven.kalkulus</groupId>
@@ -27,7 +27,7 @@
         <jacoco.skip>true</jacoco.skip> <!-- default skip coverage -->
 
         <revision>1.1</revision>
-        <sha1 />
+        <sha1/>
         <changelist>-SNAPSHOT</changelist>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -40,7 +40,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <beregningsgrunnlag.regelmodell.version>3.3.1</beregningsgrunnlag.regelmodell.version>
+        <beregningsgrunnlag.regelmodell.version>3.4.0</beregningsgrunnlag.regelmodell.version>
 
         <felles.version>1.0.10</felles.version>
 
@@ -378,7 +378,7 @@
                     <artifactId>maven-antrun-plugin</artifactId>
                     <version>3.1.0</version>
                 </plugin>
-		       <plugin>
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>3.1.0</version>
@@ -530,8 +530,8 @@
             </plugin>
 
 
-			<plugin>
-				<!-- FOR Å LEGGE VED JAKARTA EE9 KOMPATIBLE ARTEFAKTER I TILLEGG -->
+            <plugin>
+                <!-- FOR Å LEGGE VED JAKARTA EE9 KOMPATIBLE ARTEFAKTER I TILLEGG -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
@@ -542,16 +542,16 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-			                <target>
-                                <property name="plugin_classpath" refid="maven.plugin.classpath" />
+                            <target>
+                                <property name="plugin_classpath" refid="maven.plugin.classpath"/>
                                 <java classname="no.nav.k9.dev.jakarta.App">
-                                    <arg value="${project.build.directory}/${project.build.finalName}.jar" />
-                                    <arg value="${project.build.directory}/${legacy.artifactId}-${project.version}.jar" />
-                                    <arg value="-q" />
-                                    <arg value="-o" />
-                                    <arg value="--reverse" />
+                                    <arg value="${project.build.directory}/${project.build.finalName}.jar"/>
+                                    <arg value="${project.build.directory}/${legacy.artifactId}-${project.version}.jar"/>
+                                    <arg value="-q"/>
+                                    <arg value="-o"/>
+                                    <arg value="--reverse"/>
                                     <classpath>
-                                        <pathelement path="${plugin_classpath}" />
+                                        <pathelement path="${plugin_classpath}"/>
                                     </classpath>
                                 </java>
                             </target>
@@ -564,16 +564,16 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-			                <target>
-                                <property name="plugin_classpath" refid="maven.plugin.classpath" />
+                            <target>
+                                <property name="plugin_classpath" refid="maven.plugin.classpath"/>
                                 <java classname="no.nav.k9.dev.jakarta.App">
-                                    <arg value="${project.build.directory}/${project.build.finalName}-sources.jar" />
-                                    <arg value="${project.build.directory}/${legacy.artifactId}-${project.version}-sources.jar" />
-                                    <arg value="-q" />
-                                    <arg value="-o" />
-                                    <arg value="--reverse" />
+                                    <arg value="${project.build.directory}/${project.build.finalName}-sources.jar"/>
+                                    <arg value="${project.build.directory}/${legacy.artifactId}-${project.version}-sources.jar"/>
+                                    <arg value="-q"/>
+                                    <arg value="-o"/>
+                                    <arg value="--reverse"/>
                                     <classpath>
-                                        <pathelement path="${plugin_classpath}" />
+                                        <pathelement path="${plugin_classpath}"/>
                                     </classpath>
                                 </java>
                             </target>
@@ -603,8 +603,8 @@
     </build>
 
     <profiles>
-		<!-- FOR Å LEGGE VED JAKARTA EE9 KOMPATIBLE ARTEFAKTER I TILLEGG -->
-		<!-- (bruker ikke attach-jar da den ikke støtter alterntiv artefakt navn) -->
+        <!-- FOR Å LEGGE VED JAKARTA EE9 KOMPATIBLE ARTEFAKTER I TILLEGG -->
+        <!-- (bruker ikke attach-jar da den ikke støtter alterntiv artefakt navn) -->
         <profile>
             <id>jar-module</id>
             <activation>
@@ -623,9 +623,9 @@
                                 <configuration>
                                     <target>
                                         <unzip src="${project.build.directory}/${legacy.artifactId}-${project.version}.jar"
-                                            dest="${project.build.directory}/javax">
+                                               dest="${project.build.directory}/javax">
                                             <patternset>
-                                                <include name="META-INF/maven/**/pom.xml" />
+                                                <include name="META-INF/maven/**/pom.xml"/>
                                             </patternset>
                                             <mapper type="flatten"/>
                                         </unzip>
@@ -642,16 +642,16 @@
                                     <target>
                                         <!-- ompakker jar fil uten pom.xml -->
                                         <jar
-                                            destfile="${project.build.directory}/${legacy.artifactId}-${project.version}-TOBEDEPLOYED.jar">
+                                                destfile="${project.build.directory}/${legacy.artifactId}-${project.version}-TOBEDEPLOYED.jar">
                                             <zipfileset
-                                                src="${project.build.directory}/${legacy.artifactId}-${project.version}.jar"
-                                                excludes="META-INF/maven/**" />
+                                                    src="${project.build.directory}/${legacy.artifactId}-${project.version}.jar"
+                                                    excludes="META-INF/maven/**"/>
                                         </jar>
                                         <jar
-                                            destfile="${project.build.directory}/${legacy.artifactId}-${project.version}-sources-TOBEDEPLOYED.jar">
+                                                destfile="${project.build.directory}/${legacy.artifactId}-${project.version}-sources-TOBEDEPLOYED.jar">
                                             <zipfileset
-                                                src="${project.build.directory}/${legacy.artifactId}-${project.version}-sources.jar"
-                                                excludes="META-INF/maven/**" />
+                                                    src="${project.build.directory}/${legacy.artifactId}-${project.version}-sources.jar"
+                                                    excludes="META-INF/maven/**"/>
                                         </jar>
                                     </target>
                                 </configuration>
@@ -673,8 +673,12 @@
                                 </goals>
                                 <configuration>
                                     <pomFile>${project.build.directory}/javax/pom.xml</pomFile>
-                                    <file>${project.build.directory}/${legacy.artifactId}-${project.version}-TOBEDEPLOYED.jar</file>
-                                    <sources>${project.build.directory}/${legacy.artifactId}-${project.version}-sources-TOBEDEPLOYED.jar</sources>
+                                    <file>
+                                        ${project.build.directory}/${legacy.artifactId}-${project.version}-TOBEDEPLOYED.jar
+                                    </file>
+                                    <sources>
+                                        ${project.build.directory}/${legacy.artifactId}-${project.version}-sources-TOBEDEPLOYED.jar
+                                    </sources>
                                 </configuration>
                             </execution>
                         </executions>
@@ -693,8 +697,12 @@
                                     <!-- må matche unpacked pom.xml fra over (disse endrer ikke path ved transform p.t.) -->
                                     <pomFile>${project.build.directory}/javax/pom.xml</pomFile>
                                     <url>${project.distributionManagement.repository.url}</url>
-                                    <file>${project.build.directory}/${legacy.artifactId}-${project.version}-TOBEDEPLOYED.jar</file>
-                                    <sources>${project.build.directory}/${legacy.artifactId}-${project.version}-sources-TOBEDEPLOYED.jar</sources>
+                                    <file>
+                                        ${project.build.directory}/${legacy.artifactId}-${project.version}-TOBEDEPLOYED.jar
+                                    </file>
+                                    <sources>
+                                        ${project.build.directory}/${legacy.artifactId}-${project.version}-sources-TOBEDEPLOYED.jar
+                                    </sources>
                                     <skip>${maven.deploy.skip}</skip>
                                 </configuration>
                             </execution>
@@ -721,7 +729,7 @@
             </releases>
         </repository>
     </repositories>
-	<pluginRepositories>
+    <pluginRepositories>
         <pluginRepository>
             <id>github</id>
             <url>https://maven.pkg.github.com/navikt/dev-jakarta-transform/</url>
