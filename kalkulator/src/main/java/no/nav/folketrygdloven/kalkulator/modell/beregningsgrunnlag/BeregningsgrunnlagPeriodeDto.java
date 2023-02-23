@@ -28,18 +28,15 @@ public class BeregningsgrunnlagPeriodeDto implements IndexKey {
     @SjekkVedKopiering
     private List<TilkommetInntektDto> tilkomneInntekter = new ArrayList<>();
 
+    // Ikkje legg til @SjekkVedKopiering her. Det ødelegger difflogikk ved forlengelse
     private Intervall periode;
     @SjekkVedKopiering
     private BigDecimal bruttoPrÅr;
-    @SjekkVedKopiering
     private BigDecimal avkortetPrÅr;
-    @SjekkVedKopiering
     private BigDecimal redusertPrÅr;
-    @SjekkVedKopiering
     private Long dagsats;
     @SjekkVedKopiering
     private List<BeregningsgrunnlagPeriodeÅrsakDto> beregningsgrunnlagPeriodeÅrsaker = new ArrayList<>();
-    @SjekkVedKopiering
     private BigDecimal inntektgraderingsprosentBrutto;
 
 

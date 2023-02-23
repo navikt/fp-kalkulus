@@ -4,12 +4,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kopiering.BeregningsgrunnlagDiffSjekker;
@@ -41,10 +43,10 @@ class KanKopierBeregningsgrunnlag {
     }
 
     static Set<Intervall> finnPerioderSomKanKopieres(Optional<BeregningsgrunnlagDto> nyttBg, Optional<BeregningsgrunnlagDto> forrigeBeregningsgrunnlag) {
-        if (nyttBg.isEmpty()) {
+        if (nyttBg.isEmpty() || forrigeBeregningsgrunnlag.isEmpty()) {
             return Set.of();
         }
-        return forrigeBeregningsgrunnlag.map(bg -> BeregningsgrunnlagDiffSjekker.finnPerioderUtenDiff(nyttBg.get(), bg)).orElse(Set.of());
+        return BeregningsgrunnlagDiffSjekker.finnPerioderUtenDiff(nyttBg.get(), forrigeBeregningsgrunnlag.get());
     }
 
     private static boolean kanKopiereAktiviteter(BeregningsgrunnlagGrunnlagDto nyttGrunnlag,

@@ -45,6 +45,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto implements IndexKey {
     private BigDecimal redusertBrukersAndelPrÅr;
     private Long dagsatsBruker;
     private Long dagsatsArbeidsgiver;
+    private BigDecimal avkortetFørGraderingPrÅr;
     @SjekkVedKopiering
     private BigDecimal pgiSnitt;
     @SjekkVedKopiering
@@ -53,7 +54,9 @@ public class BeregningsgrunnlagPrStatusOgAndelDto implements IndexKey {
     private BigDecimal pgi2;
     @SjekkVedKopiering
     private BigDecimal pgi3;
+    @SjekkVedKopiering
     private Beløp årsbeløpFraTilstøtendeYtelse;
+    @SjekkVedKopiering
     private Boolean fastsattAvSaksbehandler = false;
     @SjekkVedKopiering
     private FastsattInntektskategori fastsattInntektskategori = new FastsattInntektskategori();
@@ -61,8 +64,8 @@ public class BeregningsgrunnlagPrStatusOgAndelDto implements IndexKey {
     private AndelKilde kilde = AndelKilde.PROSESS_START;
     @SjekkVedKopiering
     private BGAndelArbeidsforholdDto bgAndelArbeidsforhold;
+    @SjekkVedKopiering
     private Long orginalDagsatsFraTilstøtendeYtelse;
-    private BigDecimal avkortetFørGraderingPrÅr;
 
     public BeregningsgrunnlagPrStatusOgAndelDto() {
     }
@@ -558,7 +561,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto implements IndexKey {
 
         public Builder medÅrsbeløpFraTilstøtendeYtelse(BigDecimal årsbeløpFraTilstøtendeYtelse) {
             verifiserKanModifisere();
-            kladd.årsbeløpFraTilstøtendeYtelse = new Beløp(årsbeløpFraTilstøtendeYtelse);
+            kladd.årsbeløpFraTilstøtendeYtelse = årsbeløpFraTilstøtendeYtelse == null ? null : new Beløp(årsbeløpFraTilstøtendeYtelse);
             return this;
         }
 

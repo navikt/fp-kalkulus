@@ -1,8 +1,8 @@
 package no.nav.folketrygdloven.kalkulus.kopiering;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -16,6 +16,8 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
+import no.nav.fpsak.tidsserie.LocalDateSegment;
+import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
 public class BeregningsgrunnlagDiffSjekker {
 
@@ -32,6 +34,14 @@ public class BeregningsgrunnlagDiffSjekker {
         return !getDiff(aktivt, forrige).isEmpty();
     }
 
+    /**
+     * Finner perioder uten diff mellom aktivt og forrige beregningsgrunnlag
+     * Antar ikke at fom og tom for periodene er like, men sjekker på innhold på periodenivå og lenger ned i treet
+     *
+     * @param aktivt  Aktivt beregningsgrunnlag
+     * @param forrige Forrige beregningsgrunnlag
+     * @return Intervaller som ikke har diff
+     */
     public static Set<Intervall> finnPerioderUtenDiff(BeregningsgrunnlagDto aktivt, BeregningsgrunnlagDto forrige) {
         if (harDiffIFelterPåBeregningsgrunnlag(aktivt, forrige)) {
             return Set.of();
@@ -76,19 +86,36 @@ public class BeregningsgrunnlagDiffSjekker {
         return diffEntity.diff(dtoObject1, dtoObject2);
     }
 
-    private static boolean erDiffMellomToPerioder(BeregningsgrunnlagPeriodeDto aktivPeriode, BeregningsgrunnlagPeriodeDto forrigePeriode) {
-        return !aktivPeriode.getIndexKey().equals(forrigePeriode.getIndexKey()) || !getDiff(aktivPeriode, forrigePeriode).isEmpty();
+    private static Set<Intervall> finnPerioderUtenDiff(List<BeregningsgrunnlagPeriodeDto> aktivePerioder, List<BeregningsgrunnlagPeriodeDto> forrigePerioder) {
+        var aktivtidslinje = lagPeriodeTidslinje(aktivePerioder);
+        var forrigeTidslinje = lagPeriodeTidslinje(forrigePerioder);
+
+        var ïkkeDiffTidslinje = finnTidslinjeUtenDiff(aktivtidslinje, forrigeTidslinje);
+
+        return ïkkeDiffTidslinje.toSegments()
+                .stream()
+                .filter(LocalDateSegment::getValue)
+                .map(s -> Intervall.fraOgMedTilOgMed(s.getFom(), s.getTom()))
+                .collect(Collectors.toSet());
+
     }
 
-    private static Set<Intervall> finnPerioderUtenDiff(List<BeregningsgrunnlagPeriodeDto> aktivePerioder, List<BeregningsgrunnlagPeriodeDto> forrigePerioder) {
-        var perioderUtenDiff = new HashSet<Intervall>();
-        // begge listene er sorter på fom dato så det er mulig å benytte indeks her
-        int i = 0;
-        while (i < forrigePerioder.size() && i < aktivePerioder.size() && !erDiffMellomToPerioder(aktivePerioder.get(i), forrigePerioder.get(i))) {
-            perioderUtenDiff.add(aktivePerioder.get(i).getPeriode());
-            i++;
-        }
-        return perioderUtenDiff;
+    private static LocalDateTimeline<Boolean> finnTidslinjeUtenDiff(LocalDateTimeline<BeregningsgrunnlagPeriodeDto> aktivtidslinje, LocalDateTimeline<BeregningsgrunnlagPeriodeDto> forrigeTidslinje) {
+        return aktivtidslinje.crossJoin(forrigeTidslinje, (di, lhs, rhs) -> {
+            if (lhs == null || rhs == null) {
+                return new LocalDateSegment<>(di, false);
+            } else {
+                return new LocalDateSegment<>(di, getDiff(lhs.getValue(), rhs.getValue()).isEmpty());
+            }
+        });
+    }
+
+    private static LocalDateTimeline<BeregningsgrunnlagPeriodeDto> lagPeriodeTidslinje(List<BeregningsgrunnlagPeriodeDto> aktivePerioder) {
+        var aktiveSegmenter = aktivePerioder.stream()
+                .map(p -> new LocalDateSegment<>(p.getBeregningsgrunnlagPeriodeFom(), p.getBeregningsgrunnlagPeriodeTom(), p))
+                .toList();
+
+        return new LocalDateTimeline<>(aktiveSegmenter);
     }
 
 }
