@@ -187,6 +187,10 @@ public class SimulerGraderingMotInntektTjeneste {
                         true);
                 var utbetalingsgrad = utbetalingsgradProsent.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP);
                 return inntekt.multiply(BigDecimal.ONE.subtract(utbetalingsgrad));
+            } else if (inntektsforhold.getAktivitetStatus().equals(AktivitetStatus.FRILANSER)) {
+                var utbetalingsgradProsent = UtbetalingsgradTjeneste.finnUtbetalingsgradForStatus(AktivitetStatus.FRILANSER, periode, ytelsespesifiktGrunnlag);
+                var utbetalingsgrad = utbetalingsgradProsent.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP);
+                return inntekt.multiply(BigDecimal.ONE.subtract(utbetalingsgrad));
             } else {
                 return BigDecimal.ZERO;
             }
