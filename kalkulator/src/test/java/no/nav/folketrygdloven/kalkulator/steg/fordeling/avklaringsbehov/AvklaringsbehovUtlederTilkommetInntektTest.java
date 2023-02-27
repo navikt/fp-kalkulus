@@ -538,7 +538,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
                                                                                            List<BeregningsgrunnlagPrStatusOgAndelDto> andelerFraStart,
                                                                                            PleiepengerSyktBarnGrunnlag utbetalingsgradGrunnlag,
                                                                                            LocalDate skjæringstidspunkt) {
-        var tidslinje = TilkommetInntektsforholdTjeneste.finnTilkommetInntektsforholdTidslinje(skjæringstidspunkt, yrkesaktiviteter, inntektsposter, andelerFraStart, utbetalingsgradGrunnlag);
+        var tidslinje = TilkommetInntektsforholdTjeneste.finnTilkommetInntektsforholdTidslinje(skjæringstidspunkt, yrkesaktiviteter, inntektsposter, 5, andelerFraStart, utbetalingsgradGrunnlag);
         var segmenter = tidslinje.intersection(new LocalDateInterval(periode.getFomDato(), periode.getTomDato())).compress().toSegments();
         return segmenter.isEmpty() ? new LinkedHashSet<>() : segmenter.stream().map(LocalDateSegment::getValue)
                 .filter(s -> !s.isEmpty()).findFirst().orElse(Set.of());

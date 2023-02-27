@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt;
 
+import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste.INNTEKT_RAPPORTERING_FRIST_DATO;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,6 +42,7 @@ public class TilkommetInntektPeriodeTjeneste {
                 beregningsgrunnlag.getSkjæringstidspunkt(),
                 input.getIayGrunnlag().getAktørArbeidFraRegister().map(AktørArbeidDto::hentAlleYrkesaktiviteter).orElse(Collections.emptyList()),
                 new InntektFilterDto(input.getIayGrunnlag().getAktørInntektFraRegister()).filter(InntektskildeType.INNTEKT_BEREGNING).getFiltrertInntektsposter(),
+                (int) input.getKonfigVerdi(INNTEKT_RAPPORTERING_FRIST_DATO),
                 beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
                 input.getYtelsespesifiktGrunnlag());
         var tidlinjeMedTilkommetAktivitet = tilkommetAktivitetTidslinje.filterValue(v -> !v.isEmpty()).compress();

@@ -4,6 +4,7 @@ import static no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType.FRILANSER_OPPD
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -22,21 +23,24 @@ import no.nav.fpsak.tidsserie.StandardCombinators;
 class FrilansInntektTidslinjeUtil {
 
 
+    public static final int ANTALL_GODKJENTE_KALENDERMND_FØR_INNTEKT = 2;
+
     /**
      * Utleder utvidet tidslinje for frilansinntekt
-     * Utvidet betyr her at vi tar med alle perioder som ligger innenfor to kalendermåneder før og to kalendermåneder etter inntektsperioden og i tillegg 2 kalendermåneder før dagens dato.
+     * Utvidet betyr her at vi tar med alle perioder som ligger innenfor to kalendermåneder før inntektsperioden og i tillegg 2 kalendermåneder før siste måned der rapporteringsfristen ikke er passert.
      * <p>
      * Eksempel:
-     * En inntekt i februar utvides til å markere perioden 1. desember - 30. april
+     * En inntekt i februar utvides til å markere perioden 1. desember - 28. februar
      *
-     * @param skjæringstidspunkt Skjæringstidspunkt beregning
-     * @param yrkesaktiviteter   Alle yrkesaktiviteter
-     * @param inntektposter      Alle inntektsposter
+     * @param skjæringstidspunkt           Skjæringstidspunkt beregning
+     * @param yrkesaktiviteter             Alle yrkesaktiviteter
+     * @param inntektposter                Alle inntektsposter
+     * @param inntektRapporteringsfristDag Inntekt rapporteringsfrist dag/dato
      * @return Utvidet frilansinntekt tidslinje
      */
-    public static LocalDateTimeline<Boolean> finnFrilansInntektTidslinje(LocalDate skjæringstidspunkt, Collection<YrkesaktivitetDto> yrkesaktiviteter, Collection<InntektspostDto> inntektposter) {
+    public static LocalDateTimeline<Boolean> finnFrilansInntektTidslinje(LocalDate skjæringstidspunkt, Collection<YrkesaktivitetDto> yrkesaktiviteter, Collection<InntektspostDto> inntektposter, int inntektRapporteringsfristDag) {
         var frilansInntektSegmenter = finnUtvidetInntektperiodeForFrilans(skjæringstidspunkt, yrkesaktiviteter, inntektposter);
-        frilansInntektSegmenter.add(dagensDatoMinusToMånederGodkjent());
+        frilansInntektSegmenter.add(dagensDatoMinusMånederGodkjent(inntektRapporteringsfristDag));
 
         return new LocalDateTimeline<>(frilansInntektSegmenter, StandardCombinators::alwaysTrueForMatch);
     }
@@ -79,7 +83,7 @@ class FrilansInntektTidslinjeUtil {
 
     private static Stream<LocalDateSegment<Boolean>> finnUtvidetInntektssegmenterForAktivitet(LocalDate skjæringstidspunkt, Collection<InntektspostDto> inntektposter, YrkesaktivitetDto ya) {
         var posterForFrilansAktivitet = finnInntektsposterForAktivitetEtterStp(skjæringstidspunkt, inntektposter, ya);
-        return posterForFrilansAktivitet.stream().map(FrilansInntektTidslinjeUtil::plussMinusToMånederGodkjent);
+        return posterForFrilansAktivitet.stream().map(FrilansInntektTidslinjeUtil::minusMånederGodkjent);
     }
 
     private static List<InntektspostDto> finnInntektsposterForAktivitetEtterStp(LocalDate skjæringstidspunkt, Collection<InntektspostDto> inntektposter, YrkesaktivitetDto ya) {
@@ -88,14 +92,26 @@ class FrilansInntektTidslinjeUtil {
                 .filter(i -> i.getPeriode().getTomDato().isAfter(skjæringstidspunkt)).toList();
     }
 
-    private static LocalDateSegment<Boolean> plussMinusToMånederGodkjent(InntektspostDto p) {
+    private static LocalDateSegment<Boolean> minusMånederGodkjent(InntektspostDto p) {
         return new LocalDateSegment<>(
-                p.getPeriode().getFomDato().minusMonths(2).withDayOfMonth(1),
-                p.getPeriode().getTomDato().plusMonths(3).withDayOfMonth(1).minusDays(1), Boolean.TRUE);
+                p.getPeriode().getFomDato().minusMonths(ANTALL_GODKJENTE_KALENDERMND_FØR_INNTEKT).withDayOfMonth(1),
+                p.getPeriode().getTomDato().with(TemporalAdjusters.lastDayOfMonth()), Boolean.TRUE);
     }
 
-    private static LocalDateSegment<Boolean> dagensDatoMinusToMånederGodkjent() {
-        return new LocalDateSegment<>(LocalDate.now().minusMonths(2).withDayOfMonth(1), TIDENES_ENDE, Boolean.TRUE);
+    private static LocalDateSegment<Boolean> dagensDatoMinusMånederGodkjent(int inntektRapporteringsfristDag) {
+        var førsteMånedUtenPassertRapporteringsfrist = finnFørsteMånedUtenPassertRapporteringsfrist(inntektRapporteringsfristDag);
+        return new LocalDateSegment<>(førsteMånedUtenPassertRapporteringsfrist.minusMonths(ANTALL_GODKJENTE_KALENDERMND_FØR_INNTEKT).withDayOfMonth(1), TIDENES_ENDE, Boolean.TRUE);
+
+    }
+
+    private static LocalDate finnFørsteMånedUtenPassertRapporteringsfrist(int inntektRapporteringsfristDag) {
+        var iDag = LocalDate.now();
+        var inntektRapporteringsdato = iDag.withDayOfMonth(inntektRapporteringsfristDag);
+        if (iDag.isBefore(inntektRapporteringsdato)) {
+            return iDag.minusMonths(1).withDayOfMonth(1);
+        } else {
+            return iDag.withDayOfMonth(1);
+        }
     }
 
 }

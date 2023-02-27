@@ -54,23 +54,25 @@ public class TilkommetInntektsforholdTjeneste {
      * Vi antar bruker ville opprettholdt arbeid hos arbeidsgivere der bruker fortsatt er innregistrert i aareg, og at dette regner som en løpende aktivitet.
      * Dersom antall løpende aktiviteter øker, skal saksbehandler vurdere om de tilkomne aktivitetene skal føre til reduksjon i utbetaling.
      *
-     * @param skjæringstidspunkt      Skjæringstidspunkt for beregning
-     * @param yrkesaktiviteter        Yrkesaktiviteter
+     * @param skjæringstidspunkt           Skjæringstidspunkt for beregning
+     * @param yrkesaktiviteter             Yrkesaktiviteter
      * @param inntektposter
-     * @param andelerFraStart         Andeler i første periode
-     * @param utbetalingsgradGrunnlag Ytelsesspesifikt grunnlag
+     * @param inntektRapporteringsfristDag
+     * @param andelerFraStart              Andeler i første periode
+     * @param utbetalingsgradGrunnlag      Ytelsesspesifikt grunnlag
      * @return Tidslinje for tilkommet aktivitet/inntektsforhold
      */
     public static LocalDateTimeline<Set<StatusOgArbeidsgiver>> finnTilkommetInntektsforholdTidslinje(LocalDate skjæringstidspunkt,
                                                                                                      Collection<YrkesaktivitetDto> yrkesaktiviteter,
                                                                                                      Collection<InntektspostDto> inntektposter,
+                                                                                                     int inntektRapporteringsfristDag,
                                                                                                      Collection<BeregningsgrunnlagPrStatusOgAndelDto> andelerFraStart,
                                                                                                      YtelsespesifiktGrunnlag utbetalingsgradGrunnlag) {
         var antallGodkjenteInntektsforhold = andelerFraStart.stream().filter(a -> a.getKilde().equals(AndelKilde.PROSESS_START)).count();
         var yrkesaktivitetTidslinje = finnInntektsforholdFraYrkesaktiviteter(skjæringstidspunkt, yrkesaktiviteter);
         var næringTidslinje = finnInntektsforholdForStatusFraFravær((UtbetalingsgradGrunnlag) utbetalingsgradGrunnlag, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
         var frilansTidslinje = finnInntektsforholdForStatusFraFravær((UtbetalingsgradGrunnlag) utbetalingsgradGrunnlag, AktivitetStatus.FRILANSER);
-        var frilansGodkjentInntektTidslinje = FrilansInntektTidslinjeUtil.finnFrilansInntektTidslinje(skjæringstidspunkt, yrkesaktiviteter, inntektposter);
+        var frilansGodkjentInntektTidslinje = FrilansInntektTidslinjeUtil.finnFrilansInntektTidslinje(skjæringstidspunkt, yrkesaktiviteter, inntektposter, inntektRapporteringsfristDag);
         var aktivitetTidslinje = yrkesaktivitetTidslinje.union(næringTidslinje, StandardCombinators::union)
                 .union(frilansTidslinje, StandardCombinators::union)
                 .combine(frilansGodkjentInntektTidslinje, FrilansInntektTidslinjeUtil::kunFrilansMedInntekt, LocalDateTimeline.JoinStyle.LEFT_JOIN)

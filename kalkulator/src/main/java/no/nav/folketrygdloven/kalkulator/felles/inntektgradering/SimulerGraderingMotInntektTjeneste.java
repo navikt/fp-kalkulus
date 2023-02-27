@@ -124,7 +124,7 @@ public class SimulerGraderingMotInntektTjeneste {
         var tilkommetTidslinje = TilkommetInntektsforholdTjeneste.finnTilkommetInntektsforholdTidslinje(
                 mappetGrunnlag.getSkjæringstidspunkt(),
                 iay.getAktørArbeidFraRegister().map(AktørArbeidDto::hentAlleYrkesaktiviteter).orElse(Collections.emptyList()),
-                new InntektFilterDto(iay.getAktørInntektFraRegister()).filter(InntektskildeType.INNTEKT_BEREGNING).getFiltrertInntektsposter(), mappetGrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
+                new InntektFilterDto(iay.getAktørInntektFraRegister()).filter(InntektskildeType.INNTEKT_BEREGNING).getFiltrertInntektsposter(), 5, mappetGrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
                 ytelsespesifiktGrunnlag
         ).filterValue(v -> !v.isEmpty());
         return SplittBGPerioder.splittPerioder(mappetGrunnlag,
