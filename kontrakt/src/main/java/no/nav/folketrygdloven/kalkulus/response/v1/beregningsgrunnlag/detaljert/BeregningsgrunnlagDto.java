@@ -47,10 +47,6 @@ public class BeregningsgrunnlagDto {
     @Valid
     private List<BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPerioder;
 
-    @JsonProperty(value = "sammenligningsgrunnlag")
-    @Valid
-    private Sammenligningsgrunnlag sammenligningsgrunnlag;
-
     @JsonProperty(value = "sammenligningsgrunnlagPrStatusListe")
     @Size(max = 10)
     @Valid
@@ -77,7 +73,6 @@ public class BeregningsgrunnlagDto {
     public BeregningsgrunnlagDto(@NotNull @Valid LocalDate skjæringstidspunkt,
                                  @NotNull @Size(min = 1, max = 20) @Valid List<AktivitetStatus> aktivitetStatuser,
                                  @NotNull @Size(min = 1, max = 100) @Valid List<BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPerioder,
-                                 @Valid Sammenligningsgrunnlag sammenligningsgrunnlag,
                                  @Size(max = 10) @Valid List<SammenligningsgrunnlagPrStatusDto> sammenligningsgrunnlagPrStatusListe,
                                  @Size(max = 50) @Valid List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller,
                                  boolean overstyrt,
@@ -85,7 +80,6 @@ public class BeregningsgrunnlagDto {
         this.skjæringstidspunkt = skjæringstidspunkt;
         this.aktivitetStatuser = aktivitetStatuser;
         this.beregningsgrunnlagPerioder = beregningsgrunnlagPerioder;
-        this.sammenligningsgrunnlag = sammenligningsgrunnlag;
         this.sammenligningsgrunnlagPrStatusListe = sammenligningsgrunnlagPrStatusListe;
         this.faktaOmBeregningTilfeller = faktaOmBeregningTilfeller;
         this.overstyrt = overstyrt;
@@ -105,10 +99,6 @@ public class BeregningsgrunnlagDto {
             .stream()
             .sorted(Comparator.comparing(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPeriodeFom))
             .collect(Collectors.toUnmodifiableList());
-    }
-
-    public Sammenligningsgrunnlag getSammenligningsgrunnlag() {
-        return sammenligningsgrunnlag;
     }
 
     public List<FaktaOmBeregningTilfelle> getFaktaOmBeregningTilfeller() {

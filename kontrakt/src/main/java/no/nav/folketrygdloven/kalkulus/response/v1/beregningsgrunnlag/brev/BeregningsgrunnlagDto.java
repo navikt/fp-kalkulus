@@ -46,10 +46,6 @@ public class BeregningsgrunnlagDto {
     @Valid
     private List<BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPerioder;
 
-    @JsonProperty(value = "sammenligningsgrunnlag")
-    @Valid
-    private Sammenligningsgrunnlag sammenligningsgrunnlag;
-
     @JsonProperty(value = "sammenligningsgrunnlagPrStatusListe")
     @Size(max = 10)
     @Valid
@@ -68,13 +64,11 @@ public class BeregningsgrunnlagDto {
     public BeregningsgrunnlagDto(LocalDate skjæringstidspunkt,
                                  List<AktivitetStatus> aktivitetStatuser,
                                  List<BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPerioder,
-                                 Sammenligningsgrunnlag sammenligningsgrunnlag,
                                  List<SammenligningsgrunnlagPrStatusDto> sammenligningsgrunnlagPrStatusListe,
                                  BigDecimal grunnbeløp) {
         this.skjæringstidspunkt = skjæringstidspunkt;
         this.aktivitetStatuser = aktivitetStatuser;
         this.beregningsgrunnlagPerioder = beregningsgrunnlagPerioder;
-        this.sammenligningsgrunnlag = sammenligningsgrunnlag;
         this.sammenligningsgrunnlagPrStatusListe = sammenligningsgrunnlagPrStatusListe;
         this.grunnbeløp = grunnbeløp;
     }
@@ -91,10 +85,6 @@ public class BeregningsgrunnlagDto {
         return beregningsgrunnlagPerioder
                 .stream()
                 .sorted(Comparator.comparing(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPeriodeFom)).toList();
-    }
-
-    public Sammenligningsgrunnlag getSammenligningsgrunnlag() {
-        return sammenligningsgrunnlag;
     }
 
     public BigDecimal getGrunnbeløp() {

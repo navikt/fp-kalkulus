@@ -43,11 +43,6 @@ public class BeregningsgrunnlagGrunnlagDto {
     @Valid
     private BeregningRefusjonOverstyringerDto refusjonOverstyringer;
 
-    @JsonProperty(value = "aktiv")
-    @NotNull
-    @Valid
-    private Boolean aktiv;
-
     @JsonProperty(value = "beregningsgrunnlagTilstand")
     @NotNull
     @Valid
@@ -62,7 +57,6 @@ public class BeregningsgrunnlagGrunnlagDto {
                                          @Valid BeregningAktivitetAggregatDto saksbehandletAktiviteter,
                                          @Valid BeregningAktivitetOverstyringerDto overstyringer,
                                          @Valid BeregningRefusjonOverstyringerDto refusjonOverstyringer,
-                                         @NotNull Boolean aktiv,
                                          @NotNull @Valid BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
         this.beregningsgrunnlag = beregningsgrunnlag;
         this.faktaAggregat = faktaAggregat;
@@ -70,7 +64,6 @@ public class BeregningsgrunnlagGrunnlagDto {
         this.saksbehandletAktiviteter = saksbehandletAktiviteter;
         this.overstyringer = overstyringer;
         this.refusjonOverstyringer = refusjonOverstyringer;
-        this.aktiv = aktiv;
         this.beregningsgrunnlagTilstand = beregningsgrunnlagTilstand;
     }
 
@@ -97,10 +90,6 @@ public class BeregningsgrunnlagGrunnlagDto {
 
     public BeregningRefusjonOverstyringerDto getRefusjonOverstyringer() {
         return refusjonOverstyringer;
-    }
-
-    public Boolean getAktiv() {
-        return aktiv;
     }
 
     public BeregningsgrunnlagTilstand getBeregningsgrunnlagTilstand() {

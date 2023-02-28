@@ -1,7 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.mapTilKontrakt;
 
-import static no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapDetaljertBeregningsgrunnlag.mapSammenligningsgrunnlag;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collections;
@@ -48,7 +46,6 @@ public class MapBrevBeregningsgrunnlag {
                 beregningsgrunnlagEntitet.getSkjæringstidspunkt(),
                 mapAktivitetstatuser(beregningsgrunnlagEntitet),
                 mapBeregningsgrunnlagPerioder(beregningsgrunnlagEntitet, ytelsespesifiktGrunnlag),
-                mapSammenligningsgrunnlag(beregningsgrunnlagEntitet),
                 mapSammenligningsgrunnlagPrStatusListe(beregningsgrunnlagEntitet),
                 beregningsgrunnlagEntitet.getGrunnbeløp() == null ? null : beregningsgrunnlagEntitet.getGrunnbeløp().getVerdi());
     }

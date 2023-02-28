@@ -57,7 +57,7 @@ public class BGMapperTilKalkulus {
         return builder.build();
     }
 
-    private static BeregningsgrunnlagPrStatusOgAndelDto.Builder mapStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel fraFagsystem) {
+    public static BeregningsgrunnlagPrStatusOgAndelDto.Builder mapStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel fraFagsystem) {
         BeregningsgrunnlagPrStatusOgAndelDto.Builder builder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(fraFagsystem.getAktivitetStatus())
                 .medAndelsnr(fraFagsystem.getAndelsnr())

@@ -83,13 +83,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     @Max(178956970)
     private Long dagsatsArbeidsgiver;
 
-    @JsonProperty(value = "graderingMotTilkommetInntekt")
-    @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "100.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 3, fraction = 2)
-    private BigDecimal graderingMotTilkommetInntekt;
-
     @JsonProperty(value = "inntektskategori")
     @NotNull
     @Valid
@@ -283,11 +276,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
             return this;
         }
 
-        public Builder medGraderingMotTilkommetInntekt(BigDecimal graderingMotTilkommetInntekt) {
-            kladd.graderingMotTilkommetInntekt = graderingMotTilkommetInntekt;
-            return this;
-        }
-
         public Builder medInntektskategori(Inntektskategori inntektskategori) {
             kladd.inntektskategori = inntektskategori;
             return this;
@@ -444,10 +432,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
             return dagsatsBruker;
         }
         return dagsatsBruker + dagsatsArbeidsgiver;
-    }
-
-    public BigDecimal getGraderingMotTilkommetInntekt() {
-        return graderingMotTilkommetInntekt;
     }
 
     public BGAndelArbeidsforhold getBgAndelArbeidsforhold() {

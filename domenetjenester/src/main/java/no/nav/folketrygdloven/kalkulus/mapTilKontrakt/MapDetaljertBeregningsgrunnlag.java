@@ -1,32 +1,21 @@
 package no.nav.folketrygdloven.kalkulus.mapTilKontrakt;
 
 import java.math.BigDecimal;
-import java.util.Collections;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetOverstyringEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetOverstyringerEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningRefusjonOverstyringEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningRefusjonOverstyringerEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAggregatEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAktørEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaArbeidsforholdEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatus;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
+import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
+import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
-import no.nav.folketrygdloven.kalkulus.mapFraEntitet.SammenligningTypeMapper;
 import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BGAndelArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningAktivitetAggregatDto;
@@ -42,20 +31,19 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.FaktaAktørDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.FaktaArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.Sammenligningsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.SammenligningsgrunnlagPrStatusDto;
 
 public class MapDetaljertBeregningsgrunnlag {
 
-    public static BeregningsgrunnlagGrunnlagDto mapMedBrevfelt(BeregningsgrunnlagGrunnlagEntitet grunnlag, BeregningsgrunnlagGUIInput input) {
-        BeregningsgrunnlagGrunnlagDto dto = mapGrunnlag(grunnlag);
+    public static BeregningsgrunnlagGrunnlagDto mapMedBrevfelt(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto grunnlag, BeregningsgrunnlagGUIInput input) {
+        BeregningsgrunnlagGrunnlagDto dto = mapGrunnlag(grunnlag, input.getYtelsespesifiktGrunnlag());
         BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto = MapFormidlingsdataBeregningsgrunnlag.mapMedBrevfelt(dto, input);
         return beregningsgrunnlagGrunnlagDto;
     }
 
-    public static BeregningsgrunnlagGrunnlagDto mapGrunnlag(BeregningsgrunnlagGrunnlagEntitet beregningsgrunnlagGrunnlagEntitet) {
+    public static BeregningsgrunnlagGrunnlagDto mapGrunnlag(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagEntitet, YtelsespesifiktGrunnlag ytelsesspesifiktGrunnlag) {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlagEntitet.getBeregningsgrunnlag()
-                .map(MapDetaljertBeregningsgrunnlag::map).orElse(null);
+                .map(beregningsgrunnlagEntitet -> map(beregningsgrunnlagEntitet, ytelsesspesifiktGrunnlag)).orElse(null);
 
         return new BeregningsgrunnlagGrunnlagDto(
                 beregningsgrunnlag,
@@ -64,20 +52,19 @@ public class MapDetaljertBeregningsgrunnlag {
                 beregningsgrunnlagGrunnlagEntitet.getSaksbehandletAktiviteter().map(MapDetaljertBeregningsgrunnlag::mapBeregningAktivitetAggregat).orElse(null),
                 beregningsgrunnlagGrunnlagEntitet.getOverstyring().map(MapDetaljertBeregningsgrunnlag::mapOverstyrteAktiviteterAggregat).orElse(null),
                 beregningsgrunnlagGrunnlagEntitet.getRefusjonOverstyringer().map(MapDetaljertBeregningsgrunnlag::mapRefusjonOverstyringAggregat).orElse(null),
-                beregningsgrunnlagGrunnlagEntitet.erAktivt(),
                 beregningsgrunnlagGrunnlagEntitet.getBeregningsgrunnlagTilstand());
     }
 
-    private static FaktaAggregatDto mapFaktaAggregat(FaktaAggregatEntitet faktaAggregatEntitet) {
+    private static FaktaAggregatDto mapFaktaAggregat(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto faktaAggregatEntitet) {
         return new FaktaAggregatDto(mapFaktaArbeidsforholdListe(faktaAggregatEntitet.getFaktaArbeidsforhold()),
                 faktaAggregatEntitet.getFaktaAktør().map(MapDetaljertBeregningsgrunnlag::mapFaktaAktør).orElse(null));
     }
 
-    private static List<FaktaArbeidsforholdDto> mapFaktaArbeidsforholdListe(List<FaktaArbeidsforholdEntitet> faktaArbeidsforhold) {
+    private static List<FaktaArbeidsforholdDto> mapFaktaArbeidsforholdListe(List<no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto> faktaArbeidsforhold) {
         return faktaArbeidsforhold.stream().map(MapDetaljertBeregningsgrunnlag::mapFaktaArbeidsforhold).collect(Collectors.toList());
     }
 
-    private static FaktaArbeidsforholdDto mapFaktaArbeidsforhold(FaktaArbeidsforholdEntitet faktaArbeidsforholdEntitet) {
+    private static FaktaArbeidsforholdDto mapFaktaArbeidsforhold(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto faktaArbeidsforholdEntitet) {
         return new FaktaArbeidsforholdDto(
                 mapArbeidsgiver(faktaArbeidsforholdEntitet.getArbeidsgiver()),
                 faktaArbeidsforholdEntitet.getArbeidsforholdRef() == null || faktaArbeidsforholdEntitet.getArbeidsforholdRef().getReferanse() == null ? null
@@ -88,7 +75,7 @@ public class MapDetaljertBeregningsgrunnlag {
         );
     }
 
-    private static FaktaAktørDto mapFaktaAktør(FaktaAktørEntitet faktaAktørEntitet) {
+    private static FaktaAktørDto mapFaktaAktør(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto faktaAktørEntitet) {
         return new FaktaAktørDto(faktaAktørEntitet.getErNyIArbeidslivetSNVurdering(),
                 faktaAktørEntitet.getErNyoppstartetFLVurdering(),
                 faktaAktørEntitet.getHarFLMottattYtelseVurdering(),
@@ -97,30 +84,30 @@ public class MapDetaljertBeregningsgrunnlag {
                 faktaAktørEntitet.getMottarEtterlønnSluttpakkeVurdering());
     }
 
-    private static BeregningRefusjonOverstyringerDto mapRefusjonOverstyringAggregat(BeregningRefusjonOverstyringerEntitet beregningRefusjonOverstyringerEntitet) {
+    private static BeregningRefusjonOverstyringerDto mapRefusjonOverstyringAggregat(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto beregningRefusjonOverstyringerEntitet) {
         return new BeregningRefusjonOverstyringerDto(mapRefusjonOverstyringer(beregningRefusjonOverstyringerEntitet.getRefusjonOverstyringer()));
     }
 
-    private static List<BeregningRefusjonOverstyringDto> mapRefusjonOverstyringer(List<BeregningRefusjonOverstyringEntitet> refusjonOverstyringer) {
+    private static List<BeregningRefusjonOverstyringDto> mapRefusjonOverstyringer(List<no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto> refusjonOverstyringer) {
         return refusjonOverstyringer.stream().map(MapDetaljertBeregningsgrunnlag::mapRefusjonOverstyring).collect(Collectors.toList());
     }
 
-    private static BeregningRefusjonOverstyringDto mapRefusjonOverstyring(BeregningRefusjonOverstyringEntitet beregningRefusjonOverstyringEntitet) {
+    private static BeregningRefusjonOverstyringDto mapRefusjonOverstyring(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto beregningRefusjonOverstyringEntitet) {
         return new BeregningRefusjonOverstyringDto(
                 mapArbeidsgiver(beregningRefusjonOverstyringEntitet.getArbeidsgiver()),
                 beregningRefusjonOverstyringEntitet.getFørsteMuligeRefusjonFom().orElse(null),
-                beregningRefusjonOverstyringEntitet.getErFristUtvidet());
+                beregningRefusjonOverstyringEntitet.getErFristUtvidet().orElse(null));
     }
 
-    private static BeregningAktivitetOverstyringerDto mapOverstyrteAktiviteterAggregat(BeregningAktivitetOverstyringerEntitet beregningAktivitetOverstyringerEntitet) {
+    private static BeregningAktivitetOverstyringerDto mapOverstyrteAktiviteterAggregat(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetOverstyringerDto beregningAktivitetOverstyringerEntitet) {
         return new BeregningAktivitetOverstyringerDto(mapOverstyringer(beregningAktivitetOverstyringerEntitet.getOverstyringer()));
     }
 
-    private static List<BeregningAktivitetOverstyringDto> mapOverstyringer(List<BeregningAktivitetOverstyringEntitet> overstyringer) {
+    private static List<BeregningAktivitetOverstyringDto> mapOverstyringer(List<no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetOverstyringDto> overstyringer) {
         return overstyringer.stream().map(MapDetaljertBeregningsgrunnlag::mapOverstyrtAktivitet).collect(Collectors.toList());
     }
 
-    private static BeregningAktivitetOverstyringDto mapOverstyrtAktivitet(BeregningAktivitetOverstyringEntitet beregningAktivitetOverstyringEntitet) {
+    private static BeregningAktivitetOverstyringDto mapOverstyrtAktivitet(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetOverstyringDto beregningAktivitetOverstyringEntitet) {
         return new BeregningAktivitetOverstyringDto(
                 new Periode(beregningAktivitetOverstyringEntitet.getPeriode().getFomDato(), beregningAktivitetOverstyringEntitet.getPeriode().getTomDato()),
                 beregningAktivitetOverstyringEntitet.getArbeidsgiver().map(MapDetaljertBeregningsgrunnlag::mapArbeidsgiver).orElse(null),
@@ -131,17 +118,17 @@ public class MapDetaljertBeregningsgrunnlag {
                 beregningAktivitetOverstyringEntitet.getHandling());
     }
 
-    private static BeregningAktivitetAggregatDto mapBeregningAktivitetAggregat(BeregningAktivitetAggregatEntitet aktivitetAggregatEntitet) {
+    private static BeregningAktivitetAggregatDto mapBeregningAktivitetAggregat(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto aktivitetAggregatEntitet) {
         return new BeregningAktivitetAggregatDto(
                 mapBeregningAktiviteter(aktivitetAggregatEntitet.getBeregningAktiviteter()),
                 aktivitetAggregatEntitet.getSkjæringstidspunktOpptjening());
     }
 
-    private static List<BeregningAktivitetDto> mapBeregningAktiviteter(List<BeregningAktivitetEntitet> beregningAktiviteter) {
+    private static List<BeregningAktivitetDto> mapBeregningAktiviteter(List<no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto> beregningAktiviteter) {
         return beregningAktiviteter.stream().map(MapDetaljertBeregningsgrunnlag::mapBeregningAktivitet).collect(Collectors.toList());
     }
 
-    private static BeregningAktivitetDto mapBeregningAktivitet(BeregningAktivitetEntitet beregningAktivitetEntitet) {
+    private static BeregningAktivitetDto mapBeregningAktivitet(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto beregningAktivitetEntitet) {
         return new BeregningAktivitetDto(
                 new Periode(beregningAktivitetEntitet.getPeriode().getFomDato(), beregningAktivitetEntitet.getPeriode().getTomDato()),
                 beregningAktivitetEntitet.getArbeidsgiver() == null ? null : mapArbeidsgiver(beregningAktivitetEntitet.getArbeidsgiver()),
@@ -150,141 +137,181 @@ public class MapDetaljertBeregningsgrunnlag {
                 beregningAktivitetEntitet.getOpptjeningAktivitetType());
     }
 
-    public static BeregningsgrunnlagDto map(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
+    public static BeregningsgrunnlagDto map(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlagEntitet, YtelsespesifiktGrunnlag ytelsesspesifiktGrunnlag) {
         return new BeregningsgrunnlagDto(
                 beregningsgrunnlagEntitet.getSkjæringstidspunkt(),
                 mapAktivitetstatuser(beregningsgrunnlagEntitet),
-                mapBeregningsgrunnlagPerioder(beregningsgrunnlagEntitet),
-                mapSammenligningsgrunnlag(beregningsgrunnlagEntitet),
+                mapBeregningsgrunnlagPerioder(beregningsgrunnlagEntitet, ytelsesspesifiktGrunnlag),
                 mapSammenligningsgrunnlagPrStatusListe(beregningsgrunnlagEntitet),
                 beregningsgrunnlagEntitet.getFaktaOmBeregningTilfeller(),
                 beregningsgrunnlagEntitet.isOverstyrt(),
                 beregningsgrunnlagEntitet.getGrunnbeløp() == null ? null : beregningsgrunnlagEntitet.getGrunnbeløp().getVerdi());
     }
 
-    private static List<SammenligningsgrunnlagPrStatusDto> mapSammenligningsgrunnlagPrStatusListe(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
-        if (beregningsgrunnlagEntitet.getSammenligningsgrunnlagPrStatusListe().isEmpty() && beregningsgrunnlagEntitet.getSammenligningsgrunnlag().isPresent()) {
-            // Mapper gammel sammenligningsgrunnlag over til nytt frem til vi har migrert
-            var gammeltSG = beregningsgrunnlagEntitet.getSammenligningsgrunnlag().get();
-            return Collections.singletonList(new SammenligningsgrunnlagPrStatusDto(
-                    new Periode(gammeltSG.getSammenligningsperiodeFom(), gammeltSG.getSammenligningsperiodeTom()),
-                    SammenligningTypeMapper.finnSammenligningtypeFraAktivitetstatus(beregningsgrunnlagEntitet),
-                    mapFraBeløp(gammeltSG.getRapportertPrÅr()),
-                    gammeltSG.getAvvikPromilleNy().getVerdi()));
-        }
+    private static List<SammenligningsgrunnlagPrStatusDto> mapSammenligningsgrunnlagPrStatusListe(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlagEntitet) {
         return beregningsgrunnlagEntitet.getSammenligningsgrunnlagPrStatusListe().stream().map(MapDetaljertBeregningsgrunnlag::mapSammeligningsgrunnlagPrStatus)
                 .collect(Collectors.toList());
     }
 
-    private static SammenligningsgrunnlagPrStatusDto mapSammeligningsgrunnlagPrStatus(SammenligningsgrunnlagPrStatus sammenligningsgrunnlagPrStatus) {
+    private static SammenligningsgrunnlagPrStatusDto mapSammeligningsgrunnlagPrStatus(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlagPrStatus) {
         return new SammenligningsgrunnlagPrStatusDto(
                 new Periode(sammenligningsgrunnlagPrStatus.getSammenligningsperiodeFom(), sammenligningsgrunnlagPrStatus.getSammenligningsperiodeTom()),
                 sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType(),
-                mapFraBeløp(sammenligningsgrunnlagPrStatus.getRapportertPrÅr()),
-                sammenligningsgrunnlagPrStatus.getGjeldendeAvvik().getVerdi());
+                sammenligningsgrunnlagPrStatus.getRapportertPrÅr(),
+                sammenligningsgrunnlagPrStatus.getAvvikPromilleNy());
     }
 
-    public static Sammenligningsgrunnlag mapSammenligningsgrunnlag(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
-        // TODO Fjern denne
-        if (beregningsgrunnlagEntitet.getSammenligningsgrunnlag().isEmpty() && !beregningsgrunnlagEntitet.getSammenligningsgrunnlagPrStatusListe().isEmpty()) {
-            var sg = beregningsgrunnlagEntitet.getSammenligningsgrunnlagPrStatusListe().get(0);
-            return new Sammenligningsgrunnlag(
-                    new Periode(sg.getSammenligningsperiodeFom(), sg.getSammenligningsperiodeTom()),
-                    mapFraBeløp(sg.getRapportertPrÅr()),
-                    sg.getGjeldendeAvvik().getVerdi());
-        }
-        return beregningsgrunnlagEntitet.getSammenligningsgrunnlag().map(sg ->
-                new Sammenligningsgrunnlag(
-                        new Periode(sg.getSammenligningsperiodeFom(), sg.getSammenligningsperiodeTom()),
-                        mapFraBeløp(sg.getRapportertPrÅr()),
-                        sg.getAvvikPromilleNy().getVerdi())).orElse(null);
+
+    private static List<BeregningsgrunnlagPeriodeDto> mapBeregningsgrunnlagPerioder(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlagEntitet, YtelsespesifiktGrunnlag ytelsesspesifiktGrunnlag) {
+        return beregningsgrunnlagEntitet.getBeregningsgrunnlagPerioder().stream().map(beregningsgrunnlagPeriode -> mapPeriode(beregningsgrunnlagPeriode, ytelsesspesifiktGrunnlag)).collect(Collectors.toList());
     }
 
-    private static List<BeregningsgrunnlagPeriodeDto> mapBeregningsgrunnlagPerioder(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
-        return beregningsgrunnlagEntitet.getBeregningsgrunnlagPerioder().stream().map(MapDetaljertBeregningsgrunnlag::mapPeriode).collect(Collectors.toList());
-    }
-
-    private static BeregningsgrunnlagPeriodeDto mapPeriode(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode) {
+    private static BeregningsgrunnlagPeriodeDto mapPeriode(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode,
+                                                           YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         return new BeregningsgrunnlagPeriodeDto(
                 mapAndeler(beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList()),
                 new Periode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom()),
-                mapFraBeløp(beregningsgrunnlagPeriode.getBruttoPrÅr()),
-                mapFraBeløp(beregningsgrunnlagPeriode.getAvkortetPrÅr()),
-                mapFraBeløp(beregningsgrunnlagPeriode.getRedusertPrÅr()),
+                beregningsgrunnlagPeriode.getBruttoPrÅr(),
+                beregningsgrunnlagPeriode.getAvkortetPrÅr(),
+                beregningsgrunnlagPeriode.getRedusertPrÅr(),
                 beregningsgrunnlagPeriode.getDagsats(),
                 beregningsgrunnlagPeriode.getPeriodeÅrsaker(),
-                beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto() != null ? beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto().getVerdi() : null);
+                beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto() != null ? beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto() : null,
+                mapUtbetalingsfaktorTilkommetInntekt(beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag),
+                mapUtbetalingsfaktorUttaksgrad(beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag));
     }
 
-    private static List<BeregningsgrunnlagPrStatusOgAndelDto> mapAndeler(List<BeregningsgrunnlagPrStatusOgAndel> beregningsgrunnlagPrStatusOgAndelList) {
+    private static BigDecimal mapUtbetalingsfaktorTilkommetInntekt(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+        if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {
+            var inntektgraderingsprosentBrutto = beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto();
+            if (inntektgraderingsprosentBrutto == null) {
+                return null;
+            }
+            var grunnlagGradertMotUttaksgrad = beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList()
+                    .stream().map(a -> gradertMotUttaksgrad(beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag, a))
+                    .reduce(BigDecimal::add)
+                    .orElse(BigDecimal.ZERO);
+            var totaltGrunnlag = beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList()
+                    .stream().map(a -> a.getBruttoPrÅr() != null ? a.getBruttoPrÅr() : BigDecimal.ZERO)
+                    .reduce(BigDecimal::add)
+                    .orElse(BigDecimal.ZERO);
+
+
+            if (grunnlagGradertMotUttaksgrad.compareTo(BigDecimal.ZERO) == 0) {
+                return BigDecimal.ZERO;
+            }
+
+            return inntektgraderingsprosentBrutto.multiply(totaltGrunnlag).divide(grunnlagGradertMotUttaksgrad, 2, RoundingMode.HALF_UP);
+        }
+        return null;
+    }
+
+
+    private static BigDecimal mapUtbetalingsfaktorUttaksgrad(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode,
+                                                             YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+        if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {
+            var inntektgraderingsprosentBrutto = beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto();
+            if (inntektgraderingsprosentBrutto == null) {
+                return null;
+            }
+            var grunnlagGradertMotUttaksgrad = beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList()
+                    .stream().map(a -> gradertMotUttaksgrad(beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag, a))
+                    .reduce(BigDecimal::add)
+                    .orElse(BigDecimal.ZERO);
+            var totaltGrunnlag = beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList()
+                    .stream().map(a -> a.getBruttoPrÅr() != null ? a.getBruttoPrÅr() : BigDecimal.ZERO)
+                    .reduce(BigDecimal::add)
+                    .orElse(BigDecimal.ZERO);
+            if (totaltGrunnlag.compareTo(BigDecimal.ZERO) == 0) {
+                return BigDecimal.valueOf(100);
+            }
+            return grunnlagGradertMotUttaksgrad.divide(totaltGrunnlag, 2, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
+        }
+        return null;
+    }
+
+
+    private static BigDecimal gradertMotUttaksgrad(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto a) {
+        var utbetalingsgradForAndel = UtbetalingsgradTjeneste.finnUtbetalingsgradForAndel(a,
+                Intervall.fraOgMedTilOgMed(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom()),
+                ytelsespesifiktGrunnlag,
+                false
+        );
+        var bruttoInntekt = a.getBruttoPrÅr();
+        if (bruttoInntekt == null) {
+            return BigDecimal.ZERO;
+        }
+
+        return utbetalingsgradForAndel.multiply(bruttoInntekt).divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP);
+    }
+
+    private static List<BeregningsgrunnlagPrStatusOgAndelDto> mapAndeler(List<no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList) {
         return beregningsgrunnlagPrStatusOgAndelList.stream().map(MapDetaljertBeregningsgrunnlag::mapAndel).collect(Collectors.toList());
     }
 
-    private static BeregningsgrunnlagPrStatusOgAndelDto mapAndel(BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel) {
+    private static BeregningsgrunnlagPrStatusOgAndelDto mapAndel(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto beregningsgrunnlagPrStatusOgAndel) {
         return new BeregningsgrunnlagPrStatusOgAndelDto.Builder()
                 .medAndelsnr(beregningsgrunnlagPrStatusOgAndel.getAndelsnr())
                 .medAktivitetStatus(beregningsgrunnlagPrStatusOgAndel.getAktivitetStatus())
                 .medBeregningsperiode(mapBeregningsperiode(beregningsgrunnlagPrStatusOgAndel))
                 .medArbeidsforholdType(beregningsgrunnlagPrStatusOgAndel.getArbeidsforholdType())
-                .medBruttoPrÅr(mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr()))
-                .medRedusertRefusjonPrÅr(mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getRedusertRefusjonPrÅr()))
-                .medRedusertBrukersAndelPrÅr(mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getRedusertBrukersAndelPrÅr()))
+                .medBruttoPrÅr(beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr())
+                .medRedusertRefusjonPrÅr(beregningsgrunnlagPrStatusOgAndel.getRedusertRefusjonPrÅr())
+                .medRedusertBrukersAndelPrÅr(beregningsgrunnlagPrStatusOgAndel.getRedusertBrukersAndelPrÅr())
                 .medDagsatsBruker(beregningsgrunnlagPrStatusOgAndel.getDagsatsBruker())
                 .medDagsatsArbeidsgiver(beregningsgrunnlagPrStatusOgAndel.getDagsatsArbeidsgiver())
-                .medInntektskategori(beregningsgrunnlagPrStatusOgAndel.getInntektskategori())
+                .medInntektskategori(beregningsgrunnlagPrStatusOgAndel.getGjeldendeInntektskategori())
                 .medBgAndelArbeidsforhold(mapBgAndelArbeidsforhold(beregningsgrunnlagPrStatusOgAndel))
-                .medOverstyrtPrÅr(mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getOverstyrtPrÅr()))
-                .medAvkortetPrÅr(mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getAvkortetPrÅr()))
-                .medRedusertPrÅr(mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getRedusertPrÅr()))
-                .medBeregnetPrÅr(mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getBeregnetPrÅr()))
-                .medBesteberegningPrÅr(mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getBesteberegningPrÅr()))
-                .medFordeltPrÅr(mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getFordeltPrÅr()))
-                .medManueltFordeltPrÅr(mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getManueltFordeltPrÅr()))
-                .medMaksimalRefusjonPrÅr(mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getMaksimalRefusjonPrÅr()))
-                .medAvkortetRefusjonPrÅr(mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getAvkortetRefusjonPrÅr()))
-                .medAvkortetBrukersAndelPrÅr(mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getAvkortetBrukersAndelPrÅr()))
-                .medPgiSnitt(mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getPgiSnitt()))
-                .medPgi1(mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getPgi1()))
-                .medPgi2(mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getPgi2()))
-                .medPgi3(mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getPgi3()))
-                .medÅrsbeløpFraTilstøtendeYtelse(mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr()))
+                .medOverstyrtPrÅr(beregningsgrunnlagPrStatusOgAndel.getOverstyrtPrÅr())
+                .medAvkortetPrÅr(beregningsgrunnlagPrStatusOgAndel.getAvkortetPrÅr())
+                .medRedusertPrÅr(beregningsgrunnlagPrStatusOgAndel.getRedusertPrÅr())
+                .medBeregnetPrÅr(beregningsgrunnlagPrStatusOgAndel.getBeregnetPrÅr())
+                .medBesteberegningPrÅr(beregningsgrunnlagPrStatusOgAndel.getBesteberegningPrÅr())
+                .medFordeltPrÅr(beregningsgrunnlagPrStatusOgAndel.getFordeltPrÅr())
+                .medManueltFordeltPrÅr(beregningsgrunnlagPrStatusOgAndel.getManueltFordeltPrÅr())
+                .medMaksimalRefusjonPrÅr(beregningsgrunnlagPrStatusOgAndel.getMaksimalRefusjonPrÅr())
+                .medAvkortetRefusjonPrÅr(beregningsgrunnlagPrStatusOgAndel.getAvkortetRefusjonPrÅr())
+                .medAvkortetBrukersAndelPrÅr(beregningsgrunnlagPrStatusOgAndel.getAvkortetBrukersAndelPrÅr())
+                .medPgiSnitt(beregningsgrunnlagPrStatusOgAndel.getPgiSnitt())
+                .medPgi1(beregningsgrunnlagPrStatusOgAndel.getPgi1())
+                .medPgi2(beregningsgrunnlagPrStatusOgAndel.getPgi2())
+                .medPgi3(beregningsgrunnlagPrStatusOgAndel.getPgi3())
+                .medÅrsbeløpFraTilstøtendeYtelse(beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr())
                 .medFastsattAvSaksbehandler(beregningsgrunnlagPrStatusOgAndel.getFastsattAvSaksbehandler())
                 .medLagtTilAvSaksbehandler(beregningsgrunnlagPrStatusOgAndel.getKilde().equals(AndelKilde.SAKSBEHANDLER_KOFAKBER) || beregningsgrunnlagPrStatusOgAndel.getKilde().equals(AndelKilde.SAKSBEHANDLER_FORDELING))
                 .medOrginalDagsatsFraTilstøtendeYtelse(beregningsgrunnlagPrStatusOgAndel.getOrginalDagsatsFraTilstøtendeYtelse())
                 .build();
     }
 
-    private static Periode mapBeregningsperiode(BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel) {
+    private static Periode mapBeregningsperiode(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto beregningsgrunnlagPrStatusOgAndel) {
         return beregningsgrunnlagPrStatusOgAndel.getBeregningsperiodeFom() == null ? null
                 : new Periode(beregningsgrunnlagPrStatusOgAndel.getBeregningsperiodeFom(), beregningsgrunnlagPrStatusOgAndel.getBeregningsperiodeTom());
     }
 
-    private static BGAndelArbeidsforhold mapBgAndelArbeidsforhold(BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel) {
+    private static BGAndelArbeidsforhold mapBgAndelArbeidsforhold(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto beregningsgrunnlagPrStatusOgAndel) {
         return beregningsgrunnlagPrStatusOgAndel.getBgAndelArbeidsforhold().map(MapDetaljertBeregningsgrunnlag::mapArbeidsforhold).orElse(null);
     }
 
-    private static BGAndelArbeidsforhold mapArbeidsforhold(no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforhold bgAndelArbeidsforhold) {
+    private static BGAndelArbeidsforhold mapArbeidsforhold(BGAndelArbeidsforholdDto bgAndelArbeidsforhold) {
         return new BGAndelArbeidsforhold(
                 mapArbeidsgiver(bgAndelArbeidsforhold.getArbeidsgiver()),
                 bgAndelArbeidsforhold.getArbeidsforholdRef().getReferanse(),
-                mapFraBeløp(bgAndelArbeidsforhold.getGjeldendeRefusjonPrÅr()),
-                bgAndelArbeidsforhold.getNaturalytelseBortfaltPrÅr().map(Beløp::getVerdi).orElse(null),
-                bgAndelArbeidsforhold.getNaturalytelseTilkommetPrÅr().map(Beløp::getVerdi).orElse(null),
+                bgAndelArbeidsforhold.getGjeldendeRefusjonPrÅr(),
+                bgAndelArbeidsforhold.getNaturalytelseBortfaltPrÅr().orElse(null),
+                bgAndelArbeidsforhold.getNaturalytelseTilkommetPrÅr().orElse(null),
                 bgAndelArbeidsforhold.getArbeidsperiodeFom(),
                 bgAndelArbeidsforhold.getArbeidsperiodeTom().orElse(null));
     }
 
-    private static List<AktivitetStatus> mapAktivitetstatuser(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
-        return beregningsgrunnlagEntitet.getAktivitetStatuser().stream().map(BeregningsgrunnlagAktivitetStatus::getAktivitetStatus)
+    private static List<AktivitetStatus> mapAktivitetstatuser(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlagEntitet) {
+        return beregningsgrunnlagEntitet.getAktivitetStatuser().stream()
+                .map(BeregningsgrunnlagAktivitetStatusDto::getAktivitetStatus)
                 .collect(Collectors.toList());
     }
 
-    private static Arbeidsgiver mapArbeidsgiver(no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver a) {
+    private static Arbeidsgiver mapArbeidsgiver(no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver a) {
         return new Arbeidsgiver(a.getOrgnr(), a.getAktørId() != null ? a.getAktørId().getId() : null);
     }
 
-    private static BigDecimal mapFraBeløp(Beløp beløp) {
-        return beløp == null ? null : beløp.getVerdi();
-    }
 
 }

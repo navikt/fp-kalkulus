@@ -82,10 +82,33 @@ public class BeregningsgrunnlagPeriodeDto {
     @Digits(integer = 10, fraction = 2)
     private BigDecimal inntektGraderingsprosent;
 
+    /**
+     * Gradering av beregningsgrunnlaget ved tilkommet inntekt (gradering mot inntekt)
+     * Angir reduksjon pga gradering mot inntekt sammenlignet med å kun gradere mot uttaksgraden (eksisterer som faktor i inntektGraderingsprosent)
+     */
+    @JsonProperty(value = "utbetalingsfaktorTilkommetInntekt")
+    @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "100.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
+    private BigDecimal utbetalingsfaktorTilkommetInntekt;
+
+    /**
+     * Gradering av beregningsgrunnlaget ved tilkommet inntekt (gradering mot inntekt)
+     * Angir reduksjon pga gradering mot arbeidstid (uttaksgrad)
+     */
+    @JsonProperty(value = "utbetalingsfaktorUttaksgrad")
+    @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "100.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
+    private BigDecimal utbetalingsfaktorUttaksgrad;
+
+
     public BeregningsgrunnlagPeriodeDto() {
     }
 
-    public BeregningsgrunnlagPeriodeDto(@NotNull @Valid List<BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList, @NotNull @Valid Periode periode, @Valid BigDecimal bruttoPrÅr, @Valid BigDecimal avkortetPrÅr, @Valid BigDecimal redusertPrÅr, @Valid Long dagsats, @NotNull @Valid List<PeriodeÅrsak> periodeÅrsaker, BigDecimal inntektGraderingsprosent) {
+    public BeregningsgrunnlagPeriodeDto(@NotNull @Valid List<BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList, @NotNull @Valid Periode periode, @Valid BigDecimal bruttoPrÅr, @Valid BigDecimal avkortetPrÅr, @Valid BigDecimal redusertPrÅr, @Valid Long dagsats, @NotNull @Valid List<PeriodeÅrsak> periodeÅrsaker, BigDecimal inntektGraderingsprosent, BigDecimal utbetalingsfaktorTilkommetInntekt, BigDecimal utbetalingsfaktorUttaksgrad) {
         this.beregningsgrunnlagPrStatusOgAndelList = beregningsgrunnlagPrStatusOgAndelList;
         this.periode = periode;
         this.bruttoPrÅr = bruttoPrÅr;
@@ -94,6 +117,8 @@ public class BeregningsgrunnlagPeriodeDto {
         this.dagsats = dagsats;
         this.periodeÅrsaker = periodeÅrsaker;
         this.inntektGraderingsprosent = inntektGraderingsprosent;
+        this.utbetalingsfaktorTilkommetInntekt = utbetalingsfaktorTilkommetInntekt;
+        this.utbetalingsfaktorUttaksgrad = utbetalingsfaktorUttaksgrad;
     }
 
     public LocalDate getBeregningsgrunnlagPeriodeFom() {
@@ -134,5 +159,14 @@ public class BeregningsgrunnlagPeriodeDto {
 
     public BigDecimal getInntektGraderingsprosent() {
         return inntektGraderingsprosent;
+    }
+
+
+    public BigDecimal getUtbetalingsfaktorTilkommetInntekt() {
+        return utbetalingsfaktorTilkommetInntekt;
+    }
+
+    public BigDecimal getUtbetalingsfaktorUttaksgrad() {
+        return utbetalingsfaktorUttaksgrad;
     }
 }

@@ -105,10 +105,10 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
                 lagBGAndel(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, 200000));
         lagUtbGrunnlasg(lagYGArbeid(orgnr, ref, UttakArbeidType.ORDINÆRT_ARBEID),
                 lagYGPeriode(STP_DATO, etterSTP(10), 100));
-       lagUtbGrunnlasg(lagYGArbeid(null, null, UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE),
+        lagUtbGrunnlasg(lagYGArbeid(null, null, UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE),
                 lagYGPeriode(etterSTP(11), etterSTP(50), 100));
 
-       // Omsorgspenger
+        // Omsorgspenger
         BeregningsgrunnlagGrunnlagDto res = mapForOmsorgspenger();
 
         assertThat(res.getBeregningsgrunnlag()).isNotNull();
@@ -293,10 +293,10 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
         BeregningsgrunnlagGUIInput input = new BeregningsgrunnlagGUIInput(KoblingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(),
                 Optional.empty(), STP), null, null, new OpptjeningAktiviteterDto(), (YtelsespesifiktGrunnlag) grunnlag);
 
-        BeregningsgrunnlagDto bg = new BeregningsgrunnlagDto(null, null, bgPerioder, null,
+        BeregningsgrunnlagDto bg = new BeregningsgrunnlagDto(null, null, bgPerioder,
                 null, null, false, GRUNNBELØP);
 
-        BeregningsgrunnlagGrunnlagDto gr = new BeregningsgrunnlagGrunnlagDto(bg, null, null, null,
+        BeregningsgrunnlagGrunnlagDto gr = new BeregningsgrunnlagGrunnlagDto(bg, null, null,
                 null, null, null, BeregningsgrunnlagTilstand.FASTSATT);
 
         return MapFormidlingsdataBeregningsgrunnlag.mapMedBrevfelt(gr, input);
@@ -330,7 +330,7 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
 
     private void lagBGPeriode(LocalDate fom, LocalDate tom, BeregningsgrunnlagPrStatusOgAndelDto... andeler) {
         bgPerioder.add(new BeregningsgrunnlagPeriodeDto(Arrays.asList(andeler), new Periode(fom, tom),
-                null, null, null, null, null, null));
+                null, null, null, null, null, null, null, null));
     }
 
     private BeregningsgrunnlagPrStatusOgAndelDto lagBGAndel(AktivitetStatus status, String orgnr, String ref, int brutto) {

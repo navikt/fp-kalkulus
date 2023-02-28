@@ -1,10 +1,8 @@
 package no.nav.folketrygdloven.kalkulus.rest;
 
-import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributtMiljøvariabel.BEREGNINGSGRUNNLAG;
 import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributtMiljøvariabel.FAGSAK;
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.READ;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -117,20 +115,11 @@ public class HentKalkulusRestTjeneste {
 
         // TODO Fjern dette, lag egen tjeneste for brev
         var koblinger = koblingTjeneste.hentKoblinger(koblingReferanser, ytelseType);
+        var input = guiInputTjeneste.lagInputForKoblinger(koblinger.stream().map(KoblingEntitet::getId).toList(), List.of());
         if (YtelseTyperKalkulusStøtterKontrakt.OMSORGSPENGER.equals(ytelseType) || YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN.equals(ytelseType)) {
-            var input = guiInputTjeneste.lagInputForKoblinger(koblinger.stream().map(KoblingEntitet::getId).toList(), List.of());
-            List<BeregningsgrunnlagGrunnlagEntitet> grunnlag = hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(koblinger);
-            dtoer = new ArrayList<>();
-            input.forEach((key, value) -> {
-                Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagForKobling = grunnlag.stream()
-                        .filter(gr -> gr.getKoblingId().equals(key))
-                        .findFirst();
-                grunnlagForKobling.ifPresent(gr -> dtoer.add(MapDetaljertBeregningsgrunnlag.mapMedBrevfelt(gr, value)));
-            });
+            dtoer = input.values().stream().map(v -> MapDetaljertBeregningsgrunnlag.mapMedBrevfelt(v.getBeregningsgrunnlagGrunnlag(), v)).toList();
         } else {
-            dtoer = hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(koblinger).stream()
-                    .map(MapDetaljertBeregningsgrunnlag::mapGrunnlag)
-                    .collect(Collectors.toList());
+            dtoer = input.values().stream().map(v -> MapDetaljertBeregningsgrunnlag.mapGrunnlag(v.getBeregningsgrunnlagGrunnlag(), v.getYtelsespesifiktGrunnlag())).toList();
         }
         return dtoer.isEmpty() ? Response.noContent().build() : Response.ok(dtoer).build();
     }
