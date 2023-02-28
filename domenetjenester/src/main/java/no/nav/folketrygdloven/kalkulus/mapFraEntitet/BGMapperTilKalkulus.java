@@ -39,6 +39,7 @@ public class BGMapperTilKalkulus {
         builder.medBeregningsgrunnlagPeriode(fraFagsystem.getBeregningsgrunnlagPeriodeFom(), fraFagsystem.getBeregningsgrunnlagPeriodeTom());
         builder.medBruttoPrÅr(mapFraBeløp(fraFagsystem.getBruttoPrÅr()));
         builder.medRedusertPrÅr(mapFraBeløp(fraFagsystem.getRedusertPrÅr()));
+        builder.medInntektsgraderingsprosentBrutto(fraFagsystem.getInntektgraderingsprosentBrutto() != null ? fraFagsystem.getInntektgraderingsprosentBrutto().getVerdi() : null);
 
         //legg til
         fraFagsystem.getPeriodeÅrsaker().forEach(builder::leggTilPeriodeÅrsak);
