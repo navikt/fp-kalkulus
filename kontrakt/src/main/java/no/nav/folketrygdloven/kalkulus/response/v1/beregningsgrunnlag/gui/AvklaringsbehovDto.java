@@ -2,6 +2,8 @@ package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
+import java.time.LocalDateTime;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -23,8 +25,14 @@ public record AvklaringsbehovDto(@JsonProperty(value = "definisjon") @NotNull @V
                                  @JsonProperty(value = "kanLoses") @NotNull @Valid boolean kanLoses,
                                  @JsonProperty(value = "erTrukket") @NotNull @Valid boolean erTrukket,
                                  @JsonProperty(value = "begrunnelse")
-                              @Size(max = 5000)
-                              @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}§]+$", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
-                              @Valid String begrunnelse) {
+                                 @Size(max = 5000)
+                                 @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}§]+$", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
+                                 @Valid String begrunnelse,
+                                 @JsonProperty(value = "vurdertAv")
+                                 @Size(max = 20)
+                                 @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}§]+$", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
+                                 @Valid String vurdertAv,
+                                 @JsonProperty(value = "vurdertTidspunkt")
+                                 @Valid LocalDateTime vurdertTidspunkt) {
 
 }

@@ -1,10 +1,13 @@
 package no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov;
 
+import java.time.LocalDateTime;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovStatus;
+import no.nav.k9.sikkerhet.context.SubjectHandler;
 
 /**
  * Tjeneste som skal håndtere all opprettelse og endring av AvklaringsbehovEntitet
@@ -26,12 +29,16 @@ public class AvklaringsbehovKontrollTjeneste {
         no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet.Builder apBuilder = new no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet.Builder(kopierFra.getDefinisjon());
         apBuilder.medStatus(kopierFra.getStatus());
         apBuilder.medBegrunnelse(kopierFra.getBegrunnelse());
+        apBuilder.medVurdertAv(kopierFra.getVurdertAv());
+        apBuilder.medVurdertTidspunkt(kopierFra.getVurdertTidspunkt());
         return apBuilder.buildFor(kobling);
     }
 
     public AvklaringsbehovEntitet kopierDataFraAvklaringsbehov(AvklaringsbehovEntitet kopierTil, AvklaringsbehovEntitet kopierFra) {
         kopierTil.setStatus(kopierFra.getStatus());
         kopierTil.setBegrunnelse(kopierFra.getBegrunnelse());
+        kopierTil.setVurdertAv(kopierFra.getVurdertAv());
+        kopierTil.setVurdertTidspunkt(kopierFra.getVurdertTidspunkt());
         return kopierTil;
     }
 
@@ -44,6 +51,7 @@ public class AvklaringsbehovKontrollTjeneste {
     public void løs(AvklaringsbehovEntitet avklaringsbehovEntitet, String begrunnelse) {
         avklaringsbehovEntitet.setStatus(AvklaringsbehovStatus.UTFØRT);
         avklaringsbehovEntitet.setBegrunnelse(begrunnelse);
+        setVurdert(avklaringsbehovEntitet);
     }
 
     public void løsForMigrering(AvklaringsbehovEntitet avklaringsbehovEntitet, String begrunnelse) {
@@ -51,6 +59,7 @@ public class AvklaringsbehovKontrollTjeneste {
         if (begrunnelse != null) {
             avklaringsbehovEntitet.setBegrunnelse(begrunnelse);
         }
+        setVurdert(avklaringsbehovEntitet);
     }
 
 
@@ -66,4 +75,8 @@ public class AvklaringsbehovKontrollTjeneste {
         return avklaringsbehovEntitet;
     }
 
+    private void setVurdert(AvklaringsbehovEntitet avklaringsbehovEntitet) {
+        avklaringsbehovEntitet.setVurdertAv(SubjectHandler.getSubjectHandler().getUid());
+        avklaringsbehovEntitet.setVurdertTidspunkt(LocalDateTime.now());
+    }
 }

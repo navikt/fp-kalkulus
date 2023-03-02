@@ -171,6 +171,6 @@ public class BehandlingslagerTilKalkulusMapper {
     }
 
     private static AvklaringsbehovDto mapAvklaringsbehov(AvklaringsbehovEntitet avklaringsbehovEntitet) {
-        return new AvklaringsbehovDto(avklaringsbehovEntitet.getDefinisjon(), avklaringsbehovEntitet.getStatus(), avklaringsbehovEntitet.getBegrunnelse(), avklaringsbehovEntitet.getErTrukket());
+        return new AvklaringsbehovDto(avklaringsbehovEntitet.getDefinisjon(), avklaringsbehovEntitet.getStatus(), avklaringsbehovEntitet.getBegrunnelse(), avklaringsbehovEntitet.getErTrukket(), avklaringsbehovEntitet.getVurdertAv(), avklaringsbehovEntitet.getVurdertTidspunkt());
     }
 }

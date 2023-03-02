@@ -18,14 +18,12 @@ import jakarta.inject.Inject;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.BeregningsgrunnlagPrStatusOgAndelDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningDtoTjeneste;
-import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FinnÅrsinntektvisningstall;
 import no.nav.folketrygdloven.kalkulator.guitjenester.inntektsgrunnlag.InntektsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.refusjon.VurderRefusjonDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.ytelsegrunnlag.YtelsespesifiktGrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
@@ -94,7 +92,7 @@ public class BeregningsgrunnlagDtoTjeneste {
         dto.setAvklaringsbehov(input.getAvklaringsbehov().stream()
                 .filter(ab -> !ab.getStatus().equals(AvklaringsbehovStatus.AVBRUTT) && !ab.getErTrukket())
                 .map(a -> new AvklaringsbehovDto(a.getDefinisjon(), a.getStatus(), kanLøses(a, input),
-                        a.getErTrukket(),  a.getBegrunnelse())).collect(Collectors.toList()));
+                        a.getErTrukket(), a.getBegrunnelse(), a.getVurdertAv(), a.getVurdertTidspunkt())).collect(Collectors.toList()));
     }
 
     private boolean kanLøses(no.nav.folketrygdloven.kalkulator.modell.avklaringsbehov.AvklaringsbehovDto a, BeregningsgrunnlagGUIInput input) {

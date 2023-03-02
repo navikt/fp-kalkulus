@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -50,6 +51,11 @@ public class AvklaringsbehovEntitet extends BaseEntitet implements Comparable<Av
     @Column(name = "er_trukket")
     private Boolean erTrukket;
 
+    @Column(name = "vurdert_av")
+    private String vurdertAv;
+
+    @Column(name = "vurdert_tid")
+    private LocalDateTime vurdertTidspunkt;
 
     @Version
     @Column(name = "versjon", nullable = false)
@@ -88,6 +94,14 @@ public class AvklaringsbehovEntitet extends BaseEntitet implements Comparable<Av
         return begrunnelse;
     }
 
+    public String getVurdertAv() {
+        return vurdertAv;
+    }
+
+    public LocalDateTime getVurdertTidspunkt() {
+        return vurdertTidspunkt;
+    }
+
     void setKobling(KoblingEntitet kobling) {
         Objects.requireNonNull(kobling, "koblingId");
         this.kobling = kobling;
@@ -99,6 +113,14 @@ public class AvklaringsbehovEntitet extends BaseEntitet implements Comparable<Av
 
     void setErTrukket(Boolean erTrukket) {
         this.erTrukket = erTrukket;
+    }
+
+    void setVurdertAv(String vurdertAv) {
+        this.vurdertAv = vurdertAv;
+    }
+
+    void setVurdertTidspunkt(LocalDateTime vurdertTidspunkt) {
+        this.vurdertTidspunkt = vurdertTidspunkt;
     }
 
     void setStatus(AvklaringsbehovStatus status) {
@@ -189,6 +211,15 @@ public class AvklaringsbehovEntitet extends BaseEntitet implements Comparable<Av
             return this;
         }
 
+        AvklaringsbehovEntitet.Builder medVurdertAv(String vurdertAv) {
+            mal.setVurdertAv(vurdertAv);
+            return this;
+        }
+
+        AvklaringsbehovEntitet.Builder medVurdertTidspunkt(LocalDateTime vurdertTidspunkt) {
+            mal.setVurdertTidspunkt(vurdertTidspunkt);
+            return this;
+        }
 
         AvklaringsbehovEntitet buildFor(KoblingEntitet kobling) {
             mal.setKobling(kobling);
