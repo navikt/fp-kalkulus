@@ -26,14 +26,27 @@ public class InntektsgrunnlagDto {
     @Size(max = 12)
     private List<InntektsgrunnlagMånedDto> måneder;
 
+    @Valid
+    @NotNull
+    @JsonProperty(value = "pgiGrunnlag")
+    @Size(max = 12)
+    private List<PGIPrÅrDto> pgiGrunnlag;
+
+
     public InntektsgrunnlagDto() {
     }
 
-    public InntektsgrunnlagDto(@Valid @NotNull @Min(0) @Max(12) List<InntektsgrunnlagMånedDto> måneder) {
+    public InntektsgrunnlagDto(@Valid @NotNull @Min(0) @Max(12) List<InntektsgrunnlagMånedDto> måneder,
+                               @Valid @NotNull @Min(0) @Max(12) List<PGIPrÅrDto> pgiGrunnlag) {
         this.måneder = måneder;
+        this.pgiGrunnlag = pgiGrunnlag;
     }
 
     public List<InntektsgrunnlagMånedDto> getMåneder() {
         return måneder;
+    }
+
+    public List<PGIPrÅrDto> getPgiGrunnlag() {
+        return pgiGrunnlag;
     }
 }
