@@ -16,17 +16,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelTy
 
 
 public class HashGrupperingUtil {
-
-    private static final MessageDigest HASH_INSTANCE;
-
-    static {
-        try {
-            HASH_INSTANCE = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(e.getMessage());
-        }
-    }
-
     private HashGrupperingUtil() {
     }
 
@@ -77,7 +66,13 @@ public class HashGrupperingUtil {
     }
 
     public static String lagMD5Hash(String input) {
-        byte[] md5Hash = HASH_INSTANCE.digest(input.getBytes());
+        //OBS, MessageDigest er ikke thread-safe
+        byte[] md5Hash;
+        try {
+            md5Hash = MessageDigest.getInstance("MD5").digest(input.getBytes());
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e.getMessage());
+        }
         return toHexString(md5Hash);
     }
 
