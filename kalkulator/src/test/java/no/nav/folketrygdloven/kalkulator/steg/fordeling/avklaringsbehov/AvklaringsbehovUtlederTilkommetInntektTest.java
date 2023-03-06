@@ -5,9 +5,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -16,11 +17,13 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.kalkulator.input.PleiepengerSyktBarnGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDtoBuilder;
@@ -29,12 +32,14 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.StatusOgArbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt.TilkommetInntektsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PermisjonsbeskrivelseType;
@@ -321,15 +326,12 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
                 lagUtbetalingsgrader(50, STP, STP.plusDays(20)));
 
 
-
         var arbeidsgiver2 = Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR2);
         var nyAndel = lagArbeidstakerandel(arbeidsgiver2, 3L, AndelKilde.PROSESS_PERIODISERING, InternArbeidsforholdRefDto.nullRef());
         var utbetalingsgradNyAndel = new UtbetalingsgradPrAktivitetDto(lagAktivitet(arbeidsgiver2, InternArbeidsforholdRefDto.nullRef()),
                 lagUtbetalingsgrader(50, STP, STP.plusDays(20)));
 
         var nyYrkesaktivitet = lagYrkesaktivitet(arbeidsgiver2, STP.plusDays(10), STP.plusDays(20), InternArbeidsforholdRefDto.nullRef());
-
-
 
 
         var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(10), STP.plusDays(15));
@@ -457,7 +459,6 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
     }
 
 
-
     @Test
     void skal_ikke_finne_tilkommet_frilansandel_dersom_en_arbeidstakerandel_fra_start_med_overlapp_til_frilans_uten_inntekt_og_periode_er_passert_med_to_måneder() {
 
@@ -495,7 +496,8 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
 
         var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(10), STP.plusDays(15));
 
-        var tilkommetAktivitet = finnTilkomneAndeler(periode, List.of(yrkesaktivitet), List.of(arbeidstakerandelFraStart, nyAndel), new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel)), STP);
+        var tilkommetAktivitet = finnTilkomneAndeler(periode, List.of(yrkesaktivitet),
+                List.of(arbeidstakerandelFraStart, nyAndel), new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel)), STP);
 
         assertThat(tilkommetAktivitet.size()).isEqualTo(1);
         assertThat(tilkommetAktivitet.iterator().next().aktivitetStatus()).isEqualTo(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
@@ -516,49 +518,66 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
 
         var utbetalingsgradGrunnlag = new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel));
         var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(10), STP.plusDays(15));
-        var tilkommetAktivitet = finnTilkomneAndeler(periode, List.of(nyYrkesaktivitet), List.of(frilansandelFraStart, nyAndel), utbetalingsgradGrunnlag, STP);
+        var tilkommetAktivitet = finnTilkomneAndeler(periode, List.of(nyYrkesaktivitet),
+                List.of(lagInntektsposterForYrkesaktivitet(nyYrkesaktivitet, utbetalingsgradNyAndel.getPeriodeMedUtbetalingsgrad())),
+                List.of(frilansandelFraStart, nyAndel), utbetalingsgradGrunnlag, STP);
 
         assertThat(tilkommetAktivitet.size()).isEqualTo(1);
         var iterator = tilkommetAktivitet.iterator();
         assertThat(iterator.next().arbeidsgiver()).isEqualTo(arbeidsgiver2);
     }
 
-
-    private Set<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver> finnTilkomneAndeler(Intervall periode,
-                                                                                           List<YrkesaktivitetDto> yrkesaktiviteter,
-                                                                                           List<BeregningsgrunnlagPrStatusOgAndelDto> andelerFraStart,
-                                                                                           PleiepengerSyktBarnGrunnlag utbetalingsgradGrunnlag,
-                                                                                           LocalDate skjæringstidspunkt) {
-        return finnTilkomneAndeler(periode, yrkesaktiviteter, lagInntektForFrilans(yrkesaktiviteter), andelerFraStart, utbetalingsgradGrunnlag, skjæringstidspunkt);
+    private InntektDtoBuilder lagInntektsposterForYrkesaktivitet(YrkesaktivitetDto nyYrkesaktivitet, List<PeriodeMedUtbetalingsgradDto> perioderMedUtbetalingsgrad) {
+        var perioderMedFulltFravær = perioderMedUtbetalingsgrad.stream().filter(it -> it.getUtbetalingsgrad().compareTo(BigDecimal.valueOf(100)) == 0).map(PeriodeMedUtbetalingsgradDto::getPeriode).toList();
+        var inntektDto = InntektDtoBuilder.oppdatere(Optional.empty()).medArbeidsgiver(nyYrkesaktivitet.getArbeidsgiver()).medInntektsKilde(InntektskildeType.INNTEKT_BEREGNING);
+        nyYrkesaktivitet.getAlleAnsettelsesperioder().stream()
+                .map(AktivitetsAvtaleDto::getPeriode)
+                .filter(it -> !perioderMedFulltFravær.contains(it))
+                .forEach(p -> inntektDto.leggTilInntektspost(InntektspostDtoBuilder.ny().medBeløp(BigDecimal.valueOf(10_000)).medPeriode(p.getFomDato(), p.getTomDato()).medInntektspostType(InntektspostType.LØNN)));
+        return inntektDto;
     }
 
-    private Set<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver> finnTilkomneAndeler(Intervall periode,
-                                                                                           List<YrkesaktivitetDto> yrkesaktiviteter,
-                                                                                           Collection<InntektspostDto> inntektsposter,
-                                                                                           List<BeregningsgrunnlagPrStatusOgAndelDto> andelerFraStart,
-                                                                                           PleiepengerSyktBarnGrunnlag utbetalingsgradGrunnlag,
-                                                                                           LocalDate skjæringstidspunkt) {
-        var tidslinje = TilkommetInntektsforholdTjeneste.finnTilkommetInntektsforholdTidslinje(skjæringstidspunkt, yrkesaktiviteter, inntektsposter, 5, andelerFraStart, utbetalingsgradGrunnlag);
+
+    private Set<StatusOgArbeidsgiver> finnTilkomneAndeler(Intervall periode,
+                                                          List<YrkesaktivitetDto> yrkesaktiviteter,
+                                                          List<BeregningsgrunnlagPrStatusOgAndelDto> andelerFraStart,
+                                                          PleiepengerSyktBarnGrunnlag utbetalingsgradGrunnlag,
+                                                          LocalDate skjæringstidspunkt) {
+        return finnTilkomneAndeler(periode, yrkesaktiviteter, lagInntektForYrkesaktiviteter(yrkesaktiviteter, utbetalingsgradGrunnlag), andelerFraStart, utbetalingsgradGrunnlag, skjæringstidspunkt);
+    }
+
+    private Set<StatusOgArbeidsgiver> finnTilkomneAndeler(Intervall periode,
+                                                          List<YrkesaktivitetDto> yrkesaktiviteter,
+                                                          List<InntektDtoBuilder> inntekter,
+                                                          List<BeregningsgrunnlagPrStatusOgAndelDto> andelerFraStart,
+                                                          PleiepengerSyktBarnGrunnlag utbetalingsgradGrunnlag,
+                                                          LocalDate skjæringstidspunkt) {
+
+        var oppdatere = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
+        var aktørArbeid = InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder.oppdatere(Optional.empty());
+        yrkesaktiviteter.forEach(aktørArbeid::leggTilYrkesaktivitet);
+        oppdatere.leggTilAktørArbeid(aktørArbeid);
+        var aktørInntektBuilder = InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder.oppdatere(Optional.empty());
+        inntekter.forEach(aktørInntektBuilder::leggTilInntekt);
+        oppdatere.leggTilAktørInntekt(aktørInntektBuilder);
+
+        var tidslinje = TilkommetInntektsforholdTjeneste.finnTilkommetInntektsforholdTidslinje(skjæringstidspunkt, 5,
+                andelerFraStart, utbetalingsgradGrunnlag, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medData(oppdatere).build(), FagsakYtelseType.PLEIEPENGER_SYKT_BARN);
         var segmenter = tidslinje.intersection(new LocalDateInterval(periode.getFomDato(), periode.getTomDato())).compress().toSegments();
         return segmenter.isEmpty() ? new LinkedHashSet<>() : segmenter.stream().map(LocalDateSegment::getValue)
                 .filter(s -> !s.isEmpty()).findFirst().orElse(Set.of());
     }
 
-    private Collection<InntektspostDto> lagInntektForFrilans(List<YrkesaktivitetDto> yrkesaktiviteter) {
-        List<InntektDto> inntekter = new ArrayList<>();
-        yrkesaktiviteter.stream().filter(ya -> ya.getArbeidType().equals(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER))
-                        .forEach(ya -> {
-                            var inntektDtoBuilder = InntektDtoBuilder.oppdatere(Optional.empty())
-                                    .medArbeidsgiver(ya.getArbeidsgiver())
-                                    .medInntektsKilde(InntektskildeType.INNTEKT_BEREGNING);
-                            ya.getAlleAnsettelsesperioder().stream()
-                                    .forEach(p -> inntektDtoBuilder.leggTilInntektspost(InntektspostDtoBuilder.ny()
-                                            .medInntektspostType(InntektspostType.LØNN)
-                                            .medPeriode(p.getPeriode().getFomDato(), p.getPeriode().getTomDato())
-                                            .medBeløp(BigDecimal.valueOf(10_000))));
-                            inntekter.add(inntektDtoBuilder.build());
-                        });
-        return inntekter.stream().flatMap(i -> i.getAlleInntektsposter().stream()).toList();
+    private List<InntektDtoBuilder> lagInntektForYrkesaktiviteter(List<YrkesaktivitetDto> yrkesaktiviteter, PleiepengerSyktBarnGrunnlag utbetalingsgradGrunnlag) {
+        List<InntektDtoBuilder> inntekter = new ArrayList<>();
+        yrkesaktiviteter
+                .forEach(ya -> {
+                    var perioderMedUtbetalingsgrad = utbetalingsgradGrunnlag.getUtbetalingsgradPrAktivitet().stream().filter(it ->
+                                    Objects.equals(it.getUtbetalingsgradArbeidsforhold().getArbeidsgiver().orElse(null), ya.getArbeidsgiver()))
+                            .findFirst().map(UtbetalingsgradPrAktivitetDto::getPeriodeMedUtbetalingsgrad).orElse(Collections.emptyList());
+                    inntekter.add(lagInntektsposterForYrkesaktivitet(ya, perioderMedUtbetalingsgrad));
+                });
+        return inntekter;
     }
 
     private BeregningsgrunnlagPrStatusOgAndelDto lagArbeidstakerandel(Arbeidsgiver arbeidsgiver2, long andelsnr, AndelKilde kilde, InternArbeidsforholdRefDto arbeidsforholdRef) {

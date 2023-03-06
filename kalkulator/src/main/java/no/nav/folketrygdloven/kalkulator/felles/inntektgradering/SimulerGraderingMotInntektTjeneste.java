@@ -41,7 +41,7 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.tid.Virkedager;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
 
@@ -72,7 +72,8 @@ public class SimulerGraderingMotInntektTjeneste {
     }
 
     public BeregningsgrunnlagDto lagInputGrunnlag(BeregningsgrunnlagInput beregningsgrunnlagInput) {
-        var splittetGrunnlag = splittBeregningsgrunnlagOgLagTilkommet(beregningsgrunnlagInput.getIayGrunnlag(), beregningsgrunnlagInput.getBeregningsgrunnlag(), beregningsgrunnlagInput.getYtelsespesifiktGrunnlag());
+        var splittetGrunnlag = splittBeregningsgrunnlagOgLagTilkommet(beregningsgrunnlagInput.getIayGrunnlag(), beregningsgrunnlagInput.getBeregningsgrunnlag(),
+                beregningsgrunnlagInput.getYtelsespesifiktGrunnlag(), beregningsgrunnlagInput.getFagsakYtelseType());
         settInntektPåTilkomneInntektsforhold(beregningsgrunnlagInput.getIayGrunnlag(), beregningsgrunnlagInput.getYtelsespesifiktGrunnlag(), splittetGrunnlag);
         return splittetGrunnlag;
     }
@@ -120,12 +121,13 @@ public class SimulerGraderingMotInntektTjeneste {
                 .orElse(dagsatsFørGradering);
     }
 
-    private static BeregningsgrunnlagDto splittBeregningsgrunnlagOgLagTilkommet(InntektArbeidYtelseGrunnlagDto iay, BeregningsgrunnlagDto mappetGrunnlag, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+    private static BeregningsgrunnlagDto splittBeregningsgrunnlagOgLagTilkommet(InntektArbeidYtelseGrunnlagDto iay, BeregningsgrunnlagDto mappetGrunnlag, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, FagsakYtelseType ytelseType) {
         var tilkommetTidslinje = TilkommetInntektsforholdTjeneste.finnTilkommetInntektsforholdTidslinje(
                 mappetGrunnlag.getSkjæringstidspunkt(),
-                iay.getAktørArbeidFraRegister().map(AktørArbeidDto::hentAlleYrkesaktiviteter).orElse(Collections.emptyList()),
-                new InntektFilterDto(iay.getAktørInntektFraRegister()).filter(InntektskildeType.INNTEKT_BEREGNING).getFiltrertInntektsposter(), 5, mappetGrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
-                ytelsespesifiktGrunnlag
+                5, mappetGrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
+                (UtbetalingsgradGrunnlag) ytelsespesifiktGrunnlag,
+                iay,
+                ytelseType
         ).filterValue(v -> !v.isEmpty());
         return SplittBGPerioder.splittPerioder(mappetGrunnlag,
                 tilkommetTidslinje,

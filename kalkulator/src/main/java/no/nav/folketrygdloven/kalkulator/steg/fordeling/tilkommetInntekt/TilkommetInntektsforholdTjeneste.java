@@ -13,19 +13,26 @@ import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
-import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.AktørArbeidDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.AktørYtelseDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonPerYrkesaktivitet;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.StatusOgArbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 import no.nav.fpsak.tidsserie.StandardCombinators;
@@ -35,7 +42,7 @@ import no.nav.fpsak.tidsserie.StandardCombinators;
  * <p>
  * Utleder her om det er potensielle nye inntektsforhold.
  * <p>
- * Se https://navno.sharepoint.com/sites/fag-og-ytelser-arbeid-sykefravarsoppfolging-og-sykepenger/SitePages/%C2%A7-8-13-Graderte-sykepenger.aspx
+ * Se <a href="https://navno.sharepoint.com/sites/fag-og-ytelser-arbeid-sykefravarsoppfolging-og-sykepenger/SitePages/%C2%A7-8-13-Graderte-sykepenger.aspx">...</a>
  */
 public class TilkommetInntektsforholdTjeneste {
 
@@ -55,33 +62,51 @@ public class TilkommetInntektsforholdTjeneste {
      * Dersom antall løpende aktiviteter øker, skal saksbehandler vurdere om de tilkomne aktivitetene skal føre til reduksjon i utbetaling.
      *
      * @param skjæringstidspunkt           Skjæringstidspunkt for beregning
-     * @param yrkesaktiviteter             Yrkesaktiviteter
-     * @param inntektposter
-     * @param inntektRapporteringsfristDag
+     * @param inntektRapporteringsfristDag Inntektrapporteringsfrist
      * @param andelerFraStart              Andeler i første periode
      * @param utbetalingsgradGrunnlag      Ytelsesspesifikt grunnlag
+     * @param iayGrunnlag                  Iay-grunnlag
+     * @param ytelseTypeTilBehandling      Ytelsetype til behandling
      * @return Tidslinje for tilkommet aktivitet/inntektsforhold
      */
     public static LocalDateTimeline<Set<StatusOgArbeidsgiver>> finnTilkommetInntektsforholdTidslinje(LocalDate skjæringstidspunkt,
-                                                                                                     Collection<YrkesaktivitetDto> yrkesaktiviteter,
-                                                                                                     Collection<InntektspostDto> inntektposter,
                                                                                                      int inntektRapporteringsfristDag,
                                                                                                      Collection<BeregningsgrunnlagPrStatusOgAndelDto> andelerFraStart,
-                                                                                                     YtelsespesifiktGrunnlag utbetalingsgradGrunnlag) {
+                                                                                                     UtbetalingsgradGrunnlag utbetalingsgradGrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag, FagsakYtelseType ytelseTypeTilBehandling) {
+
+        var yrkesaktiviteter = iayGrunnlag.getAktørArbeidFraRegister().map(AktørArbeidDto::hentAlleYrkesaktiviteter).orElse(Collections.emptyList());
+        var ytelser = finnYtelserUlikYtelseTilBehandling(iayGrunnlag, ytelseTypeTilBehandling);
+        var inntektposter = new InntektFilterDto(iayGrunnlag.getAktørInntektFraRegister()).filter(InntektskildeType.INNTEKT_BEREGNING).getFiltrertInntektsposter();
+
         var antallGodkjenteInntektsforhold = andelerFraStart.stream().filter(a -> a.getKilde().equals(AndelKilde.PROSESS_START)).count();
         var yrkesaktivitetTidslinje = finnInntektsforholdFraYrkesaktiviteter(skjæringstidspunkt, yrkesaktiviteter);
-        var næringTidslinje = finnInntektsforholdForStatusFraFravær((UtbetalingsgradGrunnlag) utbetalingsgradGrunnlag, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
-        var frilansTidslinje = finnInntektsforholdForStatusFraFravær((UtbetalingsgradGrunnlag) utbetalingsgradGrunnlag, AktivitetStatus.FRILANSER);
+        var tidslinjeForAktivitetPåBakgrunnAvInntekt = FinnArbeidstakerInntektTidslinje.finnArbeidstakerInntektTidslinje(skjæringstidspunkt, inntektposter, ytelser, getArbeidsgivere(yrkesaktivitetTidslinje), utbetalingsgradGrunnlag, inntektRapporteringsfristDag);
+        var næringTidslinje = finnInntektsforholdForStatusFraFravær(utbetalingsgradGrunnlag, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+        var frilansTidslinje = finnInntektsforholdForStatusFraFravær(utbetalingsgradGrunnlag, AktivitetStatus.FRILANSER);
         var frilansGodkjentInntektTidslinje = FrilansInntektTidslinjeUtil.finnFrilansInntektTidslinje(skjæringstidspunkt, yrkesaktiviteter, inntektposter, inntektRapporteringsfristDag);
         var aktivitetTidslinje = yrkesaktivitetTidslinje.union(næringTidslinje, StandardCombinators::union)
                 .union(frilansTidslinje, StandardCombinators::union)
                 .combine(frilansGodkjentInntektTidslinje, FrilansInntektTidslinjeUtil::kunFrilansMedInntekt, LocalDateTimeline.JoinStyle.LEFT_JOIN)
+                .combine(tidslinjeForAktivitetPåBakgrunnAvInntekt, FinnArbeidstakerInntektTidslinje::kunGyldigePeriodeForInntekt, LocalDateTimeline.JoinStyle.LEFT_JOIN)
                 .compress();
-        var utbetalingTidslinje = finnUtbetalingTidslinje((UtbetalingsgradGrunnlag) utbetalingsgradGrunnlag);
+        var utbetalingTidslinje = finnUtbetalingTidslinje(utbetalingsgradGrunnlag);
         return aktivitetTidslinje
                 .intersection(utbetalingTidslinje, StandardCombinators::leftOnly)
                 .map(s -> mapTilkommetTidslinje(andelerFraStart, yrkesaktiviteter, utbetalingsgradGrunnlag, antallGodkjenteInntektsforhold, s));
 
+    }
+
+    private static List<Arbeidsgiver> getArbeidsgivere(LocalDateTimeline<Set<Inntektsforhold>> yrkesaktivitetTidslinje) {
+        var unikeInntektsforhold = yrkesaktivitetTidslinje.toSegments().stream().flatMap(s1 -> s1.getValue().stream()).collect(Collectors.toSet());
+        return unikeInntektsforhold.stream()
+                .filter(a -> a.aktivitetStatus().erArbeidstaker())
+                .map(Inntektsforhold::arbeidsgiver)
+                .toList();
+    }
+
+    private static Collection<YtelseDto> finnYtelserUlikYtelseTilBehandling(InntektArbeidYtelseGrunnlagDto iayGrunnlag, FagsakYtelseType fagsakYtelseType) {
+        return new YtelseFilterDto(iayGrunnlag.getAktørYtelseFraRegister().map(AktørYtelseDto::getAlleYtelser).orElse(Collections.emptyList()))
+                .filter(y -> !y.getYtelseType().equals(fagsakYtelseType)).getFiltrertYtelser();
     }
 
 
@@ -96,7 +121,7 @@ public class TilkommetInntektsforholdTjeneste {
 
     private static List<LocalDateSegment<Set<StatusOgArbeidsgiver>>> mapTilkommetTidslinje(Collection<BeregningsgrunnlagPrStatusOgAndelDto> andeler,
                                                                                            Collection<YrkesaktivitetDto> yrkesaktiviteter,
-                                                                                           YtelsespesifiktGrunnlag utbetalingsgradGrunnlag,
+                                                                                           UtbetalingsgradGrunnlag utbetalingsgradGrunnlag,
                                                                                            long antallGodkjenteInntektsforhold, LocalDateSegment<Set<Inntektsforhold>> s) {
         var periode = Intervall.fraOgMedTilOgMed(s.getFom(), s.getTom());
         return List.of(new LocalDateSegment<>(s.getFom(), s.getTom(),
@@ -104,7 +129,7 @@ public class TilkommetInntektsforholdTjeneste {
     }
 
     private static Set<StatusOgArbeidsgiver> mapTilkomne(Collection<YrkesaktivitetDto> yrkesaktiviteter,
-                                                         Collection<BeregningsgrunnlagPrStatusOgAndelDto> andeler, YtelsespesifiktGrunnlag utbetalingsgradGrunnlag,
+                                                         Collection<BeregningsgrunnlagPrStatusOgAndelDto> andeler, UtbetalingsgradGrunnlag utbetalingsgradGrunnlag,
                                                          long antallGodkjenteInntektsforhold,
                                                          Intervall periode,
                                                          Set<Inntektsforhold> inntektsforholdListe) {
@@ -132,7 +157,7 @@ public class TilkommetInntektsforholdTjeneste {
         return Collections.emptySet();
     }
 
-    private static boolean harIkkeFulltFravær(YtelsespesifiktGrunnlag utbetalingsgradGrunnlag, Intervall periode, Inntektsforhold it) {
+    private static boolean harIkkeFulltFravær(UtbetalingsgradGrunnlag utbetalingsgradGrunnlag, Intervall periode, Inntektsforhold it) {
         var utbetalingsgrad = finnUtbetalingsgrad(periode, utbetalingsgradGrunnlag, it);
         return harIkkeFulltFravær(utbetalingsgrad);
     }
@@ -206,7 +231,7 @@ public class TilkommetInntektsforholdTjeneste {
     }
 
     private static BigDecimal finnUtbetalingsgrad(Intervall periode,
-                                                  YtelsespesifiktGrunnlag utbetalingsgradGrunnlag,
+                                                  UtbetalingsgradGrunnlag utbetalingsgradGrunnlag,
                                                   Inntektsforhold inntektsforhold) {
         if (inntektsforhold.aktivitetStatus().erArbeidstaker()) {
             return UtbetalingsgradTjeneste.finnUtbetalingsgradForArbeid(
@@ -278,7 +303,7 @@ public class TilkommetInntektsforholdTjeneste {
     }
 
     record Inntektsforhold(AktivitetStatus aktivitetStatus, Arbeidsgiver arbeidsgiver,
-                                   InternArbeidsforholdRefDto arbeidsforholdRef) {
+                           InternArbeidsforholdRefDto arbeidsforholdRef) {
 
         @Override
         public boolean equals(Object o) {
@@ -299,20 +324,5 @@ public class TilkommetInntektsforholdTjeneste {
         }
     }
 
-    public record StatusOgArbeidsgiver(AktivitetStatus aktivitetStatus, Arbeidsgiver arbeidsgiver) {
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            StatusOgArbeidsgiver that = (StatusOgArbeidsgiver) o;
-            return aktivitetStatus == that.aktivitetStatus && Objects.equals(arbeidsgiver, that.arbeidsgiver);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(aktivitetStatus, arbeidsgiver);
-        }
-    }
 
 }

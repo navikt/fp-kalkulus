@@ -48,9 +48,9 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.KravperioderPrArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;

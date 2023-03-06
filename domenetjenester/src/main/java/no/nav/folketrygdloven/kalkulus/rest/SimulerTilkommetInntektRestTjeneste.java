@@ -44,6 +44,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.mappers.MapFraKalkulator;
 import no.nav.folketrygdloven.kalkulus.request.v1.simulerTilkommetInntekt.regelinput.FinnSimulerTilkommetInntektInputRequest;
@@ -112,6 +113,7 @@ public class SimulerTilkommetInntektRestTjeneste {
         }).flatMap(Collection::stream).toList();
         return Response.ok(simuleringer).build();
     }
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("simulerTilkommetInntektInput")
@@ -133,7 +135,7 @@ public class SimulerTilkommetInntektRestTjeneste {
             var input = inputer.get(kobling.getId());
             var beregningsgrunnlagInput = lagBeregningsgrunnlagInput(kobling, input, bg);
             var inputGrunnlag = simulerGraderingMotInntektTjeneste.lagInputGrunnlag(beregningsgrunnlagInput);
-            return VurderNyeInntektsforholdDtoTjeneste.lagVurderNyttInntektsforholdDto(inputGrunnlag, beregningsgrunnlagInput.getIayGrunnlag(), beregningsgrunnlagInput.getYtelsespesifiktGrunnlag());
+            return VurderNyeInntektsforholdDtoTjeneste.lagVurderNyttInntektsforholdDto(inputGrunnlag, beregningsgrunnlagInput.getIayGrunnlag(), beregningsgrunnlagInput.getYtelsespesifiktGrunnlag(), FagsakYtelseType.PLEIEPENGER_SYKT_BARN);
         }).toList();
         return Response.ok(vurderDtoer).build();
     }

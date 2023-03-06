@@ -22,8 +22,8 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatB
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;

@@ -49,18 +49,22 @@ public class UtbetalingsgradTjeneste {
                                                           Intervall periode,
                                                           YtelsespesifiktGrunnlag ytelsesSpesifiktGrunnlag) {
         if (ytelsesSpesifiktGrunnlag instanceof UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
-            if (status.erArbeidstaker()) {
-                throw new IllegalStateException("Bruk Arbeidsforhold-mapper");
-            }
-            return finnPerioderForStatus(status, utbetalingsgradGrunnlag)
-                    .stream()
-                    .flatMap(utb -> utb.getPeriodeMedUtbetalingsgrad().stream())
-                    .filter(p -> p.getPeriode().inkluderer(periode.getFomDato()))
-                    .map(PeriodeMedUtbetalingsgradDto::getUtbetalingsgrad)
-                    .findFirst()
-                    .orElse(BigDecimal.ZERO);
+            return finnUtbetalingsgradForStatus(status, periode, utbetalingsgradGrunnlag);
         }
         return BigDecimal.valueOf(100);
+    }
+
+    public static BigDecimal finnUtbetalingsgradForStatus(AktivitetStatus status, Intervall periode, UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
+        if (status.erArbeidstaker()) {
+            throw new IllegalStateException("Bruk Arbeidsforhold-mapper");
+        }
+        return finnPerioderForStatus(status, utbetalingsgradGrunnlag)
+                .stream()
+                .flatMap(utb -> utb.getPeriodeMedUtbetalingsgrad().stream())
+                .filter(p -> p.getPeriode().inkluderer(periode.getFomDato()))
+                .map(PeriodeMedUtbetalingsgradDto::getUtbetalingsgrad)
+                .findFirst()
+                .orElse(BigDecimal.ZERO);
     }
 
     public static Optional<UtbetalingsgradPrAktivitetDto> finnPerioderForStatus(AktivitetStatus status, UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
@@ -74,15 +78,19 @@ public class UtbetalingsgradTjeneste {
                                                           YtelsespesifiktGrunnlag ytelsesSpesifiktGrunnlag,
                                                           boolean skalIgnorereIkkeYrkesaktivStatus) {
         if (ytelsesSpesifiktGrunnlag instanceof UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
-            return finnPerioderForArbeid(utbetalingsgradGrunnlag, arbeidsgiver, arbeidsforholdRef, skalIgnorereIkkeYrkesaktivStatus)
-                    .stream()
-                    .flatMap(utb -> utb.getPeriodeMedUtbetalingsgrad().stream())
-                    .filter(p -> p.getPeriode().inkluderer(periode.getFomDato()))
-                    .map(PeriodeMedUtbetalingsgradDto::getUtbetalingsgrad)
-                    .findFirst()
-                    .orElse(BigDecimal.ZERO);
+            return finnUtbetalingsgradForArbeid(arbeidsgiver, arbeidsforholdRef, periode, utbetalingsgradGrunnlag, skalIgnorereIkkeYrkesaktivStatus);
         }
         return BigDecimal.valueOf(100);
+    }
+
+    public static BigDecimal finnUtbetalingsgradForArbeid(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRef, Intervall periode, UtbetalingsgradGrunnlag utbetalingsgradGrunnlag, boolean skalIgnorereIkkeYrkesaktivStatus) {
+        return finnPerioderForArbeid(utbetalingsgradGrunnlag, arbeidsgiver, arbeidsforholdRef, skalIgnorereIkkeYrkesaktivStatus)
+                .stream()
+                .flatMap(utb -> utb.getPeriodeMedUtbetalingsgrad().stream())
+                .filter(p -> p.getPeriode().inkluderer(periode.getFomDato()))
+                .map(PeriodeMedUtbetalingsgradDto::getUtbetalingsgrad)
+                .findFirst()
+                .orElse(BigDecimal.ZERO);
     }
 
 

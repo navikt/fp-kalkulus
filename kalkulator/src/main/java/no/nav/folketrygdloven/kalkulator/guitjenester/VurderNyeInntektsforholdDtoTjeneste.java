@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.guitjenester;
 
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -13,21 +12,21 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
+import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.TilkommetInntektDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.AktørArbeidDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.StatusOgArbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt.TilkommetInntektsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
-import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.InntektsforholdDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.VurderInntektsforholdPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.VurderNyttInntektsforholdDto;
@@ -45,20 +44,21 @@ public class VurderNyeInntektsforholdDtoTjeneste {
         var iayGrunnlag = input.getIayGrunnlag();
         var ytelsespesifiktGrunnlag = input.getYtelsespesifiktGrunnlag();
 
-        return lagVurderNyttInntektsforholdDto(beregningsgrunnlag, iayGrunnlag, ytelsespesifiktGrunnlag);
+        return lagVurderNyttInntektsforholdDto(beregningsgrunnlag, iayGrunnlag, ytelsespesifiktGrunnlag, input.getFagsakYtelseType());
     }
 
-    public static VurderNyttInntektsforholdDto lagVurderNyttInntektsforholdDto(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+    public static VurderNyttInntektsforholdDto lagVurderNyttInntektsforholdDto(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, FagsakYtelseType fagsakYtelseType) {
         var tidslinje = TilkommetInntektsforholdTjeneste.finnTilkommetInntektsforholdTidslinje(beregningsgrunnlag.getSkjæringstidspunkt(),
-                iayGrunnlag.getAktørArbeidFraRegister().map(AktørArbeidDto::hentAlleYrkesaktiviteter).orElse(Collections.emptyList()),
-                new InntektFilterDto(iayGrunnlag.getAktørInntektFraRegister()).filter(InntektskildeType.INNTEKT_BEREGNING).getFiltrertInntektsposter(), 5, beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
-                ytelsespesifiktGrunnlag
+                 5, beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
+                (UtbetalingsgradGrunnlag) ytelsespesifiktGrunnlag,
+                iayGrunnlag,
+                fagsakYtelseType
         );
 
         return getVurderNyttInntektsforholdDto(beregningsgrunnlag, iayGrunnlag, tidslinje);
     }
 
-    public static VurderNyttInntektsforholdDto getVurderNyttInntektsforholdDto(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDateTimeline<Set<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver>> tidslinje) {
+    public static VurderNyttInntektsforholdDto getVurderNyttInntektsforholdDto(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDateTimeline<Set<StatusOgArbeidsgiver>> tidslinje) {
         var bgPerioder = beregningsgrunnlag.getBeregningsgrunnlagPerioder();
         var periodeListe = bgPerioder.stream()
                 .filter(it -> !it.getTilkomneInntekter().isEmpty())
@@ -74,27 +74,27 @@ public class VurderNyeInntektsforholdDtoTjeneste {
 
     private static VurderInntektsforholdPeriodeDto mapPeriode(InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                               BeregningsgrunnlagPeriodeDto periode,
-                                                              LocalDateTimeline<Set<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver>> inntektsforholdTidslinje) {
+                                                              LocalDateTimeline<Set<StatusOgArbeidsgiver>> inntektsforholdTidslinje) {
         var innteksforholdListe = mapInntektforholdDtoListe(iayGrunnlag, periode, inntektsforholdTidslinje);
         return new VurderInntektsforholdPeriodeDto(periode.getBeregningsgrunnlagPeriodeFom(), periode.getBeregningsgrunnlagPeriodeTom(), innteksforholdListe.stream().toList());
     }
 
     private static Set<InntektsforholdDto> mapInntektforholdDtoListe(InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                                                     BeregningsgrunnlagPeriodeDto periode, LocalDateTimeline<Set<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver>> inntektsforholdTidslinje) {
+                                                                     BeregningsgrunnlagPeriodeDto periode, LocalDateTimeline<Set<StatusOgArbeidsgiver>> inntektsforholdTidslinje) {
         return periode.getTilkomneInntekter()
                 .stream()
                 .map(a -> mapTilInntektsforhold(a, iayGrunnlag, finnSegmenterSomInneholderInntektsforhold(inntektsforholdTidslinje, a).toList()))
                 .collect(Collectors.toCollection(HashSet::new));
     }
 
-    private static Stream<LocalDateSegment<Set<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver>>> finnSegmenterSomInneholderInntektsforhold(LocalDateTimeline<Set<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver>> inntektsforholdTidslinje, TilkommetInntektDto a) {
+    private static Stream<LocalDateSegment<Set<StatusOgArbeidsgiver>>> finnSegmenterSomInneholderInntektsforhold(LocalDateTimeline<Set<StatusOgArbeidsgiver>> inntektsforholdTidslinje, TilkommetInntektDto a) {
         return inntektsforholdTidslinje.stream().filter(it -> it.getValue()
-                .contains(new TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver(a.getAktivitetStatus(), a.getArbeidsgiver().orElse(null))));
+                .contains(new StatusOgArbeidsgiver(a.getAktivitetStatus(), a.getArbeidsgiver().orElse(null))));
     }
 
 
     private static InntektsforholdDto mapTilInntektsforhold(TilkommetInntektDto tilkommetInntektDto, InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                                            List<LocalDateSegment<Set<TilkommetInntektsforholdTjeneste.StatusOgArbeidsgiver>>> segmenterMedInntektsforhold) {
+                                                            List<LocalDateSegment<Set<StatusOgArbeidsgiver>>> segmenterMedInntektsforhold) {
 
         Periode periode = utledPeriode(segmenterMedInntektsforhold);
 

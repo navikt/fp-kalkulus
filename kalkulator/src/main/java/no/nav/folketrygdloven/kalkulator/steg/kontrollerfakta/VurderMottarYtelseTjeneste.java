@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Collection;
 
 import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
+import no.nav.folketrygdloven.kalkulator.felles.ytelseovergang.DirekteOvergangTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AnvistAndel;
@@ -73,26 +74,8 @@ public class VurderMottarYtelseTjeneste {
             return true;
         }
         Intervall beregningsPeriodeForStatus = finnBeregningsperiodeForAktivitetStatus(beregningsgrunnlag, AktivitetStatus.ARBEIDSTAKER);
-        return ytelseFilterDto.getFiltrertYtelser().stream()
-                .flatMap(y -> y.getYtelseAnvist().stream())
-                .filter(ya -> ya.getAnvistPeriode().overlapper(beregningsPeriodeForStatus))
-                .anyMatch(ya -> ya.getAnvisteAndeler().isEmpty() ||
-                        ya.getAnvisteAndeler().stream()
-                                .anyMatch(a -> erDirekteutbetalingForArbeidsgiver(arbeidsgiver, a) || erDirekteUtbetalingUtenArbeidsgiver(a)));
+        return DirekteOvergangTjeneste.harDirekteMottattYtelseForArbeidsgiver(beregningsPeriodeForStatus, arbeidsgiver, ytelseFilterDto.getFiltrertYtelser());
     }
-
-    private static boolean erDirekteUtbetalingUtenArbeidsgiver(AnvistAndel a) {
-        return a.getInntektskategori().equals(Inntektskategori.ARBEIDSTAKER) &&
-                a.getArbeidsgiver().isEmpty() &&
-                a.getRefusjonsgrad().getVerdi().compareTo(BigDecimal.valueOf(100)) < 0;
-    }
-
-    private static boolean erDirekteutbetalingForArbeidsgiver(Arbeidsgiver arbeidsgiver, AnvistAndel a) {
-        return a.getArbeidsgiver().isPresent() &&
-                a.getArbeidsgiver().get().equals(arbeidsgiver) &&
-                a.getRefusjonsgrad().getVerdi().compareTo(BigDecimal.valueOf(100)) < 0;
-    }
-
 
     public static boolean erFrilanser(BeregningsgrunnlagDto beregningsgrunnlag) {
         return beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()

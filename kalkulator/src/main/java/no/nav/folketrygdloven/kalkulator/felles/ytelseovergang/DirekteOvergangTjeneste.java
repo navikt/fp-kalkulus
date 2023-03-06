@@ -1,14 +1,30 @@
 package no.nav.folketrygdloven.kalkulator.felles.ytelseovergang;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
+import no.nav.folketrygdloven.kalkulator.felles.inntektgradering.DagsatsPrKategoriOgArbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.iay.AnvistAndel;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.fpsak.tidsserie.LocalDateSegment;
+import no.nav.fpsak.tidsserie.LocalDateTimeline;
+import no.nav.fpsak.tidsserie.StandardCombinators;
 
 public class DirekteOvergangTjeneste {
 
@@ -50,6 +66,84 @@ public class DirekteOvergangTjeneste {
         var sisteDagMedAnvisning = alleAnvisninger.stream().max(Comparator.comparing(YtelseAnvistDto::getAnvistTOM)).map(YtelseAnvistDto::getAnvistTOM);
         return sisteDagMedAnvisning.isEmpty() ? Collections.emptyList() : alleAnvisninger.stream()
                 .filter(a -> a.getAnvistTOM().equals(sisteDagMedAnvisning.get())).toList();
+    }
+
+
+    /**
+     * Vurderer om det er mottatt ytelse direkte til bruker for arbeid hos gitt arbeidsgiver.
+     * <p>
+     * Dersom ytelsen ikke oppgir andeler antas det at ytelsen utbetales direkte.
+     *
+     * @param intervall    Periode som vurderes
+     * @param arbeidsgiver Arbeidsgiver
+     * @param ytelser      Ytelser
+     * @return har direkte utbetalt ytelse for aktivitet hos arbeidsgiver
+     */
+    public static boolean harDirekteMottattYtelseForArbeidsgiver(Intervall intervall,
+                                                                 Arbeidsgiver arbeidsgiver,
+                                                                 Collection<YtelseDto> ytelser) {
+        return ytelser.stream()
+                .flatMap(y -> y.getYtelseAnvist().stream())
+                .filter(ya -> ya.getAnvistPeriode().overlapper(intervall))
+                .anyMatch(ya -> ya.getAnvisteAndeler().isEmpty() ||
+                        ya.getAnvisteAndeler().stream()
+                                .anyMatch(a -> erDirekteutbetalingForArbeidsgiver(arbeidsgiver, a) || erDirekteUtbetalingUtenArbeidsgiver(a)));
+    }
+
+    /**
+     * Lager tidslinje over perioder med direkte mottatt ytelse for status/arbeidsgiver.
+     * <p>
+     * Dersom en ytelse ikke har en liste med andeler antas direkteutbetaling, men DagsatsPrStatusOgArbeidsgiver som returneres
+     * har AktivitetStatus UDEFINERT og ingen arbeidsgiver.
+     *
+     * @param ytelser         Ytelser
+     * @param ytelsePredicate ytelsepredicate for å filtrere bort ytelser
+     * @return Tidslinje over perioder med direkte mottatt ytelse
+     */
+    public static LocalDateTimeline<Set<DagsatsPrKategoriOgArbeidsgiver>> direkteUtbetalingTidslinje(Collection<YtelseDto> ytelser, Predicate<? super YtelseDto> ytelsePredicate) {
+
+        List<LocalDateSegment<Set<DagsatsPrKategoriOgArbeidsgiver>>> ytelserPrStatusOgArbeidsgiver = ytelser.stream()
+                .filter(ytelsePredicate)
+                .flatMap(y -> y.getYtelseAnvist().stream())
+                .flatMap(y -> {
+                    if (y.getAnvisteAndeler().isEmpty()) {
+                        return Stream.of(new LocalDateSegment<>(y.getAnvistFOM(), y.getAnvistTOM(), Set.of(new DagsatsPrKategoriOgArbeidsgiver(Inntektskategori.UDEFINERT, null, null))));
+                    }
+                    return y.getAnvisteAndeler().stream().map(a -> mapTilDirekteUtbetalingSegment(a, y.getAnvistPeriode()));
+                })
+                .toList();
+        return new LocalDateTimeline<>(ytelserPrStatusOgArbeidsgiver, StandardCombinators::union).filterValue(v -> !v.isEmpty()).mapValue(TreeSet::new);
+    }
+
+    private static LocalDateSegment<Set<DagsatsPrKategoriOgArbeidsgiver>> mapTilDirekteUtbetalingSegment(AnvistAndel a, Intervall anvistPeriode) {
+        if (erDirekteutbetaling(a)) {
+            return new LocalDateSegment<>(anvistPeriode.getFomDato(),
+                    anvistPeriode.getTomDato(),
+                    Set.of(new DagsatsPrKategoriOgArbeidsgiver(a.getInntektskategori(), a.getArbeidsgiver().orElse(null), finnDirekteUtbetaltDagsats(a))));
+        }
+        return new LocalDateSegment<>(anvistPeriode.getFomDato(),
+                anvistPeriode.getTomDato(),
+                Set.of());
+    }
+
+    private static BigDecimal finnDirekteUtbetaltDagsats(AnvistAndel a) {
+        return a.getDagsats().multiply(BigDecimal.valueOf(100).subtract(a.getRefusjonsgrad().getVerdi()).divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP));
+    }
+
+    private static boolean erDirekteUtbetalingUtenArbeidsgiver(AnvistAndel a) {
+        return a.getInntektskategori().equals(Inntektskategori.ARBEIDSTAKER) &&
+                a.getArbeidsgiver().isEmpty() &&
+                a.getRefusjonsgrad().getVerdi().compareTo(BigDecimal.valueOf(100)) < 0;
+    }
+
+    private static boolean erDirekteutbetaling(AnvistAndel a) {
+        return !a.getInntektskategori().equals(Inntektskategori.ARBEIDSTAKER) || a.getRefusjonsgrad().getVerdi().compareTo(BigDecimal.valueOf(100)) < 0;
+    }
+
+    private static boolean erDirekteutbetalingForArbeidsgiver(Arbeidsgiver arbeidsgiver, AnvistAndel a) {
+        return a.getArbeidsgiver().isPresent() &&
+                a.getArbeidsgiver().get().equals(arbeidsgiver) &&
+                a.getRefusjonsgrad().getVerdi().compareTo(BigDecimal.valueOf(100)) < 0;
     }
 
 
