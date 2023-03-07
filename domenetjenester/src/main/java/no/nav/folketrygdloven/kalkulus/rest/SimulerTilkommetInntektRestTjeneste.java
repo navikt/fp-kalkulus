@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.rest;
 
 import static no.nav.folketrygdloven.kalkulator.felles.inntektgradering.SimulerGraderingMotInntektTjeneste.ReduksjonVedGradering;
+import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributtMiljøvariabel.BEREGNINGSGRUNNLAG;
 import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributtMiljøvariabel.DRIFT;
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.READ;
 
@@ -39,17 +40,23 @@ import no.nav.folketrygdloven.kalkulator.guitjenester.VurderNyeInntektsforholdDt
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.mappers.MapFraKalkulator;
-import no.nav.folketrygdloven.kalkulus.request.v1.simulerTilkommetInntekt.regelinput.FinnSimulerTilkommetInntektInputRequest;
-import no.nav.folketrygdloven.kalkulus.request.v1.simulerTilkommetInntekt.regelinput.SimulerTilkommetInntektRequest;
+import no.nav.folketrygdloven.kalkulus.request.v1.simulerTilkommetInntekt.FinnSimulerTilkommetInntektInputRequest;
+import no.nav.folketrygdloven.kalkulus.request.v1.simulerTilkommetInntekt.SimulerTilkommetInntektForRequest;
+import no.nav.folketrygdloven.kalkulus.request.v1.simulerTilkommetInntekt.SimulerTilkommetInntektListeRequest;
+import no.nav.folketrygdloven.kalkulus.request.v1.simulerTilkommetInntekt.SimulerTilkommetInntektRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.simulerTilkommetInntekt.SimulertTilkommetInntekt;
+import no.nav.folketrygdloven.kalkulus.response.v1.simulerTilkommetInntekt.SimulertTilkommetInntektListe;
+import no.nav.folketrygdloven.kalkulus.response.v1.simulerTilkommetInntekt.SimulertTilkommetInntektPrReferanse;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 import no.nav.k9.felles.sikkerhet.abac.AbacDataAttributter;
@@ -86,6 +93,36 @@ public class SimulerTilkommetInntektRestTjeneste {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.koblingRepository = koblingRepository;
         this.simulerGraderingMotInntektTjeneste = simulerGraderingMotInntektTjeneste;
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("simulerTilkommetInntektForKoblinger")
+    @Operation(description = "Simulerer tilkommet inntekt for koblinger", tags = "simulerTilkommetInntekt", summary = ("Simulerer tilkommet inntekt for koblinger"))
+    @BeskyttetRessurs(action = READ, property = BEREGNINGSGRUNNLAG)
+    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
+    public Response simulerTilkommetInntektForKoblinger(@NotNull @Valid SimulerTilkommetInntektListeRequestAbacDto spesifikasjon) {
+        var referanser = spesifikasjon.getSimulerForListe().stream().map(SimulerTilkommetInntektForRequest::getEksternReferanse).map(KoblingReferanse::new).toList();
+        var koblinger = koblingRepository.hentKoblingerFor(
+                referanser,
+                spesifikasjon.getYtelseType());
+        var koblingIder = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
+        var beregningsgrunnlag = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingIder);
+        var inputer = kalkulatorInputTjeneste.hentForKoblinger(beregningsgrunnlag.stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId).collect(Collectors.toSet()));
+        var fastsatteGrunnlag = beregningsgrunnlag.stream()
+                .filter(bg -> bg.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.FASTSATT))
+                .toList();
+        var simuleringer = fastsatteGrunnlag.stream().map(bg -> {
+            var kobling = koblinger.stream().filter(it -> it.getId().equals(bg.getKoblingId())).findFirst().orElseThrow();
+            var input = inputer.get(kobling.getId());
+            var beregningsgrunnlagInput = lagBeregningsgrunnlagInput(kobling, input, bg);
+            var tilkommetAktivitetPerioder = simulerGraderingMotInntektTjeneste.finnTilkommetAktivitetPerioder(beregningsgrunnlagInput);
+            return new SimulertTilkommetInntektPrReferanse(
+                    koblinger.stream().filter(it -> it.getId().equals(bg.getKoblingId())).findFirst().orElseThrow().getKoblingReferanse().getReferanse(),
+                    tilkommetAktivitetPerioder.stream().map(p -> new Periode(p.getFomDato(), p.getTomDato())).toList()
+            );
+        }).toList();
+        return Response.ok(new SimulertTilkommetInntektListe(simuleringer)).build();
     }
 
 
@@ -262,6 +299,22 @@ public class SimulerTilkommetInntektRestTjeneste {
         return MapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input, Optional.of(aktivGrunnlagEntitet), Collections.emptyList());
     }
 
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
+    public static class SimulerTilkommetInntektListeRequestAbacDto extends SimulerTilkommetInntektListeRequest implements AbacDto {
+
+        public SimulerTilkommetInntektListeRequestAbacDto() {
+            // Jackson
+        }
+
+        @Override
+        public AbacDataAttributter abacAttributter() {
+            final var abacDataAttributter = AbacDataAttributter.opprett();
+            return abacDataAttributter;
+        }
+    }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)

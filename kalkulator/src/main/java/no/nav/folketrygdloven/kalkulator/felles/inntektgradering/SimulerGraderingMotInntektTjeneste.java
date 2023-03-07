@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulator.felles.inntektgradering;
 
 import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste.finnPerioderForArbeid;
 import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste.finnPerioderForStatus;
+import static no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt.TilkommetInntektPeriodeTjeneste.FOM_DATO_GRADERING_MOT_INNTEKT;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -44,6 +45,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
+import no.nav.fpsak.tidsserie.LocalDateInterval;
 
 /**
  * Simulerer resultat av gradering mot inntekt
@@ -69,6 +71,21 @@ public class SimulerGraderingMotInntektTjeneste {
     public List<ReduksjonVedGradering> simulerGraderingMotInntekt(BeregningsgrunnlagInput beregningsgrunnlagInput) {
         var nyttBg = lagInputGrunnlag(beregningsgrunnlagInput);
         return finnReduksjon(beregningsgrunnlagInput, nyttBg);
+    }
+
+    public List<Intervall> finnTilkommetAktivitetPerioder(BeregningsgrunnlagInput beregningsgrunnlagInput) {
+        var tilkommetTidslinje = TilkommetInntektsforholdTjeneste.finnTilkommetInntektsforholdTidslinje(
+                beregningsgrunnlagInput.getSkjæringstidspunktForBeregning(),
+                5, beregningsgrunnlagInput.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
+                beregningsgrunnlagInput.getYtelsespesifiktGrunnlag(),
+                beregningsgrunnlagInput.getIayGrunnlag(),
+                beregningsgrunnlagInput.getFagsakYtelseType()
+        );
+        var tidlinjeMedTilkommetAktivitet = tilkommetTidslinje.filterValue(v -> !v.isEmpty()).compress();
+        var redusertTidslinje = tidlinjeMedTilkommetAktivitet.intersection(new LocalDateInterval(FOM_DATO_GRADERING_MOT_INNTEKT, LocalDateInterval.TIDENES_ENDE));
+        return redusertTidslinje.toSegments().stream()
+                .map(s -> Intervall.fraOgMedTilOgMed(s.getFom(), s.getTom()))
+                .toList();
     }
 
     public BeregningsgrunnlagDto lagInputGrunnlag(BeregningsgrunnlagInput beregningsgrunnlagInput) {

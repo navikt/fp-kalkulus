@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulus.request.v1.simulerTilkommetInntekt.regelinput;
+package no.nav.folketrygdloven.kalkulus.request.v1.simulerTilkommetInntekt;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -7,37 +7,27 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
-public class SimulerTilkommetInntektRequest {
+public class FinnSimulerTilkommetInntektInputRequest {
 
-    @JsonProperty(value = "periode")
+    @JsonProperty(value = "saksnummer")
     @Valid
-    private Periode periode;
-
-    @JsonProperty(value = "dagsatsFeiltoleranse")
-    @Valid
-    private Long dagsatsFeiltoleranse;
+    private String saksnummer;
 
 
-    public SimulerTilkommetInntektRequest() {
+    public FinnSimulerTilkommetInntektInputRequest() {
     }
 
     @JsonCreator
-    public SimulerTilkommetInntektRequest(@JsonProperty(value = "periode") Periode saksnummer, Long dagsatsFeiltoleranse) {
-        this.periode = saksnummer;
-        this.dagsatsFeiltoleranse = dagsatsFeiltoleranse;
+    public FinnSimulerTilkommetInntektInputRequest(@JsonProperty(value = "saksnummer") String saksnummer) {
+        this.saksnummer = saksnummer;
     }
 
-
-    public Long getDagsatsFeiltoleranse() {
-        return dagsatsFeiltoleranse;
+    public String getSaksnummer() {
+        return saksnummer;
     }
 
-    public Periode getPeriode() {
-        return periode;
-    }
 }
