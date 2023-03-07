@@ -2,9 +2,9 @@ package no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt;
 
 import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste.INNTEKT_RAPPORTERING_FRIST_DATO;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -17,14 +17,8 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.TilkommetInntektDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.AktørArbeidDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.AktørYtelseDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.StatusOgArbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
@@ -39,6 +33,11 @@ import no.nav.fpsak.tidsserie.LocalDateSegment;
 public class TilkommetInntektPeriodeTjeneste {
 
 
+    /**
+     * Det er bestemt at gradering mot inntekt ved tilkommet aktivitet skal gjelde perioder fom 1.4.2023.
+     */
+    public static final LocalDate FOM_DATO_GRADERING_MOT_INNTEKT = LocalDate.of(2023, 4, 1);
+
     public BeregningsgrunnlagDto splittPerioderVedTilkommetInntekt(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
 
         var tilkommetAktivitetTidslinje = TilkommetInntektsforholdTjeneste.finnTilkommetInntektsforholdTidslinje(
@@ -48,12 +47,13 @@ public class TilkommetInntektPeriodeTjeneste {
                 input.getYtelsespesifiktGrunnlag(),
                 input.getIayGrunnlag(),
                 input.getFagsakYtelseType()
-                );
+        );
         var tidlinjeMedTilkommetAktivitet = tilkommetAktivitetTidslinje.filterValue(v -> !v.isEmpty()).compress();
+        var redusertTidslinje = tidlinjeMedTilkommetAktivitet.intersection(new LocalDateInterval(FOM_DATO_GRADERING_MOT_INNTEKT, LocalDateInterval.TIDENES_ENDE));
         return SplittBGPerioder.splittPerioder(beregningsgrunnlag,
-                tidlinjeMedTilkommetAktivitet,
+                redusertTidslinje,
                 TilkommetInntektPeriodeTjeneste::opprettTilkommetInntekt,
-                SplittBGPerioder.getSettAvsluttetPeriodeårsakMapper(tidlinjeMedTilkommetAktivitet, input.getForlengelseperioder(), PeriodeÅrsak.TILKOMMET_INNTEKT_AVSLUTTET));
+                SplittBGPerioder.getSettAvsluttetPeriodeårsakMapper(redusertTidslinje, input.getForlengelseperioder(), PeriodeÅrsak.TILKOMMET_INNTEKT_AVSLUTTET));
     }
 
 
