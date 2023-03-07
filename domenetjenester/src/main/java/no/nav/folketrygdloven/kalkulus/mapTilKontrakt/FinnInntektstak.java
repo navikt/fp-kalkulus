@@ -6,16 +6,14 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
-import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
 /**
@@ -24,8 +22,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 class FinnInntektstak {
 
 
-    static BigDecimal finnInntektstakForAndel(BeregningsgrunnlagPrStatusOgAndel andel,
-                                              BeregningsgrunnlagPeriode bgPeriode,
+    static BigDecimal finnInntektstakForAndel(BeregningsgrunnlagPrStatusOgAndelDto andel,
+                                              BeregningsgrunnlagPeriodeDto bgPeriode,
                                               UtbetalingsgradGrunnlag yg,
                                               BigDecimal grenseverdi) {
         if (andel.getAktivitetStatus().erArbeidstaker()) {
@@ -44,8 +42,8 @@ class FinnInntektstak {
     }
 
 
-    private static BigDecimal finnInntektstakForYtelse(BeregningsgrunnlagPrStatusOgAndel andel,
-                                                       BeregningsgrunnlagPeriode inneværendeBGPeriode,
+    private static BigDecimal finnInntektstakForYtelse(BeregningsgrunnlagPrStatusOgAndelDto andel,
+                                                       BeregningsgrunnlagPeriodeDto inneværendeBGPeriode,
                                                        UtbetalingsgradGrunnlag yg,
                                                        BigDecimal grenseverdi) {
         if (!harSøktUtbetalingForAndel(inneværendeBGPeriode.getPeriode(), andel, yg)) {
@@ -59,11 +57,11 @@ class FinnInntektstak {
         var grenseverdiTruketFraIkkeTilgjengeligInntekt = grenseverdi.subtract(inntektIkkeTilgjengeligForSN);
         return grenseverdiTruketFraIkkeTilgjengeligInntekt.compareTo(BigDecimal.ZERO) <= 0
                 ? BigDecimal.ZERO
-                : grenseverdiTruketFraIkkeTilgjengeligInntekt.min(andel.getBruttoPrÅr().getVerdi());
+                : grenseverdiTruketFraIkkeTilgjengeligInntekt.min(andel.getBruttoPrÅr());
     }
 
-    private static BigDecimal finnInntektstakForNæring(BeregningsgrunnlagPrStatusOgAndel andel,
-                                                       BeregningsgrunnlagPeriode inneværendeBGPeriode,
+    private static BigDecimal finnInntektstakForNæring(BeregningsgrunnlagPrStatusOgAndelDto andel,
+                                                       BeregningsgrunnlagPeriodeDto inneværendeBGPeriode,
                                                        UtbetalingsgradGrunnlag yg,
                                                        BigDecimal grenseverdi) {
         if (!harSøktUtbetalingForAndel(inneværendeBGPeriode.getPeriode(), andel, yg)) {
@@ -76,11 +74,11 @@ class FinnInntektstak {
         var grenseverdiTruketFraIkkeTilgjengeligInntekt = grenseverdi.subtract(inntektIkkeTilgjengeligForSN);
         return grenseverdiTruketFraIkkeTilgjengeligInntekt.compareTo(BigDecimal.ZERO) <= 0
                 ? BigDecimal.ZERO
-                : grenseverdiTruketFraIkkeTilgjengeligInntekt.min(andel.getBruttoPrÅr().getVerdi());
+                : grenseverdiTruketFraIkkeTilgjengeligInntekt.min(andel.getBruttoPrÅr());
     }
 
-    private static BigDecimal finnInntektstakForFrilans(BeregningsgrunnlagPrStatusOgAndel andel,
-                                                        BeregningsgrunnlagPeriode inneværendeBGPeriode,
+    private static BigDecimal finnInntektstakForFrilans(BeregningsgrunnlagPrStatusOgAndelDto andel,
+                                                        BeregningsgrunnlagPeriodeDto inneværendeBGPeriode,
                                                         UtbetalingsgradGrunnlag yg,
                                                         BigDecimal grenseverdi) {
 
@@ -93,10 +91,10 @@ class FinnInntektstak {
         var grenseverdiTruketFraIkkeTilgjengeligInntekt = grenseverdi.subtract(inntektIkkeTilgjengeligForFL);
         return grenseverdiTruketFraIkkeTilgjengeligInntekt.compareTo(BigDecimal.ZERO) <= 0
                 ? BigDecimal.ZERO
-                : grenseverdiTruketFraIkkeTilgjengeligInntekt.min(andel.getBruttoPrÅr().getVerdi());
+                : grenseverdiTruketFraIkkeTilgjengeligInntekt.min(andel.getBruttoPrÅr());
     }
 
-    private static BigDecimal finnInntektSøktOm(BeregningsgrunnlagPeriode inneværendeBGPeriode, UtbetalingsgradGrunnlag yg, AktivitetStatus status) {
+    private static BigDecimal finnInntektSøktOm(BeregningsgrunnlagPeriodeDto inneværendeBGPeriode, UtbetalingsgradGrunnlag yg, AktivitetStatus status) {
         var andelerSøktOm = inneværendeBGPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(bga -> bga.getAktivitetStatus().equals(status))
                 .filter(bga -> harSøktUtbetalingForAndel(inneværendeBGPeriode.getPeriode(), bga, yg))
@@ -105,8 +103,8 @@ class FinnInntektstak {
     }
 
 
-    private static BigDecimal finnInntektstakForArbeidstaker(BeregningsgrunnlagPrStatusOgAndel andelÅVurdere,
-                                                             BeregningsgrunnlagPeriode inneværendeBGPeriode,
+    private static BigDecimal finnInntektstakForArbeidstaker(BeregningsgrunnlagPrStatusOgAndelDto andelÅVurdere,
+                                                             BeregningsgrunnlagPeriodeDto inneværendeBGPeriode,
                                                              UtbetalingsgradGrunnlag yg,
                                                              BigDecimal grenseverdi) {
         boolean harSøkt = harSøktUtbetalingForAndel(inneværendeBGPeriode.getPeriode(), andelÅVurdere, yg);
@@ -118,10 +116,10 @@ class FinnInntektstak {
         var grenseMinusAnnenInntekt = grenseverdi.subtract(inntektIkkeSøktOm);
         return grenseMinusAnnenInntekt.compareTo(BigDecimal.ZERO) <= 0
                 ? BigDecimal.ZERO
-                : grenseMinusAnnenInntekt.min(andelÅVurdere.getBruttoPrÅr().getVerdi());
+                : grenseMinusAnnenInntekt.min(andelÅVurdere.getBruttoPrÅr());
     }
 
-    private static BigDecimal finnInntektIkkeSøktOm(BeregningsgrunnlagPeriode inneværendeBGPeriode,
+    private static BigDecimal finnInntektIkkeSøktOm(BeregningsgrunnlagPeriodeDto inneværendeBGPeriode,
                                                     UtbetalingsgradGrunnlag yg) {
         var alleAndelerUtenUtb = inneværendeBGPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(bga -> !harSøktUtbetalingForAndel(inneværendeBGPeriode.getPeriode(), bga, yg))
@@ -129,18 +127,17 @@ class FinnInntektstak {
         return finnBrutto(alleAndelerUtenUtb);
     }
 
-    private static BigDecimal finnBrutto(List<BeregningsgrunnlagPrStatusOgAndel> andeler) {
+    private static BigDecimal finnBrutto(List<BeregningsgrunnlagPrStatusOgAndelDto> andeler) {
         return andeler.stream()
                 .filter(Objects::nonNull)
-                .map(BeregningsgrunnlagPrStatusOgAndel::getBruttoPrÅr)
+                .map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoPrÅr)
                 .filter(Objects::nonNull)
-                .map(Beløp::getVerdi)
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
     }
 
-    private static boolean harSøktUtbetalingForAndel(IntervallEntitet bgPeriode,
-                                                     BeregningsgrunnlagPrStatusOgAndel bgAndel,
+    private static boolean harSøktUtbetalingForAndel(Intervall bgPeriode,
+                                                     BeregningsgrunnlagPrStatusOgAndelDto bgAndel,
                                                      UtbetalingsgradGrunnlag yg) {
         return yg.getUtbetalingsgradPrAktivitet().stream()
                 .filter(utb -> matcherMedBGAndel(utb.getUtbetalingsgradArbeidsforhold(), bgAndel))
@@ -148,7 +145,7 @@ class FinnInntektstak {
     }
 
     private static boolean matcherMedBGAndel(AktivitetDto utbArbeid,
-                                             BeregningsgrunnlagPrStatusOgAndel bgAndel) {
+                                             BeregningsgrunnlagPrStatusOgAndelDto bgAndel) {
         if (bgAndel.getAktivitetStatus().erFrilanser()) {
             return utbArbeid.getUttakArbeidType().equals(UttakArbeidType.FRILANS);
         } else if (bgAndel.getAktivitetStatus().erSelvstendigNæringsdrivende()) {
@@ -168,7 +165,7 @@ class FinnInntektstak {
         } else return false;
     }
 
-    private static boolean harSøktUtbetalingIPeriode(List<PeriodeMedUtbetalingsgradDto> periodeMedUtbetalingsgrad, IntervallEntitet periode) {
+    private static boolean harSøktUtbetalingIPeriode(List<PeriodeMedUtbetalingsgradDto> periodeMedUtbetalingsgrad, Intervall periode) {
         return periodeMedUtbetalingsgrad.stream()
                 .filter(utbPeriode -> utbPeriode.getPeriode().overlapper(Intervall.fraOgMedTilOgMed(periode.getFomDato(), periode.getTomDato())))
                 .anyMatch(utbPeriode -> utbPeriode.getUtbetalingsgrad().compareTo(BigDecimal.ZERO) > 0);

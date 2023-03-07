@@ -110,7 +110,7 @@ class UtvidetInntektsperiodeUtleder {
 
     private static LocalDateTimeline<BigDecimal> fyllMellomromFraDato(LocalDate fomDato, LocalDateTimeline<BigDecimal> inntektPerioderTidslinje) {
         var mellomrom = new LocalDateTimeline<>(new LocalDateInterval(fomDato, LocalDateInterval.TIDENES_ENDE), BigDecimal.ZERO);
-        return inntektPerioderTidslinje.combine(mellomrom, StandardCombinators::sum, LocalDateTimeline.JoinStyle.CROSS_JOIN);
+        return inntektPerioderTidslinje.combine(mellomrom, StandardCombinators::sum, LocalDateTimeline.JoinStyle.CROSS_JOIN).compress();
     }
 
 
@@ -162,6 +162,9 @@ class UtvidetInntektsperiodeUtleder {
         var overlappendeInntektSegment = fyllMellomromFraDato(inntektTidslinje.getMinLocalDate(), inntektTidslinje).toSegments()
                 .stream().filter(s -> s.getLocalDateInterval().contains(førsteMånedUtenPassertFrist))
                 .findFirst().orElseThrow();
+        if (overlappendeInntektSegment.getFom().isEqual(førsteMånedUtenPassertFrist)) {
+            return new LocalDateSegment<>(overlappendeInntektSegment.getFom(), TIDENES_ENDE, TRUE);
+        }
         var segmentTilFørsteIkkeRapporterteMåned = new LocalDateSegment<>(overlappendeInntektSegment.getFom(), førsteMånedUtenPassertFrist.minusDays(1), overlappendeInntektSegment.getValue());
         var godkjentSegmentFramTilFrist = godkjennInntektEllerHullPåMindreEnnTreMåneder(segmentTilFørsteIkkeRapporterteMåned);
         if (godkjentSegmentFramTilFrist.getValue()) {

@@ -43,7 +43,7 @@ class FinnArbeidstakerInntektTidslinje {
     }
 
     private static LocalDateTimeline<Set<DagsatsPrKategoriOgArbeidsgiver>> finnUtbetaltInntektTidslinje(LocalDate skjæringstidspunkt, Collection<InntektspostDto> inntektposter, Collection<YtelseDto> ytelser, List<Arbeidsgiver> arbeidsgivere) {
-        var registerInntektTidslinje = RegisterInntektTidslinjeUtleder.lagInntektsperioderTidslinje(skjæringstidspunkt, inntektposter, arbeidsgivere);
+        var registerInntektTidslinje = RegisterInntektTidslinjeUtleder.lagInntektsperioderTidslinje(skjæringstidspunkt.minusMonths(3).withDayOfMonth(1), inntektposter, arbeidsgivere);
         var direkteUtbetalingTidslinje = FinnTidslinjeFraDirekteMottattYtelse(ytelser);
         return registerInntektTidslinje.combine(direkteUtbetalingTidslinje, StandardCombinators::union, LocalDateTimeline.JoinStyle.CROSS_JOIN);
     }

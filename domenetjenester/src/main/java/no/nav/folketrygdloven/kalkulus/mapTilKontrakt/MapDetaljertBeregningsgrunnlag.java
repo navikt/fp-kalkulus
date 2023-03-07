@@ -1,17 +1,15 @@
 package no.nav.folketrygdloven.kalkulus.mapTilKontrakt;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import static no.nav.folketrygdloven.kalkulus.mapTilKontrakt.UtledGraderingsdata.utledGraderingsfaktorInntekt;
+import static no.nav.folketrygdloven.kalkulus.mapTilKontrakt.UtledGraderingsdata.utledGraderingsfaktorTid;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
-import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
-import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
@@ -177,72 +175,8 @@ public class MapDetaljertBeregningsgrunnlag {
                 beregningsgrunnlagPeriode.getDagsats(),
                 beregningsgrunnlagPeriode.getPeriodeÅrsaker(),
                 beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto() != null ? beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto() : null,
-                mapUtbetalingsfaktorTilkommetInntekt(beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag),
-                mapUtbetalingsfaktorUttaksgrad(beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag));
-    }
-
-    private static BigDecimal mapUtbetalingsfaktorTilkommetInntekt(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {
-            var inntektgraderingsprosentBrutto = beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto();
-            if (inntektgraderingsprosentBrutto == null) {
-                return null;
-            }
-            var grunnlagGradertMotUttaksgrad = beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList()
-                    .stream().map(a -> gradertMotUttaksgrad(beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag, a))
-                    .reduce(BigDecimal::add)
-                    .orElse(BigDecimal.ZERO);
-            var totaltGrunnlag = beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList()
-                    .stream().map(a -> a.getBruttoPrÅr() != null ? a.getBruttoPrÅr() : BigDecimal.ZERO)
-                    .reduce(BigDecimal::add)
-                    .orElse(BigDecimal.ZERO);
-
-
-            if (grunnlagGradertMotUttaksgrad.compareTo(BigDecimal.ZERO) == 0) {
-                return BigDecimal.ZERO;
-            }
-
-            return inntektgraderingsprosentBrutto.multiply(totaltGrunnlag).divide(grunnlagGradertMotUttaksgrad, 2, RoundingMode.HALF_UP);
-        }
-        return null;
-    }
-
-
-    private static BigDecimal mapUtbetalingsfaktorUttaksgrad(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode,
-                                                             YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {
-            var inntektgraderingsprosentBrutto = beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto();
-            if (inntektgraderingsprosentBrutto == null) {
-                return null;
-            }
-            var grunnlagGradertMotUttaksgrad = beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList()
-                    .stream().map(a -> gradertMotUttaksgrad(beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag, a))
-                    .reduce(BigDecimal::add)
-                    .orElse(BigDecimal.ZERO);
-            var totaltGrunnlag = beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList()
-                    .stream().map(a -> a.getBruttoPrÅr() != null ? a.getBruttoPrÅr() : BigDecimal.ZERO)
-                    .reduce(BigDecimal::add)
-                    .orElse(BigDecimal.ZERO);
-            if (totaltGrunnlag.compareTo(BigDecimal.ZERO) == 0) {
-                return BigDecimal.valueOf(100);
-            }
-            return grunnlagGradertMotUttaksgrad.divide(totaltGrunnlag, 2, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
-        }
-        return null;
-    }
-
-
-    private static BigDecimal gradertMotUttaksgrad(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto a) {
-        var utbetalingsgradForAndel = UtbetalingsgradTjeneste.finnUtbetalingsgradForAndel(a,
-                Intervall.fraOgMedTilOgMed(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom()),
-                ytelsespesifiktGrunnlag,
-                false
-        );
-        var bruttoInntekt = a.getBruttoPrÅr();
-        if (bruttoInntekt == null) {
-            return BigDecimal.ZERO;
-        }
-
-        return utbetalingsgradForAndel.multiply(bruttoInntekt).divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP);
+                utledGraderingsfaktorInntekt(beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag),
+                utledGraderingsfaktorTid(beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag));
     }
 
     private static List<BeregningsgrunnlagPrStatusOgAndelDto> mapAndeler(List<no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList) {
