@@ -71,6 +71,7 @@ class UtvidetInntektsperiodeUtleder {
     private static HashSet<Arbeidsgiver> getArbeidsgivereFraInntekttidslinje(LocalDateTimeline<Set<DagsatsPrKategoriOgArbeidsgiver>> registerInntektTidslinje) {
         return registerInntektTidslinje.toSegments().stream()
                 .flatMap(s -> s.getValue().stream().map(DagsatsPrKategoriOgArbeidsgiver::arbeidsgiver))
+                .filter(Objects::nonNull)
                 .collect(Collectors.toCollection(HashSet::new));
     }
 
@@ -84,7 +85,7 @@ class UtvidetInntektsperiodeUtleder {
     }
 
     private static LocalDateTimeline<BigDecimal> finnTidslinjeForArbeidsgiver(LocalDateTimeline<Set<DagsatsPrKategoriOgArbeidsgiver>> registerInntektTidslinje, Arbeidsgiver arbeidsgiver) {
-        return registerInntektTidslinje.mapValue(v -> v.stream().filter(i -> i.arbeidsgiver().equals(arbeidsgiver)).findFirst()
+        return registerInntektTidslinje.mapValue(v -> v.stream().filter(i -> Objects.equals(i.arbeidsgiver(), arbeidsgiver)).findFirst()
                         .map(DagsatsPrKategoriOgArbeidsgiver::dagsats).orElse(null))
                 .filterValue(Objects::nonNull);
     }
