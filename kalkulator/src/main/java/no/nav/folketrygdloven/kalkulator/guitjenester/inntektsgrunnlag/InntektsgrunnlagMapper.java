@@ -26,10 +26,10 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntek
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.PGIPrÅrDto;
 
 public class InntektsgrunnlagMapper {
-    private final Intervall sammenligningsperiode;
+    private final Optional<Intervall> sammenligningsperiode;
     private final List<Arbeidsgiver> frilansArbeidsgivere;
 
-    public InntektsgrunnlagMapper(Intervall sammenligningsperiode,
+    public InntektsgrunnlagMapper(Optional<Intervall> sammenligningsperiode,
                                   List<Arbeidsgiver> frilansArbeidsgivere) {
         this.sammenligningsperiode = sammenligningsperiode;
         this.frilansArbeidsgivere = frilansArbeidsgivere;
@@ -82,7 +82,7 @@ public class InntektsgrunnlagMapper {
     }
 
     private List<InntektsgrunnlagMånedDto> mapSammenligningsgrunnlagInntekter(List<InntektDto> inntekter) {
-        List<InntektDtoMedMåned> alleInntektsposter = inntekter.stream().map(this::mapInntekt)
+        List<InntektDtoMedMåned> alleInntektsposter = inntekter.stream().map(this::mapInntektATFLYtelse)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
         Map<LocalDate, List<InntektDtoMedMåned>> dateMap = alleInntektsposter.stream().collect(Collectors.groupingBy(intp -> intp.månedFom));
@@ -100,13 +100,12 @@ public class InntektsgrunnlagMapper {
         return måneder;
     }
 
-    private List<InntektDtoMedMåned> mapInntekt(InntektDto inn) {
-        if (!inn.getInntektsKilde().equals(InntektskildeType.INNTEKT_SAMMENLIGNING)) {
+    private List<InntektDtoMedMåned> mapInntektATFLYtelse(InntektDto inn) {
+        if (!inn.getInntektsKilde().equals(InntektskildeType.INNTEKT_SAMMENLIGNING) || sammenligningsperiode.isEmpty()) {
             return Collections.emptyList();
         }
-
         return inn.getAlleInntektsposter().stream()
-                .filter(intp -> sammenligningsperiode.inkluderer(intp.getPeriode().getFomDato().withDayOfMonth(1)))
+                .filter(intp -> sammenligningsperiode.get().inkluderer(intp.getPeriode().getFomDato().withDayOfMonth(1)))
                 .map(intp -> new InntektDtoMedMåned(finnInntektType(inn.getArbeidsgiver(), intp.getInntektspostType()),
                         intp.getBeløp() != null ? intp.getBeløp().getVerdi() : BigDecimal.ZERO,
                         intp.getPeriode().getFomDato().withDayOfMonth(1)))

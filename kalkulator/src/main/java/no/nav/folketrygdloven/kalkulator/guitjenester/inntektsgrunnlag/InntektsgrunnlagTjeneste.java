@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørArbeidDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
@@ -27,15 +26,17 @@ public class InntektsgrunnlagTjeneste {
         InntektFilterDto inntektFilter = new InntektFilterDto(input.getIayGrunnlag().getAktørInntektFraRegister()).før(input.getSkjæringstidspunktForBeregning());
         List<InntektDto> sammenligningInntekter = inntektFilter.getAlleInntektSammenligningsgrunnlag().stream()
                 .filter(inntekt -> inntekt.getInntektsKilde().equals(InntektskildeType.INNTEKT_SAMMENLIGNING))
-                .collect(Collectors.toList());
+                .toList();
         List<Arbeidsgiver> frilansArbeidsgivere = finnFrilansArbeidsgivere(input);
-        // Inntektsgrunnlaget skal brukes i tilfeller med avvik for at / fl, ser derfor etter dette spesifikt.
-        Optional<SammenligningsgrunnlagPrStatusDto> sammenligningsgrunnlagATFL = input.getBeregningsgrunnlag() != null ? input.getBeregningsgrunnlag().getSammenligningsgrunnlagForStatus(SammenligningsgrunnlagType.SAMMENLIGNING_AT_FL) : Optional.empty();
-        if (sammenligningsgrunnlagATFL.isEmpty()) {
+        var harStatusSomKreverDetaljertInntektsgrunnlag = input.getBeregningsgrunnlag() != null && input.getBeregningsgrunnlag().getAktivitetStatuser().stream()
+                .anyMatch(st -> st.getAktivitetStatus() != null && (st.getAktivitetStatus().erArbeidstaker()
+                        || st.getAktivitetStatus().erFrilanser() || st.getAktivitetStatus().erSelvstendigNæringsdrivende()));
+        if (!harStatusSomKreverDetaljertInntektsgrunnlag) {
             return Optional.empty();
         }
-        Intervall sammenligningsperiode = Intervall.fraOgMedTilOgMed(sammenligningsgrunnlagATFL.get().getSammenligningsperiodeFom(), sammenligningsgrunnlagATFL.get().getSammenligningsperiodeTom());
-        InntektsgrunnlagMapper mapper = new InntektsgrunnlagMapper(sammenligningsperiode, frilansArbeidsgivere);
+        Optional<Intervall> atflSgPeriode = input.getBeregningsgrunnlag().getSammenligningsgrunnlagForStatus(SammenligningsgrunnlagType.SAMMENLIGNING_AT_FL)
+                .map(sg -> Intervall.fraOgMedTilOgMed(sg.getSammenligningsperiodeFom(), sg.getSammenligningsperiodeTom()));
+        InntektsgrunnlagMapper mapper = new InntektsgrunnlagMapper(atflSgPeriode, frilansArbeidsgivere);
         return mapper.map(sammenligningInntekter);
     }
 
