@@ -35,19 +35,19 @@ public class InntektsgrunnlagMapper {
         this.frilansArbeidsgivere = frilansArbeidsgivere;
     }
 
-    public Optional<InntektsgrunnlagDto> map(List<InntektDto> inntekter) {
+    public Optional<InntektsgrunnlagDto> map(Collection<InntektDto> alleInntekter) {
 
-        if (inntekter.isEmpty()) {
+        if (alleInntekter.isEmpty()) {
             return Optional.empty();
         }
-        List<InntektsgrunnlagMånedDto> sammenligningsgrunnlagInntekter = mapSammenligningsgrunnlagInntekter(inntekter);
-        List<PGIPrÅrDto> pgiGrunnlagInntekter  = mapPGIGrunnlagInntekter(inntekter);
+        List<InntektsgrunnlagMånedDto> sammenligningsgrunnlagInntekter = mapSammenligningsgrunnlagInntekter(alleInntekter);
+        List<PGIPrÅrDto> pgiGrunnlagInntekter  = mapPGIGrunnlagInntekter(alleInntekter);
 
         return Optional.of(new InntektsgrunnlagDto(sammenligningsgrunnlagInntekter, pgiGrunnlagInntekter));
     }
 
-    private List<PGIPrÅrDto> mapPGIGrunnlagInntekter(List<InntektDto> inntekter) {
-        Optional<InntektDto> sigrunInntekt = inntekter.stream()
+    private List<PGIPrÅrDto> mapPGIGrunnlagInntekter(Collection<InntektDto> alleInntekter) {
+        Optional<InntektDto> sigrunInntekt = alleInntekter.stream()
                 .filter(innt -> innt.getInntektsKilde().equals(InntektskildeType.SIGRUN))
                 .findFirst();
         if (sigrunInntekt.isEmpty()) {
@@ -81,10 +81,12 @@ public class InntektsgrunnlagMapper {
         };
     }
 
-    private List<InntektsgrunnlagMånedDto> mapSammenligningsgrunnlagInntekter(List<InntektDto> inntekter) {
-        List<InntektDtoMedMåned> alleInntektsposter = inntekter.stream().map(this::mapInntektATFLYtelse)
+    private List<InntektsgrunnlagMånedDto> mapSammenligningsgrunnlagInntekter(Collection<InntektDto> alleInntekter) {
+        List<InntektDtoMedMåned> alleInntektsposter = alleInntekter.stream()
+                .filter(i -> i.getInntektsKilde().equals(InntektskildeType.INNTEKT_SAMMENLIGNING))
+                .map(this::mapInntektATFLYtelse)
                 .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+                .toList();
         Map<LocalDate, List<InntektDtoMedMåned>> dateMap = alleInntektsposter.stream().collect(Collectors.groupingBy(intp -> intp.månedFom));
         if (dateMap.isEmpty()) {
             return Collections.emptyList();
@@ -93,7 +95,7 @@ public class InntektsgrunnlagMapper {
         dateMap.forEach((månedFom, poster) -> {
             List<InntektsgrunnlagInntektDto> inntekDtoer = poster.stream()
                     .map(post -> new InntektsgrunnlagInntektDto(post.inntektAktivitetType, post.beløp))
-                    .collect(Collectors.toList());
+                    .toList();
             LocalDate tom = månedFom.with(TemporalAdjusters.lastDayOfMonth());
             måneder.add(new InntektsgrunnlagMånedDto(månedFom, tom, inntekDtoer));
         });
