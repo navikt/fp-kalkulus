@@ -53,15 +53,11 @@ public class KalkulatorInputTjeneste {
     }
 
     public Map<Long, KalkulatorInputDto> hentOgLagreForSteg(Map<UUID, KalkulatorInputDto> inputPrReferanse, Set<Long> koblingIder, BeregningSteg stegType) {
-        if (inputPrReferanse != null && !inputPrReferanse.isEmpty() && skalOppdatereInputISteg(stegType)) {
+        if (inputPrReferanse != null && !inputPrReferanse.isEmpty()) {
             // kalkulatorinput oppdateres
             return lagreKalkulatorInput(inputPrReferanse);
         }
         return hentOgOppdaterDersomUtdatert(inputPrReferanse, koblingIder);
-    }
-
-    private boolean skalOppdatereInputISteg(BeregningSteg stegType) {
-        return stegType.equals(BeregningSteg.FASTSETT_STP_BER) || stegType.equals(BeregningSteg.VURDER_REF_BERGRUNN);
     }
 
     public Map<Long, KalkulatorInputDto> hentOgLagre(Map<UUID, KalkulatorInputDto> inputPrReferanse, Set<Long> koblingIder) {

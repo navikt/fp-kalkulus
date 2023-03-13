@@ -443,7 +443,7 @@ public class BeregningsgrunnlagRepository {
         var query = entityManager.createQuery("Update KalkulatorInput " +
                         "set aktiv = false, " +
                         "endretTidspunkt = :endretTid " +
-                        "where koblingId = :koblingId ")
+                        "where koblingId = :koblingId and aktiv = true")
                 .setParameter(KOBLING_ID, koblingId)
                 .setParameter("endretTid", LocalDateTime.now());
 
