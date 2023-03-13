@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -155,7 +157,9 @@ public class RegelsporingRepository {
                 .filter(e -> !eksisterendeHasher.contains(e.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        regelInputPrHashFiltrert.forEach(this::lagreRegelInputKomprimert);
+
+        SortedMap<String, String> sortert = new TreeMap<>(regelInputPrHashFiltrert);
+        sortert.forEach(this::lagreRegelInputKomprimert);
         entityManager.flush();
 
         log.info("Lagret {} ({} kb) av {} ({} kb) regelinput etter hash-sjekk", regelInputPrHashFiltrert.size(), kbSizeOfValues(regelInputPrHashFiltrert), regelInputPrHash.size(), kbSizeOfValues(regelInputPrHash));
