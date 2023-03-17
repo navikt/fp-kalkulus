@@ -118,6 +118,6 @@ spec:
     - name: KOPIERING_VED_FORLENGELSE
       value: "true"
     - name: GRADERING_MOT_INNTEKT
-      value: "true"
+      value: "false"
     - name: AKSJONSPUNKT_VURDER_STORTINGET
       value: "true"
