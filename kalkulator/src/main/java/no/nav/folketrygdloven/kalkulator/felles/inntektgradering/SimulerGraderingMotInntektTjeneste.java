@@ -35,7 +35,10 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt.SplittBGPerioder;
+import no.nav.folketrygdloven.kalkulator.modell.typer.StatusOgArbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.PeriodeSplitter;
+import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.SplittPeriodeConfig;
+import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.StandardPeriodeSplittMappers;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt.TilkommetInntektPeriodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt.TilkommetInntektsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -146,10 +149,14 @@ public class SimulerGraderingMotInntektTjeneste {
                 iay,
                 ytelseType
         ).filterValue(v -> !v.isEmpty());
-        return SplittBGPerioder.splittPerioder(mappetGrunnlag,
-                tilkommetTidslinje,
+        return getPeriodeSplitter().splittPerioder(mappetGrunnlag, tilkommetTidslinje);
+    }
+
+    private static PeriodeSplitter<Set<StatusOgArbeidsgiver>> getPeriodeSplitter() {
+        var spittPerioderConfig = new SplittPeriodeConfig<>(Object::equals,
                 TilkommetInntektPeriodeTjeneste::opprettTilkommetInntekt,
-                SplittBGPerioder.getSettAvsluttetPeriodeårsakMapper(tilkommetTidslinje, Collections.emptyList(), PeriodeÅrsak.TILKOMMET_INNTEKT_AVSLUTTET));
+                StandardPeriodeSplittMappers.settAvsluttetPeriodeårsak(Collections.emptyList(), PeriodeÅrsak.TILKOMMET_INNTEKT_AVSLUTTET));
+        return new PeriodeSplitter<>(spittPerioderConfig);
     }
 
     private void settInntektPåTilkomneInntektsforhold(InntektArbeidYtelseGrunnlagDto iay, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, BeregningsgrunnlagDto nyttBg) {

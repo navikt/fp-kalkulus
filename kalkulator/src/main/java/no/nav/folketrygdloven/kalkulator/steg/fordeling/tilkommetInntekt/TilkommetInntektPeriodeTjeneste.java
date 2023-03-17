@@ -12,6 +12,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.PeriodeSplitter;
+import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.SplittPeriodeConfig;
+import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.StandardPeriodeSplittMappers;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -50,10 +53,15 @@ public class TilkommetInntektPeriodeTjeneste {
         );
         var tidlinjeMedTilkommetAktivitet = tilkommetAktivitetTidslinje.filterValue(v -> !v.isEmpty()).compress();
         var redusertTidslinje = tidlinjeMedTilkommetAktivitet.intersection(new LocalDateInterval(FOM_DATO_GRADERING_MOT_INNTEKT, LocalDateInterval.TIDENES_ENDE));
-        return SplittBGPerioder.splittPerioder(beregningsgrunnlag,
-                redusertTidslinje,
+        PeriodeSplitter<Set<StatusOgArbeidsgiver>> periodeSplitter = getPeriodeSplitter(input);
+        return periodeSplitter.splittPerioder(beregningsgrunnlag, tidlinjeMedTilkommetAktivitet);
+    }
+
+    private PeriodeSplitter<Set<StatusOgArbeidsgiver>> getPeriodeSplitter(BeregningsgrunnlagInput input) {
+        var spittPerioderConfig = new SplittPeriodeConfig<>(Object::equals,
                 TilkommetInntektPeriodeTjeneste::opprettTilkommetInntekt,
-                SplittBGPerioder.getSettAvsluttetPeriodeårsakMapper(redusertTidslinje, input.getForlengelseperioder(), PeriodeÅrsak.TILKOMMET_INNTEKT_AVSLUTTET));
+                StandardPeriodeSplittMappers.settAvsluttetPeriodeårsak(input.getForlengelseperioder(), PeriodeÅrsak.TILKOMMET_INNTEKT_AVSLUTTET));
+        return new PeriodeSplitter<>(spittPerioderConfig);
     }
 
 
