@@ -18,7 +18,7 @@ public class ForlengelsePeriodeTjeneste {
                     .map(p -> new LocalDateSegment<>(p.getFomDato(), p.getTomDato(), Boolean.TRUE))
                     .toList();
             var forlengelseTidslinje = new LocalDateTimeline<>(forlengelseSegmenter);
-            getPeriodeSplitter(input).splittPerioder(beregningsgrunnlag, forlengelseTidslinje);
+            return getPeriodeSplitter(input).splittPerioder(beregningsgrunnlag, forlengelseTidslinje);
         }
         return beregningsgrunnlag;
     }
