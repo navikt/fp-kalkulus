@@ -51,10 +51,10 @@ public class TilkommetInntektPeriodeTjeneste {
                 input.getIayGrunnlag(),
                 input.getFagsakYtelseType()
         );
-        var tidlinjeMedTilkommetAktivitet = tilkommetAktivitetTidslinje.filterValue(v -> !v.isEmpty()).compress();
+        var tidlinjeMedTilkommetAktivitet = tilkommetAktivitetTidslinje.filterValue(v -> !v.isEmpty());
         var redusertTidslinje = tidlinjeMedTilkommetAktivitet.intersection(new LocalDateInterval(FOM_DATO_GRADERING_MOT_INNTEKT, LocalDateInterval.TIDENES_ENDE));
         PeriodeSplitter<Set<StatusOgArbeidsgiver>> periodeSplitter = getPeriodeSplitter(input);
-        return periodeSplitter.splittPerioder(beregningsgrunnlag, tidlinjeMedTilkommetAktivitet);
+        return periodeSplitter.splittPerioder(beregningsgrunnlag, redusertTidslinje);
     }
 
     private PeriodeSplitter<Set<StatusOgArbeidsgiver>> getPeriodeSplitter(BeregningsgrunnlagInput input) {
