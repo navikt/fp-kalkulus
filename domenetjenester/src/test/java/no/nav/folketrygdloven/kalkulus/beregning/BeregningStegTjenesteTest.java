@@ -309,9 +309,9 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
 
     private void assertResultatOgAktiviteter(TilstandResponse resultat, Optional<BeregningsgrunnlagGrunnlagEntitet> bg, BeregningsgrunnlagTilstand tilstand, boolean medAksjonspunkt, int registerAktiviteter, int saksbehandlerAktiviteter) {
         if (medAksjonspunkt) {
-            assertThat(resultat.getAksjonspunktMedTilstandDto()).hasSize(1);
+            assertThat(resultat.getAvklaringsbehovMedTilstandDto()).hasSize(1);
         } else {
-            assertThat(resultat.getAksjonspunktMedTilstandDto()).isEmpty();
+            assertThat(resultat.getAvklaringsbehovMedTilstandDto()).isEmpty();
         }
         assertThat(bg).isPresent();
         assertThat(bg.get().getBeregningsgrunnlagTilstand()).isEqualTo(tilstand);

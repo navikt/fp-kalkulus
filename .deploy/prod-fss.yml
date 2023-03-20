@@ -120,3 +120,5 @@ spec:
       value: "false"
     - name: AKSJONSPUNKT_VURDER_STORTINGET
       value: "false"
+    - name: UTTAK_OG_BERGNING_UGYLDIG_TILSTAND_RESPONS_KODE
+      value: "false"

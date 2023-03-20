@@ -11,6 +11,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Any;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
+import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
@@ -36,6 +37,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelTy
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.KalkulusResultatKode;
 import no.nav.folketrygdloven.kalkulus.kopiering.SpolFramoverTjeneste;
 import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
@@ -186,7 +188,7 @@ public class BeregningStegTjeneste {
                 return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
             }
         }
-        return new TilstandResponse(input.getKoblingReferanse().getKoblingUuid(), List.of());
+        return new TilstandResponse(input.getKoblingReferanse().getKoblingUuid(), KalkulusResultatKode.BEREGNET, List.of());
     }
 
 
@@ -201,6 +203,9 @@ public class BeregningStegTjeneste {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.vurderBeregningsgrunnlagvilkår(input);
         lagreOgKopier(input, beregningResultatAggregat);
         if (beregningResultatAggregat.getBeregningVilkårResultat() == null) {
+            if (KonfigurasjonVerdi.get("UTTAK_OG_BERGNING_UGYLDIG_TILSTAND_RESPONS_KODE", false)) {
+                return new TilstandResponse(input.getKoblingReferanse().getKoblingUuid(), KalkulusResultatKode.UTTAK_OG_BEREGNING_UGYLDIG_TILSTAND);
+            }
             throw new IllegalStateException("Hadde ikke vilkårsresultat for input med ref " + input.getKoblingReferanse());
         }
         lagreAvklaringsbehov(input, beregningResultatAggregat);
@@ -279,10 +284,11 @@ public class BeregningStegTjeneste {
         if (resultat.getBeregningVilkårResultat() != null) {
             return new TilstandResponse(koblingReferanse.getKoblingUuid(),
                     avklaringsbehov,
+                    avklaringsbehov.isEmpty() ? KalkulusResultatKode.BEREGNET : KalkulusResultatKode.BEREGNET_MED_AVKLARINGSBEHOV,
                     resultat.getBeregningVilkårResultat().getErVilkårOppfylt(),
                     resultat.getBeregningVilkårResultat().getErVilkårOppfylt() ? null : resultat.getBeregningVilkårResultat().getVilkårsavslagsårsak());
         } else {
-            return new TilstandResponse(koblingReferanse.getKoblingUuid(), avklaringsbehov);
+            return new TilstandResponse(koblingReferanse.getKoblingUuid(), avklaringsbehov.isEmpty() ? KalkulusResultatKode.BEREGNET : KalkulusResultatKode.BEREGNET_MED_AVKLARINGSBEHOV, avklaringsbehov);
         }
     }
 

@@ -1,0 +1,76 @@
+package no.nav.folketrygdloven.kalkulus.kodeverk;
+
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+@JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
+public enum KalkulusResultatKode implements Kodeverdi {
+
+    BEREGNET("BEREGNET", "Beregning fullført uten avklaringsbehov"),
+    BEREGNET_MED_AVKLARINGSBEHOV("BEREGNET_MED_AVKLARINGSBEHOV", "Beregning fullført med avklaringsbehov"),
+    UTTAK_OG_BEREGNING_UGYLDIG_TILSTAND("UTTAK_OG_BEREGNING_UGYLDIG_TILSTAND", "Uttak og beregning er i en ugyldig tilstand"),
+
+
+    ;
+    private static final Map<String, KalkulusResultatKode> KODER = new LinkedHashMap<>();
+
+    public static final String KODEVERK = "KALKULUS_RESPONS_KODE";
+
+    static {
+        for (var v : values()) {
+            if (KODER.putIfAbsent(v.kode, v) != null) {
+                throw new IllegalArgumentException("Duplikat : " + v.kode);
+            }
+        }
+    }
+
+    @JsonIgnore
+    private String navn;
+
+    private String kode;
+
+    KalkulusResultatKode(String kode, String navn) {
+        this.kode = kode;
+        this.navn = navn;
+    }
+
+    @JsonCreator(mode = Mode.DELEGATING)
+    public static KalkulusResultatKode fraKode(Object node) {
+        if (node == null) {
+            return null;
+        }
+        String kode = TempAvledeKode.getVerdi(KalkulusResultatKode.class, node, "kode");
+        var ad = KODER.get(kode);
+        if (ad == null) {
+            throw new IllegalArgumentException("Ukjent KalkulusResultatKode: " + kode);
+        }
+        return ad;
+    }
+
+    public static Map<String, KalkulusResultatKode> kodeMap() {
+        return Collections.unmodifiableMap(KODER);
+    }
+
+    @JsonProperty
+    @Override
+    public String getKode() {
+        return kode;
+    }
+
+    @JsonProperty
+    @Override
+    public String getKodeverk() {
+        return KODEVERK;
+    }
+}
