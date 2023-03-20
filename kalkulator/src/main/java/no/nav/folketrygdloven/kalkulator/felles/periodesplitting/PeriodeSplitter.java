@@ -32,7 +32,7 @@ public class PeriodeSplitter<V> {
         var eksisterendePerioderTidslinje = new LocalDateTimeline<>(eksisterendePerioder.stream()
                 .map(p -> new LocalDateSegment<>(new LocalDateInterval(p.getPeriode().getFomDato(), p.getPeriode().getTomDato()), p)).toList());
 
-        var komprimert = nyePerioderTidslinje.compress(config.getLikhetsPredikatForCompress(), StandardCombinators::leftOnly);
+        var komprimert = nyePerioderTidslinje.compress(config.getAbutsPredikatForCompress(), config.getLikhetsPredikatForCompress(), StandardCombinators::leftOnly);
 
         var resultatPerioder = eksisterendePerioderTidslinje.combine(komprimert, config.getNyePerioderCombinator(), LocalDateTimeline.JoinStyle.LEFT_JOIN);
 

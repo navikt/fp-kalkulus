@@ -21,6 +21,9 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.Beregnings
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.fastsett.MapBeregningsgrunnlagFraVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.PeriodeSplitter;
+import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.SplittPeriodeConfig;
+import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.StandardPeriodeSplittMappers;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
@@ -36,9 +39,6 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDt
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.StatusOgArbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.PeriodeSplitter;
-import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.SplittPeriodeConfig;
-import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.StandardPeriodeSplittMappers;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt.TilkommetInntektPeriodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt.TilkommetInntektsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -153,7 +153,7 @@ public class SimulerGraderingMotInntektTjeneste {
     }
 
     private static PeriodeSplitter<Set<StatusOgArbeidsgiver>> getPeriodeSplitter() {
-        var spittPerioderConfig = new SplittPeriodeConfig<>(Object::equals,
+        var spittPerioderConfig = new SplittPeriodeConfig<>(
                 TilkommetInntektPeriodeTjeneste::opprettTilkommetInntekt,
                 StandardPeriodeSplittMappers.settAvsluttetPeriodeårsak(Collections.emptyList(), PeriodeÅrsak.TILKOMMET_INNTEKT_AVSLUTTET));
         return new PeriodeSplitter<>(spittPerioderConfig);

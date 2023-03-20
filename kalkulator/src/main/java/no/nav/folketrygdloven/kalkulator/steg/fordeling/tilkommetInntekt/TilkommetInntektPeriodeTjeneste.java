@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt;
 
+import static com.fasterxml.jackson.databind.node.BooleanNode.TRUE;
+import static no.nav.folketrygdloven.kalkulator.felles.periodesplitting.TidslinjeUtils.opprettTidslinje;
 import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste.INNTEKT_RAPPORTERING_FRIST_DATO;
 
 import java.time.LocalDate;
@@ -25,6 +27,8 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.StatusOgArbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
+import no.nav.fpsak.tidsserie.LocalDateTimeline;
+import no.nav.fpsak.tidsserie.StandardCombinators;
 
 /**
  * Ved nye inntektsforhold skal beregningsgrunnlaget graderes mot inntekt.
@@ -51,16 +55,18 @@ public class TilkommetInntektPeriodeTjeneste {
                 input.getIayGrunnlag(),
                 input.getFagsakYtelseType()
         );
-        var tidlinjeMedTilkommetAktivitet = tilkommetAktivitetTidslinje.filterValue(v -> !v.isEmpty());
-        var redusertTidslinje = tidlinjeMedTilkommetAktivitet.intersection(new LocalDateInterval(FOM_DATO_GRADERING_MOT_INNTEKT, LocalDateInterval.TIDENES_ENDE));
+        var tidlinjeMedTilkommetAktivitet = tilkommetAktivitetTidslinje.filterValue(v -> !v.isEmpty())
+                .combine(opprettTidslinje(input.getForlengelseperioder()), StandardCombinators::leftOnly, input.getForlengelseperioder().isEmpty() ? LocalDateTimeline.JoinStyle.LEFT_JOIN : LocalDateTimeline.JoinStyle.INNER_JOIN)
+                .combine(new LocalDateSegment<>(new LocalDateInterval(FOM_DATO_GRADERING_MOT_INNTEKT, LocalDateInterval.TIDENES_ENDE), TRUE), StandardCombinators::leftOnly, LocalDateTimeline.JoinStyle.LEFT_JOIN);
         PeriodeSplitter<Set<StatusOgArbeidsgiver>> periodeSplitter = getPeriodeSplitter(input);
-        return periodeSplitter.splittPerioder(beregningsgrunnlag, redusertTidslinje);
+        return periodeSplitter.splittPerioder(beregningsgrunnlag, tidlinjeMedTilkommetAktivitet);
     }
 
     private PeriodeSplitter<Set<StatusOgArbeidsgiver>> getPeriodeSplitter(BeregningsgrunnlagInput input) {
-        var spittPerioderConfig = new SplittPeriodeConfig<>(Object::equals,
+        var spittPerioderConfig = new SplittPeriodeConfig<>(
                 TilkommetInntektPeriodeTjeneste::opprettTilkommetInntekt,
                 StandardPeriodeSplittMappers.settAvsluttetPeriodeårsak(input.getForlengelseperioder(), PeriodeÅrsak.TILKOMMET_INNTEKT_AVSLUTTET));
+        spittPerioderConfig.setAbutsPredikatForCompress((di1, di2) -> di1.abuts(di2) && !di2.getFomDato().equals(FOM_DATO_GRADERING_MOT_INNTEKT));
         return new PeriodeSplitter<>(spittPerioderConfig);
     }
 

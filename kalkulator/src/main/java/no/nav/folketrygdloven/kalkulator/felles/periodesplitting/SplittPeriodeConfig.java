@@ -8,6 +8,7 @@ import java.util.function.BiPredicate;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
+import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateSegmentCombinator;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
@@ -19,6 +20,8 @@ import no.nav.fpsak.tidsserie.LocalDateTimeline;
 public class SplittPeriodeConfig<V> {
 
     private BiPredicate<V, V> likhetsPredikatForCompress = Objects::equals;
+
+    private BiPredicate<LocalDateInterval, LocalDateInterval> abutsPredikatForCompress = LocalDateInterval::abuts;
 
     /**
      * Combinator for left-joint mot eksisterende perioder
@@ -35,10 +38,8 @@ public class SplittPeriodeConfig<V> {
         this.nyePerioderCombinator = nyePerioderCombinator;
     }
 
-    public SplittPeriodeConfig(BiPredicate<V, V> likhetsPredikatForCompress,
-                               LocalDateSegmentCombinator<BeregningsgrunnlagPeriodeDto, V, BeregningsgrunnlagPeriodeDto> nyePerioderCombinator,
+    public SplittPeriodeConfig(LocalDateSegmentCombinator<BeregningsgrunnlagPeriodeDto, V, BeregningsgrunnlagPeriodeDto> nyePerioderCombinator,
                                BiFunction<LocalDateTimeline<BeregningsgrunnlagPeriodeDto>, LocalDateTimeline<V>, LocalDateTimeline<BeregningsgrunnlagPeriodeDto>> periodeTidslinjeMapper) {
-        this.likhetsPredikatForCompress = likhetsPredikatForCompress;
         this.nyePerioderCombinator = nyePerioderCombinator;
         this.periodeTidslinjeMapper = periodeTidslinjeMapper;
     }
@@ -52,7 +53,6 @@ public class SplittPeriodeConfig<V> {
 
     public static <V> SplittPeriodeConfig<V> medAvsluttetPeriodeårsakConfig(PeriodeÅrsak nyPeriodeÅrsak, PeriodeÅrsak avsluttetPeriodeårsak, List<Intervall> forlengelseperioder) {
         return new SplittPeriodeConfig<>(
-                Object::equals,
                 StandardPeriodeSplittCombinators.splittPerioderOgSettÅrsakCombinator(nyPeriodeÅrsak),
                 StandardPeriodeSplittMappers.settAvsluttetPeriodeårsak(forlengelseperioder, avsluttetPeriodeårsak)
         );
@@ -60,6 +60,10 @@ public class SplittPeriodeConfig<V> {
 
     public BiPredicate<V, V> getLikhetsPredikatForCompress() {
         return likhetsPredikatForCompress;
+    }
+
+    public void setLikhetsPredikatForCompress(BiPredicate<V, V> likhetsPredikatForCompress) {
+        this.likhetsPredikatForCompress = likhetsPredikatForCompress;
     }
 
     public LocalDateSegmentCombinator<BeregningsgrunnlagPeriodeDto, V, BeregningsgrunnlagPeriodeDto> getNyePerioderCombinator() {
@@ -70,5 +74,11 @@ public class SplittPeriodeConfig<V> {
         return periodeTidslinjeMapper;
     }
 
+    public BiPredicate<LocalDateInterval, LocalDateInterval> getAbutsPredikatForCompress() {
+        return abutsPredikatForCompress;
+    }
 
+    public void setAbutsPredikatForCompress(BiPredicate<LocalDateInterval, LocalDateInterval> abutsPredikatForCompress) {
+        this.abutsPredikatForCompress = abutsPredikatForCompress;
+    }
 }
