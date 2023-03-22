@@ -118,7 +118,7 @@ spec:
     - name: KOPIERING_VED_FORLENGELSE
       value: "true"
     - name: GRADERING_MOT_INNTEKT
-      value: "false"
+      value: "true"
     - name: AKSJONSPUNKT_VURDER_STORTINGET
       value: "true"
     - name: UTTAK_OG_BERGNING_UGYLDIG_TILSTAND_RESPONS_KODE
