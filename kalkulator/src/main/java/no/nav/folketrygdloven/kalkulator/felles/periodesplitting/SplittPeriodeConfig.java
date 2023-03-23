@@ -19,7 +19,7 @@ import no.nav.fpsak.tidsserie.LocalDateTimeline;
  */
 public class SplittPeriodeConfig<V> {
 
-    private BiPredicate<V, V> likhetsPredikatForCompress = Objects::equals;
+    private BiPredicate<V, V> likhetsPredikatForCompress = StandardPeriodeCompressLikhetspredikat::komprimerNårLike;
 
     private BiPredicate<LocalDateInterval, LocalDateInterval> abutsPredikatForCompress = LocalDateInterval::abuts;
 

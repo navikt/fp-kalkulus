@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -41,6 +42,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 
 class VurderTilkommetInntektTjenesteTest {
 
@@ -92,6 +94,119 @@ class VurderTilkommetInntektTjenesteTest {
 
 
     }
+
+    @Test
+    void skal_splitte_periode() {
+        // Arrange
+        var arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
+        var arbeidstakerandelFraStart = lagArbeidstakerandel(arbeidsgiver, 1L, AndelKilde.PROSESS_START, InternArbeidsforholdRefDto.nullRef());
+
+        var arbeidsgiver2 = Arbeidsgiver.virksomhet(ORGNR2);
+        var nyAndel = lagArbeidstakerandel(arbeidsgiver2, 2L, AndelKilde.PROSESS_PERIODISERING, InternArbeidsforholdRefDto.nullRef());
+
+        var yrkesaktivitet = lagYrkesaktivitet(arbeidsgiver, STP.minusMonths(10), STP.plusDays(15), InternArbeidsforholdRefDto.nullRef());
+        var nyYrkesaktivitet = lagYrkesaktivitet(arbeidsgiver2, STP.plusDays(10), STP.plusDays(20), InternArbeidsforholdRefDto.nullRef());
+
+        var utbetalingsgradFraStart = new UtbetalingsgradPrAktivitetDto(lagAktivitet(arbeidsgiver, InternArbeidsforholdRefDto.nullRef()), lagUtbetalingsgrader(100, STP, STP.plusDays(20)));
+        var utbetalingsgradNyAndel = new UtbetalingsgradPrAktivitetDto(lagAktivitet(arbeidsgiver2, InternArbeidsforholdRefDto.nullRef()), lagUtbetalingsgrader(50, STP.plusDays(10), STP.plusDays(20)));
+
+        var yrkesaktiviteter = List.of(yrkesaktivitet, nyYrkesaktivitet);
+        var utbetalingsgrader = List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel);
+        var andeler = List.of(arbeidstakerandelFraStart, nyAndel);
+
+        var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(10), STP.plusDays(20));
+
+        var vurderteInntektsforhold = List.of(lagNyttInntektsforhold(ORGNR2, true, 100_000));
+
+        var vurdertPeriode1 = new VurderTilkomneInntektsforholdPeriodeDto(vurderteInntektsforhold, periode.getFomDato(), periode.getTomDato().minusDays(3));
+
+        var vurderteInntektsforhold2 = List.of(lagNyttInntektsforhold(ORGNR2, false, null));
+
+        var vurdertPeriode2 = new VurderTilkomneInntektsforholdPeriodeDto(vurderteInntektsforhold2, periode.getTomDato().minusDays(2), periode.getTomDato());
+
+        VurderTilkommetInntektHåndteringDto dto = new VurderTilkommetInntektHåndteringDto(List.of(vurdertPeriode1, vurdertPeriode2));
+
+        BeregningsgrunnlagInput input = lagInput(periode, yrkesaktiviteter, utbetalingsgrader, andeler, vurderteInntektsforhold);
+
+        // Act
+        var nyttGr = VurderTilkommetInntektTjeneste.løsAvklaringsbehov(dto, new HåndterBeregningsgrunnlagInput(input, BeregningsgrunnlagTilstand.FASTSATT_INN));
+
+
+        // Assert
+        assertThat(nyttGr.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().size()).isEqualTo(2);
+        var tilkomneInntekter1 = nyttGr.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0)
+                .getTilkomneInntekter();
+        assertThat(tilkomneInntekter1.size()).isEqualTo(1);
+        assertThat(tilkomneInntekter1.get(0).getArbeidsgiver().get()).isEqualTo(arbeidsgiver2);
+        assertThat(tilkomneInntekter1.get(0).getAktivitetStatus()).isEqualTo(AktivitetStatus.ARBEIDSTAKER);
+        assertThat(tilkomneInntekter1.get(0).getBruttoInntektPrÅr().compareTo(BigDecimal.valueOf(100_000))).isEqualTo(0);
+
+        var periodeLagtTil = nyttGr.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(1);
+        var tilkomneInntekter2 = periodeLagtTil
+                .getTilkomneInntekter();
+        assertThat(periodeLagtTil.getPeriodeÅrsaker().contains(PeriodeÅrsak.TILKOMMET_INNTEKT_MANUELT)).isTrue();
+        assertThat(periodeLagtTil.getPeriodeÅrsaker().contains(PeriodeÅrsak.TILKOMMET_INNTEKT)).isTrue();
+        assertThat(tilkomneInntekter2.size()).isEqualTo(1);
+        assertThat(tilkomneInntekter2.get(0).getArbeidsgiver().get()).isEqualTo(arbeidsgiver2);
+        assertThat(tilkomneInntekter2.get(0).getAktivitetStatus()).isEqualTo(AktivitetStatus.ARBEIDSTAKER);
+        assertThat(tilkomneInntekter2.get(0).skalRedusereUtbetaling()).isFalse();
+    }
+
+
+
+    @Test
+    void skal_splitte_periode_og_ikke_komprimere_like() {
+        // Arrange
+        var arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
+        var arbeidstakerandelFraStart = lagArbeidstakerandel(arbeidsgiver, 1L, AndelKilde.PROSESS_START, InternArbeidsforholdRefDto.nullRef());
+
+        var arbeidsgiver2 = Arbeidsgiver.virksomhet(ORGNR2);
+        var nyAndel = lagArbeidstakerandel(arbeidsgiver2, 2L, AndelKilde.PROSESS_PERIODISERING, InternArbeidsforholdRefDto.nullRef());
+
+        var yrkesaktivitet = lagYrkesaktivitet(arbeidsgiver, STP.minusMonths(10), STP.plusDays(15), InternArbeidsforholdRefDto.nullRef());
+        var nyYrkesaktivitet = lagYrkesaktivitet(arbeidsgiver2, STP.plusDays(10), STP.plusDays(20), InternArbeidsforholdRefDto.nullRef());
+
+        var utbetalingsgradFraStart = new UtbetalingsgradPrAktivitetDto(lagAktivitet(arbeidsgiver, InternArbeidsforholdRefDto.nullRef()), lagUtbetalingsgrader(100, STP, STP.plusDays(20)));
+        var utbetalingsgradNyAndel = new UtbetalingsgradPrAktivitetDto(lagAktivitet(arbeidsgiver2, InternArbeidsforholdRefDto.nullRef()), lagUtbetalingsgrader(50, STP.plusDays(10), STP.plusDays(20)));
+
+        var yrkesaktiviteter = List.of(yrkesaktivitet, nyYrkesaktivitet);
+        var utbetalingsgrader = List.of(utbetalingsgradFraStart, utbetalingsgradNyAndel);
+        var andeler = List.of(arbeidstakerandelFraStart, nyAndel);
+
+        var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(10), STP.plusDays(20));
+
+        var vurderteInntektsforhold = List.of(lagNyttInntektsforhold(ORGNR2, true, 100_000));
+
+        var vurdertPeriode1 = new VurderTilkomneInntektsforholdPeriodeDto(vurderteInntektsforhold, periode.getFomDato(), periode.getTomDato().minusDays(3));
+
+        var vurdertPeriode2 = new VurderTilkomneInntektsforholdPeriodeDto(vurderteInntektsforhold, periode.getTomDato().minusDays(2), periode.getTomDato());
+
+        VurderTilkommetInntektHåndteringDto dto = new VurderTilkommetInntektHåndteringDto(List.of(vurdertPeriode1, vurdertPeriode2));
+
+        BeregningsgrunnlagInput input = lagInput(periode, yrkesaktiviteter, utbetalingsgrader, andeler, vurderteInntektsforhold);
+
+        // Act
+        var nyttGr = VurderTilkommetInntektTjeneste.løsAvklaringsbehov(dto, new HåndterBeregningsgrunnlagInput(input, BeregningsgrunnlagTilstand.FASTSATT_INN));
+
+
+        // Assert
+        assertThat(nyttGr.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().size()).isEqualTo(2);
+        var tilkomneInntekter1 = nyttGr.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0)
+                .getTilkomneInntekter();
+        assertThat(tilkomneInntekter1.size()).isEqualTo(1);
+        assertThat(tilkomneInntekter1.get(0).getArbeidsgiver().get()).isEqualTo(arbeidsgiver2);
+        assertThat(tilkomneInntekter1.get(0).getAktivitetStatus()).isEqualTo(AktivitetStatus.ARBEIDSTAKER);
+        assertThat(tilkomneInntekter1.get(0).getBruttoInntektPrÅr().compareTo(BigDecimal.valueOf(100_000))).isEqualTo(0);
+
+        var periodeLagtTil = nyttGr.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(1);
+        var tilkomneInntekter2 = periodeLagtTil
+                .getTilkomneInntekter();
+        assertThat(tilkomneInntekter2.size()).isEqualTo(1);
+        assertThat(tilkomneInntekter2.get(0).getArbeidsgiver().get()).isEqualTo(arbeidsgiver2);
+        assertThat(tilkomneInntekter2.get(0).getAktivitetStatus()).isEqualTo(AktivitetStatus.ARBEIDSTAKER);
+        assertThat(tilkomneInntekter2.get(0).getBruttoInntektPrÅr().compareTo(BigDecimal.valueOf(100_000))).isEqualTo(0);
+    }
+
 
     @Test
     void skal_sette_verdier_for_vurdert_næring() {
@@ -151,7 +266,7 @@ class VurderTilkommetInntektTjenesteTest {
         return input;
     }
 
-    private NyttInntektsforholdDto lagNyttInntektsforhold(String orgnr, boolean skalRedusereUtbetaling, int bruttoInntektPrÅr) {
+    private NyttInntektsforholdDto lagNyttInntektsforhold(String orgnr, boolean skalRedusereUtbetaling, Integer bruttoInntektPrÅr) {
         return new NyttInntektsforholdDto(
                 AktivitetStatus.ARBEIDSTAKER,
                 orgnr, null, bruttoInntektPrÅr, skalRedusereUtbetaling);
@@ -169,6 +284,9 @@ class VurderTilkommetInntektTjenesteTest {
         var periodeBuilder = new BeregningsgrunnlagPeriodeDto.Builder();
         periodeBuilder.medBeregningsgrunnlagPeriode(fom, tom);
         andeler.forEach(periodeBuilder::leggTilBeregningsgrunnlagPrStatusOgAndel);
+        if (!vurderteInntektsforhold.isEmpty()) {
+            periodeBuilder.leggTilPeriodeÅrsak(PeriodeÅrsak.TILKOMMET_INNTEKT);
+        }
         vurderteInntektsforhold.stream().map(v -> new TilkommetInntektDto(v.getAktivitetStatus(), v.getArbeidsgiverIdentifikator() != null ? Arbeidsgiver.virksomhet(v.getArbeidsgiverIdentifikator()) : null, InternArbeidsforholdRefDto.ref(v.getArbeidsforholdId()), null, null, null))
                 .forEach(periodeBuilder::leggTilTilkommetInntekt);
         return BeregningsgrunnlagGrunnlagDtoBuilder.nytt()

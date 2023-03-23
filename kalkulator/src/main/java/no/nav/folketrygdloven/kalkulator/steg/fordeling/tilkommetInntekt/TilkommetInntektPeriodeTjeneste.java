@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.PeriodeSplitter;
 import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.SplittPeriodeConfig;
+import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.StandardPeriodeCompressLikhetspredikat;
 import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.StandardPeriodeSplittMappers;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;

@@ -5,12 +5,14 @@ import static no.nav.folketrygdloven.kalkulus.kopiering.KanKopierBeregningsgrunn
 import static no.nav.folketrygdloven.kalkulus.kopiering.KanKopierBeregningsgrunnlag.kanKopiereForrigeGrunnlagAvklartIStegUt;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.PeriodeSplitter;
+import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.SplittPeriodeConfig;
+import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.StandardPeriodeCompressLikhetspredikat;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
@@ -18,6 +20,10 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
+import no.nav.fpsak.tidsserie.LocalDateInterval;
+import no.nav.fpsak.tidsserie.LocalDateSegment;
+import no.nav.fpsak.tidsserie.LocalDateSegmentCombinator;
+import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
 public final class SpolFramoverTjeneste {
 
@@ -37,9 +43,9 @@ public final class SpolFramoverTjeneste {
      * @return Builder for grunnlag som det skal spoles fram til
      */
     public static Optional<BeregningsgrunnlagGrunnlagDto> finnGrunnlagDetSkalSpolesTil(Collection<BeregningAvklaringsbehovResultat> avklaringsbehov,
-                                                                                              BeregningsgrunnlagGrunnlagDto nyttGrunnlag,
-                                                                                              Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlagFraSteg,
-                                                                                              Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlagFraStegUt) {
+                                                                                       BeregningsgrunnlagGrunnlagDto nyttGrunnlag,
+                                                                                       Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlagFraSteg,
+                                                                                       Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlagFraStegUt) {
 
         boolean kanSpoleFramHeleGrunnlaget = kanKopiereForrigeGrunnlagAvklartIStegUt(
                 avklaringsbehov,
@@ -55,15 +61,12 @@ public final class SpolFramoverTjeneste {
 
 
     private static Optional<BeregningsgrunnlagGrunnlagDto> spolFramLikePerioderOmMulig(BeregningsgrunnlagGrunnlagDto nyttGrunnlag,
-                                                                                              BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraSteg,
-                                                                                              BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraStegUt) {
+                                                                                       BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraSteg,
+                                                                                       BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraStegUt) {
         Set<Intervall> intervallerSomKanKopieres = finnPerioderSomKanKopieres(
                 nyttGrunnlag.getBeregningsgrunnlag(),
                 forrigeGrunnlagFraSteg.getBeregningsgrunnlag());
-        int antallPerioderForrigeUt = finnAntallPerioder(forrigeGrunnlagFraStegUt);
-        int antallPerioderForrige = finnAntallPerioder(forrigeGrunnlagFraSteg);
-        // Antar at antall perioder ikkje endres i frontend, sjekk for å unngå at feil fra tidligere saker tas med videre
-        if (intervallerSomKanKopieres.isEmpty() || antallPerioderForrigeUt != antallPerioderForrige) {
+        if (intervallerSomKanKopieres.isEmpty()) {
             return Optional.empty();
         } else {
             return Optional.of(kopierPerioderFraForrigeGrunnlag(nyttGrunnlag, forrigeGrunnlagFraStegUt, intervallerSomKanKopieres));
@@ -72,68 +75,69 @@ public final class SpolFramoverTjeneste {
     }
 
     public static BeregningsgrunnlagGrunnlagDto kopierPerioderFraForrigeGrunnlag(BeregningsgrunnlagGrunnlagDto nyttGrunnlag,
-                                                                                        BeregningsgrunnlagGrunnlagDto eksisterendeGrunnlag,
-                                                                                        Set<Intervall> intervallerSomKanKopieres) {
+                                                                                 BeregningsgrunnlagGrunnlagDto eksisterendeGrunnlag,
+                                                                                 Set<Intervall> intervallerSomKanKopieres) {
         BeregningsgrunnlagDto nyttBg = nyttGrunnlag.getBeregningsgrunnlag().orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag om perioder skal kopieres"));
-        BeregningsgrunnlagDto.Builder bgBuilder = BeregningsgrunnlagDto.builder(nyttBg).fjernAllePerioder();
-        leggTilPerioder(eksisterendeGrunnlag, nyttBg, bgBuilder, intervallerSomKanKopieres);
+        var medKopiertePerioder = leggTilPerioder(eksisterendeGrunnlag, nyttBg, intervallerSomKanKopieres);
         return BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(nyttGrunnlag)
-                .medBeregningsgrunnlag(bgBuilder.build())
+                .medBeregningsgrunnlag(medKopiertePerioder)
                 .build(eksisterendeGrunnlag.getBeregningsgrunnlagTilstand());
     }
 
-    private static int finnAntallPerioder(BeregningsgrunnlagGrunnlagDto eksisterende) {
-        return eksisterende.getBeregningsgrunnlag().map(BeregningsgrunnlagDto::getBeregningsgrunnlagPerioder).orElse(Collections.emptyList()).size();
-    }
-
-    private static void leggTilPerioder(BeregningsgrunnlagGrunnlagDto eksisterende,
-                                        BeregningsgrunnlagDto nyttBg, BeregningsgrunnlagDto.Builder bgBuilder,
-                                        Set<Intervall> intervallerSomKanKopieres) {
+    private static BeregningsgrunnlagDto leggTilPerioder(BeregningsgrunnlagGrunnlagDto eksisterende,
+                                                         BeregningsgrunnlagDto nyttBg,
+                                                         Set<Intervall> intervallerSomKanKopieres) {
         List<BeregningsgrunnlagPeriodeDto> eksisterendePerioder = eksisterende.getBeregningsgrunnlag()
                 .stream()
                 .flatMap(bg -> bg.getBeregningsgrunnlagPerioder().stream())
                 .collect(Collectors.toList());
-
-        nyttBg.getBeregningsgrunnlagPerioder().forEach(periode -> {
-            if (intervallerSomKanKopieres.stream().anyMatch(it -> it.inkluderer(periode.getPeriode()))) {
-                bgBuilder.leggTilBeregningsgrunnlagPeriode(finnPeriodeFraEksisterende(eksisterendePerioder,
-                        periode.getPeriodeÅrsaker(),
-                        periode.getPeriode(),
-                        intervallerSomKanKopieres));
-            } else {
-                bgBuilder.leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeDto.kopier(periode));
-            }
-        });
+        LocalDateTimeline<BeregningsgrunnlagPeriodeDto> tidslinjeFraStegUt = lagTidslinjeFraPerioder(eksisterendePerioder);
+        SplittPeriodeConfig<BeregningsgrunnlagPeriodeDto> splittConfig = new SplittPeriodeConfig<>(kopiCombinator(intervallerSomKanKopieres));
+        splittConfig.setLikhetsPredikatForCompress(StandardPeriodeCompressLikhetspredikat::aldriKomprimer);
+        var splitter = new PeriodeSplitter<>(splittConfig);
+        return splitter.splittPerioder(nyttBg, tidslinjeFraStegUt);
     }
 
-    private static BeregningsgrunnlagPeriodeDto.Builder finnPeriodeFraEksisterende(List<BeregningsgrunnlagPeriodeDto> forrigePerioder,
-                                                                                   List<PeriodeÅrsak> nyePeriodeÅrsaker,
-                                                                                   Intervall periodeSomSkalKopieres,
-                                                                                   Set<Intervall> intervallerSomKanKopieres) {
-        var tilstøterEndretIntervall = intervallerSomKanKopieres.stream().noneMatch(p -> p.inkluderer(periodeSomSkalKopieres.getFomDato().minusDays(1)) ||
-                (!periodeSomSkalKopieres.getTomDato().equals(TIDENES_ENDE) && p.inkluderer(periodeSomSkalKopieres.getTomDato().plusDays(1))));
-        var forrigePeriode = forrigePerioder.stream()
-                .filter(p -> p.getPeriode().equals(periodeSomSkalKopieres))
-                .findFirst();
+    private static LocalDateSegmentCombinator<BeregningsgrunnlagPeriodeDto, BeregningsgrunnlagPeriodeDto, BeregningsgrunnlagPeriodeDto> kopiCombinator(Set<Intervall> intervallerSomKanKopieres) {
+        return (datoInterval, lhs, rhs) -> kopierRhsDersomSegmentOverlapperIntervallSomKopieres(intervallerSomKanKopieres, datoInterval, lhs, rhs);
+    }
 
-        if (forrigePeriode.isPresent()) {
-            var periodeBuilder = BeregningsgrunnlagPeriodeDto.kopier(forrigePeriode.get());
-            leggTilManglendePeriodeårsaker(nyePeriodeÅrsaker, forrigePeriode.get(), periodeBuilder, tilstøterEndretIntervall);
-            return periodeBuilder;
+    private static LocalDateSegment<BeregningsgrunnlagPeriodeDto> kopierRhsDersomSegmentOverlapperIntervallSomKopieres(Set<Intervall> intervallerSomKanKopieres, LocalDateInterval datoInterval, LocalDateSegment<BeregningsgrunnlagPeriodeDto> lhs, LocalDateSegment<BeregningsgrunnlagPeriodeDto> rhs) {
+        if (lhs == null || rhs == null) {
+            throw new IllegalStateException("Forventer at alle perioder overlapper");
         }
+        var periode = Intervall.fraOgMedTilOgMed(datoInterval.getFomDato(), datoInterval.getTomDato());
+        if (intervallerSomKanKopieres.stream().anyMatch(it -> it.inkluderer(periode))) {
+            var tilstøterEndretIntervall = tilstøterSegmentSomIkkeKopieres(intervallerSomKanKopieres, datoInterval);
+            var periodeBuilder = BeregningsgrunnlagPeriodeDto.kopier(rhs.getValue())
+                    .medBeregningsgrunnlagPeriode(datoInterval.getFomDato(), datoInterval.getTomDato());
+            leggTilManglendePeriodeårsaker(lhs.getValue().getPeriodeÅrsaker(), rhs.getValue(), periodeBuilder, tilstøterEndretIntervall);
+            return new LocalDateSegment<>(datoInterval, periodeBuilder.build());
 
-        forrigePeriode = forrigePerioder.stream()
-                .filter(p -> p.getPeriode().inkluderer(periodeSomSkalKopieres))
-                .findFirst();
-
-        if (forrigePeriode.isPresent()) {
-            var periodeBuilder = BeregningsgrunnlagPeriodeDto.kopier(forrigePeriode.get())
-                    .medBeregningsgrunnlagPeriode(periodeSomSkalKopieres.getFomDato(), periodeSomSkalKopieres.getTomDato());
-            leggTilManglendePeriodeårsaker(nyePeriodeÅrsaker, forrigePeriode.get(), periodeBuilder, tilstøterEndretIntervall);
-            return periodeBuilder;
         }
+        return new LocalDateSegment<>(datoInterval, BeregningsgrunnlagPeriodeDto.kopier(lhs.getValue())
+                .medBeregningsgrunnlagPeriode(datoInterval.getFomDato(), datoInterval.getTomDato())
+                .build()
+        );
+    }
 
-        throw new IllegalStateException("Fant ikke periode fra forrige grunnlag som inkluderer " + periodeSomSkalKopieres);
+    private static boolean tilstøterSegmentSomIkkeKopieres(Set<Intervall> intervallerSomKanKopieres, LocalDateInterval datoInterval) {
+        return intervallerSomKanKopieres.stream().noneMatch(p -> inkludererForrige(datoInterval, p) || inkludererNeste(datoInterval, p));
+    }
+
+    private static boolean inkludererNeste(LocalDateInterval datoInterval, Intervall p) {
+        return !datoInterval.getTomDato().equals(TIDENES_ENDE) && p.inkluderer(datoInterval.getTomDato().plusDays(1));
+    }
+
+    private static boolean inkludererForrige(LocalDateInterval datoInterval, Intervall p) {
+        return p.inkluderer(datoInterval.getFomDato().minusDays(1));
+    }
+
+    private static LocalDateTimeline<BeregningsgrunnlagPeriodeDto> lagTidslinjeFraPerioder(List<BeregningsgrunnlagPeriodeDto> eksisterendePerioder) {
+        var eksisterendeSegmenter = eksisterendePerioder.stream()
+                .map(p -> new LocalDateSegment<>(p.getBeregningsgrunnlagPeriodeFom(), p.getBeregningsgrunnlagPeriodeTom(), p))
+                .toList();
+        return new LocalDateTimeline<>(eksisterendeSegmenter);
     }
 
     private static void leggTilManglendePeriodeårsaker(List<PeriodeÅrsak> nyePeriodeÅrsaker, BeregningsgrunnlagPeriodeDto forrigePeriode, BeregningsgrunnlagPeriodeDto.Builder periodeBuilder, boolean tilstøterEndretIntervall) {
