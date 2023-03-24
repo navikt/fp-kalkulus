@@ -198,8 +198,8 @@ class SpolFramoverTjenesteTest {
         // Act
         var gr = SpolFramoverTjeneste.kopierPerioderFraForrigeGrunnlag(nyttGrunnlag,
                 forrigeGrunnlagFraSteg,
-                Set.of(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)))
-        );
+                Set.of(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2))),
+                true);
 
         // Assert
         BeregningsgrunnlagDto bg = gr.getBeregningsgrunnlag().get();

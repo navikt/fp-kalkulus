@@ -103,7 +103,7 @@ public class ForlengelseTjeneste {
 
         logger.info("Kopierer perioder fra eksisterende grunnlag: " + intervallerSomKanKopieres);
 
-        return SpolFramoverTjeneste.kopierPerioderFraForrigeGrunnlag(nyttGrunnlag, forrigeGrunnlag, intervallerSomKanKopieres);
+        return SpolFramoverTjeneste.kopierPerioderFraForrigeGrunnlag(nyttGrunnlag, forrigeGrunnlag, intervallerSomKanKopieres, false);
     }
 
     public void lagrePerioderForForlengelse(BeregningSteg steg, List<BeregnForRequest> beregnForListe, List<KoblingEntitet> koblinger) {
