@@ -29,23 +29,26 @@ public final class BeregningsgrunnlagVerifiserer {
     private BeregningsgrunnlagVerifiserer() {
     }
 
-    public static void verifiserOppdatertBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
+    public static void verifiserOppdatertBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag, PerioderTilVurderingTjeneste perioderTilVurderingTjeneste) {
         Objects.requireNonNull(beregningsgrunnlag.getSkjæringstidspunkt(), "Skjæringstidspunkt");
         verifiserIkkeTomListe(beregningsgrunnlag.getBeregningsgrunnlagPerioder(), "BeregningsgrunnlagPerioder");
         verifiserIkkeTomListe(beregningsgrunnlag.getAktivitetStatuser(), "Aktivitetstatuser");
-        verfiserBeregningsgrunnlagPerioder(beregningsgrunnlag);
+        verfiserBeregningsgrunnlagPerioder(beregningsgrunnlag, perioderTilVurderingTjeneste);
         beregningsgrunnlag.getBeregningsgrunnlagPerioder()
+                .stream().filter(p -> perioderTilVurderingTjeneste.erTilVurdering(p.getPeriode()))
                 .forEach(p -> verfiserBeregningsgrunnlagAndeler(p, BeregningsgrunnlagVerifiserer::verifiserOpprettetAndel));
     }
 
-    private static void verfiserBeregningsgrunnlagPerioder(BeregningsgrunnlagDto beregningsgrunnlag) {
+    private static void verfiserBeregningsgrunnlagPerioder(BeregningsgrunnlagDto beregningsgrunnlag, PerioderTilVurderingTjeneste perioderTilVurderingTjeneste) {
         List<BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPerioder = beregningsgrunnlag.getBeregningsgrunnlagPerioder();
         for (int i = 0; i < beregningsgrunnlagPerioder.size(); i++) {
             BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlagPerioder.get(i);
-            Objects.requireNonNull(periode.getBeregningsgrunnlagPeriodeFom(), "BeregningsgrunnlagperiodeFom");
-            verifiserIkkeTomListe(periode.getBeregningsgrunnlagPrStatusOgAndelList(), "BeregningsgrunnlagPrStatusOgAndelList");
-            if (i > 0) {
-                verifiserIkkeTomListe(periode.getPeriodeÅrsaker(), "PeriodeÅrsaker");
+            if (perioderTilVurderingTjeneste.erTilVurdering(periode.getPeriode())) {
+                Objects.requireNonNull(periode.getBeregningsgrunnlagPeriodeFom(), "BeregningsgrunnlagperiodeFom");
+                verifiserIkkeTomListe(periode.getBeregningsgrunnlagPrStatusOgAndelList(), "BeregningsgrunnlagPrStatusOgAndelList");
+                if (i > 0) {
+                    verifiserIkkeTomListe(periode.getPeriodeÅrsaker(), "PeriodeÅrsaker");
+                }
             }
         }
     }
@@ -85,13 +88,13 @@ public final class BeregningsgrunnlagVerifiserer {
     }
 
     public static void verifiserForeslåttBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
-        verifiserOppdatertBeregningsgrunnlag(beregningsgrunnlag);
+        verifiserOppdatertBeregningsgrunnlag(beregningsgrunnlag, new PerioderTilVurderingTjeneste(null, beregningsgrunnlag));
         beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p, verifiserForeslåttDel1Andel(p)));
         verifiserSammenligningsgrunnlag(beregningsgrunnlag);
     }
 
     public static void verifiserFortsettForeslåttBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
-        verifiserOppdatertBeregningsgrunnlag(beregningsgrunnlag);
+        verifiserOppdatertBeregningsgrunnlag(beregningsgrunnlag, new PerioderTilVurderingTjeneste(null, beregningsgrunnlag));
         beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p, verifiserForeslåttDel2Andel(p)));
         verifiserSammenligningsgrunnlag(beregningsgrunnlag);
     }
@@ -109,7 +112,7 @@ public final class BeregningsgrunnlagVerifiserer {
 
     private static void verifiserFordeltBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag, List<Intervall> forlengelseperioder) {
         var perioderTilVurderingTjeneste = new PerioderTilVurderingTjeneste(forlengelseperioder, beregningsgrunnlag);
-        verifiserOppdatertBeregningsgrunnlag(beregningsgrunnlag);
+        verifiserOppdatertBeregningsgrunnlag(beregningsgrunnlag, perioderTilVurderingTjeneste);
         beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
                 .filter(p -> perioderTilVurderingTjeneste.erTilVurdering(p.getPeriode())).forEach(p -> verfiserBeregningsgrunnlagAndeler(p, BeregningsgrunnlagVerifiserer::verifiserFordeltAndel));
         verifiserSammenligningsgrunnlag(beregningsgrunnlag);

@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.BeregningstidspunktTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
@@ -172,7 +173,7 @@ public class TilkommetInntektsforholdTjeneste {
                             return ansettelsesTidslinje.disjoint(permisjonTidslinje)
                                     .toSegments().stream()
                                     .map(LocalDateSegment::getLocalDateInterval)
-                                    .filter(p -> p.getTomDato().isAfter(skjæringstidspunkt.minusDays(1)))
+                                    .filter(p -> p.getTomDato().isAfter(BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunkt)))
                                     .map(p -> new LocalDateSegment<>(
                                             p.getFomDato(),
                                             p.getTomDato(),
