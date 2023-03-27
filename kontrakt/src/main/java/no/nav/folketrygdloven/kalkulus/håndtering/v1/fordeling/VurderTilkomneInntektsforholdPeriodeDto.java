@@ -20,7 +20,7 @@ import jakarta.validation.constraints.Size;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class VurderTilkomneInntektsforholdPeriodeDto {
 
-    @JsonProperty("andeler")
+    @JsonProperty("tilkomneInntektsforhold")
     @Valid
     @Size(min = 1, max = 100)
     private List<NyttInntektsforholdDto> tilkomneInntektsforhold;
