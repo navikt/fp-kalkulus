@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.felles.BeregningstidspunktTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
@@ -51,7 +52,7 @@ public class LønnsendringTjeneste {
         // Vi teller ikkje med første dag, siden man då har ein heil måned med inntekt å beregne fra
         BiPredicate<BeregningsgrunnlagPrStatusOgAndelDto, LocalDate> harLønnsendringISisteMåned = (andel, dato) -> {
             LocalDate fom = beregningsgrunnlag.getSkjæringstidspunkt().minusMonths(1).withDayOfMonth(2);
-            return Intervall.fraOgMedTilOgMed(fom, beregningsgrunnlag.getSkjæringstidspunkt()).inkluderer(dato);
+            return Intervall.fraOgMedTilOgMed(fom, BeregningstidspunktTjeneste.finnBeregningstidspunkt(beregningsgrunnlag.getSkjæringstidspunkt())).inkluderer(dato);
         };
         return finnYrkesaktiviteterMedLønnsendringIBeregningsperiode(beregningsgrunnlag, iayGrunnlag, inntektsmeldinger, harLønnsendringISisteMåned);
     }
@@ -68,10 +69,10 @@ public class LønnsendringTjeneste {
                                                                                                                    Collection<InntektsmeldingDto> inntektsmeldinger) {
         BiPredicate<BeregningsgrunnlagPrStatusOgAndelDto, LocalDate> datoErInkludertIRelevantPeriode = (andel, dato) -> {
             var stp = beregningsgrunnlag.getSkjæringstidspunkt();
-            if (andel.getBeregningsperiode().getTomDato().isBefore(stp.minusDays(1))) {
+            if (andel.getBeregningsperiode().getTomDato().isBefore(BeregningstidspunktTjeneste.finnBeregningstidspunkt(stp))) {
                 var periodeFraTomTilStp = Intervall.fraOgMedTilOgMed(
                         andel.getBeregningsperiode().getTomDato().plusDays(1),
-                        stp.minusDays(1));
+                        BeregningstidspunktTjeneste.finnBeregningstidspunkt(stp));
                 return andel.getBeregningsperiode().inkluderer(dato) || periodeFraTomTilStp.inkluderer(dato);
             }
             return andel.getBeregningsperiode().inkluderer(dato);
