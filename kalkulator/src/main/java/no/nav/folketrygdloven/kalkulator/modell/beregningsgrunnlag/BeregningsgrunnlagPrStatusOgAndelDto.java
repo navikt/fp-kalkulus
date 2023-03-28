@@ -36,15 +36,25 @@ public class BeregningsgrunnlagPrStatusOgAndelDto implements IndexKey {
     private OpptjeningAktivitetType arbeidsforholdType;
     @SjekkVedKopiering
     private Årsgrunnlag grunnlagPrÅr = new Årsgrunnlag();
+    @SjekkVedKopiering
     private BigDecimal avkortetPrÅr;
+    @SjekkVedKopiering
     private BigDecimal redusertPrÅr;
+    @SjekkVedKopiering
     private BigDecimal maksimalRefusjonPrÅr;
+    @SjekkVedKopiering
     private BigDecimal avkortetRefusjonPrÅr;
+    @SjekkVedKopiering
     private BigDecimal redusertRefusjonPrÅr;
+    @SjekkVedKopiering
     private BigDecimal avkortetBrukersAndelPrÅr;
+    @SjekkVedKopiering
     private BigDecimal redusertBrukersAndelPrÅr;
+    @SjekkVedKopiering
     private Long dagsatsBruker;
+    @SjekkVedKopiering
     private Long dagsatsArbeidsgiver;
+    @SjekkVedKopiering
     private BigDecimal avkortetFørGraderingPrÅr;
     @SjekkVedKopiering
     private BigDecimal pgiSnitt;
