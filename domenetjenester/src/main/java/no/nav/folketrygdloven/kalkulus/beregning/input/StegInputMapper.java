@@ -5,7 +5,6 @@ import static no.nav.folketrygdloven.kalkulus.beregning.MapStegTilTilstand.mapTi
 
 import java.time.LocalDate;
 import java.time.MonthDay;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,7 +21,6 @@ import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.input.VurderBeregningsgrunnlagvilkårInput;
 import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
@@ -133,6 +131,9 @@ class StegInputMapper {
         return new StegProsesseringInput(beregningsgrunnlagInput, mapTilStegTilstand(stegType))
                 .medForrigeGrunnlagFraStegUt(grunnlagFraStegUt.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).orElse(null))
                 .medForrigeGrunnlagFraSteg(grunnlagFraSteg.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).orElse(null))
+                .medOriginalGrunnlagFraSteg(beregningsgrunnlagRepository.hentOriginalGrunnlagForTilstand(kobling.getId(), mapTilStegTilstand(stegType))
+                        .map(BehandlingslagerTilKalkulusMapper::mapGrunnlag)
+                        .orElse(null))
                 .medStegUtTilstand(mapTilStegUtTilstand(stegType).orElse(null));
     }
 
@@ -163,11 +164,6 @@ class StegInputMapper {
                     .orElse(fordelBeregningsgrunnlagInput);
         }
         return fordelBeregningsgrunnlagInput;
-    }
-
-    private List<Intervall> mapIntervaller(List<IntervallEntitet> forlengelseperioder) {
-        return forlengelseperioder != null ?
-                forlengelseperioder.stream().map(p -> Intervall.fraOgMedTilOgMed(p.getFomDato(), p.getTomDato())).toList() : Collections.emptyList();
     }
 
     private FullføreBeregningsgrunnlagInput lagInputFullføre(StegProsesseringInput stegProsesseringInput, Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet) {

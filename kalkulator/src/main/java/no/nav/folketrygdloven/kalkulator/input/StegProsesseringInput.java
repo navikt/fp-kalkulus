@@ -10,7 +10,9 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.KravperioderPrArbeidsforhold
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 
-/** Inputstruktur for beregningsgrunnlag tjenester. */
+/**
+ * Inputstruktur for beregningsgrunnlag tjenester.
+ */
 public class StegProsesseringInput extends BeregningsgrunnlagInput {
 
     /**
@@ -23,11 +25,21 @@ public class StegProsesseringInput extends BeregningsgrunnlagInput {
      */
     protected BeregningsgrunnlagTilstand stegUtTilstand;
 
-    /** Forrige grunnlag for steg-ut-tilstand */
+    /**
+     * Forrige grunnlag for steg-ut-tilstand
+     */
     private BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraStegUt;
 
-    /** Forrige grunnlag for steg-tilstand */
+    /**
+     * Forrige grunnlag for steg-tilstand
+     */
     private BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraSteg;
+
+
+    /**
+     * Grunnlag for steg-tilstand fra original behandling
+     */
+    private BeregningsgrunnlagGrunnlagDto originalGrunnlagFraSteg;
 
     public StegProsesseringInput(BeregningsgrunnlagInput input, BeregningsgrunnlagTilstand stegTilstand) {
         super(input);
@@ -48,6 +60,7 @@ public class StegProsesseringInput extends BeregningsgrunnlagInput {
         super(input);
         this.forrigeGrunnlagFraSteg = input.getForrigeGrunnlagFraSteg().orElse(null);
         this.forrigeGrunnlagFraStegUt = input.getForrigeGrunnlagFraStegUt().orElse(null);
+        this.originalGrunnlagFraSteg = input.getOriginalGrunnlagFraSteg().orElse(null);
         this.stegTilstand = input.getStegTilstand();
         this.stegUtTilstand = input.getStegUtTilstandHvisFinnes().orElse(null);
     }
@@ -60,6 +73,10 @@ public class StegProsesseringInput extends BeregningsgrunnlagInput {
         return Optional.ofNullable(forrigeGrunnlagFraSteg);
     }
 
+
+    public Optional<BeregningsgrunnlagGrunnlagDto> getOriginalGrunnlagFraSteg() {
+        return Optional.ofNullable(originalGrunnlagFraSteg);
+    }
 
     public BeregningsgrunnlagTilstand getStegTilstand() {
         return stegTilstand;
@@ -86,6 +103,12 @@ public class StegProsesseringInput extends BeregningsgrunnlagInput {
     public StegProsesseringInput medForrigeGrunnlagFraSteg(BeregningsgrunnlagGrunnlagDto grunnlag) {
         var newInput = new StegProsesseringInput(this);
         newInput.forrigeGrunnlagFraSteg = grunnlag;
+        return newInput;
+    }
+
+    public StegProsesseringInput medOriginalGrunnlagFraSteg(BeregningsgrunnlagGrunnlagDto grunnlag) {
+        var newInput = new StegProsesseringInput(this);
+        newInput.originalGrunnlagFraSteg = grunnlag;
         return newInput;
     }
 

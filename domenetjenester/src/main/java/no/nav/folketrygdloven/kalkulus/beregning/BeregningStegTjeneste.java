@@ -258,7 +258,7 @@ public class BeregningStegTjeneste {
     private void lagreOgKopier(StegProsesseringInput input,
                                BeregningResultatAggregat resultat) {
         // Validering ved forlengelse og kopier bg utenfor forlengelseperioder
-        var forlengetGrunnlag = forlengelseTjeneste.forlengEksisterendeBeregningsgrunnlag(input.getForlengelseperioder(), resultat.getBeregningsgrunnlagGrunnlag(), input.getForrigeGrunnlagFraSteg());
+        var forlengetGrunnlag = forlengelseTjeneste.forlengEksisterendeBeregningsgrunnlag(input.getForlengelseperioder(), resultat.getBeregningsgrunnlagGrunnlag(), input.getOriginalGrunnlagFraSteg());
 
         // Lagring av grunnlag fra steg
         repository.lagre(input.getKoblingId(), mapGrunnlag(forlengetGrunnlag), input.getStegTilstand());
