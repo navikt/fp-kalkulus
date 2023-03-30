@@ -35,7 +35,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontr
 import no.nav.folketrygdloven.kalkulus.request.v1.BeregnForRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.HåndterBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.KalkulusRespons;
-import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.forlengelse.ForlengelseTjeneste;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
@@ -235,7 +234,7 @@ public class OperereKalkulusOrkestrerer {
 
         private BeregningsgrunnlagTilstand finnTilstandFraDto(Map<Long, HåndterBeregningDto> håndterBeregningDtoPrKobling) {
             List<BeregningsgrunnlagTilstand> tilstander = håndterBeregningDtoPrKobling.values().stream().map(HåndterBeregningDto::getAvklaringsbehovDefinisjon)
-                    .map(a  -> mapTilStegUtTilstand(a.getStegFunnet()).orElseThrow())
+                    .map(a -> mapTilStegUtTilstand(a.getStegFunnet()).orElseThrow())
                     .distinct()
                     .collect(Collectors.toList());
             if (tilstander.size() > 1) {
@@ -276,12 +275,9 @@ public class OperereKalkulusOrkestrerer {
         @Override
         public KalkulusRespons utfør(BeregningsgrunnlagInput beregningsgrunnlagInput) {
             KalkulusRespons response;
-            try {
-                MDC.put("koblingId", beregningsgrunnlagInput.getKoblingId());
-                response = beregningStegTjeneste.beregnFor(beregningSteg, (StegProsesseringInput) beregningsgrunnlagInput);
-            } finally {
-                MDC.remove("koblingId");
-            }
+            MDC.put("prosess_koblingId", beregningsgrunnlagInput.getKoblingId());
+            response = beregningStegTjeneste.beregnFor(beregningSteg, (StegProsesseringInput) beregningsgrunnlagInput);
+            MDC.remove("prosess_koblingId");
             return response;
         }
     }
