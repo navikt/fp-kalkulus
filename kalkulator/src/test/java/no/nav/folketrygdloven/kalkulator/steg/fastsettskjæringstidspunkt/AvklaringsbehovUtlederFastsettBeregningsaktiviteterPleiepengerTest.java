@@ -1,13 +1,11 @@
 package no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -105,8 +103,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterPleiepengerTest 
         assertThat(beregningAvklaringsbehovResultat.getVentefrist())
                 .isNotNull()
                 .isAfterOrEqualTo(frist)
-                .isBeforeOrEqualTo(frist.plusDays(2))
-                .isCloseTo(frist, within(2, ChronoUnit.DAYS));
+                .isBeforeOrEqualTo(frist.plusDays(4)); //utledning tar hensyn til bevegelige helligdager. Gir testen slack for å tillate det.
     }
 
     private BeregningsgrunnlagRegelResultat lagRegelresultat() {
