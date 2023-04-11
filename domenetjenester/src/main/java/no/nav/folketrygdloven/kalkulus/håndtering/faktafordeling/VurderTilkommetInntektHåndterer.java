@@ -18,7 +18,7 @@ class VurderTilkommetInntektHåndterer implements BeregningHåndterer<VurderTilk
     public HåndteringResultat håndter(VurderTilkommetInntektHåndteringDto dto, HåndterBeregningsgrunnlagInput beregningsgrunnlagInput) {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = VurderTilkommetInntektTjeneste.løsAvklaringsbehov(dto, beregningsgrunnlagInput);
         BeregningsgrunnlagGrunnlagDto grunnlagFraSteg = beregningsgrunnlagInput.getBeregningsgrunnlagGrunnlag();
-        var endring = UtledEndring.utled(nyttGrunnlag, grunnlagFraSteg, beregningsgrunnlagInput.getForrigeGrunnlagFraHåndteringTilstand(), dto, beregningsgrunnlagInput.getIayGrunnlag());
+        var endring = UtledEndring.forTilkommetInntekt().utled(nyttGrunnlag, grunnlagFraSteg, beregningsgrunnlagInput.getForrigeGrunnlagFraHåndteringTilstand(), dto, beregningsgrunnlagInput.getIayGrunnlag());
         return new HåndteringResultat(nyttGrunnlag, endring);
     }
 

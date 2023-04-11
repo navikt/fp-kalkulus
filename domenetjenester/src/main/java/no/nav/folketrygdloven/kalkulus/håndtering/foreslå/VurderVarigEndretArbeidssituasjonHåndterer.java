@@ -22,7 +22,7 @@ class VurderVarigEndretArbeidssituasjonHåndterer implements BeregningHåndterer
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = VurderVarigEndretEllerNyoppstartetHåndterer.håndter(beregningsgrunnlagInput, dto.getBruttoBeregningsgrunnlag(), AktivitetStatus.BRUKERS_ANDEL);
         Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag = beregningsgrunnlagInput.getForrigeGrunnlagFraHåndteringTilstand();
         BeregningsgrunnlagGrunnlagDto grunnlagFraSteg = beregningsgrunnlagInput.getBeregningsgrunnlagGrunnlag();
-        var endring = UtledEndring.utled(nyttGrunnlag, grunnlagFraSteg, forrigeGrunnlag, dto, beregningsgrunnlagInput.getIayGrunnlag());
+        var endring = UtledEndring.standard().utled(nyttGrunnlag, grunnlagFraSteg, forrigeGrunnlag, dto, beregningsgrunnlagInput.getIayGrunnlag());
         return new HåndteringResultat(nyttGrunnlag, endring);
     }
 

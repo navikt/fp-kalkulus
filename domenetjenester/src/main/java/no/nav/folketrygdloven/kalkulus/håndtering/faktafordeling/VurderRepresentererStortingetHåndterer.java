@@ -19,7 +19,7 @@ public class VurderRepresentererStortingetHåndterer implements BeregningHåndte
     public HåndteringResultat håndter(VurderRepresentererStortingetHåndteringDto dto, HåndterBeregningsgrunnlagInput beregningsgrunnlagInput) {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = VurderRepresentererStortingetTjeneste.løsAvklaringsbehov(dto, beregningsgrunnlagInput);
         BeregningsgrunnlagGrunnlagDto grunnlagFraSteg = beregningsgrunnlagInput.getBeregningsgrunnlagGrunnlag();
-        var endring = UtledEndring.utled(nyttGrunnlag,  grunnlagFraSteg, beregningsgrunnlagInput.getForrigeGrunnlagFraHåndteringTilstand(), dto, beregningsgrunnlagInput.getIayGrunnlag());
+        var endring = UtledEndring.standard().utled(nyttGrunnlag,  grunnlagFraSteg, beregningsgrunnlagInput.getForrigeGrunnlagFraHåndteringTilstand(), dto, beregningsgrunnlagInput.getIayGrunnlag());
         return new HåndteringResultat(nyttGrunnlag, endring);
     }
 

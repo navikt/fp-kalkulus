@@ -15,8 +15,8 @@ import no.nav.folketrygdloven.kalkulus.håndtering.faktaberegning.UtledFaktaOmBe
 import no.nav.folketrygdloven.kalkulus.håndtering.foreslå.UtledVarigEndringEllerNyoppstartetVurderinger;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FaktaOmBeregningHåndteringDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.VurderVarigEndringEllerNyoppstartetSNHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.VurderVarigEndretArbeidssituasjonHåndteringDto;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.VurderVarigEndringEllerNyoppstartetSNHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningsgrunnlagEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningsgrunnlagPeriodeEndring;
@@ -27,15 +27,25 @@ import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.VarigEndretEllerN
 
 public class UtledEndring {
 
-    private UtledEndring() {
-        // skjul
+    private boolean tillatSplittPeriode;
+
+    private UtledEndring(boolean tillatSplittPeriode) {
+        this.tillatSplittPeriode = tillatSplittPeriode;
     }
 
-    public static Endringer utled(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto,
-                                  BeregningsgrunnlagGrunnlagDto grunnlagFraSteg,
-                                  Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag,
-                                  HåndterBeregningDto dto,
-                                  InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+    public static UtledEndring standard() {
+        return new UtledEndring(false);
+    }
+
+    public static UtledEndring forTilkommetInntekt() {
+        return new UtledEndring(true);
+    }
+
+    public Endringer utled(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto,
+                           BeregningsgrunnlagGrunnlagDto grunnlagFraSteg,
+                           Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag,
+                           HåndterBeregningDto dto,
+                           InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         var endringBuilder = Endringer.ny();
         BeregningsgrunnlagDto beregningsgrunnlagDto = beregningsgrunnlagGrunnlagDto.getBeregningsgrunnlag()
                 .orElseThrow(() -> new IllegalArgumentException("Skal ha beregningsgrunnlag her"));
@@ -88,29 +98,31 @@ public class UtledEndring {
     }
 
     private static Optional<FaktaOmBeregningVurderinger> mapFaktaOmBeregningEndring(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto, Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag, HåndterBeregningDto dto, Endringer.Builder endringBuilder) {
-        if (dto instanceof FaktaOmBeregningHåndteringDto) {
+        if (dto instanceof FaktaOmBeregningHåndteringDto faktaOmBeregningHåndteringDto) {
             return Optional.ofNullable(UtledFaktaOmBeregningVurderinger.utled(
-                    (FaktaOmBeregningHåndteringDto) dto,
+                    faktaOmBeregningHåndteringDto,
                     beregningsgrunnlagGrunnlagDto.getFaktaAggregat(),
                     forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getFaktaAggregat)));
         }
         return Optional.empty();
     }
 
-    private static BeregningsgrunnlagEndring utledBeregningsgrunnlagEndring(BeregningsgrunnlagDto beregningsgrunnlagEntitet, BeregningsgrunnlagDto bgFraSteg, Optional<BeregningsgrunnlagDto> forrigeBeregningsgrunnlagOpt) {
+    private BeregningsgrunnlagEndring utledBeregningsgrunnlagEndring(BeregningsgrunnlagDto beregningsgrunnlagEntitet, BeregningsgrunnlagDto bgFraSteg, Optional<BeregningsgrunnlagDto> forrigeBeregningsgrunnlagOpt) {
         List<BeregningsgrunnlagPeriodeDto> perioder = beregningsgrunnlagEntitet.getBeregningsgrunnlagPerioder();
         List<BeregningsgrunnlagPeriodeDto> perioderFraSteg = bgFraSteg.getBeregningsgrunnlagPerioder();
         List<BeregningsgrunnlagPeriodeDto> forrigePerioder = forrigeBeregningsgrunnlagOpt.map(BeregningsgrunnlagDto::getBeregningsgrunnlagPerioder).orElse(Collections.emptyList());
-        List<BeregningsgrunnlagPeriodeEndring> beregningsgrunnlagPeriodeEndringer = utledPeriodeEndringer(perioder, perioderFraSteg, forrigePerioder);
+        List<BeregningsgrunnlagPeriodeEndring> beregningsgrunnlagPeriodeEndringer = tillatSplittPeriode
+                ? utledPeriodeEndringerMedSplittingTillatt(perioder, perioderFraSteg, forrigePerioder)
+                : utledPeriodeEndringerUtenSplittingTillatt(perioder, perioderFraSteg, forrigePerioder);
         return beregningsgrunnlagPeriodeEndringer.isEmpty() ? null : new BeregningsgrunnlagEndring(beregningsgrunnlagPeriodeEndringer);
     }
 
-    private static List<BeregningsgrunnlagPeriodeEndring> utledPeriodeEndringer(List<BeregningsgrunnlagPeriodeDto> perioder, List<BeregningsgrunnlagPeriodeDto> perioderFraSteg, List<BeregningsgrunnlagPeriodeDto> forrigePerioder) {
+    private List<BeregningsgrunnlagPeriodeEndring> utledPeriodeEndringerUtenSplittingTillatt(List<BeregningsgrunnlagPeriodeDto> perioder, List<BeregningsgrunnlagPeriodeDto> perioderFraSteg, List<BeregningsgrunnlagPeriodeDto> forrigePerioder) {
         return perioder.stream()
                 .map(p -> {
-                    BeregningsgrunnlagPeriodeDto periodeFraSteg = finnPeriode(perioderFraSteg, p.getBeregningsgrunnlagPeriodeFom())
-                            .orElseThrow(() -> new IllegalStateException("Skal ikke ha endring i periode fra steg"));
-                    Optional<BeregningsgrunnlagPeriodeDto> forrigePeriode = finnPeriode(forrigePerioder, p.getBeregningsgrunnlagPeriodeFom());
+                    BeregningsgrunnlagPeriodeDto periodeFraSteg = finnPeriodeEksaktMatchMotFom(perioderFraSteg, p.getBeregningsgrunnlagPeriodeFom())
+                            .orElseThrow(() -> new IllegalStateException("Skal ikke ha endring i periode fra steg. Fant ikke periode med fom " + p.getBeregningsgrunnlagPeriodeFom() + ", har " + perioderFraSteg.stream().map(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPeriodeFom).toList()));
+                    Optional<BeregningsgrunnlagPeriodeDto> forrigePeriode = finnPeriodeEksaktMatchMotFom(forrigePerioder, p.getBeregningsgrunnlagPeriodeFom());
                     return UtledEndringIPeriode.utled(p, periodeFraSteg, forrigePeriode);
                 })
                 .filter(Optional::isPresent)
@@ -118,7 +130,29 @@ public class UtledEndring {
                 .collect(Collectors.toList());
     }
 
-    private static Optional<BeregningsgrunnlagPeriodeDto> finnPeriode(List<BeregningsgrunnlagPeriodeDto> forrigePerioder, LocalDate beregningsgrunnlagPeriodeFom) {
+    private List<BeregningsgrunnlagPeriodeEndring> utledPeriodeEndringerMedSplittingTillatt(List<BeregningsgrunnlagPeriodeDto> perioder, List<BeregningsgrunnlagPeriodeDto> perioderFraSteg, List<BeregningsgrunnlagPeriodeDto> forrigePerioder) {
+        return perioder.stream()
+                .map(p -> {
+                    BeregningsgrunnlagPeriodeDto periodeFraSteg = finnPeriodeMedEvtSplitt(perioderFraSteg, p.getBeregningsgrunnlagPeriodeFom())
+                            .orElseThrow(() -> new IllegalStateException("Fant ikke periode som overlapper med fom " + p.getBeregningsgrunnlagPeriodeFom() + ", har " + perioderFraSteg.stream().map(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPeriodeFom).toList()));
+                    Optional<BeregningsgrunnlagPeriodeDto> forrigePeriode = finnPeriodeMedEvtSplitt(forrigePerioder, p.getBeregningsgrunnlagPeriodeFom());
+                    return UtledEndringIPeriode.utled(p, periodeFraSteg, forrigePeriode);
+                })
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+    }
+
+
+    private static Optional<BeregningsgrunnlagPeriodeDto> finnPeriodeEksaktMatchMotFom(List<BeregningsgrunnlagPeriodeDto> forrigePerioder, LocalDate beregningsgrunnlagPeriodeFom) {
         return forrigePerioder.stream().filter(p -> p.getBeregningsgrunnlagPeriodeFom().equals(beregningsgrunnlagPeriodeFom)).findFirst();
+    }
+
+    private static Optional<BeregningsgrunnlagPeriodeDto> finnPeriodeMedEvtSplitt(List<BeregningsgrunnlagPeriodeDto> perioder, LocalDate beregningsgrunnlagPeriodeFom) {
+        return perioder.stream()
+                .filter(p -> p.getPeriode().inkluderer(beregningsgrunnlagPeriodeFom))
+                .reduce((a, b) -> {
+                    throw new IllegalStateException("Fant flere enn 1 periode som overlappet med " + beregningsgrunnlagPeriodeFom);
+                });
     }
 }
