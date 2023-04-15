@@ -25,31 +25,49 @@ import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class KalkulatorInputDto {
 
+    /**
+     * Informasjon vedrørende datoer for refusjon pr arbeidsgiver
+     */
     @JsonProperty(value = "refusjonskravDatoer")
     @Valid
     @Size()
     @Deprecated(forRemoval = true)
     private List<RefusjonskravDatoDto> refusjonskravDatoer;
 
+    /**
+     * Informasjon vedrørende refusjonskrav pr arbeidsgiver
+     */
     @JsonProperty(value = "refusjonskravPrArbeidsgiver")
     @Valid
     @Size()
     private List<KravperioderPrArbeidsforhold> refusjonskravPrArbeidsforhold;
 
+    /**
+     * Aggregat for inntekt, arbeid og ytelser
+     */
     @JsonProperty(value = "iayGrunnlag", required = true)
     @NotNull
     @Valid
     private InntektArbeidYtelseGrunnlagDto iayGrunnlag;
 
+    /**
+     * Aktiviteter som skal brukes i utledning av aktivitetstatus på skjæringstidspunktet
+     */
     @JsonProperty(value = "opptjeningAktiviteter", required = true)
     @NotNull
     @Valid
     private OpptjeningAktiviteterDto opptjeningAktiviteter;
 
+    /**
+     * Ytelsesspesifikt grunnlag
+     */
     @JsonProperty(value = "ytelsespesifiktGrunnlag")
     @Valid
     private YtelsespesifiktGrunnlagDto ytelsespesifiktGrunnlag;
 
+    /**
+     * Skjæringstidspunkt for ytelse
+     */
     @JsonProperty(value = "skjæringstidspunkt")
     @Valid
     @NotNull

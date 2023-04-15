@@ -21,26 +21,44 @@ import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittOpptjeningDto;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class InntektArbeidYtelseGrunnlagDto {
 
+    /**
+     * Informasjon om arbeid og arbeidsperioder fra med kilde aa-reg
+     */
     @JsonProperty(value = "arbeidDto")
     @Valid
     private ArbeidDto arbeidDto;
 
+    /**
+     * Informasjon om inntekter. Kilder er Sigrun og A-inntekt
+     */
     @JsonProperty(value = "inntekterDto")
     @Valid
     private InntekterDto inntekterDto;
 
+    /**
+     * Informasjon om ytelse. Kilder er arena, infotrygd, fp-sak, k9-sak og SPokelse
+     */
     @JsonProperty(value = "ytelserDto")
     @Valid
     private YtelserDto ytelserDto;
 
+    /**
+     * Informasjon om opptjening som er oppgitt av bruker
+     */
     @JsonProperty(value = "oppgittOpptjening")
     @Valid
     private OppgittOpptjeningDto oppgittOpptjening;
 
+    /**
+     * Inntektsmeldinger
+     */
     @JsonProperty(value = "inntektsmeldinger")
     @Valid
     private InntektsmeldingerDto inntektsmeldinger;
 
+    /**
+     * Informasjon om overstyring av arbeidsforholdinformasjon
+     */
     @JsonProperty(value = "arbeidsforholdInformasjon")
     @Valid
     private ArbeidsforholdInformasjonDto arbeidsforholdInformasjon;
