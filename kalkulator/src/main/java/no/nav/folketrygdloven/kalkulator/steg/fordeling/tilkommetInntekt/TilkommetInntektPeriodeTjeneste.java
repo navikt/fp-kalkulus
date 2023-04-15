@@ -42,7 +42,7 @@ public class TilkommetInntektPeriodeTjeneste {
 
 
     /**
-     * Det er bestemt at gradering mot inntekt ved tilkommet aktivitet skal gjelde perioder fom 1.4.2023.
+     * Det er bestemt at gradering mot inntekt ved tilkommet aktivitet skal gjelde perioder fom 1.5.2023.
      */
     public static final LocalDate FOM_DATO_GRADERING_MOT_INNTEKT = LocalDate.of(2023, 5, 1);
 

@@ -54,7 +54,8 @@ class FinnArbeidstakerInntektTidslinje {
                 .filterValue(v -> !v.isEmpty());
     }
 
-    public static LocalDateSegment<Set<TilkommetInntektsforholdTjeneste.Inntektsforhold>> kunGyldigePeriodeForInntekt(LocalDateInterval di, LocalDateSegment<Set<TilkommetInntektsforholdTjeneste.Inntektsforhold>> lhs, LocalDateSegment<Set<Arbeidsgiver>> rhs) {
+    public static LocalDateSegment<Set<TilkommetInntektsforholdTjeneste.Inntektsforhold>> kunGyldigePeriodeForInntekt(LocalDateInterval di, LocalDateSegment<Set<TilkommetInntektsforholdTjeneste.Inntektsforhold>> lhs,
+                                                                                                                      LocalDateSegment<Set<Arbeidsgiver>> rhs) {
         if (lhs != null) {
 
             var aktiveInntektsforhold = lhs.getValue().stream()
@@ -69,4 +70,5 @@ class FinnArbeidstakerInntektTidslinje {
     private static boolean erIkkeArbeidstakerEllerHarInntektSomArbeidstaker(LocalDateSegment<Set<Arbeidsgiver>> rhs, TilkommetInntektsforholdTjeneste.Inntektsforhold it) {
         return !it.aktivitetStatus().erArbeidstaker() || (rhs != null && rhs.getValue().stream().anyMatch(i -> i.equals(it.arbeidsgiver())));
     }
+
 }

@@ -73,7 +73,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
     }
 
     @Test
-    void skal_ikke_finne_tilkommet_andel_dersom_en_andel_fra_start_og_direkte_overgang_uten_overlap_til_nytt_arbeid() {
+    void skal_finne_tilkommet_andel_dersom_en_andel_fra_start_og_direkte_overgang_uten_overlap_til_nytt_arbeid() {
 
         var arbeidsgiver = Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR);
         var arbeidstakerandelFraStart = lagArbeidstakerandel(arbeidsgiver, 1L, AndelKilde.PROSESS_START, InternArbeidsforholdRefDto.nullRef());
@@ -93,7 +93,8 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
         var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(10), STP.plusDays(15));
         var tilkomneAndeler = finnTilkomneAndeler(periode, List.of(yrkesaktivitet, nyYrkesaktivitet), List.of(arbeidstakerandelFraStart, nyAndel), utbetalingsgradGrunnlag, STP);
 
-        assertThat(tilkomneAndeler.isEmpty()).isTrue();
+        assertThat(tilkomneAndeler.size()).isEqualTo(1);
+        assertThat(tilkomneAndeler.iterator().next().arbeidsgiver()).isEqualTo(arbeidsgiver2);
     }
 
     @Test
@@ -314,7 +315,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
     }
 
     @Test
-    void skal_ikke_finne_tilkommet_andel_dersom_en_frilansandel_og_en_arbeidstakerandel_fra_start_med_direkte_overgang_til_nytt_arbeid() {
+    void skal_finne_tilkommet_andel_dersom_en_frilansandel_og_en_arbeidstakerandel_fra_start_med_direkte_overgang_til_nytt_arbeid() {
         var frilansandelFraStart = lagFrilansandel(1L, AndelKilde.PROSESS_START);
         var utbetalingsgradFraStart = new UtbetalingsgradPrAktivitetDto(lagFrilansAktivitet(), lagUtbetalingsgrader(50, STP, STP.plusDays(20)));
 
@@ -335,10 +336,12 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
 
 
         var periode = Intervall.fraOgMedTilOgMed(STP.plusDays(10), STP.plusDays(15));
-        var tilkomneAndeler = finnTilkomneAndeler(periode, List.of(yrkesaktivitet, nyYrkesaktivitet), List.of(frilansandelFraStart, atFraStart, nyAndel),
+        var tilkommetAktivitet = finnTilkomneAndeler(periode, List.of(yrkesaktivitet, nyYrkesaktivitet), List.of(frilansandelFraStart, atFraStart, nyAndel),
                 new PleiepengerSyktBarnGrunnlag(List.of(utbetalingsgradFraStart, utbetalingsgradATFraStart, utbetalingsgradNyAndel)), STP);
 
-        assertThat(tilkomneAndeler.isEmpty()).isTrue();
+        assertThat(tilkommetAktivitet.size()).isEqualTo(1);
+        var iterator = tilkommetAktivitet.iterator();
+        assertThat(iterator.next().arbeidsgiver()).isEqualTo(arbeidsgiver2);
     }
 
     @Test
