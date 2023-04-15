@@ -12,11 +12,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import no.nav.folketrygdloven.kalkulator.felles.inntektgradering.ForeslåInntektGraderingForUendretResultat;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
-import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
@@ -27,16 +25,12 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.StatusOgArbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt.TilkommetInntektsforholdTjeneste;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.InntektsforholdDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.VurderInntektsforholdPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.VurderNyttInntektsforholdDto;
-import no.nav.fpsak.tidsserie.LocalDateSegment;
-import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
 public class VurderNyeInntektsforholdDtoTjeneste {
 
@@ -49,26 +43,19 @@ public class VurderNyeInntektsforholdDtoTjeneste {
         var iayGrunnlag = input.getIayGrunnlag();
         var ytelsespesifiktGrunnlag = input.getYtelsespesifiktGrunnlag();
 
-        return lagVurderNyttInntektsforholdDto(beregningsgrunnlag, iayGrunnlag, ytelsespesifiktGrunnlag, input.getFagsakYtelseType(), input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling());
+        return lagVurderNyttInntektsforholdDto(beregningsgrunnlag, iayGrunnlag, ytelsespesifiktGrunnlag,
+                input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling());
     }
 
-    public static VurderNyttInntektsforholdDto lagVurderNyttInntektsforholdDto(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, FagsakYtelseType fagsakYtelseType, List<BeregningsgrunnlagGrunnlagDto> beregningsgrunnlagGrunnlagFraForrigeBehandling) {
-        var tidslinje = TilkommetInntektsforholdTjeneste.finnTilkommetInntektsforholdTidslinje(beregningsgrunnlag.getSkjæringstidspunkt(),
-                5, beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
-                (UtbetalingsgradGrunnlag) ytelsespesifiktGrunnlag,
-                iayGrunnlag,
-                fagsakYtelseType
-        );
-
-        return getVurderNyttInntektsforholdDto(beregningsgrunnlag, iayGrunnlag, tidslinje, beregningsgrunnlagGrunnlagFraForrigeBehandling, ytelsespesifiktGrunnlag);
-    }
-
-    public static VurderNyttInntektsforholdDto getVurderNyttInntektsforholdDto(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDateTimeline<Set<StatusOgArbeidsgiver>> tidslinje, List<BeregningsgrunnlagGrunnlagDto> beregningsgrunnlagGrunnlagFraForrigeBehandling, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+    public static VurderNyttInntektsforholdDto lagVurderNyttInntektsforholdDto(BeregningsgrunnlagDto beregningsgrunnlag,
+                                                                               InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                                                               YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
+                                                                               List<BeregningsgrunnlagGrunnlagDto> beregningsgrunnlagGrunnlagFraForrigeBehandling) {
         var bgPerioder = beregningsgrunnlag.getBeregningsgrunnlagPerioder();
 
         var periodeListe = bgPerioder.stream()
                 .filter(it -> !it.getTilkomneInntekter().isEmpty())
-                .map(it -> mapPeriode(iayGrunnlag, it, tidslinje, finnPeriodeFraForrigeBehandling(it, beregningsgrunnlagGrunnlagFraForrigeBehandling), ytelsespesifiktGrunnlag))
+                .map(it -> mapPeriode(iayGrunnlag, it, bgPerioder, finnPeriodeFraForrigeBehandling(it, beregningsgrunnlagGrunnlagFraForrigeBehandling), ytelsespesifiktGrunnlag))
                 .collect(Collectors.toList());
 
         if (!periodeListe.isEmpty()) {
@@ -96,20 +83,30 @@ public class VurderNyeInntektsforholdDtoTjeneste {
 
     private static VurderInntektsforholdPeriodeDto mapPeriode(InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                               BeregningsgrunnlagPeriodeDto periode,
-                                                              LocalDateTimeline<Set<StatusOgArbeidsgiver>> inntektsforholdTidslinje, Optional<BeregningsgrunnlagPeriodeDto> forrigePeriode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        var innteksforholdListe = mapInntektforholdDtoListe(iayGrunnlag, periode, inntektsforholdTidslinje, forrigePeriode, ytelsespesifiktGrunnlag);
+                                                              List<BeregningsgrunnlagPeriodeDto> allePerioder,
+                                                              Optional<BeregningsgrunnlagPeriodeDto> forrigePeriode,
+                                                              YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+        var innteksforholdListe = mapInntektforholdDtoListe(iayGrunnlag, periode, allePerioder, forrigePeriode, ytelsespesifiktGrunnlag);
         return new VurderInntektsforholdPeriodeDto(periode.getBeregningsgrunnlagPeriodeFom(), periode.getBeregningsgrunnlagPeriodeTom(), innteksforholdListe.stream().toList());
     }
 
     private static Set<InntektsforholdDto> mapInntektforholdDtoListe(InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                                                     BeregningsgrunnlagPeriodeDto periode, LocalDateTimeline<Set<StatusOgArbeidsgiver>> inntektsforholdTidslinje,
+                                                                     BeregningsgrunnlagPeriodeDto periode,
+                                                                     List<BeregningsgrunnlagPeriodeDto> allePerioder,
                                                                      Optional<BeregningsgrunnlagPeriodeDto> forrigePeriode,
                                                                      YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
 
         return finnTilkomneInntekterForVisning(periode, forrigePeriode, ytelsespesifiktGrunnlag)
                 .stream()
-                .map(a -> mapTilInntektsforhold(a, iayGrunnlag, finnSegmenterSomInneholderInntektsforhold(inntektsforholdTidslinje, a).toList()))
+                .map(a -> mapTilInntektsforhold(a, iayGrunnlag, utledPeriode(a, allePerioder)))
                 .collect(Collectors.toCollection(HashSet::new));
+    }
+
+    private static Periode utledPeriode(TilkommetInntektDto a, List<BeregningsgrunnlagPeriodeDto> allePerioder) {
+        var perioderMedInntekt = allePerioder.stream().filter(it -> it.getTilkomneInntekter().stream().anyMatch(i -> i.matcher(a))).map(BeregningsgrunnlagPeriodeDto::getPeriode).collect(Collectors.toSet());
+        var fom = perioderMedInntekt.stream().map(Intervall::getFomDato).min(Comparator.naturalOrder()).orElseThrow();
+        var tom = perioderMedInntekt.stream().map(Intervall::getTomDato).max(Comparator.naturalOrder()).orElseThrow();
+        return new Periode(fom, tom);
     }
 
     private static List<TilkommetInntektDto> finnTilkomneInntekterForVisning(BeregningsgrunnlagPeriodeDto periode, Optional<BeregningsgrunnlagPeriodeDto> forrigePeriode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
@@ -121,17 +118,8 @@ public class VurderNyeInntektsforholdDtoTjeneste {
         return ForeslåInntektGraderingForUendretResultat.foreslå(periode, forrigePeriode.get(), ytelsespesifiktGrunnlag);
     }
 
-    private static Stream<LocalDateSegment<Set<StatusOgArbeidsgiver>>> finnSegmenterSomInneholderInntektsforhold(LocalDateTimeline<Set<StatusOgArbeidsgiver>> inntektsforholdTidslinje, TilkommetInntektDto a) {
-        return inntektsforholdTidslinje.stream().filter(it -> it.getValue()
-                .contains(new StatusOgArbeidsgiver(a.getAktivitetStatus(), a.getArbeidsgiver().orElse(null))));
-    }
-
-
     private static InntektsforholdDto mapTilInntektsforhold(TilkommetInntektDto tilkommetInntektDto, InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                                            List<LocalDateSegment<Set<StatusOgArbeidsgiver>>> segmenterMedInntektsforhold) {
-
-        Periode periode = utledPeriode(segmenterMedInntektsforhold);
-
+                                                            Periode periode) {
         var inntektsmelding = iayGrunnlag.getInntektsmeldinger().stream()
                 .flatMap(it -> it.getAlleInntektsmeldinger().stream())
                 .filter(im -> Objects.equals(im.getArbeidsgiver(), tilkommetInntektDto.getArbeidsgiver().orElse(null))
@@ -148,12 +136,6 @@ public class VurderNyeInntektsforholdDtoTjeneste {
                 tilkommetInntektDto.getBruttoInntektPrÅr() != null ? tilkommetInntektDto.getBruttoInntektPrÅr().intValue() : null,
                 tilkommetInntektDto.skalRedusereUtbetaling()
         );
-    }
-
-    private static <V> Periode utledPeriode(List<LocalDateSegment<V>> segmenter) {
-        var fom = segmenter.stream().map(LocalDateSegment::getFom).min(Comparator.naturalOrder()).orElseThrow();
-        var tom = segmenter.stream().map(LocalDateSegment::getTom).max(Comparator.naturalOrder()).orElseThrow();
-        return new Periode(fom, tom);
     }
 
     private static Optional<EksternArbeidsforholdRef> finnEksternArbeidsforholdId(Optional<Arbeidsgiver> arbeidsgiver,
