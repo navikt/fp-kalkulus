@@ -11,6 +11,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
@@ -40,7 +43,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 public class ForeslåInntektGraderingForUendretResultat {
 
     private static final Set<UttakArbeidType> SPESIALTYPER_FRA_UTTAK = Set.of(UttakArbeidType.IKKE_YRKESAKTIV, UttakArbeidType.BRUKERS_ANDEL);
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ForeslåInntektGraderingForUendretResultat.class);
 
     public static List<TilkommetInntektDto> foreslå(BeregningsgrunnlagPeriodeDto periode, BeregningsgrunnlagPeriodeDto forrigePeriode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         if (skalGraderesFullt(periode) || harIkkeFastsattForrigePeriode(forrigePeriode)) {
@@ -48,6 +51,8 @@ public class ForeslåInntektGraderingForUendretResultat {
         }
 
         var graderingsdataPrAndel = finnGraderingsdataPrAndel(periode, forrigePeriode, (UtbetalingsgradGrunnlag) ytelsespesifiktGrunnlag);
+
+        LOGGER.info("Graderingsdata: " + graderingsdataPrAndel);
 
         if (harEndringerSomPåvirkerUtbetaling(graderingsdataPrAndel)) {
             return ingenEndring(periode);
@@ -293,5 +298,17 @@ public class ForeslåInntektGraderingForUendretResultat {
             UttakArbeidType uttakArbeidType,
             BigDecimal utbetalingsgrad,
             BigDecimal forrigeUtbetalingsgrad) {
+
+        @Override
+        public String toString() {
+            return "GraderingsdataPrAndel{" +
+                    "tilkommetAktivitet=" + tilkommetAktivitet +
+                    ", ikkeNokData=" + ikkeNokData +
+                    ", forrigeAndelsmessigFørGradering=" + forrigeAndelsmessigFørGradering +
+                    ", uttakArbeidType=" + uttakArbeidType +
+                    ", utbetalingsgrad=" + utbetalingsgrad +
+                    ", forrigeUtbetalingsgrad=" + forrigeUtbetalingsgrad +
+                    '}';
+        }
     }
 }
