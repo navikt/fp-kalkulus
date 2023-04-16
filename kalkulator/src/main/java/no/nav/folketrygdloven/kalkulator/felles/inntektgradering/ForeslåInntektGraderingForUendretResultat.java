@@ -11,9 +11,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
@@ -43,7 +40,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 public class ForeslåInntektGraderingForUendretResultat {
 
     private static final Set<UttakArbeidType> SPESIALTYPER_FRA_UTTAK = Set.of(UttakArbeidType.IKKE_YRKESAKTIV, UttakArbeidType.BRUKERS_ANDEL);
-    private static final Logger LOGGER = LoggerFactory.getLogger(ForeslåInntektGraderingForUendretResultat.class);
 
     public static List<TilkommetInntektDto> foreslå(BeregningsgrunnlagPeriodeDto periode, BeregningsgrunnlagPeriodeDto forrigePeriode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         if (skalGraderesFullt(periode) || harIkkeFastsattForrigePeriode(forrigePeriode)) {
@@ -52,8 +48,10 @@ public class ForeslåInntektGraderingForUendretResultat {
 
         var graderingsdataPrAndel = finnGraderingsdataPrAndel(periode, forrigePeriode, (UtbetalingsgradGrunnlag) ytelsespesifiktGrunnlag);
 
-        LOGGER.info("Graderingsdata: " + graderingsdataPrAndel);
+        return foreslåFraGraderingsdata(periode, ytelsespesifiktGrunnlag, graderingsdataPrAndel);
+    }
 
+    static List<TilkommetInntektDto> foreslåFraGraderingsdata(BeregningsgrunnlagPeriodeDto periode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, List<GraderingsdataPrAndel> graderingsdataPrAndel) {
         if (harEndringerSomPåvirkerUtbetaling(graderingsdataPrAndel)) {
             return ingenEndring(periode);
         }
@@ -96,7 +94,7 @@ public class ForeslåInntektGraderingForUendretResultat {
     private static List<TilkommetInntektDto> lagListeForDelvisReduksjon(BeregningsgrunnlagPeriodeDto periode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, Set<GraderingsdataPrAndel> graderingsdataForSpesialTyper) {
         var totalDifferanse = finnTotalDifferanse(graderingsdataForSpesialTyper);
 
-        if (totalDifferanse.compareTo(BigDecimal.ZERO) > 0) {
+        if (totalDifferanse.compareTo(BigDecimal.ZERO) <= 0) {
             return ingenEndring(periode);
         }
 
@@ -291,7 +289,7 @@ public class ForeslåInntektGraderingForUendretResultat {
                 (a.getGjeldendeInntektskategori() == null && a.matchUtenInntektskategori(it))).findFirst();
     }
 
-    private record GraderingsdataPrAndel(
+    record GraderingsdataPrAndel(
             boolean tilkommetAktivitet,
             boolean ikkeNokData,
             BigDecimal forrigeAndelsmessigFørGradering,
