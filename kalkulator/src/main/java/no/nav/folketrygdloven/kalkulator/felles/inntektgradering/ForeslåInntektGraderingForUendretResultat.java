@@ -55,7 +55,8 @@ public class ForeslåInntektGraderingForUendretResultat {
 
         var graderingsdataForSpesialTyper = finnDataForSpesialtyper(graderingsdataPrAndel);
 
-        var harKunTyperUtenUtbetaling = graderingsdataForSpesialTyper.stream().allMatch(g -> g.forrigeUtbetalingsgrad() == null || g.forrigeAndelsmessigFørGradering() == null);
+        var harKunTyperUtenUtbetaling = graderingsdataForSpesialTyper.stream()
+                .allMatch(g -> g.forrigeUtbetalingsgrad() == null || g.forrigeAndelsmessigFørGradering() == null);
 
         if (harKunTyperUtenUtbetaling) {
             return lagListeUtenReduksjon(periode);
@@ -66,12 +67,13 @@ public class ForeslåInntektGraderingForUendretResultat {
 
     private static Set<GraderingsdataPrAndel> finnDataForSpesialtyper(List<GraderingsdataPrAndel> graderingsdataPrAndel) {
         return graderingsdataPrAndel.stream()
+                .filter(a -> !a.tilkommetAktivitet())
                 .filter(g -> SPESIALTYPER_FRA_UTTAK.contains(g.uttakArbeidType())).collect(Collectors.toSet());
     }
 
     private static boolean harEndringerSomPåvirkerUtbetaling(List<GraderingsdataPrAndel> graderingsdataPrAndel) {
         return graderingsdataPrAndel.stream()
-                .anyMatch(g -> g.ikkeNokData() || harRelevantEndringIGradering(g));
+                .anyMatch(g -> !g.tilkommetAktivitet() && (g.ikkeNokData() || harRelevantEndringIGradering(g)));
     }
 
     private static boolean skalGraderesFullt(BeregningsgrunnlagPeriodeDto periode) {
@@ -96,6 +98,9 @@ public class ForeslåInntektGraderingForUendretResultat {
         var tilkomneInntekter = periode.getTilkomneInntekter();
         var antallTilkomne = tilkomneInntekter.size();
         var tilkommetPrAktivitet = totalDifferanse.divide(BigDecimal.valueOf(antallTilkomne), 10, RoundingMode.HALF_UP);
+        if (tilkommetPrAktivitet.compareTo(BigDecimal.ZERO) == 0) {
+            return lagListeUtenReduksjon(periode);
+        }
         return tilkomneInntekter.stream().map(it -> mapTilDelvisReduksjon(periode, ytelsespesifiktGrunnlag, tilkommetPrAktivitet, it)).toList();
     }
 
@@ -167,7 +172,7 @@ public class ForeslåInntektGraderingForUendretResultat {
             var beregnetPrÅr = a.getBeregnetPrÅr();
             Optional<BeregningsgrunnlagPrStatusOgAndelDto> andelFraForrige = finnAndelFraForrige(forrigePeriode, a);
             if (andelFraForrige.isEmpty()) {
-                utbetalingsgraderPrAndel.add(ikkeNokData());
+                utbetalingsgraderPrAndel.add(tilkommet());
                 continue;
             }
 
@@ -196,7 +201,7 @@ public class ForeslåInntektGraderingForUendretResultat {
 
     private static GraderingsdataPrAndel lagGraderingsdataUtenUtbetalingsgradForAndel(BeregningsgrunnlagPrStatusOgAndelDto andelFraForrige, Optional<BigDecimal> forrigeUtbetalingsgrad) {
         return new GraderingsdataPrAndel(
-                false,
+                false, false,
                 andelFraForrige.getAvkortetFørGraderingPrÅr(),
                 null,
                 null,
@@ -207,7 +212,7 @@ public class ForeslåInntektGraderingForUendretResultat {
         var uttakArbeidType = gradering.getUtbetalingsgradArbeidsforhold().getUttakArbeidType();
         var utbetalingsgrad = finnUtbetalingsgradFraPerioder(gradering);
         return new GraderingsdataPrAndel(
-                false,
+                false, false,
                 andelFraForrige.getAvkortetFørGraderingPrÅr(),
                 uttakArbeidType, utbetalingsgrad,
                 forrigeUtbetalingsgrad.orElse(null));
@@ -230,12 +235,23 @@ public class ForeslåInntektGraderingForUendretResultat {
 
     private static GraderingsdataPrAndel ikkeNokData() {
         return new GraderingsdataPrAndel(
-                true,
+                false, true,
                 null,
                 null,
                 null,
                 null);
     }
+
+    private static GraderingsdataPrAndel tilkommet() {
+        return new GraderingsdataPrAndel(
+                true,
+                false,
+                null,
+                null,
+                null,
+                null);
+    }
+
 
     private static Optional<UtbetalingsgradPrAktivitetDto> finnUtbetalingsgrad(BeregningsgrunnlagPeriodeDto periode, BeregningsgrunnlagPrStatusOgAndelDto a, UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
         if (a.getBgAndelArbeidsforhold().isPresent()) {
@@ -271,6 +287,7 @@ public class ForeslåInntektGraderingForUendretResultat {
     }
 
     private record GraderingsdataPrAndel(
+            boolean tilkommetAktivitet,
             boolean ikkeNokData,
             BigDecimal forrigeAndelsmessigFørGradering,
             UttakArbeidType uttakArbeidType,
