@@ -97,8 +97,6 @@ spec:
       value: "true"
     - name: BEREGNE_DAGPENGER_FRA_PLEIEPENGER
       value: "true"
-    - name: FORDELING_UTEN_KRAV
-      value: "false"
     - name: MELDEKORT_DELVIS_PERIODE
       value: "false"
     - name: BEREGNE_FRA_YTELSE_VEDTAK
