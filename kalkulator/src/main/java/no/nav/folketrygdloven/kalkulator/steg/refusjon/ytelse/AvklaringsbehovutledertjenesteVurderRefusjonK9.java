@@ -40,10 +40,6 @@ public class AvklaringsbehovutledertjenesteVurderRefusjonK9 implements Avklaring
     public List<BeregningAvklaringsbehovResultat> utledAvklaringsbehov(BeregningsgrunnlagInput input,
                                                                        BeregningsgrunnlagDto periodisertMedRefusjonOgGradering) {
 
-        if (!KonfigurasjonVerdi.get("VURDER_REFUSJON_K9", false)) {
-            return Collections.emptyList();
-        }
-
         VurderRefusjonBeregningsgrunnlagInput vurderInput = (VurderRefusjonBeregningsgrunnlagInput) input;
         List<BeregningsgrunnlagGrunnlagDto> orginaltBGGrunnlag = vurderInput.getBeregningsgrunnlagGrunnlagFraForrigeBehandling();
         if (orginaltBGGrunnlag.isEmpty() || orginaltBGGrunnlag.stream().noneMatch(gr -> gr.getBeregningsgrunnlag().isPresent())) {
