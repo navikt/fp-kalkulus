@@ -18,9 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public enum KalkulusResultatKode implements Kodeverdi {
 
     BEREGNET("BEREGNET", "Beregning fullført uten avklaringsbehov"),
-    BEREGNET_MED_AVKLARINGSBEHOV("BEREGNET_MED_AVKLARINGSBEHOV", "Beregning fullført med avklaringsbehov"),
-    UTTAK_OG_BEREGNING_UGYLDIG_TILSTAND("UTTAK_OG_BEREGNING_UGYLDIG_TILSTAND", "Uttak og beregning er i en ugyldig tilstand"),
-
+    BEREGNET_MED_AVKLARINGSBEHOV("BEREGNET_MED_AVKLARINGSBEHOV", "Beregning fullført med avklaringsbehov")
 
     ;
     private static final Map<String, KalkulusResultatKode> KODER = new LinkedHashMap<>();

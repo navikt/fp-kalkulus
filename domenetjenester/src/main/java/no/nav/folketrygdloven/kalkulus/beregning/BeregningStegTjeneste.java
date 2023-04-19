@@ -203,9 +203,6 @@ public class BeregningStegTjeneste {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.vurderBeregningsgrunnlagvilkår(input);
         lagreOgKopier(input, beregningResultatAggregat);
         if (beregningResultatAggregat.getBeregningVilkårResultat() == null) {
-            if (KonfigurasjonVerdi.get("UTTAK_OG_BERGNING_UGYLDIG_TILSTAND_RESPONS_KODE", false)) {
-                return new TilstandResponse(input.getKoblingReferanse().getKoblingUuid(), KalkulusResultatKode.UTTAK_OG_BEREGNING_UGYLDIG_TILSTAND);
-            }
             throw new IllegalStateException("Hadde ikke vilkårsresultat for input med ref " + input.getKoblingReferanse());
         }
         lagreAvklaringsbehov(input, beregningResultatAggregat);
