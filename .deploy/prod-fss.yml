@@ -111,7 +111,7 @@ spec:
     - name: TREKKE_OVERSTYRING_ENABLED
       value: "true"
     - name: KOPIERING_VED_FORLENGELSE
-      value: "false"
+      value: "true"
     - name: GRADERING_MOT_INNTEKT
       value: "false"
     - name: AKSJONSPUNKT_VURDER_STORTINGET
