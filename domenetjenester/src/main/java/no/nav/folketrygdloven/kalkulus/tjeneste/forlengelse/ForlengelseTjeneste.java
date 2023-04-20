@@ -127,30 +127,47 @@ public class ForlengelseTjeneste {
     private void validerIngenEndringer(BeregningSteg steg, List<KoblingEntitet> koblinger, List<BeregnForRequest> requesterMedForlengelse, List<ForlengelseperioderEntitet> forlengelser) {
         var koblingIderMedForlengelse = requesterMedForlengelse.stream().map(r -> finnKobligForRequest(koblinger, r)).map(KoblingEntitet::getId).collect(Collectors.toSet());
         var eksisterendeForlengelser = forlengelseRepository.hentAktivePerioderForKoblingId(koblingIderMedForlengelse);
-        forlengelser.forEach(f -> {
-            validerIngenEndringForForlengelse(steg, eksisterendeForlengelser, f);
-        });
+        forlengelser.forEach(f -> validerIngenEndringForForlengelse(steg, eksisterendeForlengelser, f));
     }
 
     private void validerIngenEndringForForlengelse(BeregningSteg steg, List<ForlengelseperioderEntitet> eksisterendeForlengelser, ForlengelseperioderEntitet f) {
+
+
         var aktivForlengelse = eksisterendeForlengelser.stream().filter(e -> e.getKoblingId().equals(f.getKoblingId())).findFirst();
-        if (aktivForlengelse.isEmpty()) {
-            throw new IllegalStateException("Kan ikke lagre ny periode med forlengelse i steg " + steg);
-        }
+
         var sorterteNyeForlengelser = f.getForlengelseperioder().stream()
                 .map(ForlengelseperiodeEntitet::getPeriode).sorted(Comparator.naturalOrder())
                 .toList();
-        var sorterteEksisterendeForlengelser = aktivForlengelse.get().getForlengelseperioder().stream()
+
+        var sorterteEksisterendeForlengelser = aktivForlengelse.stream()
+                .flatMap(it -> it.getForlengelseperioder().stream())
                 .map(ForlengelseperiodeEntitet::getPeriode).sorted(Comparator.naturalOrder()).toList();
-        if (sorterteNyeForlengelser.size() != sorterteEksisterendeForlengelser.size()) {
-            throw new IllegalStateException("Kan ikke ha endring i forlengelse i steg " + steg);
-        }
-        var nyIterator = sorterteNyeForlengelser.iterator();
-        var eksisterendeIterator = sorterteEksisterendeForlengelser.iterator();
-        while (nyIterator.hasNext()) {
-            if (!nyIterator.next().equals(eksisterendeIterator.next())) {
+
+
+        if (KonfigurasjonVerdi.get("SKAL_VALIDERE_FORLENGELSE_ENDRING", false)) {
+            if (aktivForlengelse.isEmpty()) {
+                throw new IllegalStateException("Kan ikke lagre ny periode med forlengelse i steg " + steg);
+            }
+
+
+            if (sorterteNyeForlengelser.size() != sorterteEksisterendeForlengelser.size()) {
                 throw new IllegalStateException("Kan ikke ha endring i forlengelse i steg " + steg);
             }
+            var nyIterator = sorterteNyeForlengelser.iterator();
+            var eksisterendeIterator = sorterteEksisterendeForlengelser.iterator();
+            while (nyIterator.hasNext()) {
+                if (!nyIterator.next().equals(eksisterendeIterator.next())) {
+                    throw new IllegalStateException("Kan ikke ha endring i forlengelse i steg " + steg);
+                }
+            }
+        } else {
+            if (aktivForlengelse.isPresent()) {
+                var alleNyeErSubsetAvGammel = sorterteNyeForlengelser.stream().allMatch(p -> sorterteEksisterendeForlengelser.stream().anyMatch(it -> !it.getFomDato().isAfter(p.getFomDato()) && !it.getTomDato().isBefore(p.getTomDato())));
+                if (!alleNyeErSubsetAvGammel) {
+                    throw new IllegalStateException("Alle nye forlengelser skal vere subset av eksisterende. Fikk " + sorterteNyeForlengelser + " og eksisterende er " + sorterteEksisterendeForlengelser);
+                }
+            }
+
         }
     }
 

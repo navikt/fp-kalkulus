@@ -116,3 +116,5 @@ spec:
       value: "false"
     - name: AKSJONSPUNKT_VURDER_STORTINGET
       value: "false"
+    - name: SKAL_VALIDERE_FORLENGELSE_ENDRING
+      value: "false"
