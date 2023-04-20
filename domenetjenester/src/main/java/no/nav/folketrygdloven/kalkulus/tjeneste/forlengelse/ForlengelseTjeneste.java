@@ -190,7 +190,7 @@ public class ForlengelseTjeneste {
         boolean harDiffUtenforForlengelse = !tidslinjeMedDiff.isEmpty();
         if (harDiffUtenforForlengelse && !erKunHelg(tidslinjeMedDiff)) {
             logger.info("Perioder med diff:" + tidslinjeMedDiff.toSegments().stream().map(LocalDateSegment::getLocalDateInterval).toList());
-            throw new IllegalStateException("Fant differanse i beregnet grunnlag utenfor oppgitt periode for forlengelse. Forlengelseperioder: " + forlengelseperioder);
+            throw new IllegalStateException("Fant differanse i beregnet grunnlag utenfor oppgitt periode for forlengelse. Skjæringstidspunkt: " + nyttBg.getSkjæringstidspunkt() + " Forlengelseperioder: " + forlengelseperioder);
         }
     }
 
