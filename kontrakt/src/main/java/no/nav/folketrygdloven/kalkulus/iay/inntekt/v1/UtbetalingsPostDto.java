@@ -40,9 +40,9 @@ public class UtbetalingsPostDto {
     @Valid
     private SkatteOgAvgiftsregelType skattAvgiftType;
 
-    @JsonProperty("lønnsinntektBeskivelse")
+    @JsonProperty("lønnsinntektBeskrivelse")
     @Valid
-    private LønnsinntektBeskrivelse lønnsinntektBeskivelse;
+    private LønnsinntektBeskrivelse lønnsinntektBeskrivelse;
 
     /**
      * Tillater her både positive og negative beløp (korreksjoner). Min/max verdi håndteres av mottager og avsender.
@@ -84,12 +84,12 @@ public class UtbetalingsPostDto {
         this.skattAvgiftType = skattAvgiftType;
     }
 
-    public LønnsinntektBeskrivelse getLønnsinntektBeskivelse() {
-        return lønnsinntektBeskivelse;
+    public LønnsinntektBeskrivelse getLønnsinntektBeskrivelse() {
+        return lønnsinntektBeskrivelse;
     }
 
-    public void setLønnsinntektBeskivelse(LønnsinntektBeskrivelse lønnsinntektBeskivelse) {
-        this.lønnsinntektBeskivelse = lønnsinntektBeskivelse;
+    public void setLønnsinntektBeskrivelse(LønnsinntektBeskrivelse lønnsinntektBeskrivelse) {
+        this.lønnsinntektBeskrivelse = lønnsinntektBeskrivelse;
     }
 
     public void setUtbetaltYtelseType(UtbetaltYtelseType ytelseType) {
@@ -108,6 +108,11 @@ public class UtbetalingsPostDto {
 
     public UtbetalingsPostDto medSkattAvgiftType(String kode) {
         setSkattAvgiftType(SkatteOgAvgiftsregelType.fraKode(kode));
+        return this;
+    }
+
+    public UtbetalingsPostDto medLønnsinntektBeskrivelse(String kode) {
+        setLønnsinntektBeskrivelse(LønnsinntektBeskrivelse.fraKode(kode));
         return this;
     }
 
