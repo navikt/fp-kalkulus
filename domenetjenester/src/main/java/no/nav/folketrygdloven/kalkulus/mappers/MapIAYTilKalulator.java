@@ -262,6 +262,9 @@ public class MapIAYTilKalulator {
         if (inntektspost.getSkattAvgiftType() != null) {
             builder.medSkatteOgAvgiftsregelType(inntektspost.getSkattAvgiftType().getKode());
         }
+        if (inntektspost.getLønnsinntektBeskivelse() != null) {
+            builder.medLønnsinntektBeskrivelse(inntektspost.getLønnsinntektBeskivelse().getKode());
+        }
         builder.medYtelse(mapUtbetaltYtelseTypeTilGrunnlag(inntektspost.getYtelseType()));
         return builder;
     }

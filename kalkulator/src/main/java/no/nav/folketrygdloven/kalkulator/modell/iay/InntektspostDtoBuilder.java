@@ -5,6 +5,7 @@ import java.time.LocalDate;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.LønnsinntektBeskrivelse;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SkatteOgAvgiftsregelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
@@ -26,6 +27,12 @@ public class InntektspostDtoBuilder {
 
     public InntektspostDtoBuilder medSkatteOgAvgiftsregelType(SkatteOgAvgiftsregelType skatteOgAvgiftsregelType) {
         this.inntektspost.setSkatteOgAvgiftsregelType(skatteOgAvgiftsregelType);
+        return this;
+    }
+
+
+    public InntektspostDtoBuilder medLønnsinntektBeskrivelse(LønnsinntektBeskrivelse lønnsinntektBeskrivelse) {
+        this.inntektspost.setLønnsinnntektBeskrivelse(lønnsinntektBeskrivelse);
         return this;
     }
 
@@ -52,10 +59,14 @@ public class InntektspostDtoBuilder {
     }
 
     public InntektspostDtoBuilder medInntektspostType(String kode) {
-       return medInntektspostType(InntektspostType.fraKode(kode));
+        return medInntektspostType(InntektspostType.fraKode(kode));
     }
 
     public InntektspostDtoBuilder medSkatteOgAvgiftsregelType(String kode) {
         return medSkatteOgAvgiftsregelType(SkatteOgAvgiftsregelType.fraKode(kode));
+    }
+
+    public InntektspostDtoBuilder medLønnsinntektBeskrivelse(String kode) {
+        return medLønnsinntektBeskrivelse(LønnsinntektBeskrivelse.fraKode(kode));
     }
 }

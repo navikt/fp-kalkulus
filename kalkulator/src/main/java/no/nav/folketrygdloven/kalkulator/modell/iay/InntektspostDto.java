@@ -9,6 +9,7 @@ import java.util.Objects;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.LønnsinntektBeskrivelse;
 import no.nav.folketrygdloven.kalkulus.kodeverk.NæringsinntektType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OffentligYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PensjonTrygdType;
@@ -25,10 +26,12 @@ public class InntektspostDto {
         YTELSE_TYPER.put(PensjonTrygdType.KODEVERK, PensjonTrygdType.kodeMap());
 
     }
+
     private InntektspostType inntektspostType;
     private SkatteOgAvgiftsregelType skatteOgAvgiftsregelType = SkatteOgAvgiftsregelType.UDEFINERT;
     private InntektDto inntekt;
     private String ytelseType = OffentligYtelseType.KODEVERK;
+    private LønnsinntektBeskrivelse lønnsinnntektBeskrivelse = LønnsinntektBeskrivelse.UDEFINERT;
     private String ytelse = OffentligYtelseType.UDEFINERT.getKode();
     private Intervall periode;
     private Beløp beløp;
@@ -83,6 +86,15 @@ public class InntektspostDto {
         this.skatteOgAvgiftsregelType = skatteOgAvgiftsregelType;
     }
 
+    public LønnsinntektBeskrivelse getLønnsinnntektBeskrivelse() {
+        return lønnsinnntektBeskrivelse;
+    }
+
+
+    public void setLønnsinnntektBeskrivelse(LønnsinntektBeskrivelse lønnsinnntektBeskrivelse) {
+        this.lønnsinnntektBeskrivelse = lønnsinnntektBeskrivelse;
+    }
+
     void setPeriode(LocalDate fom, LocalDate tom) {
         this.periode = Intervall.fraOgMedTilOgMed(fom, tom);
     }
@@ -131,10 +143,10 @@ public class InntektspostDto {
         }
         InntektspostDto other = (InntektspostDto) obj;
         return Objects.equals(this.getInntektspostType(), other.getInntektspostType())
-            && Objects.equals(this.getYtelseType(), other.getYtelseType())
-            && Objects.equals(this.getSkatteOgAvgiftsregelType(), other.getSkatteOgAvgiftsregelType())
-            && Objects.equals(this.getPeriode().getFomDato(), other.getPeriode().getFomDato())
-            && Objects.equals(this.getPeriode().getTomDato(), other.getPeriode().getTomDato());
+                && Objects.equals(this.getYtelseType(), other.getYtelseType())
+                && Objects.equals(this.getSkatteOgAvgiftsregelType(), other.getSkatteOgAvgiftsregelType())
+                && Objects.equals(this.getPeriode().getFomDato(), other.getPeriode().getFomDato())
+                && Objects.equals(this.getPeriode().getTomDato(), other.getPeriode().getTomDato());
     }
 
     @Override
@@ -145,13 +157,13 @@ public class InntektspostDto {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "<" +
-            "ytelseType=" + ytelseType +
-            "inntektspostType=" + inntektspostType +
-            "skatteOgAvgiftsregelType=" + skatteOgAvgiftsregelType +
-            ", fraOgMed=" + periode.getFomDato() +
-            ", tilOgMed=" + periode.getTomDato() +
-            ", beløp=" + beløp +
-            '>';
+                "ytelseType=" + ytelseType +
+                "inntektspostType=" + inntektspostType +
+                "skatteOgAvgiftsregelType=" + skatteOgAvgiftsregelType +
+                ", fraOgMed=" + periode.getFomDato() +
+                ", tilOgMed=" + periode.getTomDato() +
+                ", beløp=" + beløp +
+                '>';
     }
 
     public boolean hasValues() {
