@@ -21,6 +21,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.TilkommetInntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
@@ -28,6 +29,8 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.LønnsinntektBeskrivelse;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.InntektsforholdDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.VurderInntektsforholdPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.VurderNyttInntektsforholdDto;
@@ -87,7 +90,15 @@ public class VurderNyeInntektsforholdDtoTjeneste {
                                                               Optional<BeregningsgrunnlagPeriodeDto> forrigePeriode,
                                                               YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         var innteksforholdListe = mapInntektforholdDtoListe(iayGrunnlag, periode, allePerioder, forrigePeriode, ytelsespesifiktGrunnlag);
-        return new VurderInntektsforholdPeriodeDto(periode.getBeregningsgrunnlagPeriodeFom(), periode.getBeregningsgrunnlagPeriodeTom(), innteksforholdListe.stream().toList());
+        var harOmsorgsstønadEllerFosterhjemsgodtgjørelse = harMottattOmsorgsstønadEllerFosterhjemsgodtgjørelseIPerioden(iayGrunnlag, periode);
+        return new VurderInntektsforholdPeriodeDto(periode.getBeregningsgrunnlagPeriodeFom(), periode.getBeregningsgrunnlagPeriodeTom(), innteksforholdListe.stream().toList(), harOmsorgsstønadEllerFosterhjemsgodtgjørelse);
+    }
+
+    private static boolean harMottattOmsorgsstønadEllerFosterhjemsgodtgjørelseIPerioden(InntektArbeidYtelseGrunnlagDto iayGrunnlag, BeregningsgrunnlagPeriodeDto periode) {
+        return new InntektFilterDto(iayGrunnlag.getAktørInntektFraRegister()).filter(InntektskildeType.INNTEKT_BEREGNING)
+                .getFiltrertInntektsposter().stream()
+                .filter(p -> p.getPeriode().overlapper(periode.getPeriode()))
+                .anyMatch(p -> p.getLønnsinnntektBeskrivelse() != null && p.getLønnsinnntektBeskrivelse().equals(LønnsinntektBeskrivelse.KOMMUNAL_OMSORGSLOENN_OG_FOSTERHJEMSGODTGJOERELSE));
     }
 
     private static Set<InntektsforholdDto> mapInntektforholdDtoListe(InntektArbeidYtelseGrunnlagDto iayGrunnlag,
