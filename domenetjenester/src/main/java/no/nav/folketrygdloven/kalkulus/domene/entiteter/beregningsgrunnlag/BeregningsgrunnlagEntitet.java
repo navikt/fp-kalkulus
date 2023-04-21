@@ -45,18 +45,18 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
     private LocalDate skjæringstidspunkt;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlag", cascade = CascadeType.PERSIST)
-    @BatchSize(size=20)
+    @BatchSize(size = 20)
     private final List<BeregningsgrunnlagAktivitetStatus> aktivitetStatuser = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlag", cascade = CascadeType.PERSIST)
-    @BatchSize(size=20)
+    @BatchSize(size = 20)
     private final List<BeregningsgrunnlagPeriode> beregningsgrunnlagPerioder = new ArrayList<>();
 
     @OneToOne(mappedBy = "beregningsgrunnlag", cascade = CascadeType.PERSIST)
     private Sammenligningsgrunnlag sammenligningsgrunnlag;
 
     @OneToMany(mappedBy = "beregningsgrunnlag")
-    @BatchSize(size=20)
+    @BatchSize(size = 20)
     private final List<SammenligningsgrunnlagPrStatus> sammenligningsgrunnlagPrStatusListe = new ArrayList<>();
 
     @Embedded
@@ -65,7 +65,7 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
     private Beløp grunnbeløp;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlag", cascade = CascadeType.PERSIST)
-    @BatchSize(size=20)
+    @BatchSize(size = 20)
     private final List<BeregningsgrunnlagFaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = new ArrayList<>();
 
     @Column(name = "overstyrt", nullable = false)
@@ -77,7 +77,7 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
         this.skjæringstidspunkt = kopi.getSkjæringstidspunkt();
         kopi.getSammenligningsgrunnlag().map(Sammenligningsgrunnlag::new).ifPresent(this::setSammenligningsgrunnlag);
         kopi.getSammenligningsgrunnlagPrStatusListe().stream().map(SammenligningsgrunnlagPrStatus::new).forEach(this::leggTilSammenligningsgrunnlagPrStatus);
-        kopi.faktaOmBeregningTilfeller.stream().map(BeregningsgrunnlagFaktaOmBeregningTilfelle::new).forEach(this::leggTilFaktaOmBeregningTilfelle);
+        kopi.getFaktaOmBeregningTilfeller().stream().map(BeregningsgrunnlagFaktaOmBeregningTilfelle::new).forEach(this::leggTilFaktaOmBeregningTilfelle);
         kopi.getAktivitetStatuser().stream().map(BeregningsgrunnlagAktivitetStatus::new).forEach(this::leggTilBeregningsgrunnlagAktivitetStatus);
         kopi.getBeregningsgrunnlagPerioder().stream().map(BeregningsgrunnlagPeriode::new)
                 .forEach(this::leggTilBeregningsgrunnlagPeriode);
@@ -279,7 +279,7 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
         }
 
         private void verifiserKanModifisere() {
-            if(built) {
+            if (built) {
                 throw new IllegalStateException("Er allerede bygd, kan ikke oppdatere videre: " + this.kladd);
             }
         }

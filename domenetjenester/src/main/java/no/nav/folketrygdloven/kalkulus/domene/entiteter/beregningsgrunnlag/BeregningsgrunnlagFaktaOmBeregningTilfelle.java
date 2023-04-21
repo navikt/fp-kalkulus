@@ -41,8 +41,10 @@ public class BeregningsgrunnlagFaktaOmBeregningTilfelle extends BaseEntitet {
     @Column(name="fakta_beregning_tilfelle", nullable = false)
     private FaktaOmBeregningTilfelle faktaOmBeregningTilfelle = FaktaOmBeregningTilfelle.UDEFINERT;
 
-    public BeregningsgrunnlagFaktaOmBeregningTilfelle(BeregningsgrunnlagFaktaOmBeregningTilfelle beregningsgrunnlagFaktaOmBeregningTilfelle) {
-        this.faktaOmBeregningTilfelle = beregningsgrunnlagFaktaOmBeregningTilfelle.getFaktaOmBeregningTilfelle();
+
+    // kun til bruk for kopiering (bruk Builder ved opprettelse)
+    BeregningsgrunnlagFaktaOmBeregningTilfelle(FaktaOmBeregningTilfelle faktaOmBeregningTilfelle) {
+        this.faktaOmBeregningTilfelle = faktaOmBeregningTilfelle;
     }
 
     protected BeregningsgrunnlagFaktaOmBeregningTilfelle() {
