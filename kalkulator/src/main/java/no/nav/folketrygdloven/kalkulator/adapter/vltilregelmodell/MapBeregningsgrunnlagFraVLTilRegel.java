@@ -115,7 +115,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medUregulertGrunnbeløp(mapUregulertGrunnbeløp(input, beregningsgrunnlag))
                 .medMidlertidigInaktivType(mapMidlertidigInaktivType(input))
                 .medGrunnbeløpSatser(grunnbeløpSatser(input))
-                .medFomDatoForIndividuellSammenligningATFL_SN(LocalDate.of(2023,1,1))
+                .medFomDatoForIndividuellSammenligningATFLSN(LocalDate.of(2023,1,1))
                 .build();
     }
 
