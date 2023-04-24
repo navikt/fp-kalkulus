@@ -4,6 +4,7 @@ package no.nav.folketrygdloven.kalkulator.guitjenester;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -62,7 +63,7 @@ public class VurderNyeInntektsforholdDtoTjeneste {
                 .collect(Collectors.toList());
 
         if (!periodeListe.isEmpty()) {
-            return new VurderNyttInntektsforholdDto(periodeListe);
+            return new VurderNyttInntektsforholdDto(periodeListe, harMottattOmsorgsstønadEllerFosterhjemsgodtgjørelseEtterStp(iayGrunnlag, beregningsgrunnlag.getSkjæringstidspunkt()));
         }
 
         return null;
@@ -90,14 +91,14 @@ public class VurderNyeInntektsforholdDtoTjeneste {
                                                               Optional<BeregningsgrunnlagPeriodeDto> forrigePeriode,
                                                               YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         var innteksforholdListe = mapInntektforholdDtoListe(iayGrunnlag, periode, allePerioder, forrigePeriode, ytelsespesifiktGrunnlag);
-        var harOmsorgsstønadEllerFosterhjemsgodtgjørelse = harMottattOmsorgsstønadEllerFosterhjemsgodtgjørelseIPerioden(iayGrunnlag, periode);
-        return new VurderInntektsforholdPeriodeDto(periode.getBeregningsgrunnlagPeriodeFom(), periode.getBeregningsgrunnlagPeriodeTom(), innteksforholdListe.stream().toList(), harOmsorgsstønadEllerFosterhjemsgodtgjørelse);
+        return new VurderInntektsforholdPeriodeDto(periode.getBeregningsgrunnlagPeriodeFom(), periode.getBeregningsgrunnlagPeriodeTom(), innteksforholdListe.stream().toList());
     }
 
-    private static boolean harMottattOmsorgsstønadEllerFosterhjemsgodtgjørelseIPerioden(InntektArbeidYtelseGrunnlagDto iayGrunnlag, BeregningsgrunnlagPeriodeDto periode) {
+
+    private static boolean harMottattOmsorgsstønadEllerFosterhjemsgodtgjørelseEtterStp(InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDate stp) {
         return new InntektFilterDto(iayGrunnlag.getAktørInntektFraRegister()).filter(InntektskildeType.INNTEKT_BEREGNING)
                 .getFiltrertInntektsposter().stream()
-                .filter(p -> p.getPeriode().overlapper(periode.getPeriode()))
+                .filter(p -> p.getPeriode().getTomDato().isAfter(stp))
                 .anyMatch(p -> p.getLønnsinnntektBeskrivelse() != null && p.getLønnsinnntektBeskrivelse().equals(LønnsinntektBeskrivelse.KOMMUNAL_OMSORGSLOENN_OG_FOSTERHJEMSGODTGJOERELSE));
     }
 

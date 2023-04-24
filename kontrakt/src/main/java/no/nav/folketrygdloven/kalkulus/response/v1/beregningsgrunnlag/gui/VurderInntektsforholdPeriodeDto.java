@@ -32,11 +32,6 @@ public class VurderInntektsforholdPeriodeDto {
     private LocalDate tom;
 
     @Valid
-    @JsonProperty(value = "harOmsorgsstønadEllerFosterhjemsgodtgjørelse")
-    @NotNull
-    private boolean harOmsorgsstønadEllerFosterhjemsgodtgjørelse;
-
-    @Valid
     @JsonProperty(value = "inntektsforholdListe")
     @Size(max = 50)
     @NotNull
@@ -45,11 +40,10 @@ public class VurderInntektsforholdPeriodeDto {
     public VurderInntektsforholdPeriodeDto() {
     }
 
-    public VurderInntektsforholdPeriodeDto(LocalDate fom, LocalDate tom, List<InntektsforholdDto> inntektsforholdListe, boolean harOmsorgsstønadEllerFosterhjemsgodtgjørelse) {
+    public VurderInntektsforholdPeriodeDto(LocalDate fom, LocalDate tom, List<InntektsforholdDto> inntektsforholdListe) {
         this.fom = fom;
         this.tom = tom;
         this.inntektsforholdListe = inntektsforholdListe;
-        this.harOmsorgsstønadEllerFosterhjemsgodtgjørelse = harOmsorgsstønadEllerFosterhjemsgodtgjørelse;
     }
 
     public LocalDate getFom() {
@@ -76,7 +70,4 @@ public class VurderInntektsforholdPeriodeDto {
         this.inntektsforholdListe = inntektsforholdListe;
     }
 
-    public boolean getHarOmsorgsstønadEllerFosterhjemsgodtgjørelse() {
-        return harOmsorgsstønadEllerFosterhjemsgodtgjørelse;
-    }
 }

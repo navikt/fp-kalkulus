@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -23,20 +22,34 @@ public class VurderNyttInntektsforholdDto {
     @JsonProperty(value = "vurderInntektsforholdPerioder")
     @Size(max = 50)
     @NotNull
-    private List<VurderInntektsforholdPeriodeDto> vurderInntektsforholdPerioder = new ArrayList<>();
+    private List<VurderInntektsforholdPeriodeDto> vurderInntektsforholdPerioder;
 
-    public VurderNyttInntektsforholdDto() {
-    }
+    /**
+     * Angir om bruker har mottatt Kommunal omsorgsstønad eller fosterhjemsgodtgjørelse etter skjæringstidspunktet
+     * <p>
+     * Se <a href="https://www.skatteetaten.no/bedrift-og-organisasjon/arbeidsgiver/a-meldingen/veiledning/lonn-og-ytelser/oversikt-over-lonn-og-andre-ytelser/kommunal-omsorgslonn-og-fosterhjemgodtgjorelse/">...</a>
+     * <p>
+     * Relevant fordi disse ikke skal reduseres på samme måte som annen frilansinntekt
+     *
+     */
+    @Valid
+    @JsonProperty(value = "harMottattOmsorgsstønadEllerFosterhjemsgodtgjørelse")
+    @NotNull
+    private boolean harMottattOmsorgsstønadEllerFosterhjemsgodtgjørelse;
 
-    public VurderNyttInntektsforholdDto(List<VurderInntektsforholdPeriodeDto> vurderInntektsforholdPerioder) {
+
+    public VurderNyttInntektsforholdDto(List<VurderInntektsforholdPeriodeDto> vurderInntektsforholdPerioder, boolean harMottattOmsorgsstønadEllerFosterhjemsgodtgjørelse) {
         this.vurderInntektsforholdPerioder = vurderInntektsforholdPerioder;
+        this.harMottattOmsorgsstønadEllerFosterhjemsgodtgjørelse = harMottattOmsorgsstønadEllerFosterhjemsgodtgjørelse;
     }
 
     public List<VurderInntektsforholdPeriodeDto> getVurderInntektsforholdPerioder() {
         return vurderInntektsforholdPerioder;
     }
 
-    public void setVurderInntektsforholdPerioder(List<VurderInntektsforholdPeriodeDto> vurderInntektsforholdPerioder) {
-        this.vurderInntektsforholdPerioder = vurderInntektsforholdPerioder;
+    public boolean getHarMottattOmsorgsstønadEllerFosterhjemsgodtgjørelse() {
+        return harMottattOmsorgsstønadEllerFosterhjemsgodtgjørelse;
     }
+
+
 }
