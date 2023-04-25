@@ -15,7 +15,7 @@ import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.FordelingGraderingTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
-class FinnArbeidsprosenterFP implements FinnArbeidsprosenter {
+public class FinnArbeidsprosenterFP implements FinnArbeidsprosenter {
 
     @Override
     public List<BigDecimal> finnArbeidsprosenterIPeriode(BeregningsgrunnlagPrStatusOgAndelDto andel,
