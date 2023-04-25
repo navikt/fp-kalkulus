@@ -38,6 +38,9 @@ public class VurderNyttInntektsforholdDto {
     private boolean harMottattOmsorgsstønadEllerFosterhjemsgodtgjørelse;
 
 
+    public VurderNyttInntektsforholdDto() {
+    }
+
     public VurderNyttInntektsforholdDto(List<VurderInntektsforholdPeriodeDto> vurderInntektsforholdPerioder, boolean harMottattOmsorgsstønadEllerFosterhjemsgodtgjørelse) {
         this.vurderInntektsforholdPerioder = vurderInntektsforholdPerioder;
         this.harMottattOmsorgsstønadEllerFosterhjemsgodtgjørelse = harMottattOmsorgsstønadEllerFosterhjemsgodtgjørelse;
