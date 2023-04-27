@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.time.MonthDay;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
@@ -109,13 +108,7 @@ class StegInputMapper {
     }
 
     private List<BeregningsgrunnlagGrunnlagDto> finnOriginaltGrunnlag(List<Long> originaleKoblinger) {
-        return originaleKoblinger.stream().flatMap(k -> finnGrunnlagForKobling(k).stream()).collect(Collectors.toList());
-
-    }
-
-    private Optional<BeregningsgrunnlagGrunnlagDto> finnGrunnlagForKobling(Long koblingId) {
-        Optional<BeregningsgrunnlagGrunnlagEntitet> entitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
-        return entitet.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag);
+        return beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(originaleKoblinger).stream().map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).toList();
     }
 
     private StegProsesseringInput lagStegProsesseringInput(KoblingEntitet kobling,
@@ -126,12 +119,12 @@ class StegInputMapper {
         var beregningsgrunnlagInput = MapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input, grunnlagEntitet, forlengelseperioder);
         var grunnlagFraSteg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(
                 kobling,
-                mapTilStegTilstand(stegType));
+                mapTilStegTilstand(stegType), input.getSkjæringstidspunkt());
         var grunnlagFraStegUt = finnForrigeAvklartGrunnlagHvisFinnes(grunnlagFraSteg, stegType);
         return new StegProsesseringInput(beregningsgrunnlagInput, mapTilStegTilstand(stegType))
                 .medForrigeGrunnlagFraStegUt(grunnlagFraStegUt.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).orElse(null))
                 .medForrigeGrunnlagFraSteg(grunnlagFraSteg.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).orElse(null))
-                .medOriginalGrunnlagFraSteg(beregningsgrunnlagRepository.hentOriginalGrunnlagForTilstand(kobling.getId(), mapTilStegTilstand(stegType))
+                .medOriginalGrunnlagFraSteg(beregningsgrunnlagRepository.hentOriginalGrunnlagForTilstand(kobling.getId(), mapTilStegTilstand(stegType), input.getSkjæringstidspunkt())
                         .map(BehandlingslagerTilKalkulusMapper::mapGrunnlag)
                         .orElse(null))
                 .medStegUtTilstand(mapTilStegUtTilstand(stegType).orElse(null));
@@ -188,7 +181,7 @@ class StegInputMapper {
         if (MonthDay.from(skjæringstidspunktBeregning).isBefore(ENDRING_AV_GRUNNBELØP)) {
             return Optional.empty();
         }
-        return beregningsgrunnlagRepository.hentOriginalGrunnlagForTilstand(koblingEntitet.getId(), BeregningsgrunnlagTilstand.FASTSATT);
+        return beregningsgrunnlagRepository.hentOriginalGrunnlagForTilstand(koblingEntitet.getId(), BeregningsgrunnlagTilstand.FASTSATT, skjæringstidspunktBeregning);
     }
 
     private Optional<BeregningsgrunnlagGrunnlagEntitet> finnForrigeAvklartGrunnlagHvisFinnes(Optional<BeregningsgrunnlagGrunnlagEntitet> forrigeGrunnlagFraSteg,

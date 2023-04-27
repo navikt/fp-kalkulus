@@ -37,7 +37,7 @@ public class StegProsesseringInput extends BeregningsgrunnlagInput {
 
 
     /**
-     * Grunnlag for steg-tilstand fra original behandling
+     * Grunnlag for steg-tilstand fra original behandling som har samme skjæringstidspunkt som grunnlaget til behandling
      */
     private BeregningsgrunnlagGrunnlagDto originalGrunnlagFraSteg;
 

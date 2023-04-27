@@ -70,16 +70,17 @@ public class BeregningsgrunnlagRepository {
      *
      * @param kobling                    en kobling
      * @param beregningsgrunnlagTilstand steget {@link BeregningsgrunnlagGrunnlagEntitet} er opprettet i
+     * @param skjæringstidspunkt
      * @return Hvis det finnes et eller fler BeregningsgrunnlagGrunnlagEntitet som har blitt opprettet i {@code stegOpprettet} returneres den
      * som ble opprettet sist
      */
     public Optional<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(KoblingEntitet kobling,
-                                                                                                                 BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
+                                                                                                                 BeregningsgrunnlagTilstand beregningsgrunnlagTilstand,
+                                                                                                                 LocalDate skjæringstidspunkt) {
         Optional<BeregningsgrunnlagGrunnlagEntitet> sisteBg = hentSisteBeregningsgrunnlagGrunnlagEntitet(kobling.getId(), beregningsgrunnlagTilstand);
         if (!sisteBg.isPresent()) {
             // Henter siste grunnlaget som ble lagret med samme skjæringstidspunkt (tilsvarer original kobling)
-            // TOODO Lag støtte for fleire originale grunnlag
-            var originalGrunnlag = hentOriginalGrunnlagForTilstand(kobling.getId(), beregningsgrunnlagTilstand);
+            var originalGrunnlag = hentOriginalGrunnlagForTilstand(kobling.getId(), beregningsgrunnlagTilstand, skjæringstidspunkt);
             return originalGrunnlag;
         }
         return sisteBg;
@@ -137,8 +138,9 @@ public class BeregningsgrunnlagRepository {
         return hentUniktResultat(query);
     }
 
+
     /**
-     * Henter originalt grunnlag for kobling med gitt tilstand
+     * Henter originalt grunnlag for kobling med gitt tilstand og skjæringstidspunkt
      *
      * @param koblingId koblingId
      * @param tilstand  Tilstand for grunnlag
@@ -146,9 +148,11 @@ public class BeregningsgrunnlagRepository {
      */
     @SuppressWarnings("unchecked")
     public Optional<BeregningsgrunnlagGrunnlagEntitet> hentOriginalGrunnlagForTilstand(Long koblingId,
-                                                                                       BeregningsgrunnlagTilstand tilstand) {
+                                                                                       BeregningsgrunnlagTilstand tilstand,
+                                                                                       LocalDate skjæringstidspunktOpptjening) {
         var query = entityManager.createNativeQuery(
                 "SELECT GR.* FROM  GR_BEREGNINGSGRUNNLAG GR " +
+                        "INNER JOIN BG_AKTIVITETER AKT ON GR.register_aktiviteter_id = AKT.ID " +
                         "WHERE (GR.KOBLING_ID IN (" +
                         "with recursive originalkoblinger as (" +
                         "    select original_kobling_id" +
@@ -161,10 +165,12 @@ public class BeregningsgrunnlagRepository {
                         ") select * from originalkoblinger" +
                         ")) " +
                         "AND STEG_OPPRETTET = :beregningsgrunnlagTilstand " +
+                        "AND AKT.skjaringstidspunkt_opptjening = :stp " +
                         "order by GR.OPPRETTET_TID desc, GR.ID desc", //$NON-NLS-1$
                 BeregningsgrunnlagGrunnlagEntitet.class);
         query.setParameter("koblingId", koblingId); // $NON-NLS-1$
         query.setParameter("beregningsgrunnlagTilstand", tilstand.getKode()); // $NON-NLS-1$
+        query.setParameter("stp", skjæringstidspunktOpptjening); // $NON-NLS-1$
         query.setMaxResults(1);
         List<BeregningsgrunnlagGrunnlagEntitet> resultatListe = query.getResultList();
         if (resultatListe.size() > 1) {
@@ -172,6 +178,7 @@ public class BeregningsgrunnlagRepository {
         }
         return resultatListe.size() == 1 ? Optional.of(resultatListe.get(0)) : Optional.empty();
     }
+
 
 
     /**
