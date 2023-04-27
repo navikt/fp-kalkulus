@@ -14,7 +14,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.felles.inntektgradering.ForeslåInntektGraderingForUendretResultat;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -108,7 +107,7 @@ public class VurderNyeInntektsforholdDtoTjeneste {
                                                                      Optional<BeregningsgrunnlagPeriodeDto> forrigePeriode,
                                                                      YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
 
-        return finnTilkomneInntekterForVisning(periode, forrigePeriode, ytelsespesifiktGrunnlag)
+        return periode.getTilkomneInntekter()
                 .stream()
                 .map(a -> mapTilInntektsforhold(a, iayGrunnlag, utledPeriode(a, allePerioder)))
                 .collect(Collectors.toCollection(HashSet::new));
@@ -119,15 +118,6 @@ public class VurderNyeInntektsforholdDtoTjeneste {
         var fom = perioderMedInntekt.stream().map(Intervall::getFomDato).min(Comparator.naturalOrder()).orElseThrow();
         var tom = perioderMedInntekt.stream().map(Intervall::getTomDato).max(Comparator.naturalOrder()).orElseThrow();
         return new Periode(fom, tom);
-    }
-
-    private static List<TilkommetInntektDto> finnTilkomneInntekterForVisning(BeregningsgrunnlagPeriodeDto periode, Optional<BeregningsgrunnlagPeriodeDto> forrigePeriode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        var erVurdert = periode.getTilkomneInntekter().stream().anyMatch(t -> t.skalRedusereUtbetaling() != null);
-        if (erVurdert || forrigePeriode.isEmpty()) {
-            return periode.getTilkomneInntekter();
-
-        }
-        return ForeslåInntektGraderingForUendretResultat.foreslå(periode, forrigePeriode.get(), ytelsespesifiktGrunnlag);
     }
 
     private static InntektsforholdDto mapTilInntektsforhold(TilkommetInntektDto tilkommetInntektDto, InntektArbeidYtelseGrunnlagDto iayGrunnlag,
