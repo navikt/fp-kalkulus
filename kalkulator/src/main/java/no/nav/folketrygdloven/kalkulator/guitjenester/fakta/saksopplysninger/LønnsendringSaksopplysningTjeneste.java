@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulator.guitjenester.fakta.saksopplysninger;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -66,6 +67,7 @@ public class LønnsendringSaksopplysningTjeneste {
                 .flatMap(a -> a.hentAlleYrkesaktiviteter().stream())
                 .filter(ya -> ya.gjelderFor(arbeidsforhold.getArbeidsgiver(), arbeidsforhold.getArbeidsforholdRef()))
                 .flatMap(ya -> ya.getAlleAktivitetsAvtaler().stream().map(AktivitetsAvtaleDto::getSisteLønnsendringsdato))
+                .filter(Objects::nonNull)
                 .filter(d -> d.isBefore(input.getSkjæringstidspunktForBeregning()))
                 .max(Comparator.naturalOrder()).orElseThrow();
     }
