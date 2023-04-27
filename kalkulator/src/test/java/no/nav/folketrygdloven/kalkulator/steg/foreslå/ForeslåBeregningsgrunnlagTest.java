@@ -695,6 +695,7 @@ public class ForeslåBeregningsgrunnlagTest {
                     Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1));
         }
         iayGrunnlagBuilder.medData(inntektArbeidYtelseBuilder);
+
         // Act
         BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, List.of(), omsorgspengerGrunnlag);
         // Assert

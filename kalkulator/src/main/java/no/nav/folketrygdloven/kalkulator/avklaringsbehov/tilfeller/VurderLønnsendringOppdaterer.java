@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.avklaringsbehov.tilfeller;
 
-import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.LønnsendringTjeneste.finnAktiviteterMedLønnsendringUtenInntektsmeldingIHeleBeregningsperioden;
+import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.LønnsendringTjeneste.finnAktiviteterMedLønnsendringUtenInntektsmeldingIBeregningsperiodenOgTilStp;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
-import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FaktaBeregningLagreDto;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -29,7 +28,7 @@ public class VurderLønnsendringOppdaterer implements FaktaOmBeregningTilfelleOp
                 .map(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPrStatusOgAndelList).flatMap(Collection::stream)
                 .filter(bpsa -> bpsa.getAktivitetStatus().erArbeidstaker())
                 .collect(Collectors.toList());
-        var aktiviteterMedLønnsendring = finnAktiviteterMedLønnsendringUtenInntektsmeldingIHeleBeregningsperioden(beregningsgrunnlag, input.getIayGrunnlag(), input.getInntektsmeldinger());
+        var aktiviteterMedLønnsendring = finnAktiviteterMedLønnsendringUtenInntektsmeldingIBeregningsperiodenOgTilStp(beregningsgrunnlag, input.getIayGrunnlag(), input.getInntektsmeldinger());
         var faktaAggregatBuilder = grunnlagBuilder.getFaktaAggregatBuilder();
         arbeidstakerAndeler.stream().map(BeregningsgrunnlagPrStatusOgAndelDto::getBgAndelArbeidsforhold)
                 .filter(Optional::isPresent)

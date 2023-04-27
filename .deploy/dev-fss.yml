@@ -93,7 +93,7 @@ spec:
     # Feature-flag
     - name: BEREGNE_DAGPENGER_FRA_SYKEPENGER
       value: "true"
-    - name: AUTOMATISK_BEREGNE_LONNSENDRING
+    - name: AUTOMATISK_BEREGNE_LONNSENDRING_V2
       value: "true"
     - name: BEREGNE_DAGPENGER_FRA_PLEIEPENGER
       value: "true"

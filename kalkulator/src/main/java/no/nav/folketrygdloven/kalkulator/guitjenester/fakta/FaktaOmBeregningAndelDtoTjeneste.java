@@ -116,7 +116,7 @@ public class FaktaOmBeregningAndelDtoTjeneste {
                                                                                       Optional<FaktaAggregatDto> faktaAggregat,
                                                                                       InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
                                                                                       Collection<InntektsmeldingDto> inntektsmeldinger) {
-        List<YrkesaktivitetDto> aktiviteterMedLønnsendring = LønnsendringTjeneste.finnAktiviteterMedLønnsendringUtenInntektsmeldingIHeleBeregningsperioden(beregningsgrunnlag, inntektArbeidYtelseGrunnlag, inntektsmeldinger);
+        List<YrkesaktivitetDto> aktiviteterMedLønnsendring = LønnsendringTjeneste.finnAktiviteterMedLønnsendringUtenInntektsmeldingIBeregningsperiodenOgTilStp(beregningsgrunnlag, inntektArbeidYtelseGrunnlag, inntektsmeldinger);
         var aktiviteterMedLønnsendringUtenVurdering = aktiviteterMedLønnsendring.stream().filter(ya -> harIkkeBlittVurdertAutomatisk(faktaAggregat, ya))
                 .toList();
         if (aktiviteterMedLønnsendringUtenVurdering.isEmpty()) {

@@ -308,7 +308,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medOverstyrtPrÅr(vlBGPStatus.getOverstyrtPrÅr())
                 .medFordeltPrÅr(vlBGPStatus.getManueltFordeltPrÅr() != null ? vlBGPStatus.getManueltFordeltPrÅr() : vlBGPStatus.getFordeltPrÅr()) // Midlertidig løsning til vi lager egen mapping for fastsettsteget vl til regel
                 .medBesteberegningPrÅr(vlBGPStatus.getBesteberegningPrÅr())
-                .medArbeidsforhold(MapArbeidsforholdFraVLTilRegel.arbeidsforholdFor(vlBGPStatus))
+                .medArbeidsforhold(MapArbeidsforholdFraVLTilRegel.arbeidsforholdForMedStartdato(vlBGPStatus, input.getIayGrunnlag(), input.getSkjæringstidspunktForBeregning()))
                 .medUtbetalingsprosentSVP(finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false));
         Optional<Boolean> erTidsbegrenset = input.getBeregningsgrunnlagGrunnlag().getFaktaAggregat().flatMap(fa -> fa.getFaktaArbeidsforhold(vlBGPStatus))
                 .map(FaktaArbeidsforholdDto::getErTidsbegrensetVurdering);
