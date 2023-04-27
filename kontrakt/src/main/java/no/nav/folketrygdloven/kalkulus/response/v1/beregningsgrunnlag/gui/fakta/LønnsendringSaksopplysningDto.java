@@ -34,6 +34,8 @@ public class LønnsendringSaksopplysningDto {
     @NotNull
     private ArbeidsforholdDto arbeidsforhold;
 
+    public LønnsendringSaksopplysningDto() {
+    }
 
     public LønnsendringSaksopplysningDto(LocalDate sisteLønnsendringsdato, LønnsendringScenario lønnsendringScenario, ArbeidsforholdDto arbeidsforhold) {
         this.sisteLønnsendringsdato = sisteLønnsendringsdato;
