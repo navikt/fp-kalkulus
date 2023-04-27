@@ -8,10 +8,12 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.fakta.
 
 public class SaksopplysningerTjeneste {
 
-    private SaksopplysningerTjeneste() {}
+    private SaksopplysningerTjeneste() {
+    }
 
     public static Saksopplysninger lagSaksopplysninger(BeregningsgrunnlagGUIInput input) {
         Saksopplysninger saksopplysninger = new Saksopplysninger();
+        saksopplysninger.setLønnsendringSaksopplysning(LønnsendringSaksopplysningTjeneste.lagDto(input));
         saksopplysninger.setArbeidsforholdMedLønnsendring(lagArbeidsforholdMedLønnsendring(input));
         saksopplysninger.setKortvarigeArbeidsforhold(lagKortvarigeArbeidsforhold(input));
         return saksopplysninger;
