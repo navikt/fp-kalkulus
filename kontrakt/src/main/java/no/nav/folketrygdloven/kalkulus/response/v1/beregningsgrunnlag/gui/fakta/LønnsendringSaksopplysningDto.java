@@ -24,9 +24,9 @@ public class LønnsendringSaksopplysningDto {
     private LocalDate sisteLønnsendringsdato;
 
     @Valid
-    @JsonProperty(value = "lønnsendringScenario")
+    @JsonProperty(value = "lønnsendringscenario")
     @NotNull
-    private LønnsendringScenario lønnsendringScenario;
+    private LønnsendringScenario lønnsendringscenario;
 
 
     @Valid
@@ -37,9 +37,9 @@ public class LønnsendringSaksopplysningDto {
     public LønnsendringSaksopplysningDto() {
     }
 
-    public LønnsendringSaksopplysningDto(LocalDate sisteLønnsendringsdato, LønnsendringScenario lønnsendringScenario, ArbeidsforholdDto arbeidsforhold) {
+    public LønnsendringSaksopplysningDto(LocalDate sisteLønnsendringsdato, LønnsendringScenario lønnsendringscenario, ArbeidsforholdDto arbeidsforhold) {
         this.sisteLønnsendringsdato = sisteLønnsendringsdato;
-        this.lønnsendringScenario = lønnsendringScenario;
+        this.lønnsendringscenario = lønnsendringscenario;
         this.arbeidsforhold = arbeidsforhold;
     }
 
@@ -47,8 +47,8 @@ public class LønnsendringSaksopplysningDto {
         return sisteLønnsendringsdato;
     }
 
-    public LønnsendringScenario getLønnsendringScenario() {
-        return lønnsendringScenario;
+    public LønnsendringScenario getLønnsendringscenario() {
+        return lønnsendringscenario;
     }
 
     public ArbeidsforholdDto getArbeidsforhold() {
