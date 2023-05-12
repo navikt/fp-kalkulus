@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.fastsett;
 
+import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste.finnAktivitetsgradForAndel;
 import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste.finnUtbetalingsgradForAndel;
 
 import java.math.BigDecimal;
@@ -34,7 +35,6 @@ import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.TilkommetInntektDto;
@@ -187,13 +187,14 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
     // Ikke ATFL, de har separat mapping
     private static BeregningsgrunnlagPrStatus mapVLBGPStatusForAlleAktivietetStatuser(BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         final AktivitetStatus regelAktivitetStatus = mapVLAktivitetStatus(vlBGPStatus.getAktivitetStatus());
-        return BeregningsgrunnlagPrStatus.builder()
+        var builder = BeregningsgrunnlagPrStatus.builder()
                 .medAktivitetStatus(regelAktivitetStatus)
                 .medBruttoPrÅr(vlBGPStatus.getBruttoPrÅr())
                 .medInntektsgrunnlagPrÅr(vlBGPStatus.getGrunnlagPrÅr().getBruttoUtenFordelt() != null ? vlBGPStatus.getGrunnlagPrÅr().getBruttoUtenFordelt() : BigDecimal.ZERO)
                 .medAndelNr(vlBGPStatus.getAndelsnr())
-                .medUtbetalingsprosent(finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), ytelsespesifiktGrunnlag, false))
-                .build();
+                .medUtbetalingsprosent(finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), ytelsespesifiktGrunnlag, false));
+        finnAktivitetsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), ytelsespesifiktGrunnlag, false).ifPresent(builder::medAktivitetsgrad);
+        return builder.build();
     }
 
     // Felles mapping av alle statuser som mapper til ATFL
@@ -219,6 +220,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medAndelNr(vlBGPStatus.getAndelsnr())
                 .medArbeidsforhold(MapArbeidsforholdFraVLTilRegel.arbeidsforholdFor(vlBGPStatus))
                 .medUtbetalingsprosent(finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), ytelsespesifiktGrunnlag, false));
+        finnAktivitetsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), ytelsespesifiktGrunnlag, false).ifPresent(builder::medAktivitetsgrad);
         vlBGPStatus.getBgAndelArbeidsforhold().ifPresent(bga ->
                 builder
                         .medNaturalytelseBortfaltPrÅr(bga.getNaturalytelseBortfaltPrÅr().orElse(null))
@@ -227,5 +229,4 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
 
         return builder.build();
     }
-
 }

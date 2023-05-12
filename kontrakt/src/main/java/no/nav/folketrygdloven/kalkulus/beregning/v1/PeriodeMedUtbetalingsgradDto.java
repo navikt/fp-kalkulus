@@ -35,6 +35,13 @@ public class PeriodeMedUtbetalingsgradDto {
     @Digits(integer = 3, fraction = 2)
     private BigDecimal utbetalingsgrad;
 
+    @JsonProperty(value = "aktivitetsgrad")
+    @Valid
+    @DecimalMin(value = "0.00", message = "aktivitetsgrad ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "100.00", message = "aktivitetsgrad ${validatedValue} må være <= {value}")
+    @Digits(integer = 3, fraction = 2)
+    private BigDecimal aktivitetsgrad;
+
     public PeriodeMedUtbetalingsgradDto() {
     }
 
@@ -43,12 +50,24 @@ public class PeriodeMedUtbetalingsgradDto {
         this.utbetalingsgrad = utbetalingsgrad;
     }
 
+    public PeriodeMedUtbetalingsgradDto(@NotNull @Valid Periode periode,
+                                        @Valid @DecimalMin(value = "0.00", message = "utbetalingsgrad ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "utbetalingsgrad ${validatedValue} må være <= {value}") BigDecimal utbetalingsgrad,
+                                        @Valid @DecimalMin(value = "0.00", message = "aktivitetsgrad ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "aktivitetsgrad ${validatedValue} må være <= {value}") BigDecimal aktivitetsgrad) {
+        this.periode = periode;
+        this.utbetalingsgrad = utbetalingsgrad;
+        this.aktivitetsgrad = aktivitetsgrad;
+    }
+
     public Periode getPeriode() {
         return periode;
     }
 
     public BigDecimal getUtbetalingsgrad() {
         return utbetalingsgrad;
+    }
+
+    public BigDecimal getAktivitetsgrad() {
+        return aktivitetsgrad;
     }
 
     @Override

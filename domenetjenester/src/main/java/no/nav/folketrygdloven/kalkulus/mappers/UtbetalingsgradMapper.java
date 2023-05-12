@@ -40,7 +40,7 @@ class UtbetalingsgradMapper {
     }
 
     private static PeriodeMedUtbetalingsgradDto mapPeriodeMedUtbetalingsgrad(no.nav.folketrygdloven.kalkulus.beregning.v1.PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto) {
-        return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(periodeMedUtbetalingsgradDto.getPeriode().getFom(), periodeMedUtbetalingsgradDto.getPeriode().getTom()), periodeMedUtbetalingsgradDto.getUtbetalingsgrad());
+        return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(periodeMedUtbetalingsgradDto.getPeriode().getFom(), periodeMedUtbetalingsgradDto.getPeriode().getTom()), periodeMedUtbetalingsgradDto.getUtbetalingsgrad(), periodeMedUtbetalingsgradDto.getAktivitetsgrad());
     }
 
     public static AktivitetDto mapArbeidsforhold(no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetDto aktivitetDto) {
