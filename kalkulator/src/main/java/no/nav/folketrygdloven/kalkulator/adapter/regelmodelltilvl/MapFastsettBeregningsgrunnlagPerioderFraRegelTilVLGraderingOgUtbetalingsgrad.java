@@ -16,7 +16,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
@@ -39,10 +38,15 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLGraderingOgUtbeta
     protected void mapAndeler(BeregningsgrunnlagDto nyttBeregningsgrunnlag, SplittetPeriode splittetPeriode,
                               List<BeregningsgrunnlagPrStatusOgAndelDto> andelListe, BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
         andelListe.forEach(eksisterendeAndel -> leggTilEksisterende(beregningsgrunnlagPeriode, eksisterendeAndel));
-        splittetPeriode.getNyeAndeler().forEach(nyAndel -> mapNyAndel(beregningsgrunnlagPeriode, nyttBeregningsgrunnlag.getSkjæringstidspunkt(), nyAndel));
+        try {
+            splittetPeriode.getNyeAndeler().forEach(nyAndel -> mapNyAndel(beregningsgrunnlagPeriode, nyAndel));
+        } catch (Exception e) {
+            var error = String.format("Klarte ikke mappe nye andeler %s. Fullstendig feilmelding: %s", splittetPeriode.getNyeAndeler(), e);
+            throw new IllegalStateException(error);
+        }
     }
 
-    private void mapNyAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, LocalDate skjæringstidspunkt, SplittetAndel nyAndel) {
+    private void mapNyAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, SplittetAndel nyAndel) {
         // Antar at vi ikkje får nye andeler for ytelse FRISINN
         if (nyAndelErSNFlDP(nyAndel)) {
             AktivitetStatus aktivitetStatus = mapAktivitetStatus(nyAndel.getAktivitetStatus());
