@@ -2,9 +2,10 @@ package no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse;
 
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
+import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
@@ -14,6 +15,10 @@ import no.nav.fpsak.tidsserie.LocalDateTimeline;
 import no.nav.fpsak.tidsserie.StandardCombinators;
 
 public class FinnTidslinjeForErNyAktivitet {
+
+    private FinnTidslinjeForErNyAktivitet() {
+        // Skjuler default konstruktør
+    }
 
 
     /** Finner tidslinje for perioder der gitt arbeidsforhold har en matchende andel i beregningsgrunnlaget.
@@ -32,11 +37,16 @@ public class FinnTidslinjeForErNyAktivitet {
         var eksisterendeAndelSegmenter = vlBeregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
                 .filter(p -> p.getBeregningsgrunnlagPrStatusOgAndelList()
                         .stream().anyMatch(a ->
-                                AktivitetStatusMatcher.matcherStatus(a.getAktivitetStatus(), uttakArbeidType) &&
-                                a.getBgAndelArbeidsforhold().map(bgAndelArbeidsforhold -> bgAndelArbeidsforhold.getArbeidsgiver().equals(tilretteleggingArbeidsgiver) &&
-                                        bgAndelArbeidsforhold.getArbeidsforholdRef().gjelderFor(internArbeidsforholdRef)).orElse(true)))
+                        {
+                            var statusMatcher = AktivitetStatusMatcher.matcherStatus(a.getAktivitetStatus(), uttakArbeidType);
+                            var andelAG = a.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver).orElse(null);
+                            var arbeidsgiverMatcher = Objects.equals(andelAG, tilretteleggingArbeidsgiver);
+                            var andelRef = a.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsforholdRef).orElse(InternArbeidsforholdRefDto.nullRef());
+                            var arbeidsforholdRefMatcher = andelRef.gjelderFor(internArbeidsforholdRef);
+                            return statusMatcher && arbeidsgiverMatcher && arbeidsforholdRefMatcher;
+                        }))
                 .map(p -> new LocalDateSegment<>(p.getBeregningsgrunnlagPeriodeFom(), p.getBeregningsgrunnlagPeriodeTom(), false))
-                .collect(Collectors.toList());
+                .toList();
         LocalDateTimeline<Boolean> eksisterendeAndelTidslinje = new LocalDateTimeline<>(eksisterendeAndelSegmenter);
         return new LocalDateTimeline<>(vlBeregningsgrunnlag.getSkjæringstidspunkt(), TIDENES_ENDE, true)
                 .crossJoin(eksisterendeAndelTidslinje, StandardCombinators::coalesceRightHandSide);
