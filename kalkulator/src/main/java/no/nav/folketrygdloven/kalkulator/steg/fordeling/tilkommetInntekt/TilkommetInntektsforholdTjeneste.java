@@ -71,11 +71,21 @@ public class TilkommetInntektsforholdTjeneste {
      * @return Tidslinje for tilkommet aktivitet/inntektsforhold
      */
     public static LocalDateTimeline<Set<StatusOgArbeidsgiver>> finnTilkommetInntektsforholdTidslinje(LocalDate skjæringstidspunkt,
+            int inntektRapporteringsfristDag,
+            Collection<BeregningsgrunnlagPrStatusOgAndelDto> andelerFraStart,
+            UtbetalingsgradGrunnlag utbetalingsgradGrunnlag,
+            InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+            FagsakYtelseType ytelseTypeTilBehandling) {
+        return finnTilkommetInntektsforholdTidslinje(skjæringstidspunkt, inntektRapporteringsfristDag, andelerFraStart, utbetalingsgradGrunnlag, iayGrunnlag, ytelseTypeTilBehandling, false);
+    }
+
+    public static LocalDateTimeline<Set<StatusOgArbeidsgiver>> finnTilkommetInntektsforholdTidslinje(LocalDate skjæringstidspunkt,
                                                                                                      int inntektRapporteringsfristDag,
                                                                                                      Collection<BeregningsgrunnlagPrStatusOgAndelDto> andelerFraStart,
                                                                                                      UtbetalingsgradGrunnlag utbetalingsgradGrunnlag,
                                                                                                      InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                                                                                     FagsakYtelseType ytelseTypeTilBehandling) {
+                                                                                                     FagsakYtelseType ytelseTypeTilBehandling,
+                                                                                                     boolean ikkeFiltrerVedFulltFravær) {
 
         var yrkesaktiviteter = iayGrunnlag.getAktørArbeidFraRegister().map(AktørArbeidDto::hentAlleYrkesaktiviteter).orElse(Collections.emptyList());
         var ytelser = finnYtelserUlikYtelseTilBehandling(iayGrunnlag, ytelseTypeTilBehandling);
@@ -92,10 +102,14 @@ public class TilkommetInntektsforholdTjeneste {
                 .combine(tidslinjeForAktivitetPåBakgrunnAvInntekt, FinnArbeidstakerInntektTidslinje::kunGyldigePeriodeForInntekt, LocalDateTimeline.JoinStyle.LEFT_JOIN)
                 .compress();
         var utbetalingTidslinje = finnUtbetalingTidslinje(utbetalingsgradGrunnlag);
-        return aktivitetTidslinje
-                .intersection(utbetalingTidslinje, StandardCombinators::leftOnly)
-                .map(s -> mapTilkommetTidslinje(andelerFraStart, yrkesaktiviteter, utbetalingsgradGrunnlag, s));
+        final LocalDateTimeline<Set<Inntektsforhold>> resultat;
+        if (ikkeFiltrerVedFulltFravær) {
+            resultat = aktivitetTidslinje;
+        } else {
+            resultat = aktivitetTidslinje.intersection(utbetalingTidslinje, StandardCombinators::leftOnly);
+        }
 
+        return resultat.map(s -> mapTilkommetTidslinje(andelerFraStart, yrkesaktiviteter, utbetalingsgradGrunnlag, s, ikkeFiltrerVedFulltFravær));
     }
 
     private static List<Arbeidsgiver> getArbeidsgivere(LocalDateTimeline<Set<Inntektsforhold>> yrkesaktivitetTidslinje) {
@@ -124,22 +138,24 @@ public class TilkommetInntektsforholdTjeneste {
     private static List<LocalDateSegment<Set<StatusOgArbeidsgiver>>> mapTilkommetTidslinje(Collection<BeregningsgrunnlagPrStatusOgAndelDto> andeler,
                                                                                            Collection<YrkesaktivitetDto> yrkesaktiviteter,
                                                                                            UtbetalingsgradGrunnlag utbetalingsgradGrunnlag,
-                                                                                           LocalDateSegment<Set<Inntektsforhold>> s) {
+                                                                                           LocalDateSegment<Set<Inntektsforhold>> s,
+                                                                                           boolean ikkeFiltrerVedFulltFravær) {
         var periode = Intervall.fraOgMedTilOgMed(s.getFom(), s.getTom());
         return List.of(new LocalDateSegment<>(s.getFom(), s.getTom(),
-                mapTilkomne(yrkesaktiviteter, andeler, utbetalingsgradGrunnlag, periode, s.getValue())));
+                mapTilkomne(yrkesaktiviteter, andeler, utbetalingsgradGrunnlag, periode, s.getValue(), ikkeFiltrerVedFulltFravær)));
     }
 
     private static Set<StatusOgArbeidsgiver> mapTilkomne(Collection<YrkesaktivitetDto> yrkesaktiviteter,
                                                          Collection<BeregningsgrunnlagPrStatusOgAndelDto> andeler,
                                                          UtbetalingsgradGrunnlag utbetalingsgradGrunnlag,
                                                          Intervall periode,
-                                                         Set<Inntektsforhold> inntektsforholdListe) {
+                                                         Set<Inntektsforhold> inntektsforholdListe,
+                                                         boolean ikkeFiltrerVedFulltFravær) {
 
 
         var nyeInntektsforhold = inntektsforholdListe.stream()
                 .filter(it -> !harAndelForArbeidsgiverFraStart(it, andeler))
-                .filter(it -> harIkkeFulltFravær(utbetalingsgradGrunnlag, periode, it)).collect(Collectors.toSet());
+                .filter(it -> ikkeFiltrerVedFulltFravær || harIkkeFulltFravær(utbetalingsgradGrunnlag, periode, it)).collect(Collectors.toSet());
 
         return nyeInntektsforhold.stream()
                 .sorted(sorterPåStartdato(yrkesaktiviteter))

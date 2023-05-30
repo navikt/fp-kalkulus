@@ -49,6 +49,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
+import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
 /**
  * Simulerer resultat av gradering mot inntekt
@@ -86,9 +87,27 @@ public class SimulerGraderingMotInntektTjeneste {
         );
         var tidlinjeMedTilkommetAktivitet = tilkommetTidslinje.filterValue(v -> !v.isEmpty()).compress();
         var redusertTidslinje = tidlinjeMedTilkommetAktivitet.intersection(new LocalDateInterval(FOM_DATO_GRADERING_MOT_INNTEKT, LocalDateInterval.TIDENES_ENDE));
+        
         return redusertTidslinje.toSegments().stream()
                 .map(s -> Intervall.fraOgMedTilOgMed(s.getFom(), s.getTom()))
                 .toList();
+    }
+
+    public LocalDateTimeline<Set<StatusOgArbeidsgiver>> utledTilkommetAktivitetPerioder(BeregningsgrunnlagInput beregningsgrunnlagInput) {
+        /*
+         * XXX: Koden her bør trekkes ut i en egen tjeneste for "tilkommet aktivitet".
+         */
+        var tilkommetTidslinje = TilkommetInntektsforholdTjeneste.finnTilkommetInntektsforholdTidslinje(
+                beregningsgrunnlagInput.getSkjæringstidspunktForBeregning(),
+                5, beregningsgrunnlagInput.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
+                beregningsgrunnlagInput.getYtelsespesifiktGrunnlag(),
+                beregningsgrunnlagInput.getIayGrunnlag(),
+                beregningsgrunnlagInput.getFagsakYtelseType(),
+                true
+                );
+        var tidlinjeMedTilkommetAktivitet = tilkommetTidslinje.filterValue(v -> !v.isEmpty()).compress();
+        var redusertTidslinje = tidlinjeMedTilkommetAktivitet.intersection(new LocalDateInterval(FOM_DATO_GRADERING_MOT_INNTEKT, LocalDateInterval.TIDENES_ENDE));
+        return redusertTidslinje;
     }
 
     public BeregningsgrunnlagDto lagInputGrunnlag(BeregningsgrunnlagInput beregningsgrunnlagInput) {

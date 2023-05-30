@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.rest;
 
-import static no.nav.folketrygdloven.kalkulator.felles.inntektgradering.SimulerGraderingMotInntektTjeneste.ReduksjonVedGradering;
 import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributtMiljøvariabel.BEREGNINGSGRUNNLAG;
 import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributtMiljøvariabel.DRIFT;
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.READ;
@@ -36,6 +35,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import no.nav.folketrygdloven.kalkulator.felles.inntektgradering.SimulerGraderingMotInntektTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.inntektgradering.SimulerGraderingMotInntektTjeneste.ReduksjonVedGradering;
 import no.nav.folketrygdloven.kalkulator.guitjenester.VurderNyeInntektsforholdDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
@@ -111,6 +111,7 @@ public class SimulerTilkommetInntektRestTjeneste {
         var fastsatteGrunnlag = beregningsgrunnlag.stream()
                 .filter(bg -> bg.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.FASTSATT))
                 .toList();
+        
         var simuleringer = fastsatteGrunnlag.stream().map(bg -> {
             var kobling = koblinger.stream().filter(it -> it.getId().equals(bg.getKoblingId())).findFirst().orElseThrow();
             var input = inputer.get(kobling.getId());
@@ -123,7 +124,6 @@ public class SimulerTilkommetInntektRestTjeneste {
         }).toList();
         return Response.ok(new SimulertTilkommetInntektListe(simuleringer)).build();
     }
-
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

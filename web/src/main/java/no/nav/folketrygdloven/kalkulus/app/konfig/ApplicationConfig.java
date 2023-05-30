@@ -33,6 +33,7 @@ import no.nav.folketrygdloven.kalkulus.rest.KomprimerJsonInputRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.MigrerAksjonspunktRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.OperereKalkulusRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.SimulerTilkommetInntektRestTjeneste;
+import no.nav.folketrygdloven.kalkulus.rest.TilkommetAktivitetRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.forvaltning.DiagnostikkBeregningRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.forvaltning.ForvaltningFrisinnRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.forvaltning.KopierOgResetRestTjeneste;
@@ -100,6 +101,7 @@ public class ApplicationConfig extends Application {
         classes.add(DiagnostikkBeregningRestTjeneste.class);
         classes.add(KopierOgResetRestTjeneste.class);
         classes.add(SimulerTilkommetInntektRestTjeneste.class);
+        classes.add(TilkommetAktivitetRestTjeneste.class);
 
         return Collections.unmodifiableSet(classes);
     }
