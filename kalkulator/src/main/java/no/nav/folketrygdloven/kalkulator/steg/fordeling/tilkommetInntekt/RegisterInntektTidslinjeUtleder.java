@@ -42,6 +42,7 @@ class RegisterInntektTidslinjeUtleder {
 
     private static Map<Arbeidsgiver, List<InntektspostDto>> finnInntektsposterPrRelevantArbeidsgiver(Collection<InntektspostDto> inntektposter, List<Arbeidsgiver> arbeidsgivere) {
         var posterPrArbeidsgiver = inntektposter.stream()
+                .filter(p -> p.getInntekt().getArbeidsgiver() != null)
                 .collect(Collectors.groupingBy(p -> p.getInntekt().getArbeidsgiver()));
         return arbeidsgivere
                 .stream()
