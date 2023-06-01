@@ -10,7 +10,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.TilkommetInntektDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.FastsattInntektskategori;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Refusjon;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatus;
@@ -77,7 +76,7 @@ public class BGMapperTilKalkulus {
                 .medMaksimalRefusjonPrÅr(mapFraBeløp(fraFagsystem.getMaksimalRefusjonPrÅr()))
                 .medRedusertRefusjonPrÅr(mapFraBeløp(fraFagsystem.getRedusertRefusjonPrÅr()))
                 .medÅrsbeløpFraTilstøtendeYtelse(mapFraBeløp(fraFagsystem.getÅrsbeløpFraTilstøtendeYtelse()))
-                .medInntektskategori(mapFastsatteInntektskategorier(fraFagsystem.getFastsattInntektskategori()))
+                .medInntektskategori(fraFagsystem.getInntektskategori())
                 .medKilde(fraFagsystem.getKilde())
                 .medOrginalDagsatsFraTilstøtendeYtelse(fraFagsystem.getOrginalDagsatsFraTilstøtendeYtelse())
                 .medAvkortetFørGraderingPrÅr(mapFraBeløp(fraFagsystem.getAvkortetFørGraderingPrÅr()));
@@ -95,15 +94,6 @@ public class BGMapperTilKalkulus {
 
         fraFagsystem.getBgAndelArbeidsforhold().ifPresent(bgAndelArbeidsforhold -> builder.medBGAndelArbeidsforhold(BGMapperTilKalkulus.magBGAndelArbeidsforhold(bgAndelArbeidsforhold)));
         return builder;
-    }
-
-    private static FastsattInntektskategori mapFastsatteInntektskategorier(no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.FastsattInntektskategori fraFagsystem) {
-        if (fraFagsystem == null) {
-            return null;
-        }
-        return new FastsattInntektskategori(fraFagsystem.getInntektskategori(),
-                fraFagsystem.getInntektskategoriAutomatiskFordeling(),
-                fraFagsystem.getInntektskategoriManuellFordeling());
     }
 
     private static BGAndelArbeidsforholdDto.Builder magBGAndelArbeidsforhold(BGAndelArbeidsforhold fraFagsystem) {
