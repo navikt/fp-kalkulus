@@ -45,6 +45,8 @@ public class InntektsmeldingDto {
             final RefusjonDto refusjon = new RefusjonDto(r);
             return refusjon;
         }).collect(Collectors.toList());
+        this.kanalreferanse = inntektsmelding.getKanalreferanse();
+        this.journalpostId = inntektsmelding.getJournalpostId();
     }
 
     /**

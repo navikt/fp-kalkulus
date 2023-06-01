@@ -25,7 +25,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.KravperioderPrArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 /** Inputstruktur for beregningsgrunnlag tjenester. */

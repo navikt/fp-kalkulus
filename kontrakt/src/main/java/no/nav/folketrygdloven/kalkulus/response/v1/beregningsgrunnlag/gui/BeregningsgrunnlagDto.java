@@ -155,7 +155,6 @@ public class BeregningsgrunnlagDto {
         this.ytelsesspesifiktGrunnlag = beregningsgrunnlagDto.ytelsesspesifiktGrunnlag;
         this.inntektsgrunnlag = beregningsgrunnlagDto.inntektsgrunnlag;
         this.forlengelseperioder = beregningsgrunnlagDto.forlengelseperioder;
-
     }
 
 

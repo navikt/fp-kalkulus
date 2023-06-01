@@ -24,7 +24,6 @@ public class InntektspostDto {
         YTELSE_TYPER.put(OffentligYtelseType.KODEVERK, OffentligYtelseType.kodeMap());
         YTELSE_TYPER.put(NæringsinntektType.KODEVERK, NæringsinntektType.kodeMap());
         YTELSE_TYPER.put(PensjonTrygdType.KODEVERK, PensjonTrygdType.kodeMap());
-
     }
 
     private InntektspostType inntektspostType;
