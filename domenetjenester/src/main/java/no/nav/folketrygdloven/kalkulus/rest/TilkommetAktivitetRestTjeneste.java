@@ -144,6 +144,9 @@ public class TilkommetAktivitetRestTjeneste {
     }
 
     private static Arbeidsgiver mapArbeidsgiver(no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver a) {
+        if (a == null) {
+            return null;
+        }
         return new Arbeidsgiver(a.getOrgnr(), a.getAktørId() != null ? a.getAktørId().getId() : null);
     }
 
