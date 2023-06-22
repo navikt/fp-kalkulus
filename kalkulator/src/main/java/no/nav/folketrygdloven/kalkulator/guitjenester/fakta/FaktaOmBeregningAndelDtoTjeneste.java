@@ -130,7 +130,7 @@ public class FaktaOmBeregningAndelDtoTjeneste {
         for (YrkesaktivitetDto yrkesaktivitet : aktiviteterMedLønnsendringUtenVurdering) {
             Optional<BeregningsgrunnlagPrStatusOgAndelDto> korrektAndel = finnKorrektAndelFraArbeidsgiver(andeler, yrkesaktivitet.getArbeidsgiver());
             if (korrektAndel.isEmpty()) {
-                throw new IllegalStateException("Utviklerfeil: Finner ikke korrekt andel for yrkesaktiviteten");
+                throw new IllegalStateException("Utviklerfeil: Finner ikke korrekt andel for yrkesaktiviteten.");
             }
             FaktaOmBeregningAndelDto dto = lagArbeidsforholdUtenInntektsmeldingDto(korrektAndel.get(), inntektArbeidYtelseGrunnlag);
             arbeidsforholdMedLønnsendringUtenIMDtoList.add(dto);
@@ -143,6 +143,7 @@ public class FaktaOmBeregningAndelDtoTjeneste {
                 .noneMatch(a ->
                         a.getArbeidsgiver().equals(ya.getArbeidsgiver()) &&
                                 a.getArbeidsforholdRef().gjelderFor(ya.getArbeidsforholdRef()) &&
+                                a.getHarLønnsendringIBeregningsperiodenVurdering() != null &&
                                 a.getHarLønnsendringIBeregningsperioden().getKilde().equals(FaktaVurderingKilde.KALKULATOR));
     }
 
