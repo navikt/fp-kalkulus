@@ -95,7 +95,7 @@ spec:
     - name: AUTOMATISK_BEREGNE_LONNSENDRING
       value: "true"
     - name: AUTOMATISK_BEREGNE_LONNSENDRING_V2
-      value: "false"
+      value: "true"
     - name: BEREGNE_DAGPENGER_FRA_PLEIEPENGER
       value: "true"
     - name: MELDEKORT_DELVIS_PERIODE
