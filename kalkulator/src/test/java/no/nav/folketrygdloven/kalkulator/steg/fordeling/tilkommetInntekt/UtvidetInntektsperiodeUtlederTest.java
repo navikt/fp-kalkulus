@@ -142,7 +142,7 @@ class UtvidetInntektsperiodeUtlederTest {
                 ),
                 List.of(new PeriodeMedUtbetalingsgradDto(
                         Intervall.fraOgMedTilOgMed(LocalDate.of(2022, 7, 1), LocalDate.of(2022, 7, 31)),
-                        BigDecimal.valueOf(100)
+                        BigDecimal.valueOf(100), BigDecimal.valueOf(0)
                 ))
         );
     }

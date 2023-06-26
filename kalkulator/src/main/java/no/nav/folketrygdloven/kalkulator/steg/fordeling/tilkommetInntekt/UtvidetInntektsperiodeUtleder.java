@@ -118,7 +118,7 @@ class UtvidetInntektsperiodeUtleder {
     private static List<LocalDateSegment<Boolean>> godkjennGrunnetFulltFravær(List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitetDto) {
         return utbetalingsgradPrAktivitetDto.stream()
                 .flatMap(it -> it.getPeriodeMedUtbetalingsgrad().stream())
-                .filter(p -> p.getUtbetalingsgrad().compareTo(BigDecimal.valueOf(100)) == 0)
+                .filter(p -> p.getAktivitetsgrad().map(ag -> ag.compareTo(BigDecimal.valueOf(0)) == 0).orElse(false))
                 .map(PeriodeMedUtbetalingsgradDto::getPeriode)
                 .map(it -> new LocalDateSegment<>(it.getFomDato(), it.getTomDato(), TRUE))
                 .toList();

@@ -44,11 +44,11 @@ class FinnArbeidstakerInntektTidslinje {
 
     private static LocalDateTimeline<Set<DagsatsPrKategoriOgArbeidsgiver>> finnUtbetaltInntektTidslinje(LocalDate skjæringstidspunkt, Collection<InntektspostDto> inntektposter, Collection<YtelseDto> ytelser, List<Arbeidsgiver> arbeidsgivere) {
         var registerInntektTidslinje = RegisterInntektTidslinjeUtleder.lagInntektsperioderTidslinje(skjæringstidspunkt.minusMonths(3).withDayOfMonth(1), inntektposter, arbeidsgivere);
-        var direkteUtbetalingTidslinje = FinnTidslinjeFraDirekteMottattYtelse(ytelser);
+        var direkteUtbetalingTidslinje = finnTidslinjeFraDirekteMottattYtelse(ytelser);
         return registerInntektTidslinje.combine(direkteUtbetalingTidslinje, StandardCombinators::union, LocalDateTimeline.JoinStyle.CROSS_JOIN);
     }
 
-    private static LocalDateTimeline<Set<DagsatsPrKategoriOgArbeidsgiver>> FinnTidslinjeFraDirekteMottattYtelse(Collection<YtelseDto> ytelser) {
+    private static LocalDateTimeline<Set<DagsatsPrKategoriOgArbeidsgiver>> finnTidslinjeFraDirekteMottattYtelse(Collection<YtelseDto> ytelser) {
         return DirekteOvergangTjeneste.direkteUtbetalingTidslinje(ytelser, y -> true)
                 .mapValue(v -> v.stream().filter(a -> a.inntektskategori().equals(Inntektskategori.ARBEIDSTAKER)).collect(Collectors.toSet()))
                 .filterValue(v -> !v.isEmpty());

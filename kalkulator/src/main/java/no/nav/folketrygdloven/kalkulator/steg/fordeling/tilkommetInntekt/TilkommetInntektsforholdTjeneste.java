@@ -98,18 +98,26 @@ public class TilkommetInntektsforholdTjeneste {
         var frilansGodkjentInntektTidslinje = FrilansInntektTidslinjeUtil.finnFrilansInntektTidslinje(skjæringstidspunkt, yrkesaktiviteter, inntektposter, inntektRapporteringsfristDag);
         var aktivitetTidslinje = yrkesaktivitetTidslinje.union(næringTidslinje, StandardCombinators::union)
                 .union(frilansTidslinje, StandardCombinators::union)
-                .combine(frilansGodkjentInntektTidslinje, FrilansInntektTidslinjeUtil::kunFrilansMedInntekt, LocalDateTimeline.JoinStyle.LEFT_JOIN)
-                .combine(tidslinjeForAktivitetPåBakgrunnAvInntekt, FinnArbeidstakerInntektTidslinje::kunGyldigePeriodeForInntekt, LocalDateTimeline.JoinStyle.LEFT_JOIN)
-                .compress();
-        var utbetalingTidslinje = finnUtbetalingTidslinje(utbetalingsgradGrunnlag);
+                .combine(frilansGodkjentInntektTidslinje, FrilansInntektTidslinjeUtil::kunFrilansMedInntekt, LocalDateTimeline.JoinStyle.LEFT_JOIN);
+        
+        /* Neste løsning vi forsøker:
         final LocalDateTimeline<Set<Inntektsforhold>> resultat;
         if (ikkeFiltrerVedFulltFravær) {
+            aktivitetTidslinje = aktivitetTidslinje.compress();
             resultat = aktivitetTidslinje;
         } else {
+            aktivitetTidslinje = aktivitetTidslinje.combine(tidslinjeForAktivitetPåBakgrunnAvInntekt, FinnArbeidstakerInntektTidslinje::kunGyldigePeriodeForInntekt, LocalDateTimeline.JoinStyle.LEFT_JOIN).compress();
+            var utbetalingTidslinje = finnUtbetalingTidslinje(utbetalingsgradGrunnlag);
             resultat = aktivitetTidslinje.intersection(utbetalingTidslinje, StandardCombinators::leftOnly);
         }
 
         return resultat.map(s -> mapTilkommetTidslinje(andelerFraStart, yrkesaktiviteter, utbetalingsgradGrunnlag, s, ikkeFiltrerVedFulltFravær));
+        */
+        if (!ikkeFiltrerVedFulltFravær) {
+            var utbetalingTidslinje = finnUtbetalingTidslinje(utbetalingsgradGrunnlag);
+            aktivitetTidslinje = aktivitetTidslinje.intersection(utbetalingTidslinje, StandardCombinators::leftOnly);
+        }
+        return aktivitetTidslinje.compress().map(s -> mapTilkommetTidslinje(andelerFraStart, yrkesaktiviteter, utbetalingsgradGrunnlag, s, ikkeFiltrerVedFulltFravær));
     }
 
     private static List<Arbeidsgiver> getArbeidsgivere(LocalDateTimeline<Set<Inntektsforhold>> yrkesaktivitetTidslinje) {
@@ -155,7 +163,8 @@ public class TilkommetInntektsforholdTjeneste {
 
         var nyeInntektsforhold = inntektsforholdListe.stream()
                 .filter(it -> !harAndelForArbeidsgiverFraStart(it, andeler))
-                .filter(it -> ikkeFiltrerVedFulltFravær || harIkkeFulltFravær(utbetalingsgradGrunnlag, periode, it)).collect(Collectors.toSet());
+                .filter(it -> ikkeFiltrerVedFulltFravær || harIkkeFulltFravær(utbetalingsgradGrunnlag, periode, it))
+                .collect(Collectors.toSet());
 
         return nyeInntektsforhold.stream()
                 .sorted(sorterPåStartdato(yrkesaktiviteter))
