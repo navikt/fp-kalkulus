@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 import java.time.LocalDateTime;
@@ -19,7 +20,10 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovStatus;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
-@JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
+@JsonAutoDetect(
+        getterVisibility = JsonAutoDetect.Visibility.NONE,
+        setterVisibility = JsonAutoDetect.Visibility.NONE,
+        fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public record AvklaringsbehovDto(@JsonProperty(value = "definisjon") @NotNull @Valid AvklaringsbehovDefinisjon definisjon,
                                  @JsonProperty(value = "status") @NotNull @Valid AvklaringsbehovStatus status,
                                  @JsonProperty(value = "kanLoses") @NotNull @Valid boolean kanLoses,
