@@ -261,6 +261,7 @@ public class TilkommetInntektsforholdTjeneste {
     }
 
     private static boolean harIkkeFulltFravær(BigDecimal utbetalingsgrad) {
+        // TODO: Sjekk på om aktivitetsgrad > 0?
         return utbetalingsgrad.compareTo(BigDecimal.valueOf(100)) < 0;
     }
 

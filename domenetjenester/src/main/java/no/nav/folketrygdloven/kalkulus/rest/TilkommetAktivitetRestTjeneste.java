@@ -31,6 +31,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import no.nav.folketrygdloven.kalkulator.felles.inntektgradering.SimulerGraderingMotInntektTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.inntektgradering.SimulerTilkomneAktiviteterTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.typer.StatusOgArbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
@@ -85,7 +86,7 @@ public class TilkommetAktivitetRestTjeneste {
         this.simulerGraderingMotInntektTjeneste = simulerGraderingMotInntektTjeneste;
     }
 
-    
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("utledTilkommetAktivitetForKoblinger")
@@ -105,7 +106,7 @@ public class TilkommetAktivitetRestTjeneste {
             var kobling = koblinger.stream().filter(it -> it.getId().equals(bg.getKoblingId())).findFirst().orElseThrow();
             var input = inputer.get(kobling.getId());
             var beregningsgrunnlagInput = lagBeregningsgrunnlagInput(kobling, input, bg);
-            var tilkommetAktivitetPerioder = simulerGraderingMotInntektTjeneste.utledTilkommetAktivitetPerioder(beregningsgrunnlagInput);
+            var tilkommetAktivitetPerioder = SimulerTilkomneAktiviteterTjeneste.utledTilkommetAktivitetPerioder(beregningsgrunnlagInput);
             final List<UtledetTilkommetAktivitet> aktiviteter = mapTilUtledetTilkommetAktivitet(tilkommetAktivitetPerioder);
 
             return new UtledetTilkommetAktivitetPrReferanse(
@@ -115,7 +116,7 @@ public class TilkommetAktivitetRestTjeneste {
         }).toList();
         return Response.ok(new UtledetTilkommetAktivitetListe(simuleringer)).build();
     }
-    
+
     private BeregningsgrunnlagInput lagBeregningsgrunnlagInput(KoblingEntitet kobling,
             KalkulatorInputDto input,
             BeregningsgrunnlagGrunnlagEntitet aktivGrunnlagEntitet) {

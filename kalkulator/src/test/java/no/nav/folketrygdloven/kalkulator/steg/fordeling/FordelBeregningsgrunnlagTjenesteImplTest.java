@@ -10,6 +10,7 @@ import no.nav.folketrygdloven.kalkulator.felles.frist.ArbeidsgiverRefusjonskravT
 import no.nav.folketrygdloven.kalkulator.felles.frist.KravTjeneste;
 import no.nav.folketrygdloven.kalkulator.felles.frist.TreMånedersFristVurderer;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -118,7 +119,7 @@ public class FordelBeregningsgrunnlagTjenesteImplTest {
         var inntektsmeldinger = List.of(im1, im2, im3);
 
         var iayGrunnlag = iayGrunnlagBuilder.medInntektsmeldinger(inntektsmeldinger).build();
-        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, opprett(iayGrunnlag, koblingReferanse.getSkjæringstidspunktBeregning()), null)
+        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, opprett(iayGrunnlag, koblingReferanse.getSkjæringstidspunktBeregning()), new ForeldrepengerGrunnlag(100, false))
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Act

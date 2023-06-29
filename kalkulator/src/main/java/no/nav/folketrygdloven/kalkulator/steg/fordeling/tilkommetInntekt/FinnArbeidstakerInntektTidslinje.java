@@ -45,6 +45,7 @@ class FinnArbeidstakerInntektTidslinje {
     private static LocalDateTimeline<Set<DagsatsPrKategoriOgArbeidsgiver>> finnUtbetaltInntektTidslinje(LocalDate skjæringstidspunkt, Collection<InntektspostDto> inntektposter, Collection<YtelseDto> ytelser, List<Arbeidsgiver> arbeidsgivere) {
         var registerInntektTidslinje = RegisterInntektTidslinjeUtleder.lagInntektsperioderTidslinje(skjæringstidspunkt.minusMonths(3).withDayOfMonth(1), inntektposter, arbeidsgivere);
         var direkteUtbetalingTidslinje = finnTidslinjeFraDirekteMottattYtelse(ytelser);
+        // TODO: Her kjører vi en godtroende union som ikke tar hensyn til at de to objektene kan være like, eks ved 50% ytelse der dagsats fra ytelse er lik dagsats fra arbeidsforhold
         return registerInntektTidslinje.combine(direkteUtbetalingTidslinje, StandardCombinators::union, LocalDateTimeline.JoinStyle.CROSS_JOIN);
     }
 

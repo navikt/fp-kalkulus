@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
 
+import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste.finnAktivitetsgradForAndel;
 import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste.finnUtbetalingsgradForAndel;
 
 import java.math.BigDecimal;
@@ -12,15 +13,18 @@ import no.nav.folketrygdloven.beregningsgrunnlag.fordel.modell.FordelPeriodeMode
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
+import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.adapter.util.FinnArbeidsperiode;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapInntektskategoriFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.PerioderTilVurderingTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.inntektgradering.SimulerTilkomneAktiviteterTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
 public class MapTilFordelingsmodell {
@@ -51,7 +55,7 @@ public class MapTilFordelingsmodell {
                 .medAktivitetStatus(regelstatus)
                 .medAndelNr(bgAndel.getAndelsnr())
                 .erSøktYtelseFor(erSøktYtelseFor(bgAndel, input))
-                .medUtbetalingsgrad(hundreEllerNull(bgAndel, input))
+                .medUtbetalingsgrad(kanFordeleTilAndelen(bgAndel, input) ? BigDecimal.valueOf(100) : BigDecimal.ZERO)
                 .medInntektskategori(MapInntektskategoriFraVLTilRegel.map(bgAndel.getGjeldendeInntektskategori()));
         mapArbeidsforhold(bgAndel).ifPresent(regelBuilder::medArbeidsforhold);
         bgAndel.getBgAndelArbeidsforhold().ifPresent(arb -> regelBuilder.medGjeldendeRefusjonPrÅr(arb.getGjeldendeRefusjonPrÅr()));
@@ -66,9 +70,8 @@ public class MapTilFordelingsmodell {
         return regelBuilder.build();
     }
 
-    private static BigDecimal hundreEllerNull(BeregningsgrunnlagPrStatusOgAndelDto bgAndel, BeregningsgrunnlagInput input) {
+    private static boolean kanFordeleTilAndelen(BeregningsgrunnlagPrStatusOgAndelDto bgAndel, BeregningsgrunnlagInput input) {
         var periode = bgAndel.getBeregningsgrunnlagPeriode().getPeriode();
-        var ubetalingsgrad = finnUtbetalingsgradForAndel(bgAndel, periode, input.getYtelsespesifiktGrunnlag(), false);
         if (bgAndel.getBgAndelArbeidsforhold().isPresent()) {
             var ansattTidslinje = FinnArbeidsperiode.finnAnsettelseTidslinje(bgAndel.getBgAndelArbeidsforhold().get().getArbeidsgiver(),
                     bgAndel.getBgAndelArbeidsforhold().get().getArbeidsforholdRef(),
@@ -76,10 +79,19 @@ public class MapTilFordelingsmodell {
             var aktuellPeriode = new LocalDateTimeline<>(periode.getFomDato(), periode.getTomDato(), Boolean.TRUE);
             var erAnsattIPeriode = !ansattTidslinje.intersection(aktuellPeriode).isEmpty();
             if (!erAnsattIPeriode) {
-                return BigDecimal.valueOf(100);
+                return true;
             }
         }
-        return ubetalingsgrad.compareTo(BigDecimal.ZERO) > 0 ? BigDecimal.valueOf(100) : BigDecimal.ZERO;
+        var tilkommetAktivitetTidslinje = SimulerTilkomneAktiviteterTjeneste.utledTilkommetAktivitetPerioder(input);
+        var erTilkommet = SimulerTilkomneAktiviteterTjeneste.erTilkommetAktivitetIPeriode(tilkommetAktivitetTidslinje,
+                LocalDateSegment.emptySegment(bgAndel.getBeregningsgrunnlagPeriode().getBeregningsgrunnlagPeriodeFom(), bgAndel.getBeregningsgrunnlagPeriode().getBeregningsgrunnlagPeriodeTom()), bgAndel.getAktivitetStatus(), bgAndel.getArbeidsgiver());
+        var aktivitetsgrad = finnAktivitetsgradForAndel(bgAndel, bgAndel.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);
+        var brukAktivitetsgrad = KonfigurasjonVerdi.get("GRADERING_MOT_INNTEKT", false) && aktivitetsgrad.isPresent() && erTilkommet;
+        if (brukAktivitetsgrad) {
+            return aktivitetsgrad.get().compareTo(BigDecimal.valueOf(100)) < 0;
+        }
+        var ubetalingsgrad = finnUtbetalingsgradForAndel(bgAndel, periode, input.getYtelsespesifiktGrunnlag(), false);
+        return ubetalingsgrad.compareTo(BigDecimal.ZERO) > 0;
     }
 
 
@@ -98,6 +110,14 @@ public class MapTilFordelingsmodell {
     }
 
     private static boolean erSøktYtelseFor(BeregningsgrunnlagPrStatusOgAndelDto bgAndel, BeregningsgrunnlagInput input) {
+        var tilkommetAktivitetTidslinje = SimulerTilkomneAktiviteterTjeneste.utledTilkommetAktivitetPerioder(input);
+        var erTilkommet = SimulerTilkomneAktiviteterTjeneste.erTilkommetAktivitetIPeriode(tilkommetAktivitetTidslinje,
+                LocalDateSegment.emptySegment(bgAndel.getBeregningsgrunnlagPeriode().getBeregningsgrunnlagPeriodeFom(), bgAndel.getBeregningsgrunnlagPeriode().getBeregningsgrunnlagPeriodeTom()), bgAndel.getAktivitetStatus(), bgAndel.getArbeidsgiver());
+        var aktivitetsgrad = finnAktivitetsgradForAndel(bgAndel, bgAndel.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);
+        var brukAktivitetsgrad = KonfigurasjonVerdi.get("GRADERING_MOT_INNTEKT", false) && aktivitetsgrad.isPresent() && erTilkommet;
+        if (brukAktivitetsgrad) {
+            return aktivitetsgrad.get().compareTo(BigDecimal.valueOf(100)) < 0;
+        }
         var utbGrad = finnUtbetalingsgradForAndel(bgAndel, bgAndel.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);
         return utbGrad.compareTo(BigDecimal.ZERO) > 0;
     }
