@@ -6,6 +6,7 @@ import static no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.FinnTidslin
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -128,7 +129,9 @@ public class MapPerioderForUtbetalingsgradFraVLTilRegel {
     private static boolean erTilkommetIPeriode(AktivitetDto utbetalingsgradArbeidsforhold, LocalDateTimeline<Set<StatusOgArbeidsgiver>> tilkomneAktiviteterTidslinje, PeriodeMedUtbetalingsgradDto periode) {
         return tilkomneAktiviteterTidslinje.stream()
                 .filter(interval -> interval.overlapper(LocalDateSegment.emptySegment(periode.getPeriode().getFomDato(), periode.getPeriode().getTomDato())))
-                .anyMatch(interval -> interval.getValue().stream().anyMatch(aktivitet -> aktivitet.arbeidsgiver().equals(utbetalingsgradArbeidsforhold.getArbeidsgiver().orElse(null))));
+                .anyMatch(interval -> interval.getValue().stream()
+                        .anyMatch(aktivitet -> Objects.equals(aktivitet.arbeidsgiver(), utbetalingsgradArbeidsforhold.getArbeidsgiver().orElse(null))
+                        && AktivitetStatusMatcher.matcherStatus(aktivitet.aktivitetStatus(), utbetalingsgradArbeidsforhold.getUttakArbeidType())));
     }
 
     private static Optional<Arbeidsforhold> mapArbeidsforholdMedPeriode(KoblingReferanse ref, YrkesaktivitetFilterDto filter, AktivitetDto tilretteleggingArbeidsforhold) {
