@@ -2,16 +2,15 @@ package no.nav.folketrygdloven.kalkulator.felles.inntektgradering;
 
 import static no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt.TilkommetInntektPeriodeTjeneste.FOM_DATO_GRADERING_MOT_INNTEKT;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.StatusOgArbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt.TilkommetInntektsforholdTjeneste;
-import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
@@ -50,7 +49,7 @@ public class SimulerTilkomneAktiviteterTjeneste {
     public static boolean erTilkommetAktivitetIPeriode(LocalDateTimeline<Set<StatusOgArbeidsgiver>> tilkommetAktivitetTidslinje, LocalDateSegment periode, AktivitetStatus aktivitetStatus, Optional<Arbeidsgiver> arbeidsgiver) {
         return tilkommetAktivitetTidslinje.stream()
                 .filter(tids -> tids.overlapper(periode))
-                .anyMatch(tids -> tids.getValue().stream().anyMatch(akt -> akt.arbeidsgiver().equals(arbeidsgiver.orElse(null))
+                .anyMatch(tids -> tids.getValue().stream().anyMatch(akt -> Objects.equals(akt.arbeidsgiver(), arbeidsgiver.orElse(null))
                         && akt.aktivitetStatus().equals(aktivitetStatus)));
     }
 
