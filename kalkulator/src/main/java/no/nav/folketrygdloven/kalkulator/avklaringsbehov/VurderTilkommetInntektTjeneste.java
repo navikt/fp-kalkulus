@@ -59,7 +59,6 @@ public class VurderTilkommetInntektTjeneste {
                 } else if (!lhs.getValue().getPeriodeÅrsaker().contains(PeriodeÅrsak.TILKOMMET_INNTEKT) && !rhs.getValue().isEmpty()) {
                     throw new IllegalStateException("Forventer at periode med vurderte inntektsforhold har PeriodeÅrsak TILKOMMET_INNTEKT");
                 }
-
                 rhs.getValue().stream().map(i -> {
                     var tilkommetInntektDto = finnTilkommetInntektTilVurdering(lhs.getValue().getTilkomneInntekter(), i).orElseThrow();
                     return new TilkommetInntektDto(tilkommetInntektDto.getAktivitetStatus(), tilkommetInntektDto.getArbeidsgiver().orElse(null), tilkommetInntektDto.getArbeidsforholdRef(), i.getSkalRedusereUtbetaling() ? finnBruttoPrÅr(i, input.getIayGrunnlag()) : null, i.getSkalRedusereUtbetaling() ? utledTilkommetFraBrutto(i, Intervall.fraOgMedTilOgMed(di.getFomDato(), di.getTomDato()), input.getYtelsespesifiktGrunnlag()) : null, i.getSkalRedusereUtbetaling());
@@ -120,19 +119,24 @@ public class VurderTilkommetInntektTjeneste {
         return OrgNummer.erGyldigOrgnr(i.getArbeidsgiverIdentifikator()) ? Arbeidsgiver.virksomhet(i.getArbeidsgiverIdentifikator()) : Arbeidsgiver.person(new AktørId(i.getArbeidsgiverIdentifikator()));
     }
 
-    private static BigDecimal utledTilkommetFraBrutto(NyttInntektsforholdDto inntektsforhold, Intervall periode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+    private static BigDecimal utledTilkommetFraBrutto(NyttInntektsforholdDto inntektsforhold,
+                                                      Intervall periode,
+                                                      YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {
             if (inntektsforhold.getAktivitetStatus().erArbeidstaker() && inntektsforhold.getArbeidsgiverIdentifikator() != null) {
-                var utbetalingsgradProsent = UtbetalingsgradTjeneste.finnUtbetalingsgradForArbeid(mapArbeidsgiver(inntektsforhold), InternArbeidsforholdRefDto.ref(inntektsforhold.getArbeidsforholdId()), periode, ytelsespesifiktGrunnlag, true);
-                var utbetalingsgrad = utbetalingsgradProsent.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP);
-                return BigDecimal.valueOf(inntektsforhold.getBruttoInntektPrÅr()).multiply(BigDecimal.ONE.subtract(utbetalingsgrad));
+                var aktivitetsProsent = UtbetalingsgradTjeneste.finnAktivitetsgradForArbeid(mapArbeidsgiver(inntektsforhold), InternArbeidsforholdRefDto.ref(inntektsforhold.getArbeidsforholdId()), periode, ytelsespesifiktGrunnlag, true);
+                var utbetalingsprosent = UtbetalingsgradTjeneste.finnUtbetalingsgradForArbeid(mapArbeidsgiver(inntektsforhold), InternArbeidsforholdRefDto.ref(inntektsforhold.getArbeidsforholdId()), periode, ytelsespesifiktGrunnlag, true);
+                var tilommetGrad = aktivitetsProsent.map(grad -> grad.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP))
+                        .orElse(BigDecimal.valueOf(1).subtract(utbetalingsprosent.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP)));
+                return BigDecimal.valueOf(inntektsforhold.getBruttoInntektPrÅr()).multiply(tilommetGrad);
             } else {
-                var utbetalingsgradProsent = UtbetalingsgradTjeneste.finnUtbetalingsgradForStatus(inntektsforhold.getAktivitetStatus(), periode, ytelsespesifiktGrunnlag);
-                var utbetalingsgrad = utbetalingsgradProsent.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP);
-                return BigDecimal.valueOf(inntektsforhold.getBruttoInntektPrÅr()).multiply(BigDecimal.ONE.subtract(utbetalingsgrad));
+                var utbetalingsprosent = UtbetalingsgradTjeneste.finnUtbetalingsgradForStatus(inntektsforhold.getAktivitetStatus(), periode, ytelsespesifiktGrunnlag);
+                var aktivitetsProsent = UtbetalingsgradTjeneste.finnAktivitetsgradForStatus(inntektsforhold.getAktivitetStatus(), periode, ytelsespesifiktGrunnlag);
+                var tilommetGrad = aktivitetsProsent.map(grad -> grad.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP))
+                        .orElse(BigDecimal.valueOf(1).subtract(utbetalingsprosent.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP)));
+                return BigDecimal.valueOf(inntektsforhold.getBruttoInntektPrÅr()).multiply(tilommetGrad);
             }
         }
         throw new IllegalStateException("Kun gyldig ved utbetalingsgradgrunnlag");
     }
-
 }
