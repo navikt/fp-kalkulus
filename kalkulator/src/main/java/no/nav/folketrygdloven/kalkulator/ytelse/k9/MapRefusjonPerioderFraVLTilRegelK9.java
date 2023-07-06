@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste;
 import no.nav.folketrygdloven.kalkulator.felles.frist.ArbeidsgiverRefusjonskravTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
@@ -80,7 +81,8 @@ public abstract class MapRefusjonPerioderFraVLTilRegelK9 extends MapRefusjonPeri
         final List<LocalDateTimeline<Boolean>> segmenterMedUtbetaling = UtbetalingsgradTjeneste.finnPerioderForArbeid(ytelsespesifiktGrunnlag, im.getArbeidsgiver(), im.getArbeidsforholdRef(), true)
                 .stream()
                 .flatMap(u -> u.getPeriodeMedUtbetalingsgrad().stream())
-                .filter(p -> p.getUtbetalingsgrad() != null && p.getUtbetalingsgrad().compareTo(BigDecimal.ZERO) > 0)
+                .filter(p -> p.getUtbetalingsgrad() != null && p.getUtbetalingsgrad().compareTo(BigDecimal.ZERO) > 0
+                        || harAktivitetsgradMedTilkommetInntektToggle(p))
                 .map(PeriodeMedUtbetalingsgradDto::getPeriode)
                 .map(p -> new LocalDateTimeline<>(List.of(new LocalDateSegment<>(p.getFomDato(), p.getTomDato(), true))))
                 .collect(Collectors.toList());
@@ -95,6 +97,11 @@ public abstract class MapRefusjonPerioderFraVLTilRegelK9 extends MapRefusjonPeri
         timeline = timeline.intersection(tidslinjeEtterPermisjon);
 
         return timeline.compress();
+    }
+
+    private static boolean harAktivitetsgradMedTilkommetInntektToggle(PeriodeMedUtbetalingsgradDto p) {
+        return p.getAktivitetsgrad().map(ag -> ag.compareTo(BigDecimal.valueOf(100)) < 0).orElse(false)
+                && KonfigurasjonVerdi.get("GRADERING_MOT_INNTEKT", false);
     }
 
 
