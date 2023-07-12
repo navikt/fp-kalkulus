@@ -20,9 +20,11 @@ env:
   IMAGE_BASE_CR: ghcr.io/${{ github.repository }}
 jobs:
   build:
-
+    permissions:
+      contents: read
+      issues: write
+      packages: write
     runs-on: ubuntu-latest
-
     services:
       postgres:
         image: postgres:12
