@@ -10,6 +10,9 @@ on:
   
 jobs:
   deps:
+    permissions:
+      contents: write
+      security-events: write
     name: k9-felles mvn dependency scan
     uses: navikt/sif-gha-workflows/.github/workflows/maven-dependency-submission.yml@main
     secrets: inherit
