@@ -15,4 +15,11 @@ public class VurderLønnsendringDto {
     public void setErLønnsendringIBeregningsperioden(Boolean erLønnsendringIBeregningsperioden) {
         this.erLønnsendringIBeregningsperioden = erLønnsendringIBeregningsperioden;
     }
+
+    @Override
+    public String toString() {
+        return "VurderLønnsendringDto{" +
+                "erLønnsendringIBeregningsperioden=" + erLønnsendringIBeregningsperioden +
+                '}';
+    }
 }

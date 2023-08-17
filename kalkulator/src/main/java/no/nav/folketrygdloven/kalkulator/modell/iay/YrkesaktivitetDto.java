@@ -174,8 +174,10 @@ public class YrkesaktivitetDto {
 
     @Override
     public String toString() {
-        return "YrkesaktivitetEntitet{" +
-                "arbeidsgiver=" + arbeidsgiver +
+        return "YrkesaktivitetDto{" +
+                "aktivitetsAvtale=" + aktivitetsAvtale +
+                ", permisjoner=" + permisjoner +
+                ", arbeidsgiver=" + arbeidsgiver +
                 ", arbeidsforholdRef=" + arbeidsforholdRef +
                 ", arbeidType=" + arbeidType +
                 '}';
