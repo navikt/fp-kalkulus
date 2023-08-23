@@ -31,9 +31,9 @@ jobs:
           ISSUE_BODY_INPUT: ${{github.event.comment.body}}
         run: |
           echo "TAG=$TAG_INPUT" >> $GITHUB_ENV
-          echo "IMAGE=$IMAGE_BASE:$(echo '$IMAGE_INPUT' | awk '{print $NF}')" >> $GITHUB_ENV
-          echo "CLUSTER=$(echo '$ISSUE_BODY_INPUT' | cut -d' ' -f2)" >> $GITHUB_ENV
-          echo "NAMESPACE=$(echo '$ISSUE_BODY_INPUT' | cut -d' ' -f3)" >> $GITHUB_ENV
+          echo "IMAGE=$IMAGE_BASE:$(echo $IMAGE_INPUT | awk '{print $NF}')" >> $GITHUB_ENV
+          echo "CLUSTER=$(echo $ISSUE_BODY_INPUT | cut -d' ' -f2)" >> $GITHUB_ENV
+          echo "NAMESPACE=$(echo $ISSUE_BODY_INPUT | cut -d' ' -f3)" >> $GITHUB_ENV
          
       - name: Sjekk ut kode
         uses: actions/checkout@v3
