@@ -41,6 +41,8 @@ public class KalkulatorTilBGMapper {
         builder.medBruttoPrÅr(mapTilBeløp(fraKalkulus.getBruttoPrÅr()));
         builder.medRedusertPrÅr(mapTilBeløp(fraKalkulus.getRedusertPrÅr()));
         builder.medInntektGraderingsprosentBrutto(fraKalkulus.getInntektgraderingsprosentBrutto() != null ? new Prosent(fraKalkulus.getInntektgraderingsprosentBrutto()) : null);
+        builder.medTotalUtbetalingsgradFraUttak(fraKalkulus.getTotalUtbetalingsgradFraUttak());
+        builder.medTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt(fraKalkulus.getTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt());
 
         //legg til
         fraKalkulus.getPeriodeÅrsaker().forEach(builder::leggTilPeriodeÅrsak);

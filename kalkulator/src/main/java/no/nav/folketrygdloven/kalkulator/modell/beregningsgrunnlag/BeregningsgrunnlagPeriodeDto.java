@@ -13,9 +13,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
 import no.nav.folketrygdloven.kalkulator.modell.diff.DiffIgnore;
 import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
+import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 
@@ -38,7 +38,8 @@ public class BeregningsgrunnlagPeriodeDto implements IndexKey {
     @SjekkVedKopiering
     private List<BeregningsgrunnlagPeriodeÅrsakDto> beregningsgrunnlagPeriodeÅrsaker = new ArrayList<>();
     private BigDecimal inntektgraderingsprosentBrutto;
-
+    private BigDecimal totalUtbetalingsgradFraUttak;
+    private BigDecimal totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt;
 
     private BeregningsgrunnlagPeriodeDto() {
     }
@@ -64,6 +65,8 @@ public class BeregningsgrunnlagPeriodeDto implements IndexKey {
         this.redusertPrÅr = kopiereFra.redusertPrÅr;
         this.dagsats = kopiereFra.dagsats;
         this.inntektgraderingsprosentBrutto = kopiereFra.inntektgraderingsprosentBrutto;
+        this.totalUtbetalingsgradFraUttak = kopiereFra.totalUtbetalingsgradFraUttak;
+        this.totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt = kopiereFra.totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt;
     }
 
     public static Builder ny() {
@@ -157,6 +160,14 @@ public class BeregningsgrunnlagPeriodeDto implements IndexKey {
 
     public BigDecimal getInntektgraderingsprosentBrutto() {
         return inntektgraderingsprosentBrutto;
+    }
+
+    public BigDecimal getTotalUtbetalingsgradFraUttak() {
+        return totalUtbetalingsgradFraUttak;
+    }
+
+    public BigDecimal getTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt() {
+        return totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt;
     }
 
     @Override
@@ -308,7 +319,17 @@ public class BeregningsgrunnlagPeriodeDto implements IndexKey {
             kladd.inntektgraderingsprosentBrutto = graderinsprosent;
             return this;
         }
+        public Builder medTotalUtbetalingsgradFraUttak(BigDecimal totalUtbetalingsgradFraUttak) {
+            verifiserKanModifisere();
+            kladd.totalUtbetalingsgradFraUttak = totalUtbetalingsgradFraUttak;
+            return this;
+        }
 
+        public Builder medTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt(BigDecimal totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt) {
+            verifiserKanModifisere();
+            kladd.totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt = totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt;
+            return this;
+        }
 
         public Builder leggTilPeriodeÅrsak(PeriodeÅrsak periodeÅrsak) {
             verifiserKanModifisere();

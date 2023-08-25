@@ -40,6 +40,8 @@ public class BGMapperTilKalkulus {
         builder.medBruttoPrÅr(mapFraBeløp(fraFagsystem.getBruttoPrÅr()));
         builder.medRedusertPrÅr(mapFraBeløp(fraFagsystem.getRedusertPrÅr()));
         builder.medInntektsgraderingsprosentBrutto(fraFagsystem.getInntektgraderingsprosentBrutto() != null ? fraFagsystem.getInntektgraderingsprosentBrutto().getVerdi() : null);
+        builder.medTotalUtbetalingsgradFraUttak(fraFagsystem.getTotalUtbetalingsgradFraUttak());
+        builder.medTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt(fraFagsystem.getTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt());
 
         //legg til
         fraFagsystem.getPeriodeÅrsaker().forEach(builder::leggTilPeriodeÅrsak);

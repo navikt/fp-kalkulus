@@ -26,7 +26,7 @@
         <argLine>-Xms256m -Dfile.encoding=UTF-8 -Dlog.level.no.nav=WARN</argLine>
         <jacoco.skip>true</jacoco.skip> <!-- default skip coverage -->
 
-        <revision>2.2</revision>
+        <revision>2.5</revision>
         <sha1/>
         <changelist>-SNAPSHOT</changelist>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -40,7 +40,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <beregningsgrunnlag.regelmodell.version>4.0.6</beregningsgrunnlag.regelmodell.version>
+        <beregningsgrunnlag.regelmodell.version>4.1.0</beregningsgrunnlag.regelmodell.version>
 
         <felles.version>2.0.6</felles.version>
 

@@ -68,6 +68,8 @@ public class MapBrevBeregningsgrunnlag {
                 beregningsgrunnlagPeriode.getAvkortetPrÅr(),
                 beregningsgrunnlagPeriode.getDagsats(),
                 beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto(),
+                beregningsgrunnlagPeriode.getTotalUtbetalingsgradFraUttak(),
+                beregningsgrunnlagPeriode.getTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt(),
                 UtledGraderingsdata.utledGraderingsfaktorInntekt(beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag),
                 UtledGraderingsdata.utledGraderingsfaktorTid(beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag));
     }

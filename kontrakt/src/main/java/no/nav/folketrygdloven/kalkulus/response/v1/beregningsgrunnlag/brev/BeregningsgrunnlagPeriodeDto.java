@@ -6,6 +6,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -14,13 +20,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -58,6 +57,7 @@ public class BeregningsgrunnlagPeriodeDto {
     @Max(178956970)
     private Long dagsats;
 
+    @Deprecated(since = "2.5.0", forRemoval = true)// du vil sannsynligvis bruke noe av totalUtbetalingsgradFraUttak/totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt
     /**
      * Gradering av beregningsgrunnlaget ved tilkommet inntekt (gradering mot inntekt)
      * Angir total bortfalt inntekt av totalt beregningsgrunnlag.
@@ -70,6 +70,27 @@ public class BeregningsgrunnlagPeriodeDto {
     private BigDecimal inntektGraderingsprosent;
 
     /**
+     * utbetalingsgrad dersom det kun skulle vært gradert mot uttak
+     */
+    @JsonProperty(value = "totalUtbetalingsgradFraUttak")
+    @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 4)
+    private BigDecimal totalUtbetalingsgradFraUttak;
+
+    /**
+     * utbetalingsgrad dersom det kun skulle vært gradert mot tilkommetInntekt
+     */
+    @JsonProperty(value = "totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt")
+    @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 4)
+    private BigDecimal totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt;
+
+    @Deprecated(since = "2.5.0", forRemoval = true)// du vil sannsynligvis bruke noe av totalUtbetalingsgradFraUttak/totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt
+    /**
      * Gradering av beregningsgrunnlaget ved tilkommet inntekt (gradering mot inntekt)
      * Angir reduksjon pga gradering mot inntekt sammenlignet med å kun gradere mot uttaksgraden (eksisterer som faktor i inntektGraderingsprosent)
      */
@@ -80,6 +101,7 @@ public class BeregningsgrunnlagPeriodeDto {
     @Digits(integer = 10, fraction = 2)
     private BigDecimal graderingsfaktorInntekt;
 
+    @Deprecated(since = "2.5.0", forRemoval = true)// du vil sannsynligvis bruke noe av totalUtbetalingsgradFraUttak/totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt
     /**
      * Gradering av beregningsgrunnlaget ved tilkommet inntekt (gradering mot inntekt)
      * Angir reduksjon pga gradering mot arbeidstid (uttaksgrad)
@@ -91,6 +113,8 @@ public class BeregningsgrunnlagPeriodeDto {
     @Digits(integer = 10, fraction = 2)
     private BigDecimal graderingsfaktorTid;
 
+
+
     public BeregningsgrunnlagPeriodeDto() {
     }
 
@@ -100,6 +124,8 @@ public class BeregningsgrunnlagPeriodeDto {
                                         @Valid BigDecimal avkortetPrÅr,
                                         @Valid Long dagsats,
                                         BigDecimal inntektGraderingsprosent,
+                                        BigDecimal totalUtbetalingsgradFraUttak,
+                                        BigDecimal totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt,
                                         BigDecimal graderingsfaktorInntekt,
                                         BigDecimal graderingsfaktorTid) {
         this.beregningsgrunnlagPrStatusOgAndelList = beregningsgrunnlagPrStatusOgAndelList;
@@ -108,6 +134,8 @@ public class BeregningsgrunnlagPeriodeDto {
         this.avkortetPrÅr = avkortetPrÅr;
         this.dagsats = dagsats;
         this.inntektGraderingsprosent = inntektGraderingsprosent;
+        this.totalUtbetalingsgradFraUttak = totalUtbetalingsgradFraUttak;
+        this.totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt = totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt;
         this.graderingsfaktorInntekt = graderingsfaktorInntekt;
         this.graderingsfaktorTid = graderingsfaktorTid;
     }
@@ -142,6 +170,14 @@ public class BeregningsgrunnlagPeriodeDto {
 
     public BigDecimal getInntektGraderingsprosent() {
         return inntektGraderingsprosent;
+    }
+
+    public BigDecimal getTotalUtbetalingsgradFraUttak() {
+        return totalUtbetalingsgradFraUttak;
+    }
+
+    public BigDecimal getTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt() {
+        return totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt;
     }
 
     public BigDecimal getGraderingsfaktorInntekt() {

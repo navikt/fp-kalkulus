@@ -5,11 +5,14 @@ import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDEN
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import org.hibernate.annotations.BatchSize;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
@@ -26,14 +29,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
-
-import org.hibernate.annotations.BatchSize;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
-import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Promille;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Prosent;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
@@ -57,17 +53,17 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
     private BeregningsgrunnlagEntitet beregningsgrunnlag;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlagPeriode", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    @BatchSize(size=20)
+    @BatchSize(size = 20)
     private final List<BeregningsgrunnlagPrStatusOgAndel> beregningsgrunnlagPrStatusOgAndelList = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlagPeriode", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    @BatchSize(size=20)
+    @BatchSize(size = 20)
     private final List<TilkommetInntekt> tilkomneInntekter = new ArrayList<>();
 
     @Embedded
     @AttributeOverrides({
-        @AttributeOverride(name = "fomDato", column = @Column(name = "bg_periode_fom")),
-        @AttributeOverride(name = "tomDato", column = @Column(name = "bg_periode_tom"))
+            @AttributeOverride(name = "fomDato", column = @Column(name = "bg_periode_fom")),
+            @AttributeOverride(name = "tomDato", column = @Column(name = "bg_periode_tom"))
     })
     private IntervallEntitet periode;
 
@@ -90,8 +86,14 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
     @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "inntekt_graderingsprosent_brutto")))
     private Prosent inntektgraderingsprosentBrutto;
 
+    @Column(name = "total_utbetalingsgrad_fra_uttak")
+    private BigDecimal totalUtbetalingsgradFraUttak;
+
+    @Column(name = "total_utbetalingsgrad_etter_reduksjon_ved_tilkommet_inntekt")
+    private BigDecimal totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlagPeriode", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    @BatchSize(size=20)
+    @BatchSize(size = 20)
     private final List<BeregningsgrunnlagPeriodeÅrsak> beregningsgrunnlagPeriodeÅrsaker = new ArrayList<>();
 
     public BeregningsgrunnlagPeriode(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode) {
@@ -101,6 +103,8 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
         this.periode = beregningsgrunnlagPeriode.getPeriode();
         this.redusertPrÅr = beregningsgrunnlagPeriode.getRedusertPrÅr();
         this.inntektgraderingsprosentBrutto = beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto();
+        this.totalUtbetalingsgradFraUttak = beregningsgrunnlagPeriode.getTotalUtbetalingsgradFraUttak();
+        this.totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt = beregningsgrunnlagPeriode.getTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt();
         beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeÅrsaker().stream().map(BeregningsgrunnlagPeriodeÅrsak::new)
                 .forEach(this::addBeregningsgrunnlagPeriodeÅrsak);
         beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream().map(BeregningsgrunnlagPrStatusOgAndel::new)
@@ -109,7 +113,8 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
                 .forEach(this::addTilkommetInntekt);
     }
 
-    private BeregningsgrunnlagPeriode() { }
+    private BeregningsgrunnlagPeriode() {
+    }
 
     public Long getId() {
         return id;
@@ -170,6 +175,14 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
 
     public Prosent getInntektgraderingsprosentBrutto() {
         return inntektgraderingsprosentBrutto;
+    }
+
+    public BigDecimal getTotalUtbetalingsgradFraUttak() {
+        return totalUtbetalingsgradFraUttak;
+    }
+
+    public BigDecimal getTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt() {
+        return totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt;
     }
 
     public List<BeregningsgrunnlagPeriodeÅrsak> getBeregningsgrunnlagPeriodeÅrsaker() {
@@ -319,6 +332,35 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
             return this;
         }
 
+        public Builder medTotalUtbetalingsgradFraUttak(BigDecimal totalUtbetalingsgradFraUttak) {
+            verifiserKanModifisere();
+            if (totalUtbetalingsgradFraUttak != null) {
+                if (totalUtbetalingsgradFraUttak.compareTo(BigDecimal.ZERO) < 0) {
+                    throw new IllegalStateException("totalUtbetalingsgradFraUttak må vere større enn eller lik 0. Var " + totalUtbetalingsgradFraUttak);
+                }
+                if (totalUtbetalingsgradFraUttak.compareTo(BigDecimal.valueOf(1)) > 0) {
+                    throw new IllegalStateException("totalUtbetalingsgradFraUttak må vere mindre enn eller lik 1. Var " + totalUtbetalingsgradFraUttak);
+                }
+            }
+            kladd.totalUtbetalingsgradFraUttak = totalUtbetalingsgradFraUttak;
+            return this;
+        }
+
+        public Builder medTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt(BigDecimal totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt) {
+            verifiserKanModifisere();
+
+            if (totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt != null) {
+                if (totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt.compareTo(BigDecimal.ZERO) < 0) {
+                    throw new IllegalStateException("totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt må vere større enn eller lik 0. Var " + totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt);
+                }
+                if (totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt.compareTo(BigDecimal.valueOf(1)) > 0) {
+                    throw new IllegalStateException("totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt må vere mindre enn eller lik 1. Var " + totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt);
+                }
+            }
+            kladd.totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt = totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt;
+            return this;
+        }
+
         public Builder leggTilPeriodeÅrsak(PeriodeÅrsak periodeÅrsak) {
             verifiserKanModifisere();
             if (!kladd.getPeriodeÅrsaker().contains(periodeÅrsak)) {
@@ -344,7 +386,7 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
         }
 
         private void verifiserKanModifisere() {
-            if(built) {
+            if (built) {
                 throw new IllegalStateException("Er allerede bygd, kan ikke oppdatere videre: " + this.kladd);
             }
         }
