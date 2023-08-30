@@ -26,6 +26,15 @@ public class SimulerTilkomneAktiviteterTjeneste {
     }
 
     public static LocalDateTimeline<Set<StatusOgArbeidsgiver>> utledTilkommetAktivitetPerioder(BeregningsgrunnlagInput beregningsgrunnlagInput) {
+        return utledTilkommetAktivitetPerioder(beregningsgrunnlagInput, true);
+    }
+    
+    public static LocalDateTimeline<Set<StatusOgArbeidsgiver>> utledTilkommetAktivitetPerioderUavhengigAvAktiveringsdato(BeregningsgrunnlagInput beregningsgrunnlagInput) {
+        return utledTilkommetAktivitetPerioder(beregningsgrunnlagInput, false);
+    }
+    
+    
+    private static LocalDateTimeline<Set<StatusOgArbeidsgiver>> utledTilkommetAktivitetPerioder(BeregningsgrunnlagInput beregningsgrunnlagInput, boolean reduserTidslinjeTilFomGraderingMotInntekt) {
         /*
          * XXX: Koden her bør trekkes ut i en egen tjeneste for "tilkommet aktivitet".
          */
@@ -42,6 +51,16 @@ public class SimulerTilkomneAktiviteterTjeneste {
                 true
         );
         var tidlinjeMedTilkommetAktivitet = tilkommetTidslinje.filterValue(v -> !v.isEmpty()).compress();
+        
+        if (!reduserTidslinjeTilFomGraderingMotInntekt) {
+            /*
+             * Det er trolig tilstrekkelig å returnere "tidlinjeMedTilkommetAktivitet", men kapper
+             * tidslinjen i tilfelle koden over ikke holder seg innenfor TIDENES_BEGYNNELSE
+             * og TIDENES_ENDE.
+             */
+            return tidlinjeMedTilkommetAktivitet.intersection(new LocalDateInterval(LocalDateInterval.TIDENES_BEGYNNELSE, LocalDateInterval.TIDENES_ENDE));
+        }
+        
         var redusertTidslinje = tidlinjeMedTilkommetAktivitet.intersection(new LocalDateInterval(FOM_DATO_GRADERING_MOT_INNTEKT, LocalDateInterval.TIDENES_ENDE));
         return redusertTidslinje;
     }

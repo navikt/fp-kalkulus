@@ -106,7 +106,7 @@ public class TilkommetAktivitetRestTjeneste {
             var kobling = koblinger.stream().filter(it -> it.getId().equals(bg.getKoblingId())).findFirst().orElseThrow();
             var input = inputer.get(kobling.getId());
             var beregningsgrunnlagInput = lagBeregningsgrunnlagInput(kobling, input, bg);
-            var tilkommetAktivitetPerioder = SimulerTilkomneAktiviteterTjeneste.utledTilkommetAktivitetPerioder(beregningsgrunnlagInput);
+            var tilkommetAktivitetPerioder = SimulerTilkomneAktiviteterTjeneste.utledTilkommetAktivitetPerioderUavhengigAvAktiveringsdato(beregningsgrunnlagInput);
             final List<UtledetTilkommetAktivitet> aktiviteter = mapTilUtledetTilkommetAktivitet(tilkommetAktivitetPerioder);
 
             return new UtledetTilkommetAktivitetPrReferanse(
