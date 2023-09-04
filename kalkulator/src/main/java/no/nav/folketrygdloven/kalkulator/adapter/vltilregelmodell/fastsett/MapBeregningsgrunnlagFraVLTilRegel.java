@@ -194,15 +194,14 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         var aktivitetsgrad = finnAktivitetsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);
         var erTilkommet = SimulerTilkomneAktiviteterTjeneste.erTilkommetAktivitetIPeriode(SimulerTilkomneAktiviteterTjeneste.utledTilkommetAktivitetPerioder(input), LocalDateSegment.emptySegment(vlBGPStatus.getBeregningsgrunnlagPeriode().getBeregningsgrunnlagPeriodeFom(),
                 vlBGPStatus.getBeregningsgrunnlagPeriode().getBeregningsgrunnlagPeriodeTom()), vlBGPStatus.getAktivitetStatus(), vlBGPStatus.getArbeidsgiver());
-        var skalBrukeManglendeAktivitetSomUtbetaling = KonfigurasjonVerdi.get("GRADERING_MOT_INNTEKT", false) && aktivitetsgrad.isPresent() && erTilkommet;
-        var utbetalingsgrad = skalBrukeManglendeAktivitetSomUtbetaling
-                ? BigDecimal.valueOf(100).subtract(aktivitetsgrad.get())
-                : finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);
+        var skalRegnesSomTilkommetInntekt = KonfigurasjonVerdi.get("GRADERING_MOT_INNTEKT", false) && aktivitetsgrad.isPresent() && erTilkommet;
+        var utbetalingsgrad = finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);
         var builder = BeregningsgrunnlagPrStatus.builder()
                 .medAktivitetStatus(regelAktivitetStatus)
                 .medBruttoPrÅr(vlBGPStatus.getBruttoPrÅr())
                 .medInntektsgrunnlagPrÅr(vlBGPStatus.getGrunnlagPrÅr().getBruttoUtenFordelt() != null ? vlBGPStatus.getGrunnlagPrÅr().getBruttoUtenFordelt() : BigDecimal.ZERO)
                 .medAndelNr(vlBGPStatus.getAndelsnr())
+                .medErAndelMedTilkommetInntekt(skalRegnesSomTilkommetInntekt)
                 .medUtbetalingsprosent(utbetalingsgrad);
         aktivitetsgrad.ifPresent(builder::medAktivitetsgrad);
         return builder.build();
@@ -228,15 +227,14 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         var aktivitetsgrad = finnAktivitetsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);
         var erTilkommet = SimulerTilkomneAktiviteterTjeneste.erTilkommetAktivitetIPeriode(SimulerTilkomneAktiviteterTjeneste.utledTilkommetAktivitetPerioder(input), LocalDateSegment.emptySegment(vlBGPStatus.getBeregningsgrunnlagPeriode().getBeregningsgrunnlagPeriodeFom(),
                 vlBGPStatus.getBeregningsgrunnlagPeriode().getBeregningsgrunnlagPeriodeTom()), vlBGPStatus.getAktivitetStatus(), vlBGPStatus.getArbeidsgiver());
-        var skalBrukeManglendeAktivitetSomUtbetaling = KonfigurasjonVerdi.get("GRADERING_MOT_INNTEKT", false) && aktivitetsgrad.isPresent() && erTilkommet;
-        var utbetalingsgrad = skalBrukeManglendeAktivitetSomUtbetaling
-                ? BigDecimal.valueOf(100).subtract(aktivitetsgrad.get())
-                : finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);
+        var skalRegnesSomTilkommetInntekt = KonfigurasjonVerdi.get("GRADERING_MOT_INNTEKT", false) && aktivitetsgrad.isPresent() && erTilkommet;
+        var utbetalingsgrad = finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);
         builder
                 .medBruttoPrÅr(vlBGPStatus.getBruttoPrÅr())
                 .medInntektsgrunnlagPrÅr(vlBGPStatus.getGrunnlagPrÅr().getBruttoUtenFordelt() != null ? vlBGPStatus.getGrunnlagPrÅr().getBruttoUtenFordelt() : BigDecimal.ZERO)
                 .medAndelNr(vlBGPStatus.getAndelsnr())
                 .medArbeidsforhold(MapArbeidsforholdFraVLTilRegel.arbeidsforholdFor(vlBGPStatus))
+                .medErAndelMedTilkommetInntekt(skalRegnesSomTilkommetInntekt)
                 .medUtbetalingsprosent(utbetalingsgrad);
         aktivitetsgrad.ifPresent(builder::medAktivitetsgrad);
         vlBGPStatus.getBgAndelArbeidsforhold().ifPresent(bga ->
