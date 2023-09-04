@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -40,12 +39,10 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.TilkommetInntektDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.StatusOgArbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
-import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
 @ApplicationScoped
 public class MapBeregningsgrunnlagFraVLTilRegel {
@@ -195,7 +192,10 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         var erTilkommet = SimulerTilkomneAktiviteterTjeneste.erTilkommetAktivitetIPeriode(SimulerTilkomneAktiviteterTjeneste.utledTilkommetAktivitetPerioder(input), LocalDateSegment.emptySegment(vlBGPStatus.getBeregningsgrunnlagPeriode().getBeregningsgrunnlagPeriodeFom(),
                 vlBGPStatus.getBeregningsgrunnlagPeriode().getBeregningsgrunnlagPeriodeTom()), vlBGPStatus.getAktivitetStatus(), vlBGPStatus.getArbeidsgiver());
         var skalRegnesSomTilkommetInntekt = KonfigurasjonVerdi.get("GRADERING_MOT_INNTEKT", false) && aktivitetsgrad.isPresent() && erTilkommet;
-        var utbetalingsgrad = finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);
+        var skalBrukeManglendeAktivitetSomUtbetaling = KonfigurasjonVerdi.get("GRADERING_MOT_INNTEKT", false) && aktivitetsgrad.isPresent() && erTilkommet;
+        var utbetalingsgrad = skalBrukeManglendeAktivitetSomUtbetaling
+                ? BigDecimal.valueOf(100).subtract(aktivitetsgrad.get())
+                : finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);
         var builder = BeregningsgrunnlagPrStatus.builder()
                 .medAktivitetStatus(regelAktivitetStatus)
                 .medBruttoPrÅr(vlBGPStatus.getBruttoPrÅr())
