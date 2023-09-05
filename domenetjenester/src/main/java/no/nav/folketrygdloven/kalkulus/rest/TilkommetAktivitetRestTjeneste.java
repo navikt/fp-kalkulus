@@ -30,7 +30,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import no.nav.folketrygdloven.kalkulator.felles.inntektgradering.SimulerGraderingMotInntektTjeneste;
 import no.nav.folketrygdloven.kalkulator.felles.inntektgradering.SimulerTilkomneAktiviteterTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.typer.StatusOgArbeidsgiver;
@@ -68,8 +67,6 @@ public class TilkommetAktivitetRestTjeneste {
 
     private KoblingRepository koblingRepository;
 
-    private SimulerGraderingMotInntektTjeneste simulerGraderingMotInntektTjeneste;
-
 
     public TilkommetAktivitetRestTjeneste() {
         // for CDI
@@ -77,13 +74,11 @@ public class TilkommetAktivitetRestTjeneste {
 
     @Inject
     public TilkommetAktivitetRestTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository,
-                                               KalkulatorInputTjeneste kalkulatorInputTjeneste,
-                                               KoblingRepository koblingRepository,
-                                               SimulerGraderingMotInntektTjeneste simulerGraderingMotInntektTjeneste) {
+                                          KalkulatorInputTjeneste kalkulatorInputTjeneste,
+                                          KoblingRepository koblingRepository) {
         this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.koblingRepository = koblingRepository;
-        this.simulerGraderingMotInntektTjeneste = simulerGraderingMotInntektTjeneste;
     }
 
 
@@ -112,14 +107,14 @@ public class TilkommetAktivitetRestTjeneste {
             return new UtledetTilkommetAktivitetPrReferanse(
                     koblinger.stream().filter(it -> it.getId().equals(bg.getKoblingId())).findFirst().orElseThrow().getKoblingReferanse().getReferanse(),
                     aktiviteter
-                    );
+            );
         }).toList();
         return Response.ok(new UtledetTilkommetAktivitetListe(simuleringer)).build();
     }
 
     private BeregningsgrunnlagInput lagBeregningsgrunnlagInput(KoblingEntitet kobling,
-            KalkulatorInputDto input,
-            BeregningsgrunnlagGrunnlagEntitet aktivGrunnlagEntitet) {
+                                                               KalkulatorInputDto input,
+                                                               BeregningsgrunnlagGrunnlagEntitet aktivGrunnlagEntitet) {
         return MapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input, Optional.of(aktivGrunnlagEntitet), Collections.emptyList());
     }
 
