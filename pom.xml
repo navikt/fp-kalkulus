@@ -40,7 +40,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <beregningsgrunnlag.regelmodell.version>4.1.4</beregningsgrunnlag.regelmodell.version>
+        <beregningsgrunnlag.regelmodell.version>4.1.6</beregningsgrunnlag.regelmodell.version>
 
         <felles.version>2.0.7</felles.version>
 
