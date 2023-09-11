@@ -135,7 +135,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
     }
 
     private static List<BeregningsgrunnlagPeriode> mapBeregningsgrunnlagPerioder(BeregningsgrunnlagDto vlBeregningsgrunnlag,
-                                                                          BeregningsgrunnlagInput input) {
+                                                                                 BeregningsgrunnlagInput input) {
         var perioderTilVurderingTjeneste = new PerioderTilVurderingTjeneste(input.getForlengelseperioder(), vlBeregningsgrunnlag);
         var perioder = vlBeregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
                 .filter(p -> perioderTilVurderingTjeneste.erTilVurdering(p.getPeriode()))
@@ -230,7 +230,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medAndelNr(vlBGPStatus.getAndelsnr())
                 .medArbeidsforhold(MapArbeidsforholdFraVLTilRegel.arbeidsforholdFor(vlBGPStatus))
                 .medUtbetalingsprosent(utbetalingsgrad);
-        aktivitetsgrad.ifPresent(builder::medAktivitetsgrad);
+        aktivitetsgrad.ifPresentOrElse(builder::medAktivitetsgrad, () -> builder.medAktivitetsgrad(BigDecimal.valueOf(100).subtract(utbetalingsgrad)));
         vlBGPStatus.getBgAndelArbeidsforhold().ifPresent(bga ->
                 builder
                         .medNaturalytelseBortfaltPrÅr(bga.getNaturalytelseBortfaltPrÅr().orElse(null))
