@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.steg;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import no.nav.folketrygdloven.kalkulator.KalkulatorException;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.PerioderTilVurderingTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
@@ -127,6 +129,21 @@ public final class BeregningsgrunnlagVerifiserer {
         if (ytelsespesifiktGrunnlag instanceof ForeldrepengerGrunnlag) {
             verifiserAtAndelerSomGraderesHarGrunnlag(beregningsgrunnlag, ((ForeldrepengerGrunnlag) ytelsespesifiktGrunnlag).getAktivitetGradering());
         }
+        beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
+                .filter(p -> perioderTilVurderingTjeneste.erTilVurdering(p.getPeriode()))
+                .forEach(p -> verfiserBeregningsgrunnlagAndeler(p, a -> BeregningsgrunnlagVerifiserer.verifiserUtbetaling(a, UtbetalingsgradTjeneste.finnUtbetalingsgradForAndel(a, p.getPeriode(), ytelsespesifiktGrunnlag, false))));
+    }
+
+    private static void verifiserUtbetaling(BeregningsgrunnlagPrStatusOgAndelDto andel, BigDecimal utbetalingsgrad) {
+        if (utbetalingsgrad.compareTo(BigDecimal.ZERO) == 0 && !harRefusjon(andel)) {
+            if (andel.getDagsats() > 0L) {
+                throw new IllegalStateException("Dagsats større enn 0 for andel uten krav");
+            }
+        }
+    }
+
+    private static boolean harRefusjon(BeregningsgrunnlagPrStatusOgAndelDto andel) {
+        return andel.getBgAndelArbeidsforhold().isPresent() && andel.getBgAndelArbeidsforhold().get().getGjeldendeRefusjonPrÅr() != null && andel.getBgAndelArbeidsforhold().get().getGjeldendeRefusjonPrÅr().compareTo(BigDecimal.ZERO) > 0;
     }
 
     private static void verifiserAtAndelerSomGraderesHarGrunnlag(BeregningsgrunnlagDto beregningsgrunnlag, AktivitetGradering aktivitetGradering) {
