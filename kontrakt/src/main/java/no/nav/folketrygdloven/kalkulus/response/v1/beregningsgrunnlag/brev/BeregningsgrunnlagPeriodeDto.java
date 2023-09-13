@@ -32,6 +32,11 @@ public class BeregningsgrunnlagPeriodeDto {
     @Valid
     private List<BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList;
 
+    @JsonProperty(value = "tilkommetInntektsforholdList")
+    @Size(max = 100)
+    @Valid
+    private List<TilkommetInntektsforholdDto> tilkommetInntektsforholdList;
+
     @JsonProperty(value = "periode")
     @NotNull
     @Valid
@@ -57,7 +62,8 @@ public class BeregningsgrunnlagPeriodeDto {
     @Max(178956970)
     private Long dagsats;
 
-    @Deprecated(since = "2.5.0", forRemoval = true)// du vil sannsynligvis bruke noe av totalUtbetalingsgradFraUttak/totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt
+    @Deprecated(since = "2.5.0", forRemoval = true)
+// du vil sannsynligvis bruke noe av totalUtbetalingsgradFraUttak/totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt
     /**
      * Gradering av beregningsgrunnlaget ved tilkommet inntekt (gradering mot inntekt)
      * Angir total bortfalt inntekt av totalt beregningsgrunnlag.
@@ -89,7 +95,8 @@ public class BeregningsgrunnlagPeriodeDto {
     @Digits(integer = 10, fraction = 4)
     private BigDecimal totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt;
 
-    @Deprecated(since = "2.5.0", forRemoval = true)// du vil sannsynligvis bruke noe av totalUtbetalingsgradFraUttak/totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt
+    @Deprecated(since = "2.5.0", forRemoval = true)
+// du vil sannsynligvis bruke noe av totalUtbetalingsgradFraUttak/totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt
     /**
      * Gradering av beregningsgrunnlaget ved tilkommet inntekt (gradering mot inntekt)
      * Angir reduksjon pga gradering mot inntekt sammenlignet med å kun gradere mot uttaksgraden (eksisterer som faktor i inntektGraderingsprosent)
@@ -101,7 +108,8 @@ public class BeregningsgrunnlagPeriodeDto {
     @Digits(integer = 10, fraction = 2)
     private BigDecimal graderingsfaktorInntekt;
 
-    @Deprecated(since = "2.5.0", forRemoval = true)// du vil sannsynligvis bruke noe av totalUtbetalingsgradFraUttak/totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt
+    @Deprecated(since = "2.5.0", forRemoval = true)
+// du vil sannsynligvis bruke noe av totalUtbetalingsgradFraUttak/totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt
     /**
      * Gradering av beregningsgrunnlaget ved tilkommet inntekt (gradering mot inntekt)
      * Angir reduksjon pga gradering mot arbeidstid (uttaksgrad)
@@ -114,12 +122,11 @@ public class BeregningsgrunnlagPeriodeDto {
     private BigDecimal graderingsfaktorTid;
 
 
-
     public BeregningsgrunnlagPeriodeDto() {
     }
 
     public BeregningsgrunnlagPeriodeDto(@NotNull @Valid List<BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList,
-                                        @NotNull @Valid Periode periode,
+                                        List<TilkommetInntektsforholdDto> tilkommetInntektsforholdList, @NotNull @Valid Periode periode,
                                         @Valid BigDecimal bruttoPrÅr,
                                         @Valid BigDecimal avkortetPrÅr,
                                         @Valid Long dagsats,
@@ -129,6 +136,7 @@ public class BeregningsgrunnlagPeriodeDto {
                                         BigDecimal graderingsfaktorInntekt,
                                         BigDecimal graderingsfaktorTid) {
         this.beregningsgrunnlagPrStatusOgAndelList = beregningsgrunnlagPrStatusOgAndelList;
+        this.tilkommetInntektsforholdList = tilkommetInntektsforholdList;
         this.periode = periode;
         this.bruttoPrÅr = bruttoPrÅr;
         this.avkortetPrÅr = avkortetPrÅr;
@@ -186,5 +194,9 @@ public class BeregningsgrunnlagPeriodeDto {
 
     public BigDecimal getGraderingsfaktorTid() {
         return graderingsfaktorTid;
+    }
+
+    public List<TilkommetInntektsforholdDto> getTilkommetInntektsforholdList() {
+        return tilkommetInntektsforholdList;
     }
 }

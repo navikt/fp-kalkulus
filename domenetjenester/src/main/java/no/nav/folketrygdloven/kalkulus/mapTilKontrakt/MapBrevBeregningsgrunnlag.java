@@ -11,6 +11,7 @@ import no.nav.folketrygdloven.kalkulator.konfig.DefaultKonfig;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.TilkommetInntektDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
@@ -19,6 +20,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.brev.Bereg
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.brev.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.brev.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.brev.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.brev.TilkommetInntektsforholdDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.SammenligningsgrunnlagPrStatusDto;
 
 public class MapBrevBeregningsgrunnlag {
@@ -63,6 +65,7 @@ public class MapBrevBeregningsgrunnlag {
                                                            YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, BigDecimal grunnbeløp) {
         return new BeregningsgrunnlagPeriodeDto(
                 mapAndeler(beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList(), beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag, grunnbeløp),
+                mapTilkomneInntektsforhold(beregningsgrunnlagPeriode.getTilkomneInntekter()),
                 new Periode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom()),
                 beregningsgrunnlagPeriode.getBruttoPrÅr(),
                 beregningsgrunnlagPeriode.getAvkortetPrÅr(),
@@ -72,6 +75,16 @@ public class MapBrevBeregningsgrunnlag {
                 beregningsgrunnlagPeriode.getTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt(),
                 UtledGraderingsdata.utledGraderingsfaktorInntekt(beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag),
                 UtledGraderingsdata.utledGraderingsfaktorTid(beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag));
+    }
+
+    private static List<TilkommetInntektsforholdDto> mapTilkomneInntektsforhold(List<TilkommetInntektDto> tilkomneInntekter) {
+        return tilkomneInntekter == null ? null : tilkomneInntekter.stream().map(t -> new TilkommetInntektsforholdDto(
+                        t.getAktivitetStatus(),
+                        t.getArbeidsgiver().map(no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver::getIdentifikator).orElse(null),
+                        t.getArbeidsforholdRef() == null ? null : t.getArbeidsforholdRef().getReferanse(),
+                        t.getBruttoInntektPrÅr().intValue(),
+                        t.skalRedusereUtbetaling()))
+                .toList();
     }
 
     private static List<BeregningsgrunnlagPrStatusOgAndelDto> mapAndeler(List<no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList, no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto periode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, BigDecimal grunnbeløp) {
