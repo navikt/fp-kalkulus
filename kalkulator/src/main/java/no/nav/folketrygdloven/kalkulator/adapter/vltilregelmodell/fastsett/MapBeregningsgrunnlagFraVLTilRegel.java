@@ -189,12 +189,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
     private static BeregningsgrunnlagPrStatus mapVLBGPStatusForAlleAktivietetStatuser(BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus, BeregningsgrunnlagInput input) {
         final AktivitetStatus regelAktivitetStatus = mapVLAktivitetStatus(vlBGPStatus.getAktivitetStatus());
         var aktivitetsgrad = finnAktivitetsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);
-        var erTilkommet = SimulerTilkomneAktiviteterTjeneste.erTilkommetAktivitetIPeriode(SimulerTilkomneAktiviteterTjeneste.utledTilkommetAktivitetPerioder(input), LocalDateSegment.emptySegment(vlBGPStatus.getBeregningsgrunnlagPeriode().getBeregningsgrunnlagPeriodeFom(),
-                vlBGPStatus.getBeregningsgrunnlagPeriode().getBeregningsgrunnlagPeriodeTom()), vlBGPStatus.getAktivitetStatus(), vlBGPStatus.getArbeidsgiver());
-        var skalBrukeManglendeAktivitetSomUtbetaling = KonfigurasjonVerdi.get("GRADERING_MOT_INNTEKT", false) && aktivitetsgrad.isPresent() && erTilkommet;
-        var utbetalingsgrad = skalBrukeManglendeAktivitetSomUtbetaling
-                ? BigDecimal.valueOf(100).subtract(aktivitetsgrad.get())
-                : finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);
+        var utbetalingsgrad = finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);
         var builder = BeregningsgrunnlagPrStatus.builder()
                 .medAktivitetStatus(regelAktivitetStatus)
                 .medBruttoPrÅr(vlBGPStatus.getBruttoPrÅr())

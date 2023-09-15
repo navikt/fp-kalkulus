@@ -131,11 +131,13 @@ public final class BeregningsgrunnlagVerifiserer {
         }
         beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
                 .filter(p -> perioderTilVurderingTjeneste.erTilVurdering(p.getPeriode()))
-                .forEach(p -> verfiserBeregningsgrunnlagAndeler(p, a -> BeregningsgrunnlagVerifiserer.verifiserUtbetaling(a, UtbetalingsgradTjeneste.finnUtbetalingsgradForAndel(a, p.getPeriode(), ytelsespesifiktGrunnlag, false))));
+                .forEach(p -> verfiserBeregningsgrunnlagAndeler(p, a -> BeregningsgrunnlagVerifiserer.verifiserUtbetaling(a, UtbetalingsgradTjeneste.finnUtbetalingsgradForAndel(a, p.getPeriode(), ytelsespesifiktGrunnlag, false),
+                        UtbetalingsgradTjeneste.finnAktivitetsgradForAndel(a, p.getPeriode(), ytelsespesifiktGrunnlag, false))));
     }
 
-    private static void verifiserUtbetaling(BeregningsgrunnlagPrStatusOgAndelDto andel, BigDecimal utbetalingsgrad) {
-        if (utbetalingsgrad.compareTo(BigDecimal.ZERO) == 0 && !harRefusjon(andel)) {
+    private static void verifiserUtbetaling(BeregningsgrunnlagPrStatusOgAndelDto andel, BigDecimal utbetalingsgrad, Optional<BigDecimal> aktivitetsgrad) {
+        var inaktivitetsgrad = aktivitetsgrad.map(BigDecimal.valueOf(100)::subtract).orElse(utbetalingsgrad);
+        if (inaktivitetsgrad.compareTo(BigDecimal.ZERO) == 0 && !harRefusjon(andel)) {
             if (andel.getDagsats() > 0L) {
                 throw new IllegalStateException("Dagsats større enn 0 for andel uten krav");
             }
