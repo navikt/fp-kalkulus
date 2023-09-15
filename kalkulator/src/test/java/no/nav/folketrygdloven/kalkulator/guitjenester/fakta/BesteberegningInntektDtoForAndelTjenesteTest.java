@@ -75,7 +75,7 @@ public class BesteberegningInntektDtoForAndelTjenesteTest {
     public void skal_finne_snitt_inntekt_for_arbeidstaker_med_lik_inntekt_pr_mnd() {
         var aktørInntekt = lagAktørInntekt(singletonList(lagLikInntektSiste3Mnd(arbeidsgiver)));
         var filter = new InntektFilterDto(aktørInntekt.build());
-        BigDecimal snittIBeregningsperioden = InntektForAndelTjeneste.finnSnittinntektForArbeidstakerIBeregningsperioden(filter, arbeidstakerAndel);
+        BigDecimal snittIBeregningsperioden = InntektForAndelTjeneste.finnSnittinntektForArbeidstakerIBeregningsperioden(filter, arbeidstakerAndel).get();
         assertThat(snittIBeregningsperioden).isEqualByComparingTo(INNTEKT1);
     }
 
@@ -83,7 +83,7 @@ public class BesteberegningInntektDtoForAndelTjenesteTest {
     public void skal_finne_snitt_inntekt_for_arbeidstaker_med_ulik_inntekt_pr_mnd() {
         var aktørInntekt = lagAktørInntekt(singletonList(lagUlikInntektSiste3Mnd(arbeidsgiver)));
         var filter = new InntektFilterDto(aktørInntekt.build());
-        BigDecimal snittIBeregningsperioden = InntektForAndelTjeneste.finnSnittinntektForArbeidstakerIBeregningsperioden(filter, arbeidstakerAndel);
+        BigDecimal snittIBeregningsperioden = InntektForAndelTjeneste.finnSnittinntektForArbeidstakerIBeregningsperioden(filter, arbeidstakerAndel).get();
         assertThat(snittIBeregningsperioden).isEqualByComparingTo(SNITT_AV_ULIKE_INNTEKTER);
     }
 
@@ -118,9 +118,9 @@ public class BesteberegningInntektDtoForAndelTjenesteTest {
         var aggregatBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
         var aktørInntektBuilder = aggregatBuilder.getAktørInntektBuilder();
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
-            .medData(InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER)
-                .leggTilAktørArbeid(lagAktørArbeid(aktiviteter))
-                .leggTilAktørInntekt(lagAktørInntekt(aktørInntektBuilder, inntekter)));
+                .medData(InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER)
+                        .leggTilAktørArbeid(lagAktørArbeid(aktiviteter))
+                        .leggTilAktørInntekt(lagAktørInntekt(aktørInntektBuilder, inntekter)));
         return iayGrunnlag.build();
     }
 
@@ -132,7 +132,7 @@ public class BesteberegningInntektDtoForAndelTjenesteTest {
 
     private AktivitetsAvtaleDtoBuilder lagAktivitetsavtale() {
         return AktivitetsAvtaleDtoBuilder.ny()
-            .medPeriode(Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(2)));
+                .medPeriode(Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(2)));
     }
 
     private InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder lagAktørInntekt(List<InntektDtoBuilder> inntektList) {
@@ -148,57 +148,57 @@ public class BesteberegningInntektDtoForAndelTjenesteTest {
 
     private InntektDtoBuilder lagLikInntektSiste3Mnd(Arbeidsgiver arbeidsgiver) {
         return InntektDtoBuilder.oppdatere(Optional.empty())
-        .leggTilInntektspost(lagInntektspost(INNTEKT1, 1))
-        .leggTilInntektspost(lagInntektspost(INNTEKT1, 2))
-        .leggTilInntektspost(lagInntektspost(INNTEKT1, 3))
-        .medArbeidsgiver(arbeidsgiver)
-        .medInntektsKilde(InntektskildeType.INNTEKT_BEREGNING);
+                .leggTilInntektspost(lagInntektspost(INNTEKT1, 1))
+                .leggTilInntektspost(lagInntektspost(INNTEKT1, 2))
+                .leggTilInntektspost(lagInntektspost(INNTEKT1, 3))
+                .medArbeidsgiver(arbeidsgiver)
+                .medInntektsKilde(InntektskildeType.INNTEKT_BEREGNING);
     }
 
     private InntektDtoBuilder lagUlikInntektSiste3Mnd(Arbeidsgiver arbeidsgiver) {
         return InntektDtoBuilder.oppdatere(Optional.empty())
-            .leggTilInntektspost(lagInntektspost(INNTEKT1, 1))
-            .leggTilInntektspost(lagInntektspost(INNTEKT2, 2))
-            .leggTilInntektspost(lagInntektspost(INNTEKT3, 3))
-            .medArbeidsgiver(arbeidsgiver)
-            .medInntektsKilde(InntektskildeType.INNTEKT_BEREGNING);
+                .leggTilInntektspost(lagInntektspost(INNTEKT1, 1))
+                .leggTilInntektspost(lagInntektspost(INNTEKT2, 2))
+                .leggTilInntektspost(lagInntektspost(INNTEKT3, 3))
+                .medArbeidsgiver(arbeidsgiver)
+                .medInntektsKilde(InntektskildeType.INNTEKT_BEREGNING);
     }
 
 
     private InntektspostDtoBuilder lagInntektspost(BigDecimal inntekt, int mndFørSkjæringstidspunkt) {
         return InntektspostDtoBuilder.ny().medBeløp(inntekt)
-            .medInntektspostType(InntektspostType.LØNN)
-            .medPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(mndFørSkjæringstidspunkt).withDayOfMonth(1),
-                SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(mndFørSkjæringstidspunkt-1).withDayOfMonth(1).minusDays(1))
-            .medSkatteOgAvgiftsregelType(SkatteOgAvgiftsregelType.UDEFINERT);
+                .medInntektspostType(InntektspostType.LØNN)
+                .medPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(mndFørSkjæringstidspunkt).withDayOfMonth(1),
+                        SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(mndFørSkjæringstidspunkt - 1).withDayOfMonth(1).minusDays(1))
+                .medSkatteOgAvgiftsregelType(SkatteOgAvgiftsregelType.UDEFINERT);
     }
 
     private void lagArbeidstakerAndel() {
         arbeidstakerAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(3).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.withDayOfMonth(1).minusDays(1))
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver))
-            .medAndelsnr(1L)
-            .build(periode);
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(3).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.withDayOfMonth(1).minusDays(1))
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver))
+                .medAndelsnr(1L)
+                .build(periode);
     }
 
     private void lagBGPeriode() {
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
-            .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
-            .medGrunnbeløp(BigDecimal.valueOf(91425L))
-            .build();
+                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
+                .medGrunnbeløp(BigDecimal.valueOf(91425L))
+                .build();
         periode = BeregningsgrunnlagPeriodeDto.ny()
-            .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
-            .build(beregningsgrunnlag);
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
+                .build(beregningsgrunnlag);
     }
 
     private void byggArbeidstakerYrkesaktivitet() {
         arbeidstakerYrkesaktivitet = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
-            .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
-            .medArbeidsgiver(arbeidsgiver)
-            .medArbeidsforholdId(ARB_ID)
-            .leggTilAktivitetsAvtale(lagAktivitetsavtale())
-            .build();
+                .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
+                .medArbeidsgiver(arbeidsgiver)
+                .medArbeidsforholdId(ARB_ID)
+                .leggTilAktivitetsAvtale(lagAktivitetsavtale())
+                .build();
     }
 
     private void byggArbeidsgiver() {
@@ -209,29 +209,29 @@ public class BesteberegningInntektDtoForAndelTjenesteTest {
 
     private void lagFrilansAndel() {
         frilansAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medAktivitetStatus(AktivitetStatus.FRILANSER)
-            .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(3).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.withDayOfMonth(1).minusDays(1))
-            .medAndelsnr(2L)
-            .build(periode);
+                .medAktivitetStatus(AktivitetStatus.FRILANSER)
+                .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(3).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.withDayOfMonth(1).minusDays(1))
+                .medAndelsnr(2L)
+                .build(periode);
     }
 
     private void byggFrilansAktivitet() {
         frilans = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
-            .medArbeidType(ArbeidType.FRILANSER)
-            .build();
+                .medArbeidType(ArbeidType.FRILANSER)
+                .build();
     }
 
     private void byggFrilansOppdragAktivitet() {
         frilansOppdrag = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
-            .medArbeidType(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER)
-            .medArbeidsgiver(frilansArbeidsgiver)
-            .leggTilAktivitetsAvtale(lagAktivitetsavtale())
-            .build();
+                .medArbeidType(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER)
+                .medArbeidsgiver(frilansArbeidsgiver)
+                .leggTilAktivitetsAvtale(lagAktivitetsavtale())
+                .build();
         frilansOppdrag2 = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
-            .medArbeidType(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER)
-            .medArbeidsgiver(frilansArbeidsgiver2)
-            .leggTilAktivitetsAvtale(lagAktivitetsavtale())
-            .build();
+                .medArbeidType(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER)
+                .medArbeidsgiver(frilansArbeidsgiver2)
+                .leggTilAktivitetsAvtale(lagAktivitetsavtale())
+                .build();
     }
 
 }

@@ -86,8 +86,8 @@ public class VurderMottarYtelseDtoTjeneste implements FaktaOmBeregningTilfelleDt
     }
 
     private void beregnOgSettInntektPrMnd(InntektFilterDto filter, BeregningsgrunnlagPrStatusOgAndelDto andel, ArbeidstakerUtenInntektsmeldingAndelDto dto) {
-        BigDecimal snittIBeregningsperioden = InntektForAndelTjeneste.finnSnittinntektForArbeidstakerIBeregningsperioden(filter, andel);
-        dto.setInntektPrMnd(snittIBeregningsperioden);
+        var snittIBeregningsperioden = InntektForAndelTjeneste.finnSnittinntektForArbeidstakerIBeregningsperioden(filter, andel);
+        snittIBeregningsperioden.ifPresent(dto::setInntektPrMnd);
     }
 
     private void lagFrilansDel(BeregningsgrunnlagDto beregningsgrunnlag,

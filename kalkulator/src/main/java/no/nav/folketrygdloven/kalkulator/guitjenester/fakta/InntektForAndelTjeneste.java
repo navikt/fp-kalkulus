@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -19,6 +20,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 
 class InntektForAndelTjeneste {
@@ -29,13 +31,26 @@ class InntektForAndelTjeneste {
         // Hide public constructor
     }
 
-    static BigDecimal finnSnittinntektForArbeidstakerIBeregningsperioden(InntektFilterDto filter, no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        LocalDate fraDato = andel.getBeregningsperiodeFom();
+    static Optional<BigDecimal> finnSnittinntektForArbeidstakerIBeregningsperioden(InntektFilterDto filter, no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
         LocalDate tilDato = andel.getBeregningsperiodeTom();
-        long beregningsperiodeLengdeIMnd = ChronoUnit.MONTHS.between(fraDato, tilDato.plusDays(1));
+        long beregningsperiodeLengdeIMnd = finnHeleMåneder(andel.getBeregningsperiode());
+        if (beregningsperiodeLengdeIMnd == 0) {
+            return Optional.empty();
+        }
         BigDecimal totalBeløp = finnTotalbeløpIBeregningsperioden(filter, andel, tilDato, beregningsperiodeLengdeIMnd);
-        return totalBeløp.divide(BigDecimal.valueOf(beregningsperiodeLengdeIMnd), 10, RoundingMode.HALF_EVEN);
+        return Optional.of(totalBeløp.divide(BigDecimal.valueOf(beregningsperiodeLengdeIMnd), 10, RoundingMode.HALF_EVEN));
     }
+
+    private static long finnHeleMåneder(Intervall periode) {
+        int antallMåneder = 0;
+        LocalDate date = periode.getFomDato().minusDays(1).with(TemporalAdjusters.lastDayOfMonth());
+        while (date.isBefore(periode.getTomDato())) {
+            antallMåneder++;
+            date = date.plusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
+        }
+        return antallMåneder;
+    }
+
 
     private static BigDecimal finnTotalbeløpIBeregningsperioden(InntektFilterDto filter, no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel, LocalDate tilDato,
                                                                 Long beregningsperiodeLengdeIMnd) {
@@ -46,7 +61,7 @@ class InntektForAndelTjeneste {
 
         AtomicReference<BigDecimal> totalBeløp = new AtomicReference<>(BigDecimal.ZERO);
         inntekter.forFilter((inntekt, inntektsposter) -> totalBeløp
-            .set(totalBeløp.get().add(summerInntekterIBeregningsperioden(tilDato, inntektsposter, beregningsperiodeLengdeIMnd))));
+                .set(totalBeløp.get().add(summerInntekterIBeregningsperioden(tilDato, inntektsposter, beregningsperiodeLengdeIMnd))));
 
         return totalBeløp.get();
     }
@@ -72,7 +87,7 @@ class InntektForAndelTjeneste {
             return InntektFilterDto.EMPTY;
         }
         return filter.filterBeregningsgrunnlag()
-            .filter(arbeidsgiver.get());
+                .filter(arbeidsgiver.get());
     }
 
     private static BigDecimal summerInntekterIBeregningsperioden(LocalDate tilDato, Collection<InntektspostDto> inntektsposter, Long beregningsperiodeLengdeIMnd) {
@@ -87,8 +102,8 @@ class InntektForAndelTjeneste {
 
     private static Beløp finnMånedsinntekt(Collection<InntektspostDto> inntektsposter, LocalDate dato) {
         return inntektsposter.stream()
-            .filter(inntektspost -> inntektspost.getPeriode().inkluderer(dato))
-            .findFirst().map(InntektspostDto::getBeløp).orElse(Beløp.ZERO);
+                .filter(inntektspost -> inntektspost.getPeriode().inkluderer(dato))
+                .findFirst().map(InntektspostDto::getBeløp).orElse(Beløp.ZERO);
     }
 
     static Optional<BigDecimal> finnSnittAvFrilansinntektIBeregningsperioden(InntektArbeidYtelseGrunnlagDto grunnlag,
@@ -111,7 +126,7 @@ class InntektForAndelTjeneste {
             }
             AtomicReference<BigDecimal> totalBeløp = new AtomicReference<>(BigDecimal.ZERO);
             frilansInntekter.forFilter((inntekt, inntektsposter) -> totalBeløp
-                .set(totalBeløp.get().add(summerInntekterIBeregningsperioden(tilDato, inntektsposter, beregningsperiodeLengdeIMnd))));
+                    .set(totalBeløp.get().add(summerInntekterIBeregningsperioden(tilDato, inntektsposter, beregningsperiodeLengdeIMnd))));
             return Optional.of(totalBeløp.get().divide(BigDecimal.valueOf(beregningsperiodeLengdeIMnd), 10, RoundingMode.HALF_EVEN));
 
         }
@@ -137,12 +152,12 @@ class InntektForAndelTjeneste {
 
     private static Collection<ArbeidType> getArbeidTyper(Collection<YrkesaktivitetDto> yrkesaktiviteter, Arbeidsgiver arbeidsgiver) {
         return yrkesaktiviteter
-            .stream()
-            .filter(it -> it.getArbeidsgiver() != null)
-            .filter(it -> it.getArbeidsgiver().getIdentifikator().equals(arbeidsgiver.getIdentifikator()))
-            .map(YrkesaktivitetDto::getArbeidType)
-            .distinct()
-            .collect(Collectors.toList());
+                .stream()
+                .filter(it -> it.getArbeidsgiver() != null)
+                .filter(it -> it.getArbeidsgiver().getIdentifikator().equals(arbeidsgiver.getIdentifikator()))
+                .map(YrkesaktivitetDto::getArbeidType)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     private static boolean erFrilansInntekt(Collection<ArbeidType> arbeidTyper, boolean erFrilanser) {
