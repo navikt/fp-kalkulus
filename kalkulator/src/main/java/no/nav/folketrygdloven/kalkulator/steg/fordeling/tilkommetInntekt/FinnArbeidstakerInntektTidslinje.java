@@ -18,6 +18,7 @@ import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 import no.nav.fpsak.tidsserie.StandardCombinators;
 
+// Lar denne ligge her enn så lenge i tilfelle det er noko vi skal ta i bruk som forbedring på tilkommet inntekt
 class FinnArbeidstakerInntektTidslinje {
 
 

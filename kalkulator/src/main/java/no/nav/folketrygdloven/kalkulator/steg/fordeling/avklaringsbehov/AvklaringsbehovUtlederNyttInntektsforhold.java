@@ -7,7 +7,6 @@ import no.nav.folketrygdloven.kalkulator.avklaringsbehov.PerioderTilVurderingTje
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 /**
@@ -20,7 +19,6 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 public class AvklaringsbehovUtlederNyttInntektsforhold {
 
     public static boolean skalVurdereNyttInntektsforhold(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag,
-                                                         InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                          YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
                                                          List<Intervall> forlengelseperioder) {
 

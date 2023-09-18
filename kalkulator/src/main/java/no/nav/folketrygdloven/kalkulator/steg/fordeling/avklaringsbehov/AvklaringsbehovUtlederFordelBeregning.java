@@ -37,7 +37,6 @@ public class AvklaringsbehovUtlederFordelBeregning {
                 forlengelseperioder);
         var skalVurdereNyttInntektsforhold = AvklaringsbehovUtlederNyttInntektsforhold.skalVurdereNyttInntektsforhold(
                 beregningsgrunnlagGrunnlag,
-                iayGrunnlag,
                 ytelsespesifiktGrunnlag,
                 forlengelseperioder);
         var utledetbehovForAvklaring = new ArrayList<BeregningAvklaringsbehovResultat>();

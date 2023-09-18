@@ -49,7 +49,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
-import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
 /**
  * Simulerer resultat av gradering mot inntekt
@@ -80,10 +79,9 @@ public class SimulerGraderingMotInntektTjeneste {
     public List<Intervall> finnTilkommetAktivitetPerioder(BeregningsgrunnlagInput beregningsgrunnlagInput) {
         var tilkommetTidslinje = TilkommetInntektsforholdTjeneste.finnTilkommetInntektsforholdTidslinje(
                 beregningsgrunnlagInput.getSkjæringstidspunktForBeregning(),
-                5, beregningsgrunnlagInput.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
+                beregningsgrunnlagInput.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
                 beregningsgrunnlagInput.getYtelsespesifiktGrunnlag(),
-                beregningsgrunnlagInput.getIayGrunnlag(),
-                beregningsgrunnlagInput.getFagsakYtelseType()
+                beregningsgrunnlagInput.getIayGrunnlag()
         );
         var tidlinjeMedTilkommetAktivitet = tilkommetTidslinje.filterValue(v -> !v.isEmpty()).compress();
         var redusertTidslinje = tidlinjeMedTilkommetAktivitet.intersection(new LocalDateInterval(FOM_DATO_GRADERING_MOT_INNTEKT, LocalDateInterval.TIDENES_ENDE));
@@ -146,10 +144,9 @@ public class SimulerGraderingMotInntektTjeneste {
     private static BeregningsgrunnlagDto splittBeregningsgrunnlagOgLagTilkommet(InntektArbeidYtelseGrunnlagDto iay, BeregningsgrunnlagDto mappetGrunnlag, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, FagsakYtelseType ytelseType) {
         var tilkommetTidslinje = TilkommetInntektsforholdTjeneste.finnTilkommetInntektsforholdTidslinje(
                 mappetGrunnlag.getSkjæringstidspunkt(),
-                5, mappetGrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
+                mappetGrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
                 (UtbetalingsgradGrunnlag) ytelsespesifiktGrunnlag,
-                iay,
-                ytelseType
+                iay
         ).filterValue(v -> !v.isEmpty());
         return getPeriodeSplitter().splittPerioder(mappetGrunnlag, tilkommetTidslinje);
     }

@@ -28,12 +28,12 @@ public class SimulerTilkomneAktiviteterTjeneste {
     public static LocalDateTimeline<Set<StatusOgArbeidsgiver>> utledTilkommetAktivitetPerioder(BeregningsgrunnlagInput beregningsgrunnlagInput) {
         return utledTilkommetAktivitetPerioder(beregningsgrunnlagInput, true);
     }
-    
+
     public static LocalDateTimeline<Set<StatusOgArbeidsgiver>> utledTilkommetAktivitetPerioderUavhengigAvAktiveringsdato(BeregningsgrunnlagInput beregningsgrunnlagInput) {
         return utledTilkommetAktivitetPerioder(beregningsgrunnlagInput, false);
     }
-    
-    
+
+
     private static LocalDateTimeline<Set<StatusOgArbeidsgiver>> utledTilkommetAktivitetPerioder(BeregningsgrunnlagInput beregningsgrunnlagInput, boolean reduserTidslinjeTilFomGraderingMotInntekt) {
         /*
          * XXX: Koden her bør trekkes ut i en egen tjeneste for "tilkommet aktivitet".
@@ -44,14 +44,13 @@ public class SimulerTilkomneAktiviteterTjeneste {
         }
         var tilkommetTidslinje = TilkommetInntektsforholdTjeneste.finnTilkommetInntektsforholdTidslinje(
                 beregningsgrunnlagInput.getSkjæringstidspunktForBeregning(),
-                5, beregningsgrunnlagInput.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
+                beregningsgrunnlagInput.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
                 beregningsgrunnlagInput.getYtelsespesifiktGrunnlag(),
                 beregningsgrunnlagInput.getIayGrunnlag(),
-                beregningsgrunnlagInput.getFagsakYtelseType(),
                 true
         );
         var tidlinjeMedTilkommetAktivitet = tilkommetTidslinje.filterValue(v -> !v.isEmpty()).compress();
-        
+
         if (!reduserTidslinjeTilFomGraderingMotInntekt) {
             /*
              * Det er trolig tilstrekkelig å returnere "tidlinjeMedTilkommetAktivitet", men kapper
@@ -60,7 +59,7 @@ public class SimulerTilkomneAktiviteterTjeneste {
              */
             return tidlinjeMedTilkommetAktivitet.intersection(new LocalDateInterval(LocalDateInterval.TIDENES_BEGYNNELSE, LocalDateInterval.TIDENES_ENDE));
         }
-        
+
         var redusertTidslinje = tidlinjeMedTilkommetAktivitet.intersection(new LocalDateInterval(FOM_DATO_GRADERING_MOT_INNTEKT, LocalDateInterval.TIDENES_ENDE));
         return redusertTidslinje;
     }

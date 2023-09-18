@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.PeriodeSplitter;
 import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.SplittPeriodeConfig;
-import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.StandardPeriodeCompressLikhetspredikat;
 import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.StandardPeriodeSplittMappers;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -50,12 +49,10 @@ public class TilkommetInntektPeriodeTjeneste {
 
         var tilkommetAktivitetTidslinje = TilkommetInntektsforholdTjeneste.finnTilkommetInntektsforholdTidslinje(
                 beregningsgrunnlag.getSkjæringstidspunkt(),
-                (int) input.getKonfigVerdi(INNTEKT_RAPPORTERING_FRIST_DATO),
                 beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
                 input.getYtelsespesifiktGrunnlag(),
-                input.getIayGrunnlag(),
-                input.getFagsakYtelseType()
-        );
+                input.getIayGrunnlag()
+                );
         var tidlinjeMedTilkommetAktivitet = tilkommetAktivitetTidslinje.filterValue(v -> !v.isEmpty())
                 .combine(opprettTidslinje(input.getForlengelseperioder()), StandardCombinators::leftOnly, input.getForlengelseperioder().isEmpty() ? LocalDateTimeline.JoinStyle.LEFT_JOIN : LocalDateTimeline.JoinStyle.INNER_JOIN)
                 .combine(new LocalDateSegment<>(new LocalDateInterval(FOM_DATO_GRADERING_MOT_INNTEKT, LocalDateInterval.TIDENES_ENDE), TRUE), StandardCombinators::leftOnly, LocalDateTimeline.JoinStyle.LEFT_JOIN);
