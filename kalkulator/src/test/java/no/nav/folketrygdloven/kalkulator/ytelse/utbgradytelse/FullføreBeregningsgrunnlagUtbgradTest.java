@@ -47,6 +47,7 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingPeriode;
 import no.nav.folketrygdloven.kalkulator.steg.fullføre.FullføreBeregningsgrunnlag;
+import no.nav.folketrygdloven.kalkulator.steg.fullføre.ytelse.psb.FullføreBeregningsgrunnlagPleiepenger;
 import no.nav.folketrygdloven.kalkulator.steg.fullføre.ytelse.utbgrad.FullføreBeregningsgrunnlagUtbgrad;
 import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -87,7 +88,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
 
     @BeforeEach
     public void setup() {
-        tjeneste = new FullføreBeregningsgrunnlagUtbgrad(mapBeregningsgrunnlagFraVLTilRegel);
+        tjeneste = new FullføreBeregningsgrunnlagPleiepenger(mapBeregningsgrunnlagFraVLTilRegel);
         beregningsgrunnlag = lagBeregningsgrunnlagAT();
     }
 

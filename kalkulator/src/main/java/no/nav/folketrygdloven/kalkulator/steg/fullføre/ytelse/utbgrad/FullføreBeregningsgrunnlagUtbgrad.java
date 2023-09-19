@@ -2,27 +2,21 @@ package no.nav.folketrygdloven.kalkulator.steg.fullføre.ytelse.utbgrad;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.Beregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.BeregningsgrunnlagPeriode;
-import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.fastsett.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.steg.fullføre.FullføreBeregningsgrunnlag;
 import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
 
-@ApplicationScoped
-public class FullføreBeregningsgrunnlagUtbgrad extends FullføreBeregningsgrunnlag {
+public abstract class FullføreBeregningsgrunnlagUtbgrad extends FullføreBeregningsgrunnlag {
 
     public FullføreBeregningsgrunnlagUtbgrad() {
         // CDI
     }
 
-    @Inject
     public FullføreBeregningsgrunnlagUtbgrad(MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel) {
         super(mapBeregningsgrunnlagFraVLTilRegel);
     }
@@ -60,16 +54,6 @@ public class FullføreBeregningsgrunnlagUtbgrad extends FullføreBeregningsgrunn
         return regelResultater;
     }
 
-    protected List<String> kjørRegelFinnGrenseverdi(Beregningsgrunnlag beregningsgrunnlagRegel) {
-        var graderingMotInntektEnabled = KonfigurasjonVerdi.get("GRADERING_MOT_INNTEKT", false);
-        return beregningsgrunnlagRegel.getBeregningsgrunnlagPerioder().stream()
-                .map(periode -> {
-                    if (graderingMotInntektEnabled) {
-                        return KalkulusRegler.finnGrenseverdiUtenFordeling(periode).getRegelSporing().sporing();
-                    }
-                    return KalkulusRegler.finnGrenseverdi(periode).getRegelSporing().sporing();
-                })
-                .collect(Collectors.toList());
-    }
+    protected abstract List<String> kjørRegelFinnGrenseverdi(Beregningsgrunnlag beregningsgrunnlagRegel);
 
 }

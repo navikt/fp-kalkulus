@@ -93,7 +93,7 @@ public class SimulerGraderingMotInntektTjeneste {
 
     public BeregningsgrunnlagDto lagInputGrunnlag(BeregningsgrunnlagInput beregningsgrunnlagInput) {
         var splittetGrunnlag = splittBeregningsgrunnlagOgLagTilkommet(beregningsgrunnlagInput.getIayGrunnlag(), beregningsgrunnlagInput.getBeregningsgrunnlag(),
-                beregningsgrunnlagInput.getYtelsespesifiktGrunnlag(), beregningsgrunnlagInput.getFagsakYtelseType());
+                beregningsgrunnlagInput.getYtelsespesifiktGrunnlag());
         settInntektPåTilkomneInntektsforhold(beregningsgrunnlagInput.getIayGrunnlag(), beregningsgrunnlagInput.getYtelsespesifiktGrunnlag(), splittetGrunnlag);
         return splittetGrunnlag;
     }
@@ -141,11 +141,11 @@ public class SimulerGraderingMotInntektTjeneste {
                 .orElse(dagsatsFørGradering);
     }
 
-    private static BeregningsgrunnlagDto splittBeregningsgrunnlagOgLagTilkommet(InntektArbeidYtelseGrunnlagDto iay, BeregningsgrunnlagDto mappetGrunnlag, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, FagsakYtelseType ytelseType) {
+    private static BeregningsgrunnlagDto splittBeregningsgrunnlagOgLagTilkommet(InntektArbeidYtelseGrunnlagDto iay, BeregningsgrunnlagDto mappetGrunnlag, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         var tilkommetTidslinje = TilkommetInntektsforholdTjeneste.finnTilkommetInntektsforholdTidslinje(
                 mappetGrunnlag.getSkjæringstidspunkt(),
                 mappetGrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
-                (UtbetalingsgradGrunnlag) ytelsespesifiktGrunnlag,
+                ytelsespesifiktGrunnlag,
                 iay
         ).filterValue(v -> !v.isEmpty());
         return getPeriodeSplitter().splittPerioder(mappetGrunnlag, tilkommetTidslinje);
