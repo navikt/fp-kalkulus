@@ -16,6 +16,9 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -70,6 +73,7 @@ import no.nav.k9.felles.sikkerhet.abac.BeskyttetRessurs;
 public class SimulerTilkommetInntektRestTjeneste {
 
 
+    private Logger log = LoggerFactory.getLogger(SimulerTilkommetInntektRestTjeneste.class);
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
 
     private KalkulatorInputTjeneste kalkulatorInputTjeneste;
@@ -102,6 +106,9 @@ public class SimulerTilkommetInntektRestTjeneste {
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response simulerTilkommetInntektForKoblinger(@NotNull @Valid SimulerTilkommetInntektListeRequestAbacDto spesifikasjon) {
         var referanser = spesifikasjon.getSimulerForListe().stream().map(SimulerTilkommetInntektForRequest::getEksternReferanse).map(KoblingReferanse::new).toList();
+
+        log.info("Simulerer tilkommet inntekt for referanser: " + referanser);
+
         var koblinger = koblingRepository.hentKoblingerFor(
                 referanser,
                 spesifikasjon.getYtelseType());
@@ -111,7 +118,7 @@ public class SimulerTilkommetInntektRestTjeneste {
         var fastsatteGrunnlag = beregningsgrunnlag.stream()
                 .filter(bg -> bg.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.FASTSATT))
                 .toList();
-        
+
         var simuleringer = fastsatteGrunnlag.stream().map(bg -> {
             var kobling = koblinger.stream().filter(it -> it.getId().equals(bg.getKoblingId())).findFirst().orElseThrow();
             var input = inputer.get(kobling.getId());
