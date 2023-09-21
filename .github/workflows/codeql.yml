@@ -1,4 +1,4 @@
-name: CodeQl
+name: "CodeQL"
 on:
   schedule:
     - cron: '0 0 * * 0'
@@ -9,6 +9,6 @@ jobs:
     permissions:
       contents: read
       security-events: write
-    name: CodeQl
+    name: CodeQL
     uses: navikt/fp-gha-workflows/.github/workflows/codeql.yml@f7528b272a7cca0316ceff37d02780bb32d61a66
     secrets: inherit
