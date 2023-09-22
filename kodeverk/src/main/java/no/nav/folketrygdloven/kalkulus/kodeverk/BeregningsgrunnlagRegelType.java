@@ -33,6 +33,7 @@ public enum BeregningsgrunnlagRegelType implements Kodeverdi {
     // Vurder om perioder i databasen skal migreres over til PERIODISERING_UTBETALINGSGRAD før fp-sak flytter til kalkulus
     PERIODISERING_GRADERING("PERIODISERING_GRADERING", "Periodiser beregningsgrunnlag pga gradering", VURDERT_REFUSJON),
     PERIODISERING_UTBETALINGSGRAD("PERIODISERING_UTBETALINGSGRAD", "Periodiser beregningsgrunnlag pga endring i utbetalingsgrad", VURDERT_REFUSJON),
+    PERIODISERING_AKTIVITETSGRAD("PERIODISERING_AKTIVITETSGRAD", "Periodiser beregningsgrunnlag pga endring i aktivitetsgrad", VURDERT_REFUSJON),
     BESTEBEREGNING("BESTEBEREGNING", "Sammenligner beregning etter kap 8 med beregning ved besteberegning.", BESTEBEREGNET),
 
     UDEFINERT("-", "Ikke definert", BeregningsgrunnlagTilstand.UDEFINERT),
