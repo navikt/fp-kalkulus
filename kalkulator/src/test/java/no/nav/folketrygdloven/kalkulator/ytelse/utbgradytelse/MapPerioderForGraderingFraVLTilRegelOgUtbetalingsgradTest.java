@@ -182,7 +182,7 @@ public class MapPerioderForGraderingFraVLTilRegelOgUtbetalingsgradTest {
         var tilrettelegginger = List.of(tilrette1, tilrette2);
 
         // Act
-        var andelGraderingList = new MapPerioderForUtbetalingsgradFraVLTilRegel().mapTilrettelegginger(REF, tilrettelegginger, bg, filter, new LocalDateTimeline<Set<StatusOgArbeidsgiver>>(Set.of()));
+        var andelGraderingList = MapPerioderForUtbetalingsgradFraVLTilRegel.mapTilrettelegginger(REF, tilrettelegginger, bg, filter, new LocalDateTimeline<Set<StatusOgArbeidsgiver>>(Set.of()));
 
         // Assert
         assertThat(andelGraderingList).hasSize(2);
@@ -229,7 +229,7 @@ public class MapPerioderForGraderingFraVLTilRegelOgUtbetalingsgradTest {
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(List.of(byggYA(orgnr1, date)));
 
         // Act
-        var andelGraderingList = new MapPerioderForUtbetalingsgradFraVLTilRegel().mapTilrettelegginger(REF, tilrettelegginger, bg, filter, new LocalDateTimeline<Set<StatusOgArbeidsgiver>>(Set.of()));
+        var andelGraderingList = MapPerioderForUtbetalingsgradFraVLTilRegel.mapTilrettelegginger(REF, tilrettelegginger, bg, filter, new LocalDateTimeline<Set<StatusOgArbeidsgiver>>(Set.of()));
 
         // Assert
         assertThat(andelGraderingList).hasSize(1);
