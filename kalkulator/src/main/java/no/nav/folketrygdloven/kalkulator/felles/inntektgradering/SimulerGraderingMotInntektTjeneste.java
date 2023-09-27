@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.felles.inntektgradering;
 
 import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste.finnPerioderForArbeid;
 import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste.finnPerioderForStatus;
-import static no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt.TilkommetInntektPeriodeTjeneste.FOM_DATO_GRADERING_MOT_INNTEKT;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -45,7 +44,6 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.tid.Virkedager;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
@@ -77,6 +75,9 @@ public class SimulerGraderingMotInntektTjeneste {
     }
 
     public List<Intervall> finnTilkommetAktivitetPerioder(BeregningsgrunnlagInput beregningsgrunnlagInput) {
+        if (!(beregningsgrunnlagInput.getYtelsespesifiktGrunnlag() instanceof UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) || utbetalingsgradGrunnlag.getTilkommetInntektHensyntasFom().isEmpty()) {
+            return Collections.emptyList();
+        }
         var tilkommetTidslinje = TilkommetInntektsforholdTjeneste.finnTilkommetInntektsforholdTidslinje(
                 beregningsgrunnlagInput.getSkjæringstidspunktForBeregning(),
                 beregningsgrunnlagInput.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
@@ -84,7 +85,7 @@ public class SimulerGraderingMotInntektTjeneste {
                 beregningsgrunnlagInput.getIayGrunnlag()
         );
         var tidlinjeMedTilkommetAktivitet = tilkommetTidslinje.filterValue(v -> !v.isEmpty()).compress();
-        var redusertTidslinje = tidlinjeMedTilkommetAktivitet.intersection(new LocalDateInterval(FOM_DATO_GRADERING_MOT_INNTEKT, LocalDateInterval.TIDENES_ENDE));
+        var redusertTidslinje = tidlinjeMedTilkommetAktivitet.intersection(new LocalDateInterval(TilkommetInntektPeriodeTjeneste.FOM_DATO_GRADERING_MOT_INNTEKT, LocalDateInterval.TIDENES_ENDE));
 
         return redusertTidslinje.toSegments().stream()
                 .map(s -> Intervall.fraOgMedTilOgMed(s.getFom(), s.getTom()))

@@ -7,11 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
-
-import no.nav.folketrygdloven.kalkulator.modell.typer.StatusOgArbeidsgiver;
-import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
 import org.junit.jupiter.api.Test;
 
@@ -24,6 +20,7 @@ import no.nav.folketrygdloven.kalkulator.felles.frist.ArbeidsgiverRefusjonskravT
 import no.nav.folketrygdloven.kalkulator.felles.frist.KravTjeneste;
 import no.nav.folketrygdloven.kalkulator.felles.frist.TreMånedersFristVurderer;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.SvangerskapspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
@@ -41,8 +38,8 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
-import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
@@ -56,7 +53,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 
 public class MapPerioderForGraderingFraVLTilRegelOgUtbetalingsgradTest {
-    private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019,1,1);
+    private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019, 1, 1);
     public static final KoblingReferanseMock REF = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
     public static final BigDecimal REFUSJON = BigDecimal.valueOf(44733);
     private final BeregningsgrunnlagDto bg = lagBgMedEnPeriode();
@@ -170,11 +167,11 @@ public class MapPerioderForGraderingFraVLTilRegelOgUtbetalingsgradTest {
         PeriodeMedUtbetalingsgradDto periode1 = lagPeriodeMedUtbetaling(date, BigDecimal.valueOf(100));
         PeriodeMedUtbetalingsgradDto periode2 = lagPeriodeMedUtbetaling(date.plusMonths(1), BigDecimal.valueOf(100));
         UtbetalingsgradPrAktivitetDto tilrette1 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(orgnr1),
-            periode1, periode2);
+                periode1, periode2);
 
         PeriodeMedUtbetalingsgradDto periode3 = lagPeriodeMedUtbetaling(date, BigDecimal.valueOf(100));
         UtbetalingsgradPrAktivitetDto tilrette2 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(orgnr2),
-            periode3);
+                periode3);
 
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(List.of(byggYA(orgnr1, date), byggYA(orgnr2, date)));
 
@@ -182,7 +179,7 @@ public class MapPerioderForGraderingFraVLTilRegelOgUtbetalingsgradTest {
         var tilrettelegginger = List.of(tilrette1, tilrette2);
 
         // Act
-        var andelGraderingList = MapPerioderForUtbetalingsgradFraVLTilRegel.mapTilrettelegginger(REF, tilrettelegginger, bg, filter, new LocalDateTimeline<Set<StatusOgArbeidsgiver>>(Set.of()));
+        var andelGraderingList = MapPerioderForUtbetalingsgradFraVLTilRegel.mapTilrettelegginger(REF, new SvangerskapspengerGrunnlag(tilrettelegginger), bg, filter);
 
         // Assert
         assertThat(andelGraderingList).hasSize(2);
@@ -211,7 +208,7 @@ public class MapPerioderForGraderingFraVLTilRegelOgUtbetalingsgradTest {
 
     private YrkesaktivitetDto byggYA(String orgnr1, LocalDate date) {
         return YrkesaktivitetDtoBuilder.oppdatere(Optional.empty()).medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD).medArbeidsgiver(Arbeidsgiver.virksomhet(orgnr1))
-                    .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(date.minusMonths(10), date.plusMonths(10))).medErAnsettelsesPeriode(true)).build();
+                .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(date.minusMonths(10), date.plusMonths(10))).medErAnsettelsesPeriode(true)).build();
     }
 
     @Test
@@ -222,14 +219,14 @@ public class MapPerioderForGraderingFraVLTilRegelOgUtbetalingsgradTest {
         PeriodeMedUtbetalingsgradDto periode1 = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT.minusDays(5), BigDecimal.valueOf(100));
         PeriodeMedUtbetalingsgradDto periode2 = lagPeriodeMedUtbetaling(date.plusDays(2), BigDecimal.valueOf(100));
         UtbetalingsgradPrAktivitetDto tilrette1 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(orgnr1),
-            periode1, periode2);
+                periode1, periode2);
 
         var tilrettelegginger = List.of(tilrette1);
 
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(List.of(byggYA(orgnr1, date)));
 
         // Act
-        var andelGraderingList = MapPerioderForUtbetalingsgradFraVLTilRegel.mapTilrettelegginger(REF, tilrettelegginger, bg, filter, new LocalDateTimeline<Set<StatusOgArbeidsgiver>>(Set.of()));
+        var andelGraderingList = MapPerioderForUtbetalingsgradFraVLTilRegel.mapTilrettelegginger(REF, new SvangerskapspengerGrunnlag(tilrettelegginger), bg, filter);
 
         // Assert
         assertThat(andelGraderingList).hasSize(1);
@@ -250,17 +247,17 @@ public class MapPerioderForGraderingFraVLTilRegelOgUtbetalingsgradTest {
 
     private BeregningsgrunnlagDto lagBgMedEnPeriode() {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
-            .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT).build();
+                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT).build();
 
         BeregningsgrunnlagPeriodeDto.ny()
-            .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null).build(bg);
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null).build(bg);
         return bg;
     }
 
     private List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.utbetalingsgrad.AndelUtbetalingsgrad> forArbeidsgiver(List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.utbetalingsgrad.AndelUtbetalingsgrad> andelGraderingList, Arbeidsgiver arbeidsgiver, AktivitetStatusV2 status) {
         return andelGraderingList.stream()
-            .filter(ag -> Objects.equals(arbeidsgiver.getIdentifikator(), ag.getArbeidsforhold().getOrgnr()) && ag.getAktivitetStatus().equals(status))
-            .collect(Collectors.toList());
+                .filter(ag -> Objects.equals(arbeidsgiver.getIdentifikator(), ag.getArbeidsforhold().getOrgnr()) && ag.getAktivitetStatus().equals(status))
+                .collect(Collectors.toList());
     }
 
     private UtbetalingsgradPrAktivitetDto lagTilretteleggingMedUtbelingsgrad(UttakArbeidType uttakArbeidType,

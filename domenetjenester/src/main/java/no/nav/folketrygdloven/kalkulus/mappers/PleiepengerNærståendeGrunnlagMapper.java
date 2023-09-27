@@ -4,13 +4,16 @@ import no.nav.folketrygdloven.kalkulator.input.PleiepengerNærståendeGrunnlag;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
+
 class PleiepengerNærståendeGrunnlagMapper {
 
 
     static PleiepengerNærståendeGrunnlag mapPleiepengerNærståendeGrunnlag(no.nav.folketrygdloven.kalkulus.beregning.v1.PleiepengerNærståendeGrunnlag ytelsespesifiktGrunnlag) {
         no.nav.folketrygdloven.kalkulus.beregning.v1.PleiepengerNærståendeGrunnlag ppnYtelsesGrunnlag = ytelsespesifiktGrunnlag;
-        var pleiepengerNærståendeGrunnlag = new PleiepengerNærståendeGrunnlag(
-                UtbetalingsgradMapper.mapUtbetalingsgrad(ppnYtelsesGrunnlag.getUtbetalingsgradPrAktivitet()));
+        var tilretteleggingMedUtbelingsgrad = UtbetalingsgradMapper.mapUtbetalingsgrad(ppnYtelsesGrunnlag.getUtbetalingsgradPrAktivitet());
+        var pleiepengerNærståendeGrunnlag = ppnYtelsesGrunnlag.getTilkommetInntektHensyntasFom() == null
+                ? new PleiepengerNærståendeGrunnlag(tilretteleggingMedUtbelingsgrad)
+                : new PleiepengerNærståendeGrunnlag(tilretteleggingMedUtbelingsgrad, ppnYtelsesGrunnlag.getTilkommetInntektHensyntasFom());
         pleiepengerNærståendeGrunnlag
                 .setGrunnbeløpMilitærHarKravPå(KonfigTjeneste.forYtelse(FagsakYtelseType.PLEIEPENGER_NÆRSTÅENDE).getAntallGMilitærHarKravPå().intValue());
         return pleiepengerNærståendeGrunnlag;

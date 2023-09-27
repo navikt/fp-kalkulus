@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt;
 
 import static com.fasterxml.jackson.databind.node.BooleanNode.TRUE;
 import static no.nav.folketrygdloven.kalkulator.felles.periodesplitting.TidslinjeUtils.opprettTidslinje;
-import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste.INNTEKT_RAPPORTERING_FRIST_DATO;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -18,6 +17,7 @@ import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.PeriodeSplitter
 import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.SplittPeriodeConfig;
 import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.StandardPeriodeSplittMappers;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -39,13 +39,15 @@ import no.nav.fpsak.tidsserie.StandardCombinators;
  */
 public class TilkommetInntektPeriodeTjeneste {
 
-
     /**
      * Det er bestemt at gradering mot inntekt ved tilkommet aktivitet skal gjelde perioder fom 6.11.2023.
      */
     public static final LocalDate FOM_DATO_GRADERING_MOT_INNTEKT = LocalDate.of(2023, 11, 6);
 
     public BeregningsgrunnlagDto splittPerioderVedTilkommetInntekt(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
+        if (!(input.getYtelsespesifiktGrunnlag() instanceof UtbetalingsgradGrunnlag ytelseGrunnlag) || ytelseGrunnlag.getTilkommetInntektHensyntasFom().isEmpty()) {
+            return beregningsgrunnlag;
+        }
 
         var tilkommetAktivitetTidslinje = TilkommetInntektsforholdTjeneste.finnTilkommetInntektsforholdTidslinje(
                 beregningsgrunnlag.getSkjæringstidspunkt(),
@@ -53,19 +55,20 @@ public class TilkommetInntektPeriodeTjeneste {
                 input.getYtelsespesifiktGrunnlag(),
                 input.getIayGrunnlag()
                 );
+        var tilkommetInntektHensyntasFom = ytelseGrunnlag.getTilkommetInntektHensyntasFom().get();
         var tidlinjeMedTilkommetAktivitet = tilkommetAktivitetTidslinje.filterValue(v -> !v.isEmpty())
                 .combine(opprettTidslinje(input.getForlengelseperioder()), StandardCombinators::leftOnly, input.getForlengelseperioder().isEmpty() ? LocalDateTimeline.JoinStyle.LEFT_JOIN : LocalDateTimeline.JoinStyle.INNER_JOIN)
                 .combine(new LocalDateSegment<>(new LocalDateInterval(FOM_DATO_GRADERING_MOT_INNTEKT, LocalDateInterval.TIDENES_ENDE), TRUE), StandardCombinators::leftOnly, LocalDateTimeline.JoinStyle.LEFT_JOIN);
-        PeriodeSplitter<Set<StatusOgArbeidsgiver>> periodeSplitter = getPeriodeSplitter(input);
+        PeriodeSplitter<Set<StatusOgArbeidsgiver>> periodeSplitter = getPeriodeSplitter(input, tilkommetInntektHensyntasFom);
         return periodeSplitter.splittPerioder(beregningsgrunnlag, tidlinjeMedTilkommetAktivitet);
     }
 
-    private PeriodeSplitter<Set<StatusOgArbeidsgiver>> getPeriodeSplitter(BeregningsgrunnlagInput input) {
-        var spittPerioderConfig = new SplittPeriodeConfig<>(
+    private PeriodeSplitter<Set<StatusOgArbeidsgiver>> getPeriodeSplitter(BeregningsgrunnlagInput input, LocalDate tilkommetInntektHensyntasFom) {
+        var splittPerioderConfig = new SplittPeriodeConfig<>(
                 TilkommetInntektPeriodeTjeneste::opprettTilkommetInntekt,
                 StandardPeriodeSplittMappers.settAvsluttetPeriodeårsak(input.getForlengelseperioder(), PeriodeÅrsak.TILKOMMET_INNTEKT_AVSLUTTET));
-        spittPerioderConfig.setAbutsPredikatForCompress((di1, di2) -> di1.abuts(di2) && !di2.getFomDato().equals(FOM_DATO_GRADERING_MOT_INNTEKT));
-        return new PeriodeSplitter<>(spittPerioderConfig);
+        splittPerioderConfig.setAbutsPredikatForCompress((di1, di2) -> di1.abuts(di2) && !di2.getFomDato().equals(FOM_DATO_GRADERING_MOT_INNTEKT));
+        return new PeriodeSplitter<>(splittPerioderConfig);
     }
 
 
