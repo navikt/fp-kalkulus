@@ -45,7 +45,7 @@ public class TilkommetInntektPeriodeTjeneste {
     public static final LocalDate FOM_DATO_GRADERING_MOT_INNTEKT = LocalDate.of(2023, 11, 6);
 
     public BeregningsgrunnlagDto splittPerioderVedTilkommetInntekt(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
-        if (!(input.getYtelsespesifiktGrunnlag() instanceof UtbetalingsgradGrunnlag ytelseGrunnlag) || ytelseGrunnlag.getTilkommetInntektHensyntasFom().isEmpty()) {
+        if (!(input.getYtelsespesifiktGrunnlag() instanceof UtbetalingsgradGrunnlag ytelseGrunnlag)) {
             return beregningsgrunnlag;
         }
 
@@ -54,16 +54,22 @@ public class TilkommetInntektPeriodeTjeneste {
                 beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList(),
                 input.getYtelsespesifiktGrunnlag(),
                 input.getIayGrunnlag()
-                );
-        var tilkommetInntektHensyntasFom = ytelseGrunnlag.getTilkommetInntektHensyntasFom().get();
+        );
         var tidlinjeMedTilkommetAktivitet = tilkommetAktivitetTidslinje.filterValue(v -> !v.isEmpty())
                 .combine(opprettTidslinje(input.getForlengelseperioder()), StandardCombinators::leftOnly, input.getForlengelseperioder().isEmpty() ? LocalDateTimeline.JoinStyle.LEFT_JOIN : LocalDateTimeline.JoinStyle.INNER_JOIN)
-                .combine(new LocalDateSegment<>(new LocalDateInterval(FOM_DATO_GRADERING_MOT_INNTEKT, LocalDateInterval.TIDENES_ENDE), TRUE), StandardCombinators::leftOnly, LocalDateTimeline.JoinStyle.LEFT_JOIN);
-        PeriodeSplitter<Set<StatusOgArbeidsgiver>> periodeSplitter = getPeriodeSplitter(input, tilkommetInntektHensyntasFom);
+                .combine(new LocalDateSegment<>(new LocalDateInterval(FOM_DATO_GRADERING_MOT_INNTEKT, LocalDateInterval.TIDENES_ENDE), Boolean.TRUE), StandardCombinators::leftOnly, LocalDateTimeline.JoinStyle.LEFT_JOIN);
+
+        if (ytelseGrunnlag.getTilkommetInntektHensyntasFom().isPresent()) {
+            tidlinjeMedTilkommetAktivitet = tilkommetAktivitetTidslinje.combine(new LocalDateSegment<>(new LocalDateInterval(ytelseGrunnlag.getTilkommetInntektHensyntasFom().get(), LocalDateInterval.TIDENES_ENDE), Boolean.TRUE), StandardCombinators::leftOnly, LocalDateTimeline.JoinStyle.INNER_JOIN);
+        } else if (!tidlinjeMedTilkommetAktivitet.isEmpty()) {
+            throw new IllegalStateException("Hadde ikke startdato for nye regler, men fikk tilkommet inntekt");
+        }
+
+        PeriodeSplitter<Set<StatusOgArbeidsgiver>> periodeSplitter = getPeriodeSplitter(input);
         return periodeSplitter.splittPerioder(beregningsgrunnlag, tidlinjeMedTilkommetAktivitet);
     }
 
-    private PeriodeSplitter<Set<StatusOgArbeidsgiver>> getPeriodeSplitter(BeregningsgrunnlagInput input, LocalDate tilkommetInntektHensyntasFom) {
+    private PeriodeSplitter<Set<StatusOgArbeidsgiver>> getPeriodeSplitter(BeregningsgrunnlagInput input) {
         var splittPerioderConfig = new SplittPeriodeConfig<>(
                 TilkommetInntektPeriodeTjeneste::opprettTilkommetInntekt,
                 StandardPeriodeSplittMappers.settAvsluttetPeriodeårsak(input.getForlengelseperioder(), PeriodeÅrsak.TILKOMMET_INNTEKT_AVSLUTTET));

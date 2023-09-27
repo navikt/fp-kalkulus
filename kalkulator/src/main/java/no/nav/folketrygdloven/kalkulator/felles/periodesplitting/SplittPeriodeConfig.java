@@ -47,13 +47,13 @@ public class SplittPeriodeConfig<V> {
 
     public static <V> SplittPeriodeConfig<V> defaultConfig(PeriodeÅrsak nyPeriodeÅrsak) {
         return new SplittPeriodeConfig<>(
-                StandardPeriodeSplittCombinators.splittPerioderOgSettÅrsakCombinator(nyPeriodeÅrsak)
+                StandardPeriodeSplittCombinators.splittPerioderOgSettÅrsakCombinator(nyPeriodeÅrsak, (di, lhs, rhs) -> rhs != null)
         );
     }
 
     public static <V> SplittPeriodeConfig<V> medAvsluttetPeriodeårsakConfig(PeriodeÅrsak nyPeriodeÅrsak, PeriodeÅrsak avsluttetPeriodeårsak, List<Intervall> forlengelseperioder) {
         return new SplittPeriodeConfig<>(
-                StandardPeriodeSplittCombinators.splittPerioderOgSettÅrsakCombinator(nyPeriodeÅrsak),
+                StandardPeriodeSplittCombinators.splittPerioderOgSettÅrsakCombinator(nyPeriodeÅrsak, (di, lhs, rhs) -> rhs != null),
                 StandardPeriodeSplittMappers.settAvsluttetPeriodeårsak(forlengelseperioder, avsluttetPeriodeårsak)
         );
     }

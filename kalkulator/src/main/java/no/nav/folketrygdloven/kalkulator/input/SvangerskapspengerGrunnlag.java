@@ -11,12 +11,17 @@ public class SvangerskapspengerGrunnlag extends UtbetalingsgradGrunnlag implemen
     private int dekningsgrad = 100;
     private Integer grunnbeløpMilitærHarKravPå;
 
-    /** Når vi start behandlingen av saken, skal brukes for å vurdere refusjon til arbeidsforhold som er avsluttet */
+    /**
+     * Når vi start behandlingen av saken, skal brukes for å vurdere refusjon til arbeidsforhold som er avsluttet
+     */
     private LocalDate behandlingstidspunkt;
-
 
     public SvangerskapspengerGrunnlag(List<UtbetalingsgradPrAktivitetDto> tilretteleggingMedUtbetalingsgrad) {
         super(tilretteleggingMedUtbetalingsgrad);
+    }
+
+    public SvangerskapspengerGrunnlag(List<UtbetalingsgradPrAktivitetDto> tilretteleggingMedUtbetalingsgrad, LocalDate tilkommetInntektHensyntasFom) {
+        super(tilretteleggingMedUtbetalingsgrad, tilkommetInntektHensyntasFom);
     }
 
     @Override

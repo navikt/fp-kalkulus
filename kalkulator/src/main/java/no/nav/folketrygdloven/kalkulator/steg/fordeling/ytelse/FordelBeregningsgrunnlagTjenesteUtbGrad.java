@@ -21,7 +21,6 @@ public class FordelBeregningsgrunnlagTjenesteUtbGrad implements FordelBeregnings
     private final TilkommetInntektPeriodeTjeneste periodeTjeneste = new TilkommetInntektPeriodeTjeneste();
     private OmfordelBeregningsgrunnlagTjeneste omfordelTjeneste;
     private boolean graderingMotInntektEnabled;
-    private boolean fordelingUtenKravEnabled;
 
     public FordelBeregningsgrunnlagTjenesteUtbGrad() {
         // CDI
