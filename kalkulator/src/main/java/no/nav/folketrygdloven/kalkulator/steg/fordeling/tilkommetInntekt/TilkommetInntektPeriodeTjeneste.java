@@ -60,7 +60,7 @@ public class TilkommetInntektPeriodeTjeneste {
                 .combine(new LocalDateSegment<>(new LocalDateInterval(FOM_DATO_GRADERING_MOT_INNTEKT, LocalDateInterval.TIDENES_ENDE), Boolean.TRUE), StandardCombinators::leftOnly, LocalDateTimeline.JoinStyle.LEFT_JOIN);
 
         if (ytelseGrunnlag.getTilkommetInntektHensyntasFom().isPresent()) {
-            tidlinjeMedTilkommetAktivitet = tilkommetAktivitetTidslinje.combine(new LocalDateSegment<>(new LocalDateInterval(ytelseGrunnlag.getTilkommetInntektHensyntasFom().get(), LocalDateInterval.TIDENES_ENDE), Boolean.TRUE), StandardCombinators::leftOnly, LocalDateTimeline.JoinStyle.INNER_JOIN);
+            tidlinjeMedTilkommetAktivitet = tidlinjeMedTilkommetAktivitet.combine(new LocalDateSegment<>(new LocalDateInterval(ytelseGrunnlag.getTilkommetInntektHensyntasFom().get(), LocalDateInterval.TIDENES_ENDE), Boolean.TRUE), StandardCombinators::leftOnly, LocalDateTimeline.JoinStyle.INNER_JOIN);
         } else if (!tidlinjeMedTilkommetAktivitet.isEmpty()) {
             throw new IllegalStateException("Hadde ikke startdato for nye regler, men fikk tilkommet inntekt");
         }
