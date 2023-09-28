@@ -7,7 +7,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.Beregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
-import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.fastsett.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.steg.fullføre.ytelse.utbgrad.FullføreBeregningsgrunnlagUtbgrad;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
@@ -29,14 +28,8 @@ public class FullføreBeregningsgrunnlagPleiepenger extends FullføreBeregningsg
     }
 
     protected List<String> kjørRegelFinnGrenseverdi(Beregningsgrunnlag beregningsgrunnlagRegel) {
-        var graderingMotInntektEnabled = KonfigurasjonVerdi.get("GRADERING_MOT_INNTEKT", false);
         return beregningsgrunnlagRegel.getBeregningsgrunnlagPerioder().stream()
-                .map(periode -> {
-                    if (graderingMotInntektEnabled) {
-                        return KalkulusRegler.finnGrenseverdi(periode).getRegelSporing().sporing();
-                    }
-                    return KalkulusRegler.finnGrenseverdi(periode).getRegelSporing().sporing();
-                })
+                .map(periode -> KalkulusRegler.finnGrenseverdi(periode).getRegelSporing().sporing())
                 .collect(Collectors.toList());
     }
 
