@@ -33,7 +33,7 @@ public class FullføreBeregningsgrunnlagPleiepenger extends FullføreBeregningsg
         return beregningsgrunnlagRegel.getBeregningsgrunnlagPerioder().stream()
                 .map(periode -> {
                     if (graderingMotInntektEnabled) {
-                        return KalkulusRegler.finnGrenseverdiUtenFordeling(periode).getRegelSporing().sporing();
+                        return KalkulusRegler.finnGrenseverdi(periode).getRegelSporing().sporing();
                     }
                     return KalkulusRegler.finnGrenseverdi(periode).getRegelSporing().sporing();
                 })
