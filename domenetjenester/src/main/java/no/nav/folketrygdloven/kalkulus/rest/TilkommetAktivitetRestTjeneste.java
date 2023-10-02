@@ -95,11 +95,16 @@ public class TilkommetAktivitetRestTjeneste {
                 spesifikasjon.getYtelseType());
         var koblingIder = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
         var beregningsgrunnlag = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingIder);
+
+        // TODO: fjern når k9-sak kaller med kalkulatorinput
         var inputer = kalkulatorInputTjeneste.hentForKoblinger(beregningsgrunnlag.stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId).collect(Collectors.toSet()));
+
+        var referanseInputMap = spesifikasjon.getListe().stream().filter(it -> it.getKalkulatorInput() != null)
+                .collect(Collectors.toMap(UtledTilkommetAktivitetForRequest::getEksternReferanse, UtledTilkommetAktivitetForRequest::getKalkulatorInput));
 
         final List<UtledetTilkommetAktivitetPrReferanse> simuleringer = beregningsgrunnlag.stream().map(bg -> {
             var kobling = koblinger.stream().filter(it -> it.getId().equals(bg.getKoblingId())).findFirst().orElseThrow();
-            var input = inputer.get(kobling.getId());
+            var input = referanseInputMap.getOrDefault(kobling.getKoblingReferanse().getReferanse(), inputer.get(kobling.getId()));
             var beregningsgrunnlagInput = lagBeregningsgrunnlagInput(kobling, input, bg);
             var tilkommetAktivitetPerioder = SimulerTilkomneAktiviteterTjeneste.utledTilkommetAktivitetPerioder(beregningsgrunnlagInput);
             final List<UtledetTilkommetAktivitet> aktiviteter = mapTilUtledetTilkommetAktivitet(tilkommetAktivitetPerioder);

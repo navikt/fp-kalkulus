@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.request.v1.tilkommetAktivitet;
 
-import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -11,8 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
@@ -25,16 +23,16 @@ public class UtledTilkommetAktivitetForRequest {
     private UUID eksternReferanse;
 
 
-    @JsonProperty(value = "perioder")
-    @Size()
+    @JsonProperty(value = "kalkulatorInput")
     @Valid
-    private List<Periode> perioder;
+    private KalkulatorInputDto kalkulatorInput;
+
 
     @JsonCreator
     public UtledTilkommetAktivitetForRequest(@JsonProperty(value = "eksternReferanse", required = true) UUID eksternReferanse,
-                                             @JsonProperty(value = "perioder") List<Periode> perioder) {
+                                             @JsonProperty(value = "kalkulatorInput") KalkulatorInputDto kalkulatorInput) {
         this.eksternReferanse = eksternReferanse;
-        this.perioder = perioder;
+        this.kalkulatorInput = kalkulatorInput;
     }
 
     public UUID getEksternReferanse() {
@@ -42,9 +40,7 @@ public class UtledTilkommetAktivitetForRequest {
     }
 
 
-    public List<Periode> getPerioder() {
-        return perioder;
+    public KalkulatorInputDto getKalkulatorInput() {
+        return kalkulatorInput;
     }
-
-
 }
