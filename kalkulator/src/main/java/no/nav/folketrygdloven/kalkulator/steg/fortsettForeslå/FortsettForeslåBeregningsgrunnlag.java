@@ -47,13 +47,6 @@ public class FortsettForeslåBeregningsgrunnlag {
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag()
                 .orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag her"));
 
-
-        // Hvis gammelt foreslå-steg er kjørt vil andeler med status SN og MS allerede være foreslått og vi ikke kjøre foreslå del 2
-        if (SnMsForeslåttSjekk.snOgMsErAlleredeForeslått(beregningsgrunnlag)) {
-            return new BeregningsgrunnlagRegelResultat(beregningsgrunnlag, Collections.emptyList());
-        }
-
-
         // Oversetter initielt Beregningsgrunnlag -> regelmodell
         Beregningsgrunnlag regelmodellBeregningsgrunnlag = mapBeregningsgrunnlagFraVLTilRegel.map(input, grunnlag);
         List<RegelResultat> regelResultater = new ArrayList<>();
