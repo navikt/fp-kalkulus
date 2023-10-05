@@ -34,7 +34,7 @@ public class ErFjernetIOverstyrt {
 
     private static boolean varIkkeIPermisjonPåSkjæringstidspunkt(Collection<PermisjonDto> permisjoner, LocalDate skjæringstidspunktBeregning) {
         return permisjoner.stream()
-                .noneMatch(p -> p.getPeriode().inkluderer(skjæringstidspunktBeregning));
+                .noneMatch(p -> p.getPeriode().inkluderer(BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunktBeregning)));
     }
 
     private static boolean liggerIkkeIBGAktivitetAggregat(YrkesaktivitetDto yrkesaktivitet, BeregningAktivitetAggregatDto aktivitetAggregatEntitet) {

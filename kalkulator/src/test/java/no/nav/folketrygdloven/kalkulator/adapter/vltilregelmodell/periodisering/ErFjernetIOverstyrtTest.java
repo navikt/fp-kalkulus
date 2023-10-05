@@ -46,6 +46,24 @@ class ErFjernetIOverstyrtTest {
     }
 
     @Test
+    public void arbeidsforhold_som_var_i_permisjon_dagen_før_stp_med_ikkje_på_stp_og_ikke_ligger_i_beregningsaggregatet_er_ikke_fjernet() {
+        // Arrange
+        Arbeidsgiver ag = Arbeidsgiver.virksomhet("999999999");
+        InternArbeidsforholdRefDto ref = InternArbeidsforholdRefDto.nullRef();
+        YrkesaktivitetDtoBuilder ya = lagYrkesaktivitet(ag, ref);
+        lagPermisjonForAG(ya, STP.minusMonths(3), STP.minusDays(1));
+        InntektArbeidYtelseGrunnlagDto grunnlag = ferdigstillIAYGrunnlag();
+        BeregningAktivitetAggregatDto bgAggregat = ferdigstillBGAggregat();
+
+        YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(grunnlag.getArbeidsforholdInformasjon(), grunnlag.getAktørArbeidFraRegister());
+
+        // Act
+        boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(), bgAggregat, STP);
+
+        assertThat(erFjernet).isFalse();
+    }
+
+    @Test
     public void arbeidsforhold_som_var_i_permisjon_og_ligger_i_beregningsaggregat_er_ikke_fjernet() {
         // Arrange
         Arbeidsgiver ag = Arbeidsgiver.virksomhet("999999999");
