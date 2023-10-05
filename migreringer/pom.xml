@@ -13,10 +13,7 @@
     <artifactId>migreringer</artifactId>
     <packaging>jar</packaging>
     <name>Kalkulus :: Database migreringer</name>
-
-    <properties>
-        <skipMigrering>false</skipMigrering>
-    </properties>
+    
 
     <dependencies>
         <!-- Eksterne avhengigheter til andre NAV-prosjekter-->
@@ -54,7 +51,7 @@
                     <mainClass>no.nav.folketrygdloven.kalkulus.dbstoette.Databaseskjemainitialisering</mainClass>
                     <classpathScope>test</classpathScope>
                     <cleanupDaemonThreads>false</cleanupDaemonThreads>
-                    <skip>${skipMigrering}</skip>
+                    <skip>${skipTests}</skip>
                 </configuration>
             </plugin>
             <plugin>
