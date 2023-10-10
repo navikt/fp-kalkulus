@@ -177,6 +177,7 @@ public class MapDetaljertBeregningsgrunnlag {
                 beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto() != null ? beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto() : null,
                 beregningsgrunnlagPeriode.getTotalUtbetalingsgradFraUttak(),
                 beregningsgrunnlagPeriode.getTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt(),
+                beregningsgrunnlagPeriode.getReduksjonsfaktorInaktivTypeA(),
                 utledGraderingsfaktorInntekt(beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag),
                 utledGraderingsfaktorTid(beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag));
     }

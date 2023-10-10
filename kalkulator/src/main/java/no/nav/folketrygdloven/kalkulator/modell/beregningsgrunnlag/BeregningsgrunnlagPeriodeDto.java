@@ -40,6 +40,7 @@ public class BeregningsgrunnlagPeriodeDto implements IndexKey {
     private BigDecimal inntektgraderingsprosentBrutto;
     private BigDecimal totalUtbetalingsgradFraUttak;
     private BigDecimal totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt;
+    private BigDecimal reduksjonsfaktorInaktivTypeA;
 
     private BeregningsgrunnlagPeriodeDto() {
     }
@@ -67,6 +68,7 @@ public class BeregningsgrunnlagPeriodeDto implements IndexKey {
         this.inntektgraderingsprosentBrutto = kopiereFra.inntektgraderingsprosentBrutto;
         this.totalUtbetalingsgradFraUttak = kopiereFra.totalUtbetalingsgradFraUttak;
         this.totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt = kopiereFra.totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt;
+        this.reduksjonsfaktorInaktivTypeA = kopiereFra.reduksjonsfaktorInaktivTypeA;
     }
 
     public static Builder ny() {
@@ -168,6 +170,10 @@ public class BeregningsgrunnlagPeriodeDto implements IndexKey {
 
     public BigDecimal getTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt() {
         return totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt;
+    }
+
+    public BigDecimal getReduksjonsfaktorInaktivTypeA() {
+        return reduksjonsfaktorInaktivTypeA;
     }
 
     @Override
@@ -328,6 +334,12 @@ public class BeregningsgrunnlagPeriodeDto implements IndexKey {
         public Builder medTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt(BigDecimal totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt) {
             verifiserKanModifisere();
             kladd.totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt = totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt;
+            return this;
+        }
+
+        public Builder medReduksjonsfaktorInaktivTypeA(BigDecimal reduksjonsfaktorInaktivTypeA) {
+            verifiserKanModifisere();
+            kladd.reduksjonsfaktorInaktivTypeA = reduksjonsfaktorInaktivTypeA;
             return this;
         }
 

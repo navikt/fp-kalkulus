@@ -92,6 +92,9 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
     @Column(name = "total_utbetalingsgrad_etter_reduksjon_ved_tilkommet_inntekt")
     private BigDecimal totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt;
 
+    @Column(name = "reduksjonsfaktor_inaktiv_type_a")
+    private BigDecimal reduksjonsfaktorInaktivTypeA;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlagPeriode", cascade = CascadeType.PERSIST, orphanRemoval = true)
     @BatchSize(size = 20)
     private final List<BeregningsgrunnlagPeriodeÅrsak> beregningsgrunnlagPeriodeÅrsaker = new ArrayList<>();
@@ -105,6 +108,7 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
         this.inntektgraderingsprosentBrutto = beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto();
         this.totalUtbetalingsgradFraUttak = beregningsgrunnlagPeriode.getTotalUtbetalingsgradFraUttak();
         this.totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt = beregningsgrunnlagPeriode.getTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt();
+        this.reduksjonsfaktorInaktivTypeA = beregningsgrunnlagPeriode.getReduksjonsfaktorInaktivTypeA();
         beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeÅrsaker().stream().map(BeregningsgrunnlagPeriodeÅrsak::new)
                 .forEach(this::addBeregningsgrunnlagPeriodeÅrsak);
         beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream().map(BeregningsgrunnlagPrStatusOgAndel::new)
@@ -183,6 +187,10 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
 
     public BigDecimal getTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt() {
         return totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt;
+    }
+
+    public BigDecimal getReduksjonsfaktorInaktivTypeA() {
+        return reduksjonsfaktorInaktivTypeA;
     }
 
     public List<BeregningsgrunnlagPeriodeÅrsak> getBeregningsgrunnlagPeriodeÅrsaker() {
@@ -358,6 +366,12 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
                 }
             }
             kladd.totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt = totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt;
+            return this;
+        }
+
+        public Builder medReduksjonsfaktorInaktivTypeA(BigDecimal reduksjonsfaktorInaktivTypeA){
+            verifiserKanModifisere();
+            kladd.reduksjonsfaktorInaktivTypeA = reduksjonsfaktorInaktivTypeA;
             return this;
         }
 

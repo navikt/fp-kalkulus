@@ -103,6 +103,16 @@ public class BeregningsgrunnlagPeriodeDto {
     @Digits(integer = 10, fraction = 4)
     private BigDecimal totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt;
 
+    /**
+     * Reduksjonsfaktor benyttet ved midlertidig inaktiv type A (§8-47a)
+     */
+    @JsonProperty(value = "reduksjonsfaktorInaktivTypeA")
+    @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 4)
+    private BigDecimal reduksjonsfaktorInaktivTypeA;
+
     @Deprecated(since = "2.5.0", forRemoval = true)// du vil sannsynligvis bruke noe av totalUtbetalingsgradFraUttak/totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt
     /**
      * Gradering av beregningsgrunnlaget ved tilkommet inntekt (gradering mot inntekt)
@@ -141,6 +151,7 @@ public class BeregningsgrunnlagPeriodeDto {
                                         BigDecimal inntektGraderingsprosent,
                                         BigDecimal totalUtbetalingsgradFraUttak,
                                         BigDecimal totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt,
+                                        BigDecimal reduksjonsfaktorInaktivTypeA,
                                         BigDecimal graderingsfaktorInntekt,
                                         BigDecimal graderingsfaktorTid) {
         this.beregningsgrunnlagPrStatusOgAndelList = beregningsgrunnlagPrStatusOgAndelList;
@@ -153,6 +164,7 @@ public class BeregningsgrunnlagPeriodeDto {
         this.inntektGraderingsprosent = inntektGraderingsprosent;
         this.totalUtbetalingsgradFraUttak = totalUtbetalingsgradFraUttak;
         this.totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt = totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt;
+        this.reduksjonsfaktorInaktivTypeA = reduksjonsfaktorInaktivTypeA;
         this.graderingsfaktorInntekt = graderingsfaktorInntekt;
         this.graderingsfaktorTid = graderingsfaktorTid;
     }
@@ -212,5 +224,9 @@ public class BeregningsgrunnlagPeriodeDto {
 
     public BigDecimal getTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt() {
         return totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt;
+    }
+
+    public BigDecimal getReduksjonsfaktorInaktivTypeA() {
+        return reduksjonsfaktorInaktivTypeA;
     }
 }

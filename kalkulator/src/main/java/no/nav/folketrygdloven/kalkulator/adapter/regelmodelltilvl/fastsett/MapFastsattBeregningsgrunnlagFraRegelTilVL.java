@@ -43,7 +43,8 @@ public class MapFastsattBeregningsgrunnlagFraRegelTilVL {
             BeregningsgrunnlagPeriodeDto.oppdater(eksisterendePeriode)
                     .medInntektsgraderingsprosentBrutto(resultatBGPeriode.getInntektsgraderingFraBruttoBeregningsgrunnlag())
                     .medTotalUtbetalingsgradFraUttak(resultatBGPeriode.getTotalUtbetalingsgradFraUttak())
-                    .medTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt(resultatBGPeriode.getTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt());
+                    .medTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt(resultatBGPeriode.getTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt())
+                    .medReduksjonsfaktorInaktivTypeA(resultatBGPeriode.getReduksjonsfaktorInaktivTypeA());
         }
     }
 
