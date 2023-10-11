@@ -4,6 +4,10 @@ import static no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak.ENDRING_I_A
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,11 +18,12 @@ import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.StandardPeriode
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
+import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
-import no.nav.fpsak.tidsserie.StandardCombinators;
 import no.nav.k9.felles.konfigurasjon.env.Environment;
 
 public class PeriodiserForAktivitetsgradTjeneste {
@@ -28,44 +33,39 @@ public class PeriodiserForAktivitetsgradTjeneste {
     public static BeregningsgrunnlagDto splittVedEndringIAktivitetsgrad(BeregningsgrunnlagDto beregningsgrunnlag, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
 
         if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
-
-            for (UtbetalingsgradPrAktivitetDto ut : utbetalingsgradGrunnlag.getUtbetalingsgradPrAktivitet()) {
-                for (PeriodeMedUtbetalingsgradDto p : ut.getPeriodeMedUtbetalingsgrad()) {
-                    if (Environment.current().isDev()) {
-                        logger.info("Grunnlagsdata for [{}-{}] aktivitetsgrad {}", p.getPeriode().getFomDato(), p.getPeriode().getTomDato(), p.getAktivitetsgrad().orElse(null));
+            List<LocalDateSegment<Map<AktivitetDto, BigDecimal>>> aktivitetsgradSegmenter = new ArrayList<>();
+            for (UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitet : utbetalingsgradGrunnlag.getUtbetalingsgradPrAktivitet()) {
+                AktivitetDto aktivitet = utbetalingsgradPrAktivitet.getUtbetalingsgradArbeidsforhold();
+                for (PeriodeMedUtbetalingsgradDto periode : utbetalingsgradPrAktivitet.getPeriodeMedUtbetalingsgrad()) {
+                    if (periode.getAktivitetsgrad().isPresent()) {
+                        aktivitetsgradSegmenter.add(new LocalDateSegment<>(periode.getPeriode().getFomDato(), periode.getPeriode().getTomDato(), Map.of(aktivitet, periode.getAktivitetsgrad().orElse(BigDecimal.ZERO))));
                     }
                 }
             }
-
-            var tidslinjePåTversAvArbeidsforhold = utbetalingsgradGrunnlag.getUtbetalingsgradPrAktivitet().stream()
-                    .map(a -> {
-                        var segmenterForAktivitet = a.getPeriodeMedUtbetalingsgrad().stream()
-                                .filter(p -> p.getAktivitetsgrad().isPresent())
-                                .map(p -> new LocalDateSegment<>(p.getPeriode().getFomDato(), p.getPeriode().getTomDato(), p.getAktivitetsgrad().get()))
-                                .toList();
-                        var tidslinjeForAktivitet = new LocalDateTimeline<>(segmenterForAktivitet, StandardCombinators::rightOnly);
-                        tidslinjeForAktivitet.compress((e1, e2) -> e1.compareTo(e2) == 0, StandardCombinators::leftOnly);
-                        return tidslinjeForAktivitet;
-                    })
-                    .reduce((t1, t2) -> t1.crossJoin(t2, StandardCombinators::coalesceLeftHandSide))
-                    .orElse(LocalDateTimeline.empty());
+            LocalDateTimeline<Map<AktivitetDto, BigDecimal>> aktivitetsgradTidslinje = new LocalDateTimeline<>(aktivitetsgradSegmenter, PeriodiserForAktivitetsgradTjeneste::merge);
             if (Environment.current().isDev()) {
                 logger.info("Beregningsgrunnlag før splitting pga tilkommet {}", prettyPrint(beregningsgrunnlag));
-                logger.info("På tvers av arbeidsforhold-tidslinje for stp {}: {}", beregningsgrunnlag.getSkjæringstidspunkt(), prettyPrint(tidslinjePåTversAvArbeidsforhold));
+                logger.info("Aktivitetsgrad-tidslinje for stp {}: {}", beregningsgrunnlag.getSkjæringstidspunkt(), prettyPrint(aktivitetsgradTidslinje));
             }
-            beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream().map(bg -> bg.getPeriode().getFomDato() + "," + bg.getPeriode().getTomDato()).reduce("", (a, b) -> a + ", " + b);
-            BeregningsgrunnlagDto etterSplitt = getPeriodeSplitter(beregningsgrunnlag.getSkjæringstidspunkt()).splittPerioder(beregningsgrunnlag, tidslinjePåTversAvArbeidsforhold);
+            BeregningsgrunnlagDto resultat = lagPeriodeSplitter(beregningsgrunnlag.getSkjæringstidspunkt()).splittPerioder(beregningsgrunnlag, aktivitetsgradTidslinje);
             if (Environment.current().isDev()) {
-                logger.info("Beregningsgrunnlag etter splitting pga tilkommet {}", prettyPrint(etterSplitt));
+                logger.info("Beregningsgrunnlag etter splitting pga tilkommet {}", prettyPrint(resultat));
             }
-            return etterSplitt;
+            return resultat;
         }
         return beregningsgrunnlag;
     }
 
-    private static String prettyPrint(LocalDateTimeline<BigDecimal> tidslinje) {
+    static LocalDateSegment<Map<AktivitetDto, BigDecimal>> merge(LocalDateInterval intervall, LocalDateSegment<Map<AktivitetDto, BigDecimal>> lhs, LocalDateSegment<Map<AktivitetDto, BigDecimal>> rhs) {
+        Map<AktivitetDto, BigDecimal> resultat = new LinkedHashMap<>();
+        resultat.putAll(lhs.getValue());
+        resultat.putAll(rhs.getValue());
+        return new LocalDateSegment<>(intervall, resultat);
+    }
+
+    private static String prettyPrint(LocalDateTimeline<Map<AktivitetDto, BigDecimal>> tidslinje) {
         return tidslinje.stream()
-                .map(s -> "[" + s.getLocalDateInterval().getFomDato() + "," + s.getLocalDateInterval().getTomDato() + "]:" + s.getValue().toPlainString())
+                .map(s -> "[" + s.getLocalDateInterval().getFomDato() + "," + s.getLocalDateInterval().getTomDato() + "]:" + s.getValue())
                 .reduce("", (a, b) -> a + ", " + b);
     }
 
@@ -75,12 +75,31 @@ public class PeriodiserForAktivitetsgradTjeneste {
                 .reduce("", (a, b) -> a + ", " + b);
     }
 
-
-    private static PeriodeSplitter<BigDecimal> getPeriodeSplitter(LocalDate stp) {
-        SplittPeriodeConfig<BigDecimal> splittPeriodeConfig = new SplittPeriodeConfig<>(
+    private static PeriodeSplitter<Map<AktivitetDto, BigDecimal>> lagPeriodeSplitter(LocalDate stp) {
+        SplittPeriodeConfig<Map<AktivitetDto, BigDecimal>> splittPeriodeConfig = new SplittPeriodeConfig<>(
                 StandardPeriodeSplittCombinators.splittPerioderOgSettÅrsakCombinator(ENDRING_I_AKTIVITETER_SØKT_FOR, (di1, lhs1, rhs1) -> di1.getFomDato().isAfter(stp) && lhs1 != null));
-        splittPeriodeConfig.setLikhetsPredikatForCompress((e1, e2) -> e1.compareTo(e2) == 0);
+        splittPeriodeConfig.setLikhetsPredikatForCompress(PeriodiserForAktivitetsgradTjeneste::like);
         return new PeriodeSplitter<>(splittPeriodeConfig);
+    }
+
+    private static boolean like(Map<AktivitetDto, BigDecimal> a, Map<AktivitetDto, BigDecimal> b) {
+        if (a.size() != b.size()) {
+            return false;
+        }
+        for (Map.Entry<AktivitetDto, BigDecimal> bEntry : b.entrySet()) {
+            BigDecimal aVerdi = a.get(bEntry.getKey());
+            BigDecimal bVerdi = bEntry.getValue();
+            if (aVerdi == null && bVerdi == null) {
+                continue;
+            }
+            if (aVerdi == null || bVerdi == null) {
+                return false;
+            }
+            if (aVerdi.compareTo(bVerdi) != 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

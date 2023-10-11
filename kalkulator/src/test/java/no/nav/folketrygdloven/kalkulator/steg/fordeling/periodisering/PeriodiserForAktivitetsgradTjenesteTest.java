@@ -82,6 +82,30 @@ class PeriodiserForAktivitetsgradTjenesteTest {
     }
 
     @Test
+    void skal_splitte_grunnlag_med_endring_i_aktivitetsgrad_for_en_arbeidsgiver_også_når_det_ikke_er_endring_hos_en_annen_arbeidsgiver() {
+        // Arrange
+        var stp = LocalDate.now();
+        BeregningsgrunnlagDto bg = lagBeregningsgrunnlagMedEnPeriode(stp);
+        var ytelsespesifiktGrunnlag = new PleiepengerSyktBarnGrunnlag(List.of(
+                new UtbetalingsgradPrAktivitetDto(new AktivitetDto(Arbeidsgiver.virksomhet("111111111"), InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID), List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, TIDENES_ENDE), BigDecimal.ZERO, BigDecimal.ZERO))),
+                new UtbetalingsgradPrAktivitetDto(new AktivitetDto(Arbeidsgiver.virksomhet("123456789"), InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID), List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, stp.plusMonths(1)), BigDecimal.TEN, BigDecimal.TEN)))
+        ), stp);
+
+        // Act
+        var resultat = PeriodiserForAktivitetsgradTjeneste.splittVedEndringIAktivitetsgrad(bg, ytelsespesifiktGrunnlag);
+
+        // Assert
+        var resultatperioder = resultat.getBeregningsgrunnlagPerioder();
+        assertThat(resultatperioder.size()).isEqualTo(2);
+        assertThat(resultatperioder.get(0).getBeregningsgrunnlagPeriodeFom()).isEqualTo(stp);
+        assertThat(resultatperioder.get(0).getBeregningsgrunnlagPeriodeTom()).isEqualTo(stp.plusMonths(1));
+
+        assertThat(resultatperioder.get(1).getBeregningsgrunnlagPeriodeTom()).isEqualTo(TIDENES_ENDE);
+        assertThat(resultatperioder.get(1).getBeregningsgrunnlagPeriodeFom()).isEqualTo(stp.plusMonths(1).plusDays(1));
+        assertThat(resultatperioder.get(1).getPeriodeÅrsaker().size()).isEqualTo(1);
+    }
+
+    @Test
     void skal_splitte_grunnlag_med_to_endringer_i_aktivitetsgrad_for_en_arbeidsgiver() {
         // Arrange
         var stp = LocalDate.now();
@@ -117,9 +141,9 @@ class PeriodiserForAktivitetsgradTjenesteTest {
         var stp = LocalDate.now();
         BeregningsgrunnlagDto bg = lagBeregningsgrunnlagMedEnPeriode(stp);
         var ytelsespesifiktGrunnlag = new PleiepengerSyktBarnGrunnlag(List.of(new UtbetalingsgradPrAktivitetDto(
-                new AktivitetDto(Arbeidsgiver.virksomhet("123456789"), InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID),
-                List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, stp.plusMonths(1)), BigDecimal.TEN, BigDecimal.TEN))
-        ),
+                        new AktivitetDto(Arbeidsgiver.virksomhet("123456789"), InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID),
+                        List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, stp.plusMonths(1)), BigDecimal.TEN, BigDecimal.TEN))
+                ),
                 new UtbetalingsgradPrAktivitetDto(
                         new AktivitetDto(Arbeidsgiver.virksomhet("987654321"), InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID),
                         List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, stp.plusMonths(2)), BigDecimal.TEN, BigDecimal.valueOf(50)))
