@@ -9,9 +9,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.PeriodeSplitter;
 import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.SplittPeriodeConfig;
 import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.StandardPeriodeSplittCombinators;
@@ -24,11 +21,8 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDt
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
-import no.nav.k9.felles.konfigurasjon.env.Environment;
 
 public class PeriodiserForAktivitetsgradTjeneste {
-
-    private static final Logger logger = LoggerFactory.getLogger(PeriodiserForAktivitetsgradTjeneste.class);
 
     public static BeregningsgrunnlagDto splittVedEndringIAktivitetsgrad(BeregningsgrunnlagDto beregningsgrunnlag, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
 
@@ -43,15 +37,7 @@ public class PeriodiserForAktivitetsgradTjeneste {
                 }
             }
             LocalDateTimeline<Map<AktivitetDto, BigDecimal>> aktivitetsgradTidslinje = new LocalDateTimeline<>(aktivitetsgradSegmenter, PeriodiserForAktivitetsgradTjeneste::merge);
-            if (Environment.current().isDev()) {
-                logger.info("Beregningsgrunnlag før splitting pga tilkommet {}", prettyPrint(beregningsgrunnlag));
-                logger.info("Aktivitetsgrad-tidslinje for stp {}: {}", beregningsgrunnlag.getSkjæringstidspunkt(), prettyPrint(aktivitetsgradTidslinje));
-            }
-            BeregningsgrunnlagDto resultat = lagPeriodeSplitter(beregningsgrunnlag.getSkjæringstidspunkt()).splittPerioder(beregningsgrunnlag, aktivitetsgradTidslinje);
-            if (Environment.current().isDev()) {
-                logger.info("Beregningsgrunnlag etter splitting pga tilkommet {}", prettyPrint(resultat));
-            }
-            return resultat;
+            return lagPeriodeSplitter(beregningsgrunnlag.getSkjæringstidspunkt()).splittPerioder(beregningsgrunnlag, aktivitetsgradTidslinje);
         }
         return beregningsgrunnlag;
     }
@@ -61,18 +47,6 @@ public class PeriodiserForAktivitetsgradTjeneste {
         resultat.putAll(lhs.getValue());
         resultat.putAll(rhs.getValue());
         return new LocalDateSegment<>(intervall, resultat);
-    }
-
-    private static String prettyPrint(LocalDateTimeline<Map<AktivitetDto, BigDecimal>> tidslinje) {
-        return tidslinje.stream()
-                .map(s -> "[" + s.getLocalDateInterval().getFomDato() + "," + s.getLocalDateInterval().getTomDato() + "]:" + s.getValue())
-                .reduce("", (a, b) -> a + ", " + b);
-    }
-
-    private static String prettyPrint(BeregningsgrunnlagDto beregningsgrunnlag) {
-        return beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
-                .map(bg -> "[" + bg.getPeriode().getFomDato() + "," + bg.getPeriode().getTomDato() + "]")
-                .reduce("", (a, b) -> a + ", " + b);
     }
 
     private static PeriodeSplitter<Map<AktivitetDto, BigDecimal>> lagPeriodeSplitter(LocalDate stp) {
