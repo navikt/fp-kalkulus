@@ -16,6 +16,7 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.FastsettSkjæringstidspunktOgStatuser;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.FastsettBeregningsperiodeTjeneste;
+import no.nav.folketrygdloven.kalkulator.ytelse.fp.FastsettBeregningsperiodeTjenesteFP;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
@@ -25,8 +26,6 @@ import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusMod
 @FagsakYtelseTypeRef(FagsakYtelseType.FORELDREPENGER)
 @FagsakYtelseTypeRef(FagsakYtelseType.SVANGERSKAPSPENGER)
 public class FastsettSkjæringstidspunktOgStatuserK14 implements FastsettSkjæringstidspunktOgStatuser {
-
-    private final FastsettBeregningsperiodeTjeneste fastsettBeregningsperiodeTjeneste = new FastsettBeregningsperiodeTjeneste();
 
     @Override
     public BeregningsgrunnlagRegelResultat fastsett(BeregningsgrunnlagInput input, BeregningAktivitetAggregatDto beregningAktivitetAggregat, List<Grunnbeløp> grunnbeløpSatser) {
@@ -39,12 +38,16 @@ public class FastsettSkjæringstidspunktOgStatuserK14 implements FastsettSkjæri
                 regelResultatFastsettSkjæringstidspunkt,
                 regelResultatFastsettStatus);
         var nyttBeregningsgrunnlag = mapForSkjæringstidspunktOgStatuser(input.getKoblingReferanse(), regelmodell, regelResultater, input.getIayGrunnlag(), grunnbeløpSatser);
+        var fastsettBeregningsperiodeTjeneste = FagsakYtelseType.SVANGERSKAPSPENGER.equals(input.getFagsakYtelseType())
+                ? new FastsettBeregningsperiodeTjeneste()
+                : new FastsettBeregningsperiodeTjenesteFP();
         var fastsattBeregningsperiode = fastsettBeregningsperiodeTjeneste.fastsettBeregningsperiode(nyttBeregningsgrunnlag, input.getIayGrunnlag(), input.getInntektsmeldinger());
         return new BeregningsgrunnlagRegelResultat(fastsattBeregningsperiode,
                 new RegelSporingAggregat(
                         mapRegelSporingGrunnlag(regelResultatFastsettSkjæringstidspunkt, BeregningsgrunnlagRegelType.SKJÆRINGSTIDSPUNKT),
                         mapRegelSporingGrunnlag(regelResultatFastsettStatus, BeregningsgrunnlagRegelType.BRUKERS_STATUS)));
     }
+
 
     private RegelResultat fastsettSkjæringstidspunkt(AktivitetStatusModell regelmodell) {
         // Tar sporingssnapshot av regelmodell, deretter oppdateres modell med fastsatt skjæringstidspunkt for Beregning
