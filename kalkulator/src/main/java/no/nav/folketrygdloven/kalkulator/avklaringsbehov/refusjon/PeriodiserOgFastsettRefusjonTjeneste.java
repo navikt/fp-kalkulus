@@ -26,17 +26,16 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 /**
-    * Når beregningsgrunnlagene kommer hit skal de allerede ha satt refusjon fra den dagen refusjon kreves (som regel skjæringstidspunkt for beregning).
-    * Denne klassen må derfor nullstille refusjonen i perioder som ligger før
-    * fastsatt startdato for refusjon og trenger ikke endre perioder der det skal være refusjon
+ * Når beregningsgrunnlagene kommer hit skal de allerede ha satt refusjon fra den dagen refusjon kreves (som regel skjæringstidspunkt for beregning).
+ * Denne klassen må derfor nullstille refusjonen i perioder som ligger før
+ * fastsatt startdato for refusjon og trenger ikke endre perioder der det skal være refusjon
  */
 public final class PeriodiserOgFastsettRefusjonTjeneste {
     private static final BigDecimal MÅNEDER_I_ÅR = BigDecimal.valueOf(12);
 
     /**
-     *
      * @param beregningsgrunnlagDto - beregningsgrunnlaget som skal splittes.
-     * @param andeler - overstyringer avklart av saksbehandler som skal brukes til å bestemme splitten.
+     * @param andeler               - overstyringer avklart av saksbehandler som skal brukes til å bestemme splitten.
      * @return beregningsgrunnlag splittet i henhold til refusjonsdatoer med refusjon kun fra refusjonsstart.
      */
     public static BeregningsgrunnlagDto periodiserOgFastsett(BeregningsgrunnlagDto beregningsgrunnlagDto,
@@ -144,9 +143,9 @@ public final class PeriodiserOgFastsettRefusjonTjeneste {
     }
 
     private static List<RefusjonSplittAndel> lagSplittAndeler(List<VurderRefusjonAndelBeregningsgrunnlagDto> andeler) {
-       return andeler.stream()
-               .map(andel -> new RefusjonSplittAndel(mapArbeidsgiver(andel), mapReferanse(andel), andel.getFastsattRefusjonFom(), mapÅrsbeløpRefusjon(andel)))
-               .collect(Collectors.toList());
+        return andeler.stream()
+                .map(andel -> new RefusjonSplittAndel(mapArbeidsgiver(andel), mapReferanse(andel), andel.getFastsattRefusjonFom(), mapÅrsbeløpRefusjon(andel)))
+                .collect(Collectors.toList());
     }
 
     private static BigDecimal mapÅrsbeløpRefusjon(VurderRefusjonAndelBeregningsgrunnlagDto andel) {
@@ -184,6 +183,21 @@ public final class PeriodiserOgFastsettRefusjonTjeneste {
             });
         });
 
+        validerIngenØkteKrav(nyttGrunnlag);
+
+    }
+
+    private static void validerIngenØkteKrav(BeregningsgrunnlagDto nyttGrunnlag) {
+        nyttGrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> {
+            p.getBeregningsgrunnlagPrStatusOgAndelList().forEach(a -> {
+                var refusjon = a.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getRefusjon);
+                if (refusjon.isPresent() && refusjon.get().getSaksbehandletRefusjonPrÅr() != null) {
+                    if (refusjon.get().getSaksbehandletRefusjonPrÅr().compareTo(refusjon.get().getRefusjonskravPrÅr()) > 0) {
+                        throw new IllegalStateException("Kan ikke øke refusjonskrav for andel " + a);
+                    }
+                }
+            });
+        });
     }
 
     private static List<BeregningsgrunnlagPrStatusOgAndelDto> finnAndelerPåDatoIGrunnlag(LocalDate dato, BeregningsgrunnlagDto grunnlag) {

@@ -127,6 +127,36 @@ class LagVurderRefusjonDtoTest {
     }
 
     @Test
+    public void skal_lage_dto_når_tilkommetIM_har_refusjonskrav_tidligere_utbetalt_refusjon_for_annet_orgnr() {
+        String internRef = UUID.randomUUID().toString();
+        String internRef2 = UUID.randomUUID().toString();
+        String orgnr = "999999999";
+        String orgnr2 = "999999991";
+        LocalDate refusjonFom = BG_PERIODE.getFomDato();
+        lagIAYGrunnlag();
+        byggBGAndel(Arbeidsgiver.virksomhet(orgnr2), internRef2);
+
+        byggRefusjonAndel(Arbeidsgiver.virksomhet(orgnr2), internRef2);
+        byggBGAndelOrginal(Arbeidsgiver.virksomhet(orgnr), internRef, 0, 500000);
+        ferdigstillInput();
+
+        Optional<RefusjonTilVurderingDto> resultat = LagVurderRefusjonDto.lagDto(andelMap, input);
+        assertThat(resultat).isPresent();
+        assertThat(resultat.get().getAndeler()).hasSize(1);
+        RefusjonAndelTilVurderingDto matchetAndel = resultat.get().getAndeler().stream()
+                .filter(a -> a.getArbeidsgiver().getArbeidsgiverOrgnr().equals(orgnr2)
+                        && Objects.equals(a.getInternArbeidsforholdRef(), internRef2))
+                .findFirst()
+                .orElse(null);
+        assertThat(matchetAndel).isNotNull();
+        assertThat(matchetAndel.getNyttRefusjonskravFom()).isEqualTo(refusjonFom);
+        assertThat(matchetAndel.getTidligsteMuligeRefusjonsdato()).isEqualTo(refusjonFom);
+
+        assertThat(matchetAndel.getTidligereUtbetalinger()).isEmpty();
+        assertThat(matchetAndel.getSkalKunneFastsetteDelvisRefusjon()).isTrue();
+    }
+
+    @Test
     public void skal_sette_tidligste_refusjonsdato_lik_avklaring_fra_fakta_om_beregnign() {
         String internRef = UUID.randomUUID().toString();
         String orgnr = "999999999";
@@ -239,7 +269,7 @@ class LagVurderRefusjonDtoTest {
         BeregningsgrunnlagGrunnlagDto byggetGrunnlag = grunnlag.build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON);
         input = new BeregningsgrunnlagGUIInput(koblingReferanse, iay, List.of(), new OpptjeningAktiviteterDto(), null)
                 .medBeregningsgrunnlagGrunnlag(byggetGrunnlag)
-                .medBeregningsgrunnlagGrunnlagFraForrigeBehandling(grunnlagOrginal);
+                .medBeregningsgrunnlagGrunnlagFraForrigeBehandling(List.of(grunnlagOrginal));
     }
 
     private void lagIAYGrunnlag() {
