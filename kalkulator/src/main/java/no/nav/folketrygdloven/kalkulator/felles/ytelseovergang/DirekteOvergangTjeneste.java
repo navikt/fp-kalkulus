@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulator.felles.ytelseovergang;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
@@ -54,7 +55,7 @@ public class DirekteOvergangTjeneste {
         return new YtelseFilterDto(iayGrunnlag.getAktørYtelseFraRegister())
                 .før(skjæringstidspunkt)
                 .filter(y -> YTELSER_FRA_KAP_8.contains(y.getYtelseType()))
-                .filter(y -> y.getPeriode().getTomDato().isAfter(skjæringstidspunkt.minusMonths(3).withDayOfMonth(1)));
+                .filter(y -> !y.getPeriode().getTomDato().isBefore(skjæringstidspunkt.minusMonths(3).withDayOfMonth(1)));
     }
 
     private static List<YtelseAnvistDto> finnSisteAnvisninger(YtelseFilterDto filter, LocalDate skjæringstidspunkt) {
@@ -114,6 +115,39 @@ public class DirekteOvergangTjeneste {
                 .toList();
         return new LocalDateTimeline<>(ytelserPrStatusOgArbeidsgiver, StandardCombinators::union).filterValue(v -> !v.isEmpty()).mapValue(TreeSet::new);
     }
+
+
+    /**
+     * Finner ut som det finnes ytelse av samme type som går kant-i-kant.
+     * <p>
+     * Slike tilfeller må vurderes manuelt fordi vi ikke klarer å skille mellom saker som gjelder andre barn/pleietrengende eller om det gjelder samme sak
+     *
+     * @param iayGrunnlag                    iay-grunnlag
+     * @param skjæringstidspunktForBeregning skjæringstidspunkt
+     * @param ytelseType                     Ytelsetype
+     * @return verdi som sier som det finnes ytelse kant i kant
+     */
+    public static boolean harSammeYtelseKantIKant(InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDate skjæringstidspunktForBeregning, FagsakYtelseType ytelseType) {
+        return getYtelseFilterKap8(iayGrunnlag, skjæringstidspunktForBeregning)
+                .filter(y -> y.getYtelseType().equals(ytelseType))
+                .getFiltrertYtelser()
+                .stream()
+                .anyMatch(it -> DirekteOvergangTjeneste.harAnvisningSomTilstøterSkjæringstidspunkt(it, skjæringstidspunktForBeregning));
+    }
+
+    private static boolean harAnvisningSomTilstøterSkjæringstidspunkt(YtelseDto ytelseDto, LocalDate skjæringstidspunktForBeregning) {
+        return ytelseDto.getYtelseAnvist().stream().anyMatch(ya -> tilstøter(ya.getAnvistPeriode(), skjæringstidspunktForBeregning));
+    }
+
+    private static boolean tilstøter(Intervall periode, LocalDate dato) {
+        if (periode.getTomDato().getDayOfWeek().equals(DayOfWeek.FRIDAY)) {
+            return periode.getTomDato().plusDays(1).equals(dato) || periode.getTomDato().plusDays(2).equals(dato) || periode.getTomDato().plusDays(3).equals(dato);
+        } else if (periode.getTomDato().getDayOfWeek().equals(DayOfWeek.SATURDAY)) {
+            return periode.getTomDato().plusDays(1).equals(dato) || periode.getTomDato().plusDays(2).equals(dato);
+        }
+        return periode.getTomDato().plusDays(1).equals(dato);
+    }
+
 
     private static LocalDateSegment<Set<DagsatsPrKategoriOgArbeidsgiver>> mapTilDirekteUtbetalingSegment(AnvistAndel a, Intervall anvistPeriode) {
         if (erDirekteutbetaling(a)) {

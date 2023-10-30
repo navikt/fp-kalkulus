@@ -10,6 +10,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
 import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
+import no.nav.folketrygdloven.kalkulator.felles.ytelseovergang.DirekteOvergangTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
@@ -36,7 +37,9 @@ public class KunYtelseTilfelleUtleder implements TilfelleUtleder {
             var harKunYtelse = KontrollerFaktaBeregningTjeneste.harAktivitetStatusKunYtelse(beregningsgrunnlag);
             var harForeldrepengerAvDagpenger = harForeldrepengerAvDagpenger(input, beregningsgrunnlag);
             var harIkkeAnvisteAndeler = harYtelseUtenAnvisteAndeler(input, beregningsgrunnlag);
-            return harKunYtelse && (harIkkeAnvisteAndeler || harForeldrepengerAvDagpenger) ? Optional.of(FaktaOmBeregningTilfelle.FASTSETT_BG_KUN_YTELSE) : Optional.empty();
+            var harPeriodeMedSammeYtelsetypeSomTilstøterStp = DirekteOvergangTjeneste.harSammeYtelseKantIKant(input.getIayGrunnlag(), input.getSkjæringstidspunktForBeregning(), input.getFagsakYtelseType());
+            return harKunYtelse && (harIkkeAnvisteAndeler || harForeldrepengerAvDagpenger || harPeriodeMedSammeYtelsetypeSomTilstøterStp) ?
+                    Optional.of(FaktaOmBeregningTilfelle.FASTSETT_BG_KUN_YTELSE) : Optional.empty();
         }
         return KontrollerFaktaBeregningTjeneste.harAktivitetStatusKunYtelse(beregningsgrunnlag) ?
                 Optional.of(FaktaOmBeregningTilfelle.FASTSETT_BG_KUN_YTELSE) : Optional.empty();
@@ -46,7 +49,7 @@ public class KunYtelseTilfelleUtleder implements TilfelleUtleder {
     private boolean harForeldrepengerAvDagpenger(FaktaOmBeregningInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
         return getYtelseFilterKap8(input, beregningsgrunnlag)
                 .filter(y -> y.getYtelseType().equals(FagsakYtelseType.FORELDREPENGER))
-                .getAlleYtelser()
+                .getFiltrertYtelser()
                 .stream()
                 .anyMatch(this::erBasertPåDagpenger);
     }
@@ -60,7 +63,7 @@ public class KunYtelseTilfelleUtleder implements TilfelleUtleder {
         return new YtelseFilterDto(input.getIayGrunnlag().getAktørYtelseFraRegister())
                 .før(beregningsgrunnlag.getSkjæringstidspunkt())
                 .filter(y -> !y.getYtelseType().equals(FagsakYtelseType.DAGPENGER) && !y.getYtelseType().equals(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER))
-                .filter(y -> y.getPeriode().getTomDato().isAfter(beregningsgrunnlag.getSkjæringstidspunkt().minusMonths(3).withDayOfMonth(1)));
+                .filter(y -> !y.getPeriode().getTomDato().isBefore(beregningsgrunnlag.getSkjæringstidspunkt().minusMonths(3).withDayOfMonth(1)));
     }
 
 
