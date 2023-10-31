@@ -97,6 +97,7 @@ public class FaktaOmBeregningAndelDtoTjeneste {
                 .ifPresent(dto::setArbeidsforhold);
         dto.setAndelsnr(andel.getAndelsnr());
         dto.setInntektskategori(andel.getGjeldendeInntektskategori());
+        dto.setAktivitetStatus(andel.getAktivitetStatus());
 
         // Privapersoner sender ikke inntektsmelding, disse må alltid fastsettes
         if (andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver).map(Arbeidsgiver::getErVirksomhet).orElse(false)) {
