@@ -10,7 +10,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.jboss.logging.MDC;
+
+import org.slf4j.MDC;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -275,7 +276,7 @@ public class OperereKalkulusOrkestrerer {
         @Override
         public KalkulusRespons utfør(BeregningsgrunnlagInput beregningsgrunnlagInput) {
             KalkulusRespons response;
-            MDC.put("prosess_koblingId", beregningsgrunnlagInput.getKoblingId());
+            MDC.put("prosess_koblingId", beregningsgrunnlagInput.getKoblingId().toString());
             response = beregningStegTjeneste.beregnFor(beregningSteg, (StegProsesseringInput) beregningsgrunnlagInput);
             MDC.remove("prosess_koblingId");
             return response;

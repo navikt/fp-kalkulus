@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.Dependent;
@@ -51,6 +52,11 @@ public class PdpRequestBuilderImpl implements PdpRequestBuilder {
 
     @Override
     public PdpRequest lagPdpRequest(AbacAttributtSamling attributter) {
+        var saksnr = attributter.getVerdier(StandardAbacAttributtType.SAKSNUMMER);
+        if (!saksnr.isEmpty()) {
+            MDC.put("prosess_saksnummer", saksnr.iterator().next().toString());
+        }
+
         PdpRequest pdpRequest = new PdpRequest();
         pdpRequest.put(PdpKlient.ENVIRONMENT_AUTH_TOKEN, attributter.getIdToken());
         pdpRequest.put(FellesAbacAttributter.XACML_1_0_ACTION_ACTION_ID, attributter.getActionType().getEksternKode());

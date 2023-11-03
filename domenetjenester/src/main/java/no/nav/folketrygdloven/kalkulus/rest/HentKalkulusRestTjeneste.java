@@ -4,15 +4,13 @@ import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessurs
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.READ;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.NavigableSet;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.jboss.logging.MDC;
+import org.slf4j.MDC;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -39,6 +37,7 @@ import no.nav.folketrygdloven.kalkulus.beregning.GUIBeregningsgrunnlagInputTjene
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
@@ -50,6 +49,9 @@ import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagDtoForGU
 import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagDtoListeForGUIRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagListeRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagRequest;
+import no.nav.folketrygdloven.kalkulus.request.v1.HentForSakRequest;
+import no.nav.folketrygdloven.kalkulus.response.v1.AktiveReferanser;
+import no.nav.folketrygdloven.kalkulus.response.v1.EksternReferanseDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.BeregningsgrunnlagPrReferanse;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto;
@@ -163,9 +165,6 @@ public class HentKalkulusRestTjeneste {
     @Path("/beregningsgrunnlagListe")
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response hentBeregningsgrunnlagDtoListe(@NotNull @Valid HentBeregningsgrunnlagDtoListeForGUIRequestAbacDto spesifikasjon) {
-        if (spesifikasjon.getSaksnummer() != null) {
-            MDC.put("prosess_saksnummer", spesifikasjon.getSaksnummer());
-        }
         List<HentBeregningsgrunnlagDtoForGUIRequest> spesifikasjoner = spesifikasjon.getRequestPrReferanse();
         if (spesifikasjon.getKalkulatorInputPerKoblingReferanse() != null) {
             var ytelseTyper = spesifikasjoner.stream().map(HentBeregningsgrunnlagDtoForGUIRequest::getYtelseSomSkalBeregnes).collect(Collectors.toSet());
@@ -186,6 +185,27 @@ public class HentKalkulusRestTjeneste {
                 .collect(Collectors.toList());
         return Response.ok(new BeregningsgrunnlagListe(dtoPrReferanse)).build();
     }
+
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(description = "Henter aktive referanser", summary = ("Henter aktive referanser for sak"), tags = "beregningsgrunnlag")
+    @BeskyttetRessurs(action = READ, property = FAGSAK)
+    @Path("/aktive-referanser")
+    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
+    public Response hentAktiveReferanser(@NotNull @Valid HentForSakRequestAbacDto spesifikasjon) {
+        var koblinger = koblingTjeneste.hentKoblingerForSak(new Saksnummer(spesifikasjon.getSaksnummer()));
+
+        var koblingIderMedAktiveGrunnlag = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet()))
+                .stream().filter(BeregningsgrunnlagGrunnlagEntitet::erAktivt)
+                .map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId)
+                .collect(Collectors.toSet());
+        return Response.ok(new AktiveReferanser(koblinger.stream()
+                .filter(k -> koblingIderMedAktiveGrunnlag.contains(k.getId()))
+                .map(KoblingEntitet::getKoblingReferanse).map(KoblingReferanse::getReferanse)
+                .map(EksternReferanseDto::new).toList())).build();
+    }
+
 
     /**
      * @deprecated fjernes når frisinn ikke er mer.
@@ -218,25 +238,6 @@ public class HentKalkulusRestTjeneste {
         return response;
     }
 
-    private List<BeregningsgrunnlagGrunnlagEntitet> hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(List<KoblingEntitet> koblinger) {
-        if (koblinger.isEmpty()) {
-            return Collections.emptyList();
-        }
-        var saksnummer = koblinger.stream().map(KoblingEntitet::getSaksnummer).collect(Collectors.toSet());
-        if (saksnummer.size() != 1) {
-            throw new IllegalArgumentException("Angitte koblinger må tilhøre samme saksnummer. Fikk: " + saksnummer);
-        }
-
-        var saksnummer1 = saksnummer.iterator().next();
-        MDC.put("prosess_saksnummer", saksnummer1.getVerdi());
-
-        var koblingerMedKalkulatorInput = hentKoblingerMedKalkulatorInput(koblinger);
-        if (koblingerMedKalkulatorInput.isEmpty()) {
-            return Collections.emptyList();
-        }
-        List<Long> koblingIder = koblingerMedKalkulatorInput.stream().map(KoblingEntitet::getId).collect(Collectors.toList());
-        return beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingIder);
-    }
 
     private Map<UUID, BeregningsgrunnlagDto> hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(Map<Long, BeregningsgrunnlagGUIInput> inputPrKobling, List<HentBeregningsgrunnlagDtoForGUIRequest> spesifikasjoner) {
         return inputPrKobling.values()
@@ -279,18 +280,6 @@ public class HentKalkulusRestTjeneste {
         return koblingId.map(id -> beregningsgrunnlagRepository.hvisEksistererKalkulatorInput(id)).orElse(false);
     }
 
-    /**
-     * returner de av angitte koblinger som har kalkulatorinput.
-     */
-    private List<KoblingEntitet> hentKoblingerMedKalkulatorInput(List<KoblingEntitet> koblinger) {
-        var koblingIder = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
-        NavigableSet<Long> koblingIderMedKalkulatorInput = beregningsgrunnlagRepository.hvisEksistererKalkulatorInput(koblingIder);
-
-        return koblinger.stream()
-                .filter(k -> koblingIderMedKalkulatorInput.contains(k.getId()))
-                .collect(Collectors.toList());
-
-    }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -310,6 +299,7 @@ public class HentKalkulusRestTjeneste {
         }
     }
 
+
     @Deprecated(forRemoval = true, since = "1.0")
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -323,6 +313,24 @@ public class HentKalkulusRestTjeneste {
             return abacDataAttributter;
         }
     }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
+    public static class HentForSakRequestAbacDto extends HentForSakRequest implements no.nav.k9.felles.sikkerhet.abac.AbacDto {
+
+        public HentForSakRequestAbacDto() {
+            // For Json deserialisering
+        }
+
+        @Override
+        public AbacDataAttributter abacAttributter() {
+            final var abacDataAttributter = AbacDataAttributter.opprett();
+            abacDataAttributter.leggTil(StandardAbacAttributtType.SAKSNUMMER, getSaksnummer());
+            return abacDataAttributter;
+        }
+    }
+
 
     /**
      * Json bean med Abac.
