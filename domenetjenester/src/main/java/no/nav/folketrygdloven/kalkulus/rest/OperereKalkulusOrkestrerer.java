@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-
 import org.slf4j.MDC;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -261,7 +260,10 @@ public class OperereKalkulusOrkestrerer {
 
         @Override
         public KalkulusRespons utfør(BeregningsgrunnlagInput beregningsgrunnlagInput) {
-            return håndtererApplikasjonTjeneste.håndter((HåndterBeregningsgrunnlagInput) beregningsgrunnlagInput, håndteringDtoMap.get(beregningsgrunnlagInput.getKoblingId()));
+            MDC.put("prosess_koblingId", beregningsgrunnlagInput.getKoblingId().toString());
+            var response = håndtererApplikasjonTjeneste.håndter((HåndterBeregningsgrunnlagInput) beregningsgrunnlagInput, håndteringDtoMap.get(beregningsgrunnlagInput.getKoblingId()));
+            MDC.remove("prosess_koblingId");
+            return response;
         }
     }
 
