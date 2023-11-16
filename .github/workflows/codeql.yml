@@ -12,4 +12,6 @@ jobs:
       actions: read
     name: CodeQL
     uses: navikt/fp-gha-workflows/.github/workflows/codeql.yml@f7528b272a7cca0316ceff37d02780bb32d61a66
+    with:
+      java-version: 17
     secrets: inherit
