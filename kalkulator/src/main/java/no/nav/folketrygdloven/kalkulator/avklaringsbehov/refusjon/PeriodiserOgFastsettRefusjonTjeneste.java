@@ -191,7 +191,7 @@ public final class PeriodiserOgFastsettRefusjonTjeneste {
         nyttGrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> {
             p.getBeregningsgrunnlagPrStatusOgAndelList().forEach(a -> {
                 var refusjon = a.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getRefusjon);
-                if (refusjon.isPresent() && refusjon.get().getSaksbehandletRefusjonPrÅr() != null) {
+                if (refusjon.isPresent() && refusjon.get().getSaksbehandletRefusjonPrÅr() != null && refusjon.get().getRefusjonskravPrÅr() != null) {
                     if (refusjon.get().getSaksbehandletRefusjonPrÅr().compareTo(refusjon.get().getRefusjonskravPrÅr()) > 0) {
                         throw new IllegalStateException("Kan ikke øke refusjonskrav for andel " + a);
                     }
