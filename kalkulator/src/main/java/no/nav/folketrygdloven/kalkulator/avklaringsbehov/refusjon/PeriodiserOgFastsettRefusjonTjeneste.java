@@ -65,6 +65,8 @@ public final class PeriodiserOgFastsettRefusjonTjeneste {
         BeregningsgrunnlagDto nyttGrunnlag = BeregningsgrunnlagDto.builder(periodisertBeregningsgrunnlag).build();
         nyttGrunnlag.getBeregningsgrunnlagPerioder()
                 .forEach(eksisterendePeriode -> eksisterendePeriode.getBeregningsgrunnlagPrStatusOgAndelList()
+                        .stream()
+                        .filter(PeriodiserOgFastsettRefusjonTjeneste::harInnvilgetRefusjonskrav)
                         .forEach(eksisterendeAndel -> {
                             Optional<RefusjonSplittAndel> matchetSplittAndel = finnFastsattAndelForBGAndel(eksisterendeAndel, splittAndeler);
                             // Hvis saksbehandlet andel er tom er ikke andelens refusjon vurdert og den skal ha refusjon fra start
@@ -74,6 +76,13 @@ public final class PeriodiserOgFastsettRefusjonTjeneste {
                             }
                         }));
         return nyttGrunnlag;
+    }
+
+    private static boolean harInnvilgetRefusjonskrav(BeregningsgrunnlagPrStatusOgAndelDto a) {
+        return a.getBgAndelArbeidsforhold().isPresent() &&
+                a.getBgAndelArbeidsforhold().get().getRefusjon().isPresent() &&
+                a.getBgAndelArbeidsforhold().get().getRefusjon().get().getInnvilgetRefusjonskravPrÅr() != null &&
+                a.getBgAndelArbeidsforhold().get().getRefusjon().get().getInnvilgetRefusjonskravPrÅr().compareTo(BigDecimal.ZERO) > 0;
     }
 
     private static boolean refusjonSkalEndres(BeregningsgrunnlagPeriodeDto eksisterendePeriode, LocalDate startdatoRefusjon) {
