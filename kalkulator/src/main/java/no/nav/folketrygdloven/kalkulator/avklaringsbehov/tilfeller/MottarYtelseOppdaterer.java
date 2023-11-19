@@ -1,15 +1,10 @@
 package no.nav.folketrygdloven.kalkulator.avklaringsbehov.tilfeller;
 
 import java.util.List;
-import java.util.Optional;
 
-import jakarta.enterprise.context.ApplicationScoped;
-
-import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.ArbeidstakerandelUtenIMMottarYtelseDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FaktaBeregningLagreDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.MottarYtelseDto;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
@@ -18,17 +13,13 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregat
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
 
-@ApplicationScoped
-@FaktaOmBeregningTilfelleRef("VURDER_MOTTAR_YTELSE")
-public class MottarYtelseOppdaterer implements FaktaOmBeregningTilfelleOppdaterer {
+public class MottarYtelseOppdaterer {
 
-    MottarYtelseOppdaterer() {
-        // For CDI
+    private MottarYtelseOppdaterer() {
     }
 
-    @Override
-    public void oppdater(FaktaBeregningLagreDto dto,
-                         Optional<BeregningsgrunnlagDto> forrigeBg, BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder) {
+    public static void oppdater(FaktaBeregningLagreDto dto,
+                                BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder) {
         MottarYtelseDto mottarYtelseDto = dto.getMottarYtelse();
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlagBuilder.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag();
         var andelListe = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList();
@@ -41,13 +32,13 @@ public class MottarYtelseOppdaterer implements FaktaOmBeregningTilfelleOppdatere
         grunnlagBuilder.medFaktaAggregat(faktaBuilder.build());
     }
 
-    private void settMottarYtelseForFrilans(MottarYtelseDto mottarYtelseDto, FaktaAggregatDto.Builder faktaBuilder) {
+    private static void settMottarYtelseForFrilans(MottarYtelseDto mottarYtelseDto, FaktaAggregatDto.Builder faktaBuilder) {
         FaktaAktørDto.Builder faktaAktørBuilder = faktaBuilder.getFaktaAktørBuilder();
         faktaAktørBuilder.medHarFLMottattYtelseFastsattAvSaksbehandler(mottarYtelseDto.getFrilansMottarYtelse());
         faktaBuilder.medFaktaAktør(faktaAktørBuilder.build());
     }
 
-    private void settMottarYtelseForArbeid(List<BeregningsgrunnlagPrStatusOgAndelDto> andelListe, FaktaAggregatDto.Builder faktaBuilder, ArbeidstakerandelUtenIMMottarYtelseDto arbMottarYtelse) {
+    private static void settMottarYtelseForArbeid(List<BeregningsgrunnlagPrStatusOgAndelDto> andelListe, FaktaAggregatDto.Builder faktaBuilder, ArbeidstakerandelUtenIMMottarYtelseDto arbMottarYtelse) {
         andelListe.stream()
                 .filter(a -> a.getAndelsnr().equals(arbMottarYtelse.getAndelsnr()))
                 .findFirst()
@@ -55,7 +46,7 @@ public class MottarYtelseOppdaterer implements FaktaOmBeregningTilfelleOppdatere
                 .ifPresent(arb -> settMottarYtelseForArbeidsforhold(faktaBuilder, arbMottarYtelse, arb));
     }
 
-    private void settMottarYtelseForArbeidsforhold(FaktaAggregatDto.Builder faktaBuilder, ArbeidstakerandelUtenIMMottarYtelseDto arbMottarYtelse, BGAndelArbeidsforholdDto arb) {
+    private static void settMottarYtelseForArbeidsforhold(FaktaAggregatDto.Builder faktaBuilder, ArbeidstakerandelUtenIMMottarYtelseDto arbMottarYtelse, BGAndelArbeidsforholdDto arb) {
         FaktaArbeidsforholdDto.Builder faktaArbBuilder = faktaBuilder.getFaktaArbeidsforholdBuilderFor(arb.getArbeidsgiver(), arb.getArbeidsforholdRef())
                 .medHarMottattYtelseFastsattAvSaksbehandler(arbMottarYtelse.getMottarYtelse());
         faktaBuilder.erstattEksisterendeEllerLeggTil(faktaArbBuilder.build());

@@ -41,7 +41,6 @@ public class FastsettBgKunYtelseOppdatererTest {
     private final Beløp GRUNNBELØP = new Beløp(600000);
 
 
-    private FastsettBgKunYtelseOppdaterer fastsettBgKunYtelseOppdaterer = new FastsettBgKunYtelseOppdaterer();
     private AktivitetStatus brukers_andel = BRUKERS_ANDEL;
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
@@ -76,7 +75,7 @@ public class FastsettBgKunYtelseOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        fastsettBgKunYtelseOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        FastsettBgKunYtelseOppdaterer.oppdater(dto, Optional.empty(), oppdatere);
 
         // Assert
         assertThat(beregningsgrunnlag.getBeregningsgrunnlagPerioder()).hasSize(1);
@@ -102,7 +101,7 @@ public class FastsettBgKunYtelseOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        fastsettBgKunYtelseOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        FastsettBgKunYtelseOppdaterer.oppdater(dto, Optional.empty(), oppdatere);
 
         // Assert
         assertThat(beregningsgrunnlag.getBeregningsgrunnlagPerioder()).hasSize(1);
@@ -129,7 +128,7 @@ public class FastsettBgKunYtelseOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        fastsettBgKunYtelseOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        FastsettBgKunYtelseOppdaterer.oppdater(dto, Optional.empty(), oppdatere);
 
         // Assert
         assertThat(beregningsgrunnlag.getBeregningsgrunnlagPerioder()).hasSize(1);
@@ -159,7 +158,7 @@ public class FastsettBgKunYtelseOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        fastsettBgKunYtelseOppdaterer.oppdater(dto, Optional.of(eksisterendeGrunnlag), input, oppdatere);
+        FastsettBgKunYtelseOppdaterer.oppdater(dto, Optional.of(eksisterendeGrunnlag), oppdatere);
 
         // Assert
         assertThat(beregningsgrunnlag.getBeregningsgrunnlagPerioder()).hasSize(1);
@@ -184,7 +183,7 @@ public class FastsettBgKunYtelseOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        fastsettBgKunYtelseOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        FastsettBgKunYtelseOppdaterer.oppdater(dto, Optional.empty(), oppdatere);
 
         // Assert
         assertThat(beregningsgrunnlag.getBeregningsgrunnlagPerioder()).hasSize(1);
@@ -222,7 +221,7 @@ public class FastsettBgKunYtelseOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        fastsettBgKunYtelseOppdaterer.oppdater(dto, Optional.of(førsteGrunnlag), input, oppdatere);
+        FastsettBgKunYtelseOppdaterer.oppdater(dto, Optional.of(førsteGrunnlag), oppdatere);
 
         // Assert
         assertThat(beregningsgrunnlag.getBeregningsgrunnlagPerioder()).hasSize(1);
@@ -271,7 +270,7 @@ public class FastsettBgKunYtelseOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        fastsettBgKunYtelseOppdaterer.oppdater(dto, Optional.of(førsteGrunnlag), input, oppdatere);
+        FastsettBgKunYtelseOppdaterer.oppdater(dto, Optional.of(førsteGrunnlag), oppdatere);
 
         // Assert
         assertThat(beregningsgrunnlag.getBeregningsgrunnlagPerioder()).hasSize(1);

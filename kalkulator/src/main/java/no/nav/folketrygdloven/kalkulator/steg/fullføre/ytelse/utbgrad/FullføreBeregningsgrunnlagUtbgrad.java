@@ -6,7 +6,6 @@ import java.util.List;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.Beregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.BeregningsgrunnlagPeriode;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.fastsett.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.steg.fullføre.FullføreBeregningsgrunnlag;
 import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
@@ -14,11 +13,7 @@ import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
 public abstract class FullføreBeregningsgrunnlagUtbgrad extends FullføreBeregningsgrunnlag {
 
     public FullføreBeregningsgrunnlagUtbgrad() {
-        // CDI
-    }
-
-    public FullføreBeregningsgrunnlagUtbgrad(MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel) {
-        super(mapBeregningsgrunnlagFraVLTilRegel);
+        super();
     }
 
     @Override

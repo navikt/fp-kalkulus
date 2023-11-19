@@ -5,8 +5,6 @@ import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.Lønnsendri
 import java.util.Collection;
 import java.util.Optional;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FaktaBeregningLagreDto;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -15,12 +13,12 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
 
-@ApplicationScoped
-@FaktaOmBeregningTilfelleRef("VURDER_LØNNSENDRING")
-public class VurderLønnsendringOppdaterer implements FaktaOmBeregningTilfelleOppdaterer {
+public class VurderLønnsendringOppdaterer {
 
-    @Override
-    public void oppdater(FaktaBeregningLagreDto dto, Optional<BeregningsgrunnlagDto> forrigeBg, BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder) {
+    private VurderLønnsendringOppdaterer() {
+    }
+
+    public static void oppdater(FaktaBeregningLagreDto dto, Optional<BeregningsgrunnlagDto> forrigeBg, BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder) {
         var lønnsendringDto = dto.getVurdertLonnsendring();
         var beregningsgrunnlag = input.getBeregningsgrunnlag();
         var arbeidstakerAndeler = grunnlagBuilder.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().stream()

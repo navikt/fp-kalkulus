@@ -86,7 +86,7 @@ public class FastsettBesteberegningFødendeKvinneOppdatererTest {
 
         // Act);
         BeregningsgrunnlagGrunnlagDtoBuilder builder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        fastsettBesteberegningFødendeKvinneOppdaterer.oppdater(dto, Optional.empty(), input, builder);
+        fastsettBesteberegningFødendeKvinneOppdaterer.oppdater(dto, Optional.empty(), builder);
 
         // Assert
         assertThat(dagpengeAndel.getBesteberegningPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(dagpengerBeregnet*12));
@@ -112,7 +112,7 @@ public class FastsettBesteberegningFødendeKvinneOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder builder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        fastsettBesteberegningFødendeKvinneOppdaterer.oppdater(dto, Optional.empty(), input, builder);
+        fastsettBesteberegningFødendeKvinneOppdaterer.oppdater(dto, Optional.empty(), builder);
 
         // Assert
         BeregningsgrunnlagPrStatusOgAndelDto dpAndel = bg.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
@@ -149,7 +149,7 @@ public class FastsettBesteberegningFødendeKvinneOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder builder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        fastsettBesteberegningFødendeKvinneOppdaterer.oppdater(dto, Optional.of(beregningsgrunnlag), input, builder);
+        fastsettBesteberegningFødendeKvinneOppdaterer.oppdater(dto, Optional.of(beregningsgrunnlag), builder);
 
         // Assert
         BeregningsgrunnlagPrStatusOgAndelDto dpAndel = nyttBg.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(andel -> andel.erLagtTilAvSaksbehandler())

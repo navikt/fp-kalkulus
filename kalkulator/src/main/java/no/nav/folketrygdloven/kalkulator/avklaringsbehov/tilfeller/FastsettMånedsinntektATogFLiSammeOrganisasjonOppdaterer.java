@@ -1,25 +1,20 @@
 package no.nav.folketrygdloven.kalkulator.avklaringsbehov.tilfeller;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
-import jakarta.enterprise.context.ApplicationScoped;
-
-import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FaktaBeregningLagreDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.VurderATogFLiSammeOrganisasjonAndelDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.VurderATogFLiSammeOrganisasjonDto;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 
-@ApplicationScoped
-@FaktaOmBeregningTilfelleRef("VURDER_AT_OG_FL_I_SAMME_ORGANISASJON")
-class FastsettMånedsinntektATogFLiSammeOrganisasjonOppdaterer implements FaktaOmBeregningTilfelleOppdaterer {
+class FastsettMånedsinntektATogFLiSammeOrganisasjonOppdaterer {
 
-    @Override
-    public void oppdater(FaktaBeregningLagreDto dto, Optional<BeregningsgrunnlagDto> forrigeBg, BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder) {
+    private FastsettMånedsinntektATogFLiSammeOrganisasjonOppdaterer() {
+    }
+
+    public static void oppdater(FaktaBeregningLagreDto dto, BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder) {
         VurderATogFLiSammeOrganisasjonDto vurderATFLISammeOrgDto = dto.getVurderATogFLiSammeOrganisasjon();
         vurderATFLISammeOrgDto.getVurderATogFLiSammeOrganisasjonAndelListe().forEach(dtoAndel ->
         {
@@ -36,7 +31,7 @@ class FastsettMånedsinntektATogFLiSammeOrganisasjonOppdaterer implements FaktaO
         });
     }
 
-    private BeregningsgrunnlagPrStatusOgAndelDto finnAndelIFørstePeriode(BeregningsgrunnlagDto nyttBeregningsgrunnlag, VurderATogFLiSammeOrganisasjonAndelDto dtoAndel) {
+    private static BeregningsgrunnlagPrStatusOgAndelDto finnAndelIFørstePeriode(BeregningsgrunnlagDto nyttBeregningsgrunnlag, VurderATogFLiSammeOrganisasjonAndelDto dtoAndel) {
         return nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0)
                     .getBeregningsgrunnlagPrStatusOgAndelList().stream()
                     .filter(bpsa -> bpsa.getAndelsnr().equals(dtoAndel.getAndelsnr()))

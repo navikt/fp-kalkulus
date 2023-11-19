@@ -3,24 +3,16 @@ package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.frisinn;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.FrisinnGrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.FrisinnPeriode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.YtelsesSpesifiktGrunnlag;
-import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.fastsett.YtelsesspesifikkRegelMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
-@ApplicationScoped
-@FagsakYtelseTypeRef(FagsakYtelseType.FRISINN)
-public class FrisinnGrunnlagMapperFastsett implements YtelsesspesifikkRegelMapper {
+public class FrisinnGrunnlagMapperFastsett {
 
-    @Override
-    public YtelsesSpesifiktGrunnlag map(BeregningsgrunnlagDto beregningsgrunnlagDto, BeregningsgrunnlagInput input) {
+    public YtelsesSpesifiktGrunnlag map(BeregningsgrunnlagInput input) {
         if (!(input.getYtelsespesifiktGrunnlag() instanceof no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag)) {
             throw new IllegalStateException("Mangler frisinngrunnlag for frisinnberegning");
         }

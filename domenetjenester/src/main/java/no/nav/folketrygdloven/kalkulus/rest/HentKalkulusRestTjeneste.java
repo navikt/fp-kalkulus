@@ -31,7 +31,8 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoTjeneste;
+import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagGuiTjeneste;
+import no.nav.folketrygdloven.kalkulator.guitjenester.KalkulatorGuiInterface;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulus.beregning.GUIBeregningsgrunnlagInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
@@ -73,7 +74,7 @@ public class HentKalkulusRestTjeneste {
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private KalkulatorInputTjeneste kalkulatorInputTjeneste;
     private GUIBeregningsgrunnlagInputTjeneste guiInputTjeneste;
-    private BeregningsgrunnlagDtoTjeneste beregningsgrunnlagDtoTjeneste;
+    private final KalkulatorGuiInterface dtoTjeneste = new BeregningsgrunnlagGuiTjeneste();
     private ForlengelseTjeneste forlengelseTjeneste;
 
     public HentKalkulusRestTjeneste() {
@@ -85,12 +86,11 @@ public class HentKalkulusRestTjeneste {
                                     BeregningsgrunnlagRepository beregningsgrunnlagRepository,
                                     KalkulatorInputTjeneste kalkulatorInputTjeneste,
                                     GUIBeregningsgrunnlagInputTjeneste guiInputTjeneste,
-                                    BeregningsgrunnlagDtoTjeneste beregningsgrunnlagDtoTjeneste, ForlengelseTjeneste forlengelseTjeneste) {
+                                    ForlengelseTjeneste forlengelseTjeneste) {
         this.koblingTjeneste = koblingTjeneste;
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
         this.guiInputTjeneste = guiInputTjeneste;
-        this.beregningsgrunnlagDtoTjeneste = beregningsgrunnlagDtoTjeneste;
         this.forlengelseTjeneste = forlengelseTjeneste;
     }
 
@@ -271,7 +271,7 @@ public class HentKalkulusRestTjeneste {
         var spesifikasjon = spesifikasjoner.stream().filter(s -> s.getKoblingReferanse().equals(input.getKoblingReferanse().getKoblingUuid()))
                 .findFirst().orElseThrow(() -> new IllegalStateException("Ingen match blant koblinger"));
         input.oppdaterArbeidsgiverinformasjon(MapIAYTilKalulator.mapArbeidsgiverReferanser(spesifikasjon.getReferanser()));
-        BeregningsgrunnlagDto beregningsgrunnlagDto = beregningsgrunnlagDtoTjeneste.lagBeregningsgrunnlagDto(input);
+        BeregningsgrunnlagDto beregningsgrunnlagDto = dtoTjeneste.lagBeregningsgrunnlagDto(input);
         beregningsgrunnlagDto.setVilkårsperiodeFom(spesifikasjon.getVilkårsperiodeFom());
         return beregningsgrunnlagDto;
     }

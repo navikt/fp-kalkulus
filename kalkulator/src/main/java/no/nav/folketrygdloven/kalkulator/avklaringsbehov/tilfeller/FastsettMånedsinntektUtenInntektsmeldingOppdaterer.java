@@ -5,27 +5,24 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.FastsettFaktaOmBeregningVerdierTjeneste;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FaktaBeregningLagreDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FastsatteVerdierDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FastsettMånedsinntektUtenInntektsmeldingAndelDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FastsettMånedsinntektUtenInntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.RedigerbarAndelFaktaOmBeregningDto;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 
-@ApplicationScoped
-@FaktaOmBeregningTilfelleRef("FASTSETT_MÅNEDSLØNN_ARBEIDSTAKER_UTEN_INNTEKTSMELDING")
-public class FastsettMånedsinntektUtenInntektsmeldingOppdaterer implements FaktaOmBeregningTilfelleOppdaterer {
+public class FastsettMånedsinntektUtenInntektsmeldingOppdaterer {
 
-    @Override
-    public void oppdater(FaktaBeregningLagreDto dto,
-                         Optional<BeregningsgrunnlagDto> forrigeBg, BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder) {
+    private FastsettMånedsinntektUtenInntektsmeldingOppdaterer() {
+    }
+
+    public static void oppdater(FaktaBeregningLagreDto dto,
+                                Optional<BeregningsgrunnlagDto> forrigeBg, BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder) {
         FastsettMånedsinntektUtenInntektsmeldingDto fastsettMånedsinntektDto = dto.getFastsattUtenInntektsmelding();
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlagBuilder.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag();
         List<BeregningsgrunnlagPrStatusOgAndelDto> arbeidstakerAndeleriFørstePeriode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0)
@@ -36,7 +33,7 @@ public class FastsettMånedsinntektUtenInntektsmeldingOppdaterer implements Fakt
         settInntektForAllePerioder(beregningsgrunnlag, forrigeBg, arbeidstakerAndeleriFørstePeriode, andelListe);
     }
 
-    private void settInntektForAllePerioder(BeregningsgrunnlagDto nyttBeregningsgrunnlag,
+    private static void settInntektForAllePerioder(BeregningsgrunnlagDto nyttBeregningsgrunnlag,
                                             Optional<BeregningsgrunnlagDto> forrigeBg,
                                             List<BeregningsgrunnlagPrStatusOgAndelDto> arbeidstakerAndeleriFørstePeriode,
                                             List<FastsettMånedsinntektUtenInntektsmeldingAndelDto> andelListe) {
@@ -53,27 +50,27 @@ public class FastsettMånedsinntektUtenInntektsmeldingOppdaterer implements Fakt
         }
     }
 
-    private FastsatteVerdierDto mapTilFastsatteVerdier(FastsettMånedsinntektUtenInntektsmeldingAndelDto dtoAndel) {
+    private static FastsatteVerdierDto mapTilFastsatteVerdier(FastsettMånedsinntektUtenInntektsmeldingAndelDto dtoAndel) {
         return FastsatteVerdierDto.Builder.ny().medFastsattBeløpPrMnd(dtoAndel.getFastsattBeløp()).medInntektskategori(dtoAndel.getInntektskategori()).build();
     }
 
-    private RedigerbarAndelFaktaOmBeregningDto lagRedigerbarAndel(BeregningsgrunnlagPrStatusOgAndelDto andelForArbeidsforhold) {
+    private static RedigerbarAndelFaktaOmBeregningDto lagRedigerbarAndel(BeregningsgrunnlagPrStatusOgAndelDto andelForArbeidsforhold) {
         return new RedigerbarAndelFaktaOmBeregningDto(false, andelForArbeidsforhold.getAndelsnr(), false);
     }
 
-    private Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnAndelIPeriode(BeregningsgrunnlagPrStatusOgAndelDto beregningsgrunnlagAndel, BeregningsgrunnlagPeriodeDto periode) {
+    private static Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnAndelIPeriode(BeregningsgrunnlagPrStatusOgAndelDto beregningsgrunnlagAndel, BeregningsgrunnlagPeriodeDto periode) {
         return periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(andel -> Objects.equals(andel.getArbeidsforholdRef(), beregningsgrunnlagAndel.getArbeidsforholdRef())
                         && Objects.equals(andel.getArbeidsgiver(), beregningsgrunnlagAndel.getArbeidsgiver())).findFirst();
     }
 
-    private Optional<BeregningsgrunnlagPeriodeDto> finnForrigePeriode(Optional<BeregningsgrunnlagDto> forrigeBg, BeregningsgrunnlagPeriodeDto periode) {
+    private static Optional<BeregningsgrunnlagPeriodeDto> finnForrigePeriode(Optional<BeregningsgrunnlagDto> forrigeBg, BeregningsgrunnlagPeriodeDto periode) {
         return forrigeBg.stream()
                 .flatMap(bg -> bg.getBeregningsgrunnlagPerioder().stream())
                 .filter(p -> periode.getPeriode().inkluderer(p.getPeriode().getFomDato())).findFirst();
     }
 
-    private BeregningsgrunnlagPrStatusOgAndelDto finnKorrektAndel(List<BeregningsgrunnlagPrStatusOgAndelDto> arbeidstakerAndeler, FastsettMånedsinntektUtenInntektsmeldingAndelDto dtoAndel) {
+    private static BeregningsgrunnlagPrStatusOgAndelDto finnKorrektAndel(List<BeregningsgrunnlagPrStatusOgAndelDto> arbeidstakerAndeler, FastsettMånedsinntektUtenInntektsmeldingAndelDto dtoAndel) {
         return arbeidstakerAndeler.stream()
                 .filter(bgAndel -> dtoAndel.getAndelsnr().equals(bgAndel.getAndelsnr()))
                 .findFirst()

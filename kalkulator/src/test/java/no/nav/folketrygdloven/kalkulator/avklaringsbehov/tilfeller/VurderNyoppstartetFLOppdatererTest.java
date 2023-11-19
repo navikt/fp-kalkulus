@@ -34,7 +34,6 @@ public class VurderNyoppstartetFLOppdatererTest {
     private final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
     private final Beløp GRUNNBELØP = new Beløp(600000);
 
-    private VurderNyoppstartetFLOppdaterer vurderNyoppstartetFLOppdaterer;
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
     private BeregningsgrunnlagInput input;
@@ -42,7 +41,6 @@ public class VurderNyoppstartetFLOppdatererTest {
 
     @BeforeEach
     public void setup() {
-        vurderNyoppstartetFLOppdaterer = new VurderNyoppstartetFLOppdaterer();
         beregningsgrunnlag = BeregningsgrunnlagDto.builder()
             .medGrunnbeløp(GRUNNBELØP)
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
@@ -71,7 +69,7 @@ public class VurderNyoppstartetFLOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        vurderNyoppstartetFLOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        VurderNyoppstartetFLOppdaterer.oppdater(dto, oppdatere);
         Optional<FaktaAggregatDto> faktaAggregat = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT).getFaktaAggregat();
 
         // Assert
@@ -87,7 +85,7 @@ public class VurderNyoppstartetFLOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        vurderNyoppstartetFLOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        VurderNyoppstartetFLOppdaterer.oppdater(dto, oppdatere);
         Optional<FaktaAggregatDto> faktaAggregat = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT).getFaktaAggregat();
 
         // Assert

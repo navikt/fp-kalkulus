@@ -5,36 +5,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.Beregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.BeregningsgrunnlagPeriode;
-import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.fastsett.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.output.BeregningVilkårResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.steg.fullføre.ytelse.utbgrad.FullføreBeregningsgrunnlagUtbgrad;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
 
-@FagsakYtelseTypeRef(FagsakYtelseType.FRISINN)
-@ApplicationScoped
 public class FullføreBeregningsgrunnlagFRISINN extends FullføreBeregningsgrunnlagUtbgrad {
 
-    private VurderBeregningsgrunnlagTjenesteFRISINN vurderBeregningsgrunnlagTjeneste;
+    private final VurderBeregningsgrunnlagTjenesteFRISINN vurderBeregningsgrunnlagTjeneste = new VurderBeregningsgrunnlagTjenesteFRISINN();
 
     public FullføreBeregningsgrunnlagFRISINN() {
-        // CDI
-    }
-
-    @Inject
-    public FullføreBeregningsgrunnlagFRISINN(MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel,
-                                             @FagsakYtelseTypeRef(FagsakYtelseType.FRISINN) VurderBeregningsgrunnlagTjenesteFRISINN vurderBeregningsgrunnlagTjeneste) {
-        super(mapBeregningsgrunnlagFraVLTilRegel);
-        this.vurderBeregningsgrunnlagTjeneste = vurderBeregningsgrunnlagTjeneste;
+        super();
     }
 
     @Override

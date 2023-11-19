@@ -11,16 +11,14 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Any;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
-import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.BeregningsgrunnlagPrStatusOgAndelDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.inntektsgrunnlag.InntektsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.refusjon.VurderRefusjonDtoTjeneste;
-import no.nav.folketrygdloven.kalkulator.guitjenester.ytelsegrunnlag.YtelsespesifiktGrunnlagTjeneste;
+import no.nav.folketrygdloven.kalkulator.guitjenester.ytelsegrunnlag.YtelsespesifiktGrunnlagTjenesteFP;
+import no.nav.folketrygdloven.kalkulator.guitjenester.ytelsegrunnlag.YtelsespesifiktGrunnlagTjenesteFRISINN;
+import no.nav.folketrygdloven.kalkulator.guitjenester.ytelsegrunnlag.YtelsespesifiktGrunnlagTjenesteOMP;
+import no.nav.folketrygdloven.kalkulator.guitjenester.ytelsegrunnlag.YtelsespesifiktGrunnlagTjenesteSVP;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -36,25 +34,11 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.Beregn
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.SammenligningsgrunnlagDto;
 
-@ApplicationScoped
 public class BeregningsgrunnlagDtoTjeneste {
     private static final int SEKS = 6;
-    private BeregningsgrunnlagPrStatusOgAndelDtoTjeneste beregningsgrunnlagPrStatusOgAndelDtoTjeneste;
-    private FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste;
-    private Instance<YtelsespesifiktGrunnlagTjeneste> ytelsetjenester;
-
-    BeregningsgrunnlagDtoTjeneste() {
-        // Hibernate
-    }
-
-    @Inject
-    public BeregningsgrunnlagDtoTjeneste(FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste,
-                                         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste beregningsgrunnlagPrStatusOgAndelDtoTjeneste,
-                                         @Any Instance<YtelsespesifiktGrunnlagTjeneste> ytelsetjenester) {
-        this.faktaOmBeregningDtoTjeneste = faktaOmBeregningDtoTjeneste;
-        this.beregningsgrunnlagPrStatusOgAndelDtoTjeneste = beregningsgrunnlagPrStatusOgAndelDtoTjeneste;
-        this.ytelsetjenester = ytelsetjenester;
-    }
+    private final BeregningsgrunnlagPrStatusOgAndelDtoTjeneste beregningsgrunnlagPrStatusOgAndelDtoTjeneste =
+            new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
+    private final FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste = new FaktaOmBeregningDtoTjeneste();
 
     public BeregningsgrunnlagDto lagBeregningsgrunnlagDto(BeregningsgrunnlagGUIInput input) {
         return lagDto(input);
@@ -117,8 +101,14 @@ public class BeregningsgrunnlagDtoTjeneste {
     }
 
     private void mapYtelsesspesifiktGrunnlag(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
-        Optional<YtelsespesifiktGrunnlagTjeneste> ytelsemapper = FagsakYtelseTypeRef.Lookup.find(ytelsetjenester, input.getFagsakYtelseType());
-        ytelsemapper.flatMap(ytelsespesifiktGrunnlagTjeneste -> ytelsespesifiktGrunnlagTjeneste.map(input)).ifPresent(dto::setYtelsesspesifiktGrunnlag);
+        var tjeneste = switch (input.getFagsakYtelseType()) {
+            case FORELDREPENGER -> new YtelsespesifiktGrunnlagTjenesteFP();
+            case SVANGERSKAPSPENGER -> new YtelsespesifiktGrunnlagTjenesteSVP();
+            case OMSORGSPENGER -> new YtelsespesifiktGrunnlagTjenesteOMP();
+            case FRISINN -> new YtelsespesifiktGrunnlagTjenesteFRISINN();
+            default -> null;
+        };
+        Optional.ofNullable(tjeneste).flatMap(t -> t.map(input)).ifPresent(dto::setYtelsesspesifiktGrunnlag);
     }
 
     private void mapDekningsgrad(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {

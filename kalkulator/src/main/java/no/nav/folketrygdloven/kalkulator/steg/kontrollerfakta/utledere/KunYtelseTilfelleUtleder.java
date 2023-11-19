@@ -6,9 +6,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
-import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
 import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.felles.ytelseovergang.DirekteOvergangTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
@@ -23,9 +20,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 
 
-@ApplicationScoped
-@FagsakYtelseTypeRef
-@FaktaOmBeregningTilfelleRef("FASTSETT_BG_KUN_YTELSE")
 public class KunYtelseTilfelleUtleder implements TilfelleUtleder {
 
     @Override
@@ -46,20 +40,20 @@ public class KunYtelseTilfelleUtleder implements TilfelleUtleder {
     }
 
     // Sjekker for å kunne manuelt avgjere om grunnlaget er besteberegnet
-    private boolean harForeldrepengerAvDagpenger(FaktaOmBeregningInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
+    private static boolean harForeldrepengerAvDagpenger(FaktaOmBeregningInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
         return getYtelseFilterKap8(input, beregningsgrunnlag)
                 .filter(y -> y.getYtelseType().equals(FagsakYtelseType.FORELDREPENGER))
                 .getFiltrertYtelser()
                 .stream()
-                .anyMatch(this::erBasertPåDagpenger);
+                .anyMatch(KunYtelseTilfelleUtleder::erBasertPåDagpenger);
     }
 
-    private boolean harYtelseUtenAnvisteAndeler(FaktaOmBeregningInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
+    private static boolean harYtelseUtenAnvisteAndeler(FaktaOmBeregningInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
         List<YtelseAnvistDto> sisteAnvisninger = finnAnvisningerForDirekteOvergangFraKap8(input.getIayGrunnlag(), beregningsgrunnlag.getSkjæringstidspunkt());
         return sisteAnvisninger.isEmpty() || sisteAnvisninger.stream().anyMatch(a -> a.getAnvisteAndeler().isEmpty());
     }
 
-    private YtelseFilterDto getYtelseFilterKap8(FaktaOmBeregningInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
+    private static YtelseFilterDto getYtelseFilterKap8(FaktaOmBeregningInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
         return new YtelseFilterDto(input.getIayGrunnlag().getAktørYtelseFraRegister())
                 .før(beregningsgrunnlag.getSkjæringstidspunkt())
                 .filter(y -> !y.getYtelseType().equals(FagsakYtelseType.DAGPENGER) && !y.getYtelseType().equals(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER))
@@ -67,7 +61,7 @@ public class KunYtelseTilfelleUtleder implements TilfelleUtleder {
     }
 
 
-    private boolean erBasertPåDagpenger(YtelseDto y) {
+    private static boolean erBasertPåDagpenger(YtelseDto y) {
         return y.getYtelseAnvist().stream().anyMatch(ya -> ya.getAnvisteAndeler().stream().anyMatch(a -> a.getInntektskategori().equals(Inntektskategori.DAGPENGER)));
     }
 

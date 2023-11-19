@@ -12,10 +12,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Any;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
 import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatusMedHjemmel;
@@ -23,15 +19,18 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BeregningsgrunnlagH
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Dekningsgrad;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.MidlertidigInaktivType;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrStatus;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.YtelsesSpesifiktGrunnlag;
-import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.psb.PleiepengerGrunnlag;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.svp.SvangerskapspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.adapter.util.BeregningsgrunnlagUtil;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapInntektskategoriFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapPeriodeÅrsakFraVlTilRegel;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.ForeldrepengerGrunnlagMapper;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.FrisinnGrunnlagMapper;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.OmsorgspengerGrunnlagMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
@@ -57,25 +56,12 @@ import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteter
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
-@ApplicationScoped
 public class MapBeregningsgrunnlagFraVLTilRegel {
-    private Instance<MapInntektsgrunnlagVLTilRegel> alleInntektMappere;
-    private Instance<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper;
-
-    public MapBeregningsgrunnlagFraVLTilRegel() {
-        // CDI
-    }
-
-    @Inject
-    public MapBeregningsgrunnlagFraVLTilRegel(@Any Instance<MapInntektsgrunnlagVLTilRegel> inntektsmapper,
-                                              @Any Instance<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper) {
-        this.alleInntektMappere = inntektsmapper;
-        this.ytelsesSpesifikkMapper = ytelsesSpesifikkMapper;
-    }
 
     public no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag map(BeregningsgrunnlagInput input,
                                                                                                  BeregningsgrunnlagGrunnlagDto oppdatertGrunnlag) {
@@ -90,8 +76,9 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .sorted()
                 .collect(Collectors.toList());
 
-        MapInntektsgrunnlagVLTilRegel inntektMapper = FagsakYtelseTypeRef.Lookup.find(alleInntektMappere, ref.getFagsakYtelseType()).orElseThrow();
-        Inntektsgrunnlag inntektsgrunnlag = inntektMapper.map(input, beregningsgrunnlag.getSkjæringstidspunkt());
+        var inntektsgrunnlag = FagsakYtelseType.FRISINN.equals(ref.getFagsakYtelseType()) ?
+            new MapInntektsgrunnlagVLTilRegelFRISINN().map(input, beregningsgrunnlag.getSkjæringstidspunkt()) :
+            new MapInntektsgrunnlagVLTilRegelFelles().map(input, beregningsgrunnlag.getSkjæringstidspunkt());
         List<BeregningsgrunnlagPeriode> perioder = mapBeregningsgrunnlagPerioder(beregningsgrunnlag, input);
         LocalDate skjæringstidspunkt = beregningsgrunnlag.getSkjæringstidspunkt();
 
@@ -139,24 +126,30 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
     }
 
     private BigDecimal mapUregulertGrunnbeløp(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
-        if ((input instanceof VurderBeregningsgrunnlagvilkårInput)) {
-            return ((VurderBeregningsgrunnlagvilkårInput) input).getUregulertGrunnbeløp().map(Beløp::getVerdi).orElse(beregningsgrunnlag.getGrunnbeløp().getVerdi());
+        if (input instanceof VurderBeregningsgrunnlagvilkårInput vurderBeregningsgrunnlagvilkårInput) {
+            return vurderBeregningsgrunnlagvilkårInput.getUregulertGrunnbeløp().map(Beløp::getVerdi).orElse(beregningsgrunnlag.getGrunnbeløp().getVerdi());
         }
-        if ((input instanceof VurderRefusjonBeregningsgrunnlagInput)) {
-            return ((VurderRefusjonBeregningsgrunnlagInput) input).getUregulertGrunnbeløp().map(Beløp::getVerdi).orElse(beregningsgrunnlag.getGrunnbeløp().getVerdi());
+        if (input instanceof VurderRefusjonBeregningsgrunnlagInput vurderRefusjonBeregningsgrunnlagInput) {
+            return vurderRefusjonBeregningsgrunnlagInput.getUregulertGrunnbeløp().map(Beløp::getVerdi).orElse(beregningsgrunnlag.getGrunnbeløp().getVerdi());
         }
-        if ((input instanceof FordelBeregningsgrunnlagInput)) {
-            return ((FordelBeregningsgrunnlagInput) input).getUregulertGrunnbeløp().map(Beløp::getVerdi).orElse(beregningsgrunnlag.getGrunnbeløp().getVerdi());
+        if (input instanceof FordelBeregningsgrunnlagInput fordelBeregningsgrunnlagInput) {
+            return fordelBeregningsgrunnlagInput.getUregulertGrunnbeløp().map(Beløp::getVerdi).orElse(beregningsgrunnlag.getGrunnbeløp().getVerdi());
         }
-        if ((input instanceof FullføreBeregningsgrunnlagInput)) {
-            return ((FullføreBeregningsgrunnlagInput) input).getUregulertGrunnbeløp().map(Beløp::getVerdi).orElse(beregningsgrunnlag.getGrunnbeløp().getVerdi());
+        if (input instanceof FullføreBeregningsgrunnlagInput fullføreBeregningsgrunnlagInput) {
+            return fullføreBeregningsgrunnlagInput.getUregulertGrunnbeløp().map(Beløp::getVerdi).orElse(beregningsgrunnlag.getGrunnbeløp().getVerdi());
         }
         return null;
     }
 
     private YtelsesSpesifiktGrunnlag mapYtelsesSpesifiktGrunnlag(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
-        return FagsakYtelseTypeRef.Lookup.find(ytelsesSpesifikkMapper, input.getFagsakYtelseType())
-                .map(mapper -> mapper.map(beregningsgrunnlag, input)).orElse(null);
+        return switch (input.getFagsakYtelseType()) {
+            case FORELDREPENGER ->  new ForeldrepengerGrunnlagMapper().map(beregningsgrunnlag);
+            case SVANGERSKAPSPENGER -> new SvangerskapspengerGrunnlag();
+            case OMSORGSPENGER -> new OmsorgspengerGrunnlagMapper().map(beregningsgrunnlag, input);
+            case OPPLÆRINGSPENGER, PLEIEPENGER_SYKT_BARN, PLEIEPENGER_NÆRSTÅENDE -> new PleiepengerGrunnlag(input.getFagsakYtelseType().getKode());
+            case FRISINN -> new FrisinnGrunnlagMapper().map(input);
+            default -> null;
+        };
     }
 
     private List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak> mapPeriodeÅrsak(List<BeregningsgrunnlagPeriodeÅrsakDto> beregningsgrunnlagPeriodeÅrsaker) {
@@ -164,9 +157,8 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
     }
 
     private Dekningsgrad finnDekningsgrad(YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, LocalDate periodeFom, BeregningsgrunnlagDto vlBeregningsgrunnlag, OpptjeningAktiviteterDto dto) {
-        if (ytelsespesifiktGrunnlag instanceof FrisinnGrunnlag && periodeFom != null) {
-            FrisinnGrunnlag frisinngrunnlag = (FrisinnGrunnlag) ytelsespesifiktGrunnlag;
-            return Dekningsgrad.fra(frisinngrunnlag.getDekningsgradForDato(periodeFom));
+        if (ytelsespesifiktGrunnlag instanceof FrisinnGrunnlag frisinnGrunnlag && periodeFom != null) {
+            return Dekningsgrad.fra(frisinnGrunnlag.getDekningsgradForDato(periodeFom));
         }
 
         return Dekningsgrad.fra(ytelsespesifiktGrunnlag.getDekningsgrad());

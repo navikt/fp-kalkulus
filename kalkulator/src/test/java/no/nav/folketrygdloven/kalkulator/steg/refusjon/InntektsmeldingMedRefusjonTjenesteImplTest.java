@@ -16,9 +16,6 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.felles.frist.InntektsmeldingMedRefusjonTjeneste;
-import no.nav.folketrygdloven.kalkulator.felles.frist.KravTjeneste;
-import no.nav.folketrygdloven.kalkulator.felles.frist.ArbeidsgiverRefusjonskravTjeneste;
-import no.nav.folketrygdloven.kalkulator.felles.frist.TreMånedersFristVurderer;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -45,7 +42,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
-import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 
 public class InntektsmeldingMedRefusjonTjenesteImplTest {
     private static final String ORGNR = "974760673";
@@ -54,15 +50,6 @@ public class InntektsmeldingMedRefusjonTjenesteImplTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
 
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
-
-    private final InntektsmeldingMedRefusjonTjeneste inntektsmeldingMedRefusjonTjeneste = new InntektsmeldingMedRefusjonTjeneste(
-            new ArbeidsgiverRefusjonskravTjeneste(
-                    new KravTjeneste(
-                            new UnitTestLookupInstanceImpl<>(new TreMånedersFristVurderer())
-                    )
-            )
-    );
-
 
     @Test
     public void skal_finne_arbeidsgiver_som_har_søkt_for_sent_med_flere_arbeidsforhold_et_som_tilkommer_etter_skjæringstidspunktet() {
@@ -85,7 +72,7 @@ public class InntektsmeldingMedRefusjonTjenesteImplTest {
                 BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag, førsteInnsendingMap);
 
         // Act
-        Set<Arbeidsgiver> arbeidsgivereSomHarSøktForSent = inntektsmeldingMedRefusjonTjeneste.finnArbeidsgiverSomHarSøktRefusjonForSent(
+        Set<Arbeidsgiver> arbeidsgivereSomHarSøktForSent = InntektsmeldingMedRefusjonTjeneste.finnArbeidsgiverSomHarSøktRefusjonForSent(
                 koblingReferanse,
                 input.getIayGrunnlag(),
                 input.getBeregningsgrunnlagGrunnlag(),
@@ -117,7 +104,7 @@ public class InntektsmeldingMedRefusjonTjenesteImplTest {
                 BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag, førsteInnsendingMap);
 
         // Act
-        Set<Arbeidsgiver> arbeidsgivereSomHarSøktForSent = inntektsmeldingMedRefusjonTjeneste.finnArbeidsgiverSomHarSøktRefusjonForSent(
+        Set<Arbeidsgiver> arbeidsgivereSomHarSøktForSent = InntektsmeldingMedRefusjonTjeneste.finnArbeidsgiverSomHarSøktRefusjonForSent(
                 koblingReferanse,
                 input.getIayGrunnlag(),
                 input.getBeregningsgrunnlagGrunnlag(),
@@ -143,7 +130,7 @@ public class InntektsmeldingMedRefusjonTjenesteImplTest {
 
         // Act
         BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(koblingReferanse, grunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag);
-        Set<Arbeidsgiver> arbeidsgivereSomHarSøktForSent = inntektsmeldingMedRefusjonTjeneste.finnArbeidsgiverSomHarSøktRefusjonForSent(
+        Set<Arbeidsgiver> arbeidsgivereSomHarSøktForSent = InntektsmeldingMedRefusjonTjeneste.finnArbeidsgiverSomHarSøktRefusjonForSent(
                 koblingReferanse,
                 input.getIayGrunnlag(),
                 input.getBeregningsgrunnlagGrunnlag(),
@@ -174,7 +161,7 @@ public class InntektsmeldingMedRefusjonTjenesteImplTest {
         // Act
         BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(koblingReferanse, grunnlag,
                 BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag, førsteInnsendingMap);
-        Set<Arbeidsgiver> arbeidsgivereSomHarSøktForSent = inntektsmeldingMedRefusjonTjeneste.finnArbeidsgiverSomHarSøktRefusjonForSent(
+        Set<Arbeidsgiver> arbeidsgivereSomHarSøktForSent = InntektsmeldingMedRefusjonTjeneste.finnArbeidsgiverSomHarSøktRefusjonForSent(
                 koblingReferanse,
                 input.getIayGrunnlag(),
                 input.getBeregningsgrunnlagGrunnlag(),

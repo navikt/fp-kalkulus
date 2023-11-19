@@ -74,7 +74,6 @@ public class FastsettMånedsinntektUtenInntektsmeldingOppdatererTest {
 
     @Test
     public void skal_sette_inntekt_på_riktige_andeler_i_alle_perioder(){
-        var fastsettMånedsinntektUtenInntektsmeldingOppdaterer = new FastsettMånedsinntektUtenInntektsmeldingOppdaterer();
         // Arrange
         FastsettMånedsinntektUtenInntektsmeldingDto dto = new FastsettMånedsinntektUtenInntektsmeldingDto();
         FastsettMånedsinntektUtenInntektsmeldingAndelDto andelDto = new FastsettMånedsinntektUtenInntektsmeldingAndelDto(1L,
@@ -86,7 +85,7 @@ public class FastsettMånedsinntektUtenInntektsmeldingOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        fastsettMånedsinntektUtenInntektsmeldingOppdaterer.oppdater(faktaLagreDto, Optional.empty(), input, oppdatere);
+        FastsettMånedsinntektUtenInntektsmeldingOppdaterer.oppdater(faktaLagreDto, Optional.empty(), oppdatere);
 
         // Assert
         List<BeregningsgrunnlagPrStatusOgAndelDto> andelerMedFastsattInntekt = beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream().flatMap(periode -> periode.getBeregningsgrunnlagPrStatusOgAndelList().stream())

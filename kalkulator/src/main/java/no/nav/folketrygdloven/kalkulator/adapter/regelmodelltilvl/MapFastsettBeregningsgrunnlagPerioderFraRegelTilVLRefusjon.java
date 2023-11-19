@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl;
 import java.util.List;
 import java.util.Optional;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.EksisterendeAndel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetAndel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
@@ -19,7 +18,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 
-@ApplicationScoped
 public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjon extends MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL {
 
     @Override

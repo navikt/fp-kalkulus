@@ -6,15 +6,11 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.ApplicationScoped;
-
-import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
 import no.nav.folketrygdloven.kalkulator.KalkulatorException;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FaktaBeregningLagreDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FastsattBrukersAndel;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FastsettBgKunYtelseDto;
 import no.nav.folketrygdloven.kalkulator.felles.MatchBeregningsgrunnlagTjeneste;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -26,16 +22,16 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 
 
-@ApplicationScoped
-@FaktaOmBeregningTilfelleRef("FASTSETT_BG_KUN_YTELSE")
-public class FastsettBgKunYtelseOppdaterer implements FaktaOmBeregningTilfelleOppdaterer {
+public class FastsettBgKunYtelseOppdaterer {
 
     private static final int MND_I_1_ÅR = 12;
 
-    @Override
-    public void oppdater(FaktaBeregningLagreDto dto,
-                         Optional<BeregningsgrunnlagDto> forrigeBg,
-                         BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder) {
+    private FastsettBgKunYtelseOppdaterer() {
+    }
+
+    public static void oppdater(FaktaBeregningLagreDto dto,
+                                Optional<BeregningsgrunnlagDto> forrigeBg,
+                                BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder) {
         FastsettBgKunYtelseDto kunYtelseDto = dto.getKunYtelseFordeling();
         BeregningsgrunnlagPeriodeDto periode = grunnlagBuilder.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
         List<FastsattBrukersAndel> andeler = kunYtelseDto.getAndeler();
@@ -61,12 +57,12 @@ public class FastsettBgKunYtelseOppdaterer implements FaktaOmBeregningTilfelleOp
     }
 
 
-    private void fjernAndeler(BeregningsgrunnlagPeriodeDto periode, List<Long> andelsnrListe) {
+    private static void fjernAndeler(BeregningsgrunnlagPeriodeDto periode, List<Long> andelsnrListe) {
         BeregningsgrunnlagPeriodeDto.kopier(periode).fjernBeregningsgrunnlagPrStatusOgAndelerSomIkkeLiggerIListeAvAndelsnr(andelsnrListe);
     }
 
 
-    private void settInntektskategoriOgFastsattBeløp(FastsattBrukersAndel andel, BeregningsgrunnlagPrStatusOgAndelDto korrektAndel,
+    private static void settInntektskategoriOgFastsattBeløp(FastsattBrukersAndel andel, BeregningsgrunnlagPrStatusOgAndelDto korrektAndel,
                                                      BeregningsgrunnlagPeriodeDto periode, Boolean skalBrukeBesteberegning) {
         Inntektskategori inntektskategori = andel.getInntektskategori();
         BigDecimal fastsattBeløp = BigDecimal.valueOf(andel.getFastsattBeløp() * (long) MND_I_1_ÅR);
@@ -87,7 +83,7 @@ public class FastsettBgKunYtelseOppdaterer implements FaktaOmBeregningTilfelleOp
         }
     }
 
-    private Runnable leggTilFraForrige(BeregningsgrunnlagPrStatusOgAndelDto korrektAndel, BeregningsgrunnlagPeriodeDto periode, Boolean skalBrukeBesteberegning, Inntektskategori inntektskategori, BigDecimal fastsattBeløp) {
+    private static Runnable leggTilFraForrige(BeregningsgrunnlagPrStatusOgAndelDto korrektAndel, BeregningsgrunnlagPeriodeDto periode, Boolean skalBrukeBesteberegning, Inntektskategori inntektskategori, BigDecimal fastsattBeløp) {
         return () -> BeregningsgrunnlagPrStatusOgAndelDto.kopier(korrektAndel)
                 .medBeregnetPrÅr(fastsattBeløp)
                 .medBesteberegningPrÅr(Boolean.TRUE.equals(skalBrukeBesteberegning) ? fastsattBeløp : null)
@@ -95,7 +91,7 @@ public class FastsettBgKunYtelseOppdaterer implements FaktaOmBeregningTilfelleOp
                 .medFastsattAvSaksbehandler(true).build(periode);
     }
 
-    private Consumer<BeregningsgrunnlagPrStatusOgAndelDto> endreEksisterende(Boolean skalBrukeBesteberegning, Inntektskategori inntektskategori, BigDecimal fastsattBeløp) {
+    private static Consumer<BeregningsgrunnlagPrStatusOgAndelDto> endreEksisterende(Boolean skalBrukeBesteberegning, Inntektskategori inntektskategori, BigDecimal fastsattBeløp) {
         return match -> BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(match)
                 .medBeregnetPrÅr(fastsattBeløp)
                 .medBesteberegningPrÅr(Boolean.TRUE.equals(skalBrukeBesteberegning) ? fastsattBeløp : null)
@@ -104,7 +100,7 @@ public class FastsettBgKunYtelseOppdaterer implements FaktaOmBeregningTilfelleOp
     }
 
 
-    private void fastsettBeløpForNyAndel(BeregningsgrunnlagPeriodeDto periode,
+    private static void fastsettBeløpForNyAndel(BeregningsgrunnlagPeriodeDto periode,
                                          FastsattBrukersAndel andel, Boolean skalBrukeBesteberegning) {
         BigDecimal fastsatt = BigDecimal.valueOf(andel.getFastsattBeløp() * (long) MND_I_1_ÅR);// NOSONAR
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
@@ -118,7 +114,7 @@ public class FastsettBgKunYtelseOppdaterer implements FaktaOmBeregningTilfelleOp
     }
 
 
-    private BeregningsgrunnlagPrStatusOgAndelDto getKorrektAndel(BeregningsgrunnlagPeriodeDto periode, FastsattBrukersAndel andel, Optional<BeregningsgrunnlagDto> forrigeBg) {
+    private static BeregningsgrunnlagPrStatusOgAndelDto getKorrektAndel(BeregningsgrunnlagPeriodeDto periode, FastsattBrukersAndel andel, Optional<BeregningsgrunnlagDto> forrigeBg) {
         if (andel.getLagtTilAvSaksbehandler() && !andel.getNyAndel()) {
             return finnAndelFraForrigeGrunnlag(periode, andel, forrigeBg);
         }
@@ -128,7 +124,7 @@ public class FastsettBgKunYtelseOppdaterer implements FaktaOmBeregningTilfelleOp
                 .orElseThrow(() -> new KalkulatorException("FT-401646", "Finner ikke andelen for eksisterende grunnlag."));
     }
 
-    private BeregningsgrunnlagPrStatusOgAndelDto finnAndelFraForrigeGrunnlag(BeregningsgrunnlagPeriodeDto periode, FastsattBrukersAndel andel, Optional<BeregningsgrunnlagDto> forrigeBg) {
+    private static BeregningsgrunnlagPrStatusOgAndelDto finnAndelFraForrigeGrunnlag(BeregningsgrunnlagPeriodeDto periode, FastsattBrukersAndel andel, Optional<BeregningsgrunnlagDto> forrigeBg) {
         List<BeregningsgrunnlagPeriodeDto> matchendePerioder = forrigeBg.stream()
                 .flatMap(bg -> bg.getBeregningsgrunnlagPerioder().stream())
                 .filter(periodeIGjeldendeGrunnlag -> periodeIGjeldendeGrunnlag.getPeriode().overlapper(periode.getPeriode())).collect(Collectors.toList());

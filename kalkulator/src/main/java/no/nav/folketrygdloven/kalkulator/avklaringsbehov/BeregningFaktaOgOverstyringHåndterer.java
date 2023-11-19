@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FaktaBeregningLagreDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FastsettBeregningsgrunnlagAndelDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.OverstyrBeregningsgrunnlagDto;
@@ -20,31 +17,23 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
-@ApplicationScoped
 public class BeregningFaktaOgOverstyringHåndterer {
-
-    private FaktaOmBeregningTilfellerOppdaterer faktaOmBeregningTilfellerOppdaterer;
 
     public BeregningFaktaOgOverstyringHåndterer() {
         // For CDI
     }
 
-    @Inject
-    public BeregningFaktaOgOverstyringHåndterer(FaktaOmBeregningTilfellerOppdaterer faktaOmBeregningTilfellerOppdaterer) {
-        this.faktaOmBeregningTilfellerOppdaterer = faktaOmBeregningTilfellerOppdaterer;
-    }
-
-    public BeregningsgrunnlagGrunnlagDto håndter(HåndterBeregningsgrunnlagInput input, FaktaBeregningLagreDto faktaDto) {
+    public static BeregningsgrunnlagGrunnlagDto håndter(HåndterBeregningsgrunnlagInput input, FaktaBeregningLagreDto faktaDto) {
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
 
         Optional<BeregningsgrunnlagDto> forrigeBg = input.getForrigeGrunnlagFraHåndteringTilstand().flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag);
 
-        faktaOmBeregningTilfellerOppdaterer.oppdater(faktaDto, forrigeBg, input, grunnlagBuilder);
+        FaktaOmBeregningTilfellerOppdaterer.oppdater(faktaDto, forrigeBg, input, grunnlagBuilder);
         return grunnlagBuilder.build(input.getHåndteringTilstand());
     }
 
 
-    public BeregningsgrunnlagGrunnlagDto håndterMedOverstyring(HåndterBeregningsgrunnlagInput input, OverstyrBeregningsgrunnlagDto dto) {
+    public static BeregningsgrunnlagGrunnlagDto håndterMedOverstyring(HåndterBeregningsgrunnlagInput input, OverstyrBeregningsgrunnlagDto dto) {
         // Overstyring kan kun gjøres på grunnlaget fra 98-steget
         BeregningsgrunnlagGrunnlagDto aktivtGrunnlag = input.getBeregningsgrunnlagGrunnlag();
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(aktivtGrunnlag);
@@ -53,7 +42,7 @@ public class BeregningFaktaOgOverstyringHåndterer {
 
         FaktaBeregningLagreDto fakta = dto.getFakta();
         if (fakta != null) {
-            faktaOmBeregningTilfellerOppdaterer.oppdater(fakta, forrigeBg, input, grunnlagBuilder);
+            FaktaOmBeregningTilfellerOppdaterer.oppdater(fakta, forrigeBg, input, grunnlagBuilder);
         }
         BeregningsgrunnlagDto.Builder beregningsgrunnlagBuilder = grunnlagBuilder.getBeregningsgrunnlagBuilder().medOverstyring(true);
         overstyrInntekterPrPeriode(beregningsgrunnlagBuilder.getBeregningsgrunnlag(), forrigeBg, dto.getOverstyrteAndeler());
@@ -62,7 +51,7 @@ public class BeregningFaktaOgOverstyringHåndterer {
         return grunnlagBuilder.build(input.getHåndteringTilstand());
     }
 
-    private List<AktivitetStatus> finnManglendeAktivitetstatuser(BeregningsgrunnlagDto bg, List<FastsettBeregningsgrunnlagAndelDto> overstyrteAndeler) {
+    private static List<AktivitetStatus> finnManglendeAktivitetstatuser(BeregningsgrunnlagDto bg, List<FastsettBeregningsgrunnlagAndelDto> overstyrteAndeler) {
         List<AktivitetStatus> manglendeStatuser = new ArrayList<>();
         overstyrteAndeler.stream().flatMap(a -> a.getAktivitetStatus().stream()).forEach(as -> {
             if (bgManglerStatus(bg.getAktivitetStatuser(), as)) {
@@ -72,7 +61,7 @@ public class BeregningFaktaOgOverstyringHåndterer {
         return manglendeStatuser;
     }
 
-    private boolean bgManglerStatus(List<BeregningsgrunnlagAktivitetStatusDto> statuser, AktivitetStatus statusSomSjekkes) {
+    private static boolean bgManglerStatus(List<BeregningsgrunnlagAktivitetStatusDto> statuser, AktivitetStatus statusSomSjekkes) {
         if (statusSomSjekkes.erSelvstendigNæringsdrivende()) {
             return statuser.stream().noneMatch(aks -> aks.getAktivitetStatus().erSelvstendigNæringsdrivende());
         }
@@ -85,7 +74,7 @@ public class BeregningFaktaOgOverstyringHåndterer {
         else return statuser.stream().noneMatch(aks -> aks.getAktivitetStatus().equals(statusSomSjekkes));
     }
 
-    private void overstyrInntekterPrPeriode(BeregningsgrunnlagDto nyttGrunnlag,
+    private static void overstyrInntekterPrPeriode(BeregningsgrunnlagDto nyttGrunnlag,
                                             Optional<BeregningsgrunnlagDto> forrigeBg,
                                             List<FastsettBeregningsgrunnlagAndelDto> overstyrteAndeler) {
         List<BeregningsgrunnlagPeriodeDto> bgPerioder = nyttGrunnlag.getBeregningsgrunnlagPerioder();

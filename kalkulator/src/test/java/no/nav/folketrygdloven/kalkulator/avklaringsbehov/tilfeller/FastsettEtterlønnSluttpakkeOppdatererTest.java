@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,13 +36,11 @@ public class FastsettEtterlønnSluttpakkeOppdatererTest {
 
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
     private BeregningsgrunnlagDto beregningsgrunnlag;
-    private FastsettEtterlønnSluttpakkeOppdaterer fastsettEtterlønnSluttpakkeOppdaterer;
     private static final Arbeidsgiver ARBEIDSGIVER2 = Arbeidsgiver.virksomhet("490830958");
     private BeregningsgrunnlagInput input;
 
     @BeforeEach
     public void setup() {
-        fastsettEtterlønnSluttpakkeOppdaterer = new FastsettEtterlønnSluttpakkeOppdaterer();
         beregningsgrunnlag = lagBeregningsgrunnlag();
     }
 
@@ -56,7 +53,7 @@ public class FastsettEtterlønnSluttpakkeOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        fastsettEtterlønnSluttpakkeOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        FastsettEtterlønnSluttpakkeOppdaterer.oppdater(dto, oppdatere);
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> bgPerioder = oppdatere.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();

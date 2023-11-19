@@ -1,21 +1,14 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 
-import jakarta.enterprise.inject.Instance;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
@@ -38,36 +31,14 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.ATogFLISammeOrganisasjonDto;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.AndelMedBeløpDto;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningAndelDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningDto;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.KortvarigeArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.KunYtelseDto;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.VurderBesteberegningDto;
 
 public class FaktaOmBeregningDtoTjenesteImplTest {
 
     public static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.now();
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(LocalDate.now());
 
-    private FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste;
-
-    @BeforeEach
-    public void setUp() {
-        @SuppressWarnings("unchecked")
-        Instance<FaktaOmBeregningTilfelleDtoTjeneste> tjenesteInstances = mock(Instance.class);
-        List<FaktaOmBeregningTilfelleDtoTjeneste> tjenester = new ArrayList<>();
-        tjenester.add(lagDtoTjenesteMock(setFrilansAndelConsumer()));
-        tjenester.add(lagDtoTjenesteMock(atflSammeOrgConsumer()));
-        tjenester.add(lagDtoTjenesteMock(kunYtelseConsumer()));
-        tjenester.add(lagDtoTjenesteMock(kortvarigeArbeidsforholdConsumer()));
-        tjenester.add(lagDtoTjenesteMock(vurderLønnsendringConsumer()));
-        tjenester.add(lagDtoTjenesteMock(vurderBesteberegningConsumer()));
-        when(tjenesteInstances.iterator()).thenReturn(tjenester.iterator());
-        when(tjenesteInstances.stream()).thenReturn(tjenester.stream());
-        faktaOmBeregningDtoTjeneste = new FaktaOmBeregningDtoTjeneste(tjenesteInstances);
-    }
+    private FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste = new FaktaOmBeregningDtoTjeneste();
 
     @Test
     public void skal_kalle_dto_tjenester() {
@@ -103,10 +74,10 @@ public class FaktaOmBeregningDtoTjenesteImplTest {
 
         // Assert
         assertThat(dto.get().getFrilansAndel().getAndelsnr()).isEqualTo(1);
-        assertThat(dto.get().getArbeidstakerOgFrilanserISammeOrganisasjonListe()).hasSize(1);
+        assertThat(dto.get().getArbeidstakerOgFrilanserISammeOrganisasjonListe()).isEmpty();
         assertThat(dto.get().getKunYtelse().getAndeler()).hasSize(1);
-        assertThat(dto.get().getKortvarigeArbeidsforhold()).hasSize(1);
-        assertThat(dto.get().getArbeidsforholdMedLønnsendringUtenIM()).hasSize(1);
+        assertThat(dto.get().getKortvarigeArbeidsforhold()).isEmpty();
+        assertThat(dto.get().getArbeidsforholdMedLønnsendringUtenIM()).isNull(); // Fix VurderLønnsendringDtoTjeneste til å sette tom liste?
     }
 
     @Test
@@ -179,62 +150,6 @@ public class FaktaOmBeregningDtoTjenesteImplTest {
 
         oppdatere.medBeregningsgrunnlag(beregningsgrunnlagDto);
         return oppdatere.build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
-    }
-
-    private FaktaOmBeregningTilfelleDtoTjeneste lagDtoTjenesteMock(Consumer<FaktaOmBeregningDto> dtoConsumer) {
-        return (input, faktaOmBeregningDto) -> dtoConsumer.accept(faktaOmBeregningDto);
-    }
-
-    private Consumer<FaktaOmBeregningDto> setFrilansAndelConsumer() {
-        return (dto) -> {
-            FaktaOmBeregningAndelDto andel = new FaktaOmBeregningAndelDto();
-            andel.setAndelsnr(1L);
-            dto.setFrilansAndel(andel);
-        };
-    }
-
-    private Consumer<FaktaOmBeregningDto> atflSammeOrgConsumer() {
-        return (dto) -> {
-            ATogFLISammeOrganisasjonDto atflSammeOrgDto = new ATogFLISammeOrganisasjonDto();
-            atflSammeOrgDto.setAndelsnr(1L);
-            dto.setArbeidstakerOgFrilanserISammeOrganisasjonListe(Collections.singletonList(atflSammeOrgDto));
-        };
-    }
-
-    private Consumer<FaktaOmBeregningDto> kunYtelseConsumer() {
-        return (dto) -> {
-            KunYtelseDto kunYtelseDto = new KunYtelseDto();
-            AndelMedBeløpDto brukersAndelDto = new AndelMedBeløpDto();
-            brukersAndelDto.setAndelsnr(1L);
-            kunYtelseDto.setAndeler(Collections.singletonList(brukersAndelDto));
-            dto.setKunYtelse(kunYtelseDto);
-        };
-    }
-
-    private Consumer<FaktaOmBeregningDto> kortvarigeArbeidsforholdConsumer() {
-        return (dto) -> {
-            KortvarigeArbeidsforholdDto kortvarigeArbeidsforholdDto = new KortvarigeArbeidsforholdDto();
-            kortvarigeArbeidsforholdDto.setErTidsbegrensetArbeidsforhold(true);
-            dto.setKortvarigeArbeidsforhold(Collections.singletonList(kortvarigeArbeidsforholdDto));
-        };
-    }
-
-    private Consumer<FaktaOmBeregningDto> vurderLønnsendringConsumer() {
-        return (dto) -> {
-            FaktaOmBeregningAndelDto andelDto = new FaktaOmBeregningAndelDto();
-            andelDto.setAndelsnr(1L);
-            dto.setArbeidsforholdMedLønnsendringUtenIM(Collections.singletonList(andelDto));
-        };
-    }
-
-    private Consumer<FaktaOmBeregningDto> vurderBesteberegningConsumer() {
-        return (dto) -> {
-            AndelMedBeløpDto andelDto = new AndelMedBeløpDto();
-            andelDto.setAndelsnr(1L);
-            VurderBesteberegningDto vurderBesteberegning = new VurderBesteberegningDto();
-            vurderBesteberegning.setSkalHaBesteberegning(true);
-            dto.setVurderBesteberegning(vurderBesteberegning);
-        };
     }
 
 }

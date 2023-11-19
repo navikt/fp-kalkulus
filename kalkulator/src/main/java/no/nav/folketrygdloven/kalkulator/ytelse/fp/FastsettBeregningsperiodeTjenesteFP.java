@@ -5,29 +5,17 @@ import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Collection;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import no.nav.folketrygdloven.beregningsgrunnlag.BevegeligeHelligdagerUtil;
-import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.FastsettBeregningsperiode;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
-@ApplicationScoped
-@FagsakYtelseTypeRef(FagsakYtelseType.FORELDREPENGER)
-public class FastsettBeregningsperiodeTjenesteFP implements FastsettBeregningsperiode {
-
-    private final BeregningsperiodeTjeneste beregningsperiodeTjeneste = new BeregningsperiodeTjeneste();
-
-    public FastsettBeregningsperiodeTjenesteFP() {
-    }
+public class FastsettBeregningsperiodeTjenesteFP {
 
     public BeregningsgrunnlagDto fastsettBeregningsperiode(BeregningsgrunnlagDto beregningsgrunnlag,
-                                                           InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag, Collection<InntektsmeldingDto> inntektsmeldinger) {
+                                                           Collection<InntektsmeldingDto> inntektsmeldinger) {
         BeregningsgrunnlagDto nyttBeregningsgrunnlag = BeregningsgrunnlagDto.builder(beregningsgrunnlag).build();
         nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(periode -> {
             periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
@@ -39,7 +27,7 @@ public class FastsettBeregningsperiodeTjenesteFP implements FastsettBeregningspe
 
     private Intervall finnBeregningsperiode(BeregningsgrunnlagPrStatusOgAndelDto andel, Collection<InntektsmeldingDto> inntektsmeldinger, LocalDate skjæringstidspunkt) {
         var harIM = inntektsmeldinger.stream().anyMatch(im -> andel.gjelderInntektsmeldingFor(im.getArbeidsgiver(), im.getArbeidsforholdRef()));
-        var beregningsperiodeUjustert = beregningsperiodeTjeneste.fastsettBeregningsperiodeForATFLAndeler(skjæringstidspunkt);
+        var beregningsperiodeUjustert = new BeregningsperiodeTjeneste().fastsettBeregningsperiodeForATFLAndeler(skjæringstidspunkt);
         if (harIM) {
             return beregningsperiodeUjustert;
         }

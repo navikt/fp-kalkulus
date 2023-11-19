@@ -9,9 +9,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.SvangerskapspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -21,20 +18,11 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.AvklaringsbehovutlederRefusjonEtterSluttdato;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.AvklaringsbehovutlederVurderRefusjon;
-import no.nav.folketrygdloven.kalkulator.steg.refusjon.AvklaringsbehovutledertjenesteVurderRefusjon;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
-@ApplicationScoped
-@FagsakYtelseTypeRef(FagsakYtelseType.SVANGERSKAPSPENGER)
-public class AvklaringsbehovutledertjenesteVurderRefusjonSVP implements AvklaringsbehovutledertjenesteVurderRefusjon {
+public class AvklaringsbehovutledertjenesteVurderRefusjonSVP {
 
-    @Inject
-    public AvklaringsbehovutledertjenesteVurderRefusjonSVP() {
-    }
-
-    @Override
     public List<BeregningAvklaringsbehovResultat> utledAvklaringsbehov(BeregningsgrunnlagInput input,
                                                                        BeregningsgrunnlagDto periodisertMedRefusjonOgGradering) {
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = new ArrayList<>();
@@ -43,8 +31,7 @@ public class AvklaringsbehovutledertjenesteVurderRefusjonSVP implements Avklarin
             avklaringsbehov.add(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.VURDER_REFUSJONSKRAV));
         }
 
-        if (input.getYtelsespesifiktGrunnlag() instanceof SvangerskapspengerGrunnlag) {
-            SvangerskapspengerGrunnlag svpGrunnlag = input.getYtelsespesifiktGrunnlag();
+        if (input.getYtelsespesifiktGrunnlag() instanceof SvangerskapspengerGrunnlag svpGrunnlag) {
             Collection<YrkesaktivitetDto> yrkesaktiviteter = input.getIayGrunnlag().getAktørArbeidFraRegister()
                     .map(AktørArbeidDto::hentAlleYrkesaktiviteter)
                     .orElse(Collections.emptyList());

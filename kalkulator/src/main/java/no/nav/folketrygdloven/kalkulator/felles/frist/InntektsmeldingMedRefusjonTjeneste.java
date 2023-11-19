@@ -8,10 +8,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Default;
-import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.kalkulator.felles.FinnYrkesaktiviteterForBeregningTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -25,20 +21,12 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
-@ApplicationScoped
 public class InntektsmeldingMedRefusjonTjeneste {
 
-    private ArbeidsgiverRefusjonskravTjeneste arbeidsgiverRefusjonskravTjeneste;
-
-    public InntektsmeldingMedRefusjonTjeneste() {
+    private InntektsmeldingMedRefusjonTjeneste() {
     }
 
-    @Inject
-    public InntektsmeldingMedRefusjonTjeneste(ArbeidsgiverRefusjonskravTjeneste arbeidsgiverRefusjonskravTjeneste) {
-        this.arbeidsgiverRefusjonskravTjeneste = arbeidsgiverRefusjonskravTjeneste;
-    }
-
-    public Set<Arbeidsgiver> finnArbeidsgiverSomHarSøktRefusjonForSent(KoblingReferanse koblingReferanse,
+    public static Set<Arbeidsgiver> finnArbeidsgiverSomHarSøktRefusjonForSent(KoblingReferanse koblingReferanse,
                                                                        InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                        BeregningsgrunnlagGrunnlagDto grunnlag,
                                                                        List<KravperioderPrArbeidsforholdDto> kravperioder,
@@ -47,7 +35,7 @@ public class InntektsmeldingMedRefusjonTjeneste {
         LocalDate skjæringstidspunktBeregning = grunnlag.getBeregningsgrunnlag().map(BeregningsgrunnlagDto::getSkjæringstidspunkt)
             .orElseThrow(() -> new IllegalStateException("Utviklerfeil: Skal ha beregningsgrunnlag"));
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = grunnlag.getGjeldendeAktiviteter();
-        var harSøktForSentMap = arbeidsgiverRefusjonskravTjeneste.lagFristTidslinjePrArbeidsgiver(
+        var harSøktForSentMap = ArbeidsgiverRefusjonskravTjeneste.lagFristTidslinjePrArbeidsgiver(
                 yrkesaktiviteter,
                 kravperioder,
                 gjeldendeAktiviteter,

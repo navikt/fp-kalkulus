@@ -47,7 +47,6 @@ public class VurderLønnsendringOppdatererTest {
     private final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
     private final Beløp GRUNNBELØP = new Beløp(600000);
 
-    private VurderLønnsendringOppdaterer vurderLønnsendringOppdaterer;
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private BeregningsgrunnlagPrStatusOgAndelDto frilansAndel;
     private BeregningsgrunnlagPrStatusOgAndelDto arbeidstakerAndel;
@@ -56,7 +55,6 @@ public class VurderLønnsendringOppdatererTest {
 
     @BeforeEach
     public void setup() {
-        vurderLønnsendringOppdaterer = new VurderLønnsendringOppdaterer();
         Arbeidsgiver virksomheten = Arbeidsgiver.virksomhet(ORGNR);
         beregningsgrunnlag = BeregningsgrunnlagDto.builder()
 
@@ -109,7 +107,7 @@ public class VurderLønnsendringOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        vurderLønnsendringOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        VurderLønnsendringOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
         Optional<FaktaAggregatDto> faktaAggregat = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT).getFaktaAggregat();
 
         // Assert
@@ -128,7 +126,7 @@ public class VurderLønnsendringOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        vurderLønnsendringOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        VurderLønnsendringOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
         Optional<FaktaAggregatDto> faktaAggregat = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT).getFaktaAggregat();
 
         // Assert

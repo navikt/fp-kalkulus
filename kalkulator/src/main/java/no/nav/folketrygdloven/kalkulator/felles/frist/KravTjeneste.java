@@ -1,8 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.felles.frist;
 
-import static no.nav.folketrygdloven.kalkulator.felles.frist.StartRefusjonTjeneste.finnFørsteGyldigeDatoMedRefusjon;
 import static no.nav.folketrygdloven.kalkulator.felles.frist.StartRefusjonTjeneste.finnFørsteMuligeDagRefusjon;
-import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -11,13 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Any;
-import jakarta.enterprise.inject.Default;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
-
-import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.PerioderForKravDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
@@ -26,19 +17,10 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
-@ApplicationScoped
 public class KravTjeneste {
 
-    private Instance<FristVurderer> fristVurderere;
-
-    public KravTjeneste() {
+    private KravTjeneste() {
     }
-
-    @Inject
-    public KravTjeneste(@Any Instance<FristVurderer> fristVurderere) {
-        this.fristVurderere = fristVurderere;
-    }
-
     /** Finner tidslinje for refusjonskrav og vurdering av om det er mottatt innen fristen
      *
      * @param kravperioder Perioder for refusjonskrav
@@ -49,7 +31,7 @@ public class KravTjeneste {
      * @param ytelseType
      * @return Tidslinje for mottatt krav og utfall av fristvurdering
      */
-    public LocalDateTimeline<KravOgUtfall> lagTidslinjeForYrkesaktivitet(List<PerioderForKravDto> kravperioder,
+    public static LocalDateTimeline<KravOgUtfall> lagTidslinjeForYrkesaktivitet(List<PerioderForKravDto> kravperioder,
                                                                                 YrkesaktivitetDto yrkesaktivitet,
                                                                                 BeregningAktivitetAggregatDto gjeldendeAktiviteter,
                                                                                 LocalDate skjæringstidspunktBeregning,
@@ -61,7 +43,7 @@ public class KravTjeneste {
                 .orElse(new LocalDateTimeline<>(Collections.emptyList()));
     }
 
-    private LocalDateTimeline<KravOgUtfall> finnFristvurdertTidslinje(PerioderForKravDto krav,
+    private static LocalDateTimeline<KravOgUtfall> finnFristvurdertTidslinje(PerioderForKravDto krav,
                                                                       YrkesaktivitetDto yrkesaktivitet,
                                                                       BeregningAktivitetAggregatDto gjeldendeAktiviteter,
                                                                       LocalDate skjæringstidspunktBeregning,
@@ -77,8 +59,13 @@ public class KravTjeneste {
         }, LocalDateTimeline.JoinStyle.LEFT_JOIN);
     }
 
-    private LocalDateTimeline<Utfall> finnGodkjentTidslinje(PerioderForKravDto krav, Optional<LocalDate> overstyrtGodkjentRefusjonFom, FagsakYtelseType ytelseType) {
-        return FristVurderer.finnTjeneste(fristVurderere, ytelseType).finnTidslinje(krav, overstyrtGodkjentRefusjonFom);
+    private static LocalDateTimeline<Utfall> finnGodkjentTidslinje(PerioderForKravDto krav, Optional<LocalDate> overstyrtGodkjentRefusjonFom, FagsakYtelseType ytelseType) {
+        return switch (ytelseType) {
+            case FORELDREPENGER, SVANGERSKAPSPENGER -> TreMånedersFristVurderer.finnTidslinje(krav, overstyrtGodkjentRefusjonFom);
+            case PLEIEPENGER_SYKT_BARN, OPPLÆRINGSPENGER, OMSORGSPENGER, PLEIEPENGER_NÆRSTÅENDE -> AllePerioderGodkjentFristVurderer.finnTidslinje();
+            case UDEFINERT, FRISINN, ENGANGSTØNAD, DAGPENGER, SYKEPENGER, PÅRØRENDESYKDOM, ARBEIDSAVKLARINGSPENGER, ENSLIG_FORSØRGER ->
+                    throw new IllegalStateException("Utviklerfeil: Fant ingen fristvurderer for ytelsetype=" + ytelseType);
+        };
     }
 
     private static LocalDateTimeline<BigDecimal> finnKravTidslinje(PerioderForKravDto krav,
@@ -95,13 +82,5 @@ public class KravTjeneste {
                 .collect(Collectors.toList());
         return new LocalDateTimeline<>(kravSegmenter);
     }
-
-    private static LocalDateTimeline<Utfall> finnFristTidslinje(PerioderForKravDto krav, Optional<LocalDate> overstyrtRefusjonFom) {
-        return new LocalDateTimeline<>(List.of(new LocalDateSegment<>(
-                overstyrtRefusjonFom.orElse(finnFørsteGyldigeDatoMedRefusjon(krav.getInnsendingsdato())),
-                TIDENES_ENDE, Utfall.GODKJENT)));
-    }
-
-
 
 }

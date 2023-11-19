@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +30,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 public class VurderEtterlønnSluttpakkeOppdatererTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019,1,1);
     private static final Beløp GRUNNBELØP = new Beløp(BigDecimal.valueOf(85000));
-    private VurderEtterlønnSluttpakkeOppdaterer vurderEtterlønnSluttpakkeOppdaterer = new VurderEtterlønnSluttpakkeOppdaterer();
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private BeregningsgrunnlagInput input;
@@ -50,7 +48,7 @@ public class VurderEtterlønnSluttpakkeOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        vurderEtterlønnSluttpakkeOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        VurderEtterlønnSluttpakkeOppdaterer.oppdater(dto, oppdatere);
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> bgPerioder = oppdatere.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
@@ -70,7 +68,7 @@ public class VurderEtterlønnSluttpakkeOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        vurderEtterlønnSluttpakkeOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        VurderEtterlønnSluttpakkeOppdaterer.oppdater(dto, oppdatere);
 
         // Assert
         BeregningsgrunnlagDto nyttBg = oppdatere.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag();

@@ -5,7 +5,6 @@ import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -23,6 +22,8 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.Fordel
 import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
 
 public class BeregningsgrunnlagDtoUtil {
+
+    private static final KalkulatorGuiInterface GUI_TJENESTE = new BeregningsgrunnlagGuiTjeneste();
 
     private BeregningsgrunnlagDtoUtil() {
         // Skjul
@@ -47,18 +48,11 @@ public class BeregningsgrunnlagDtoUtil {
         andelDto.setFastsattAvSaksbehandler(andel.getFastsattAvSaksbehandler());
         andelDto.setLagtTilAvSaksbehandler(andel.erLagtTilAvSaksbehandler());
         andelDto.setKilde(andel.getKilde());
-        finnArbeidsprosentTjeneste(ytelsespesifiktGrunnlag).finnArbeidsprosenterIPeriode(andel, ytelsespesifiktGrunnlag, periode.getPeriode())
+        GUI_TJENESTE.finnArbeidsprosenterIPeriode(andel, ytelsespesifiktGrunnlag, periode.getPeriode())
                 .forEach(andelDto::leggTilAndelIArbeid);
         lagArbeidsforholdDto(andel, Optional.empty(), inntektArbeidYtelseGrunnlag)
                 .ifPresent(andelDto::setArbeidsforhold);
         return andelDto;
-    }
-
-    private static FinnArbeidsprosenter finnArbeidsprosentTjeneste(YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        if (ytelsespesifiktGrunnlag instanceof ForeldrepengerGrunnlag) {
-            return new FinnArbeidsprosenterFP();
-        }
-        return new FinnArbeidsprosenterUtbetalingsgrad();
     }
 
 

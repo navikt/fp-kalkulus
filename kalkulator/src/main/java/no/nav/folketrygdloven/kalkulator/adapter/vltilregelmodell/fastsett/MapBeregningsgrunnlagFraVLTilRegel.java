@@ -10,10 +10,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Any;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatusMedHjemmel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BeregningsgrunnlagHjemmel;
@@ -25,12 +21,11 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.Beregnings
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.BeregningsgrunnlagPrStatus;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.TilkommetInntekt;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.YtelsesSpesifiktGrunnlag;
-import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.adapter.util.BeregningsgrunnlagUtil;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapArbeidsforholdFraVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.frisinn.FrisinnGrunnlagMapperFastsett;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.PerioderTilVurderingTjeneste;
-import no.nav.folketrygdloven.kalkulator.felles.inntektgradering.SimulerTilkomneAktiviteterTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
@@ -42,20 +37,8 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.TilkommetInnt
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
-import no.nav.fpsak.tidsserie.LocalDateSegment;
 
-@ApplicationScoped
 public class MapBeregningsgrunnlagFraVLTilRegel {
-    private Instance<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper;
-
-    public MapBeregningsgrunnlagFraVLTilRegel() {
-        // CDI
-    }
-
-    @Inject
-    public MapBeregningsgrunnlagFraVLTilRegel(@Any Instance<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper) {
-        this.ytelsesSpesifikkMapper = ytelsesSpesifikkMapper;
-    }
 
     public no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.Beregningsgrunnlag map(BeregningsgrunnlagInput input,
                                                                                                  BeregningsgrunnlagDto beregningsgrunnlag) {
@@ -77,7 +60,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medBeregningsgrunnlagPerioder(perioder)
                 .medGrunnbeløp(beregningsgrunnlag.getGrunnbeløp().getVerdi())
                 .medYtelsesdagerIEtÅr(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getYtelsesdagerIÅr())
-                .medYtelsesSpesifiktGrunnlag(mapYtelsesSpesifiktGrunnlag(input, beregningsgrunnlag))
+                .medYtelsesSpesifiktGrunnlag(mapYtelsesSpesifiktGrunnlag(input))
                 .medAntallGØvreGrenseverdi(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi())
                 .medMidlertidigInaktivType(mapMidlertidigInaktivType(input))
                 .leggTilToggle("GRADERING_MOT_INNTEKT", KonfigurasjonVerdi.get("GRADERING_MOT_INNTEKT", false))
@@ -94,9 +77,12 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 null;
     }
 
-    private YtelsesSpesifiktGrunnlag mapYtelsesSpesifiktGrunnlag(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
-        return FagsakYtelseTypeRef.Lookup.find(ytelsesSpesifikkMapper, input.getFagsakYtelseType())
-                .map(mapper -> mapper.map(beregningsgrunnlag, input)).orElse(null);
+    private YtelsesSpesifiktGrunnlag mapYtelsesSpesifiktGrunnlag(BeregningsgrunnlagInput input) {
+        return switch (input.getFagsakYtelseType()) {
+            case PLEIEPENGER_SYKT_BARN, PLEIEPENGER_NÆRSTÅENDE -> new PleiepengerGrunnlagMapperFastsett().map(input);
+            case FRISINN -> new FrisinnGrunnlagMapperFastsett().map(input);
+            default -> null;
+        };
     }
 
     private static Dekningsgrad finnDekningsgrad(YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, LocalDate periodeFom) {

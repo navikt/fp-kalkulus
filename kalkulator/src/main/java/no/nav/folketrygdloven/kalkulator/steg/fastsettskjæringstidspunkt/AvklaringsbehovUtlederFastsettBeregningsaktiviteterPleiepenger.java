@@ -11,8 +11,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørYtelseDto;
@@ -25,10 +23,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningVenteårsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
-@ApplicationScoped
-@FagsakYtelseTypeRef(FagsakYtelseType.PLEIEPENGER_SYKT_BARN)
-@FagsakYtelseTypeRef(FagsakYtelseType.OPPLÆRINGSPENGER)
-@FagsakYtelseTypeRef(FagsakYtelseType.PLEIEPENGER_NÆRSTÅENDE)
 public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterPleiepenger implements AvklaringsbehovUtlederFastsettBeregningsaktiviteter {
 
     private static List<BeregningAvklaringsbehovResultat> utledAvklaringsbehovForPleiepenger(BeregningAktivitetAggregatDto beregningAktivitetAggregat,

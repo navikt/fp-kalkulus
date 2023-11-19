@@ -75,13 +75,13 @@ import no.nav.k9.felles.sikkerhet.abac.StandardAbacAttributtType;
 @Transactional
 public class MidlertidigForvaltningRestTjeneste {
 
+    private static final BeregningsgrunnlagTjeneste beregningsgrunnlagTjeneste = new BeregningsgrunnlagTjeneste();
+
     private KoblingTjeneste koblingTjeneste;
 
     private StegProsessInputTjeneste inputTjeneste;
 
     private KalkulatorInputTjeneste kalkulatorInputTjeneste;
-
-    private BeregningsgrunnlagTjeneste beregningsgrunnlagTjeneste;
 
 
     public MidlertidigForvaltningRestTjeneste() {
@@ -91,12 +91,10 @@ public class MidlertidigForvaltningRestTjeneste {
     @Inject
     public MidlertidigForvaltningRestTjeneste(KoblingTjeneste koblingTjeneste,
                                               StegProsessInputTjeneste inputTjeneste,
-                                              KalkulatorInputTjeneste kalkulatorInputTjeneste,
-                                              BeregningsgrunnlagTjeneste beregningsgrunnlagTjeneste) {
+                                              KalkulatorInputTjeneste kalkulatorInputTjeneste) {
         this.koblingTjeneste = koblingTjeneste;
         this.inputTjeneste = inputTjeneste;
         this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
-        this.beregningsgrunnlagTjeneste = beregningsgrunnlagTjeneste;
     }
 
     @POST

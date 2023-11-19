@@ -10,7 +10,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -31,8 +30,10 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.ATogFL
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningAndelDto;
 
 // TODO (Safir) Denne bør splittes opp til tre klasser: ei klasse for ATFL i samme org, ei for frilanser og ei for AT med lønnsendring (uten inntektsmelding)
-@ApplicationScoped
 public class FaktaOmBeregningAndelDtoTjeneste {
+
+    private FaktaOmBeregningAndelDtoTjeneste() {
+    }
 
     static Optional<FaktaOmBeregningAndelDto> lagFrilansAndelDto(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
         if (beregningsgrunnlag.getBeregningsgrunnlagPerioder().isEmpty()) {

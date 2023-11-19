@@ -5,9 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -16,19 +13,10 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.AvklaringsbehovutlederRefusjonEtterSluttdato;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.AvklaringsbehovutlederVurderRefusjon;
-import no.nav.folketrygdloven.kalkulator.steg.refusjon.AvklaringsbehovutledertjenesteVurderRefusjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
-@ApplicationScoped
-@FagsakYtelseTypeRef(FagsakYtelseType.FORELDREPENGER)
-public class AvklaringsbehovutledertjenesteVurderRefusjonFP implements AvklaringsbehovutledertjenesteVurderRefusjon {
+public class AvklaringsbehovutledertjenesteVurderRefusjonFP {
 
-    @Inject
-    public AvklaringsbehovutledertjenesteVurderRefusjonFP() {
-    }
-
-    @Override
     public List<BeregningAvklaringsbehovResultat> utledAvklaringsbehov(BeregningsgrunnlagInput input,
                                                                        BeregningsgrunnlagDto periodisertMedRefusjonOgGradering) {
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = new ArrayList<>();
@@ -37,8 +25,7 @@ public class AvklaringsbehovutledertjenesteVurderRefusjonFP implements Avklaring
             avklaringsbehov.add(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.VURDER_REFUSJONSKRAV));
         }
 
-        if (input.getYtelsespesifiktGrunnlag() instanceof ForeldrepengerGrunnlag) {
-            ForeldrepengerGrunnlag fpGrunnlag = input.getYtelsespesifiktGrunnlag();
+        if (input.getYtelsespesifiktGrunnlag() instanceof ForeldrepengerGrunnlag fpGrunnlag) {
             Collection<YrkesaktivitetDto> yrkesaktiviteter = input.getIayGrunnlag().getAktørArbeidFraRegister()
                     .map(AktørArbeidDto::hentAlleYrkesaktiviteter)
                     .orElse(Collections.emptyList());

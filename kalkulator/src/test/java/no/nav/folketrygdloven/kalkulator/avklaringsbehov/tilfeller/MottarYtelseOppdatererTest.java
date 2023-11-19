@@ -40,7 +40,6 @@ public class MottarYtelseOppdatererTest {
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_OPPTJENING);
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private BeregningsgrunnlagPeriodeDto periode;
-    private MottarYtelseOppdaterer oppdaterer;
     private BeregningsgrunnlagInput input;
 
     @BeforeEach
@@ -54,7 +53,6 @@ public class MottarYtelseOppdatererTest {
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
             .build(beregningsgrunnlag);
         input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
-        this.oppdaterer = new MottarYtelseOppdaterer();
     }
 
     @Test
@@ -67,7 +65,7 @@ public class MottarYtelseOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        oppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        MottarYtelseOppdaterer.oppdater(dto, oppdatere);
         Optional<FaktaAggregatDto> faktaAggregat = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT).getFaktaAggregat();
 
         // Assert
@@ -86,7 +84,7 @@ public class MottarYtelseOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        oppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        MottarYtelseOppdaterer.oppdater(dto, oppdatere);
 
         BeregningsgrunnlagPrStatusOgAndelDto oppdatertArbeidsforholdAndel = oppdatere.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag()
             .getBeregningsgrunnlagPerioder().get(0)

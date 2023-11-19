@@ -4,25 +4,24 @@ import static no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapRege
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Any;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.gradering.PeriodeModellGradering;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.refusjon.PeriodeModellRefusjon;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.utbetalingsgrad.PeriodeModellUtbetalingsgrad;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
-import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLGraderingOgUtbetalingsgrad;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjon;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.gradering.MapPerioderForGraderingFraVLTilRegel;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.refusjon.MapRefusjonPerioderFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
+import no.nav.folketrygdloven.kalkulator.ytelse.fp.MapRefusjonPerioderFraVLTilRegelFP;
+import no.nav.folketrygdloven.kalkulator.ytelse.k9.MapRefusjonPerioderFraVLTilRegelOMP;
+import no.nav.folketrygdloven.kalkulator.ytelse.k9.MapRefusjonPerioderFraVLTilRegelPleiepenger;
+import no.nav.folketrygdloven.kalkulator.ytelse.svp.MapRefusjonPerioderFraVLTilRegelSVP;
 import no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.MapPerioderForUtbetalingsgradFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
@@ -34,33 +33,30 @@ import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
  *
  * Sette refusjon på andeler med gyldig refusjon
  */
-@ApplicationScoped
 public class FordelPerioderTjeneste {
-    private Instance<MapRefusjonPerioderFraVLTilRegel> oversetterTilRegelRefusjon;
     private final MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLGraderingOgUtbetalingsgrad oversetterFraRegelGraderingOgUtbetalingsgrad = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLGraderingOgUtbetalingsgrad();
     private final MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjon oversetterFraRegelRefusjon = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjon();
-
-    FordelPerioderTjeneste() {
-        // For CDI
-    }
-
-    @Inject
-    public FordelPerioderTjeneste(@Any Instance<MapRefusjonPerioderFraVLTilRegel> oversetterTilRegelRefusjon) {
-        this.oversetterTilRegelRefusjon = oversetterTilRegelRefusjon;
-    }
-
 
 
     public BeregningsgrunnlagRegelResultat fastsettPerioderForRefusjon(BeregningsgrunnlagInput input) {
         var beregningsgrunnlag = input.getBeregningsgrunnlag();
-        var ref = input.getKoblingReferanse();
-        var mapperForYtelse = FagsakYtelseTypeRef.Lookup.find(oversetterTilRegelRefusjon, ref.getFagsakYtelseType());
 
-        return mapperForYtelse.map(mapper -> {
-                    PeriodeModellRefusjon periodeModell = mapper.map(input, beregningsgrunnlag);
-                    return kjørRegelOgMapTilVLRefusjon(beregningsgrunnlag, periodeModell);
-                }
-        ).orElse(new BeregningsgrunnlagRegelResultat(beregningsgrunnlag, List.of()));
+        return finnPeriodeModellRefusjon(input, beregningsgrunnlag)
+                .map(m -> kjørRegelOgMapTilVLRefusjon(beregningsgrunnlag, m))
+                .orElseGet(() -> new BeregningsgrunnlagRegelResultat(beregningsgrunnlag, List.of()));
+    }
+
+    private static Optional<PeriodeModellRefusjon> finnPeriodeModellRefusjon(BeregningsgrunnlagInput input,
+                                                                             BeregningsgrunnlagDto beregningsgrunnlag) {
+        var modell = switch (input.getFagsakYtelseType()) {
+            case FORELDREPENGER -> new MapRefusjonPerioderFraVLTilRegelFP().map(input, beregningsgrunnlag);
+            case SVANGERSKAPSPENGER -> new MapRefusjonPerioderFraVLTilRegelSVP().map(input, beregningsgrunnlag);
+            case OMSORGSPENGER -> new MapRefusjonPerioderFraVLTilRegelOMP().map(input, beregningsgrunnlag);
+            case PLEIEPENGER_SYKT_BARN, OPPLÆRINGSPENGER, PLEIEPENGER_NÆRSTÅENDE ->
+                    new MapRefusjonPerioderFraVLTilRegelPleiepenger().map(input, beregningsgrunnlag);
+            default -> null;
+        };
+        return Optional.ofNullable(modell);
     }
 
     public BeregningsgrunnlagRegelResultat fastsettPerioderForUtbetalingsgradEllerGradering(BeregningsgrunnlagInput input,

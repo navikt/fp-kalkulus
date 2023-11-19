@@ -1,21 +1,13 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.YtelsesSpesifiktGrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.fp.ForeldrepengerGrunnlag;
-import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.YtelsesspesifikkRegelMapper;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 
-@ApplicationScoped
-@FagsakYtelseTypeRef(FagsakYtelseType.FORELDREPENGER)
-public class ForeldrepengerGrunnlagMapper implements YtelsesspesifikkRegelMapper {
+public class ForeldrepengerGrunnlagMapper {
 
-    @Override
-    public YtelsesSpesifiktGrunnlag map(BeregningsgrunnlagDto beregningsgrunnlag, BeregningsgrunnlagInput input) {
+    public YtelsesSpesifiktGrunnlag map(BeregningsgrunnlagDto beregningsgrunnlag) {
         boolean harVærtBesteberegnet = beregningsgrunnlag.getFaktaOmBeregningTilfeller().stream()
                 .anyMatch(FaktaOmBeregningTilfelle.FASTSETT_BESTEBEREGNING_FØDENDE_KVINNE::equals);
         return new ForeldrepengerGrunnlag(harVærtBesteberegnet);

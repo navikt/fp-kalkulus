@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Optional;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
@@ -19,15 +18,13 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.AndelM
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.KunYtelseDto;
 
-@ApplicationScoped
-public class KunYtelseDtoTjeneste implements FaktaOmBeregningTilfelleDtoTjeneste {
+public class KunYtelseDtoTjeneste {
 
     KunYtelseDtoTjeneste() {
         // For CDI
     }
 
 
-    @Override
     public void lagDto(BeregningsgrunnlagGUIInput input,
                        FaktaOmBeregningDto faktaOmBeregningDto) {
         BeregningsgrunnlagDto beregningsgrunnlag = input.getBeregningsgrunnlag();
@@ -41,8 +38,8 @@ public class KunYtelseDtoTjeneste implements FaktaOmBeregningTilfelleDtoTjeneste
 
         dto.setErBesteberegning(harBesteberegning(input.getBeregningsgrunnlag(), input.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlagTilstand()));
         settVerdier(dto, input.getBeregningsgrunnlag(), input.getIayGrunnlag());
-        if (input.getYtelsespesifiktGrunnlag() instanceof ForeldrepengerGrunnlag) {
-            dto.setFodendeKvinneMedDP(((ForeldrepengerGrunnlag) input.getYtelsespesifiktGrunnlag()).isKvalifisererTilBesteberegning());
+        if (input.getYtelsespesifiktGrunnlag() instanceof ForeldrepengerGrunnlag foreldrepengerGrunnlag) {
+            dto.setFodendeKvinneMedDP(foreldrepengerGrunnlag.isKvalifisererTilBesteberegning());
         }
         return dto;
     }

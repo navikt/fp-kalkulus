@@ -2,14 +2,10 @@ package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
 import static no.nav.folketrygdloven.kalkulator.guitjenester.fakta.saksopplysninger.SaksopplysningerTjeneste.lagSaksopplysninger;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Any;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
+import java.util.Set;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -18,18 +14,10 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDto
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningDto;
 
-@ApplicationScoped
 public class FaktaOmBeregningDtoTjeneste {
-
-    private List<FaktaOmBeregningTilfelleDtoTjeneste> dtoTjenester;
 
     public FaktaOmBeregningDtoTjeneste() {
         // CDI
-    }
-
-    @Inject
-    public FaktaOmBeregningDtoTjeneste(@Any Instance<FaktaOmBeregningTilfelleDtoTjeneste> dtoTjenesteInstance) {
-        this.dtoTjenester = dtoTjenesteInstance.stream().collect(Collectors.toList());
     }
 
     // TODO (Denne burde splittes i ein del som krever bg og ein del som ikkje krever det)
@@ -44,14 +32,14 @@ public class FaktaOmBeregningDtoTjeneste {
                 saksbehandletAktivitetAggregat, arbeidsforholdInformasjon, faktaOmBeregningDto);
 
         // Denne delen krever Beregningsgrunnlag
-        if (grunnlagEntitet.getBeregningsgrunnlag().isPresent() && !grunnlagEntitet.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().isEmpty()) {
+        var beregningsgrunnlag = grunnlagEntitet.getBeregningsgrunnlag().orElse(null);
+        if (beregningsgrunnlag != null && !beregningsgrunnlag.getBeregningsgrunnlagPerioder().isEmpty()) {
             faktaOmBeregningDto.setAndelerForFaktaOmBeregning(AndelerForFaktaOmBeregningTjeneste.lagAndelerForFaktaOmBeregning(input));
             faktaOmBeregningDto.setSaksopplysninger(lagSaksopplysninger(input));
-            BeregningsgrunnlagDto beregningsgrunnlag = grunnlagEntitet.getBeregningsgrunnlag().orElseThrow();
             if (skalVurdereFaktaForATFL(beregningsgrunnlag)) {
-                List<FaktaOmBeregningTilfelle> tilfeller = beregningsgrunnlag.getFaktaOmBeregningTilfeller();
-                faktaOmBeregningDto.setFaktaOmBeregningTilfeller(tilfeller.stream().collect(Collectors.toList()));
-                utledDtoerForTilfeller(input, faktaOmBeregningDto);
+                var tilfeller = new HashSet<>(beregningsgrunnlag.getFaktaOmBeregningTilfeller());
+                faktaOmBeregningDto.setFaktaOmBeregningTilfeller(new ArrayList<>(tilfeller));
+                utledDtoerForTilfeller(tilfeller, input, faktaOmBeregningDto);
             }
         }
         return Optional.of(faktaOmBeregningDto);
@@ -61,8 +49,32 @@ public class FaktaOmBeregningDtoTjeneste {
         return !beregningsgrunnlag.getFaktaOmBeregningTilfeller().isEmpty();
     }
 
-    private void utledDtoerForTilfeller(BeregningsgrunnlagGUIInput input,
+    private void utledDtoerForTilfeller(Set<FaktaOmBeregningTilfelle> tilfeller, BeregningsgrunnlagGUIInput input,
                                         FaktaOmBeregningDto faktaOmBeregningDto) {
-        dtoTjenester.forEach(dtoTjeneste -> dtoTjeneste.lagDto(input, faktaOmBeregningDto));
+        if (tilfeller.contains(FaktaOmBeregningTilfelle.VURDER_NYOPPSTARTET_FL)) {
+            new NyOppstartetFLDtoTjeneste().lagDto(input, faktaOmBeregningDto);
+        }
+        if (tilfeller.contains(FaktaOmBeregningTilfelle.VURDER_AT_OG_FL_I_SAMME_ORGANISASJON)) {
+            new VurderATFLISammeOrgDtoTjeneste().lagDto(input, faktaOmBeregningDto);
+        }
+        if (tilfeller.contains(FaktaOmBeregningTilfelle.FASTSETT_BG_KUN_YTELSE)) {
+            new KunYtelseDtoTjeneste().lagDto(input, faktaOmBeregningDto);
+        }
+        if (tilfeller.contains(FaktaOmBeregningTilfelle.VURDER_TIDSBEGRENSET_ARBEIDSFORHOLD)) {
+            new KortvarigeArbeidsforholdDtoTjeneste().lagDto(input, faktaOmBeregningDto);
+        }
+        if (tilfeller.contains(FaktaOmBeregningTilfelle.VURDER_LØNNSENDRING)) {
+            new VurderLønnsendringDtoTjeneste().lagDto(input, faktaOmBeregningDto);
+        }
+        if (tilfeller.contains(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE)) {
+            new VurderMottarYtelseDtoTjeneste().lagDto(input, faktaOmBeregningDto);
+        }
+        if (tilfeller.contains(FaktaOmBeregningTilfelle.VURDER_BESTEBEREGNING) || tilfeller.contains(FaktaOmBeregningTilfelle.FASTSETT_BESTEBEREGNING_FØDENDE_KVINNE)) {
+            new VurderBesteberegningTilfelleDtoTjeneste().lagDto(input, faktaOmBeregningDto);
+        }
+        if (tilfeller.contains(FaktaOmBeregningTilfelle.VURDER_REFUSJONSKRAV_SOM_HAR_KOMMET_FOR_SENT)) {
+            new VurderRefusjonTilfelleDtoTjeneste().lagDto(input, faktaOmBeregningDto);
+        }
+        new VurderMilitærDtoTjeneste().lagDto(input, faktaOmBeregningDto);
     }
 }

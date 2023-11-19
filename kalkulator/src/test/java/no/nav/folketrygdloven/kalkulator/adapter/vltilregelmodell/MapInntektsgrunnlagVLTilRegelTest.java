@@ -33,7 +33,7 @@ public class MapInntektsgrunnlagVLTilRegelTest {
     public static final LocalDate SKJÆRINGSTIDSPUNKT_BEREGNING = LocalDate.now();
     public static final Arbeidsgiver VIRKSOMHET = Arbeidsgiver.virksomhet("94632432");
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
-    private MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelFelles();
+    private MapInntektsgrunnlagVLTilRegelFelles mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelFelles();
 
     @Test
     public void skal_mappe_inntektsmelding_for_arbeid_med_fleire_yrkesaktiviteter() {

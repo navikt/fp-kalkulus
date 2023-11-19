@@ -22,9 +22,6 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.OpprettKravPerioderFraInntektsmeldinger;
-import no.nav.folketrygdloven.kalkulator.felles.frist.ArbeidsgiverRefusjonskravTjeneste;
-import no.nav.folketrygdloven.kalkulator.felles.frist.KravTjeneste;
-import no.nav.folketrygdloven.kalkulator.felles.frist.TreMånedersFristVurderer;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
@@ -48,10 +45,10 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.KravperioderPrArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningIAYTestUtil;
@@ -68,7 +65,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PermisjonsbeskrivelseType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.utils.BeregningsgrunnlagTestUtil;
-import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 
 public class FordelPerioderTjenesteTest {
@@ -90,12 +86,6 @@ public class FordelPerioderTjenesteTest {
     private InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder;
 
 
-    private final ArbeidsgiverRefusjonskravTjeneste arbeidsgiverRefusjonskravTjeneste = new ArbeidsgiverRefusjonskravTjeneste(
-            new KravTjeneste(
-                    new UnitTestLookupInstanceImpl<>(new TreMånedersFristVurderer())
-            )
-    );
-
     @BeforeEach
     public void setUp() {
         iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
@@ -105,9 +95,8 @@ public class FordelPerioderTjenesteTest {
     }
 
     private FordelPerioderTjeneste lagTjeneste() {
-        var oversetterTilRegelRefusjon = new MapRefusjonPerioderFraVLTilRegelFP(arbeidsgiverRefusjonskravTjeneste);
+        var oversetterTilRegelRefusjon = new MapRefusjonPerioderFraVLTilRegelFP();
         return new FordelPerioderTjeneste(
-                new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjon)
         );
     }
 

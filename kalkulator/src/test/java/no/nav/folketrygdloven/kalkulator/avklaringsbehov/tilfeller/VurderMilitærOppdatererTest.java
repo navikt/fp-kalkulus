@@ -11,7 +11,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
@@ -40,12 +39,6 @@ public class VurderMilitærOppdatererTest {
     private static final Beløp GRUNNBELØP = new Beløp(BigDecimal.valueOf(85000));
 
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
-    private VurderMilitærOppdaterer vurderMilitærOppdaterer;
-
-    @BeforeEach
-    public void setup() {
-        vurderMilitærOppdaterer = new VurderMilitærOppdaterer();
-    }
 
     @Test
     public void skal_legge_til_militærandel_om_vurdert_til_true_og_andel_ikke_finnes() {
@@ -58,7 +51,7 @@ public class VurderMilitærOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        vurderMilitærOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        VurderMilitærOppdaterer.oppdater(dto, oppdatere);
 
         // Assert
         BeregningsgrunnlagDto nyttBg = oppdatere.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag();
@@ -83,7 +76,7 @@ public class VurderMilitærOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        vurderMilitærOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        VurderMilitærOppdaterer.oppdater(dto, oppdatere);
 
         // Assert
         BeregningsgrunnlagDto nyttBg = oppdatere.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag();
@@ -105,7 +98,7 @@ public class VurderMilitærOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        vurderMilitærOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        VurderMilitærOppdaterer.oppdater(dto, oppdatere);
 
         // Assert
         BeregningsgrunnlagDto nyttBg = oppdatere.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag();
@@ -128,7 +121,7 @@ public class VurderMilitærOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        vurderMilitærOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        VurderMilitærOppdaterer.oppdater(dto, oppdatere);
 
         // Assert
         BeregningsgrunnlagDto nyttBg = oppdatere.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag();

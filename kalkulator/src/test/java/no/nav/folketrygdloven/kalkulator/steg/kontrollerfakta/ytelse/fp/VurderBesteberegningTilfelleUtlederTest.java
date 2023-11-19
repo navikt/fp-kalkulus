@@ -35,7 +35,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 class VurderBesteberegningTilfelleUtlederTest {
 
     public static final LocalDate STP = LocalDate.now();
-    private VurderBesteberegningTilfelleUtleder tilfelleUtleder = new VurderBesteberegningTilfelleUtleder();
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(STP);
 
     @Test
@@ -85,7 +84,7 @@ class VurderBesteberegningTilfelleUtlederTest {
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Act
-        Optional<FaktaOmBeregningTilfelle> tilfelle = tilfelleUtleder.utled(new FaktaOmBeregningInput(new StegProsesseringInput(input, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER)), grunnlag);
+        Optional<FaktaOmBeregningTilfelle> tilfelle = new VurderBesteberegningTilfelleUtleder().utled(new FaktaOmBeregningInput(new StegProsesseringInput(input, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER)), grunnlag);
 
         // Assert
         assertThat(tilfelle).isEmpty();
@@ -129,7 +128,7 @@ class VurderBesteberegningTilfelleUtlederTest {
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Act
-        Optional<FaktaOmBeregningTilfelle> tilfelle = tilfelleUtleder.utled(new FaktaOmBeregningInput(new StegProsesseringInput(input, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER)), grunnlag);
+        Optional<FaktaOmBeregningTilfelle> tilfelle = new VurderBesteberegningTilfelleUtleder().utled(new FaktaOmBeregningInput(new StegProsesseringInput(input, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER)), grunnlag);
 
         // Assert
         assertThat(tilfelle).isEmpty();
@@ -174,7 +173,7 @@ class VurderBesteberegningTilfelleUtlederTest {
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Act
-        Optional<FaktaOmBeregningTilfelle> tilfelle = tilfelleUtleder.utled(new FaktaOmBeregningInput(new StegProsesseringInput(input, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER)), grunnlag);
+        Optional<FaktaOmBeregningTilfelle> tilfelle = new VurderBesteberegningTilfelleUtleder().utled(new FaktaOmBeregningInput(new StegProsesseringInput(input, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER)), grunnlag);
 
         // Assert
         assertThat(tilfelle).isNotEmpty();

@@ -55,13 +55,7 @@ import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
 public abstract class MapRefusjonPerioderFraVLTilRegel {
 
-    protected ArbeidsgiverRefusjonskravTjeneste arbeidsgiverRefusjonskravTjeneste;
-
-    MapRefusjonPerioderFraVLTilRegel() {
-    }
-
-    protected MapRefusjonPerioderFraVLTilRegel(ArbeidsgiverRefusjonskravTjeneste arbeidsgiverRefusjonskravTjeneste) {
-        this.arbeidsgiverRefusjonskravTjeneste = arbeidsgiverRefusjonskravTjeneste;
+    protected MapRefusjonPerioderFraVLTilRegel() {
     }
 
 
@@ -125,7 +119,7 @@ public abstract class MapRefusjonPerioderFraVLTilRegel {
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = input.getBeregningsgrunnlagGrunnlag().getGjeldendeAktiviteter();
         Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer = input.getBeregningsgrunnlagGrunnlag().getRefusjonOverstyringer();
         var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister());
-        var fristvurdertTidslinjePrArbeidsgiver = arbeidsgiverRefusjonskravTjeneste.lagFristTidslinjePrArbeidsgiver(
+        var fristvurdertTidslinjePrArbeidsgiver = ArbeidsgiverRefusjonskravTjeneste.lagFristTidslinjePrArbeidsgiver(
                 filter.getYrkesaktiviteterForBeregning(),
                 input.getKravPrArbeidsgiver(),
                 gjeldendeAktiviteter,

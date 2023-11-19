@@ -3,9 +3,6 @@ package no.nav.folketrygdloven.kalkulator.avklaringsbehov.tilfeller;
 import java.util.List;
 import java.util.Optional;
 
-import jakarta.enterprise.context.ApplicationScoped;
-
-import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.FastsettFaktaOmBeregningVerdierTjeneste;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.BesteberegningFødendeKvinneAndelDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.BesteberegningFødendeKvinneDto;
@@ -14,7 +11,6 @@ import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FaktaBeregningLagre
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FastsatteVerdierDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FastsatteVerdierForBesteberegningDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.RedigerbarAndelFaktaOmBeregningDto;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
@@ -24,15 +20,11 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDt
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
 
-@ApplicationScoped
-@FaktaOmBeregningTilfelleRef("FASTSETT_BESTEBEREGNING_FØDENDE_KVINNE")
-public class FastsettBesteberegningFødendeKvinneOppdaterer implements FaktaOmBeregningTilfelleOppdaterer {
+public class FastsettBesteberegningFødendeKvinneOppdaterer  {
 
-    @Override
-    public void oppdater(FaktaBeregningLagreDto dto,
-                         Optional<BeregningsgrunnlagDto> forrigeBg,
-                         BeregningsgrunnlagInput input,
-                         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder) {
+    public static void oppdater(FaktaBeregningLagreDto dto,
+                                Optional<BeregningsgrunnlagDto> forrigeBg,
+                                BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder) {
         BesteberegningFødendeKvinneDto besteberegningDto = dto.getBesteberegningAndeler();
         List<BesteberegningFødendeKvinneAndelDto> andelListe = besteberegningDto.getBesteberegningAndelListe();
         BeregningsgrunnlagDto.Builder beregningsgrunnlagBuilder = grunnlagBuilder.getBeregningsgrunnlagBuilder();
@@ -60,7 +52,7 @@ public class FastsettBesteberegningFødendeKvinneOppdaterer implements FaktaOmBe
         grunnlagBuilder.medFaktaAggregat(faktaBuilder.build());
     }
 
-    private FastsatteVerdierDto mapTilFastsatteVerdier(DagpengeAndelLagtTilBesteberegningDto nyDagpengeAndel) {
+    private static FastsatteVerdierDto mapTilFastsatteVerdier(DagpengeAndelLagtTilBesteberegningDto nyDagpengeAndel) {
         FastsatteVerdierForBesteberegningDto fastsatteVerdier = nyDagpengeAndel.getFastsatteVerdier();
         return FastsatteVerdierDto.Builder.ny()
                 .medFastsattBeløpPrÅr(fastsatteVerdier.finnFastsattBeløpPrÅr().intValue())
@@ -69,15 +61,15 @@ public class FastsettBesteberegningFødendeKvinneOppdaterer implements FaktaOmBe
                 .build();
     }
 
-    private RedigerbarAndelFaktaOmBeregningDto lagRedigerbarAndelDtoForDagpenger() {
+    private static RedigerbarAndelFaktaOmBeregningDto lagRedigerbarAndelDtoForDagpenger() {
         return new RedigerbarAndelFaktaOmBeregningDto(AktivitetStatus.DAGPENGER);
     }
 
-    private RedigerbarAndelFaktaOmBeregningDto mapTilRedigerbarAndel(BesteberegningFødendeKvinneAndelDto dtoAndel) {
+    private static RedigerbarAndelFaktaOmBeregningDto mapTilRedigerbarAndel(BesteberegningFødendeKvinneAndelDto dtoAndel) {
         return new RedigerbarAndelFaktaOmBeregningDto(false, dtoAndel.getAndelsnr(), dtoAndel.getLagtTilAvSaksbehandler());
     }
 
-    private FastsatteVerdierDto mapTilFastsatteVerdier(BesteberegningFødendeKvinneAndelDto dtoAndel) {
+    private static FastsatteVerdierDto mapTilFastsatteVerdier(BesteberegningFødendeKvinneAndelDto dtoAndel) {
         FastsatteVerdierForBesteberegningDto fastsatteVerdier = dtoAndel.getFastsatteVerdier();
         return FastsatteVerdierDto.Builder.ny()
                 .medFastsattBeløpPrÅr(fastsatteVerdier.finnFastsattBeløpPrÅr().intValue())

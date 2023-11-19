@@ -1,29 +1,23 @@
-package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
+package no.nav.folketrygdloven.kalkulator.avklaringsbehov.tilfeller;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
-import jakarta.enterprise.context.ApplicationScoped;
-
-import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FaktaBeregningLagreDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FastsettMånedsinntektFLDto;
-import no.nav.folketrygdloven.kalkulator.avklaringsbehov.tilfeller.FaktaOmBeregningTilfelleOppdaterer;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
 
-@ApplicationScoped
-@FaktaOmBeregningTilfelleRef("FASTSETT_MAANEDSINNTEKT_FL")
-class FastsettBruttoBeregningsgrunnlagFLOppdaterer implements FaktaOmBeregningTilfelleOppdaterer {
+class FastsettBruttoBeregningsgrunnlagFLOppdaterer {
 
-    @Override
-    public void oppdater(FaktaBeregningLagreDto dto, Optional<BeregningsgrunnlagDto> forrigeBg, BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder) {
+    private FastsettBruttoBeregningsgrunnlagFLOppdaterer() {
+    }
+
+    public static void oppdater(FaktaBeregningLagreDto dto, BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder) {
         FastsettMånedsinntektFLDto fastsettMånedsinntektFLDto = dto.getFastsettMaanedsinntektFL();
         Integer frilansinntekt = fastsettMånedsinntektFLDto.getMaanedsinntekt();
         BigDecimal årsinntektFL = BigDecimal.valueOf(frilansinntekt).multiply(BigDecimal.valueOf(12));

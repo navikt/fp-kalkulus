@@ -10,10 +10,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Default;
-import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
@@ -24,25 +20,17 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
-@ApplicationScoped
 public class ArbeidsgiverRefusjonskravTjeneste {
 
-    private KravTjeneste kravTjeneste;
-
-    public ArbeidsgiverRefusjonskravTjeneste() {
+    private ArbeidsgiverRefusjonskravTjeneste() {
     }
 
-    @Inject
-    public ArbeidsgiverRefusjonskravTjeneste(KravTjeneste kravTjeneste) {
-        this.kravTjeneste = kravTjeneste;
-    }
-
-    public Map<Arbeidsgiver, LocalDateTimeline<KravOgUtfall>> lagFristTidslinjePrArbeidsgiver(Collection<YrkesaktivitetDto> yrkesaktiviteter,
-                                                                                              List<KravperioderPrArbeidsforholdDto> kravperioder,
-                                                                                              BeregningAktivitetAggregatDto gjeldendeAktiviteter,
-                                                                                              LocalDate skjæringstidspunktBeregning,
-                                                                                              Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer,
-                                                                                              FagsakYtelseType ytelseType) {
+    public static Map<Arbeidsgiver, LocalDateTimeline<KravOgUtfall>> lagFristTidslinjePrArbeidsgiver(Collection<YrkesaktivitetDto> yrkesaktiviteter,
+                                                                                                     List<KravperioderPrArbeidsforholdDto> kravperioder,
+                                                                                                     BeregningAktivitetAggregatDto gjeldendeAktiviteter,
+                                                                                                     LocalDate skjæringstidspunktBeregning,
+                                                                                                     Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer,
+                                                                                                     FagsakYtelseType ytelseType) {
         Map<YrkesaktivitetDto, List<PerioderForKravDto>> yrkesaktivitetKravperioderMap = lagMap(yrkesaktiviteter, kravperioder);
         var tidslinjeMap = new HashMap<Arbeidsgiver, LocalDateTimeline<KravOgUtfall>>();
         for (var entry : yrkesaktivitetKravperioderMap.entrySet()) {
@@ -54,7 +42,7 @@ public class ArbeidsgiverRefusjonskravTjeneste {
                         .findFirst()
                         .flatMap(BeregningRefusjonOverstyringDto::getFørsteMuligeRefusjonFom);
 
-                var tidslinje = kravTjeneste.lagTidslinjeForYrkesaktivitet(
+                var tidslinje = KravTjeneste.lagTidslinjeForYrkesaktivitet(
                         entry.getValue(),
                         yrkesaktivitet,
                         gjeldendeAktiviteter,

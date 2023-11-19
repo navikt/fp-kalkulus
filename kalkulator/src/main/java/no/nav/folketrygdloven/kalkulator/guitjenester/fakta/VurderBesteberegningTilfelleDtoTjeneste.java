@@ -1,7 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
-import jakarta.enterprise.context.ApplicationScoped;
-
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
@@ -9,15 +7,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.VurderBesteberegningDto;
 
-@ApplicationScoped
-public class VurderBesteberegningTilfelleDtoTjeneste implements FaktaOmBeregningTilfelleDtoTjeneste {
+public class VurderBesteberegningTilfelleDtoTjeneste {
 
-
-    VurderBesteberegningTilfelleDtoTjeneste() {
-        // For CDI
-    }
-
-    @Override
     public void lagDto(BeregningsgrunnlagGUIInput input, FaktaOmBeregningDto faktaOmBeregningDto) {
         if (!harBgTilfelle(input.getBeregningsgrunnlag())) {
             return;

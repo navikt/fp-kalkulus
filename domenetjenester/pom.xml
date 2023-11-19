@@ -38,6 +38,10 @@
             <artifactId>kalkulus-kalkulator-jakarta</artifactId>
         </dependency>
         <dependency>
+            <groupId>no.nav.k9.felles</groupId>
+            <artifactId>k9-felles-konfigurasjon</artifactId>
+        </dependency>
+        <dependency>
             <groupId>no.nav.k9.felles.sikkerhet</groupId>
             <artifactId>k9-felles-sikkerhet</artifactId>
         </dependency>
@@ -107,6 +111,12 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.weld</groupId>
+            <artifactId>weld-junit5</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
 

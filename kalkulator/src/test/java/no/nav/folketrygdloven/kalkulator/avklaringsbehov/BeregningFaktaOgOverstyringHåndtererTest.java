@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.inject.Inject;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +18,6 @@ import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FastsatteVerdierDto
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FastsettBeregningsgrunnlagAndelDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.OverstyrBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.RedigerbarAndelFaktaOmBeregningDto;
-import no.nav.folketrygdloven.kalkulator.avklaringsbehov.tilfeller.FaktaOmBeregningTilfellerOppdaterer;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
@@ -42,14 +39,12 @@ public class BeregningFaktaOgOverstyringHåndtererTest {
 
     private static final LocalDate STP = LocalDate.of(2019, 1, 1);
 
-    @Inject
-    private FaktaOmBeregningTilfellerOppdaterer faktaOmBeregningTilfellerOppdaterer;
     private BeregningFaktaOgOverstyringHåndterer beregningFaktaOgOverstyringHåndterer;
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(STP);
 
     @BeforeEach
     public void setup() {
-        this.beregningFaktaOgOverstyringHåndterer = new BeregningFaktaOgOverstyringHåndterer(faktaOmBeregningTilfellerOppdaterer);
+        this.beregningFaktaOgOverstyringHåndterer = new BeregningFaktaOgOverstyringHåndterer();
     }
 
     @Test

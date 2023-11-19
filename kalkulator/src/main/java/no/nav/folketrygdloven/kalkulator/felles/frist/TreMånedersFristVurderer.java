@@ -7,20 +7,14 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.modell.iay.PerioderForKravDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
-@FagsakYtelseTypeRef(FagsakYtelseType.SVANGERSKAPSPENGER)
-@FagsakYtelseTypeRef(FagsakYtelseType.FORELDREPENGER)
-@ApplicationScoped
-public class TreMånedersFristVurderer implements FristVurderer {
+public class TreMånedersFristVurderer {
 
-    public LocalDateTimeline<Utfall> finnTidslinje(PerioderForKravDto krav, Optional<LocalDate> overstyrtRefusjonFom) {
+    public static LocalDateTimeline<Utfall> finnTidslinje(PerioderForKravDto krav, Optional<LocalDate> overstyrtRefusjonFom) {
         return new LocalDateTimeline<>(List.of(new LocalDateSegment<>(
                 overstyrtRefusjonFom.orElse(finnFørsteGyldigeDatoMedRefusjon(krav.getInnsendingsdato())),
                 TIDENES_ENDE, Utfall.GODKJENT)));

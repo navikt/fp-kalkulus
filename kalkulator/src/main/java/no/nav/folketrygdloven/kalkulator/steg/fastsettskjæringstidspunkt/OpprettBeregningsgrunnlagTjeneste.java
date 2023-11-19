@@ -3,18 +3,15 @@ package no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt;
 
 import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.inntektskategori.FastsettInntektskategoriTjeneste.fastsettInntektskategori;
 
+import java.util.List;
 import java.util.Optional;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Any;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
-import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
+import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.PerioderTilVurderingTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
-import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.input.GrunnbeløpMapper;
+import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -23,31 +20,21 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregat
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.steg.BeregningsgrunnlagVerifiserer;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.FastsettBeregningsperiode;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.fakta.FastsettFakta;
+import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ytelse.k14.FastsettSkjæringstidspunktOgStatuserK14;
+import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ytelse.k9.FastsettSkjæringstidspunktOgStatuserK9;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.FastsettBeregningsperiodeTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.fakta.FastsettFaktaTjenesteK14;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.fakta.FastsettFaktaTjenesteOMP;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.fakta.FastsettFaktaTjenestePleiepenger;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.periodisering.FastsettNaturalytelsePerioderTjeneste;
+import no.nav.folketrygdloven.kalkulator.ytelse.fp.FastsettBeregningsperiodeTjenesteFP;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FastsettBeregningsperiodeTjenesteFRISINN;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FastsettSkjæringstidspunktOgStatuserFRISINN;
 
 
-@ApplicationScoped
 public class OpprettBeregningsgrunnlagTjeneste {
 
     private final FastsettNaturalytelsePerioderTjeneste fastsettNaturalytelsePerioderTjeneste = new FastsettNaturalytelsePerioderTjeneste();
-    private Instance<FastsettSkjæringstidspunktOgStatuser> fastsettSkjæringstidspunktOgStatuser;
-    private Instance<FastsettBeregningsperiode> fastsettBeregningsperiodeTjeneste;
-    private Instance<FastsettFakta> fastsettFaktaTjeneste;
-
-    protected OpprettBeregningsgrunnlagTjeneste() {
-        // for CDI proxy
-    }
-
-    @Inject
-    public OpprettBeregningsgrunnlagTjeneste(@Any Instance<FastsettSkjæringstidspunktOgStatuser> fastsettSkjæringstidspunktOgStatuser,
-                                             @Any Instance<FastsettBeregningsperiode> fastsettBeregningsperiodeTjeneste,
-                                             @Any Instance<FastsettFakta> fastsettFaktaTjeneste) {
-        this.fastsettSkjæringstidspunktOgStatuser = fastsettSkjæringstidspunktOgStatuser;
-        this.fastsettBeregningsperiodeTjeneste = fastsettBeregningsperiodeTjeneste;
-        this.fastsettFaktaTjeneste = fastsettFaktaTjeneste;
-    }
 
     /**
      * Henter inn grunnlagsdata om nødvendig
@@ -64,9 +51,8 @@ public class OpprettBeregningsgrunnlagTjeneste {
         BeregningAktivitetAggregatDto beregningAktiviteter = grunnlag.getGjeldendeAktiviteter();
 
         // Fastsetter andeler, status og endelig skjæringstidpsunkt
-        var resultatMedAndeler = FagsakYtelseTypeRef.Lookup.find(fastsettSkjæringstidspunktOgStatuser, input.getFagsakYtelseType())
-                .orElseThrow(() -> new IllegalStateException("Fant ikke FastsettSkjæringstidspunktOgStatuser for ytelsetype " + input.getFagsakYtelseType().getKode()))
-                .fastsett(input, beregningAktiviteter, GrunnbeløpMapper.mapGrunnbeløpInput(input.getGrunnbeløpsatser(), input.getGrunnbeløpInput()));
+        var resultatMedAndeler = fastsettSkjæringstidspunktOgStatuser(input, beregningAktiviteter,
+                GrunnbeløpMapper.mapGrunnbeløpInput(input.getGrunnbeløpsatser(), input.getGrunnbeløpInput()));
 
         // Oppdaterer koblinginformasjon for videre prosessering
         KoblingReferanse refMedSkjæringstidspunkt = ref
@@ -77,12 +63,10 @@ public class OpprettBeregningsgrunnlagTjeneste {
         var medFastsattInntektskategori = fastsettInntektskategori(resultatMedAndeler.getBeregningsgrunnlag(), input.getIayGrunnlag());
 
         // Fastsett beregningsperiode
-        var medFastsattBeregningsperiode = FagsakYtelseTypeRef.Lookup.find(fastsettBeregningsperiodeTjeneste, input.getFagsakYtelseType()).orElseThrow()
-                .fastsettBeregningsperiode(medFastsattInntektskategori, input.getIayGrunnlag(), input.getInntektsmeldinger());
+        var medFastsattBeregningsperiode = fastsettBeregningsperiode(input, medFastsattInntektskategori);
 
         // Fastsett fakta
-        Optional<FaktaAggregatDto> faktaAggregatDto = FagsakYtelseTypeRef.Lookup.find(fastsettFaktaTjeneste, input.getFagsakYtelseType())
-                .flatMap(t -> t.fastsettFakta(medFastsattBeregningsperiode, input.getIayGrunnlag(), input.getInntektsmeldinger()));
+        Optional<FaktaAggregatDto> faktaAggregatDto = lagFaktaAggregat(input, medFastsattBeregningsperiode);
 
         // Oppretter perioder for endring i naturalytelse (tilkommet/bortfalt)
         var resultatMedNaturalytelse = fastsettNaturalytelsePerioderTjeneste.fastsettPerioderForNaturalytelse(newInput, medFastsattBeregningsperiode);
@@ -94,7 +78,6 @@ public class OpprettBeregningsgrunnlagTjeneste {
                         resultatMedNaturalytelse.getRegelsporinger().orElse(null)));
     }
 
-
     private Skjæringstidspunkt oppdaterSkjæringstidspunktForBeregning(BeregningAktivitetAggregatDto beregningAktivitetAggregat,
                                                                       BeregningsgrunnlagDto beregningsgrunnlag) {
         return Skjæringstidspunkt.builder()
@@ -102,10 +85,34 @@ public class OpprettBeregningsgrunnlagTjeneste {
                 .medSkjæringstidspunktBeregning(beregningsgrunnlag.getSkjæringstidspunkt()).build();
     }
 
-    public BeregningsgrunnlagRegelResultat fastsettSkjæringstidspunktOgStatuser(FastsettBeregningsaktiviteterInput input, BeregningAktivitetAggregatDto beregningAktiviteter) {
-        return FagsakYtelseTypeRef.Lookup.find(fastsettSkjæringstidspunktOgStatuser, input.getFagsakYtelseType())
-                .orElseThrow(() -> new IllegalStateException("Fant ikke FastsettSkjæringstidspunktOgStatuser for ytelsetype " + input.getFagsakYtelseType().getKode()))
-                .fastsett(input, beregningAktiviteter, GrunnbeløpMapper.mapGrunnbeløpInput(input.getGrunnbeløpsatser(), input.getGrunnbeløpInput()));
+    public BeregningsgrunnlagRegelResultat fastsettSkjæringstidspunktOgStatuser(StegProsesseringInput input, BeregningAktivitetAggregatDto beregningAktiviteter, List<Grunnbeløp> grunnbeløpSatser) {
+        return switch (input.getFagsakYtelseType()) {
+            case FORELDREPENGER, SVANGERSKAPSPENGER -> new FastsettSkjæringstidspunktOgStatuserK14().fastsett(input, beregningAktiviteter, grunnbeløpSatser);
+            case OMSORGSPENGER, OPPLÆRINGSPENGER, PLEIEPENGER_SYKT_BARN, PLEIEPENGER_NÆRSTÅENDE ->
+                    new FastsettSkjæringstidspunktOgStatuserK9().fastsett(input, beregningAktiviteter, grunnbeløpSatser);
+            case FRISINN -> new FastsettSkjæringstidspunktOgStatuserFRISINN().fastsett(input, beregningAktiviteter, grunnbeløpSatser);
+            default -> throw new IllegalStateException("Fant ikke FastsettSkjæringstidspunktOgStatuser for ytelse " + input.getFagsakYtelseType().getKode());
+        };
+    }
+
+    private BeregningsgrunnlagDto fastsettBeregningsperiode(FaktaOmBeregningInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
+        return switch (input.getFagsakYtelseType()) {
+            case FORELDREPENGER -> new FastsettBeregningsperiodeTjenesteFP().fastsettBeregningsperiode(beregningsgrunnlag, input.getInntektsmeldinger());
+            case OMSORGSPENGER, OPPLÆRINGSPENGER, PLEIEPENGER_SYKT_BARN, PLEIEPENGER_NÆRSTÅENDE, SVANGERSKAPSPENGER ->
+                    new FastsettBeregningsperiodeTjeneste().fastsettBeregningsperiode(beregningsgrunnlag, input.getIayGrunnlag(), input.getInntektsmeldinger());
+            case FRISINN -> new FastsettBeregningsperiodeTjenesteFRISINN().fastsettBeregningsperiode(beregningsgrunnlag);
+            default -> throw new IllegalStateException("Fant ikke FastsettBeregningsperiode for ytelse " + input.getFagsakYtelseType().getKode());
+        };
+    }
+
+    private Optional<FaktaAggregatDto> lagFaktaAggregat(FaktaOmBeregningInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
+        return switch (input.getFagsakYtelseType()) {
+            case FORELDREPENGER, SVANGERSKAPSPENGER -> new FastsettFaktaTjenesteK14().fastsettFakta(beregningsgrunnlag, input.getIayGrunnlag(), input.getInntektsmeldinger());
+            case OPPLÆRINGSPENGER, PLEIEPENGER_SYKT_BARN, PLEIEPENGER_NÆRSTÅENDE ->
+                    new FastsettFaktaTjenestePleiepenger().fastsettFakta(beregningsgrunnlag, input.getIayGrunnlag(), input.getInntektsmeldinger());
+            case OMSORGSPENGER -> new FastsettFaktaTjenesteOMP().fastsettFakta(beregningsgrunnlag, input.getIayGrunnlag(), input.getInntektsmeldinger());
+            default -> Optional.empty();
+        };
     }
 
 }

@@ -7,11 +7,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Any;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
-import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.felles.FinnInntektsmeldingForAndel;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
@@ -21,23 +16,12 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsf
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPrStatusOgAndelDto;
 
-@ApplicationScoped
 public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
 
-    private Instance<FastsettGrunnlagGenerell> fastsettGrunnlag;
     private static final int MND_I_ÅR = 12;
-
-    public BeregningsgrunnlagPrStatusOgAndelDtoTjeneste() {
-        // CDI Proxy
-    }
-
-    @Inject
-    public BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(@Any Instance<FastsettGrunnlagGenerell> fastsettGrunnlag) {
-        this.fastsettGrunnlag = fastsettGrunnlag;
-        // Skjul
-    }
 
     public List<BeregningsgrunnlagPrStatusOgAndelDto> lagBeregningsgrunnlagPrStatusOgAndelDto(BeregningsgrunnlagGUIInput input,
                                                                                               List<no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList) {
@@ -101,9 +85,11 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
 
     private boolean skalGrunnlagFastsettesForYtelse(BeregningsgrunnlagGUIInput input,
                                                     no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        return FagsakYtelseTypeRef.Lookup.find(fastsettGrunnlag, input.getFagsakYtelseType())
-                .orElseThrow(() -> new IllegalStateException("Finner ikke implementasjon for om grunnlag skal fastsettes for BehandlingReferanse " + input.getKoblingReferanse()))
-                .skalGrunnlagFastsettes(input, andel);
+        if (FagsakYtelseType.OMSORGSPENGER.equals(input.getFagsakYtelseType())) {
+            return new FastsettGrunnlagOmsorgspenger().skalGrunnlagFastsettes(input, andel);
+        } else {
+            return new FastsettGrunnlagGenerell().skalGrunnlagFastsettes(input, andel);
+        }
     }
 
     private static boolean dtoKanSorteres(List<BeregningsgrunnlagPrStatusOgAndelDto> arbeidsarbeidstakerAndeler) {

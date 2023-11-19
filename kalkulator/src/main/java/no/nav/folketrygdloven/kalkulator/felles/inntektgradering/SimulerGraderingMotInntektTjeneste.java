@@ -14,8 +14,6 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.Beregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste;
@@ -53,21 +51,12 @@ import no.nav.fpsak.tidsserie.LocalDateInterval;
  * Kun til bruk i forvaltning og statistikk enn så lenge.
  * Metoder for å bestemme inntekt må gås over funksjonelt før den kan brukes i automatisk saksbehandling.
  */
-@ApplicationScoped
 public class SimulerGraderingMotInntektTjeneste {
 
     private static final Logger LOG = LoggerFactory.getLogger(SimulerGraderingMotInntektTjeneste.class);
 
-    private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel;
+    private final MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel();
 
-
-    public SimulerGraderingMotInntektTjeneste() {
-    }
-
-    @Inject
-    public SimulerGraderingMotInntektTjeneste(MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel) {
-        this.mapBeregningsgrunnlagFraVLTilRegel = mapBeregningsgrunnlagFraVLTilRegel;
-    }
 
     public List<ReduksjonVedGradering> simulerGraderingMotInntekt(BeregningsgrunnlagInput beregningsgrunnlagInput) {
         var nyttBg = lagInputGrunnlag(beregningsgrunnlagInput);

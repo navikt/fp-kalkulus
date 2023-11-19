@@ -12,15 +12,12 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Any;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 import no.nav.folketrygdloven.kalkulator.guitjenester.ytelsegrunnlag.YtelsespesifiktGrunnlagTjenesteOMP;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
@@ -29,8 +26,10 @@ import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingAggregatDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AvklaringsbehovUtlederFastsettBeregningsaktiviteter;
+import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AvklaringsbehovUtlederFastsettBeregningsaktiviteterTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.FordelBeregningsgrunnlagTilfelleInput;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.FordelBeregningsgrunnlagTilfelleTjeneste;
+import no.nav.folketrygdloven.kalkulus.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovKontrollTjeneste;
@@ -67,7 +66,6 @@ public class AksjonspunktMigreringTjeneste {
     private KalkulatorInputTjeneste kalkulatorInputTjeneste;
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private AvklaringsbehovKontrollTjeneste avklaringsbehovKontrollTjeneste;
-    private Instance<AvklaringsbehovUtlederFastsettBeregningsaktiviteter> apUtlederFastsettAktiviteter;
     private YtelsespesifiktGrunnlagTjenesteOMP ytelsespesifiktGrunnlagTjenesteOMP;
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
     private AvklaringsbehovRepository avklaringsbehovRepository;
@@ -78,7 +76,6 @@ public class AksjonspunktMigreringTjeneste {
 
     @Inject
     public AksjonspunktMigreringTjeneste(KoblingTjeneste koblingTjeneste,
-                                         @Any Instance<AvklaringsbehovUtlederFastsettBeregningsaktiviteter> apUtlederFastsettAktiviteter,
                                          KalkulatorInputTjeneste kalkulatorInputTjeneste,
                                          BeregningsgrunnlagRepository beregningsgrunnlagRepository,
                                          AvklaringsbehovKontrollTjeneste avklaringsbehovKontrollTjeneste,
@@ -88,7 +85,6 @@ public class AksjonspunktMigreringTjeneste {
         this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.avklaringsbehovKontrollTjeneste = avklaringsbehovKontrollTjeneste;
-        this.apUtlederFastsettAktiviteter = apUtlederFastsettAktiviteter;
         this.avklaringsbehovRepository = avklaringsbehovRepository;
         this.ytelsespesifiktGrunnlagTjenesteOMP = new YtelsespesifiktGrunnlagTjenesteOMP();
         this.avklaringsbehovTjeneste = avklaringsbehovTjeneste;
@@ -315,7 +311,7 @@ public class AksjonspunktMigreringTjeneste {
                         Map.Entry::getKey,
                         e -> mapFraKalkulatorInputTilBeregningsgrunnlagInput(finnKobling(koblinger, e.getKey()), inputRespons.get(e.getKey()), Optional.of(e.getValue()), Collections.emptyList()))
                 );
-        var utleder = finnImplementasjonForYtelseType(FagsakYtelseType.fraKode(data.getYtelseSomSkalBeregnes().getKode()), apUtlederFastsettAktiviteter);
+        var utleder = AvklaringsbehovUtlederFastsettBeregningsaktiviteterTjeneste.utledTjeneste(FagsakYtelseType.fraKode(data.getYtelseSomSkalBeregnes().getKode()));
 
         List<KoblingEntitet> koblingerMedAvklaringsbehov = koblingStegInputMap.keySet().stream()
                 .filter(beregningsgrunnlagInput -> harAvklarAktiviteterAksjonspunkt(koblingStegInputMap, utleder, beregningsgrunnlagInput))

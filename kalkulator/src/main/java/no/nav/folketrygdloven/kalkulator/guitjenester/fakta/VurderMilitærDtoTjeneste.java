@@ -2,8 +2,6 @@ package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
 import java.util.List;
 
-import jakarta.enterprise.context.ApplicationScoped;
-
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
@@ -11,14 +9,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.VurderMilitærDto;
 
-@ApplicationScoped
-public class VurderMilitærDtoTjeneste implements FaktaOmBeregningTilfelleDtoTjeneste {
+public class VurderMilitærDtoTjeneste {
 
-    VurderMilitærDtoTjeneste() {
-        // For CDI
-    }
-
-    @Override
     public void lagDto(BeregningsgrunnlagGUIInput input, FaktaOmBeregningDto faktaOmBeregningDto) {
         List<BeregningsgrunnlagAktivitetStatusDto> aktivitetStatuser = input.getBeregningsgrunnlag().getAktivitetStatuser();
         BeregningsgrunnlagTilstand aktivTilstand = input.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlagTilstand();

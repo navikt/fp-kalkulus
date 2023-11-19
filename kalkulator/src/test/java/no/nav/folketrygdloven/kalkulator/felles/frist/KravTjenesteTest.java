@@ -24,7 +24,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
-import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
@@ -33,9 +32,6 @@ class KravTjenesteTest {
     public static final LocalDate SKJÆRINGSTIDSPUNKT_BEREGNING = LocalDate.now();
     public static final Arbeidsgiver ARBEIDSGIVER1 = Arbeidsgiver.virksomhet("37432232");
 
-    private final KravTjeneste kravTjeneste = new KravTjeneste(new UnitTestLookupInstanceImpl<>(new TreMånedersFristVurderer()));
-
-
     @Test
     void skal_lage_tom_tidslinje_uten_kravperioder() {
         List<PerioderForKravDto> kravperioder = List.of();
@@ -43,7 +39,7 @@ class KravTjenesteTest {
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagGjeldendeAktiviteter(ansattPeriode);
         YrkesaktivitetDto yrkesaktivitet = lagYrkesaktivitet(ansattPeriode);
 
-        LocalDateTimeline<KravOgUtfall> kravTidslinje = kravTjeneste.lagTidslinjeForYrkesaktivitet(
+        LocalDateTimeline<KravOgUtfall> kravTidslinje = KravTjeneste.lagTidslinjeForYrkesaktivitet(
                 kravperioder,
                 yrkesaktivitet,
                 gjeldendeAktiviteter,
@@ -63,7 +59,7 @@ class KravTjenesteTest {
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagGjeldendeAktiviteter(ansattPeriode);
         YrkesaktivitetDto yrkesaktivitet = lagYrkesaktivitet(ansattPeriode);
 
-        LocalDateTimeline<KravOgUtfall> kravTidslinje = kravTjeneste.lagTidslinjeForYrkesaktivitet(
+        LocalDateTimeline<KravOgUtfall> kravTidslinje = KravTjeneste.lagTidslinjeForYrkesaktivitet(
                 kravperioder,
                 yrkesaktivitet,
                 gjeldendeAktiviteter,
@@ -88,7 +84,7 @@ class KravTjenesteTest {
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagGjeldendeAktiviteter(ansattPeriode);
         YrkesaktivitetDto yrkesaktivitet = lagYrkesaktivitet(ansattPeriode);
 
-        LocalDateTimeline<KravOgUtfall> kravTidslinje = kravTjeneste.lagTidslinjeForYrkesaktivitet(
+        LocalDateTimeline<KravOgUtfall> kravTidslinje = KravTjeneste.lagTidslinjeForYrkesaktivitet(
                 kravperioder,
                 yrkesaktivitet,
                 gjeldendeAktiviteter,
@@ -122,7 +118,7 @@ class KravTjenesteTest {
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagGjeldendeAktiviteter(ansattPeriode);
         YrkesaktivitetDto yrkesaktivitet = lagYrkesaktivitet(ansattPeriode);
 
-        LocalDateTimeline<KravOgUtfall> kravTidslinje = kravTjeneste.lagTidslinjeForYrkesaktivitet(
+        LocalDateTimeline<KravOgUtfall> kravTidslinje = KravTjeneste.lagTidslinjeForYrkesaktivitet(
                 kravperioder,
                 yrkesaktivitet,
                 gjeldendeAktiviteter,
@@ -149,7 +145,7 @@ class KravTjenesteTest {
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagGjeldendeAktiviteter(ansattPeriode);
         YrkesaktivitetDto yrkesaktivitet = lagYrkesaktivitet(ansattPeriode);
 
-        LocalDateTimeline<KravOgUtfall> kravTidslinje = kravTjeneste.lagTidslinjeForYrkesaktivitet(
+        LocalDateTimeline<KravOgUtfall> kravTidslinje = KravTjeneste.lagTidslinjeForYrkesaktivitet(
                 kravperioder,
                 yrkesaktivitet,
                 gjeldendeAktiviteter,
@@ -179,7 +175,7 @@ class KravTjenesteTest {
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagGjeldendeAktiviteter(ansattPeriode);
         YrkesaktivitetDto yrkesaktivitet = lagYrkesaktivitet(ansattPeriode);
 
-        LocalDateTimeline<KravOgUtfall> kravTidslinje = kravTjeneste.lagTidslinjeForYrkesaktivitet(
+        LocalDateTimeline<KravOgUtfall> kravTidslinje = KravTjeneste.lagTidslinjeForYrkesaktivitet(
                 kravperioder,
                 yrkesaktivitet,
                 gjeldendeAktiviteter,
@@ -215,7 +211,7 @@ class KravTjenesteTest {
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagGjeldendeAktiviteter(ansattPeriode);
         YrkesaktivitetDto yrkesaktivitet = lagYrkesaktivitet(ansattPeriode);
 
-        LocalDateTimeline<KravOgUtfall> kravTidslinje = kravTjeneste.lagTidslinjeForYrkesaktivitet(
+        LocalDateTimeline<KravOgUtfall> kravTidslinje = KravTjeneste.lagTidslinjeForYrkesaktivitet(
                 kravperioder,
                 yrkesaktivitet,
                 gjeldendeAktiviteter,
@@ -247,7 +243,7 @@ class KravTjenesteTest {
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagGjeldendeAktiviteter(ansattPeriode);
         YrkesaktivitetDto yrkesaktivitet = lagYrkesaktivitet(ansattPeriode);
 
-        LocalDateTimeline<KravOgUtfall> kravTidslinje = kravTjeneste.lagTidslinjeForYrkesaktivitet(
+        LocalDateTimeline<KravOgUtfall> kravTidslinje = KravTjeneste.lagTidslinjeForYrkesaktivitet(
                 kravperioder,
                 yrkesaktivitet,
                 gjeldendeAktiviteter,

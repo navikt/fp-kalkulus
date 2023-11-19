@@ -14,9 +14,6 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.BeregningsgrunnlagPrStatusOgAndelDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningDtoTjeneste;
-import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningTilfelleDtoTjenesteProviderMock;
-import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FastsettGrunnlagGenerell;
-import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.YtelsespesifiktGrunnlagTjenesteMock;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
@@ -43,7 +40,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.SammenligningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
-import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 
 
 public class BeregningsgrunnlagDtoTjenesteImplTest {
@@ -75,12 +71,11 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
 
     @BeforeEach
     public void setup() {
-        FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste = new FaktaOmBeregningDtoTjeneste(FaktaOmBeregningTilfelleDtoTjenesteProviderMock.getTjenesteInstances());
+        FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste = new FaktaOmBeregningDtoTjeneste();
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste beregningsgrunnlagPrStatusOgAndelDtoTjeneste =
-                new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste((new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell())));
+                new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
         beregningsgrunnlagDtoTjeneste = new BeregningsgrunnlagDtoTjeneste(
-                faktaOmBeregningDtoTjeneste,
-                beregningsgrunnlagPrStatusOgAndelDtoTjeneste, new UnitTestLookupInstanceImpl<>(new YtelsespesifiktGrunnlagTjenesteMock()));
+        );
         virksomhet.setNavn(VIRKSOMHET_NAVN);
     }
 

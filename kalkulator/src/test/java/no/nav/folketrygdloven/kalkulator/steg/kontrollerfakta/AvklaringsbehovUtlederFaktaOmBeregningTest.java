@@ -10,18 +10,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import jakarta.inject.Inject;
-
-import org.jboss.weld.junit5.EnableWeld;
-import org.jboss.weld.junit5.WeldInitiator;
-import org.jboss.weld.junit5.WeldSetup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.GrunnbeløpTestKonstanter;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.felles.frist.InntektsmeldingMedRefusjonTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
@@ -41,9 +35,9 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningIAYTestUtil;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
@@ -52,22 +46,13 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 
-@EnableWeld
 public class AvklaringsbehovUtlederFaktaOmBeregningTest {
-
-    @WeldSetup
-    WeldInitiator weldInitiator = WeldInitiator.of(WeldInitiator.createWeld()
-            .addPackages(true, FaktaOmBeregningTilfelleTjeneste.class)
-            .addPackages(true, InntektsmeldingMedRefusjonTjeneste.class));
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.MARCH, 23);
     private final InternArbeidsforholdRefDto arbId = InternArbeidsforholdRefDto.namedRef("A");
     private final String orgnr = "974760673";
     private final InternArbeidsforholdRefDto arbId2 = InternArbeidsforholdRefDto.namedRef("B");
     private final String orgnr2 = "974761424";
-
-    @Inject
-    private FaktaOmBeregningTilfelleTjeneste faktaOmBeregningTilfelleTjeneste;
 
     private AvklaringsbehovUtlederFaktaOmBeregning avklaringsbehovUtlederFaktaOmBeregning;
 
@@ -81,7 +66,7 @@ public class AvklaringsbehovUtlederFaktaOmBeregningTest {
 
     @BeforeEach
     public void setup() {
-        avklaringsbehovUtlederFaktaOmBeregning = new AvklaringsbehovUtlederFaktaOmBeregning(faktaOmBeregningTilfelleTjeneste);
+        avklaringsbehovUtlederFaktaOmBeregning = new AvklaringsbehovUtlederFaktaOmBeregning();
         arbeidsgiver = Arbeidsgiver.virksomhet(orgnr);
     }
 

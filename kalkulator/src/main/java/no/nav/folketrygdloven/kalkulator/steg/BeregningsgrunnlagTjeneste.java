@@ -3,13 +3,9 @@ package no.nav.folketrygdloven.kalkulator.steg;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Any;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
-import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
@@ -25,85 +21,43 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat.Builder;
-import no.nav.folketrygdloven.kalkulator.output.BeregningVilkårResultat;
-import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
-import no.nav.folketrygdloven.kalkulator.output.FaktaOmBeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningRegelResultat;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningResultat;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.ForeslåBesteberegning;
-import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AvklaringsbehovUtlederFastsettBeregningsaktiviteter;
+import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AvklaringsbehovUtlederFastsettBeregningsaktiviteterTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ForeslåSkjæringstidspunktTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.OpprettBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.FordelBeregningsgrunnlagTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.FordelBeregningsgrunnlagTjenesteImpl;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.AvklaringsbehovUtlederFordelBeregning;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.vilkår.VilkårTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.vilkår.VurderBeregningsgrunnlagTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.ytelse.FordelBeregningsgrunnlagTjenesteUtbGrad;
 import no.nav.folketrygdloven.kalkulator.steg.foreslå.ForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.steg.fortsettForeslå.FortsettForeslåBeregningsgrunnlag;
-import no.nav.folketrygdloven.kalkulator.steg.fullføre.FullføreBeregningsgrunnlag;
+import no.nav.folketrygdloven.kalkulator.steg.fullføre.FullføreBeregningsgrunnlagTjenesteVelger;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.AvklaringsbehovUtlederFaktaOmBeregning;
-import no.nav.folketrygdloven.kalkulator.steg.refusjon.VurderRefusjonBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.VurderRefusjonBeregningsgrunnlagFelles;
+import no.nav.folketrygdloven.kalkulator.steg.refusjon.ytelse.VurderRefusjonBeregningsgrunnlagPleiepenger;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 /**
  * Fasadetjeneste for å delegere alle kall fra steg
  */
-@ApplicationScoped
 public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
 
-    private ForeslåSkjæringstidspunktTjeneste foreslåSkjæringstidspunktTjeneste;
-    protected OpprettBeregningsgrunnlagTjeneste opprettBeregningsgrunnlagTjeneste;
-    private Instance<AvklaringsbehovUtlederFaktaOmBeregning> avklaringsbehovUtledereFaktaOmBeregning;
-    private Instance<AvklaringsbehovUtlederFastsettBeregningsaktiviteter> apUtlederFastsettAktiviteter;
-    private Instance<FullføreBeregningsgrunnlag> fullføreBeregningsgrunnlag;
-    private Instance<ForeslåBeregningsgrunnlag> foreslåBeregningsgrunnlag;
-    private final ForeslåBesteberegning foreslåBesteberegning = new ForeslåBesteberegning();
-    private Instance<VurderBeregningsgrunnlagTjeneste> vurderBeregningsgrunnlagTjeneste;
-    private Instance<FordelBeregningsgrunnlagTjeneste> fordelBeregningsgrunnlagTjeneste;
-    private Instance<VurderRefusjonBeregningsgrunnlag> vurderRefusjonBeregningsgrunnlag;
-    private Instance<VilkårTjeneste> vilkårTjeneste;
-    private Instance<FortsettForeslåBeregningsgrunnlag> fortsettForeslåBeregningsgrunnlagTjeneste;
-
-
-    public BeregningsgrunnlagTjeneste() {
-        // CDI Proxy
-    }
-
-    @Inject
-    public BeregningsgrunnlagTjeneste(ForeslåSkjæringstidspunktTjeneste foreslåSkjæringstidspunktTjeneste,
-                                      @Any Instance<FullføreBeregningsgrunnlag> fullføreBeregningsgrunnlag,
-                                      @Any Instance<AvklaringsbehovUtlederFaktaOmBeregning> avklaringsbehovUtledereFaktaOmBeregning,
-                                      @Any Instance<AvklaringsbehovUtlederFastsettBeregningsaktiviteter> apUtlederFastsettAktiviteter,
-                                      OpprettBeregningsgrunnlagTjeneste opprettBeregningsgrunnlagTjeneste,
-                                      @Any Instance<FordelBeregningsgrunnlagTjeneste> fordelBeregningsgrunnlagTjeneste,
-                                      @Any Instance<VurderRefusjonBeregningsgrunnlag> vurderRefusjonBeregningsgrunnlag,
-                                      @Any Instance<ForeslåBeregningsgrunnlag> foreslåBeregningsgrunnlag,
-                                      @Any Instance<VurderBeregningsgrunnlagTjeneste> vurderBeregningsgrunnlagTjeneste,
-                                      @Any Instance<FortsettForeslåBeregningsgrunnlag> fortsettForeslåBeregningsgrunnlagTjeneste,
-                                      @Any Instance<VilkårTjeneste> vilkårTjeneste) {
-        this.foreslåSkjæringstidspunktTjeneste = foreslåSkjæringstidspunktTjeneste;
-        this.fullføreBeregningsgrunnlag = fullføreBeregningsgrunnlag;
-        this.avklaringsbehovUtledereFaktaOmBeregning = avklaringsbehovUtledereFaktaOmBeregning;
-        this.apUtlederFastsettAktiviteter = apUtlederFastsettAktiviteter;
-        this.opprettBeregningsgrunnlagTjeneste = opprettBeregningsgrunnlagTjeneste;
-        this.fordelBeregningsgrunnlagTjeneste = fordelBeregningsgrunnlagTjeneste;
-        this.vurderRefusjonBeregningsgrunnlag = vurderRefusjonBeregningsgrunnlag;
-        this.foreslåBeregningsgrunnlag = foreslåBeregningsgrunnlag;
-        this.vurderBeregningsgrunnlagTjeneste = vurderBeregningsgrunnlagTjeneste;
-        this.vilkårTjeneste = vilkårTjeneste;
-        this.fortsettForeslåBeregningsgrunnlagTjeneste = fortsettForeslåBeregningsgrunnlagTjeneste;
-    }
+    private final VilkårTjeneste vilkårTjeneste = new VilkårTjeneste();
 
     @Override
     public BeregningResultatAggregat fastsettBeregningsaktiviteter(FastsettBeregningsaktiviteterInput input) {
-        var beregningsgrunnlagRegelResultat = foreslåSkjæringstidspunktTjeneste.foreslåSkjæringstidspunkt(input);
+        validerIkkeFrisinn(input);
+        var beregningsgrunnlagRegelResultat = new ForeslåSkjæringstidspunktTjeneste().foreslåSkjæringstidspunkt(input);
         var tidligereAktivitetOverstyring = hentTidligereOverstyringer(input);
-        var avklaringsbehov = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), apUtlederFastsettAktiviteter)
+        var avklaringsbehov = AvklaringsbehovUtlederFastsettBeregningsaktiviteterTjeneste.utledTjeneste(input.getFagsakYtelseType())
                 .utledAvklaringsbehov(beregningsgrunnlagRegelResultat, input, tidligereAktivitetOverstyring.isPresent());
-        var vilkårResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vilkårTjeneste)
+        var vilkårResultat = vilkårTjeneste
                 .lagVilkårResultatFastsettAktiviteter(input, beregningsgrunnlagRegelResultat.getVilkårsresultat());
         return BeregningResultatAggregat.Builder.fra(input)
                 .medRegisterAktiviteter(beregningsgrunnlagRegelResultat.getRegisterAktiviteter())
@@ -116,20 +70,21 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
 
     @Override
     public BeregningResultatAggregat fastsettBeregningsgrunnlag(StegProsesseringInput input) {
-        FullføreBeregningsgrunnlag fullføre = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), fullføreBeregningsgrunnlag);
-        var resultat = fullføre.fullføreBeregningsgrunnlag(input);
+        validerIkkeFrisinn(input);
+        var resultat = FullføreBeregningsgrunnlagTjenesteVelger.utledTjeneste(input.getFagsakYtelseType())
+                .fullføreBeregningsgrunnlag(input);
         Builder resultatBuilder = Builder.fra(input)
                 .medRegelSporingAggregat(resultat.getRegelsporinger().orElse(null))
                 .medBeregningsgrunnlag(resultat.getBeregningsgrunnlag(), input.getStegTilstand());
-        var vilkårResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vilkårTjeneste)
-                .lagVilkårResultatFullføre(input, resultat.getBeregningsgrunnlag());
+        var vilkårResultat = vilkårTjeneste.lagVilkårResultatFullføre(input, resultat.getBeregningsgrunnlag());
         resultatBuilder.medVilkårResultat(vilkårResultat.orElse(null));
         return resultatBuilder.build();
     }
 
     @Override
     public BeregningResultatAggregat fordelBeregningsgrunnlag(StegProsesseringInput input) {
-        var fordelResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), fordelBeregningsgrunnlagTjeneste)
+        validerIkkeFrisinn(input);
+        var fordelResultat = finnFordelBeregningsgrunnlagTjeneste(input.getFagsakYtelseType())
                 .omfordelBeregningsgrunnlag(input);
         var nyttGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag())
                 .medBeregningsgrunnlag(fordelResultat.getBeregningsgrunnlag())
@@ -158,10 +113,11 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
      */
     @Override
     public BeregningResultatAggregat vurderBeregningsgrunnlagvilkår(StegProsesseringInput input) {
-        BeregningsgrunnlagRegelResultat vilkårVurderingResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vurderBeregningsgrunnlagTjeneste)
+        validerIkkeFrisinn(input);
+        var vilkårVurderingResultat = new VurderBeregningsgrunnlagTjeneste()
                 .vurderBeregningsgrunnlag(input, input.getBeregningsgrunnlagGrunnlag());
         BeregningsgrunnlagDto vurdertBeregningsgrunnlag = vilkårVurderingResultat.getBeregningsgrunnlag();
-        BeregningVilkårResultat vilkårResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vilkårTjeneste)
+        var vilkårResultat = vilkårTjeneste
                 .lagVilkårResultatFordel(input, vilkårVurderingResultat.getVilkårsresultat());
         return BeregningResultatAggregat.Builder.fra(input)
                 .medAvklaringsbehov(vilkårVurderingResultat.getAvklaringsbehov())
@@ -180,8 +136,12 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
      */
     @Override
     public BeregningResultatAggregat vurderRefusjonskravForBeregninggrunnlag(VurderRefusjonBeregningsgrunnlagInput input) {
+        validerIkkeFrisinn(input);
         validerSynkronisertUttak(input);
-        BeregningsgrunnlagRegelResultat vurderRefusjonResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vurderRefusjonBeregningsgrunnlag).vurderRefusjon(input);
+        var vurderRefusjonResultat = FagsakYtelseType.PLEIEPENGER_SYKT_BARN.equals(input.getFagsakYtelseType())
+                || FagsakYtelseType.PLEIEPENGER_NÆRSTÅENDE.equals(input.getFagsakYtelseType()) ?
+                new VurderRefusjonBeregningsgrunnlagPleiepenger().vurderRefusjon(input) :
+                new VurderRefusjonBeregningsgrunnlagFelles().vurderRefusjon(input);
         return Builder.fra(input)
                 .medAvklaringsbehov(vurderRefusjonResultat.getAvklaringsbehov())
                 .medBeregningsgrunnlag(vurderRefusjonResultat.getBeregningsgrunnlag(), input.getStegTilstand())
@@ -210,13 +170,14 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
      */
     @Override
     public BesteberegningResultat foreslåBesteberegning(ForeslåBesteberegningInput input) {
+        validerIkkeFrisinn(input);
         if (input.getBeregningsgrunnlag().isOverstyrt()) {
             // Skal ikkje gjere noko i steget om overstyrt inntekt
             return BesteberegningResultat.Builder.fra(input)
                     .medBeregningsgrunnlag(new BeregningsgrunnlagDto(input.getBeregningsgrunnlag()))
                     .build();
         }
-        BesteberegningRegelResultat resultat = foreslåBesteberegning.foreslåBesteberegning(input);
+        BesteberegningRegelResultat resultat = new ForeslåBesteberegning().foreslåBesteberegning(input);
         BeregningsgrunnlagVerifiserer.verifiserBesteberegnetBeregningsgrunnlag(resultat.getBeregningsgrunnlag());
         return BesteberegningResultat.Builder.fra(input)
                 .medVurderingsgrunnlag(resultat.getBesteberegningVurderingGrunnlag())
@@ -227,7 +188,8 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
 
     @Override
     public BeregningResultatAggregat foreslåBeregningsgrunnlag(ForeslåBeregningsgrunnlagInput input) {
-        BeregningsgrunnlagRegelResultat resultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), foreslåBeregningsgrunnlag)
+        validerIkkeFrisinn(input);
+        var resultat = new ForeslåBeregningsgrunnlag()
                 .foreslåBeregningsgrunnlag(input);
         return BeregningResultatAggregat.Builder.fra(input)
                 .medAvklaringsbehov(resultat.getAvklaringsbehov())
@@ -238,7 +200,8 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
 
     @Override
     public BeregningResultatAggregat fortsettForeslåBeregningsgrunnlag(FortsettForeslåBeregningsgrunnlagInput input) {
-        BeregningsgrunnlagRegelResultat resultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), fortsettForeslåBeregningsgrunnlagTjeneste)
+        validerIkkeFrisinn(input);
+        var resultat = new FortsettForeslåBeregningsgrunnlag()
                 .fortsettForeslåBeregningsgrunnlag(input);
         return BeregningResultatAggregat.Builder.fra(input)
                 .medAvklaringsbehov(resultat.getAvklaringsbehov())
@@ -249,17 +212,15 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
 
     @Override
     public BeregningResultatAggregat kontrollerFaktaBeregningsgrunnlag(FaktaOmBeregningInput input) {
-        var resultat = opprettBeregningsgrunnlagTjeneste.opprettOgLagreBeregningsgrunnlag(input);
+        validerIkkeFrisinn(input);
+        var resultat = new OpprettBeregningsgrunnlagTjeneste().opprettOgLagreBeregningsgrunnlag(input);
 
         BeregningsgrunnlagDto beregningsgrunnlag = resultat.getBeregningsgrunnlag();
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag())
                 .medBeregningsgrunnlag(beregningsgrunnlag)
                 .build(input.getStegTilstand());
-        var apUtleder = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), avklaringsbehovUtledereFaktaOmBeregning);
-        FaktaOmBeregningAvklaringsbehovResultat avklaringsbehovresultat = apUtleder.utledAvklaringsbehovFor(
-                input,
-                nyttGrunnlag,
-                harOverstyrtBergningsgrunnlag(input));
+        var avklaringsbehovresultat = new AvklaringsbehovUtlederFaktaOmBeregning()
+                .utledAvklaringsbehovFor(input, nyttGrunnlag, harOverstyrtBergningsgrunnlag(input));
 
         BeregningsgrunnlagDto grunnlagMedTilfeller = BeregningsgrunnlagDto.builder(beregningsgrunnlag)
                 .leggTilFaktaOmBeregningTilfeller(avklaringsbehovresultat.getFaktaOmBeregningTilfeller())
@@ -285,9 +246,16 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
         return overstyrtGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getOverstyring);
     }
 
-    private <T> T finnImplementasjonForYtelseType(FagsakYtelseType fagsakYtelseType, Instance<T> instanser) {
-        return FagsakYtelseTypeRef.Lookup.find(instanser, fagsakYtelseType)
-                .orElseThrow(() -> new IllegalStateException("Finner ikke implementasjon for ytelse " + fagsakYtelseType.getKode()));
+    private FordelBeregningsgrunnlagTjeneste finnFordelBeregningsgrunnlagTjeneste(FagsakYtelseType ytelseType) {
+        var utbetalingsGrad = Set.of(FagsakYtelseType.SVANGERSKAPSPENGER, FagsakYtelseType.PLEIEPENGER_SYKT_BARN,
+                FagsakYtelseType.PLEIEPENGER_NÆRSTÅENDE, FagsakYtelseType.OPPLÆRINGSPENGER).contains(ytelseType);
+        return utbetalingsGrad ? new FordelBeregningsgrunnlagTjenesteUtbGrad() : new FordelBeregningsgrunnlagTjenesteImpl();
+    }
+
+    private void validerIkkeFrisinn(StegProsesseringInput input) {
+        if (FagsakYtelseType.FRISINN.equals(input.getFagsakYtelseType())) {
+            throw new IllegalStateException("Utviklerfeil: FRISINN til beregning");
+        }
     }
 
 }

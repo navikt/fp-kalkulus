@@ -33,7 +33,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.PermisjonsbeskrivelseType;
 class MapRefusjonPerioderFraVLTilRegelUtbgradTest {
 
 
-    private final MapRefusjonPerioderFraVLTilRegelUtbgrad mapper = new MapRefusjonPerioderFraVLTilRegelPleiepenger(null);
+    private final MapRefusjonPerioderFraVLTilRegelUtbgrad mapper = new MapRefusjonPerioderFraVLTilRegelPleiepenger();
 
     @Test
     void skal_finne_første_dag_etter_permisjon() {

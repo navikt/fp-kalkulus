@@ -7,9 +7,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.kalkulator.felles.frist.InntektsmeldingMedRefusjonTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
@@ -20,17 +17,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.RefusjonskravSomKommerForSentDto;
 
-@ApplicationScoped
-class VurderRefusjonTilfelleDtoTjeneste implements FaktaOmBeregningTilfelleDtoTjeneste {
+class VurderRefusjonTilfelleDtoTjeneste {
 
-    private final InntektsmeldingMedRefusjonTjeneste inntektsmeldingMedRefusjonTjeneste;
-
-    @Inject
-    public VurderRefusjonTilfelleDtoTjeneste(InntektsmeldingMedRefusjonTjeneste inntektsmeldingMedRefusjonTjeneste) {
-        this.inntektsmeldingMedRefusjonTjeneste = inntektsmeldingMedRefusjonTjeneste;
-    }
-
-    @Override
     public void lagDto(BeregningsgrunnlagGUIInput input, FaktaOmBeregningDto faktaOmBeregningDto) {
         BeregningsgrunnlagDto beregningsgrunnlag = input.getBeregningsgrunnlag();
         List<FaktaOmBeregningTilfelle> tilfeller = beregningsgrunnlag.getFaktaOmBeregningTilfeller();
@@ -46,7 +34,7 @@ class VurderRefusjonTilfelleDtoTjeneste implements FaktaOmBeregningTilfelleDtoTj
             .map(BeregningRefusjonOverstyringerDto::getRefusjonOverstyringer)
             .orElse(Collections.emptyList());
 
-        Set<Arbeidsgiver> arbeidsgivere = inntektsmeldingMedRefusjonTjeneste.finnArbeidsgiverSomHarSøktRefusjonForSent(
+        Set<Arbeidsgiver> arbeidsgivere = InntektsmeldingMedRefusjonTjeneste.finnArbeidsgiverSomHarSøktRefusjonForSent(
                 input.getKoblingReferanse(),
                 input.getIayGrunnlag(),
                 input.getBeregningsgrunnlagGrunnlag(),

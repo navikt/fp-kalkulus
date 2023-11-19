@@ -8,8 +8,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import jakarta.enterprise.context.ApplicationScoped;
-
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.NaturalYtelseDto;
@@ -18,11 +16,10 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 
 
-@ApplicationScoped
 public class BeregningInntektsmeldingTestUtil {
 
 
-    public BeregningInntektsmeldingTestUtil() {
+    private BeregningInntektsmeldingTestUtil() {
         // for CDI
     }
 

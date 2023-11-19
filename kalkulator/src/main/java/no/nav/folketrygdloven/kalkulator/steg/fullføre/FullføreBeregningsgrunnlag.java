@@ -22,23 +22,14 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelTy
 
 
 public abstract class FullføreBeregningsgrunnlag {
-    private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel;
+
     private final MapFastsattBeregningsgrunnlagFraRegelTilVL mapBeregningsgrunnlagFraRegelTilVL = new MapFastsattBeregningsgrunnlagFraRegelTilVL();
-
-    public FullføreBeregningsgrunnlag() {
-        // CDI
-    }
-
-    public FullføreBeregningsgrunnlag(MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel) {
-        this.mapBeregningsgrunnlagFraVLTilRegel = mapBeregningsgrunnlagFraVLTilRegel;
-        //for CDI proxy
-    }
 
     public BeregningsgrunnlagRegelResultat fullføreBeregningsgrunnlag(BeregningsgrunnlagInput input) {
         var grunnlag = input.getBeregningsgrunnlagGrunnlag();
 
         // Oversetter foreslått Beregningsgrunnlag -> regelmodell
-        var beregningsgrunnlagRegel = mapBeregningsgrunnlagFraVLTilRegel.map(input, grunnlag.getBeregningsgrunnlag().orElse(null));
+        var beregningsgrunnlagRegel = new MapBeregningsgrunnlagFraVLTilRegel().map(input, grunnlag.getBeregningsgrunnlag().orElse(null));
 
         // Evaluerer hver BeregningsgrunnlagPeriode fra foreslått Beregningsgrunnlag
         List<RegelResultat> regelResultater = evaluerRegelmodell(beregningsgrunnlagRegel, input);

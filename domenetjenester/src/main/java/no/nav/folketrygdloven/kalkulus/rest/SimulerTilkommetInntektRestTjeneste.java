@@ -80,7 +80,7 @@ public class SimulerTilkommetInntektRestTjeneste {
 
     private KoblingRepository koblingRepository;
 
-    private SimulerGraderingMotInntektTjeneste simulerGraderingMotInntektTjeneste;
+    private final SimulerGraderingMotInntektTjeneste simulerGraderingMotInntektTjeneste = new SimulerGraderingMotInntektTjeneste();
 
 
     public SimulerTilkommetInntektRestTjeneste() {
@@ -90,12 +90,10 @@ public class SimulerTilkommetInntektRestTjeneste {
     @Inject
     public SimulerTilkommetInntektRestTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository,
                                                KalkulatorInputTjeneste kalkulatorInputTjeneste,
-                                               KoblingRepository koblingRepository,
-                                               SimulerGraderingMotInntektTjeneste simulerGraderingMotInntektTjeneste) {
+                                               KoblingRepository koblingRepository) {
         this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.koblingRepository = koblingRepository;
-        this.simulerGraderingMotInntektTjeneste = simulerGraderingMotInntektTjeneste;
     }
 
     @POST

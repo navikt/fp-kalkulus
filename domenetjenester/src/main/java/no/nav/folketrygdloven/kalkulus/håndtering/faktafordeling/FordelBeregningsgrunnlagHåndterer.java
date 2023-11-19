@@ -7,11 +7,9 @@ import java.math.BigDecimal;
 import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import no.nav.folketrygdloven.kalkulator.guitjenester.FinnArbeidsprosenter;
-import no.nav.folketrygdloven.kalkulator.guitjenester.FinnArbeidsprosenterFP;
-import no.nav.folketrygdloven.kalkulator.guitjenester.FinnArbeidsprosenterUtbetalingsgrad;
+import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagGuiTjeneste;
+import no.nav.folketrygdloven.kalkulator.guitjenester.KalkulatorGuiInterface;
 import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -25,6 +23,8 @@ import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.FaktaOmFordeling
 @DtoTilServiceAdapter(dto = FaktaOmFordelingHåndteringDto.class, adapter = BeregningHåndterer.class)
 public class FordelBeregningsgrunnlagHåndterer implements BeregningHåndterer<FaktaOmFordelingHåndteringDto> {
 
+    private static final KalkulatorGuiInterface GUI_TJENESTE = new BeregningsgrunnlagGuiTjeneste();
+
     @Override
     public HåndteringResultat håndter(FaktaOmFordelingHåndteringDto dto, HåndterBeregningsgrunnlagInput beregningsgrunnlagInput) {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = no.nav.folketrygdloven.kalkulator.avklaringsbehov.FordelBeregningsgrunnlagHåndterer.håndter(mapFordelBeregningsgrunnlagDto(dto.getFordelBeregningsgrunnlagDto()), beregningsgrunnlagInput);
@@ -37,16 +37,10 @@ public class FordelBeregningsgrunnlagHåndterer implements BeregningHåndterer<F
     }
 
     private static void validerAtBruttoErSatt(BeregningsgrunnlagGrunnlagDto nyttGrunnlag, HåndterBeregningsgrunnlagInput beregningsgrunnlagInput) {
-        FinnArbeidsprosenter finnArbeidsprosenter;
-        if (beregningsgrunnlagInput.getYtelsespesifiktGrunnlag() instanceof UtbetalingsgradGrunnlag) {
-            finnArbeidsprosenter = new FinnArbeidsprosenterUtbetalingsgrad();
-        } else {
-            finnArbeidsprosenter = new FinnArbeidsprosenterFP();
-        }
         var andelerUtenGrunnlag = nyttGrunnlag.getBeregningsgrunnlag().orElseThrow()
                 .getBeregningsgrunnlagPerioder()
                 .stream()
-                .filter(p -> harAndelMedFravær(beregningsgrunnlagInput, finnArbeidsprosenter, p))
+                .filter(p -> harAndelMedFravær(beregningsgrunnlagInput, p))
                 .collect(
                         Collectors.toMap(BeregningsgrunnlagPeriodeDto::getPeriode,
                                 p -> p.getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(a -> a.getBruttoPrÅr() == null).toList()));
@@ -57,12 +51,12 @@ public class FordelBeregningsgrunnlagHåndterer implements BeregningHåndterer<F
         }
     }
 
-    private static boolean harAndelMedFravær(HåndterBeregningsgrunnlagInput beregningsgrunnlagInput, FinnArbeidsprosenter finnArbeidsprosenter, BeregningsgrunnlagPeriodeDto p) {
-        return p.getBeregningsgrunnlagPrStatusOgAndelList().stream().anyMatch(a -> harFraværIPerioden(beregningsgrunnlagInput, finnArbeidsprosenter, p, a));
+    private static boolean harAndelMedFravær(HåndterBeregningsgrunnlagInput beregningsgrunnlagInput, BeregningsgrunnlagPeriodeDto p) {
+        return p.getBeregningsgrunnlagPrStatusOgAndelList().stream().anyMatch(a -> harFraværIPerioden(beregningsgrunnlagInput, p, a));
     }
 
-    private static boolean harFraværIPerioden(HåndterBeregningsgrunnlagInput beregningsgrunnlagInput, FinnArbeidsprosenter finnArbeidsprosenter, BeregningsgrunnlagPeriodeDto p, BeregningsgrunnlagPrStatusOgAndelDto a) {
-        return finnArbeidsprosenter.finnArbeidsprosenterIPeriode(a, beregningsgrunnlagInput.getYtelsespesifiktGrunnlag(), p.getPeriode()).stream().anyMatch(
+    private static boolean harFraværIPerioden(HåndterBeregningsgrunnlagInput beregningsgrunnlagInput, BeregningsgrunnlagPeriodeDto p, BeregningsgrunnlagPrStatusOgAndelDto a) {
+        return GUI_TJENESTE.finnArbeidsprosenterIPeriode(a, beregningsgrunnlagInput.getYtelsespesifiktGrunnlag(), p.getPeriode()).stream().anyMatch(
                 it -> it.compareTo(BigDecimal.valueOf(100)) != 0
         );
     }

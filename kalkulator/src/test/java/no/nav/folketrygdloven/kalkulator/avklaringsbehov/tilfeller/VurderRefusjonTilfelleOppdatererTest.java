@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
@@ -41,13 +40,8 @@ public class VurderRefusjonTilfelleOppdatererTest {
     private final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
     private final Beløp GRUNNBELØP = new Beløp(600000);
 
-    private VurderRefusjonTilfelleOppdaterer vurderRefusjonTilfelleOppdaterer;
     private KoblingReferanse referanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
 
-    @BeforeEach
-    public void setUp() {
-        vurderRefusjonTilfelleOppdaterer = new VurderRefusjonTilfelleOppdaterer();
-    }
 
     @Test
     public void oppdater_når_ikkje_gyldig_utvidelse() {
@@ -63,7 +57,7 @@ public class VurderRefusjonTilfelleOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(beregningsgrunnlagInput.getBeregningsgrunnlagGrunnlag());
-        vurderRefusjonTilfelleOppdaterer.oppdater(dto, Optional.empty(), beregningsgrunnlagInput, oppdatere);
+        VurderRefusjonTilfelleOppdaterer.oppdater(dto, beregningsgrunnlagInput, oppdatere);
 
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT);
 
@@ -84,7 +78,7 @@ public class VurderRefusjonTilfelleOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(beregningsgrunnlagInput.getBeregningsgrunnlagGrunnlag());
-        vurderRefusjonTilfelleOppdaterer.oppdater(dto, Optional.empty(), beregningsgrunnlagInput, oppdatere);
+        VurderRefusjonTilfelleOppdaterer.oppdater(dto, beregningsgrunnlagInput, oppdatere);
 
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT);
 

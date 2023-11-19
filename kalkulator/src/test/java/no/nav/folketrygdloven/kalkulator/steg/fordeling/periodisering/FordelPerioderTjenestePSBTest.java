@@ -17,10 +17,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
-import no.nav.folketrygdloven.kalkulator.felles.frist.ArbeidsgiverRefusjonskravTjeneste;
-import no.nav.folketrygdloven.kalkulator.felles.frist.KravTjeneste;
-import no.nav.folketrygdloven.kalkulator.felles.frist.TreMånedersFristVurderer;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.SvangerskapspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
@@ -56,7 +52,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
-import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 
 @ExtendWith(MockitoExtension.class)
 public class FordelPerioderTjenestePSBTest {
@@ -75,12 +70,6 @@ public class FordelPerioderTjenestePSBTest {
     private FordelPerioderTjeneste tjeneste;
 
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT, FagsakYtelseType.PLEIEPENGER_SYKT_BARN);
-
-    private final ArbeidsgiverRefusjonskravTjeneste arbeidsgiverRefusjonskravTjeneste = new ArbeidsgiverRefusjonskravTjeneste(
-            new KravTjeneste(
-                    new UnitTestLookupInstanceImpl<>(new TreMånedersFristVurderer())
-            )
-    );
 
 
     @BeforeEach
@@ -256,8 +245,8 @@ public class FordelPerioderTjenestePSBTest {
     }
 
     private FordelPerioderTjeneste lagTjeneste() {
-        var oversetterTilRegelRefusjon = new MapRefusjonPerioderFraVLTilRegelSVP(arbeidsgiverRefusjonskravTjeneste);
-        return new FordelPerioderTjeneste(new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjon)
+        var oversetterTilRegelRefusjon = new MapRefusjonPerioderFraVLTilRegelSVP();
+        return new FordelPerioderTjeneste(
         );
     }
 }

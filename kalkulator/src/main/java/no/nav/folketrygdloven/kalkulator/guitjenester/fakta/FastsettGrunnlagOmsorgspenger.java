@@ -6,8 +6,6 @@ import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodi
 import java.math.BigDecimal;
 import java.util.List;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.input.OmsorgspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
@@ -19,10 +17,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
-@FagsakYtelseTypeRef(FagsakYtelseType.OMSORGSPENGER)
-@ApplicationScoped
 public class FastsettGrunnlagOmsorgspenger extends FastsettGrunnlagGenerell {
 
     @Override

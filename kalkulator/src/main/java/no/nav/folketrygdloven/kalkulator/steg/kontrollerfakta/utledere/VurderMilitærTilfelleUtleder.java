@@ -4,9 +4,6 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
-import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
@@ -14,9 +11,6 @@ import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteter
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
-@ApplicationScoped
-@FagsakYtelseTypeRef
-@FaktaOmBeregningTilfelleRef("VURDER_MILITÆR_SIVILTJENESTE")
 public class VurderMilitærTilfelleUtleder implements TilfelleUtleder {
 
     @Override

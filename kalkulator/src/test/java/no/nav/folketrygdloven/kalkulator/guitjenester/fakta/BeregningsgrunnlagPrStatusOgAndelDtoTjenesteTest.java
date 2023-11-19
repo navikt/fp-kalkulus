@@ -37,7 +37,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
-import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 
 public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now().minusDays(5);
@@ -71,7 +70,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, List.of(), new OpptjeningAktiviteterDto(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
-        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
+        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
         //Act
         var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
                 grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
@@ -93,7 +92,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, List.of(), new OpptjeningAktiviteterDto(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
-        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
+        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
         //Act
         var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
                 grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
@@ -118,7 +117,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, List.of(), new OpptjeningAktiviteterDto(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
-        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
+        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
         //Act
         var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
                 grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
@@ -142,7 +141,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, List.of(), new OpptjeningAktiviteterDto(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
-        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
+        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
         //Act
         var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
                 grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
@@ -161,7 +160,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, List.of(), new OpptjeningAktiviteterDto(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
-        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
+        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
         //Act
         tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
                 grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
@@ -179,7 +178,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, List.of(), new OpptjeningAktiviteterDto(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
-        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
+        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
         //Act
         var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
                 grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
@@ -200,7 +199,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, List.of(), new OpptjeningAktiviteterDto(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
-        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
+        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
         //Act
         var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
                 grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
@@ -225,7 +224,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, List.of(), new OpptjeningAktiviteterDto(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
-        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
+        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
         //Act
         var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
                 grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
@@ -246,7 +245,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, List.of(), new OpptjeningAktiviteterDto(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
-        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
+        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
         //Act
         tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
                 grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());

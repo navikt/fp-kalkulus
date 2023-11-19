@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,14 +35,12 @@ public class VurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdatererTest {
     private final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
     private final Beløp GRUNNBELØP = new Beløp(600000);
 
-    private VurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdaterer vurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdaterer;
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
     private BeregningsgrunnlagInput input;
 
     @BeforeEach
     public void setup() {
-        vurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdaterer = new VurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdaterer();
         beregningsgrunnlag = BeregningsgrunnlagDto.builder()
             .medGrunnbeløp(GRUNNBELØP)
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
@@ -72,7 +69,7 @@ public class VurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        vurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        VurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdaterer.oppdater(dto, oppdatere);
         var faktaAktør = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT).getFaktaAggregat().flatMap(FaktaAggregatDto::getFaktaAktør);
 
         // Assert
@@ -88,7 +85,7 @@ public class VurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdatererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        vurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        VurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdaterer.oppdater(dto, oppdatere);
         FaktaAktørDto faktaAktørDto = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT).getFaktaAggregat().get().getFaktaAktør().get();
 
         // Assert

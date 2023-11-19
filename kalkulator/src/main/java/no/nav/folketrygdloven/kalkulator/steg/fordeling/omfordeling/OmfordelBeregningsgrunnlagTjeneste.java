@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import no.nav.folketrygdloven.beregningsgrunnlag.fordel.modell.FordelAndelModell;
 import no.nav.folketrygdloven.beregningsgrunnlag.fordel.modell.FordelPeriodeModell;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
@@ -21,12 +19,7 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
 
-@ApplicationScoped
 public class OmfordelBeregningsgrunnlagTjeneste {
-
-    @Inject
-    public OmfordelBeregningsgrunnlagTjeneste() {
-    }
 
     public BeregningsgrunnlagRegelResultat omfordel(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
         return fordel(input, beregningsgrunnlag);

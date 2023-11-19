@@ -36,14 +36,13 @@ public class FastsettMånedsinntektUtenInntektsmeldingTilfelleUtlederTest {
 
     public static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2018, 1, 1);
     public static final String ORGNR = "21348714121";
-    private FastsettMånedsinntektUtenInntektsmeldingTilfelleUtleder utleder = new FastsettMånedsinntektUtenInntektsmeldingTilfelleUtleder();
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
 
     @Test
     public void skal_gi_tilfelle_om_beregningsgrunnlag_har_andel_med_kunstig_arbeid() {
         BeregningsgrunnlagGrunnlagDto grunnlag = lagGrunnlag(true);
         FaktaOmBeregningInput faktaOmBeregningInput = lagFaktaOmBeregningInput(grunnlag, List.of());
-        Optional<FaktaOmBeregningTilfelle> tilfelle = utleder.utled(faktaOmBeregningInput, grunnlag);
+        Optional<FaktaOmBeregningTilfelle> tilfelle = new FastsettMånedsinntektUtenInntektsmeldingTilfelleUtleder().utled(faktaOmBeregningInput, grunnlag);
         assertThat(tilfelle.get()).isEqualTo(FaktaOmBeregningTilfelle.FASTSETT_MÅNEDSLØNN_ARBEIDSTAKER_UTEN_INNTEKTSMELDING);
     }
 
@@ -52,7 +51,7 @@ public class FastsettMånedsinntektUtenInntektsmeldingTilfelleUtlederTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = lagGrunnlag(false);
         FaktaOmBeregningInput faktaOmBeregningInput = lagFaktaOmBeregningInput(grunnlag, List.of());
 
-        Optional<FaktaOmBeregningTilfelle> tilfelle = utleder.utled(faktaOmBeregningInput, grunnlag);
+        Optional<FaktaOmBeregningTilfelle> tilfelle = new FastsettMånedsinntektUtenInntektsmeldingTilfelleUtleder().utled(faktaOmBeregningInput, grunnlag);
         assertThat(tilfelle).isNotPresent();
     }
 
@@ -87,7 +86,7 @@ public class FastsettMånedsinntektUtenInntektsmeldingTilfelleUtlederTest {
         FaktaOmBeregningInput faktaOmBeregningInput = lagFaktaOmBeregningInput(grunnlag, List.of(im));
 
 
-        Optional<FaktaOmBeregningTilfelle> tilfelle = utleder.utled(faktaOmBeregningInput, grunnlag);
+        Optional<FaktaOmBeregningTilfelle> tilfelle = new FastsettMånedsinntektUtenInntektsmeldingTilfelleUtleder().utled(faktaOmBeregningInput, grunnlag);
         assertThat(tilfelle).isPresent();
     }
 
@@ -127,7 +126,7 @@ public class FastsettMånedsinntektUtenInntektsmeldingTilfelleUtlederTest {
 
         FaktaOmBeregningInput faktaOmBeregningInput = lagFaktaOmBeregningInput(grunnlag, List.of(im, im2));
 
-        Optional<FaktaOmBeregningTilfelle> tilfelle = utleder.utled(faktaOmBeregningInput, grunnlag);
+        Optional<FaktaOmBeregningTilfelle> tilfelle = new FastsettMånedsinntektUtenInntektsmeldingTilfelleUtleder().utled(faktaOmBeregningInput, grunnlag);
         assertThat(tilfelle).isNotPresent();
     }
 

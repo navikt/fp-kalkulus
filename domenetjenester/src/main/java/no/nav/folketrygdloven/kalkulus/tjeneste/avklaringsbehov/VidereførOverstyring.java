@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov;
 import java.util.Optional;
 
 import jakarta.enterprise.inject.Instance;
-import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
+import no.nav.folketrygdloven.kalkulus.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;

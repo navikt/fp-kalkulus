@@ -2,28 +2,23 @@ package no.nav.folketrygdloven.kalkulator.avklaringsbehov.tilfeller;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.ApplicationScoped;
-
-import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FaktaBeregningLagreDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FastsettEtterlønnSluttpakkeDto;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
-@ApplicationScoped
-@FaktaOmBeregningTilfelleRef("FASTSETT_ETTERLØNN_SLUTTPAKKE")
-public class FastsettEtterlønnSluttpakkeOppdaterer implements FaktaOmBeregningTilfelleOppdaterer {
+public class FastsettEtterlønnSluttpakkeOppdaterer {
 
     private static final BigDecimal MÅNEDER_I_ET_ÅR = BigDecimal.valueOf(12);
 
-    @Override
-    public void oppdater(FaktaBeregningLagreDto dto, Optional<BeregningsgrunnlagDto> forrigeBg, BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder) {
+    private FastsettEtterlønnSluttpakkeOppdaterer() {
+    }
+
+    public static void oppdater(FaktaBeregningLagreDto dto, BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder) {
         FastsettEtterlønnSluttpakkeDto fastettDto = dto.getFastsettEtterlønnSluttpakke();
         List<BeregningsgrunnlagPrStatusOgAndelDto> etterlønnSluttpakkeAndeler = finnEtterlønnSluttpakkeAndel(grunnlagBuilder.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag());
         Integer fastsattPrMnd = fastettDto.getFastsattPrMnd();
@@ -36,7 +31,7 @@ public class FastsettEtterlønnSluttpakkeOppdaterer implements FaktaOmBeregningT
             .medFastsattAvSaksbehandler(true));
     }
 
-    private List<BeregningsgrunnlagPrStatusOgAndelDto> finnEtterlønnSluttpakkeAndel(BeregningsgrunnlagDto nyttBeregningsgrunnlag) {
+    private static List<BeregningsgrunnlagPrStatusOgAndelDto> finnEtterlønnSluttpakkeAndel(BeregningsgrunnlagDto nyttBeregningsgrunnlag) {
         return nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder()
             .get(0)
             .getBeregningsgrunnlagPrStatusOgAndelList()
