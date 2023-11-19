@@ -346,9 +346,9 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>org.jboss.jandex</groupId>
+                    <groupId>io.smallrye</groupId>
                     <artifactId>jandex-maven-plugin</artifactId>
-                    <version>1.2.3</version>
+                    <version>3.1.5</version>
                     <executions>
                         <execution>
                             <id>make-index</id>
@@ -356,7 +356,7 @@
                                 <goal>jandex</goal>
                             </goals>
                             <configuration>
-                                <!-- Nothing needed here for simple cases -->
+                                <indexVersion>10</indexVersion>
                             </configuration>
                         </execution>
                     </executions>
@@ -450,7 +450,7 @@
 
         <plugins>
             <plugin>
-                <groupId>org.jboss.jandex</groupId>
+                <groupId>io.smallrye</groupId>
                 <artifactId>jandex-maven-plugin</artifactId>
                 <executions>
                     <execution>
@@ -459,7 +459,7 @@
                             <goal>jandex</goal>
                         </goals>
                         <configuration>
-                            <!-- Nothing needed here for simple cases -->
+                            <indexVersion>10</indexVersion>
                         </configuration>
                     </execution>
                 </executions>
