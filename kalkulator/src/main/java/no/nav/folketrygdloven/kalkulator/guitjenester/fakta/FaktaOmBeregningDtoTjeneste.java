@@ -3,7 +3,9 @@ package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 import static no.nav.folketrygdloven.kalkulator.guitjenester.fakta.saksopplysninger.SaksopplysningerTjeneste.lagSaksopplysninger;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -37,8 +39,10 @@ public class FaktaOmBeregningDtoTjeneste {
             faktaOmBeregningDto.setAndelerForFaktaOmBeregning(AndelerForFaktaOmBeregningTjeneste.lagAndelerForFaktaOmBeregning(input));
             faktaOmBeregningDto.setSaksopplysninger(lagSaksopplysninger(input));
             if (skalVurdereFaktaForATFL(beregningsgrunnlag)) {
-                var tilfeller = new HashSet<>(beregningsgrunnlag.getFaktaOmBeregningTilfeller());
-                faktaOmBeregningDto.setFaktaOmBeregningTilfeller(new ArrayList<>(tilfeller));
+                var tilfeller = new HashSet<>(beregningsgrunnlag.getFaktaOmBeregningTilfeller()).stream()
+                        .sorted(Comparator.comparing(FaktaOmBeregningTilfelle::name))
+                        .toList();
+                faktaOmBeregningDto.setFaktaOmBeregningTilfeller(tilfeller);
                 utledDtoerForTilfeller(tilfeller, input, faktaOmBeregningDto);
             }
         }
@@ -49,7 +53,7 @@ public class FaktaOmBeregningDtoTjeneste {
         return !beregningsgrunnlag.getFaktaOmBeregningTilfeller().isEmpty();
     }
 
-    private void utledDtoerForTilfeller(Set<FaktaOmBeregningTilfelle> tilfeller, BeregningsgrunnlagGUIInput input,
+    private void utledDtoerForTilfeller(List<FaktaOmBeregningTilfelle> tilfeller, BeregningsgrunnlagGUIInput input,
                                         FaktaOmBeregningDto faktaOmBeregningDto) {
         if (tilfeller.contains(FaktaOmBeregningTilfelle.VURDER_NYOPPSTARTET_FL)) {
             new NyOppstartetFLDtoTjeneste().lagDto(input, faktaOmBeregningDto);
