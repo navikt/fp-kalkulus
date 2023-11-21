@@ -17,7 +17,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.felles.v1.PersonIdent;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 
@@ -56,15 +55,11 @@ public class BeregnListeRequest implements KalkulusRequest {
     @Valid
     private StegType stegType;
 
-    @JsonProperty(value = "beregnForListe")
-    @Size(min=1)
+    @JsonProperty(value = "beregnForListe", required = true)
+    @Size(min = 1)
     @Valid
+    @NotNull
     private List<BeregnForRequest> beregnForListe;
-
-    @JsonProperty(value = "fordelBeregningListe")
-    @Size(min=1)
-    @Valid
-    private List<BeregnForRequest> fordelBeregningListe;
 
     protected BeregnListeRequest() {
     }
@@ -107,14 +102,13 @@ public class BeregnListeRequest implements KalkulusRequest {
     }
 
     public List<BeregnForRequest> getBeregnForListe() {
-        return fordelBeregningListe != null ? fordelBeregningListe : beregnForListe;
+        return beregnForListe;
     }
 
     @AssertTrue
     public boolean isSkalHaInputForFørsteSteg() {
         return stegType != StegType.FASTSETT_STP_BER || beregnForListe.stream().noneMatch(r -> r.getKalkulatorInput() == null);
     }
-
 
 
 }
