@@ -67,7 +67,14 @@ public interface KalkulatorInterface {
      */
     BeregningResultatAggregat vurderBeregningsgrunnlagvilkår(StegProsesseringInput input);
 
-    /** Steg 6: Vurder refusjonskrav
+    /** Steg 6 Vurderer tilkommet inntekt
+     *
+     * @param input Input til steget
+     * @return Vurdering av vilkår
+     */
+    BeregningResultatAggregat vurderTilkommetInntekt(StegProsesseringInput input);
+
+    /** Steg 7: Vurder refusjonskrav
      *
      * Vurderer beregningsgrunnlagvilkåret
      *
@@ -76,14 +83,14 @@ public interface KalkulatorInterface {
      */
     BeregningResultatAggregat vurderRefusjonskravForBeregninggrunnlag(VurderRefusjonBeregningsgrunnlagInput input);
 
-    /** Steg 7: Fordel beregningsgrunnlag
+    /** Steg 8: Fordel beregningsgrunnlag
      *
      * @param input Input til steget
      * @return Nytt beregningsgrunnlag og avklaringsbehov
      */
     BeregningResultatAggregat fordelBeregningsgrunnlag(StegProsesseringInput input);
 
-    /** Steg 8: Fastsett beregningsgrunnlag
+    /** Steg 9: Fastsett beregningsgrunnlag
      *
      * @param input Input til steget
      * @return Fastsatt beregningsgrunnlag

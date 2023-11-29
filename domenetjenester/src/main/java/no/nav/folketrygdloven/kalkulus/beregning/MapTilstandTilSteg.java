@@ -8,6 +8,7 @@ import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FORS_BESTEB
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FORTS_FORS_BERGRUNN;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.KOFAKBER;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.VURDER_REF_BERGRUNN;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.VURDER_TILKOMMET_INNTEKT;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.VURDER_VILKAR_BERGRUNN;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.BESTEBEREGNET;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FASTSATT;
@@ -23,6 +24,8 @@ import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstan
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.OPPRETTET;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.VURDERT_REFUSJON;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.VURDERT_REFUSJON_UT;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.VURDERT_TILKOMMET_INNTEKT;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.VURDERT_TILKOMMET_INNTEKT_UT;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.VURDERT_VILKÅR;
 
 import java.util.HashMap;
@@ -46,6 +49,8 @@ public class MapTilstandTilSteg {
         MAP_TILSTAND_STEG.put(FORESLÅTT_2, FORTS_FORS_BERGRUNN);
         MAP_TILSTAND_STEG.put(FORESLÅTT_2_UT, FORTS_FORS_BERGRUNN);
         MAP_TILSTAND_STEG.put(VURDERT_VILKÅR, VURDER_VILKAR_BERGRUNN);
+        MAP_TILSTAND_STEG.put(VURDERT_TILKOMMET_INNTEKT, VURDER_TILKOMMET_INNTEKT);
+        MAP_TILSTAND_STEG.put(VURDERT_TILKOMMET_INNTEKT_UT, VURDER_TILKOMMET_INNTEKT);
         MAP_TILSTAND_STEG.put(VURDERT_REFUSJON, VURDER_REF_BERGRUNN);
         MAP_TILSTAND_STEG.put(VURDERT_REFUSJON_UT, VURDER_REF_BERGRUNN);
         MAP_TILSTAND_STEG.put(OPPDATERT_MED_REFUSJON_OG_GRADERING, FORDEL_BERGRUNN);

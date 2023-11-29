@@ -28,6 +28,8 @@ public enum BeregningSteg implements Kodeverdi {
 
     VURDER_VILKAR_BERGRUNN("VURDER_VILKAR_BERGRUNN", "Vurder beregningsgrunnlagsvilkår"),
 
+    VURDER_TILKOMMET_INNTEKT("VURDER_TILKOMMET_INNTEKT", "Vurder tilkommet inntekt"),
+
     VURDER_REF_BERGRUNN("VURDER_REF_BERGRUNN", "Vurder refusjon for beregningsgrunnlaget"),
     FORDEL_BERGRUNN("FORDEL_BERGRUNN", "Fordel beregningsgrunnlag"),
     FAST_BERGRUNN("FAST_BERGRUNN", "Fastsett beregningsgrunnlag");

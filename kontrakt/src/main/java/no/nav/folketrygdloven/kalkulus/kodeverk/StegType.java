@@ -27,6 +27,7 @@ public class StegType extends Kodeverk{
     public static final StegType FORS_BERGRUNN = new StegType("FORS_BERGRUNN");
     public static final StegType FORTS_FORS_BERGRUNN = new StegType("FORS_BERGRUNN_2");
     public static final StegType VURDER_VILKAR_BERGRUNN = new StegType("VURDER_VILKAR_BERGRUNN");
+    public static final StegType VURDER_TILKOMMET_INNTEKT = new StegType("VURDER_TILKOMMET_INNTEKT");
     public static final StegType VURDER_REF_BERGRUNN = new StegType("VURDER_REF_BERGRUNN");
     public static final StegType FORDEL_BERGRUNN = new StegType("FORDEL_BERGRUNN");
     public static final StegType FAST_BERGRUNN = new StegType("FAST_BERGRUNN");

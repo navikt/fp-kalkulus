@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
@@ -35,14 +36,7 @@ public class AvklaringsbehovUtlederFordelBeregning {
                 ytelsespesifiktGrunnlag,
                 inntektsmeldinger,
                 forlengelseperioder);
-        var skalVurdereNyttInntektsforhold = AvklaringsbehovUtlederNyttInntektsforhold.skalVurdereNyttInntektsforhold(
-                beregningsgrunnlagGrunnlag,
-                ytelsespesifiktGrunnlag,
-                forlengelseperioder);
         var utledetbehovForAvklaring = new ArrayList<BeregningAvklaringsbehovResultat>();
-        if (skalVurdereNyttInntektsforhold) {
-            utledetbehovForAvklaring.add(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.VURDER_NYTT_INNTKTSFRHLD));
-        }
         if (AvklaringsbehovUtlederRepresentererStortinget.skalVurderePeriodeForStortingsrepresentasjon(beregningsgrunnlagGrunnlag, iayGrunnlag, forlengelseperioder)) {
             utledetbehovForAvklaring.add(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.VURDER_REPRESENTERER_STORTINGET));
         }

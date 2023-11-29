@@ -1,6 +1,5 @@
-package no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt;
+package no.nav.folketrygdloven.kalkulator.steg.tilkommetInntekt;
 
-import static com.fasterxml.jackson.databind.node.BooleanNode.TRUE;
 import static no.nav.folketrygdloven.kalkulator.felles.periodesplitting.TidslinjeUtils.opprettTidslinje;
 
 import java.time.LocalDate;

@@ -36,8 +36,8 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDt
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.StatusOgArbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt.TilkommetInntektPeriodeTjeneste;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt.TilkommetInntektsforholdTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.tilkommetInntekt.TilkommetInntektPeriodeTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.tilkommetInntekt.TilkommetInntektsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.tid.Virkedager;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;

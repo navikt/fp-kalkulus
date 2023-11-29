@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt;
+package no.nav.folketrygdloven.kalkulator.steg.tilkommetInntekt;
 
 import java.time.LocalDate;
 import java.util.Collection;

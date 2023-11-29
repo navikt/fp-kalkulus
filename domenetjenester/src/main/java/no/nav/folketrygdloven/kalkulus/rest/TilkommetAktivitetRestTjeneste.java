@@ -30,6 +30,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import no.nav.folketrygdloven.kalkulator.felles.inntektgradering.FinnUttaksgradInntektsgradering;
 import no.nav.folketrygdloven.kalkulator.felles.inntektgradering.SimulerTilkomneAktiviteterTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.typer.StatusOgArbeidsgiver;
@@ -39,10 +40,14 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingRef
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.mappers.MapFraKalkulator;
 import no.nav.folketrygdloven.kalkulus.request.v1.tilkommetAktivitet.UtledTilkommetAktivitetForRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.tilkommetAktivitet.UtledTilkommetAktivitetListeRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.response.v1.gradering.InntektGraderingPeriode;
+import no.nav.folketrygdloven.kalkulus.response.v1.gradering.InntektgraderingListe;
+import no.nav.folketrygdloven.kalkulus.response.v1.gradering.InntektgraderingPrReferanse;
 import no.nav.folketrygdloven.kalkulus.response.v1.tilkommetAktivitet.UtledetTilkommetAktivitet;
 import no.nav.folketrygdloven.kalkulus.response.v1.tilkommetAktivitet.UtledetTilkommetAktivitetListe;
 import no.nav.folketrygdloven.kalkulus.response.v1.tilkommetAktivitet.UtledetTilkommetAktivitetPrReferanse;
@@ -81,6 +86,44 @@ public class TilkommetAktivitetRestTjeneste {
         this.koblingRepository = koblingRepository;
     }
 
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("finnUttaksgradVedInntektsgradering")
+    @Operation(description = "Finn inntektsgradering", tags = "finnUttaksgradVedInntektsgradering", summary = ("Finn inntektsgradering"))
+    @BeskyttetRessurs(action = READ, property = BEREGNINGSGRUNNLAG)
+    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
+    public Response finnUttaksgradVedInntektsgradering(@NotNull @Valid UtledTilkommetAktivitetListeRequestAbacDto spesifikasjon) {
+
+        var referanser = spesifikasjon.getListe().stream().map(UtledTilkommetAktivitetForRequest::getEksternReferanse).map(KoblingReferanse::new).toList();
+        var koblinger = koblingRepository.hentKoblingerFor(
+                referanser,
+                spesifikasjon.getYtelseType());
+        var koblingIder = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
+        var beregningsgrunnlag = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingIder);
+
+        if (beregningsgrunnlag.stream().anyMatch(bg -> !bg.getBeregningsgrunnlagTilstand().erEtter(BeregningsgrunnlagTilstand.VURDERT_VILKÅR))) {
+            throw new IllegalStateException("Kan ikke finne uttaksgrad ved gradering mot inntekt uten å ha passert vilkårsvurdering");
+        }
+
+        var inputer = spesifikasjon.getListe().stream().collect(Collectors.toMap(UtledTilkommetAktivitetForRequest::getEksternReferanse, UtledTilkommetAktivitetForRequest::getKalkulatorInput));
+
+        var referanseInputMap = spesifikasjon.getListe().stream().filter(it -> it.getKalkulatorInput() != null)
+                .collect(Collectors.toMap(UtledTilkommetAktivitetForRequest::getEksternReferanse, UtledTilkommetAktivitetForRequest::getKalkulatorInput));
+
+        var inntektgraderinger = beregningsgrunnlag.stream().map(bg -> {
+            var kobling = koblinger.stream().filter(it -> it.getId().equals(bg.getKoblingId())).findFirst().orElseThrow();
+            var input = referanseInputMap.getOrDefault(kobling.getKoblingReferanse().getReferanse(), inputer.get(kobling.getKoblingReferanse().getReferanse()));
+            var beregningsgrunnlagInput = lagBeregningsgrunnlagInput(kobling, input, bg);
+            var graderingMotInntektTidslinje = FinnUttaksgradInntektsgradering.finn(beregningsgrunnlagInput);
+
+
+            return new InntektgraderingPrReferanse(
+                    kobling.getKoblingReferanse().getReferanse(),
+                    graderingMotInntektTidslinje.toSegments().stream().map(s -> new InntektGraderingPeriode(new Periode(s.getFom(), s.getTom()), s.getValue())).toList()
+            );
+        }).toList();
+        return Response.ok(new InntektgraderingListe(inntektgraderinger)).build();
+    }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

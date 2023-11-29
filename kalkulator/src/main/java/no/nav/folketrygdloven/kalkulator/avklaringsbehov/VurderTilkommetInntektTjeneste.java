@@ -46,7 +46,7 @@ public class VurderTilkommetInntektTjeneste {
         var splitter = new PeriodeSplitter<>(splittPeriodeConfig);
         var splittetGrunnlag = splitter.splittPerioder(input.getBeregningsgrunnlag(), tidslinje);
         grunnlagBuilder.medBeregningsgrunnlag(splittetGrunnlag);
-        return grunnlagBuilder.build(BeregningsgrunnlagTilstand.FASTSATT_INN);
+        return grunnlagBuilder.build(BeregningsgrunnlagTilstand.VURDERT_TILKOMMET_INNTEKT_UT);
     }
 
     private static LocalDateSegmentCombinator<BeregningsgrunnlagPeriodeDto, List<NyttInntektsforholdDto>, BeregningsgrunnlagPeriodeDto> settVurderingCombinator(HåndterBeregningsgrunnlagInput input) {

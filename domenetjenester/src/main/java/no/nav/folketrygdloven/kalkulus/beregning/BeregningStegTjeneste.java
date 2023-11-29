@@ -11,6 +11,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Any;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
+import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
@@ -51,7 +52,7 @@ import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
 
 @ApplicationScoped
 public class BeregningStegTjeneste {
-
+    private static final boolean GRADERING_MOT_INNTEKT_ENABLED = KonfigurasjonVerdi.get("GRADERING_MOT_INNTEKT", false);
     private final KalkulatorInterface beregningsgrunnlagTjeneste = new BeregningsgrunnlagTjeneste();
     private final KalkulatorInterface beregningsgrunnlagFrisinnTjeneste = new BeregningsgrunnlagFRISINNTjeneste();
     private BeregningsgrunnlagRepository repository;
@@ -60,6 +61,7 @@ public class BeregningStegTjeneste {
     private ForlengelseTjeneste forlengelseTjeneste;
     private Instance<VidereførOverstyring> videreførOverstyring;
     private RegelSporingTjeneste regelSporingTjeneste;
+
 
     BeregningStegTjeneste() {
         // CDI
@@ -96,6 +98,7 @@ public class BeregningStegTjeneste {
             case FORS_BERGRUNN -> foreslåBeregningsgrunnlag((ForeslåBeregningsgrunnlagInput) input);
             case FORTS_FORS_BERGRUNN -> fortsettForeslåBeregningsgrunnlag((FortsettForeslåBeregningsgrunnlagInput) input);
             case VURDER_VILKAR_BERGRUNN -> vurderBeregningsgrunnlagsvilkår((VurderBeregningsgrunnlagvilkårInput) input);
+            case VURDER_TILKOMMET_INNTEKT -> vurderTilkommetInntekt(input);
             case VURDER_REF_BERGRUNN -> vurderRefusjonForBeregningsgrunnlaget((VurderRefusjonBeregningsgrunnlagInput) input);
             case FORDEL_BERGRUNN -> fordelBeregningsgrunnlag((FordelBeregningsgrunnlagInput) input);
             case FAST_BERGRUNN -> fastsettBeregningsgrunnlag(input);
@@ -200,10 +203,27 @@ public class BeregningStegTjeneste {
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
 
+    /**
+     * Vurder tilkommet inntekt (ikke påkrevd steg)
+     * Steg 6. VURDER_TILKOMMET_INNTEKT
+     *
+     * @param input {@link BeregningsgrunnlagInput}
+     * @return {@link BeregningAvklaringsbehovResultat}
+     */
+    private TilstandResponse vurderTilkommetInntekt(StegProsesseringInput input) {
+        if (!GRADERING_MOT_INNTEKT_ENABLED) {
+            return new TilstandResponse(input.getKoblingReferanse().getKoblingUuid(), KalkulusResultatKode.BEREGNET);
+        }
+        var beregningResultatAggregat = velgKalkulatorImplementasjon(input).vurderTilkommetInntekt(input);
+        lagreOgKopier(input, beregningResultatAggregat);
+        lagreAvklaringsbehov(input, beregningResultatAggregat);
+        return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
+    }
+
 
     /**
      * VurderRefusjonBeregningsgrunnlag
-     * Steg 6. VURDER_REF_BERGRUNN
+     * Steg 7. VURDER_REF_BERGRUNN
      *
      * @param input {@link BeregningsgrunnlagInput}
      * @return {@link BeregningAvklaringsbehovResultat}
@@ -218,7 +238,7 @@ public class BeregningStegTjeneste {
 
     /**
      * FordelBeregningsgrunnlag
-     * Steg 7. FORDEL_BERGRUNN
+     * Steg 8. FORDEL_BERGRUNN
      *
      * @param input {@link BeregningsgrunnlagInput}
      * @return {@link BeregningAvklaringsbehovResultat}
@@ -232,7 +252,7 @@ public class BeregningStegTjeneste {
 
     /**
      * FastsettBeregningsgrunnlagSteg
-     * Steg 8. FAST_BERGRUNN
+     * Steg 9. FAST_BERGRUNN
      *
      * @param input {@link BeregningsgrunnlagInput}
      */

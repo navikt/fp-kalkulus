@@ -1,9 +1,10 @@
 package no.nav.folketrygdloven.kalkulator.steg;
 
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.VURDERT_TILKOMMET_INNTEKT;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
@@ -28,18 +29,18 @@ import no.nav.folketrygdloven.kalkulator.steg.besteberegning.ForeslåBesteberegn
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AvklaringsbehovUtlederFastsettBeregningsaktiviteterTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ForeslåSkjæringstidspunktTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.OpprettBeregningsgrunnlagTjeneste;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.FordelBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.FordelBeregningsgrunnlagTjenesteImpl;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.AvklaringsbehovUtlederFordelBeregning;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.vilkår.VilkårTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.vilkår.VurderBeregningsgrunnlagTjeneste;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.ytelse.FordelBeregningsgrunnlagTjenesteUtbGrad;
 import no.nav.folketrygdloven.kalkulator.steg.foreslå.ForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.steg.fortsettForeslå.FortsettForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.steg.fullføre.FullføreBeregningsgrunnlagTjenesteVelger;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.AvklaringsbehovUtlederFaktaOmBeregning;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.VurderRefusjonBeregningsgrunnlagFelles;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.ytelse.VurderRefusjonBeregningsgrunnlagPleiepenger;
+import no.nav.folketrygdloven.kalkulator.steg.tilkommetInntekt.AvklaringsbehovUtlederTilkommetInntekt;
+import no.nav.folketrygdloven.kalkulator.steg.tilkommetInntekt.TilkommetInntektTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
@@ -84,8 +85,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
     @Override
     public BeregningResultatAggregat fordelBeregningsgrunnlag(StegProsesseringInput input) {
         validerIkkeFrisinn(input);
-        var fordelResultat = finnFordelBeregningsgrunnlagTjeneste(input.getFagsakYtelseType())
-                .omfordelBeregningsgrunnlag(input);
+        var fordelResultat = new FordelBeregningsgrunnlagTjenesteImpl().omfordelBeregningsgrunnlag(input);
         var nyttGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag())
                 .medBeregningsgrunnlag(fordelResultat.getBeregningsgrunnlag())
                 .build(input.getStegTilstand());
@@ -124,6 +124,27 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
                 .medBeregningsgrunnlag(vurdertBeregningsgrunnlag, input.getStegTilstand())
                 .medVilkårResultat(vilkårResultat)
                 .medRegelSporingAggregat(vilkårVurderingResultat.getRegelsporinger().orElse(null))
+                .build();
+    }
+
+
+    /**
+     * Vurderer tilkommet inntekt
+     *
+     * @param input Standard steginput
+     * @return Resultat av vurdering av tilkommet inntekt: nytt bg og eventuelt aksjonspunkt
+     */
+    @Override
+    public BeregningResultatAggregat vurderTilkommetInntekt(StegProsesseringInput input) {
+        validerIkkeFrisinn(input);
+        var bg = new TilkommetInntektTjeneste().vurderTilkommetInntekt(input);
+        var avklaringsbehov = AvklaringsbehovUtlederTilkommetInntekt.utledAvklaringsbehovFor(
+                BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag()).medBeregningsgrunnlag(bg).build(VURDERT_TILKOMMET_INNTEKT),
+                input.getYtelsespesifiktGrunnlag(),
+                input.getForlengelseperioder());
+        return BeregningResultatAggregat.Builder.fra(input)
+                .medAvklaringsbehov(avklaringsbehov)
+                .medBeregningsgrunnlag(bg, input.getStegTilstand())
                 .build();
     }
 
@@ -244,12 +265,6 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
     private Optional<BeregningAktivitetOverstyringerDto> hentTidligereOverstyringer(FastsettBeregningsaktiviteterInput input) {
         Optional<BeregningsgrunnlagGrunnlagDto> overstyrtGrunnlag = input.getForrigeGrunnlagFraStegUt();
         return overstyrtGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getOverstyring);
-    }
-
-    private FordelBeregningsgrunnlagTjeneste finnFordelBeregningsgrunnlagTjeneste(FagsakYtelseType ytelseType) {
-        var utbetalingsGrad = Set.of(FagsakYtelseType.SVANGERSKAPSPENGER, FagsakYtelseType.PLEIEPENGER_SYKT_BARN,
-                FagsakYtelseType.PLEIEPENGER_NÆRSTÅENDE, FagsakYtelseType.OPPLÆRINGSPENGER).contains(ytelseType);
-        return utbetalingsGrad ? new FordelBeregningsgrunnlagTjenesteUtbGrad() : new FordelBeregningsgrunnlagTjenesteImpl();
     }
 
     private void validerIkkeFrisinn(StegProsesseringInput input) {

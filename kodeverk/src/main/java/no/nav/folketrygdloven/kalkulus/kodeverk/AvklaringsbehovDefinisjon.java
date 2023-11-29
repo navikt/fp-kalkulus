@@ -34,7 +34,7 @@ enum AvklaringsbehovDefinisjon implements Kodeverdi {
     FASTSETT_BG_SN("5042", "FASTSETT_BG_SN", MANUELL, BeregningSteg.FORTS_FORS_BERGRUNN, "Fastsett beregningsgrunnlag for selvstendig næringsdrivende"),
     FORDEL_BG("5046", "FORDEL_BG", MANUELL, BeregningSteg.FORDEL_BERGRUNN, "Fordel beregningsgrunnlag"),
     FASTSETT_BG_TB_ARB("5047", "FASTSETT_BG_TB_ARB", MANUELL, BeregningSteg.FORS_BERGRUNN, "Fastsett beregningsgrunnlag for tidsbegrenset arbeidsforhold"),
-    VURDER_NYTT_INNTKTSFRHLD("5067", "VURDER_NYTT_INNTKTSFRHLD", MANUELL, BeregningSteg.FORDEL_BERGRUNN, "Vurder nytt inntektsforhold"),
+    VURDER_NYTT_INNTKTSFRHLD("5067", "VURDER_NYTT_INNTKTSFRHLD", MANUELL, BeregningSteg.VURDER_TILKOMMET_INNTEKT, "Vurder nytt inntektsforhold"),
     VURDER_REPRESENTERER_STORTINGET("5087", "VURDER_REPRSNTR_STORTNGT", MANUELL, BeregningSteg.FORDEL_BERGRUNN, "Vurder om bruker representerer stortinget i perioden"),
 
     FASTSETT_BG_SN_NY_I_ARB_LIVT("5049", "FASTSETT_BG_SN_NY_I_ARB_LIVT", MANUELL, BeregningSteg.FORTS_FORS_BERGRUNN, "Fastsett beregningsgrunnlag for SN som er ny i arbeidslivet"),
@@ -170,6 +170,4 @@ enum AvklaringsbehovDefinisjon implements Kodeverdi {
     public boolean erOverstyring() {
         return OVERSTYRING.equals(this.avklaringsbehovType);
     }
-
-
 }

@@ -8,6 +8,7 @@ import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FORS_BESTEB
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FORTS_FORS_BERGRUNN;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.KOFAKBER;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.VURDER_REF_BERGRUNN;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.VURDER_TILKOMMET_INNTEKT;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.VURDER_VILKAR_BERGRUNN;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.BESTEBEREGNET;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FASTSATT;
@@ -23,6 +24,8 @@ import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstan
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.OPPRETTET;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.VURDERT_REFUSJON;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.VURDERT_REFUSJON_UT;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.VURDERT_TILKOMMET_INNTEKT;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.VURDERT_TILKOMMET_INNTEKT_UT;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.VURDERT_VILKÅR;
 
 import java.util.Map;
@@ -40,6 +43,7 @@ public class MapStegTilTilstand {
             FORS_BERGRUNN, FORESLÅTT,
             FORTS_FORS_BERGRUNN, FORESLÅTT_2,
             VURDER_VILKAR_BERGRUNN, VURDERT_VILKÅR,
+            VURDER_TILKOMMET_INNTEKT, VURDERT_TILKOMMET_INNTEKT,
             VURDER_REF_BERGRUNN, VURDERT_REFUSJON,
             FORDEL_BERGRUNN, OPPDATERT_MED_REFUSJON_OG_GRADERING,
             FAST_BERGRUNN, FASTSATT);
@@ -49,6 +53,7 @@ public class MapStegTilTilstand {
             KOFAKBER, KOFAKBER_UT,
             FORS_BERGRUNN, FORESLÅTT_UT,
             FORTS_FORS_BERGRUNN, FORESLÅTT_2_UT,
+            VURDER_TILKOMMET_INNTEKT, VURDERT_TILKOMMET_INNTEKT_UT,
             VURDER_REF_BERGRUNN, VURDERT_REFUSJON_UT,
             FORDEL_BERGRUNN, FASTSATT_INN);
 
@@ -63,7 +68,6 @@ public class MapStegTilTilstand {
     public static Optional<BeregningsgrunnlagTilstand> mapTilStegUtTilstand(BeregningSteg kode) {
         return Optional.ofNullable(MAP_STEG_UT_TILSTAND.get(kode));
     }
-
 
 
 }

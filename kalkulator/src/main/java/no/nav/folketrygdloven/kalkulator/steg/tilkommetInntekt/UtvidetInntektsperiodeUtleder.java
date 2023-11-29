@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt;
+package no.nav.folketrygdloven.kalkulator.steg.tilkommetInntekt;
 
 import static java.lang.Boolean.TRUE;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;

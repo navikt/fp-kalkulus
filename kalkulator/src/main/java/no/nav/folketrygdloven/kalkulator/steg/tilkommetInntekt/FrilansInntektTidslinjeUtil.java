@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.steg.fordeling.tilkommetInntekt;
+package no.nav.folketrygdloven.kalkulator.steg.tilkommetInntekt;
 
 import static no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;

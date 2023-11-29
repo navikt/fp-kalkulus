@@ -66,7 +66,7 @@ public class BeregningsgrunnlagFRISINNTjeneste implements KalkulatorInterface {
     @Override
     public BeregningResultatAggregat fastsettBeregningsgrunnlag(StegProsesseringInput input) {
         validerFrisinn(input);
-        var resultat =  new FullføreBeregningsgrunnlagFRISINN().fullføreBeregningsgrunnlag(input);
+        var resultat = new FullføreBeregningsgrunnlagFRISINN().fullføreBeregningsgrunnlag(input);
         Builder resultatBuilder = Builder.fra(input)
                 .medRegelSporingAggregat(resultat.getRegelsporinger().orElse(null))
                 .medBeregningsgrunnlag(resultat.getBeregningsgrunnlag(), input.getStegTilstand());
@@ -119,6 +119,12 @@ public class BeregningsgrunnlagFRISINNTjeneste implements KalkulatorInterface {
                 .medVilkårResultat(vilkårResultat)
                 .medRegelSporingAggregat(vilkårVurderingResultat.getRegelsporinger().orElse(null))
                 .build();
+    }
+
+    @Override
+    public BeregningResultatAggregat vurderTilkommetInntekt(StegProsesseringInput input) {
+        validerFrisinn(input);
+        throw new IllegalStateException("Utviklerfeil: Frisinn skal ikke vurdere tilkommet inntekt");
     }
 
 
@@ -199,7 +205,7 @@ public class BeregningsgrunnlagFRISINNTjeneste implements KalkulatorInterface {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag())
                 .medBeregningsgrunnlag(beregningsgrunnlag)
                 .build(input.getStegTilstand());
-        var avklaringsbehovresultat =  new AvklaringsbehovUtlederFaktaOmBeregningFRISINN()
+        var avklaringsbehovresultat = new AvklaringsbehovUtlederFaktaOmBeregningFRISINN()
                 .utledAvklaringsbehovFor(input, nyttGrunnlag, harOverstyrtBergningsgrunnlag(input));
 
         BeregningsgrunnlagDto grunnlagMedTilfeller = BeregningsgrunnlagDto.builder(beregningsgrunnlag)

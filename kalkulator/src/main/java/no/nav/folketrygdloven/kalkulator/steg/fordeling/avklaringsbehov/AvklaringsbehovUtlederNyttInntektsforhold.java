@@ -18,6 +18,7 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
  */
 public class AvklaringsbehovUtlederNyttInntektsforhold {
 
+
     public static boolean skalVurdereNyttInntektsforhold(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag,
                                                          YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
                                                          List<Intervall> forlengelseperioder) {
