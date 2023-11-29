@@ -71,7 +71,7 @@ public class FullføreBeregningsgrunnlagFRISINN extends FullføreBeregningsgrunn
                 .map(periode -> {
                     Boolean erVilkårOppfylt = erVilkårOppfyltForSøknadsperiode(beregningVilkårResultatListe, søknadsperioder, periode);
                     BeregningsgrunnlagPeriode.oppdater(periode).medErVilkårOppfylt(erVilkårOppfylt);
-                    return KalkulusRegler.finnGrenseverdiFRISINN(periode).sporingFinnGrenseverdi().sporing();
+                    return KalkulusRegler.finnGrenseverdiFRISINN(periode).sporing().sporing();
                 }).collect(Collectors.toList());
     }
 
