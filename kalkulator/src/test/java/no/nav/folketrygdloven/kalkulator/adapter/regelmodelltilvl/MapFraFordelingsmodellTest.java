@@ -164,7 +164,7 @@ class MapFraFordelingsmodellTest {
     private BeregningsgrunnlagDto map(FordelPeriodeModell... regelPeriode) {
         var regelperioder = Arrays.asList(regelPeriode);
         var regelresultater = regelperioder.stream()
-                .map(rp -> new RegelResultat(null, null, null))
+                .map(rp -> new RegelResultat(null, null, null, null))
                 .collect(Collectors.toList());
         return MapFraFordelingsmodell.map(regelperioder, regelresultater, bg.build());
     }

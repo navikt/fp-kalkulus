@@ -89,11 +89,11 @@ public class VurderBeregningsgrunnlagTjenesteTest {
         assertThat(resultat.getAvklaringsbehov()).isEmpty();
         assertThat(resultat.getVilkårOppfylt()).isTrue();
         assertThat(resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(1);
-        var vilkårVurdering = resultat.getRegelsporinger().get().getRegelsporingPerioder().stream()
-                .filter(rs -> rs.getRegelType().equals(BeregningsgrunnlagPeriodeRegelType.VILKÅR_VURDERING))
+        var vilkårVurdering = resultat.getRegelsporinger().get().regelsporingPerioder().stream()
+                .filter(rs -> rs.regelType().equals(BeregningsgrunnlagPeriodeRegelType.VILKÅR_VURDERING))
                 .findFirst().get();
-        assertThat(vilkårVurdering.getRegelInput()).isNotNull();
-        assertThat(vilkårVurdering.getRegelEvaluering()).isNotNull();
+        assertThat(vilkårVurdering.regelInput()).isNotNull();
+        assertThat(vilkårVurdering.regelEvaluering()).isNotNull();
     }
 
     @Test
@@ -125,11 +125,11 @@ public class VurderBeregningsgrunnlagTjenesteTest {
         assertThat(resultat.getAvklaringsbehov()).isEmpty();
         assertThat(resultat.getVilkårOppfylt()).isFalse();
         assertThat(resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(1);
-        var vilkårVurdering = resultat.getRegelsporinger().get().getRegelsporingPerioder().stream()
-                .filter(rs -> rs.getRegelType().equals(BeregningsgrunnlagPeriodeRegelType.VILKÅR_VURDERING))
+        var vilkårVurdering = resultat.getRegelsporinger().get().regelsporingPerioder().stream()
+                .filter(rs -> rs.regelType().equals(BeregningsgrunnlagPeriodeRegelType.VILKÅR_VURDERING))
                 .findFirst().get();
-        assertThat(vilkårVurdering.getRegelInput()).isNotNull();
-        assertThat(vilkårVurdering.getRegelEvaluering()).isNotNull();
+        assertThat(vilkårVurdering.regelInput()).isNotNull();
+        assertThat(vilkårVurdering.regelEvaluering()).isNotNull();
     }
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlag(int inntekt) {

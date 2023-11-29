@@ -10,9 +10,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
-
-import org.hibernate.annotations.Type;
-
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.BeregningsgrunnlagRegelTypeKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
@@ -42,6 +39,9 @@ public class RegelSporingGrunnlagEntitet extends BaseEntitet {
     @Column(name="regel_type", nullable = false)
     private BeregningsgrunnlagRegelType regelType;
 
+    @Column(name = "regel_versjon")
+    private String regelVersjon;
+
     @Column(name = "aktiv", nullable = false)
     private boolean aktiv = true;
 
@@ -66,6 +66,10 @@ public class RegelSporingGrunnlagEntitet extends BaseEntitet {
 
     public BeregningsgrunnlagRegelType getRegelType() {
         return regelType;
+    }
+
+    public String getRegelVersjon() {
+        return regelVersjon;
     }
 
     public boolean erAktiv() {
@@ -97,6 +101,11 @@ public class RegelSporingGrunnlagEntitet extends BaseEntitet {
         public Builder medRegelEvaluering(String regelEvaluering) {
             Objects.requireNonNull(regelEvaluering, "regelInput");
             kladd.regelEvaluering = regelEvaluering;
+            return this;
+        }
+
+        public Builder medRegelVersjon(String regelVersjon) {
+            kladd.regelVersjon = regelVersjon;
             return this;
         }
 

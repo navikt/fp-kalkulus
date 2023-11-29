@@ -56,14 +56,15 @@ public class RegelsporingRepository {
             String hash = entry.getKey();
             for (RegelSporingPeriode sporing : entry.getValue()) {
                 RegelSporingPeriodeEntitet entitet = RegelSporingPeriodeEntitet.ny()
-                        .medRegelEvaluering(sporing.getRegelEvaluering())
+                        .medRegelEvaluering(sporing.regelEvaluering())
                         .medRegelInputHash(hash)
-                        .medPeriode(IntervallEntitet.fraOgMedTilOgMed(sporing.getPeriode().getFomDato(), sporing.getPeriode().getTomDato()))
-                        .build(koblingId, sporing.getRegelType());
+                        .medRegelVersjon(sporing.regelVersjon())
+                        .medPeriode(IntervallEntitet.fraOgMedTilOgMed(sporing.periode().getFomDato(), sporing.periode().getTomDato()))
+                        .build(koblingId, sporing.regelType());
                 entityManager.persist(entitet);
 
                 antall++;
-                størrelseRegelEvaluering += sporing.getRegelEvaluering().length();
+                størrelseRegelEvaluering += sporing.regelEvaluering().length();
             }
         }
         entityManager.flush();

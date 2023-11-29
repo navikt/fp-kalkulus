@@ -1074,19 +1074,19 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
 
     private void assertRegelsporing(Optional<RegelSporingAggregat> regelSporingAggregat) {
 
-        RegelSporingPeriode finnGrenseverdi = regelSporingAggregat.get().getRegelsporingPerioder().stream()
-                .filter(rs -> rs.getRegelType().equals(BeregningsgrunnlagPeriodeRegelType.FINN_GRENSEVERDI))
+        RegelSporingPeriode finnGrenseverdi = regelSporingAggregat.get().regelsporingPerioder().stream()
+                .filter(rs -> rs.regelType().equals(BeregningsgrunnlagPeriodeRegelType.FINN_GRENSEVERDI))
                 .findFirst().get();
 
-        RegelSporingPeriode fastsett = regelSporingAggregat.get().getRegelsporingPerioder().stream()
-                .filter(rs -> rs.getRegelType().equals(BeregningsgrunnlagPeriodeRegelType.FASTSETT))
+        RegelSporingPeriode fastsett = regelSporingAggregat.get().regelsporingPerioder().stream()
+                .filter(rs -> rs.regelType().equals(BeregningsgrunnlagPeriodeRegelType.FASTSETT))
                 .findFirst().get();
 
-        assertThat(finnGrenseverdi.getRegelInput()).isNotNull();
-        assertThat(finnGrenseverdi.getRegelEvaluering()).isNotNull();
-        assertThat(fastsett.getRegelInput()).isNotNull();
-        assertThat(fastsett.getRegelEvaluering()).isNotNull();
-        assertThat(fastsett.getRegelEvaluering()).contains(RegelFullføreBeregningsgrunnlag.ID);
+        assertThat(finnGrenseverdi.regelInput()).isNotNull();
+        assertThat(finnGrenseverdi.regelEvaluering()).isNotNull();
+        assertThat(fastsett.regelInput()).isNotNull();
+        assertThat(fastsett.regelEvaluering()).isNotNull();
+        assertThat(fastsett.regelEvaluering()).contains(RegelFullføreBeregningsgrunnlag.ID);
     }
 
     private BeregningsgrunnlagRegelResultat act(BeregningsgrunnlagDto beregningsgrunnlag,

@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -25,8 +24,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingRef
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrunnlagEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
@@ -81,7 +78,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
                         .build()), BeregningsgrunnlagTilstand.FORESLÅTT);
-        regelSporingTjeneste.lagre(koblingId, List.of(new RegelSporingPeriode(getTestJSON(), getTestJSON(), Intervall.fraOgMed(LocalDate.now()), BeregningsgrunnlagPeriodeRegelType.FORESLÅ)));
+        regelSporingTjeneste.lagre(koblingId, List.of(new RegelSporingPeriode(getTestJSON(), getTestJSON(), Intervall.fraOgMed(LocalDate.now()), BeregningsgrunnlagPeriodeRegelType.FORESLÅ, "1.2.3")));
         rullTilbakeTjeneste.rullTilbakeTilForrigeTilstandVedBehov(Set.of(koblingId), BeregningsgrunnlagTilstand.KOFAKBER_UT, true);
 
         // Act
@@ -111,7 +108,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
                         .build()), BeregningsgrunnlagTilstand.FORESLÅTT);
-        regelSporingTjeneste.lagre(koblingId, List.of(new RegelSporingPeriode(getTestJSON(), getTestJSON(), Intervall.fraOgMed(LocalDate.now()), BeregningsgrunnlagPeriodeRegelType.FORESLÅ)));
+        regelSporingTjeneste.lagre(koblingId, List.of(new RegelSporingPeriode(getTestJSON(), getTestJSON(), Intervall.fraOgMed(LocalDate.now()), BeregningsgrunnlagPeriodeRegelType.FORESLÅ, "1.2.3")));
         rullTilbakeTjeneste.rullTilbakeTilForrigeTilstandVedBehov(Set.of(koblingId), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, true);
 
         // Act
@@ -138,7 +135,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
                         .build()), BeregningsgrunnlagTilstand.FORESLÅTT);
-        regelSporingTjeneste.lagre(koblingId, List.of(new RegelSporingPeriode(getTestJSON(), getTestJSON(), Intervall.fraOgMed(LocalDate.now()), BeregningsgrunnlagPeriodeRegelType.FORESLÅ)));
+        regelSporingTjeneste.lagre(koblingId, List.of(new RegelSporingPeriode(getTestJSON(), getTestJSON(), Intervall.fraOgMed(LocalDate.now()), BeregningsgrunnlagPeriodeRegelType.FORESLÅ, "1.2.3")));
         rullTilbakeTjeneste.rullTilbakeTilForrigeTilstandVedBehov(Set.of(koblingId), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, true);
 
         // Act

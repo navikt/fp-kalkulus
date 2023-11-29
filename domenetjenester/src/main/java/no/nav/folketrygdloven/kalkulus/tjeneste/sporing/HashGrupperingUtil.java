@@ -26,11 +26,11 @@ public class HashGrupperingUtil {
     static Map<String, List<RegelSporingPeriode>> grupperRegelsporinger(List<RegelSporingPeriode> regelSporingPerioder, Function<String, String> hashFunction) {
         //grupperer regeltype før det sendes inn til funksjon som har som antagelse at det er mye duplikater i input
         //og det vil det være i større grad om det grupperes på regeltype først, siden input vil være ulik pr type.
-        Map<BeregningsgrunnlagPeriodeRegelType, List<RegelSporingPeriode>> prRegelType = regelSporingPerioder.stream().collect(Collectors.groupingBy(RegelSporingPeriode::getRegelType));
+        Map<BeregningsgrunnlagPeriodeRegelType, List<RegelSporingPeriode>> prRegelType = regelSporingPerioder.stream().collect(Collectors.groupingBy(RegelSporingPeriode::regelType));
 
         return prRegelType.values()
                 .parallelStream()
-                .map(sporinger -> grupperPrHash(sporinger, RegelSporingPeriode::getRegelInput, hashFunction))
+                .map(sporinger -> grupperPrHash(sporinger, RegelSporingPeriode::regelInput, hashFunction))
                 .reduce(new HashMap<>(), HashGrupperingUtil::multimapUnion);
     }
 

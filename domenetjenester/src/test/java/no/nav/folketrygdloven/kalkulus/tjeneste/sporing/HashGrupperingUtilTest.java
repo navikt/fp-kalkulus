@@ -54,9 +54,9 @@ class HashGrupperingUtilTest {
         Intervall intervall1 = Intervall.fraOgMedTilOgMed(dag1, dag1);
         Intervall intervall2 = Intervall.fraOgMedTilOgMed(dag2, dag2);
         Intervall intervall3 = Intervall.fraOgMedTilOgMed(dag3, dag3);
-        RegelSporingPeriode rsp1 = new RegelSporingPeriode("evaluering1", "input1", intervall1, BeregningsgrunnlagPeriodeRegelType.FORESLÅ);
-        RegelSporingPeriode rsp2 = new RegelSporingPeriode("evaluering2", "input1", intervall2, BeregningsgrunnlagPeriodeRegelType.FORESLÅ);
-        RegelSporingPeriode rsp3 = new RegelSporingPeriode("evaluering3", "input1", intervall3, BeregningsgrunnlagPeriodeRegelType.FORESLÅ);
+        RegelSporingPeriode rsp1 = new RegelSporingPeriode("evaluering1", "input1", intervall1, BeregningsgrunnlagPeriodeRegelType.FORESLÅ, "1.2.3");
+        RegelSporingPeriode rsp2 = new RegelSporingPeriode("evaluering2", "input1", intervall2, BeregningsgrunnlagPeriodeRegelType.FORESLÅ, "1.2.3");
+        RegelSporingPeriode rsp3 = new RegelSporingPeriode("evaluering3", "input1", intervall3, BeregningsgrunnlagPeriodeRegelType.FORESLÅ, "1.2.3");
         Map<String, List<RegelSporingPeriode>> gruppert = HashGrupperingUtil.grupperRegelsporinger(List.of(rsp1, rsp2, rsp3), superenkelHashfunksjon);
         Assertions.assertThat(gruppert).containsOnlyKeys("i");
         Assertions.assertThat(gruppert.get("i")).containsOnly(rsp1, rsp2, rsp3); //garanterer ikke rekkefølge
@@ -70,9 +70,9 @@ class HashGrupperingUtilTest {
         Intervall intervall1 = Intervall.fraOgMedTilOgMed(dag1, dag1);
         Intervall intervall2 = Intervall.fraOgMedTilOgMed(dag2, dag2);
         Intervall intervall3 = Intervall.fraOgMedTilOgMed(dag3, dag3);
-        RegelSporingPeriode rsp1 = new RegelSporingPeriode("evaluering1", "input1", intervall1, BeregningsgrunnlagPeriodeRegelType.FORESLÅ);
-        RegelSporingPeriode rsp2 = new RegelSporingPeriode("evaluering2", "input2", intervall2, BeregningsgrunnlagPeriodeRegelType.FASTSETT);
-        RegelSporingPeriode rsp3 = new RegelSporingPeriode("evaluering3", "input3", intervall3, BeregningsgrunnlagPeriodeRegelType.FINN_GRENSEVERDI);
+        RegelSporingPeriode rsp1 = new RegelSporingPeriode("evaluering1", "input1", intervall1, BeregningsgrunnlagPeriodeRegelType.FORESLÅ, "1.2.3");
+        RegelSporingPeriode rsp2 = new RegelSporingPeriode("evaluering2", "input2", intervall2, BeregningsgrunnlagPeriodeRegelType.FASTSETT, "1.2.3");
+        RegelSporingPeriode rsp3 = new RegelSporingPeriode("evaluering3", "input3", intervall3, BeregningsgrunnlagPeriodeRegelType.FINN_GRENSEVERDI, "1.2.3");
         Map<String, List<RegelSporingPeriode>> gruppert = HashGrupperingUtil.grupperRegelsporinger(List.of(rsp1, rsp2, rsp3), superenkelHashfunksjon);
         Assertions.assertThat(gruppert).containsOnlyKeys("i");
         Assertions.assertThat(gruppert.get("i")).containsOnly(rsp1, rsp2, rsp3); //garanterer ikke rekkefølge
@@ -86,12 +86,12 @@ class HashGrupperingUtilTest {
         Intervall intervall1 = Intervall.fraOgMedTilOgMed(dag1, dag1);
         Intervall intervall2 = Intervall.fraOgMedTilOgMed(dag2, dag2);
         Intervall intervall3 = Intervall.fraOgMedTilOgMed(dag3, dag3);
-        RegelSporingPeriode rspA1 = new RegelSporingPeriode("evalueringA1", "Ainput1", intervall1, BeregningsgrunnlagPeriodeRegelType.FORESLÅ);
-        RegelSporingPeriode rspA2 = new RegelSporingPeriode("evalueringA2", "Ainput1", intervall2, BeregningsgrunnlagPeriodeRegelType.FORESLÅ);
-        RegelSporingPeriode rspA3 = new RegelSporingPeriode("evalueringA3", "Ainput2", intervall3, BeregningsgrunnlagPeriodeRegelType.FORESLÅ);
-        RegelSporingPeriode rspB1 = new RegelSporingPeriode("evalueringB1", "Binput1", intervall2, BeregningsgrunnlagPeriodeRegelType.FORESLÅ);
-        RegelSporingPeriode rspC1 = new RegelSporingPeriode("evalueringC1", "Cinput1", intervall3, BeregningsgrunnlagPeriodeRegelType.FINN_GRENSEVERDI);
-        RegelSporingPeriode rspC2 = new RegelSporingPeriode("evalueringC2", "Cinput1", intervall3, BeregningsgrunnlagPeriodeRegelType.FINN_GRENSEVERDI);
+        RegelSporingPeriode rspA1 = new RegelSporingPeriode("evalueringA1", "Ainput1", intervall1, BeregningsgrunnlagPeriodeRegelType.FORESLÅ, "1.2.3");
+        RegelSporingPeriode rspA2 = new RegelSporingPeriode("evalueringA2", "Ainput1", intervall2, BeregningsgrunnlagPeriodeRegelType.FORESLÅ, "1.2.3");
+        RegelSporingPeriode rspA3 = new RegelSporingPeriode("evalueringA3", "Ainput2", intervall3, BeregningsgrunnlagPeriodeRegelType.FORESLÅ, "1.2.3");
+        RegelSporingPeriode rspB1 = new RegelSporingPeriode("evalueringB1", "Binput1", intervall2, BeregningsgrunnlagPeriodeRegelType.FORESLÅ, "1.2.3");
+        RegelSporingPeriode rspC1 = new RegelSporingPeriode("evalueringC1", "Cinput1", intervall3, BeregningsgrunnlagPeriodeRegelType.FINN_GRENSEVERDI, "1.2.3");
+        RegelSporingPeriode rspC2 = new RegelSporingPeriode("evalueringC2", "Cinput1", intervall3, BeregningsgrunnlagPeriodeRegelType.FINN_GRENSEVERDI, "1.2.3");
         Map<String, List<RegelSporingPeriode>> gruppert = HashGrupperingUtil.grupperRegelsporinger(List.of(rspA1, rspA2, rspA3, rspB1, rspC1, rspC2), superenkelHashfunksjon);
         Assertions.assertThat(gruppert).containsOnlyKeys("A", "B", "C");
         Assertions.assertThat(gruppert.get("A")).containsOnly(rspA1, rspA2, rspA3); //garanterer ikke rekkefølge

@@ -136,8 +136,7 @@ public class AvklaringsbehovUtlederForeslåBeregningTest {
 
     private RegelResultat lagRegelResultat(BeregningUtfallÅrsak utfallÅrsak) {
         RegelMerknad regelMerknad = new RegelMerknad(utfallÅrsak);
-        return new RegelResultat(ResultatBeregningType.IKKE_BEREGNET, "regelInput", "regelSporing")
-            .medRegelMerknad(regelMerknad);
+        return RegelResultat.medRegelMerknad(new RegelResultat(ResultatBeregningType.IKKE_BEREGNET, "1.2.3", "regelInput", "regelSporing"), regelMerknad);
     }
 
 }

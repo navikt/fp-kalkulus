@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelSporing;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingGrunnlag;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingPeriode;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -38,8 +37,8 @@ public class MapRegelSporingFraRegelTilVL {
         var resultatIterator = regelResultater.iterator();
         for (var periode : perioder) {
             RegelResultat resultat = resultatIterator.next();
-            var hovedRegelResultat = resultat.getRegelSporing();
-            regelsporingPerioder.add(new RegelSporingPeriode(hovedRegelResultat.getSporing(), hovedRegelResultat.getInput(), periode, regelType));
+            var hovedRegelResultat = resultat.sporing();
+            regelsporingPerioder.add(new RegelSporingPeriode(hovedRegelResultat.sporing(), hovedRegelResultat.input(), periode, regelType, hovedRegelResultat.versjon()));
         }
         return regelsporingPerioder;
     }
@@ -51,8 +50,8 @@ public class MapRegelSporingFraRegelTilVL {
      * @return Aggregat som innholder regelsporing for perioder
      */
     public static RegelSporingGrunnlag mapRegelSporingGrunnlag(RegelResultat regelResultat, BeregningsgrunnlagRegelType regelType) {
-        RegelSporing regelSporing = regelResultat.getRegelSporing();
-        return new RegelSporingGrunnlag(regelSporing.getSporing(), regelSporing.getInput(), regelType);
+        var regelSporing = regelResultat.sporing();
+        return new RegelSporingGrunnlag(regelSporing.sporing(), regelSporing.input(), regelType, regelSporing.versjon());
     }
 
 

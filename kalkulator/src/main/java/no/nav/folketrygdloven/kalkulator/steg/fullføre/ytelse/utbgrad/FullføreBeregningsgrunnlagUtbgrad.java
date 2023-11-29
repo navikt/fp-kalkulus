@@ -25,17 +25,17 @@ public abstract class FullføreBeregningsgrunnlagUtbgrad extends FullføreBeregn
         //Andre gjennomkjøring av regel
         List<RegelResultat> regelResultater = kjørRegelFullførberegningsgrunnlag(beregningsgrunnlagRegel);
 
-        leggTilSporingerForFinnGrenseverdi(input, sporingerFinnGrenseverdi, regelResultater);
-
-        return regelResultater;
+        return leggTilSporingerForFinnGrenseverdi(input, sporingerFinnGrenseverdi, regelResultater);
     }
 
-    protected void leggTilSporingerForFinnGrenseverdi(String input, List<String> sporingerFinnGrenseverdi, List<RegelResultat> regelResultater) {
+    protected List<RegelResultat> leggTilSporingerForFinnGrenseverdi(String input, List<String> sporingerFinnGrenseverdi, List<RegelResultat> regelResultater) {
+        List<RegelResultat> medSporingFinnGrenseverdi = new ArrayList<>();
         if (regelResultater.size() == sporingerFinnGrenseverdi.size()) {
             for (int i = 0; i < regelResultater.size(); i++) {
                 RegelResultat res = regelResultater.get(i);
-                res.medRegelsporingFinnGrenseverdi(input, sporingerFinnGrenseverdi.get(i));
+                medSporingFinnGrenseverdi.add(RegelResultat.medRegelsporingFinnGrenseverdi(res, input, sporingerFinnGrenseverdi.get(i)));
             }
+            return medSporingFinnGrenseverdi;
         } else {
             throw new IllegalStateException("Utviklerfeil: Antall kjøringer for finn grenseverdi var ulik fastsetting.");
         }

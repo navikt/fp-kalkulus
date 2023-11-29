@@ -16,7 +16,7 @@ public class FullføreBeregningsgrunnlagSVP extends FullføreBeregningsgrunnlagU
     @Override
     protected List<String> kjørRegelFinnGrenseverdi(Beregningsgrunnlag beregningsgrunnlagRegel) {
         return beregningsgrunnlagRegel.getBeregningsgrunnlagPerioder().stream()
-                .map(periode -> KalkulusRegler.finnGrenseverdi(periode).getRegelSporing().sporing())
+                .map(periode -> KalkulusRegler.finnGrenseverdi(periode).sporing().sporing())
                 .collect(Collectors.toList());
     }
 

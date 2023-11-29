@@ -127,7 +127,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
         AktørId aktørId = AktørId.dummy();
         AktivitetStatusModell regelmodell = lagRegelModell(skjæringstidspunkt, Arbeidsforhold.nyttArbeidsforholdHosPrivatperson(aktørId.getId()));
         String inputSkjæringstidspunkt = toJson(regelmodell);
-        RegelResultat regelResultat = new RegelResultat(ResultatBeregningType.BEREGNET, inputSkjæringstidspunkt, "sporing");
+        RegelResultat regelResultat = new RegelResultat(ResultatBeregningType.BEREGNET, "1.2.3", inputSkjæringstidspunkt, "sporing");
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         BeregningIAYTestUtil.byggArbeidForBehandling(skjæringstidspunkt, skjæringstidspunkt.minusYears(1), skjæringstidspunkt, null, Arbeidsgiver.person(aktørId), iayGrunnlagBuilder);
 
@@ -154,7 +154,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
         // Arrange
         LocalDate skjæringstidspunkt = LocalDate.of(2018, 1, 1);
         LocalDate førsteUttaksdag = skjæringstidspunkt.plusWeeks(2);
-        RegelResultat regelResultat = new RegelResultat(ResultatBeregningType.BEREGNET, "input", "sporing");
+        RegelResultat regelResultat = new RegelResultat(ResultatBeregningType.BEREGNET, "1.2.3", "input", "sporing");
         AktivitetStatusModell regelmodell = lagRegelModell(skjæringstidspunkt, Arbeidsforhold.nyttArbeidsforholdHosVirksomhet(ORGNR));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         BeregningIAYTestUtil.byggArbeidForBehandling(skjæringstidspunkt, skjæringstidspunkt.minusYears(1), skjæringstidspunkt, null,
@@ -183,7 +183,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
         // Arrange
         LocalDate skjæringstidspunkt = LocalDate.of(2018, 1, 1);
         LocalDate førsteUttaksdag = skjæringstidspunkt.plusWeeks(2);
-        RegelResultat regelResultat = new RegelResultat(ResultatBeregningType.BEREGNET, "input", "sporing");
+        RegelResultat regelResultat = new RegelResultat(ResultatBeregningType.BEREGNET, "1.2.3", "input", "sporing");
         AktivitetStatusModell regelmodell = lagRegelModellSN(skjæringstidspunkt);
 
         // Act

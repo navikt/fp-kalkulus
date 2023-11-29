@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulator.steg.fullføre;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
@@ -72,10 +73,10 @@ public abstract class FullføreBeregningsgrunnlag {
         var resultatIterator = regelResultater.iterator();
         for (var periode : perioder) {
             RegelResultat resultat = resultatIterator.next();
-            var hovedRegelResultat = resultat.getRegelSporing();
-            regelsporingPerioder.add(new RegelSporingPeriode(hovedRegelResultat.getSporing(), hovedRegelResultat.getInput(), periode, BeregningsgrunnlagPeriodeRegelType.FASTSETT));
-            resultat.getRegelSporingFinnGrenseverdi()
-                    .map(res -> new RegelSporingPeriode(hovedRegelResultat.getSporing(), hovedRegelResultat.getInput(), periode, BeregningsgrunnlagPeriodeRegelType.FINN_GRENSEVERDI))
+            var hovedRegelResultat = resultat.sporing();
+            regelsporingPerioder.add(new RegelSporingPeriode(hovedRegelResultat.sporing(), hovedRegelResultat.input(), periode, BeregningsgrunnlagPeriodeRegelType.FASTSETT, hovedRegelResultat.versjon()));
+            Optional.ofNullable(resultat.sporingFinnGrenseverdi())
+                    .map(res -> new RegelSporingPeriode(hovedRegelResultat.sporing(), hovedRegelResultat.input(), periode, BeregningsgrunnlagPeriodeRegelType.FINN_GRENSEVERDI, hovedRegelResultat.versjon()))
                     .ifPresent(regelsporingPerioder::add);
         }
         return regelsporingPerioder;

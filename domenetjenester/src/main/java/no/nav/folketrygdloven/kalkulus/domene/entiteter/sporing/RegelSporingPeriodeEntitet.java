@@ -13,9 +13,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
-
-import org.hibernate.annotations.Type;
-
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.BeregningsgrunnlagPeriodeRegelTypeKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
@@ -49,6 +46,9 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
     @Convert(converter= BeregningsgrunnlagPeriodeRegelTypeKodeverdiConverter.class)
     @Column(name="regel_type", nullable = false)
     private BeregningsgrunnlagPeriodeRegelType regelType;
+
+    @Column(name = "regel_versjon")
+    private String regelVersjon;
 
     @Embedded
     @AttributeOverrides({
@@ -103,6 +103,10 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
         this.regelInput = regelInput;
     }
 
+    public String getRegelVersjon() {
+        return regelVersjon;
+    }
+
     public static Builder ny() {
         return new Builder();
     }
@@ -124,6 +128,11 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
         public Builder medRegelInputHash(String hash) {
             Objects.requireNonNull(hash, "hash");
             kladd.regelInputHash = hash;
+            return this;
+        }
+
+        public Builder medRegelVersjon(String regelVersjon) {
+            kladd.regelVersjon = regelVersjon;
             return this;
         }
 

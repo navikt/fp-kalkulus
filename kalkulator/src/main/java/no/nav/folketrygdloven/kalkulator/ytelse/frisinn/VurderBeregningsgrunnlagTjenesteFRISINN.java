@@ -77,18 +77,18 @@ public class VurderBeregningsgrunnlagTjenesteFRISINN extends VurderBeregningsgru
     }
 
     private BeregningVilkårResultat lagVilkårResultatForPeriode(RegelResultat regelResultat, Intervall periode) {
-        boolean erVilkårOppfylt = regelResultat.getMerknader().stream().map(RegelMerknad::utfallÅrsak)
+        boolean erVilkårOppfylt = regelResultat.merknader().stream().map(RegelMerknad::utfallÅrsak)
                 .noneMatch(AVSLAGSÅRSAKER::contains);
         return new BeregningVilkårResultat(erVilkårOppfylt, finnAvslagsårsak(regelResultat), periode);
     }
 
     private Vilkårsavslagsårsak finnAvslagsårsak(RegelResultat regelResultat) {
-        boolean frilansUtenInntekt = regelResultat.getMerknader().stream().map(RegelMerknad::utfallÅrsak)
+        boolean frilansUtenInntekt = regelResultat.merknader().stream().map(RegelMerknad::utfallÅrsak)
                 .anyMatch(BeregningUtfallÅrsak.FRISINN_FRILANS_UTEN_INNTEKT::equals);
         if (frilansUtenInntekt) {
             return Vilkårsavslagsårsak.SØKT_FL_INGEN_FL_INNTEKT;
         }
-        boolean harForLavtBG = regelResultat.getMerknader().stream().map(RegelMerknad::utfallÅrsak)
+        boolean harForLavtBG = regelResultat.merknader().stream().map(RegelMerknad::utfallÅrsak)
                 .anyMatch(AVSLAGSÅRSAKER::contains);
         if (harForLavtBG) {
             return Vilkårsavslagsårsak.FOR_LAVT_BG;

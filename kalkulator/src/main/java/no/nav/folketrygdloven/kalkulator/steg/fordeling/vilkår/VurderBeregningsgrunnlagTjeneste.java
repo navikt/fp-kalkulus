@@ -78,7 +78,7 @@ public class VurderBeregningsgrunnlagTjeneste {
     }
 
     private BeregningVilkårResultat lagVilkårResultatForPeriode(RegelResultat regelResultat, Intervall periode) {
-        Optional<BeregningUtfallÅrsak> utfallÅrsak = regelResultat.getMerknader().stream().map(RegelMerknad::utfallÅrsak).filter(AVSLAGSÅRSAKER::contains).findFirst();
+        Optional<BeregningUtfallÅrsak> utfallÅrsak = regelResultat.merknader().stream().map(RegelMerknad::utfallÅrsak).filter(AVSLAGSÅRSAKER::contains).findFirst();
         boolean erVilkårOppfylt = utfallÅrsak.isEmpty();
         if (erVilkårOppfylt){
             return new BeregningVilkårResultat(true, null, periode);

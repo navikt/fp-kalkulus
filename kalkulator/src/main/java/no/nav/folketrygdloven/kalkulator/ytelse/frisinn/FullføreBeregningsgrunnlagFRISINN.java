@@ -51,7 +51,7 @@ public class FullføreBeregningsgrunnlagFRISINN extends FullføreBeregningsgrunn
     @Override
     protected List<String> kjørRegelFinnGrenseverdi(Beregningsgrunnlag beregningsgrunnlagRegel) {
         return beregningsgrunnlagRegel.getBeregningsgrunnlagPerioder().stream()
-                .map(periode -> KalkulusRegler.finnGrenseverdi(periode).getRegelSporing().sporing())
+                .map(periode -> KalkulusRegler.finnGrenseverdi(periode).sporing().sporing())
                 .collect(Collectors.toList());
     }
 
@@ -71,7 +71,7 @@ public class FullføreBeregningsgrunnlagFRISINN extends FullføreBeregningsgrunn
                 .map(periode -> {
                     Boolean erVilkårOppfylt = erVilkårOppfyltForSøknadsperiode(beregningVilkårResultatListe, søknadsperioder, periode);
                     BeregningsgrunnlagPeriode.oppdater(periode).medErVilkårOppfylt(erVilkårOppfylt);
-                    return KalkulusRegler.finnGrenseverdiFRISINN(periode).getRegelSporing().sporing();
+                    return KalkulusRegler.finnGrenseverdiFRISINN(periode).sporingFinnGrenseverdi().sporing();
                 }).collect(Collectors.toList());
     }
 

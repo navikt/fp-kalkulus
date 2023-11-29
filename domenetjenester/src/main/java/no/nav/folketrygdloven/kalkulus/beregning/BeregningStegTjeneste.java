@@ -310,26 +310,27 @@ public class BeregningStegTjeneste {
 
     private void lagreRegelSporingGrunnlag(Long koblingId, RegelSporingAggregat
             regelsporinger, BeregningsgrunnlagTilstand stegTilstand) {
-        var regelsporingGrunnlag = regelsporinger.getRegelsporingerGrunnlag();
+        var regelsporingGrunnlag = regelsporinger.regelsporingerGrunnlag();
         if (regelsporingGrunnlag != null) {
             regelsporingGrunnlag.forEach(sporing -> {
-                validerRiktigTilstandForGrunnlagSporing(stegTilstand, sporing.getRegelType());
+                validerRiktigTilstandForGrunnlagSporing(stegTilstand, sporing.regelType());
                 RegelSporingGrunnlagEntitet.Builder sporingGrunnlagEntitet = RegelSporingGrunnlagEntitet.ny()
-                        .medRegelEvaluering(sporing.getRegelEvaluering())
-                        .medRegelInput(sporing.getRegelInput());
-                regelsporingRepository.lagre(koblingId, sporingGrunnlagEntitet, sporing.getRegelType());
+                        .medRegelEvaluering(sporing.regelEvaluering())
+                        .medRegelInput(sporing.regelInput())
+                        .medRegelVersjon(sporing.regelVersjon());
+                regelsporingRepository.lagre(koblingId, sporingGrunnlagEntitet, sporing.regelType());
             });
         }
     }
 
     private void lagreRegelSporingPerioder(Long koblingId, RegelSporingAggregat
             regelsporinger, BeregningsgrunnlagTilstand stegTilstand) {
-        if (regelsporinger.getRegelsporingPerioder() != null) {
-            Map<BeregningsgrunnlagPeriodeRegelType, List<RegelSporingPeriode>> sporingPerioderPrType = regelsporinger.getRegelsporingPerioder()
+        if (regelsporinger.regelsporingPerioder() != null) {
+            Map<BeregningsgrunnlagPeriodeRegelType, List<RegelSporingPeriode>> sporingPerioderPrType = regelsporinger.regelsporingPerioder()
                     .stream()
-                    .collect(Collectors.groupingBy(RegelSporingPeriode::getRegelType));
+                    .collect(Collectors.groupingBy(RegelSporingPeriode::regelType));
             validerRiktigTilstandForPeriodeSporing(stegTilstand, sporingPerioderPrType);
-            regelSporingTjeneste.lagre(koblingId, regelsporinger.getRegelsporingPerioder());
+            regelSporingTjeneste.lagre(koblingId, regelsporinger.regelsporingPerioder());
         }
     }
 

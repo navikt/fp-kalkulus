@@ -29,7 +29,7 @@ public class RegelSporingTjeneste {
      */
     public void lagre(Long koblingId, List<RegelSporingPeriode> regelSporingPerioder) {
         var gruppertPrHash = HashGrupperingUtil.grupperRegelsporingerMD5(regelSporingPerioder);
-        var regelInputPrHash = gruppertPrHash.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().get(0).getRegelInput()));
+        var regelInputPrHash = gruppertPrHash.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().get(0).regelInput()));
         regelsporingRepository.lagreRegelInputKomprimert(regelInputPrHash);
         regelsporingRepository.lagreSporinger(gruppertPrHash, koblingId);
     }

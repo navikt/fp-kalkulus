@@ -29,7 +29,7 @@ public class AvklaringsbehovUtlederForeslåBeregning {
 
     private static List<BeregningAvklaringsbehovResultat> mapRegelResultater(List<RegelResultat> regelResultater) {
         return regelResultater.stream()
-                .map(RegelResultat::getMerknader)
+                .map(RegelResultat::merknader)
                 .flatMap(Collection::stream)
                 .distinct()
                 .map(AvklaringsbehovUtlederForeslåBeregning::mapRegelMerknad)

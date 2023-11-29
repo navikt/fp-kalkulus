@@ -93,8 +93,8 @@ public class BeregningsgrunnlagFRISINNTjeneste implements KalkulatorInterface {
                 .medAvklaringsbehov(avklaringsbehov)
                 .medBeregningsgrunnlag(fordelResultat.getBeregningsgrunnlag(), input.getStegTilstand())
                 .medRegelSporingAggregat(new RegelSporingAggregat(
-                        fordelResultat.getRegelsporinger().map(RegelSporingAggregat::getRegelsporingerGrunnlag).orElse(Collections.emptyList()),
-                        fordelResultat.getRegelsporinger().map(RegelSporingAggregat::getRegelsporingPerioder).stream().flatMap(Collection::stream)
+                        fordelResultat.getRegelsporinger().map(RegelSporingAggregat::regelsporingerGrunnlag).orElse(Collections.emptyList()),
+                        fordelResultat.getRegelsporinger().map(RegelSporingAggregat::regelsporingPerioder).stream().flatMap(Collection::stream)
                                 .collect(Collectors.toList())))
                 .build();
     }
