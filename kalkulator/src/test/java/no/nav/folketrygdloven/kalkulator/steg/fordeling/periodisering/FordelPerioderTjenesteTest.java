@@ -1501,7 +1501,7 @@ public class FordelPerioderTjenesteTest {
         assertThat(beregningsgrunnlagPeriode2.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(2);
 
         BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode3 = perioder.get(2);
-        assertThat(beregningsgrunnlagPeriode3.getPeriodeÅrsaker()).containsExactly(PeriodeÅrsak.GRADERING_OPPHØRER);
+        assertThat(beregningsgrunnlagPeriode3.getPeriodeÅrsaker()).containsExactly(PeriodeÅrsak.REFUSJON_OPPHØRER, PeriodeÅrsak.GRADERING_OPPHØRER);
         assertThat(beregningsgrunnlagPeriode3.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(2);
     }
 

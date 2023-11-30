@@ -46,6 +46,7 @@ public enum BeregningSteg implements Kodeverdi {
             FORTS_FORS_BERGRUNN,
             FORS_BESTEBEREGNING,
             VURDER_VILKAR_BERGRUNN,
+            VURDER_TILKOMMET_INNTEKT,
             VURDER_REF_BERGRUNN,
             FORDEL_BERGRUNN,
             FAST_BERGRUNN);

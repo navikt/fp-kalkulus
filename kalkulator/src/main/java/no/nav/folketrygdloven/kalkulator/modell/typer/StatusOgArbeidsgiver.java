@@ -4,7 +4,9 @@ import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
-public record StatusOgArbeidsgiver(AktivitetStatus aktivitetStatus, Arbeidsgiver arbeidsgiver) {
+public record StatusOgArbeidsgiver(AktivitetStatus aktivitetStatus, Arbeidsgiver arbeidsgiver) implements Comparable<StatusOgArbeidsgiver> {
+
+
 
     @Override
     public boolean equals(Object o) {
@@ -17,5 +19,20 @@ public record StatusOgArbeidsgiver(AktivitetStatus aktivitetStatus, Arbeidsgiver
     @Override
     public int hashCode() {
         return Objects.hash(aktivitetStatus, arbeidsgiver);
+    }
+
+    @Override
+    public int compareTo(StatusOgArbeidsgiver o) {
+        var aktivitetStatusCompare = this.aktivitetStatus().compareTo(o.aktivitetStatus());
+        if (aktivitetStatusCompare != 0) {
+            return aktivitetStatusCompare;
+        }
+
+        if (this.arbeidsgiver() != null && o.arbeidsgiver() != null) {
+            return this.arbeidsgiver().getIdentifikator().compareTo(o.arbeidsgiver().getIdentifikator());
+        } else if (this.arbeidsgiver() == null) {
+            return 1;
+        }
+        return -1;
     }
 }

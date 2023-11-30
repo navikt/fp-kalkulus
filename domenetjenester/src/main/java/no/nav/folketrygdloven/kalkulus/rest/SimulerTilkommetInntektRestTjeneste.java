@@ -176,7 +176,7 @@ public class SimulerTilkommetInntektRestTjeneste {
             var input = inputer.get(kobling.getId());
             var beregningsgrunnlagInput = lagBeregningsgrunnlagInput(kobling, input, bg);
             var inputGrunnlag = simulerGraderingMotInntektTjeneste.lagInputGrunnlag(beregningsgrunnlagInput);
-            return VurderNyeInntektsforholdDtoTjeneste.lagVurderNyttInntektsforholdDto(inputGrunnlag, beregningsgrunnlagInput.getIayGrunnlag(), beregningsgrunnlagInput.getYtelsespesifiktGrunnlag(), List.of());
+            return VurderNyeInntektsforholdDtoTjeneste.lagVurderNyttInntektsforholdDto(inputGrunnlag, beregningsgrunnlagInput.getIayGrunnlag());
         }).toList();
         return Response.ok(vurderDtoer).build();
     }

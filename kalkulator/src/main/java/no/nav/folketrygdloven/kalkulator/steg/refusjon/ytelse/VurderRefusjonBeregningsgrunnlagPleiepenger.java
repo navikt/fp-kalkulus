@@ -13,6 +13,7 @@ public class VurderRefusjonBeregningsgrunnlagPleiepenger {
         BeregningsgrunnlagRegelResultat resultatFraRefusjonPeriodisering = new FordelPerioderTjeneste().fastsettPerioderForRefusjon(input);
         BeregningsgrunnlagRegelResultat resultatFraPeriodisering = new FordelPerioderTjeneste().fastsettPerioderForUtbetalingsgradEllerGradering(input, resultatFraRefusjonPeriodisering.getBeregningsgrunnlag());
         var splittetVedForlengelse = ForlengelsePeriodeTjeneste.splittVedStartAvForlengelse(input, resultatFraPeriodisering.getBeregningsgrunnlag());
+        // Kjører splitt pga aktivitetsgrad her i tillegg til vurder tilkommet inntekt siden det ikke er alle som kjører det steget
         var splittForAktivitetsgrad = PeriodiserForAktivitetsgradTjeneste.splittVedEndringIAktivitetsgrad(splittetVedForlengelse, input.getYtelsespesifiktGrunnlag());
         var avklaringsbehov = AvklaringsbehovutledertjenesteVurderRefusjon.utledAvklaringsbehov(input, splittetVedForlengelse);
         return new BeregningsgrunnlagRegelResultat(splittForAktivitetsgrad,

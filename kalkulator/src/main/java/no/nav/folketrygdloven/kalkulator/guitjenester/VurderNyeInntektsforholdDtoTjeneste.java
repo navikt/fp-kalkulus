@@ -1,23 +1,18 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester;
 
 
-import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
-import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.TilkommetInntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
@@ -44,21 +39,18 @@ public class VurderNyeInntektsforholdDtoTjeneste {
         }
         var beregningsgrunnlag = input.getBeregningsgrunnlag();
         var iayGrunnlag = input.getIayGrunnlag();
-        var ytelsespesifiktGrunnlag = input.getYtelsespesifiktGrunnlag();
 
-        return lagVurderNyttInntektsforholdDto(beregningsgrunnlag, iayGrunnlag, ytelsespesifiktGrunnlag,
-                input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling());
+        return lagVurderNyttInntektsforholdDto(beregningsgrunnlag, iayGrunnlag
+        );
     }
 
     public static VurderNyttInntektsforholdDto lagVurderNyttInntektsforholdDto(BeregningsgrunnlagDto beregningsgrunnlag,
-                                                                               InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                                                               YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
-                                                                               List<BeregningsgrunnlagGrunnlagDto> beregningsgrunnlagGrunnlagFraForrigeBehandling) {
+                                                                               InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         var bgPerioder = beregningsgrunnlag.getBeregningsgrunnlagPerioder();
 
         var periodeListe = bgPerioder.stream()
                 .filter(it -> !it.getTilkomneInntekter().isEmpty())
-                .map(it -> mapPeriode(iayGrunnlag, it, bgPerioder, finnPeriodeFraForrigeBehandling(it, beregningsgrunnlagGrunnlagFraForrigeBehandling), ytelsespesifiktGrunnlag))
+                .map(it -> mapPeriode(iayGrunnlag, it, bgPerioder))
                 .collect(Collectors.toList());
 
         if (!periodeListe.isEmpty()) {
@@ -68,28 +60,10 @@ public class VurderNyeInntektsforholdDtoTjeneste {
         return null;
     }
 
-    private static Optional<BeregningsgrunnlagPeriodeDto> finnPeriodeFraForrigeBehandling(BeregningsgrunnlagPeriodeDto periode, List<BeregningsgrunnlagGrunnlagDto> beregningsgrunnlagGrunnlagFraForrigeBehandling) {
-        var stpOverlappendePeriodeMap = beregningsgrunnlagGrunnlagFraForrigeBehandling.stream().filter(gr -> gr.getBeregningsgrunnlag().isPresent()).collect(
-                Collectors.toMap(gr -> gr.getBeregningsgrunnlag().get().getSkjæringstidspunkt(),
-                        gr -> gr.getBeregningsgrunnlag()
-                                .stream()
-                                .flatMap(b -> b.getBeregningsgrunnlagPerioder().stream())
-                                .filter(p -> !p.getBeregningsgrunnlagPeriodeTom().equals(TIDENES_ENDE))
-                                .filter(p -> p.getPeriode().overlapper(periode.getPeriode()))
-                                .findFirst()));
-
-        return stpOverlappendePeriodeMap.entrySet().stream()
-                .filter(e -> e.getValue().isPresent())
-                .max(Map.Entry.comparingByKey())
-                .flatMap(Map.Entry::getValue);
-    }
-
     private static VurderInntektsforholdPeriodeDto mapPeriode(InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                               BeregningsgrunnlagPeriodeDto periode,
-                                                              List<BeregningsgrunnlagPeriodeDto> allePerioder,
-                                                              Optional<BeregningsgrunnlagPeriodeDto> forrigePeriode,
-                                                              YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        var innteksforholdListe = mapInntektforholdDtoListe(iayGrunnlag, periode, allePerioder, forrigePeriode, ytelsespesifiktGrunnlag);
+                                                              List<BeregningsgrunnlagPeriodeDto> allePerioder) {
+        var innteksforholdListe = mapInntektforholdDtoListe(iayGrunnlag, periode, allePerioder);
         return new VurderInntektsforholdPeriodeDto(periode.getBeregningsgrunnlagPeriodeFom(), periode.getBeregningsgrunnlagPeriodeTom(), innteksforholdListe.stream().toList());
     }
 
@@ -103,9 +77,7 @@ public class VurderNyeInntektsforholdDtoTjeneste {
 
     private static Set<InntektsforholdDto> mapInntektforholdDtoListe(InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                      BeregningsgrunnlagPeriodeDto periode,
-                                                                     List<BeregningsgrunnlagPeriodeDto> allePerioder,
-                                                                     Optional<BeregningsgrunnlagPeriodeDto> forrigePeriode,
-                                                                     YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+                                                                     List<BeregningsgrunnlagPeriodeDto> allePerioder) {
 
         return periode.getTilkomneInntekter()
                 .stream()

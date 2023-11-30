@@ -5,7 +5,9 @@ import static no.nav.folketrygdloven.kalkulator.felles.periodesplitting.Tidslinj
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -84,7 +86,7 @@ public class TilkommetInntektPeriodeTjeneste {
             var nyPeriode = BeregningsgrunnlagPeriodeDto.kopier(lhs.getValue())
                     .leggTilPeriodeÅrsak(PeriodeÅrsak.TILKOMMET_INNTEKT)
                     .medBeregningsgrunnlagPeriode(di.getFomDato(), di.getTomDato());
-            mapTilkomneInntekter(lhs.getValue(), rhs.getValue()).forEach(nyPeriode::leggTilTilkommetInntekt);
+            mapTilkomneInntekter(lhs.getValue(), rhs.getValue().stream().sorted(Comparator.naturalOrder()).collect(Collectors.toCollection(LinkedHashSet::new))).forEach(nyPeriode::leggTilTilkommetInntekt);
             return new LocalDateSegment<>(di, nyPeriode.build());
         } else if (lhs != null) {
             var nyPeriode = BeregningsgrunnlagPeriodeDto.kopier(lhs.getValue())

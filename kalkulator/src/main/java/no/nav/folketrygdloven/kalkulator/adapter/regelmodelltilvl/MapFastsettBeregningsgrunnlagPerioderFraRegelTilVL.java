@@ -35,7 +35,8 @@ abstract class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL {
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("Ingen matchende perioder"));
         var andelListe = originalPeriode.getBeregningsgrunnlagPrStatusOgAndelList();
-        var bgPeriodeBuilder = BeregningsgrunnlagPeriodeDto.ny()
+        var bgPeriodeBuilder = BeregningsgrunnlagPeriodeDto.kopier(originalPeriode)
+                .fjernAlleBeregningsgrunnlagPrStatusOgAndeler()
                 .medBeregningsgrunnlagPeriode(splittetPeriode.getPeriode().getFom(), periodeTom);
         splittetPeriode.getPeriodeÅrsaker().stream()
                 .map(MapPeriodeÅrsakFraRegelTilVL::map)

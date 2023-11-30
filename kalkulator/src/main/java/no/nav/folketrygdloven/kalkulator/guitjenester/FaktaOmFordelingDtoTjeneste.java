@@ -14,14 +14,19 @@ public class FaktaOmFordelingDtoTjeneste {
 
     public static Optional<FordelingDto> lagDto(BeregningsgrunnlagGUIInput input) {
         BeregningsgrunnlagTilstand tilstandForAktivtGrunnlag = input.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlagTilstand();
-        if (!tilstandForAktivtGrunnlag.erFør(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING)) {
+
+        if (tilstandForAktivtGrunnlag.erEtter(BeregningsgrunnlagTilstand.VURDERT_VILKÅR)) {
             FordelingDto dto = new FordelingDto();
             FordelBeregningsgrunnlagDtoTjeneste.lagDto(input, dto);
             dto.setVurderNyttInntektsforholdDto(VurderNyeInntektsforholdDtoTjeneste.lagDto(input));
             VurderStortingsperiodeDtoTjeneste.lagDto(input).ifPresent(dto::setVurderRepresentererStortinget);
-            return Optional.of(dto);
+            return harSattMinstEttFelt(dto) ? Optional.of(dto) : Optional.empty();
         }
         return Optional.empty();
+    }
+
+    private static boolean harSattMinstEttFelt(FordelingDto dto) {
+        return dto.getFordelBeregningsgrunnlag() != null || dto.getVurderNyttInntektsforholdDto() != null || dto.getVurderRepresentererStortinget() != null;
     }
 
 }

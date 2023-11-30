@@ -56,8 +56,6 @@ public class VurderTilkommetInntektTjeneste {
                         .medBeregningsgrunnlagPeriode(di.getFomDato(), di.getTomDato());
                 if (erLagtTilAvSaksbehandler(di, lhs.getValue().getPeriode()) && !rhs.getValue().isEmpty()) {
                     nyPeriode.leggTilPeriodeÅrsak(PeriodeÅrsak.TILKOMMET_INNTEKT_MANUELT);
-                } else if (!lhs.getValue().getPeriodeÅrsaker().contains(PeriodeÅrsak.TILKOMMET_INNTEKT) && !rhs.getValue().isEmpty()) {
-                    throw new IllegalStateException("Forventer at periode med vurderte inntektsforhold har PeriodeÅrsak TILKOMMET_INNTEKT");
                 }
                 rhs.getValue().stream().map(i -> {
                     var tilkommetInntektDto = finnTilkommetInntektTilVurdering(lhs.getValue().getTilkomneInntekter(), i).orElseThrow();
