@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.rest;
 
 import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributtMiljøvariabel.BEREGNINGSGRUNNLAG;
+import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributtMiljøvariabel.FAGSAK;
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.READ;
 
 import java.util.ArrayList;
@@ -90,7 +91,7 @@ public class TilkommetAktivitetRestTjeneste {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("finnUttaksgradVedInntektsgradering")
     @Operation(description = "Finn inntektsgradering", tags = "finnUttaksgradVedInntektsgradering", summary = ("Finn inntektsgradering"))
-    @BeskyttetRessurs(action = READ, property = BEREGNINGSGRUNNLAG)
+    @BeskyttetRessurs(action = READ, property = FAGSAK)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response finnUttaksgradVedInntektsgradering(@NotNull @Valid UtledTilkommetAktivitetListeRequestAbacDto spesifikasjon) {
 
@@ -129,7 +130,7 @@ public class TilkommetAktivitetRestTjeneste {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("utledTilkommetAktivitetForKoblinger")
     @Operation(description = "Simulerer tilkommet aktivitet", tags = "utledTilkommetInntekt", summary = ("Utled tilkommet aktivitet"))
-    @BeskyttetRessurs(action = READ, property = BEREGNINGSGRUNNLAG)
+    @BeskyttetRessurs(action = READ, property = FAGSAK)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response utledTilkommetAktivitetForKoblinger(@NotNull @Valid UtledTilkommetAktivitetListeRequestAbacDto spesifikasjon) {
         var referanser = spesifikasjon.getListe().stream().map(UtledTilkommetAktivitetForRequest::getEksternReferanse).map(KoblingReferanse::new).toList();
