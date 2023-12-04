@@ -85,16 +85,16 @@ public class TilkommetInntektsforholdTjeneste {
                 .union(frilansTidslinje, StandardCombinators::union);
 
         if (!ikkeFiltrerVedFulltFravær) {
-            var utbetalingTidslinje = finnUtbetalingTidslinje((UtbetalingsgradGrunnlag) utbetalingsgradGrunnlag);
+            var utbetalingTidslinje = finnTidslinjeMedFravær((UtbetalingsgradGrunnlag) utbetalingsgradGrunnlag);
             aktivitetTidslinje = aktivitetTidslinje.intersection(utbetalingTidslinje, StandardCombinators::leftOnly);
         }
         return aktivitetTidslinje.compress().map(s -> mapTilkommetTidslinje(andelerFraStart, yrkesaktiviteter, utbetalingsgradGrunnlag, s, ikkeFiltrerVedFulltFravær));
     }
 
-    private static LocalDateTimeline<Boolean> finnUtbetalingTidslinje(UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
+    private static LocalDateTimeline<Boolean> finnTidslinjeMedFravær(UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
         var utbetalingSegmenter = utbetalingsgradGrunnlag.getUtbetalingsgradPrAktivitet().stream()
                 .flatMap(a -> a.getPeriodeMedUtbetalingsgrad().stream())
-                .filter(p -> p.getUtbetalingsgrad().compareTo(BigDecimal.ZERO) > 0)
+                .filter(p -> p.getAktivitetsgrad().map(v -> v.compareTo(BigDecimal.valueOf(100)) < 0).orElse(false))
                 .map(p -> new LocalDateSegment<>(p.getPeriode().getFomDato(), p.getPeriode().getTomDato(), Boolean.TRUE))
                 .toList();
         return new LocalDateTimeline<>(utbetalingSegmenter, StandardCombinators::alwaysTrueForMatch);
@@ -132,8 +132,7 @@ public class TilkommetInntektsforholdTjeneste {
 
     private static boolean harIkkeFulltFravær(YtelsespesifiktGrunnlag utbetalingsgradGrunnlag, Intervall periode, Inntektsforhold it) {
         var aktivitetsgrad = finnAktivitetsgrad(periode, utbetalingsgradGrunnlag, it);
-        var utbetalingsgrad = finnUtbetalingsgrad(periode, utbetalingsgradGrunnlag, it);
-        return harIkkeFulltFravær(aktivitetsgrad, utbetalingsgrad);
+        return harIkkeFulltFravær(aktivitetsgrad);
     }
 
     private static LocalDateTimeline<Set<Inntektsforhold>> finnInntektsforholdFraYrkesaktiviteter(LocalDate skjæringstidspunkt, Collection<YrkesaktivitetDto> yrkesaktiviteter) {
@@ -170,10 +169,14 @@ public class TilkommetInntektsforholdTjeneste {
     private static LocalDateTimeline<Set<Inntektsforhold>> finnInntektsforholdForStatusFraFravær(UtbetalingsgradGrunnlag utbetalinger, AktivitetStatus status) {
         var perioderMedStatus = finnPerioderMedStatus(utbetalinger, mapTilUttakArbeidType(status));
         var segmenter = perioderMedStatus.stream()
-                .filter(p -> p.getUtbetalingsgrad().compareTo(BigDecimal.valueOf(100)) < 0)
+                .filter(TilkommetInntektsforholdTjeneste::harIkkeFulltFravær)
                 .map(p -> new LocalDateSegment<>(p.getPeriode().getFomDato(), p.getPeriode().getTomDato(), Set.of(new Inntektsforhold(status, null, null))))
                 .toList();
         return new LocalDateTimeline<>(segmenter, StandardCombinators::union);
+    }
+
+    private static Boolean harIkkeFulltFravær(PeriodeMedUtbetalingsgradDto p) {
+        return p.getAktivitetsgrad().map(v -> v.compareTo(BigDecimal.ZERO) > 0).orElse(false);
     }
 
     private static UttakArbeidType mapTilUttakArbeidType(AktivitetStatus status) {
@@ -208,22 +211,6 @@ public class TilkommetInntektsforholdTjeneste {
         }
     }
 
-    private static BigDecimal finnUtbetalingsgrad(Intervall periode,
-                                                  YtelsespesifiktGrunnlag utbetalingsgradGrunnlag,
-                                                  Inntektsforhold inntektsforhold) {
-        if (inntektsforhold.aktivitetStatus().erArbeidstaker()) {
-            return UtbetalingsgradTjeneste.finnUtbetalingsgradForArbeid(
-                    inntektsforhold.arbeidsgiver(),
-                    inntektsforhold.arbeidsforholdRef(),
-                    periode, utbetalingsgradGrunnlag, true);
-        } else {
-            return UtbetalingsgradTjeneste.finnUtbetalingsgradForStatus(
-                    inntektsforhold.aktivitetStatus(),
-                    periode,
-                    utbetalingsgradGrunnlag);
-        }
-    }
-
     private static AktivitetStatus mapTilAktivitetStatus(YrkesaktivitetDto yrkesaktivitet) {
         return switch (yrkesaktivitet.getArbeidType()) {
             case FORENKLET_OPPGJØRSORDNING, MARITIMT_ARBEIDSFORHOLD, ORDINÆRT_ARBEIDSFORHOLD ->
@@ -234,8 +221,8 @@ public class TilkommetInntektsforholdTjeneste {
         };
     }
 
-    private static boolean harIkkeFulltFravær(Optional<BigDecimal> aktivitetsgrad, BigDecimal utbetalingsgrad) {
-        return aktivitetsgrad.map(it -> it.compareTo(BigDecimal.valueOf(0)) > 0).orElse(utbetalingsgrad.compareTo(BigDecimal.valueOf(100)) < 0);
+    private static boolean harIkkeFulltFravær(Optional<BigDecimal> aktivitetsgrad) {
+        return aktivitetsgrad.map(it -> it.compareTo(BigDecimal.ZERO) > 0).orElse(true);
     }
 
     private static LocalDateTimeline<Boolean> finnAnsettelseTidslinje(YrkesaktivitetDto it) {

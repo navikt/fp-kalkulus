@@ -552,7 +552,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
     }
 
     private InntektDtoBuilder lagInntektsposterForYrkesaktivitet(YrkesaktivitetDto nyYrkesaktivitet, List<PeriodeMedUtbetalingsgradDto> perioderMedUtbetalingsgrad) {
-        var perioderMedFulltFravær = perioderMedUtbetalingsgrad.stream().filter(it -> it.getUtbetalingsgrad().compareTo(BigDecimal.valueOf(100)) == 0).map(PeriodeMedUtbetalingsgradDto::getPeriode).toList();
+        var perioderMedFulltFravær = perioderMedUtbetalingsgrad.stream().filter(it -> it.getAktivitetsgrad().map(v -> v.compareTo(BigDecimal.ZERO) == 0).orElse(false)).map(PeriodeMedUtbetalingsgradDto::getPeriode).toList();
         var inntektDto = InntektDtoBuilder.oppdatere(Optional.empty()).medArbeidsgiver(nyYrkesaktivitet.getArbeidsgiver()).medInntektsKilde(InntektskildeType.INNTEKT_BEREGNING);
         nyYrkesaktivitet.getAlleAnsettelsesperioder().stream()
                 .map(AktivitetsAvtaleDto::getPeriode)
@@ -668,7 +668,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
     }
 
     private PeriodeMedUtbetalingsgradDto lagPeriodeMedUtbetalingsgrad(int i, LocalDate fom, LocalDate tom) {
-        return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(fom, tom), BigDecimal.valueOf(i));
+        return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(fom, tom), null, BigDecimal.valueOf(100 - i));
     }
 
     private AktivitetDto lagAktivitet(Arbeidsgiver arbeidsgiver2, InternArbeidsforholdRefDto ref) {
