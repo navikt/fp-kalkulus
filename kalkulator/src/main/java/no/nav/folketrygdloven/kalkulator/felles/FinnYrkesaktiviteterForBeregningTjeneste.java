@@ -24,12 +24,12 @@ public class FinnYrkesaktiviteterForBeregningTjeneste {
                                                                      LocalDate skjæringstidspunktBeregning) {
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister());
         Collection<YrkesaktivitetDto> yrkesaktiviteterForBeregning = filter.getYrkesaktiviteterForBeregning();
-        BeregningAktivitetAggregatDto overstyrtEllerRegisterAktiviteter = grunnlag.getOverstyrteEllerRegisterAktiviteter();
+        var aktivitetOverstyringer = grunnlag.getOverstyring();
         return yrkesaktiviteterForBeregning.stream()
             .filter(yrkesaktivitet ->
                 !ErFjernetIOverstyrt.erFjernetIOverstyrt(filter,
                         yrkesaktivitet,
-                        overstyrtEllerRegisterAktiviteter,
+                        aktivitetOverstyringer,
                         skjæringstidspunktBeregning
                 ))
             .filter(ya -> FinnAnsettelsesPeriode.finnMinMaksPeriode(filter.getAnsettelsesPerioder(ya), skjæringstidspunktBeregning).isPresent())

@@ -9,8 +9,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetOverstyringDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
@@ -24,6 +24,8 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAktivitetHandlingType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PermisjonsbeskrivelseType;
 
 class ErFjernetIOverstyrtTest {
@@ -32,99 +34,132 @@ class ErFjernetIOverstyrtTest {
     private static InntektArbeidYtelseAggregatBuilder BUILDER;
     private static InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder ARBEID_BUILDER;
     private static ArbeidsforholdInformasjonDtoBuilder ARBFOR_INFO_BUILDER;
-    private static BeregningAktivitetAggregatDto.Builder BG_AKTIVITET_AGGREGAT_BUILDER;
 
 
     @BeforeEach
     public void setup() {
         // Nullstiller aggregat
         IAY_BUILDER = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        BG_AKTIVITET_AGGREGAT_BUILDER = BeregningAktivitetAggregatDto.builder().medSkjæringstidspunktOpptjening(STP);
         BUILDER = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
         ARBEID_BUILDER = BUILDER.getAktørArbeidBuilder();
         ARBFOR_INFO_BUILDER = ArbeidsforholdInformasjonDtoBuilder.oppdatere(Optional.empty());
     }
 
     @Test
-    public void arbeidsforhold_som_var_i_permisjon_dagen_før_stp_med_ikkje_på_stp_og_ikke_ligger_i_beregningsaggregatet_er_ikke_fjernet() {
+    public void arbeidsforhold_som_var_i_permisjon_dagen_før_stp_men_ikkje_på_stp_og_er_ikke_fjernet() {
         // Arrange
         Arbeidsgiver ag = Arbeidsgiver.virksomhet("999999999");
         InternArbeidsforholdRefDto ref = InternArbeidsforholdRefDto.nullRef();
         YrkesaktivitetDtoBuilder ya = lagYrkesaktivitet(ag, ref);
         lagPermisjonForAG(ya, STP.minusMonths(3), STP.minusDays(1));
         InntektArbeidYtelseGrunnlagDto grunnlag = ferdigstillIAYGrunnlag();
-        BeregningAktivitetAggregatDto bgAggregat = ferdigstillBGAggregat();
 
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(grunnlag.getArbeidsforholdInformasjon(), grunnlag.getAktørArbeidFraRegister());
 
+        var overstyring = BeregningAktivitetOverstyringerDto.builder()
+                .leggTilOverstyring(BeregningAktivitetOverstyringDto.builder()
+                        .medArbeidsgiver(Arbeidsgiver.virksomhet("123456789"))
+                        .medHandling(BeregningAktivitetHandlingType.BENYTT)
+                        .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID).build())
+                .build();
+
         // Act
-        boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(), bgAggregat, STP);
+        boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(), Optional.of(overstyring), STP);
 
         assertThat(erFjernet).isFalse();
     }
 
     @Test
-    public void arbeidsforhold_som_var_i_permisjon_og_ligger_i_beregningsaggregat_er_ikke_fjernet() {
-        // Arrange
-        Arbeidsgiver ag = Arbeidsgiver.virksomhet("999999999");
-        InternArbeidsforholdRefDto ref = InternArbeidsforholdRefDto.nullRef();
-        YrkesaktivitetDtoBuilder ya = lagYrkesaktivitet(ag, ref);
-        lagPermisjonForAG(ya, STP.minusMonths(3), STP.plusMonths(2));
-        lagBgAktivitet(ag, ref, Intervall.fraOgMed(STP.minusYears(2)));
-        InntektArbeidYtelseGrunnlagDto grunnlag = ferdigstillIAYGrunnlag();
-        BeregningAktivitetAggregatDto bgAggregat = ferdigstillBGAggregat();
-
-        YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(grunnlag.getArbeidsforholdInformasjon(), grunnlag.getAktørArbeidFraRegister());
-
-        // Act
-        boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(), bgAggregat, STP);
-
-        assertThat(erFjernet).isFalse();
-    }
-
-    @Test
-    public void arbeidsforhold_som_var_i_permisjon_på_stp_skal_måtte_ligge_i_beregningsaggregat() {
+    public void arbeidsforhold_som_var_i_permisjon_og_ligger_i_overstyr_men_er_ikke_fjernet() {
         // Arrange
         Arbeidsgiver ag = Arbeidsgiver.virksomhet("999999999");
         InternArbeidsforholdRefDto ref = InternArbeidsforholdRefDto.nullRef();
         YrkesaktivitetDtoBuilder ya = lagYrkesaktivitet(ag, ref);
         lagPermisjonForAG(ya, STP.minusMonths(3), STP.plusMonths(2));
         InntektArbeidYtelseGrunnlagDto grunnlag = ferdigstillIAYGrunnlag();
-        BeregningAktivitetAggregatDto bgAggregat = ferdigstillBGAggregat();
 
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(grunnlag.getArbeidsforholdInformasjon(), grunnlag.getAktørArbeidFraRegister());
 
+        var overstyring = BeregningAktivitetOverstyringerDto.builder()
+                .leggTilOverstyring(BeregningAktivitetOverstyringDto.builder()
+                        .medArbeidsforholdRef(ref)
+                        .medArbeidsgiver(ag)
+                        .medHandling(BeregningAktivitetHandlingType.BENYTT)
+                        .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID).build())
+                .build();
+
         // Act
-        boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(), bgAggregat, STP);
+        boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(),
+                Optional.of(overstyring), STP);
 
         assertThat(erFjernet).isFalse();
     }
 
     @Test
-    public void arbeidsforhold_som_ikke_var_i_permisjon_på_stp_skal_måtte_ligge_i_beregningsaggregat() {
+    public void arbeidsforhold_som_var_i_permisjon_på_stp_ikke_fjernet() {
+        // Arrange
+        Arbeidsgiver ag = Arbeidsgiver.virksomhet("999999999");
+        InternArbeidsforholdRefDto ref = InternArbeidsforholdRefDto.nullRef();
+        YrkesaktivitetDtoBuilder ya = lagYrkesaktivitet(ag, ref);
+        lagPermisjonForAG(ya, STP.minusMonths(3), STP.plusMonths(2));
+        InntektArbeidYtelseGrunnlagDto grunnlag = ferdigstillIAYGrunnlag();
+
+        YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(grunnlag.getArbeidsforholdInformasjon(), grunnlag.getAktørArbeidFraRegister());
+
+
+        var overstyring = BeregningAktivitetOverstyringerDto.builder()
+                .leggTilOverstyring(BeregningAktivitetOverstyringDto.builder()
+                        .medArbeidsgiver(ag)
+                        .medArbeidsforholdRef(ref)
+                        .medHandling(BeregningAktivitetHandlingType.BENYTT)
+                        .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID).build())
+                .build();
+        // Act
+        boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(), Optional.of(overstyring), STP);
+
+        assertThat(erFjernet).isFalse();
+    }
+
+    @Test
+    public void arbeidsforhold_som_ikke_var_i_permisjon_på_stp_og_fjernet() {
         // Arrange
         Arbeidsgiver ag = Arbeidsgiver.virksomhet("999999999");
         InternArbeidsforholdRefDto ref = InternArbeidsforholdRefDto.nullRef();
         YrkesaktivitetDtoBuilder ya = lagYrkesaktivitet(ag, ref);
         InntektArbeidYtelseGrunnlagDto grunnlag = ferdigstillIAYGrunnlag();
-        BeregningAktivitetAggregatDto bgAggregat = ferdigstillBGAggregat();
 
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(grunnlag.getArbeidsforholdInformasjon(), grunnlag.getAktørArbeidFraRegister());
 
+        var overstyring = BeregningAktivitetOverstyringerDto.builder()
+                .leggTilOverstyring(BeregningAktivitetOverstyringDto.builder()
+                        .medArbeidsgiver(ag)
+                        .medArbeidsforholdRef(ref)
+                        .medHandling(BeregningAktivitetHandlingType.IKKE_BENYTT)
+                        .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID).build())
+                .build();
+
         // Act
-        boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(), bgAggregat, STP);
+        boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(), Optional.of(overstyring), STP);
 
         assertThat(erFjernet).isTrue();
     }
 
-    private BeregningAktivitetAggregatDto ferdigstillBGAggregat() {
-        return BG_AKTIVITET_AGGREGAT_BUILDER.build();
+    @Test
+    public void arbeidsforhold_uten_overstyring() {
+        // Arrange
+        Arbeidsgiver ag = Arbeidsgiver.virksomhet("999999999");
+        InternArbeidsforholdRefDto ref = InternArbeidsforholdRefDto.nullRef();
+        YrkesaktivitetDtoBuilder ya = lagYrkesaktivitet(ag, ref);
+        InntektArbeidYtelseGrunnlagDto grunnlag = ferdigstillIAYGrunnlag();
+
+        YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(grunnlag.getArbeidsforholdInformasjon(), grunnlag.getAktørArbeidFraRegister());
+
+        // Act
+        boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(), Optional.empty(), STP);
+
+        assertThat(erFjernet).isFalse();
     }
 
-    private void lagBgAktivitet(Arbeidsgiver ag, InternArbeidsforholdRefDto ref, Intervall periode) {
-        BeregningAktivitetDto aktivitet = BeregningAktivitetDto.builder().medArbeidsforholdRef(ref).medArbeidsgiver(ag).medPeriode(periode).build();
-        BG_AKTIVITET_AGGREGAT_BUILDER.leggTilAktivitet(aktivitet);
-    }
 
     private InntektArbeidYtelseGrunnlagDto ferdigstillIAYGrunnlag() {
         IAY_BUILDER.medData(BUILDER);
