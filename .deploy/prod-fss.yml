@@ -101,7 +101,7 @@ spec:
     - name: MELDEKORT_DELVIS_PERIODE
       value: "false"
     - name: BEREGNE_FRA_YTELSE_VEDTAK
-      value: "true"
+      value: "false"
     - name: VURDER_MOTTAR_YTELSE_FL_FILTRERING
       value: "true"
     - name: VURDER_MOTTAR_YTELSE_AT_FILTRERING
