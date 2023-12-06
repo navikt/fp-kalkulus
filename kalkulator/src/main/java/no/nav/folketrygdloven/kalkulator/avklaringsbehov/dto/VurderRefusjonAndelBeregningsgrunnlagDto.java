@@ -48,4 +48,27 @@ public class VurderRefusjonAndelBeregningsgrunnlagDto {
     public Integer getDelvisRefusjonBeløpPrMnd() {
         return delvisRefusjonBeløpPrMnd;
     }
+
+    @Override
+    public String toString() {
+        return "VurderRefusjonAndelBeregningsgrunnlagDto{" +
+                "arbeidsgiverOrgnr='" + sisteTreSifferOrgnr() + '\'' +
+                ", arbeidsgiverAktørId='" + arbeidsgiverAktørId + '\'' +
+                ", internArbeidsforholdRef='" + internArbeidsforholdRef + '\'' +
+                ", fastsattRefusjonFom=" + fastsattRefusjonFom +
+                ", delvisRefusjonBeløpPrMnd=" + delvisRefusjonBeløpPrMnd +
+                '}';
+    }
+
+    private String sisteTreSifferOrgnr() {
+        if (arbeidsgiverOrgnr == null) {
+            return null;
+        }
+        int length = arbeidsgiverOrgnr.length();
+        if (length <= 3) {
+            return "*".repeat(length);
+        }
+        return "*".repeat(length - 3) + arbeidsgiverOrgnr.substring(length - 3);
+    }
+
 }

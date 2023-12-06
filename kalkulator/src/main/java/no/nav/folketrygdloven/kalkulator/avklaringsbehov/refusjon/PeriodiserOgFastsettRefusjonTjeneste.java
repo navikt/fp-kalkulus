@@ -56,7 +56,7 @@ public final class PeriodiserOgFastsettRefusjonTjeneste {
         BeregningsgrunnlagDto periodisertBeregningsgrunnlagMedFastsattRefusjon = oppdaterRefusjonIRelevantePerioder(periodisertBeregningsgrunnlag, splittAndeler);
 
         // Valider resultatet
-        validerGrunnlag(beregningsgrunnlagDto, periodisertBeregningsgrunnlagMedFastsattRefusjon);
+        validerGrunnlag(beregningsgrunnlagDto, periodisertBeregningsgrunnlagMedFastsattRefusjon, andeler);
 
         return periodisertBeregningsgrunnlagMedFastsattRefusjon;
     }
@@ -173,7 +173,7 @@ public final class PeriodiserOgFastsettRefusjonTjeneste {
         }
     }
 
-    private static void validerGrunnlag(BeregningsgrunnlagDto gammeltGrunnlag, BeregningsgrunnlagDto nyttGrunnlag) {
+    private static void validerGrunnlag(BeregningsgrunnlagDto gammeltGrunnlag, BeregningsgrunnlagDto nyttGrunnlag, List<VurderRefusjonAndelBeregningsgrunnlagDto> andeler) {
         Set<LocalDate> startdatoer = new HashSet<>();
         gammeltGrunnlag.getBeregningsgrunnlagPerioder().forEach(bgp -> startdatoer.add(bgp.getPeriode().getFomDato()));
         nyttGrunnlag.getBeregningsgrunnlagPerioder().forEach(bgp -> startdatoer.add(bgp.getPeriode().getFomDato()));
@@ -192,17 +192,17 @@ public final class PeriodiserOgFastsettRefusjonTjeneste {
             });
         });
 
-        validerIngenØkteKrav(nyttGrunnlag);
+        validerIngenØkteKrav(nyttGrunnlag, andeler);
 
     }
 
-    private static void validerIngenØkteKrav(BeregningsgrunnlagDto nyttGrunnlag) {
+    private static void validerIngenØkteKrav(BeregningsgrunnlagDto nyttGrunnlag, List<VurderRefusjonAndelBeregningsgrunnlagDto> andeler) {
         nyttGrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> {
             p.getBeregningsgrunnlagPrStatusOgAndelList().forEach(a -> {
                 var refusjon = a.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getRefusjon);
                 if (refusjon.isPresent() && refusjon.get().getSaksbehandletRefusjonPrÅr() != null && refusjon.get().getRefusjonskravPrÅr() != null) {
                     if (refusjon.get().getSaksbehandletRefusjonPrÅr().compareTo(refusjon.get().getRefusjonskravPrÅr()) > 0) {
-                        throw new IllegalStateException("Kan ikke øke refusjonskrav for andel " + a);
+                        throw new IllegalStateException("Kan ikke øke refusjonskrav for andel " + a + " Alle endringer som skulle utføres var: " + andeler);
                     }
                 }
             });
