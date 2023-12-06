@@ -1,17 +1,19 @@
 domene/kontrakt:
-  - kontrakt/src/main/java/**/*
-  - kodeverk/src/main/java/**/*
-  
+  - changed-files:
+      - any-glob-to-any-file: ['kontrakt/src/main/java/**/*', 'kodeverk/src/main/java/**/*']
+
 domene/kalkulator:
-  - felles/src/main/java/**/*
-  - kalkulator/src/main/java/**/*
+  - changed-files:
+      - any-glob-to-any-file: ['felles/src/main/java/**/*', 'kalkulator/src/main/java/**/*']
 
 migreringer:
-  - migreringer/src/main/**/*
-  
+  - changed-files:
+      - any-glob-to-any-file: ['migreringer/src/main/**/*']
+
 web:
-  - web/src/main/java/**/*
-  
+  - changed-files:
+      - any-glob-to-any-file: ['web/src/main/java/**/*']
+
 pom:
-  - '**/*/pom.xml'
-  - pom.xml
+  - changed-files:
+      - any-glob-to-any-file: ['**/*/pom.xml', 'pom.xml']
