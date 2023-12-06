@@ -9,20 +9,19 @@
         <version>${revision}${sha1}${changelist}</version>
     </parent>
 
-    <artifactId>kalkulus-kalkulator-jakarta</artifactId>
+    <artifactId>kalkulus-kalkulator</artifactId>
     <packaging>jar</packaging>
     <name>Kalkulus :: Kalkulator</name>
 
     <properties>
         <maven.deploy.skip>false</maven.deploy.skip>
-        <legacy.artifactId>kalkulus-kalkulator</legacy.artifactId>
     </properties>
 
     <dependencies>
         <!-- Interne avhengigheter  -->
         <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>kalkulus-kontrakt-jakarta</artifactId>
+            <artifactId>kalkulus-kontrakt</artifactId>
         </dependency>
 
         <!-- Eksterne avhengigheter til andre NAV-prosjekter-->

@@ -75,12 +75,12 @@
 
         <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>kalkulus-kalkulator-jakarta</artifactId>
+            <artifactId>kalkulus-kalkulator</artifactId>
         </dependency>
 
         <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>kalkulus-kontrakt-jakarta</artifactId>
+            <artifactId>kalkulus-kontrakt</artifactId>
         </dependency>
         <!-- Test avhengigheter -->
         <dependency>
