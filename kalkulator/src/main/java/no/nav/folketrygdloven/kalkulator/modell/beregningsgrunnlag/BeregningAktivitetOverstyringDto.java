@@ -26,7 +26,7 @@ public class BeregningAktivitetOverstyringDto {
     }
 
     public InternArbeidsforholdRefDto getArbeidsforholdRef() {
-        return arbeidsforholdRef;
+        return arbeidsforholdRef == null ? InternArbeidsforholdRefDto.nullRef() : arbeidsforholdRef;
     }
 
     public OpptjeningAktivitetType getOpptjeningAktivitetType() {

@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.felles.BeregningstidspunktTjeneste;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
@@ -46,11 +45,6 @@ public class ErFjernetIOverstyrt {
     private static boolean varIkkeIPermisjonPåSkjæringstidspunkt(Collection<PermisjonDto> permisjoner, LocalDate skjæringstidspunktBeregning) {
         return permisjoner.stream()
                 .noneMatch(p -> p.getPeriode().inkluderer(BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunktBeregning)));
-    }
-
-    private static boolean liggerIkkeIBGAktivitetAggregat(YrkesaktivitetDto yrkesaktivitet, BeregningAktivitetAggregatDto aktivitetAggregatEntitet) {
-        return aktivitetAggregatEntitet.getBeregningAktiviteter().stream()
-                .noneMatch(beregningAktivitet -> beregningAktivitet.gjelderFor(yrkesaktivitet.getArbeidsgiver(), yrkesaktivitet.getArbeidsforholdRef()));
     }
 
     private static boolean erAktivDagenFørSkjæringstidspunktet(LocalDate skjæringstidspunktBeregning,
