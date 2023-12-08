@@ -122,3 +122,5 @@ spec:
       value: "false"
     - name: SKAL_VALIDERE_FORLENGELSE_ENDRING
       value: "false"
+    - name: ENABLE_AZURE_CC_SYSTEMCONTEXT
+      value: "false"
