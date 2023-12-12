@@ -24,7 +24,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.mappers.JsonMapper;
 import no.nav.folketrygdloven.kalkulus.rest.UgyldigInputException;
@@ -52,7 +51,7 @@ public class KalkulatorInputTjeneste {
         // CDI-runner
     }
 
-    public Map<Long, KalkulatorInputDto> hentOgLagreForSteg(Map<UUID, KalkulatorInputDto> inputPrReferanse, Set<Long> koblingIder, BeregningSteg stegType) {
+    public Map<Long, KalkulatorInputDto> hentOgLagreForSteg(Map<UUID, KalkulatorInputDto> inputPrReferanse, Set<Long> koblingIder) {
         if (inputPrReferanse != null && !inputPrReferanse.isEmpty()) {
             // kalkulatorinput oppdateres
             return lagreKalkulatorInput(inputPrReferanse);

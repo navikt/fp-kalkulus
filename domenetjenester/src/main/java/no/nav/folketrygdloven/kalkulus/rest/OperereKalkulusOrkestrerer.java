@@ -88,7 +88,7 @@ public class OperereKalkulusOrkestrerer {
         Set<Long> koblingIder = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
         // Lag input
         var inputPrReferanse = finnKalkulatorInputPrReferanseMap(beregnForListe);
-        var hentInputResultat = kalkulatorInputTjeneste.hentOgLagreForSteg(inputPrReferanse, koblingIder, steg);
+        var hentInputResultat = kalkulatorInputTjeneste.hentOgLagreForSteg(inputPrReferanse, koblingIder);
         var stegInputPrKobling = lagInputOgRullTilbakeVedBehov(koblingIder,
                 hentInputResultat,
                 new InputForSteg(steg, koblingRelasjonEntiteter), true);

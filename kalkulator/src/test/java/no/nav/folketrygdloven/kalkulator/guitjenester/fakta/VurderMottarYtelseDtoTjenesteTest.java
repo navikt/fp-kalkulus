@@ -93,7 +93,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
         BeregningsgrunnlagPrStatusOgAndelDto arbeidsforholdAndel = byggArbeidsforholdMedBgAndel();
 
         // Act
-        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, inntektArbeidYtelseGrunnlag, List.of(), new OpptjeningAktiviteterDto(), null)
+        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, inntektArbeidYtelseGrunnlag, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
 
         dtoTjeneste.lagDto(input, dto);
@@ -124,7 +124,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
                 .erstattEksisterendeEllerLeggTil(FaktaArbeidsforholdDto.builder(arbeidsgiver, InternArbeidsforholdRefDto.nullRef())
                         .medHarMottattYtelseFastsattAvSaksbehandler(true)
                         .build()).build();
-        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, inntektArbeidYtelseGrunnlag, List.of(), new OpptjeningAktiviteterDto(), null)
+        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, inntektArbeidYtelseGrunnlag, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag)
                         .medFaktaAggregat(fakta)
                         .build(BeregningsgrunnlagTilstand.KOFAKBER_UT));

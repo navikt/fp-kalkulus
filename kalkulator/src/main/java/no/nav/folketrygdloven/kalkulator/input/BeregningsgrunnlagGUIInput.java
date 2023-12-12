@@ -51,8 +51,6 @@ public class BeregningsgrunnlagGUIInput {
     /** IAY grunnlag benyttet av beregningsgrunnlag. Merk kan bli modifisert av innhenting av inntekter for beregning, sammenligning. */
     private InntektArbeidYtelseGrunnlagDto iayGrunnlag;
 
-    /** Aktiviteter til grunnlag for opptjening. */
-    private OpptjeningAktiviteterDto opptjeningAktiviteter;
 
     private final YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag;
 
@@ -62,19 +60,16 @@ public class BeregningsgrunnlagGUIInput {
 
     public BeregningsgrunnlagGUIInput(KoblingReferanse koblingReferanse,
                                       InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                      List<KravperioderPrArbeidsforholdDto> kravperioderPrArbeidsgiver,
-                                      OpptjeningAktiviteterDto opptjeningAktiviteter, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+                                      List<KravperioderPrArbeidsforholdDto> kravperioderPrArbeidsgiver, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         this.koblingReferanse = Objects.requireNonNull(koblingReferanse, "behandlingReferanse");
         this.iayGrunnlag = iayGrunnlag;
         this.kravperioderPrArbeidsgiver = kravperioderPrArbeidsgiver;
-        this.opptjeningAktiviteter = opptjeningAktiviteter;
         this.ytelsespesifiktGrunnlag = ytelsespesifiktGrunnlag;
     }
 
     private BeregningsgrunnlagGUIInput(BeregningsgrunnlagGUIInput input) {
         this(input.getKoblingReferanse(), input.getIayGrunnlag(),
-                input.getKravperioderPrArbeidsgiver(),
-                input.getOpptjeningAktiviteter(), input.getYtelsespesifiktGrunnlag());
+                input.getKravperioderPrArbeidsgiver(), input.getYtelsespesifiktGrunnlag());
         this.beregningsgrunnlagGrunnlag = input.getBeregningsgrunnlagGrunnlag();
         this.fordelBeregningsgrunnlagGrunnlag = input.fordelBeregningsgrunnlagGrunnlag;
         this.beregningsgrunnlagGrunnlagFraForrigeBehandling = input.beregningsgrunnlagGrunnlagFraForrigeBehandling;
@@ -138,10 +133,6 @@ public class BeregningsgrunnlagGUIInput {
 
     public LocalDate getSkjæringstidspunktOpptjening() {
         return getSkjæringstidspunkt().getSkjæringstidspunktOpptjening();
-    }
-
-    public OpptjeningAktiviteterDto getOpptjeningAktiviteter() {
-        return opptjeningAktiviteter;
     }
 
     public List<KravperioderPrArbeidsforholdDto> getKravperioderPrArbeidsgiver() {

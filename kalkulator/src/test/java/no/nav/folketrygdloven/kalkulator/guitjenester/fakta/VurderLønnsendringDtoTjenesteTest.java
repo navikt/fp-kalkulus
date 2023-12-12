@@ -87,7 +87,6 @@ class VurderLønnsendringDtoTjenesteTest {
                 koblingReferanse,
                 iayGrunnlag,
                 List.of(),
-                null,
                 null
         );
         input = input.medBeregningsgrunnlagGrunnlag(beregningsgrunnlagGrunnlagDto);

@@ -54,8 +54,5 @@ public class OpptjeningAktiviteterDto {
         return midlertidigInaktivType;
     }
 
-    @AssertTrue(message = "Skal ha opptjeningsaktiviteter dersom ikke inaktiv")
-    public boolean isSkalHaAktiviteterDersomIkkeInaktiv() {
-        return midlertidigInaktivType != null || !perioder.isEmpty();
-    }
+
 }

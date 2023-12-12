@@ -35,7 +35,6 @@ public class MapTilGUIInputFraKalkulator {
                 ref,
                 iayGrunnlagMappet,
                 MapFraKalkulator.mapFraDto(input.getRefusjonskravPrArbeidsforhold(), input.getRefusjonskravDatoer(), input.getIayGrunnlag(), input.getSkjæringstidspunkt()),
-                MapFraKalkulator.mapFraDto(input.getOpptjeningAktiviteter()),
                 MapFraKalkulator.mapFraDto(kobling.getYtelseTyperKalkulusStøtter(), input, iayGrunnlagMappet, beregningsgrunnlagGrunnlagEntitet));
         beregningsgrunnlagGUIInput.setForlengelseperioder(MapFraKalkulator.mapPerioder(forlengelseperioder));
         return beregningsgrunnlagGUIInput;

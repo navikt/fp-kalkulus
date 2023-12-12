@@ -155,7 +155,7 @@ class VurderRefusjonTilfelleDtoTjenesteTest {
                                                                                 InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                                 Map<Arbeidsgiver, LocalDate> førsteInnsendingAvRefusjonMap) {
         BeregningsgrunnlagGUIInput input = new BeregningsgrunnlagGUIInput(koblingReferanse, iayGrunnlag,
-                opprett(iayGrunnlag, koblingReferanse.getSkjæringstidspunktBeregning(), førsteInnsendingAvRefusjonMap), new OpptjeningAktiviteterDto(), null);
+                opprett(iayGrunnlag, koblingReferanse.getSkjæringstidspunktBeregning(), førsteInnsendingAvRefusjonMap), null);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
         return input.medBeregningsgrunnlagGrunnlag(grunnlag);
     }

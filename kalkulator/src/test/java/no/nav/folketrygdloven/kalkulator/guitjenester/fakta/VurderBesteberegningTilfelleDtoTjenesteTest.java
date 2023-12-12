@@ -60,7 +60,7 @@ public class VurderBesteberegningTilfelleDtoTjenesteTest {
         // Act
         var faktaOmBeregningDto = new FaktaOmBeregningDto();
 
-         var input = new BeregningsgrunnlagGUIInput(lagReferanse(), null, List.of(), new OpptjeningAktiviteterDto(), null)
+         var input = new BeregningsgrunnlagGUIInput(lagReferanse(), null, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
         dtoTjeneste.lagDto(input, faktaOmBeregningDto);
 
@@ -90,7 +90,7 @@ public class VurderBesteberegningTilfelleDtoTjenesteTest {
         // Act
         var faktaOmBeregningDto = new FaktaOmBeregningDto();
 
-         var input = new BeregningsgrunnlagGUIInput(lagReferanse(), null, List.of(), new OpptjeningAktiviteterDto(), null)
+         var input = new BeregningsgrunnlagGUIInput(lagReferanse(), null, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
         dtoTjeneste.lagDto(input, faktaOmBeregningDto);
 

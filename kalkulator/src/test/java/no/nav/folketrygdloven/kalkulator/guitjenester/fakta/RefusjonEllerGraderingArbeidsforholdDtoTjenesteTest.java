@@ -221,7 +221,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
     }
 
     private BeregningsgrunnlagGUIInput lagInputMedGrunnlag(InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        return new BeregningsgrunnlagGUIInput(referanse, iayGrunnlag, List.of(), new OpptjeningAktiviteterDto(), null)
+        return new BeregningsgrunnlagGUIInput(referanse, iayGrunnlag, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
     }
 
@@ -466,7 +466,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
     private BeregningsgrunnlagGUIInput lagInputMedGrunnlagOgGradering(AndelGradering andelGradering, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         ForeldrepengerGrunnlag foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
         foreldrepengerGrunnlag.setAktivitetGradering(new AktivitetGradering(andelGradering));
-        return new BeregningsgrunnlagGUIInput(referanse, iayGrunnlag, List.of(), new OpptjeningAktiviteterDto(), foreldrepengerGrunnlag)
+        return new BeregningsgrunnlagGUIInput(referanse, iayGrunnlag, List.of(), foreldrepengerGrunnlag)
                 .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
     }
 
