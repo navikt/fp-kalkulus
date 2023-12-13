@@ -18,12 +18,14 @@ import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
+import no.nav.folketrygdloven.kalkulus.beregning.input.validering.KalkulatorInputStegValidator;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.mappers.JsonMapper;
 import no.nav.folketrygdloven.kalkulus.rest.UgyldigInputException;
@@ -51,12 +53,15 @@ public class KalkulatorInputTjeneste {
         // CDI-runner
     }
 
-    public Map<Long, KalkulatorInputDto> hentOgLagreForSteg(Map<UUID, KalkulatorInputDto> inputPrReferanse, Set<Long> koblingIder) {
+    public Map<Long, KalkulatorInputDto> hentOgLagreForSteg(Map<UUID, KalkulatorInputDto> inputPrReferanse, Set<Long> koblingIder, BeregningSteg steg) {
         if (inputPrReferanse != null && !inputPrReferanse.isEmpty()) {
             // kalkulatorinput oppdateres
             return lagreKalkulatorInput(inputPrReferanse);
         }
-        return hentOgOppdaterDersomUtdatert(inputPrReferanse, koblingIder);
+        var hentetKalkulatorInput = hentOgOppdaterDersomUtdatert(inputPrReferanse, koblingIder);
+        var validator = KalkulatorInputStegValidator.finnValidator(steg);
+        hentetKalkulatorInput.values().forEach(validator::valider);
+        return hentetKalkulatorInput;
     }
 
     public Map<Long, KalkulatorInputDto> hentOgLagre(Map<UUID, KalkulatorInputDto> inputPrReferanse, Set<Long> koblingIder) {
@@ -89,14 +94,7 @@ public class KalkulatorInputTjeneste {
 
     public Map<Long, KalkulatorInputDto> hentForKoblinger(Collection<Long> koblingId) throws UgyldigInputException {
         var kalkulatorInputEntitetListe = beregningsgrunnlagRepository.hentHvisEksistererKalkulatorInput(koblingId);
-        List<Long> koblingUtenInput = koblingId.stream()
-                .filter(id -> kalkulatorInputEntitetListe.stream().map(KalkulatorInputEntitet::getKoblingId)
-                        .noneMatch(k -> k.equals(id)))
-                .collect(Collectors.toList());
-        if (!koblingUtenInput.isEmpty()) {
-            throw new TekniskException("FT-KALKULUS-INPUT-1000000",
-                    String.format("Kalkulus finner ikke kalkulator input for koblingId: %s", koblingUtenInput));
-        }
+        validerIngenKoblingerUtenInput(koblingId, kalkulatorInputEntitetListe);
         Map<Long, KalkulatorInputDto> inputMap = new HashMap<>();
 
         for (KalkulatorInputEntitet input : kalkulatorInputEntitetListe) {
@@ -106,6 +104,17 @@ public class KalkulatorInputTjeneste {
             inputMap.put(input.getKoblingId(), inputDto);
         }
         return inputMap;
+    }
+
+    private static void validerIngenKoblingerUtenInput(Collection<Long> koblingId, List<KalkulatorInputEntitet> kalkulatorInputEntitetListe) {
+        List<Long> koblingUtenInput = koblingId.stream()
+                .filter(id -> kalkulatorInputEntitetListe.stream().map(KalkulatorInputEntitet::getKoblingId)
+                        .noneMatch(k -> k.equals(id)))
+                .toList();
+        if (!koblingUtenInput.isEmpty()) {
+            throw new TekniskException("FT-KALKULUS-INPUT-1000000",
+                    String.format("Kalkulus finner ikke kalkulator input for koblingId: %s", koblingUtenInput));
+        }
     }
 
     static KalkulatorInputDto konverterTilInput(String json, Long koblingId) {
