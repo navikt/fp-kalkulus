@@ -68,6 +68,7 @@ import no.nav.k9.felles.sikkerhet.abac.AbacDataAttributter;
 import no.nav.k9.felles.sikkerhet.abac.AbacDto;
 import no.nav.k9.felles.sikkerhet.abac.BeskyttetRessurs;
 import no.nav.k9.felles.sikkerhet.abac.StandardAbacAttributtType;
+import no.nav.k9.sikkerhet.context.SubjectHandler;
 
 @Produces(MediaType.APPLICATION_JSON)
 @OpenAPIDefinition(tags = @Tag(name = "forvaltning"))
@@ -113,10 +114,13 @@ public class MidlertidigForvaltningRestTjeneste {
     public Response simulerFastsettMedOppdatertUttak(@NotNull @Valid OppdaterYtelsesspesifiktGrunnlagListeRequestAbacDto spesifikasjon) {
         var saksnummer = new Saksnummer(spesifikasjon.getSaksnummer());
 
-        entityManager.persist(new DiagnostikkSakLogg(saksnummer,
-                "/forvaltning/simulerFastsettMedOppdatertUttak/bolk", "simulerer fastsetting med endret uttak"
-        ));
-        entityManager.flush();
+
+        if (erBrukerKontekst()) {
+            entityManager.persist(new DiagnostikkSakLogg(saksnummer,
+                    "/forvaltning/simulerFastsettMedOppdatertUttak/bolk", "simulerer fastsetting med endret uttak"
+            ));
+            entityManager.flush();
+        }
 
 
         MDC.put("prosess_saksnummer", saksnummer.getVerdi());
@@ -127,6 +131,12 @@ public class MidlertidigForvaltningRestTjeneste {
                 .map(e -> finnDifferansePrGrunnlag(koblinger, e)).toList();
 
         return Response.ok(new EndretPeriodeListeRespons(responsPrReferanse)).build();
+    }
+
+    private static boolean erBrukerKontekst() {
+        // enkel sjekk på forventet systembruker fra k9-sak
+        // Brukes kun for å unngå unødvendige opprettelser av diagnostikk-logg
+        return SubjectHandler.getSubjectHandler().getUid() == null || !SubjectHandler.getSubjectHandler().getUid().equals("srvk9sak");
     }
 
     private Map<Long, StegProsesseringInput> lagInputPrKoblingId(OppdaterYtelsesspesifiktGrunnlagListeRequestAbacDto spesifikasjon, List<KoblingEntitet> koblinger, Set<Long> koblingIder) {
