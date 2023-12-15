@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.rest.forvaltning;
 
 import static java.lang.Boolean.TRUE;
-import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributtMiljøvariabel.BEREGNINGSGRUNNLAG;
+import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributtMiljøvariabel.DRIFT;
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.READ;
 
 import java.util.Collections;
@@ -26,6 +26,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -83,6 +84,8 @@ public class MidlertidigForvaltningRestTjeneste {
 
     private KalkulatorInputTjeneste kalkulatorInputTjeneste;
 
+    private EntityManager entityManager;
+
 
     public MidlertidigForvaltningRestTjeneste() {
         // for CDI
@@ -91,10 +94,12 @@ public class MidlertidigForvaltningRestTjeneste {
     @Inject
     public MidlertidigForvaltningRestTjeneste(KoblingTjeneste koblingTjeneste,
                                               StegProsessInputTjeneste inputTjeneste,
-                                              KalkulatorInputTjeneste kalkulatorInputTjeneste) {
+                                              KalkulatorInputTjeneste kalkulatorInputTjeneste,
+                                              EntityManager entityManager) {
         this.koblingTjeneste = koblingTjeneste;
         this.inputTjeneste = inputTjeneste;
         this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
+        this.entityManager = entityManager;
     }
 
     @POST
@@ -103,16 +108,24 @@ public class MidlertidigForvaltningRestTjeneste {
     @Operation(description = "Utfører fastsett-steg i beregning med oppdatert uttak", tags = "forvaltning", summary = ("Kjører fastsett steget"), responses = {
             @ApiResponse(description = "Liste med differanser i andeler fra lagret grunnlag per angitt eksternReferanse", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = EndretPeriodeListeRespons.class)))
     })
-    @BeskyttetRessurs(action = READ, property = BEREGNINGSGRUNNLAG)
+    @BeskyttetRessurs(action = READ, property = DRIFT)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response simulerFastsettMedOppdatertUttak(@NotNull @Valid OppdaterYtelsesspesifiktGrunnlagListeRequestAbacDto spesifikasjon) {
         var saksnummer = new Saksnummer(spesifikasjon.getSaksnummer());
+
+        entityManager.persist(new DiagnostikkSakLogg(saksnummer,
+                "/forvaltning/simulerFastsettMedOppdatertUttak/bolk", "simulerer fastsetting med endret uttak"
+        ));
+        entityManager.flush();
+
+
         MDC.put("prosess_saksnummer", saksnummer.getVerdi());
         var koblinger = koblingTjeneste.hentKoblinger(spesifikasjon.getYtelsespesifiktGrunnlagListe().stream().map(it -> new KoblingReferanse(it.getEksternReferanse())).toList(), spesifikasjon.getYtelseSomSkalBeregnes());
         var koblingIder = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
         var stegInputPrKobling = lagInputPrKoblingId(spesifikasjon, koblinger, koblingIder);
         var responsPrReferanse = stegInputPrKobling.entrySet().stream()
                 .map(e -> finnDifferansePrGrunnlag(koblinger, e)).toList();
+
         return Response.ok(new EndretPeriodeListeRespons(responsPrReferanse)).build();
     }
 
