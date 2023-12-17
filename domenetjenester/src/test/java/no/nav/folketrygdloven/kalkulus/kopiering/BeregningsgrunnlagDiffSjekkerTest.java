@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.kopiering;
 
+import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -9,13 +10,61 @@ import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
 
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforhold;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 
 class BeregningsgrunnlagDiffSjekkerTest {
+
+    @Test
+    public void skalReturnereTrueOmUlikeArbeidsforholdsreferanser() {
+        // Arrange
+        var stp = LocalDate.now();
+        BeregningsgrunnlagDto aktivt = BeregningsgrunnlagDto.builder()
+                .medSkjæringstidspunkt(stp)
+                .build();
+
+        var aktivPeriode = BeregningsgrunnlagPeriodeDto.ny()
+                .medBeregningsgrunnlagPeriode(stp, TIDENES_ENDE)
+                .build(aktivt);
+
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
+                        .medArbeidsgiver(Arbeidsgiver.virksomhet("12346778")))
+                .build(aktivPeriode);
+
+        BeregningsgrunnlagDto forrige = BeregningsgrunnlagDto.builder()
+                .medSkjæringstidspunkt(stp)
+                .build();
+
+        var forrigePeriode = BeregningsgrunnlagPeriodeDto.ny()
+                .medBeregningsgrunnlagPeriode(stp, TIDENES_ENDE)
+                .build(forrige);
+
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
+                        .medArbeidsgiver(Arbeidsgiver.virksomhet("12346778"))
+                        .medArbeidsforholdRef(InternArbeidsforholdRefDto.nyRef()))
+                .build(forrigePeriode);
+
+        // Act
+
+        boolean harDiff = BeregningsgrunnlagDiffSjekker.harSignifikantDiffIBeregningsgrunnlag(aktivt, forrige);
+
+        // Assert
+        assertThat(harDiff).isTrue();
+    }
 
     @Test
     public void skalReturnereTrueOmUlikeGrunnbeløp() {

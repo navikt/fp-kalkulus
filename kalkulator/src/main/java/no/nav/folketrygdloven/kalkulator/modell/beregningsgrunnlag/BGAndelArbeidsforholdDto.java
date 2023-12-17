@@ -5,8 +5,8 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
 import no.nav.folketrygdloven.kalkulator.modell.diff.DiffIgnore;
+import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Refusjon;
@@ -19,8 +19,10 @@ public class BGAndelArbeidsforholdDto {
 
     @DiffIgnore
     private BeregningsgrunnlagPrStatusOgAndelDto beregningsgrunnlagPrStatusOgAndel;
+    @SjekkVedKopiering
     private Arbeidsgiver arbeidsgiver;
-    private InternArbeidsforholdRefDto arbeidsforholdRef;
+    @SjekkVedKopiering
+    private InternArbeidsforholdRefDto arbeidsforholdRef = InternArbeidsforholdRefDto.nullRef();
     @SjekkVedKopiering
     private Refusjon refusjon;
     @SjekkVedKopiering
@@ -102,13 +104,15 @@ public class BGAndelArbeidsforholdDto {
      * Refusjonskrav settes på forskjellige steder i beregning dersom avklaringsbehov oppstår.
      * Først settes refusjonskravPrÅr, deretter saksbehandletRefusjonPrÅr og til slutt fordeltRefusjonPrÅr.
      * Det er det sist avklarte beløpet som til en hver tid skal være gjeldende.
+     *
      * @return returnerer det refusjonskravet som skal være gjeldende
      */
     public BigDecimal getGjeldendeRefusjonPrÅr() {
         return refusjon != null ? refusjon.getGjeldendeRefusjonPrÅr() : null;
     }
 
-    /** Returnerer refusjonskrav fra inntektsmelding om fristvilkåret er godkjent
+    /**
+     * Returnerer refusjonskrav fra inntektsmelding om fristvilkåret er godkjent
      *
      * @return Innvilget refusjonskrav
      */
@@ -239,7 +243,7 @@ public class BGAndelArbeidsforholdDto {
         }
 
         public Builder medArbeidsforholdRef(String arbeidsforholdRef) {
-            return medArbeidsforholdRef(arbeidsforholdRef==null?null: InternArbeidsforholdRefDto.ref(arbeidsforholdRef));
+            return medArbeidsforholdRef(arbeidsforholdRef == null ? InternArbeidsforholdRefDto.nullRef() : no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto.ref(arbeidsforholdRef));
         }
 
         public Builder medArbeidsforholdRef(InternArbeidsforholdRefDto arbeidsforholdRef) {
