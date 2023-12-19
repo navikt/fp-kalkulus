@@ -7,19 +7,10 @@ import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 
 public final class GrunnbeløpMapper {
     private GrunnbeløpMapper() {
+        // Hindrer instansiering av klasse
     }
 
-    public static List<Grunnbeløp> mapGrunnbeløpInput(List<Grunnbeløp> grunnbeløpene, List<GrunnbeløpInput> grunnbeløpInput) {
-        if (grunnbeløpInput != null && !grunnbeløpInput.isEmpty()) {
-            return grunnbeløpInput.stream().map(g -> new Grunnbeløp(g.fom(), g.tom(), g.gVerdi(), g.gSnitt())).collect(Collectors.toList());
-        }
-        return grunnbeløpene;
-    }
-
-    public static List<GrunnbeløpInput> mapTilGrunnbeløpInput(List<Grunnbeløp> grunnbeløpene, List<GrunnbeløpInput> grunnbeløpInput) {
-        if (grunnbeløpInput != null && !grunnbeløpInput.isEmpty()) {
-            return grunnbeløpInput;
-        }
-        return grunnbeløpene.stream().map(g -> new GrunnbeløpInput(g.getFom(), g.getTom(), g.getGVerdi(), g.getGSnitt())).collect(Collectors.toList());
+    public static List<Grunnbeløp> mapGrunnbeløpInput(List<GrunnbeløpInput> grunnbeløpInput) {
+        return grunnbeløpInput.stream().map(g -> new Grunnbeløp(g.fom(), g.tom(), g.gVerdi(), g.gSnitt())).collect(Collectors.toList());
     }
 }

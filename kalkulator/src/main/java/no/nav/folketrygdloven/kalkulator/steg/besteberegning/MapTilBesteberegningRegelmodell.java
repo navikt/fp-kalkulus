@@ -57,7 +57,7 @@ public class MapTilBesteberegningRegelmodell {
         List<Periode> perioderMedNæringsvirksomhet = finnPerioderMedOppgittNæring(input);
         BesteberegningInput.Builder inputBuilder = BesteberegningInput.builder()
                 .medInntektsgrunnlag(inntektsgrunnlag)
-                .medGrunnbeløpSatser(GrunnbeløpMapper.mapGrunnbeløpInput(input.getGrunnbeløpsatser(), input.getGrunnbeløpInput()))
+                .medGrunnbeløpSatser(GrunnbeløpMapper.mapGrunnbeløpInput(input.getGrunnbeløpInput()))
                 .medGjeldendeGVerdi(finnGrunnbeløp(input))
                 .medSkjæringstidspunktOpptjening(input.getSkjæringstidspunktOpptjening())
                 .medPerioderMedNæringsvirksomhet(perioderMedNæringsvirksomhet)

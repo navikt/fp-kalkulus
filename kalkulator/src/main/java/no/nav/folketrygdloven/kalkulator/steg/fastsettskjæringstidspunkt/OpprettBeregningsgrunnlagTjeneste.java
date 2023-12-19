@@ -52,7 +52,7 @@ public class OpprettBeregningsgrunnlagTjeneste {
 
         // Fastsetter andeler, status og endelig skjæringstidpsunkt
         var resultatMedAndeler = fastsettSkjæringstidspunktOgStatuser(input, beregningAktiviteter,
-                GrunnbeløpMapper.mapGrunnbeløpInput(input.getGrunnbeløpsatser(), input.getGrunnbeløpInput()));
+                GrunnbeløpMapper.mapGrunnbeløpInput(input.getGrunnbeløpInput()));
 
         // Oppdaterer koblinginformasjon for videre prosessering
         KoblingReferanse refMedSkjæringstidspunkt = ref

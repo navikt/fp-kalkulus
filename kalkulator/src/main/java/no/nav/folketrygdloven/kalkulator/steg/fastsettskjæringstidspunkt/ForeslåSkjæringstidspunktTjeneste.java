@@ -19,7 +19,7 @@ public class ForeslåSkjæringstidspunktTjeneste {
             beregningsgrunnlagRegelResultat.setVilkårsresultat(List.of(new BeregningVilkårResultat(false, Vilkårsavslagsårsak.FOR_LAVT_BG, Intervall.fraOgMed(input.getSkjæringstidspunktOpptjening()))));
             return beregningsgrunnlagRegelResultat;
         }
-        var beregningsgrunnlagRegelResultat = new OpprettBeregningsgrunnlagTjeneste().fastsettSkjæringstidspunktOgStatuser(input, beregningAktivitetAggregat, GrunnbeløpMapper.mapGrunnbeløpInput(input.getGrunnbeløpsatser(), input.getGrunnbeløpInput()));
+        var beregningsgrunnlagRegelResultat = new OpprettBeregningsgrunnlagTjeneste().fastsettSkjæringstidspunktOgStatuser(input, beregningAktivitetAggregat, GrunnbeløpMapper.mapGrunnbeløpInput(input.getGrunnbeløpInput()));
         beregningsgrunnlagRegelResultat.setRegisterAktiviteter(beregningAktivitetAggregat);
         return beregningsgrunnlagRegelResultat;
     }

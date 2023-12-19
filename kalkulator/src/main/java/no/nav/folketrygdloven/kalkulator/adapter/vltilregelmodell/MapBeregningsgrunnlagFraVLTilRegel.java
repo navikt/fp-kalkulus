@@ -108,9 +108,9 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
 
     private List<Grunnbeløp> grunnbeløpSatser(BeregningsgrunnlagInput input) {
         if (input instanceof ForeslåBeregningsgrunnlagInput foreslåBeregningsgrunnlagInput) {
-            return GrunnbeløpMapper.mapGrunnbeløpInput(foreslåBeregningsgrunnlagInput.getGrunnbeløpsatser(), foreslåBeregningsgrunnlagInput.getGrunnbeløpInput());
+            return GrunnbeløpMapper.mapGrunnbeløpInput(foreslåBeregningsgrunnlagInput.getGrunnbeløpInput());
         } else if (input instanceof FortsettForeslåBeregningsgrunnlagInput fortsettForeslåBeregningsgrunnlagInput) {
-            return GrunnbeløpMapper.mapGrunnbeløpInput(fortsettForeslåBeregningsgrunnlagInput.getGrunnbeløpsatser(), fortsettForeslåBeregningsgrunnlagInput.getGrunnbeløpInput());
+            return GrunnbeløpMapper.mapGrunnbeløpInput(fortsettForeslåBeregningsgrunnlagInput.getGrunnbeløpInput());
         }
         return Collections.emptyList();
     }

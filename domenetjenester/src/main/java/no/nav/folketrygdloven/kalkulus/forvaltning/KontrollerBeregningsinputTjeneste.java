@@ -56,7 +56,7 @@ public class KontrollerBeregningsinputTjeneste {
         BeregningsgrunnlagInput beregningsgrunnlagInput = input.medBeregningsgrunnlagGrunnlag(bgDto);
         StegProsesseringInput stegProsesseringInput = new StegProsesseringInput(beregningsgrunnlagInput, BeregningsgrunnlagTilstand.FORESLÅTT);
         ForeslåBeregningsgrunnlagInput foreslåBeregningsgrunnlagInput = new ForeslåBeregningsgrunnlagInput(stegProsesseringInput)
-                .medGrunnbeløpInput(GrunnbeløpMapper.mapTilGrunnbeløpInput(input.getGrunnbeløpsatser(), input.getGrunnbeløpInput()));
+                .medGrunnbeløpInput(input.getGrunnbeløpInput());
         foreslåBeregningsgrunnlagInput.leggTilToggle("feilretting-tsf-1715", true);
         BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(foreslåBeregningsgrunnlagInput);
         BeregningsgrunnlagDto reberegnetGrunnlag = beregningsgrunnlagRegelResultat.getBeregningsgrunnlag();

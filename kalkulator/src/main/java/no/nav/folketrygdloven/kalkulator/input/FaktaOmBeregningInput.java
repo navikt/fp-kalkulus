@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.input;
 import java.util.ArrayList;
 import java.util.List;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.KravperioderPrArbeidsforholdDto;
@@ -13,11 +12,9 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 /** Inputstruktur for beregningsgrunnlag tjenester. */
 public class FaktaOmBeregningInput extends StegProsesseringInput {
 
-
     /**
      * Grunnbeløpsatser
      */
-    private List<Grunnbeløp> grunnbeløpsatser = new ArrayList<>();
     private List<GrunnbeløpInput> grunnbeløpInput = new ArrayList<>();
 
 
@@ -38,20 +35,7 @@ public class FaktaOmBeregningInput extends StegProsesseringInput {
 
     protected FaktaOmBeregningInput(FaktaOmBeregningInput input) {
         super(input);
-        this.grunnbeløpsatser = input.getGrunnbeløpsatser();
         this.grunnbeløpInput = input.getGrunnbeløpInput();
-    }
-
-    @Deprecated(forRemoval = true)
-    public List<Grunnbeløp> getGrunnbeløpsatser() {
-        return grunnbeløpsatser;
-    }
-
-    @Deprecated(forRemoval = true)
-    public FaktaOmBeregningInput medGrunnbeløpsatser(List<Grunnbeløp> grunnbeløpsatser) {
-        var newInput = new FaktaOmBeregningInput(this);
-        newInput.grunnbeløpsatser = grunnbeløpsatser;
-        return newInput;
     }
 
     public List<GrunnbeløpInput> getGrunnbeløpInput() {
