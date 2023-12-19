@@ -66,6 +66,10 @@ spec:
         - application: k9-formidling
           namespace: k9saksbehandling
   env:
+    - name: DEFAULTDS_USERNAME
+      value: ftkalkulus
+    - name: DEFAULTDS_URL
+      value: jdbc:postgresql://a01dbvl010.adeo.no:5432/ftkalkulus
     - name: LOADBALANCER_URL
       value: https://ftkalkulus.intern.nav.no
     - name: ABAC_PDP_ENDPOINT_URL
