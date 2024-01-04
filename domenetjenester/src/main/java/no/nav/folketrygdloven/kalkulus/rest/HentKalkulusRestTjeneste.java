@@ -34,6 +34,7 @@ import jakarta.ws.rs.core.Response.Status;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagGuiTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.KalkulatorGuiInterface;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
+import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulus.beregning.GUIBeregningsgrunnlagInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
@@ -268,11 +269,13 @@ public class HentKalkulusRestTjeneste {
     }
 
     private BeregningsgrunnlagDto mapTilDto(Collection<HentBeregningsgrunnlagDtoForGUIRequest> spesifikasjoner, BeregningsgrunnlagGUIInput input) {
+        MDC.put("prosess_koblingId", input.getKoblingReferanse().getKoblingId().toString());
         var spesifikasjon = spesifikasjoner.stream().filter(s -> s.getKoblingReferanse().equals(input.getKoblingReferanse().getKoblingUuid()))
                 .findFirst().orElseThrow(() -> new IllegalStateException("Ingen match blant koblinger"));
         input.oppdaterArbeidsgiverinformasjon(MapIAYTilKalulator.mapArbeidsgiverReferanser(spesifikasjon.getReferanser()));
         BeregningsgrunnlagDto beregningsgrunnlagDto = dtoTjeneste.lagBeregningsgrunnlagDto(input);
         beregningsgrunnlagDto.setVilkårsperiodeFom(spesifikasjon.getVilkårsperiodeFom());
+        MDC.remove("prosess_koblingId");
         return beregningsgrunnlagDto;
     }
 
