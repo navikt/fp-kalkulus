@@ -9,7 +9,6 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDt
 public class SvangerskapspengerGrunnlag extends UtbetalingsgradGrunnlag implements YtelsespesifiktGrunnlag {
 
     private int dekningsgrad = 100;
-    private Integer grunnbeløpMilitærHarKravPå;
 
     /**
      * Når vi start behandlingen av saken, skal brukes for å vurdere refusjon til arbeidsforhold som er avsluttet
@@ -27,16 +26,6 @@ public class SvangerskapspengerGrunnlag extends UtbetalingsgradGrunnlag implemen
     @Override
     public int getDekningsgrad() {
         return dekningsgrad;
-    }
-
-    @Override
-    public int getGrunnbeløpMilitærHarKravPå() {
-        return grunnbeløpMilitærHarKravPå;
-    }
-
-    @Override
-    public void setGrunnbeløpMilitærHarKravPå(int grunnbeløpMilitærHarKravPå) {
-        this.grunnbeløpMilitærHarKravPå = grunnbeløpMilitærHarKravPå;
     }
 
     public Optional<LocalDate> getBehandlingstidspunkt() {

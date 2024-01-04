@@ -93,7 +93,6 @@ public class BeregningsgrunnlagInputTestUtil {
                                                                                  OpptjeningAktiviteterDto opptjeningAktiviteterDto,
                                                                                  InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad, int grunnbeløpMilitærHarKravPå) {
         var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(dekningsgrad, false);
-        foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(grunnbeløpMilitærHarKravPå);
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, opptjeningAktiviteterDto,
                 opprett(iayGrunnlag, koblingReferanse.getSkjæringstidspunktBeregning()), foreldrepengerGrunnlag);
         input.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
@@ -105,7 +104,6 @@ public class BeregningsgrunnlagInputTestUtil {
                                                                                      BeregningsgrunnlagTilstand tilstand,
                                                                                      InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
-        foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(2);
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null,
                 opprett(iayGrunnlag, koblingReferanse.getSkjæringstidspunktBeregning()), foreldrepengerGrunnlag);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
@@ -120,7 +118,6 @@ public class BeregningsgrunnlagInputTestUtil {
                                                                                      BeregningsgrunnlagTilstand tilstand,
                                                                                      InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
-        foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(2);
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null,
                 opprett(iayGrunnlag, koblingReferanse.getSkjæringstidspunktBeregning()), foreldrepengerGrunnlag);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
@@ -135,7 +132,6 @@ public class BeregningsgrunnlagInputTestUtil {
                                                                              BeregningsgrunnlagTilstand tilstand,
                                                                              InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
-        foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(2);
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null,
                 opprett(iayGrunnlag, koblingReferanse.getSkjæringstidspunktBeregning()), foreldrepengerGrunnlag);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
@@ -148,7 +144,6 @@ public class BeregningsgrunnlagInputTestUtil {
                                                                                 BeregningsgrunnlagGrunnlagDtoBuilder beregningsgrunnlagGrunnlagBuilder,
                                                                                 BeregningsgrunnlagTilstand tilstand) {
         var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
-        foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(2);
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, null,
                 Collections.emptyList(), foreldrepengerGrunnlag);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);

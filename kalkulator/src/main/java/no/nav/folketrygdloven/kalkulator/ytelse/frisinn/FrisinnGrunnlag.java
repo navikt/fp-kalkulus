@@ -16,7 +16,6 @@ public class FrisinnGrunnlag extends UtbetalingsgradGrunnlag implements Ytelsesp
     private final LocalDate FØRSTE_DAG_MED_REDUSERT_DEKNINGSGRAD = LocalDate.of(2020,11,1);
     private final LocalDate ENDRET_DEKNINGSGRAD_DATO_70_PROSENT = LocalDate.of(2022,1,1);
 
-    private Integer grunnbeløpMilitærHarKravPå = 2;
     private final List<FrisinnPeriode> frisinnPerioder;
     private FrisinnBehandlingType frisinnBehandlingType;
 
@@ -44,16 +43,6 @@ public class FrisinnGrunnlag extends UtbetalingsgradGrunnlag implements Ytelsesp
         } else {
             return DEKNINGSGRAD_70;
         }
-    }
-
-    @Override
-    public int getGrunnbeløpMilitærHarKravPå() {
-        return grunnbeløpMilitærHarKravPå;
-    }
-
-    @Override
-    public void setGrunnbeløpMilitærHarKravPå(int grunnbeløpMilitærHarKravPå) {
-        this.grunnbeløpMilitærHarKravPå = grunnbeløpMilitærHarKravPå;
     }
 
     public boolean getSøkerYtelseForFrilans() {

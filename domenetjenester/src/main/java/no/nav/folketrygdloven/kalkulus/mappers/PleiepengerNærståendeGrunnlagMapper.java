@@ -14,8 +14,6 @@ class PleiepengerNærståendeGrunnlagMapper {
         var pleiepengerNærståendeGrunnlag = ppnYtelsesGrunnlag.getTilkommetInntektHensyntasFom() == null
                 ? new PleiepengerNærståendeGrunnlag(tilretteleggingMedUtbelingsgrad)
                 : new PleiepengerNærståendeGrunnlag(tilretteleggingMedUtbelingsgrad, ppnYtelsesGrunnlag.getTilkommetInntektHensyntasFom());
-        pleiepengerNærståendeGrunnlag
-                .setGrunnbeløpMilitærHarKravPå(KonfigTjeneste.forYtelse(FagsakYtelseType.PLEIEPENGER_NÆRSTÅENDE).getAntallGMilitærHarKravPå().intValue());
         return pleiepengerNærståendeGrunnlag;
     }
 

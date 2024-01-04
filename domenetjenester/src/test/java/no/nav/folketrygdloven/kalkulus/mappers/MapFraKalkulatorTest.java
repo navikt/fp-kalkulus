@@ -60,7 +60,7 @@ class MapFraKalkulatorTest {
     void skal_mappe_fra_kalkulator_til_beregningsgrunnlag_input() {
         String saksnummer = "1234";
         UUID randomUUID = UUID.randomUUID();
-        YtelseTyperKalkulusStøtterKontrakt ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtterKontrakt.DAGPENGER;
+        YtelseTyperKalkulusStøtterKontrakt ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtterKontrakt.FORELDREPENGER;
         Saksnummer saksnummer1 = new Saksnummer(saksnummer);
         KoblingEntitet koblingEntitet = new KoblingEntitet(new KoblingReferanse(randomUUID), ytelseTyperKalkulusStøtter, saksnummer1, AktørId.dummy());
         KalkulatorInputDto kalkulatorInputDto = byggKalkulatorInput();

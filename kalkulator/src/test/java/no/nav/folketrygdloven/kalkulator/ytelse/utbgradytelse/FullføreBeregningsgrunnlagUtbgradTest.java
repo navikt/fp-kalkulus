@@ -1140,7 +1140,6 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = new SvangerskapspengerGrunnlag(
                 tilretteleggingMedUtbelingsgrad
         );
-        svangerskapspengerGrunnlag.setGrunnbeløpMilitærHarKravPå(45000);
         return svangerskapspengerGrunnlag;
     }
 

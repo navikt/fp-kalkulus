@@ -11,8 +11,6 @@ class PleiepengerSyktBarnGrunnlagMapper {
         PleiepengerSyktBarnGrunnlag pleiepengerSyktBarnGrunnlag = pleiepengerYtelsesGrunnlag.getTilkommetInntektHensyntasFom() == null
                 ? new PleiepengerSyktBarnGrunnlag(tilretteleggingMedUtbelingsgrad)
                 : new PleiepengerSyktBarnGrunnlag(tilretteleggingMedUtbelingsgrad, pleiepengerYtelsesGrunnlag.getTilkommetInntektHensyntasFom());
-        pleiepengerSyktBarnGrunnlag
-                .setGrunnbeløpMilitærHarKravPå(KonfigTjeneste.forYtelse(FagsakYtelseType.PLEIEPENGER_SYKT_BARN).getAntallGMilitærHarKravPå().intValue());
         return pleiepengerSyktBarnGrunnlag;
     }
 

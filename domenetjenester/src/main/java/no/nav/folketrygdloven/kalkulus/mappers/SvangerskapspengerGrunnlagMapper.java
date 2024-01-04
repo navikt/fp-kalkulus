@@ -9,8 +9,6 @@ class SvangerskapspengerGrunnlagMapper {
     static SvangerskapspengerGrunnlag mapSvangerskapspengerGrunnlag(no.nav.folketrygdloven.kalkulus.beregning.v1.SvangerskapspengerGrunnlag svangerskapspengerGrunnlag) {
         SvangerskapspengerGrunnlag svpGrunnlag = new SvangerskapspengerGrunnlag(
                 UtbetalingsgradMapper.mapUtbetalingsgrad(svangerskapspengerGrunnlag.getUtbetalingsgradPrAktivitet()), svangerskapspengerGrunnlag.getTilkommetInntektHensyntasFom());
-        svpGrunnlag
-                .setGrunnbeløpMilitærHarKravPå(KonfigTjeneste.forYtelse(FagsakYtelseType.SVANGERSKAPSPENGER).getAntallGMilitærHarKravPå().intValue());
         return svpGrunnlag;
     }
 

@@ -16,8 +16,6 @@ public class ForeldrepengerGrunnlag implements YtelsespesifiktGrunnlag {
 
     private BesteberegningVurderingGrunnlag besteberegningVurderingGrunnlag;
 
-    private Integer grunnbeløpMilitærHarKravPå;
-
     /** Aktiviteter for gradering av uttak. */
     private AktivitetGradering aktivitetGradering = AktivitetGradering.INGEN_GRADERING;
 
@@ -55,17 +53,6 @@ public class ForeldrepengerGrunnlag implements YtelsespesifiktGrunnlag {
     public int getDekningsgrad() {
         return dekningsgrad;
     }
-
-    @Override
-    public int getGrunnbeløpMilitærHarKravPå() {
-        return grunnbeløpMilitærHarKravPå;
-    }
-
-    @Override
-    public void setGrunnbeløpMilitærHarKravPå(int grunnbeløpMilitærHarKravPå) {
-        this.grunnbeløpMilitærHarKravPå = grunnbeløpMilitærHarKravPå;
-    }
-
 
     public void setAktivitetGradering(AktivitetGradering aktivitetGradering) {
         this.aktivitetGradering = aktivitetGradering;
