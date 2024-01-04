@@ -77,6 +77,7 @@ public class FaktaArbeidsforholdDto {
                 ", arbeidsforholdRef=" + arbeidsforholdRef +
                 ", erTidsbegrenset=" + erTidsbegrenset +
                 ", harMottattYtelse=" + harMottattYtelse +
+                ", harLønnsendringIBeregningsperioden=" + harLønnsendringIBeregningsperioden +
                 '}';
     }
 

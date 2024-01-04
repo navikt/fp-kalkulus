@@ -69,7 +69,7 @@ public class LønnsendringSaksopplysningTjeneste {
                 .flatMap(ya -> ya.getAlleAktivitetsAvtaler().stream().map(AktivitetsAvtaleDto::getSisteLønnsendringsdato))
                 .filter(Objects::nonNull)
                 .filter(d -> d.isBefore(input.getSkjæringstidspunktForBeregning()))
-                .max(Comparator.naturalOrder()).orElseThrow();
+                .max(Comparator.naturalOrder()).orElseThrow(() -> new IllegalStateException("Fant ikke lønnsendring for " + arbeidsforhold + " før skjæringstidspunktet " + input.getSkjæringstidspunktForBeregning()));
     }
 
     private static ArbeidsforholdDto mapArbeidsforhold(BeregningsgrunnlagGUIInput input, FaktaArbeidsforholdDto arbeidsforhold, BeregningsgrunnlagPrStatusOgAndelDto andel) {
