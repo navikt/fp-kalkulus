@@ -6,7 +6,6 @@ package no.nav.folketrygdloven.kalkulus.kodeverk;
  * <p>
  */
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -15,14 +14,11 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
-@JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum ArbeidsforholdHandlingType implements Kodeverdi {
+public enum ArbeidsforholdHandlingType implements Kodeverdi, KontraktKode {
 
     UDEFINERT("-", "Udefinert"),
     BRUK("BRUK", "Bruk"),
@@ -40,8 +36,6 @@ public enum ArbeidsforholdHandlingType implements Kodeverdi {
 
     private static final Map<String, ArbeidsforholdHandlingType> KODER = new LinkedHashMap<>();
 
-    public static final String KODEVERK = "ARBEIDSFORHOLD_HANDLING_TYPE";
-
     static {
         for (var v : values()) {
             if (KODER.putIfAbsent(v.kode, v) != null) {
@@ -51,15 +45,12 @@ public enum ArbeidsforholdHandlingType implements Kodeverdi {
     }
 
     @JsonIgnore
-    private String navn;
+    private final String navn;
 
-    private String kode;
+    @JsonValue
+    private final String kode;
 
-    private ArbeidsforholdHandlingType(String kode) {
-        this.kode = kode;
-    }
-
-    private ArbeidsforholdHandlingType(String kode, String navn) {
+    ArbeidsforholdHandlingType(String kode, String navn) {
         this.kode = kode;
         this.navn = navn;
     }
@@ -77,22 +68,11 @@ public enum ArbeidsforholdHandlingType implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, ArbeidsforholdHandlingType> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
-
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
-    
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
-    }
-    
+
     public boolean erPeriodeOverstyrt() {
         return MED_OVERSTYRT_PERIODE.contains(this);
     }

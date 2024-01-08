@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = UttakArbeidType.class, name = UttakArbeidType.KODEVERK),
 })
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public abstract class Kodeverk {
+public sealed abstract class Kodeverk permits RelatertYtelseType, StegType, UtbetaltNæringsYtelseType, UtbetaltPensjonTrygdType, UtbetaltYtelseFraOffentligeType, UttakArbeidType {
 
     protected Kodeverk() {
         // default ctor

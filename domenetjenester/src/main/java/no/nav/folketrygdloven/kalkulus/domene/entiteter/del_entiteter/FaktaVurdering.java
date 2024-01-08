@@ -6,13 +6,10 @@ import java.util.Objects;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
-
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.FaktaVurderingKildeKodeverdiConverter;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.InntektskategoriKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.diff.ChangeTracked;
 import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseValue;
-import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaVurderingKilde;
 
 @Embeddable

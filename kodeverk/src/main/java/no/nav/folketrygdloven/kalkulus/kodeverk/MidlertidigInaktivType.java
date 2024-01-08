@@ -1,31 +1,29 @@
-package no.nav.folketrygdloven.kalkulus.opptjening.v1;
+package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import no.nav.folketrygdloven.kalkulus.kodeverk.Kodeverdi;
-import no.nav.folketrygdloven.kalkulus.kodeverk.TempAvledeKode;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public enum MidlertidigInaktivType implements Kodeverdi {
+public enum MidlertidigInaktivType implements Kodeverdi, KontraktKode {
 
     A("8-47 A"), B("8-47 B");
 
-    public static final String KODEVERK = "MIDLERTIDIG_INAKTIV_TYPE";
     private static final Map<String, MidlertidigInaktivType> KODER = new LinkedHashMap<>();
-
+    @JsonValue // TODO: Plain enum. Fjerne kode - krever at k9sak oppdaterer kontrakt ca samtidig.
     private String kode;
 
     static {
         for (var v : values()) {
             if (KODER.putIfAbsent(v.kode, v) != null) {
                 throw new IllegalArgumentException("Duplikat : " + v.kode);
+            }
+            if (KODER.putIfAbsent(v.name(), v) != null) {
+                throw new IllegalArgumentException("Duplikat : " + v.name());
             }
         }
     }
@@ -37,11 +35,6 @@ public enum MidlertidigInaktivType implements Kodeverdi {
     @Override
     public String getKode() {
         return kode;
-    }
-
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
     }
 
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)

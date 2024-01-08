@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -8,22 +7,18 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum FaktaVurderingKilde implements Kodeverdi {
+public enum FaktaVurderingKilde implements Kodeverdi, DatabaseKode {
 
-    SAKSBEHANDLER("SAKSBEHANDLER", "Saksbehandler"),
-    KALKULATOR("KALKULATOR", "Kalkulator"),
-    UDEFINERT("-", "Uspesifisert"),
+    SAKSBEHANDLER("SAKSBEHANDLER"),
+    KALKULATOR("KALKULATOR"),
+    UDEFINERT("-"),
     ;
 
     private static final Map<String, FaktaVurderingKilde> KODER = new LinkedHashMap<>();
 
-    public static final String KODEVERK = "FAKTA_VURDERING_KILDE";
 
     static {
         for (var v : values()) {
@@ -33,14 +28,11 @@ public enum FaktaVurderingKilde implements Kodeverdi {
         }
     }
 
-    @JsonIgnore
-    private String navn;
+    @JsonValue
+    private final String kode;
 
-    private String kode;
-
-    FaktaVurderingKilde(String kode, String navn) {
+    FaktaVurderingKilde(String kode) {
         this.kode = kode;
-        this.navn = navn;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -56,19 +48,13 @@ public enum FaktaVurderingKilde implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, FaktaVurderingKilde> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
-
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
 
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
+    public static FaktaVurderingKilde fraDatabaseKode(String databaseKode) {
+        return fraKode(databaseKode);
     }
+
 }

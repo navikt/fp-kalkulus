@@ -11,8 +11,8 @@ import java.util.Optional;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.kodeverk.MidlertidigInaktivType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
-import no.nav.folketrygdloven.kalkulus.opptjening.v1.MidlertidigInaktivType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 public class OpptjeningAktiviteterDto {

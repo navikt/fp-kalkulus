@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -8,39 +7,25 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum Utfall implements Kodeverdi {
+public enum Utfall implements Kodeverdi, DatabaseKode {
 
-    GODKJENT("GODKJENT", "Godkjent"),
-    UNDERKJENT("UNDERKJENT", "Underkjent"),
-    UDEFINERT("-", "Ingen Utfall (default)"),
+    GODKJENT,
+    UNDERKJENT,
+    UDEFINERT,
     ;
 
     private static final Map<String, Utfall> KODER = new LinkedHashMap<>();
 
-    public static final String KODEVERK = "REFUSJONSKRAV_FRIST_UTFALL";
-
     static {
+        KODER.putIfAbsent("-", UDEFINERT);
         for (var v : values()) {
-            if (KODER.putIfAbsent(v.kode, v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.kode);
+            if (KODER.putIfAbsent(v.name(), v) != null) {
+                throw new IllegalArgumentException("Duplikat : " + v.name());
             }
         }
-    }
-
-    @JsonIgnore
-    private String navn;
-
-    private String kode;
-
-    Utfall(String kode, String navn) {
-        this.kode = kode;
-        this.navn = navn;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -56,19 +41,20 @@ public enum Utfall implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, Utfall> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
-
-    @JsonProperty
     @Override
+    @JsonValue
     public String getKode() {
-        return kode;
+        return this == UDEFINERT ? "-" : name();
     }
 
-    @JsonProperty
     @Override
-    public String getKodeverk() {
-        return KODEVERK;
+    public String getDatabaseKode() {
+        return this == UDEFINERT ? "-" : name();
     }
+
+
+    public static Utfall fraDatabaseKode(String databaseKode) {
+        return fraKode(databaseKode);
+    }
+
 }

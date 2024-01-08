@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -11,37 +10,33 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum AktivitetStatus implements Kodeverdi {
+public enum AktivitetStatus implements Kodeverdi, DatabaseKode, KontraktKode {
 
-    MIDLERTIDIG_INAKTIV("MIDL_INAKTIV", "Midlertidig inaktiv", Inntektskategori.UDEFINERT),
-    ARBEIDSAVKLARINGSPENGER("AAP", "Arbeidsavklaringspenger", Inntektskategori.ARBEIDSAVKLARINGSPENGER),
-    ARBEIDSTAKER("AT", "Arbeidstaker", Inntektskategori.ARBEIDSTAKER),
-    DAGPENGER("DP", "Dagpenger", Inntektskategori.DAGPENGER),
-    SYKEPENGER_AV_DAGPENGER("SP_AV_DP", "Sykepenger av dagpenger", Inntektskategori.DAGPENGER),
-    PLEIEPENGER_AV_DAGPENGER("PSB_AV_DP", "Pleiepenger av dagpenger", Inntektskategori.DAGPENGER),
-    FRILANSER("FL", "Frilanser", Inntektskategori.FRILANSER),
-    MILITÆR_ELLER_SIVIL("MS", "Militær eller sivil", Inntektskategori.ARBEIDSTAKER),
-    SELVSTENDIG_NÆRINGSDRIVENDE("SN", "Selvstendig næringsdrivende", Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE),
-    KOMBINERT_AT_FL("AT_FL", "Kombinert arbeidstaker og frilanser", Inntektskategori.UDEFINERT),
-    KOMBINERT_AT_SN("AT_SN", "Kombinert arbeidstaker og selvstendig næringsdrivende", Inntektskategori.UDEFINERT),
-    KOMBINERT_FL_SN("FL_SN", "Kombinert frilanser og selvstendig næringsdrivende", Inntektskategori.UDEFINERT),
-    KOMBINERT_AT_FL_SN("AT_FL_SN", "Kombinert arbeidstaker, frilanser og selvstendig næringsdrivende", Inntektskategori.UDEFINERT),
-    BRUKERS_ANDEL("BA", "Brukers andel", Inntektskategori.UDEFINERT),
-    KUN_YTELSE("KUN_YTELSE", "Kun ytelse", Inntektskategori.UDEFINERT),
+    MIDLERTIDIG_INAKTIV("MIDL_INAKTIV", Inntektskategori.UDEFINERT),
+    ARBEIDSAVKLARINGSPENGER("AAP", Inntektskategori.ARBEIDSAVKLARINGSPENGER),
+    ARBEIDSTAKER("AT", Inntektskategori.ARBEIDSTAKER),
+    DAGPENGER("DP", Inntektskategori.DAGPENGER),
+    SYKEPENGER_AV_DAGPENGER("SP_AV_DP", Inntektskategori.DAGPENGER),
+    PLEIEPENGER_AV_DAGPENGER("PSB_AV_DP", Inntektskategori.DAGPENGER),
+    FRILANSER("FL", Inntektskategori.FRILANSER),
+    MILITÆR_ELLER_SIVIL("MS", Inntektskategori.ARBEIDSTAKER),
+    SELVSTENDIG_NÆRINGSDRIVENDE("SN", Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE),
+    KOMBINERT_AT_FL("AT_FL", Inntektskategori.UDEFINERT),
+    KOMBINERT_AT_SN("AT_SN", Inntektskategori.UDEFINERT),
+    KOMBINERT_FL_SN("FL_SN", Inntektskategori.UDEFINERT),
+    KOMBINERT_AT_FL_SN("AT_FL_SN", Inntektskategori.UDEFINERT),
+    BRUKERS_ANDEL("BA", Inntektskategori.UDEFINERT),
+    KUN_YTELSE("KUN_YTELSE", Inntektskategori.UDEFINERT),
 
-    TTLSTØTENDE_YTELSE("TY", "Tilstøtende ytelse", Inntektskategori.UDEFINERT),
-    VENTELØNN_VARTPENGER("VENTELØNN_VARTPENGER", "Ventelønn/Vartpenger", Inntektskategori.UDEFINERT),
+    TTLSTØTENDE_YTELSE("TY", Inntektskategori.UDEFINERT),
+    VENTELØNN_VARTPENGER("VENTELØNN_VARTPENGER", Inntektskategori.UDEFINERT),
 
-    UDEFINERT("-", "Ikke definert", Inntektskategori.UDEFINERT);
-
-    public static final String KODEVERK = "AKTIVITET_STATUS";
+    UDEFINERT("-", Inntektskategori.UDEFINERT);
 
     private static final Map<String, AktivitetStatus> KODER = new LinkedHashMap<>();
 
@@ -53,17 +48,14 @@ public enum AktivitetStatus implements Kodeverdi {
         }
     }
 
-    @JsonIgnore
-    private String navn;
-
-    private String kode;
+    @JsonValue
+    private final String kode;
 
     @JsonIgnore
-    private Inntektskategori inntektskategori;
+    private final Inntektskategori inntektskategori;
 
-    AktivitetStatus(String kode, String navn, Inntektskategori inntektskategori) {
+    AktivitetStatus(String kode, Inntektskategori inntektskategori) {
         this.kode = kode;
-        this.navn = navn;
         this.inntektskategori = inntektskategori;
     }
 
@@ -80,18 +72,15 @@ public enum AktivitetStatus implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, AktivitetStatus> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
 
     private static final Set<AktivitetStatus> AT_STATUSER = new HashSet<>(Arrays.asList(ARBEIDSTAKER,
-        KOMBINERT_AT_FL_SN, KOMBINERT_AT_SN, KOMBINERT_AT_FL));
+            KOMBINERT_AT_FL_SN, KOMBINERT_AT_SN, KOMBINERT_AT_FL));
 
     private static final Set<AktivitetStatus> SN_STATUSER = new HashSet<>(Arrays.asList(SELVSTENDIG_NÆRINGSDRIVENDE,
-        KOMBINERT_AT_FL_SN, KOMBINERT_AT_SN, KOMBINERT_FL_SN));
+            KOMBINERT_AT_FL_SN, KOMBINERT_AT_SN, KOMBINERT_FL_SN));
 
     private static final Set<AktivitetStatus> FL_STATUSER = new HashSet<>(Arrays.asList(FRILANSER,
-        KOMBINERT_AT_FL_SN, KOMBINERT_AT_FL, KOMBINERT_FL_SN));
+            KOMBINERT_AT_FL_SN, KOMBINERT_AT_FL, KOMBINERT_FL_SN));
 
     private static final Set<AktivitetStatus> DP_STATUSER = new HashSet<>(Arrays.asList(DAGPENGER, SYKEPENGER_AV_DAGPENGER, PLEIEPENGER_AV_DAGPENGER));
 
@@ -111,20 +100,13 @@ public enum AktivitetStatus implements Kodeverdi {
         return DP_STATUSER.contains(this);
     }
 
-    public String getNavn() {
-        return navn;
-    }
-
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
 
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
+    public static AktivitetStatus fraDatabaseKode(String databaseKode) {
+        return fraKode(databaseKode);
     }
 
     public Inntektskategori getInntektskategori() {

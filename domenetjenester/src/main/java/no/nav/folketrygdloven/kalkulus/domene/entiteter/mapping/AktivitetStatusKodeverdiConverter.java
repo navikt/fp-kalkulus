@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
 @Converter(autoApply = true)
@@ -10,11 +9,13 @@ public class AktivitetStatusKodeverdiConverter implements AttributeConverter<Akt
 
     @Override
     public String convertToDatabaseColumn(AktivitetStatus attribute) {
-        return attribute == null ? null : attribute.getKode();
+        return attribute == null ? null : AktivitetStatus.UDEFINERT.equals(attribute) ?
+                KodeKonstanter.UDEFINERT : attribute.getDatabaseKode();
     }
 
     @Override
     public AktivitetStatus convertToEntityAttribute(String dbData) {
-        return dbData == null ? null : AktivitetStatus.fraKode(dbData);
+        return dbData == null ? null : KodeKonstanter.UDEFINERT.equals(dbData) ?
+                AktivitetStatus.UDEFINERT : AktivitetStatus.fraDatabaseKode(dbData);
     }
 }

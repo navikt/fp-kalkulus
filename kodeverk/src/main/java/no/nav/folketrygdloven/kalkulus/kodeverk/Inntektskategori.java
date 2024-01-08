@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -8,30 +7,25 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum Inntektskategori implements Kodeverdi {
+public enum Inntektskategori implements Kodeverdi, DatabaseKode, KontraktKode {
 
-    ARBEIDSTAKER("ARBEIDSTAKER", "Arbeidstaker"),
-    FRILANSER("FRILANSER", "Frilans"),
-    SELVSTENDIG_NÆRINGSDRIVENDE("SELVSTENDIG_NÆRINGSDRIVENDE", "Selvstendig næringsdrivende"),
-    DAGPENGER("DAGPENGER", "Dagpenger"),
-    ARBEIDSAVKLARINGSPENGER("ARBEIDSAVKLARINGSPENGER", "Arbeidsavklaringspenger"),
-    SJØMANN("SJØMANN", "Arbeidstaker - Sjømann"),
-    DAGMAMMA("DAGMAMMA", "Selvstendig næringsdrivende (dagmamma)"),
-    JORDBRUKER("JORDBRUKER", "Selvstendig næringsdrivende - Jordbruker"),
-    FISKER("FISKER", "Selvstendig næringsdrivende (fisker)"),
-    ARBEIDSTAKER_UTEN_FERIEPENGER("ARBEIDSTAKER_UTEN_FERIEPENGER", "Arbeidstaker uten feriepenger"),
-    UDEFINERT("-", "Ingen inntektskategori (default)"),
+    ARBEIDSTAKER("ARBEIDSTAKER"),
+    FRILANSER("FRILANSER"),
+    SELVSTENDIG_NÆRINGSDRIVENDE("SELVSTENDIG_NÆRINGSDRIVENDE"),
+    DAGPENGER("DAGPENGER"),
+    ARBEIDSAVKLARINGSPENGER("ARBEIDSAVKLARINGSPENGER"),
+    SJØMANN("SJØMANN"),
+    DAGMAMMA("DAGMAMMA"),
+    JORDBRUKER("JORDBRUKER"),
+    FISKER("FISKER"),
+    ARBEIDSTAKER_UTEN_FERIEPENGER("ARBEIDSTAKER_UTEN_FERIEPENGER"),
+    UDEFINERT("-"),
     ;
 
     private static final Map<String, Inntektskategori> KODER = new LinkedHashMap<>();
-
-    public static final String KODEVERK = "INNTEKTSKATEGORI";
 
     static {
         for (var v : values()) {
@@ -41,14 +35,11 @@ public enum Inntektskategori implements Kodeverdi {
         }
     }
 
-    @JsonIgnore
-    private String navn;
+    @JsonValue
+    private final String kode;
 
-    private String kode;
-
-    Inntektskategori(String kode, String navn) {
+    Inntektskategori(String kode) {
         this.kode = kode;
-        this.navn = navn;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -64,19 +55,13 @@ public enum Inntektskategori implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, Inntektskategori> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
-
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
 
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
+    public static Inntektskategori fraDatabaseKode(String databaseKode) {
+        return fraKode(databaseKode);
     }
+
 }

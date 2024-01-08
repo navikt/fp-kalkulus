@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.felles.frist;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-import no.nav.folketrygdloven.kalkulator.felles.frist.KravOgUtfall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateSegmentCombinator;

@@ -16,6 +16,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = UtbetaltPensjonTrygdType.class, name = UtbetaltPensjonTrygdType.KODEVERK),
         @JsonSubTypes.Type(value = UtbetaltNæringsYtelseType.class, name = UtbetaltNæringsYtelseType.KODEVERK),
 })
-public interface UtbetaltYtelseType {
+public sealed interface UtbetaltYtelseType permits UtbetaltYtelseFraOffentligeType, UtbetaltPensjonTrygdType, UtbetaltNæringsYtelseType{
 
 }

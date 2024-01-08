@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -8,14 +7,12 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum LønnsendringScenario implements Kodeverdi {
+public enum LønnsendringScenario implements Kodeverdi, KontraktKode {
 
     MANUELT_BEHANDLET("MANUELT_BEHANDLET", "Inntekt er manuelt satt i fakta om beregning"),
     DELVIS_MÅNEDSINNTEKT_SISTE_MND("DELVIS_MÅNEDSINNTEKT_SISTE_MND", "Inntekt er beregnet fra siste måned som har delvis ny og gammel inntekt"),
@@ -24,8 +21,6 @@ public enum LønnsendringScenario implements Kodeverdi {
 
     ;
     private static final Map<String, LønnsendringScenario> KODER = new LinkedHashMap<>();
-
-    public static final String KODEVERK = "LONNSENDRING_SCENARIO";
 
     static {
         for (var v : values()) {
@@ -36,9 +31,9 @@ public enum LønnsendringScenario implements Kodeverdi {
     }
 
     @JsonIgnore
-    private String navn;
-
-    private String kode;
+    private final String navn;
+    @JsonValue
+    private final String kode;
 
     LønnsendringScenario(String kode, String navn) {
         this.kode = kode;
@@ -58,19 +53,9 @@ public enum LønnsendringScenario implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, LønnsendringScenario> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
-
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
 
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
-    }
 }

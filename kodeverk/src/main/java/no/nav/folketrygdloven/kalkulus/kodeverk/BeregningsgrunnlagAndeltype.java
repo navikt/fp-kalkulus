@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -8,22 +7,17 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum BeregningsgrunnlagAndeltype implements Kodeverdi {
-    BRUKERS_ANDEL("BRUKERS_ANDEL", "Brukers andel"),
-    EGEN_NÆRING("EGEN_NÆRING", "Egen næring"),
-    FRILANS("FRILANS", "Frilans"),
-    UDEFINERT("-", "Ikke definert"),
+    BRUKERS_ANDEL("BRUKERS_ANDEL"),
+    EGEN_NÆRING("EGEN_NÆRING"),
+    FRILANS("FRILANS"),
+    UDEFINERT("-"),
     ;
     private static final Map<String, BeregningsgrunnlagAndeltype> KODER = new LinkedHashMap<>();
-
-    public static final String KODEVERK = "BEREGNINGSGRUNNLAG_ANDELTYPE";
 
     static {
         for (var v : values()) {
@@ -33,14 +27,11 @@ public enum BeregningsgrunnlagAndeltype implements Kodeverdi {
         }
     }
 
-    @JsonIgnore
-    private String navn;
+    @JsonValue
+    private final String kode;
 
-    private String kode;
-
-    BeregningsgrunnlagAndeltype(String kode, String navn) {
+    BeregningsgrunnlagAndeltype(String kode) {
         this.kode = kode;
-        this.navn = navn;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -55,20 +46,10 @@ public enum BeregningsgrunnlagAndeltype implements Kodeverdi {
         }
         return ad;
     }
-    
-    public static Map<String, BeregningsgrunnlagAndeltype> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
 
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
-    
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
-    }
+
 }

@@ -1,22 +1,18 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
+import com.fasterxml.jackson.annotation.JsonValue;
 
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public enum LønnsinntektBeskrivelse implements Kodeverdi {
-    KOMMUNAL_OMSORGSLOENN_OG_FOSTERHJEMSGODTGJOERELSE("KOMMUNAL_OMSORGSLOENN_OG_FOSTERHJEMSGODTGJOERELSE", "Kommunal omsorgslønn og fosterhjemsgodtgjørelse", "kommunalOmsorgsloennOgFosterhjemsgodtgjoerelse"),
-    UDEFINERT("-", "Udefinert", null),
+public enum LønnsinntektBeskrivelse implements Kodeverdi, KontraktKode {
+    KOMMUNAL_OMSORGSLOENN_OG_FOSTERHJEMSGODTGJOERELSE("KOMMUNAL_OMSORGSLOENN_OG_FOSTERHJEMSGODTGJOERELSE"),
+    UDEFINERT("-"),
     ;
-    public static final String KODEVERK = "LONNSINNTEKT_BESKRIVELSE";
     private static final Map<String, LønnsinntektBeskrivelse> KODER = new LinkedHashMap<>();
 
     static {
@@ -27,22 +23,15 @@ public enum LønnsinntektBeskrivelse implements Kodeverdi {
         }
     }
 
-    @JsonIgnore
-    private String navn;
-
-    @JsonIgnore
-    private String offisiellKode;
-
-    private String kode;
+    @JsonValue
+    private final String kode;
 
 
-    private LønnsinntektBeskrivelse(String kode, String navn, String offisiellKode) {
+    LønnsinntektBeskrivelse(String kode) {
         this.kode = kode;
-        this.navn = navn;
-        this.offisiellKode = offisiellKode;
     }
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+    @JsonCreator(mode = Mode.DELEGATING)
     public static LønnsinntektBeskrivelse fraKode(Object node) {
         if (node == null) {
             return null;
@@ -55,16 +44,6 @@ public enum LønnsinntektBeskrivelse implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, LønnsinntektBeskrivelse> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
-
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
-    }
-
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;

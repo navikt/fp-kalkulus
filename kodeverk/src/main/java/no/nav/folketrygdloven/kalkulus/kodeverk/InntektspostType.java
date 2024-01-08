@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -8,27 +7,21 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 
-@JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum InntektspostType implements Kodeverdi {
+public enum InntektspostType implements Kodeverdi, KontraktKode {
 
-    UDEFINERT("-", "Ikke definert", null),
-    LØNN("LØNN", "Lønn", "LONN"),
-    YTELSE("YTELSE", "Ytelse", "YTELSE"),
-    VANLIG("VANLIG", "Vanlig", "VANLIG"),
-    SELVSTENDIG_NÆRINGSDRIVENDE("SELVSTENDIG_NÆRINGSDRIVENDE", "Selvstendig næringsdrivende", "-"),
-    NÆRING_FISKE_FANGST_FAMBARNEHAGE("NÆRING_FISKE_FANGST_FAMBARNEHAGE", "Jordbruk/Skogbruk/Fiske/FamilieBarnehage", "personinntektFiskeFangstFamilebarnehage"),
-            ;
+    UDEFINERT("-"),
+    LØNN("LØNN"),
+    YTELSE("YTELSE"),
+    VANLIG("VANLIG"),
+    SELVSTENDIG_NÆRINGSDRIVENDE("SELVSTENDIG_NÆRINGSDRIVENDE"),
+    NÆRING_FISKE_FANGST_FAMBARNEHAGE("NÆRING_FISKE_FANGST_FAMBARNEHAGE"),
+    ;
 
     private static final Map<String, InntektspostType> KODER = new LinkedHashMap<>();
-
-    public static final String KODEVERK = "INNTEKTSPOST_TYPE";
 
     static {
         for (var v : values()) {
@@ -38,21 +31,11 @@ public enum InntektspostType implements Kodeverdi {
         }
     }
 
-    @JsonIgnore
-    private String navn;
+    @JsonValue
+    private final String kode;
 
-    private String kode;
-    @JsonIgnore
-    private String offisiellKode;
-
-    private InntektspostType(String kode) {
+    InntektspostType(String kode) {
         this.kode = kode;
-    }
-
-    private InntektspostType(String kode, String navn, String offisiellKode) {
-        this.kode = kode;
-        this.navn = navn;
-        this.offisiellKode = offisiellKode;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -68,19 +51,9 @@ public enum InntektspostType implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, InntektspostType> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
-
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
-    
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
-    }
+
 }

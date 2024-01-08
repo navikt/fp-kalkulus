@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -8,20 +7,16 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum BeregningSatsType implements Kodeverdi {
-    ENGANG("ENGANG", "Engangsstønad"),
-    GRUNNBELØP("GRUNNBELØP", "Grunnbeløp"),
-    GSNITT("GSNITT", "Grunnbeløp årsgjennomsnitt"),
-    UDEFINERT("-", "Ikke definert"),
+public enum BeregningSatsType implements Kodeverdi, DatabaseKode {
+    ENGANG("ENGANG"),
+    GRUNNBELØP("GRUNNBELØP"),
+    GSNITT("GSNITT"),
+    UDEFINERT("-"),
     ;
-    public static final String KODEVERK = "SATS_TYPE";
 
     private static final Map<String, BeregningSatsType> KODER = new LinkedHashMap<>();
 
@@ -33,14 +28,11 @@ public enum BeregningSatsType implements Kodeverdi {
         }
     }
 
-    @JsonIgnore
-    private String navn;
-
+    @JsonValue
     private String kode;
 
-    BeregningSatsType(String kode, String navn) {
+    BeregningSatsType(String kode) {
         this.kode = kode;
-        this.navn = navn;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -56,19 +48,13 @@ public enum BeregningSatsType implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, BeregningSatsType> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
-
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
-    
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
+
+    public static BeregningSatsType fraDatabaseKode(String databaseKode) {
+        return fraKode(databaseKode);
     }
+
 }

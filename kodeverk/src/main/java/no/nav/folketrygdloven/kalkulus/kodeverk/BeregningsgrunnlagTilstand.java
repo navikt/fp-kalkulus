@@ -10,35 +10,32 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum BeregningsgrunnlagTilstand implements Kodeverdi {
+public enum BeregningsgrunnlagTilstand implements Kodeverdi, DatabaseKode, KontraktKode {
 
-    OPPRETTET("OPPRETTET", "Opprettet", true),
-    FASTSATT_BEREGNINGSAKTIVITETER("FASTSATT_BEREGNINGSAKTIVITETER", "Fastsatt beregningsaktiviteter", false),
-    OPPDATERT_MED_ANDELER("OPPDATERT_MED_ANDELER", "Oppdatert med andeler", true),
-    KOFAKBER_UT("KOFAKBER_UT", "Kontroller fakta beregningsgrunnlag - Ut", false),
-    BESTEBEREGNET("BESTEBEREGNET", "Besteberegnet", false),
-    FORESLÅTT("FORESLÅTT", "Foreslått", true),
-    FORESLÅTT_UT("FORESLÅTT_UT", "Foreslått ut", false),
-    FORESLÅTT_2("FORESLÅTT_DEL_2", "Foreslått del 2 ut", false),
-    FORESLÅTT_2_UT("FORESLÅTT_DEL_2_UT", "Foreslått del 2 ut", false),
-    VURDERT_VILKÅR("VURDERT_VILKÅR", "Vurder beregning beregningsgrunnlagvilkår", true),
-    VURDERT_TILKOMMET_INNTEKT("VURDERT_TILKOMMET_INNTEKT", "Vurder tilkommet inntekt", false),
-    VURDERT_TILKOMMET_INNTEKT_UT("VURDERT_TILKOMMET_INNTEKT_UT", "Vurder tilkommet inntekt - UT", false),
-    VURDERT_REFUSJON("VURDERT_REFUSJON", "Vurder refusjonskrav beregning", true),
-    VURDERT_REFUSJON_UT("VURDERT_REFUSJON_UT", "Vurder refusjonskrav beregning - Ut", false),
-    OPPDATERT_MED_REFUSJON_OG_GRADERING("OPPDATERT_MED_REFUSJON_OG_GRADERING", "Tilstand for splittet periode med refusjon og gradering", true),
-    FASTSATT_INN("FASTSATT_INN", "Fastsatt - Inn", false),
-    FASTSATT("FASTSATT", "Fastsatt", true),
-    UDEFINERT("-", "Ikke definert", false),
+    OPPRETTET("OPPRETTET", true),
+    FASTSATT_BEREGNINGSAKTIVITETER("FASTSATT_BEREGNINGSAKTIVITETER", false),
+    OPPDATERT_MED_ANDELER("OPPDATERT_MED_ANDELER", true),
+    KOFAKBER_UT("KOFAKBER_UT", false),
+    BESTEBEREGNET("BESTEBEREGNET", false),
+    FORESLÅTT("FORESLÅTT", true),
+    FORESLÅTT_UT("FORESLÅTT_UT", false),
+    FORESLÅTT_2("FORESLÅTT_DEL_2", false),
+    FORESLÅTT_2_UT("FORESLÅTT_DEL_2_UT", false),
+    VURDERT_VILKÅR("VURDERT_VILKÅR", true),
+    VURDERT_TILKOMMET_INNTEKT("VURDERT_TILKOMMET_INNTEKT", false),
+    VURDERT_TILKOMMET_INNTEKT_UT("VURDERT_TILKOMMET_INNTEKT_UT", false),
+    VURDERT_REFUSJON("VURDERT_REFUSJON", true),
+    VURDERT_REFUSJON_UT("VURDERT_REFUSJON_UT", false),
+    OPPDATERT_MED_REFUSJON_OG_GRADERING("OPPDATERT_MED_REFUSJON_OG_GRADERING", true),
+    FASTSATT_INN("FASTSATT_INN", false),
+    FASTSATT("FASTSATT", true),
+    UDEFINERT("-", false),
     ;
-    public static final String KODEVERK = "BEREGNINGSGRUNNLAG_TILSTAND";
 
     private static final Map<String, BeregningsgrunnlagTilstand> KODER = new LinkedHashMap<>();
 
@@ -75,16 +72,14 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi {
         }
     }
 
-    @JsonIgnore
-    private String navn;
-    private String kode;
+    @JsonValue
+    private final String kode;
 
     @JsonIgnore
-    private boolean obligatoriskTilstand;
+    private final boolean obligatoriskTilstand;
 
-    BeregningsgrunnlagTilstand(String kode, String navn, boolean obligatoriskTilstand) {
+    BeregningsgrunnlagTilstand(String kode, boolean obligatoriskTilstand) {
         this.kode = kode;
-        this.navn = navn;
         this.obligatoriskTilstand = obligatoriskTilstand;
     }
 
@@ -103,10 +98,6 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi {
             throw new IllegalArgumentException("Ukjent BeregningsgrunnlagTilstand: " + kode);
         }
         return ad;
-    }
-
-    public static Map<String, BeregningsgrunnlagTilstand> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
     }
 
     public static BeregningsgrunnlagTilstand finnFørste() {
@@ -158,17 +149,15 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi {
         return thisIndex > thatIndex;
     }
 
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
 
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
+    public static BeregningsgrunnlagTilstand fraDatabaseKode(String databaseKode) {
+        return fraKode(databaseKode);
     }
+
 
     public boolean erObligatoriskTilstand() {
         return this.obligatoriskTilstand;

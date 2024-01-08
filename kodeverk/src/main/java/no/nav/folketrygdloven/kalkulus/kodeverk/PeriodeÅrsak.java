@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -8,37 +7,31 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 
-@JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum PeriodeÅrsak implements Kodeverdi {
+public enum PeriodeÅrsak implements Kodeverdi, DatabaseKode, KontraktKode {
 
-    NATURALYTELSE_BORTFALT("NATURALYTELSE_BORTFALT", "Naturalytelse bortfalt"),
-    ARBEIDSFORHOLD_AVSLUTTET("ARBEIDSFORHOLD_AVSLUTTET", "Arbeidsforhold avsluttet"),
-    NATURALYTELSE_TILKOMMER("NATURALYTELSE_TILKOMMER", "Naturalytelse tilkommer"),
-    ENDRING_I_REFUSJONSKRAV("ENDRING_I_REFUSJONSKRAV", "Endring i refusjonskrav"),
-    REFUSJON_OPPHØRER("REFUSJON_OPPHØRER", "Refusjon opphører"),
-    GRADERING("GRADERING", "Gradering"),
-    GRADERING_OPPHØRER("GRADERING_OPPHØRER", "Gradering opphører"),
-    ENDRING_I_AKTIVITETER_SØKT_FOR("ENDRING_I_AKTIVITETER_SØKT_FOR", "Endring i aktiviteter søkt for"),
-    TILKOMMET_INNTEKT("TILKOMMET_INNTEKT", "Tilkommet inntekt"),
-    TILKOMMET_INNTEKT_MANUELT("TILKOMMET_INNTEKT_MANUELT", "Tilkommet inntekt manuelt vurdert"),
-    TILKOMMET_INNTEKT_AVSLUTTET("TILKOMMET_INNTEKT_AVSLUTTET", "Tilkommet inntekt"),
-    REFUSJON_AVSLÅTT("REFUSJON_AVSLÅTT", "Refusjon avslått"),
-    REPRESENTERER_STORTINGET("REPRESENTERER_STORTINGET", "Representerer Stortinget"),
-    REPRESENTERER_STORTINGET_AVSLUTTET("REPRESENTERER_STORTINGET_AVSLUTTET", "Representerer Stortinget"),
+    NATURALYTELSE_BORTFALT("NATURALYTELSE_BORTFALT"),
+    ARBEIDSFORHOLD_AVSLUTTET("ARBEIDSFORHOLD_AVSLUTTET"),
+    NATURALYTELSE_TILKOMMER("NATURALYTELSE_TILKOMMER"),
+    ENDRING_I_REFUSJONSKRAV("ENDRING_I_REFUSJONSKRAV"),
+    REFUSJON_OPPHØRER("REFUSJON_OPPHØRER"),
+    GRADERING("GRADERING"),
+    GRADERING_OPPHØRER("GRADERING_OPPHØRER"),
+    ENDRING_I_AKTIVITETER_SØKT_FOR("ENDRING_I_AKTIVITETER_SØKT_FOR"),
+    TILKOMMET_INNTEKT("TILKOMMET_INNTEKT"),
+    TILKOMMET_INNTEKT_MANUELT("TILKOMMET_INNTEKT_MANUELT"),
+    TILKOMMET_INNTEKT_AVSLUTTET("TILKOMMET_INNTEKT_AVSLUTTET"),
+    REFUSJON_AVSLÅTT("REFUSJON_AVSLÅTT"),
+    REPRESENTERER_STORTINGET("REPRESENTERER_STORTINGET"),
+    REPRESENTERER_STORTINGET_AVSLUTTET("REPRESENTERER_STORTINGET_AVSLUTTET"),
 
-    UDEFINERT("-", "Ikke definert"),
+    UDEFINERT("-"),
     ;
 
     private static final Map<String, PeriodeÅrsak> KODER = new LinkedHashMap<>();
-
-    public static final String KODEVERK = "PERIODE_AARSAK";
 
     static {
         for (var v : values()) {
@@ -48,18 +41,11 @@ public enum PeriodeÅrsak implements Kodeverdi {
         }
     }
 
-    @JsonIgnore
-    private String navn;
+    @JsonValue
+    private final String kode;
 
-    private String kode;
-
-    private PeriodeÅrsak(String kode) {
+    PeriodeÅrsak(String kode) {
         this.kode = kode;
-    }
-
-    private PeriodeÅrsak(String kode, String navn) {
-        this.kode = kode;
-        this.navn = navn;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -75,19 +61,14 @@ public enum PeriodeÅrsak implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, PeriodeÅrsak> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
 
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
 
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
+    public static PeriodeÅrsak fraDatabaseKode(String databaseKode) {
+        return fraKode(databaseKode);
     }
+
 }

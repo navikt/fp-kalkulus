@@ -15,7 +15,7 @@ package no.nav.folketrygdloven.kalkulus.kodeverk;
  * <li></li>
  * </ul>
  */
-import java.util.Collections;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -24,39 +24,34 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 
-@JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum ArbeidType implements Kodeverdi {
+public enum ArbeidType implements Kodeverdi, KontraktKode {
 
-    ETTERLØNN_SLUTTPAKKE("ETTERLØNN_SLUTTPAKKE", "Etterlønn eller sluttpakke", null),
-    FORENKLET_OPPGJØRSORDNING("FORENKLET_OPPGJØRSORDNING", "Forenklet oppgjørsordning ", "forenkletOppgjoersordning"),
-    FRILANSER("FRILANSER", "Frilanser, samlet aktivitet", null),
-    FRILANSER_OPPDRAGSTAKER_MED_MER("FRILANSER_OPPDRAGSTAKER", "Frilansere/oppdragstakere, med mer", "frilanserOppdragstakerHonorarPersonerMm"),
-    LØNN_UNDER_UTDANNING("LØNN_UNDER_UTDANNING", "Lønn under utdanning", null),
-    MARITIMT_ARBEIDSFORHOLD("MARITIMT_ARBEIDSFORHOLD", "Maritimt arbeidsforhold", "maritimtArbeidsforhold"),
-    MILITÆR_ELLER_SIVILTJENESTE("MILITÆR_ELLER_SIVILTJENESTE", "Militær eller siviltjeneste", null),
-    ORDINÆRT_ARBEIDSFORHOLD("ORDINÆRT_ARBEIDSFORHOLD", "Ordinært arbeidsforhold", "ordinaertArbeidsforhold"),
-    PENSJON_OG_ANDRE_TYPER_YTELSER_UTEN_ANSETTELSESFORHOLD("PENSJON_OG_ANDRE_TYPER_YTELSER_UTEN_ANSETTELSESFORHOLD", "Pensjoner og andre typer ytelser",
-            "pensjonOgAndreTyperYtelserUtenAnsettelsesforhold"),
-    SELVSTENDIG_NÆRINGSDRIVENDE("NÆRING", "Selvstendig næringsdrivende", null),
-    UTENLANDSK_ARBEIDSFORHOLD("UTENLANDSK_ARBEIDSFORHOLD", "Arbeid i utlandet", null),
-    VENTELØNN_VARTPENGER("VENTELØNN_VARTPENGER", "Ventelønn eller vartpenger", null),
-    VANLIG("VANLIG", "Vanlig", "VANLIG"),
-    UDEFINERT("-", "Ikke definert", null),
+    ETTERLØNN_SLUTTPAKKE("ETTERLØNN_SLUTTPAKKE", "Etterlønn eller sluttpakke"),
+    FORENKLET_OPPGJØRSORDNING("FORENKLET_OPPGJØRSORDNING", "Forenklet oppgjørsordning "),
+    FRILANSER("FRILANSER", "Frilanser, samlet aktivitet"),
+    FRILANSER_OPPDRAGSTAKER_MED_MER("FRILANSER_OPPDRAGSTAKER", "Frilansere/oppdragstakere, med mer"),
+    LØNN_UNDER_UTDANNING("LØNN_UNDER_UTDANNING", "Lønn under utdanning"),
+    MARITIMT_ARBEIDSFORHOLD("MARITIMT_ARBEIDSFORHOLD", "Maritimt arbeidsforhold"),
+    MILITÆR_ELLER_SIVILTJENESTE("MILITÆR_ELLER_SIVILTJENESTE", "Militær eller siviltjeneste"),
+    ORDINÆRT_ARBEIDSFORHOLD("ORDINÆRT_ARBEIDSFORHOLD", "Ordinært arbeidsforhold"),
+    PENSJON_OG_ANDRE_TYPER_YTELSER_UTEN_ANSETTELSESFORHOLD("PENSJON_OG_ANDRE_TYPER_YTELSER_UTEN_ANSETTELSESFORHOLD", "Pensjoner og andre typer ytelser"
+    ),
+    SELVSTENDIG_NÆRINGSDRIVENDE("NÆRING", "Selvstendig næringsdrivende"),
+    UTENLANDSK_ARBEIDSFORHOLD("UTENLANDSK_ARBEIDSFORHOLD", "Arbeid i utlandet"),
+    VENTELØNN_VARTPENGER("VENTELØNN_VARTPENGER", "Ventelønn eller vartpenger"),
+    VANLIG("VANLIG", "Vanlig"),
+    UDEFINERT("-", "Ikke definert"),
     ;
 
     public static final Set<ArbeidType> AA_REGISTER_TYPER = Set.of(
-        ArbeidType.ORDINÆRT_ARBEIDSFORHOLD,
-        ArbeidType.MARITIMT_ARBEIDSFORHOLD,
-        ArbeidType.FORENKLET_OPPGJØRSORDNING);
-
-    public static final String KODEVERK = "ARBEID_TYPE";
+            ArbeidType.ORDINÆRT_ARBEIDSFORHOLD,
+            ArbeidType.MARITIMT_ARBEIDSFORHOLD,
+            ArbeidType.FORENKLET_OPPGJØRSORDNING);
 
     private static final Map<String, ArbeidType> KODER = new LinkedHashMap<>();
 
@@ -68,18 +63,15 @@ public enum ArbeidType implements Kodeverdi {
         }
     }
 
-    private String kode;
+    @JsonValue
+    private final String kode;
 
     @JsonIgnore
-    private String navn;
+    private final String navn;
 
-    @JsonIgnore
-    private String offisiellKode;
-
-    ArbeidType(String kode, String navn, String offisiellKode) {
+    ArbeidType(String kode, String navn) {
         this.kode = kode;
         this.navn = navn;
-        this.offisiellKode = offisiellKode;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -94,20 +86,10 @@ public enum ArbeidType implements Kodeverdi {
         }
         return ad;
     }
-    
-    public static Map<String, ArbeidType> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
 
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
-    
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
-    }
+
 }

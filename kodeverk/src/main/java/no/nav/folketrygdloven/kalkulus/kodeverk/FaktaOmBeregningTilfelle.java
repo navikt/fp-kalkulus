@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -8,18 +7,16 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 
 /**
  * Et tilfelle som kan oppstå i fakta om beregning. Hvert tilfelle beskriver en spesifikk situasjon der informasjon må innhentes eller manuell vurdering
  * må gjøres av saksbehandler.
  */
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum FaktaOmBeregningTilfelle implements Kodeverdi {
+public enum FaktaOmBeregningTilfelle implements Kodeverdi, DatabaseKode, KontraktKode {
 
     VURDER_TIDSBEGRENSET_ARBEIDSFORHOLD("VURDER_TIDSBEGRENSET_ARBEIDSFORHOLD", "Vurder tidsbegrenset arbeidsforhold"),
     VURDER_SN_NY_I_ARBEIDSLIVET("VURDER_SN_NY_I_ARBEIDSLIVET", "Vurder om søker er SN og ny i arbeidslivet"),
@@ -41,7 +38,6 @@ public enum FaktaOmBeregningTilfelle implements Kodeverdi {
     FASTSETT_ENDRET_BEREGNINGSGRUNNLAG("FASTSETT_ENDRET_BEREGNINGSGRUNNLAG", "Fastsette endring i beregningsgrunnlag"),
     UDEFINERT("-", "Ikke definert"),
     ;
-    public static final String KODEVERK = "FAKTA_OM_BEREGNING_TILFELLE";
     private static final Map<String, FaktaOmBeregningTilfelle> KODER = new LinkedHashMap<>();
 
     static {
@@ -53,9 +49,9 @@ public enum FaktaOmBeregningTilfelle implements Kodeverdi {
     }
 
     @JsonIgnore
-    private String navn;
-
-    private String kode;
+    private final String navn;
+    @JsonValue
+    private final String kode;
 
     FaktaOmBeregningTilfelle(String kode, String navn) {
         this.kode = kode;
@@ -75,19 +71,13 @@ public enum FaktaOmBeregningTilfelle implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, FaktaOmBeregningTilfelle> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
-
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
-    
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
+
+    public static FaktaOmBeregningTilfelle fraDatabaseKode(String databaseKode) {
+        return fraKode(databaseKode);
     }
+
 }

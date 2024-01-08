@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -8,45 +7,55 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
-@JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum YtelseTyperKalkulusStøtterKontrakt implements Kodeverdi {
+public enum YtelseTyperKalkulusStøtterKontrakt implements Kodeverdi, DatabaseKode, KontraktKode {
 
-    /** Folketrygdloven K4 ytelser. */
-    DAGPENGER("DAG", "Dagpenger"),
+    /**
+     * Folketrygdloven K4 ytelser.
+     */
+    DAGPENGER("DAG"),
 
-    /** Ytelse for kompenasasjon for koronatiltak for Selvstendig næringsdrivende og Frilansere (Anmodning 10). */
-    FRISINN("FRISINN", "Frilans og selsvstendig næringsdrivende inntektskompensasjon"),
+    /**
+     * Ytelse for kompenasasjon for koronatiltak for Selvstendig næringsdrivende og Frilansere (Anmodning 10).
+     */
+    FRISINN("FRISINN"),
 
-    /** Folketrygdloven K8 ytelser. */
-    SYKEPENGER("SP", "Sykepenger"),
+    /**
+     * Folketrygdloven K8 ytelser.
+     */
+    SYKEPENGER("SP"),
 
-    /** Folketrygdloven K9 ytelser. */
-    PLEIEPENGER_SYKT_BARN("PSB", "Pleiepenger sykt barn"),
-    PLEIEPENGER_NÆRSTÅENDE("PPN", "Pleiepenger nærstående"),
-    OMSORGSPENGER("OMP", "Omsorgspenger"),
-    OPPLÆRINGSPENGER("OLP", "Opplæringspenger"),
+    /**
+     * Folketrygdloven K9 ytelser.
+     */
+    PLEIEPENGER_SYKT_BARN("PSB"),
+    PLEIEPENGER_NÆRSTÅENDE("PPN"),
+    OMSORGSPENGER("OMP"),
+    OPPLÆRINGSPENGER("OLP"),
 
-    /** @deprecated Legacy infotrygd K9 ytelse type (må tolkes sammen med TemaUnderkategori). */
-    PÅRØRENDESYKDOM("PS", "Pårørende sykdom"),
+    /**
+     * @deprecated Legacy infotrygd K9 ytelse type (må tolkes sammen med TemaUnderkategori).
+     */
+    PÅRØRENDESYKDOM("PS"),
 
-    /** Folketrygdloven K11 ytelser. */
+    /**
+     * Folketrygdloven K11 ytelser.
+     */
     ARBEIDSAVKLARINGSPENGER("AAP"),
 
-    /** Folketrygdloven K14 ytelser. */
-    ENGANGSTØNAD("ES", "Engangsstønad"),
-    FORELDREPENGER("FP", "Foreldrepenger"),
-    SVANGERSKAPSPENGER("SVP", "Svangerskapspenger"),
+    /**
+     * Folketrygdloven K14 ytelser.
+     */
+    ENGANGSTØNAD("ES"),
+    FORELDREPENGER("FP"),
+    SVANGERSKAPSPENGER("SVP"),
 
-    /** Folketrygdloven K15 ytelser. */
-    ENSLIG_FORSØRGER("EF", "Enslig forsørger");
-
-    public static final String KODEVERK = "FAGSAK_YTELSE_TYPE"; //$NON-NLS-1$
+    /**
+     * Folketrygdloven K15 ytelser.
+     */
+    ENSLIG_FORSØRGER("EF");
 
     private static final Map<String, YtelseTyperKalkulusStøtterKontrakt> KODER = new LinkedHashMap<>();
 
@@ -58,18 +67,11 @@ public enum YtelseTyperKalkulusStøtterKontrakt implements Kodeverdi {
         }
     }
 
-    @JsonIgnore
-    private String navn;
+    @JsonValue
+    private final String kode;
 
-    private String kode;
-
-    private YtelseTyperKalkulusStøtterKontrakt(String kode) {
+    YtelseTyperKalkulusStøtterKontrakt(String kode) {
         this.kode = kode;
-    }
-
-    private YtelseTyperKalkulusStøtterKontrakt(String kode, String navn) {
-        this.kode = kode;
-        this.navn = navn;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -85,19 +87,14 @@ public enum YtelseTyperKalkulusStøtterKontrakt implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, YtelseTyperKalkulusStøtterKontrakt> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
-
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
 
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
+    public static YtelseTyperKalkulusStøtterKontrakt fraDatabaseKode(String databaseKode) {
+        return fraKode(databaseKode);
     }
+
 }
+

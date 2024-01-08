@@ -6,7 +6,6 @@ import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstan
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.VURDERT_VILKÅR;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -14,14 +13,12 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum BeregningsgrunnlagPeriodeRegelType implements Kodeverdi {
+public enum BeregningsgrunnlagPeriodeRegelType implements Kodeverdi, DatabaseKode {
     FORESLÅ("FORESLÅ", "Foreslå beregningsgrunnlag", FORESLÅTT),
     FORESLÅ_2("FORESLÅ_2", "Foreslå beregningsgrunnlag del 2", FORESLÅTT_2),
     VILKÅR_VURDERING("VILKÅR_VURDERING", "Vurder beregningsvilkår", VURDERT_VILKÅR),
@@ -34,7 +31,6 @@ public enum BeregningsgrunnlagPeriodeRegelType implements Kodeverdi {
     FINN_GRENSEVERDI("FINN_GRENSEVERDI", "Finne grenseverdi til kjøring av fastsett beregningsgrunnlag for SVP", FASTSATT),
     UDEFINERT("-", "Ikke definert", BeregningsgrunnlagTilstand.UDEFINERT),
     ;
-    public static final String KODEVERK = "BG_PERIODE_REGEL_TYPE";
 
     private static final Map<String, BeregningsgrunnlagPeriodeRegelType> KODER = new LinkedHashMap<>();
 
@@ -47,11 +43,11 @@ public enum BeregningsgrunnlagPeriodeRegelType implements Kodeverdi {
     }
 
     @JsonIgnore
-    private String navn;
-
-    private String kode;
-
-    private BeregningsgrunnlagTilstand lagretTilstand;
+    private final String navn;
+    @JsonValue
+    private final String kode;
+    @JsonIgnore
+    private final BeregningsgrunnlagTilstand lagretTilstand;
 
     BeregningsgrunnlagPeriodeRegelType(String kode, String navn, BeregningsgrunnlagTilstand lagretTilstand) {
         this.kode = kode;
@@ -72,20 +68,13 @@ public enum BeregningsgrunnlagPeriodeRegelType implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, BeregningsgrunnlagPeriodeRegelType> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
-
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
 
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
+    public static BeregningsgrunnlagPeriodeRegelType fraDatabaseKode(String databaseKode) {
+        return fraKode(databaseKode);
     }
 
     public BeregningsgrunnlagTilstand getLagretTilstand() {

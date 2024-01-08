@@ -8,30 +8,25 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 
-@JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum OffentligYtelseType implements Kodeverdi, YtelseType {
 
-    UDEFINERT("-", "UNDEFINED", null),
-    AAP("AAP", "Arbeidsavklaringspenger", "arbeidsavklaringspenger"),
-    DAGPENGER_FISKER("DAGPENGER_FISKER", "Dagpenger til fisker som bare har hyre", "dagpengerTilFiskerSomBareHarHyre"),
-    DAGPENGER_ARBEIDSLØS("DAGPENGER_ARBEIDSLØS", "Dagpenger ved arbeidsløshet", "dagpengerVedArbeidsloeshet"),
-    FORELDREPENGER("FORELDREPENGER", "Foreldrepenger", "foreldrepenger"),
-    OVERGANGSSTØNAD_ENSLIG("OVERGANGSSTØNAD_ENSLIG", "Overgangsstønad til enslig mor eller far",
-            "overgangsstoenadTilEnsligMorEllerFarSomBegynteAaLoepe1April2014EllerSenere"),
-    SVANGERSKAPSPENGER("SVANGERSKAPSPENGER", "Svangerskapspenger", "svangerskapspenger"),
-    SYKEPENGER("SYKEPENGER", "Sykepenger", "sykepenger"),
-    SYKEPENGER_FISKER("SYKEPENGER_FISKER", "Sykepenger fisker", "sykepengerTilFiskerSomBareHarHyre"),
-    UFØRETRYGD("UFØRETRYGD", "Uføretrygd", "ufoeretrygd"),
-    UFØRETRYGD_ETTEROPPGJØR("UFØRETRYGD_ETTEROPPGJØR", "Uføretrygd etteroppgjør", "ufoereytelseEtteroppgjoer"),
-    UNDERHOLDNINGSBIDRAG_BARN("UNDERHOLDNINGSBIDRAG_BARN", "Underholdningsbidrag til barn", "underholdsbidragTilBarn"),
-    VENTELØNN("VENTELØNN", "Ventelønn", "venteloenn"),
+    UDEFINERT("-"),
+    AAP("AAP"),
+    DAGPENGER_FISKER("DAGPENGER_FISKER"),
+    DAGPENGER_ARBEIDSLØS("DAGPENGER_ARBEIDSLØS"),
+    FORELDREPENGER("FORELDREPENGER"),
+    OVERGANGSSTØNAD_ENSLIG("OVERGANGSSTØNAD_ENSLIG"),
+    SVANGERSKAPSPENGER("SVANGERSKAPSPENGER"),
+    SYKEPENGER("SYKEPENGER"),
+    SYKEPENGER_FISKER("SYKEPENGER_FISKER"),
+    UFØRETRYGD("UFØRETRYGD"),
+    UFØRETRYGD_ETTEROPPGJØR("UFØRETRYGD_ETTEROPPGJØR"),
+    UNDERHOLDNINGSBIDRAG_BARN("UNDERHOLDNINGSBIDRAG_BARN"),
+    VENTELØNN("VENTELØNN"),
     ;
 
     private static final Map<String, OffentligYtelseType> KODER = new LinkedHashMap<>();
@@ -46,22 +41,12 @@ public enum OffentligYtelseType implements Kodeverdi, YtelseType {
         }
     }
 
-    @JsonIgnore
-    private String navn;
+    @JsonValue
+    private final String kode;
 
-    private String kode;
-    
-    @JsonIgnore
-    private String offisiellKode;
 
-    private OffentligYtelseType(String kode) {
+    OffentligYtelseType(String kode) {
         this.kode = kode;
-    }
-
-    private OffentligYtelseType(String kode, String navn, String offisiellKode) {
-        this.kode = kode;
-        this.navn = navn;
-        this.offisiellKode = offisiellKode;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -86,7 +71,6 @@ public enum OffentligYtelseType implements Kodeverdi, YtelseType {
         return KODEVERK;
     }
 
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;

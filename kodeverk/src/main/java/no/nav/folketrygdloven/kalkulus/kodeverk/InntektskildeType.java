@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -8,27 +7,21 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 
-@JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum InntektskildeType implements Kodeverdi {
+public enum InntektskildeType implements Kodeverdi, KontraktKode {
 
-    UDEFINERT("-", "Ikke definert", null),
-    INNTEKT_OPPTJENING("INNTEKT_OPPTJENING", "INNTEKT_OPPTJENING", "INNTEKT"),
-    INNTEKT_BEREGNING("INNTEKT_BEREGNING", "INNTEKT_BEREGNING", null),
-    INNTEKT_SAMMENLIGNING("INNTEKT_SAMMENLIGNING", "INNTEKT_SAMMENLIGNING", null),
-    SIGRUN("SIGRUN", "Sigrun", "SIGRUN"),
-    VANLIG("VANLIG", "Vanlig", "VANLIG"),
+    UDEFINERT("-"),
+    INNTEKT_OPPTJENING("INNTEKT_OPPTJENING"),
+    INNTEKT_BEREGNING("INNTEKT_BEREGNING"),
+    INNTEKT_SAMMENLIGNING("INNTEKT_SAMMENLIGNING"),
+    SIGRUN("SIGRUN"),
+    VANLIG("VANLIG"),
     ;
 
     private static final Map<String, InntektskildeType> KODER = new LinkedHashMap<>();
-
-    public static final String KODEVERK = "INNTEKTS_KILDE";
 
     static {
         for (var v : values()) {
@@ -38,22 +31,11 @@ public enum InntektskildeType implements Kodeverdi {
         }
     }
 
-    @JsonIgnore
-    private String navn;
+    @JsonValue
+    private final String kode;
 
-    private String kode;
-    
-    @JsonIgnore
-    private String offisiellKode;
-
-    private InntektskildeType(String kode) {
+    InntektskildeType(String kode) {
         this.kode = kode;
-    }
-
-    private InntektskildeType(String kode, String navn, String offisiellKode) {
-        this.kode = kode;
-        this.navn = navn;
-        this.offisiellKode = offisiellKode;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -69,19 +51,9 @@ public enum InntektskildeType implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, InntektskildeType> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
-
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
 
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
-    }
 }

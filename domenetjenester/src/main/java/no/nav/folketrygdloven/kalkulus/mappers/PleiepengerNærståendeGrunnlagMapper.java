@@ -1,8 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.mappers;
 
 import no.nav.folketrygdloven.kalkulator.input.PleiepengerNærståendeGrunnlag;
-import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 
 class PleiepengerNærståendeGrunnlagMapper {

@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,14 +8,12 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum BeregningSteg implements Kodeverdi {
+public enum BeregningSteg implements Kodeverdi, KontraktKode {
 
     FASTSETT_STP_BER("FASTSETT_STP_BER", "Fastsett skjæringstidspunkt beregning"),
     KOFAKBER("KOFAKBER", "Kontroller fakta for beregning"),
@@ -53,8 +50,6 @@ public enum BeregningSteg implements Kodeverdi {
 
     private static final Map<String, BeregningSteg> KODER = new LinkedHashMap<>();
 
-    public static final String KODEVERK = "BEREGNING_STEG";
-
     static {
         for (var v : values()) {
             if (KODER.putIfAbsent(v.kode, v) != null) {
@@ -64,9 +59,9 @@ public enum BeregningSteg implements Kodeverdi {
     }
 
     @JsonIgnore
-    private String navn;
-
-    private String kode;
+    private final String navn;
+    @JsonValue // Avklar om intern eller skal brukes i kontrakt. Ikke DB
+    private final String kode;
 
     BeregningSteg(String kode, String navn) {
         this.kode = kode;
@@ -86,21 +81,11 @@ public enum BeregningSteg implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, BeregningSteg> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
-
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
 
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
-    }
 
     public boolean erFør(BeregningSteg that) {
         int thisIndex = stegRekkefølge.indexOf(this);

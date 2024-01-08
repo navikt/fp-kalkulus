@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -11,66 +10,61 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 
-@JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum FagsakYtelseType implements Kodeverdi {
 
     /**
      * Folketrygdloven K4 ytelser.
      */
-    DAGPENGER("DAG", "Dagpenger", "DAGPENGER"),
+    DAGPENGER("DAG", "DAGPENGER"),
 
     /**
      * Ny ytelse for kompenasasjon for koronatiltak for Selvstendig næringsdrivende og Frilansere (Anmodning 10).
      */
-    FRISINN("FRISINN", "FRIlansere og Selstendig næringsdrivendes INNtektskompensasjon", "FRISINN"),
+    FRISINN("FRISINN"),
 
     /**
      * Folketrygdloven K8 ytelser.
      */
-    SYKEPENGER("SP", "Sykepenger", "SYKEPENGER"),
+    SYKEPENGER("SP", "SYKEPENGER"),
 
     /**
      * Folketrygdloven K9 ytelser.
      */
-    PLEIEPENGER_SYKT_BARN("PSB", "Pleiepenger sykt barn", "PSB"),
-    PLEIEPENGER_NÆRSTÅENDE("PPN", "Pleiepenger nærstående", "PPN"),
-    OMSORGSPENGER("OMP", "Omsorgspenger", "OMP"),
-    OPPLÆRINGSPENGER("OLP", "Opplæringspenger", "OLP"),
+    PLEIEPENGER_SYKT_BARN("PSB"),
+    PLEIEPENGER_NÆRSTÅENDE("PPN"),
+    OMSORGSPENGER("OMP"),
+    OPPLÆRINGSPENGER("OLP"),
 
     /**
      * @deprecated Gammel infotrygd kode for K9 ytelser. Må tolkes om til ovenstående sammen med TemaUnderkategori.
      */
     @Deprecated
-    PÅRØRENDESYKDOM("PS", "Pårørende sykdom", "PÅRØRENDESYKDOM"),
+    PÅRØRENDESYKDOM("PS", "PÅRØRENDESYKDOM"),
 
     /**
      * Folketrygdloven K11 ytelser.
      */
-    ARBEIDSAVKLARINGSPENGER("AAP", "Arbeidsavklaringspenger", "ARBEIDSAVKLARINGSPENGER"),
+    ARBEIDSAVKLARINGSPENGER("AAP", "ARBEIDSAVKLARINGSPENGER"),
 
     /**
      * Folketrygdloven K14 ytelser.
      */
-    ENGANGSTØNAD("ES", "Engangsstønad", "ENGANGSSTØNAD"),
-    FORELDREPENGER("FP", "Foreldrepenger", "FORELDREPENGER"),
-    SVANGERSKAPSPENGER("SVP", "Svangerskapspenger", "SVANGERSKAPSPENGER"),
+    ENGANGSTØNAD("ES", "ENGANGSSTØNAD"),
+    FORELDREPENGER("FP", "FORELDREPENGER"),
+    SVANGERSKAPSPENGER("SVP", "SVANGERSKAPSPENGER"),
 
     /**
      * Folketrygdloven K15 ytelser.
      */
-    ENSLIG_FORSØRGER("EF", "Enslig forsørger", "ENSLIG_FORSØRGER"),
+    ENSLIG_FORSØRGER("EF", "ENSLIG_FORSØRGER"),
 
     UDEFINERT("-", "Ikke definert"),
     ;
-
-    public static final String KODEVERK = "FAGSAK_YTELSE"; //$NON-NLS-1$
 
     private static final Map<String, FagsakYtelseType> KODER_FPSAK = new LinkedHashMap<>();
 
@@ -102,25 +96,16 @@ public enum FagsakYtelseType implements Kodeverdi {
     }
 
     @JsonIgnore
-    private String navn;
+    private final String fpsakKode;
+    @JsonValue
+    private final String kode;
 
-    @JsonIgnore
-    private String fpsakKode;
-
-    private String kode;
-
-    private FagsakYtelseType(String kode) {
-        this.kode = kode;
+    FagsakYtelseType(String kode) {
+        this(kode, kode);
     }
 
-    private FagsakYtelseType(String kode, String navn) {
+    FagsakYtelseType(String kode, String fpsakKode) {
         this.kode = kode;
-        this.navn = navn;
-    }
-
-    private FagsakYtelseType(String kode, String navn, String fpsakKode) {
-        this.kode = kode;
-        this.navn = navn;
         this.fpsakKode = fpsakKode;
     }
 
@@ -141,24 +126,14 @@ public enum FagsakYtelseType implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, FagsakYtelseType> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
-
     public boolean erArenaytelse() {
         return ARENA_YTELSER.contains(this);
     }
 
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
 
 
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
-    }
 }

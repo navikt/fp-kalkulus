@@ -1,21 +1,18 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
 import java.time.Period;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
-@JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum InntektPeriodeType implements Kodeverdi {
+public enum InntektPeriodeType implements Kodeverdi, KontraktKode {
 
     DAGLIG("DAGLG", Period.ofDays(1)),
     UKENTLIG("UKNLG", Period.ofWeeks(1)),
@@ -27,31 +24,43 @@ public enum InntektPeriodeType implements Kodeverdi {
     UDEFINERT("-", null),
     ;
 
-    /** @deprecated bruk enum konstant. */
+    /**
+     * @deprecated bruk enum konstant.
+     */
     @Deprecated(forRemoval = true)
     public static final InntektPeriodeType PER_ÅR = ÅRLIG;
-    /** @deprecated bruk enum konstant. */
+    /**
+     * @deprecated bruk enum konstant.
+     */
     @Deprecated(forRemoval = true)
     public static final InntektPeriodeType PER_DAG = DAGLIG;
-    /** @deprecated bruk enum konstant. */
+    /**
+     * @deprecated bruk enum konstant.
+     */
     @Deprecated(forRemoval = true)
     public static final InntektPeriodeType PER_MÅNED = MÅNEDLIG;
-    /** @deprecated bruk enum konstant. */
+    /**
+     * @deprecated bruk enum konstant.
+     */
     @Deprecated(forRemoval = true)
     public static final InntektPeriodeType PER_UKE = UKENTLIG;
-    /** @deprecated bruk enum konstant. */
+    /**
+     * @deprecated bruk enum konstant.
+     */
     @Deprecated(forRemoval = true)
     public static final InntektPeriodeType PER_14DAGER = BIUKENTLIG;
-    /** @deprecated bruk enum konstant. */
+    /**
+     * @deprecated bruk enum konstant.
+     */
     @Deprecated(forRemoval = true)
     public static final InntektPeriodeType PREMIEGRUNNLAG_OPPDRAGSGIVER = PREMIEGRUNNLAG;
-    /** @deprecated bruk enum konstant. */
+    /**
+     * @deprecated bruk enum konstant.
+     */
     @Deprecated(forRemoval = true)
     public static final InntektPeriodeType FASTSATT_ETTER_AVVIKHÅNDTERING = FASTSATT25PAVVIK;
 
     private static final Map<String, InntektPeriodeType> KODER = new LinkedHashMap<>();
-
-    public static final String KODEVERK = "INNTEKT_PERIODE_TYPE";
 
     static {
         for (var v : values()) {
@@ -61,25 +70,22 @@ public enum InntektPeriodeType implements Kodeverdi {
         }
     }
 
-
-    private String kode;
+    @JsonValue
+    private final String kode;
     @JsonIgnore
-    private Period periode;
+    private final Period periode;
 
-    private InntektPeriodeType(String kode) {
-        this.kode = kode;
-    }
-
-    private InntektPeriodeType(String kode, Period periode) {
+    InntektPeriodeType(String kode, Period periode) {
         this.kode = kode;
         this.periode = periode;
     }
 
-    @JsonCreator
-    public static InntektPeriodeType fraKode(@JsonProperty("kode") String kode) {
-        if (kode == null) {
+    @JsonCreator(mode = Mode.DELEGATING)
+    public static InntektPeriodeType fraKode(Object node) {
+        if (node == null) {
             return null;
         }
+        String kode = TempAvledeKode.getVerdi(InntektPeriodeType.class, node, "kode");
         var ad = KODER.get(kode);
         if (ad == null) {
             throw new IllegalArgumentException("Ukjent InntektPeriodeType: " + kode);
@@ -87,17 +93,7 @@ public enum InntektPeriodeType implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, InntektPeriodeType> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
 
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
-    }
-
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;

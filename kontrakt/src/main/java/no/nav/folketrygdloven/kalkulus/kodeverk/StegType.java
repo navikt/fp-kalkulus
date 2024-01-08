@@ -18,7 +18,7 @@ import jakarta.validation.constraints.Size;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public class StegType extends Kodeverk{
+public final class StegType extends Kodeverk{
     static final String KODEVERK = "STEG_TYPE";
 
     public static final StegType FASTSETT_STP_BER = new StegType("FASTSETT_STP_BER");

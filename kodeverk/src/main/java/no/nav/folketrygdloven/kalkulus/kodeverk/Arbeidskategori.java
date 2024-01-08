@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -8,15 +7,12 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 
-@JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum Arbeidskategori implements Kodeverdi {
+public enum Arbeidskategori implements Kodeverdi, KontraktKode {
 
     FISKER("FISKER", "Selvstendig næringsdrivende - Fisker"),
     ARBEIDSTAKER("ARBEIDSTAKER", "Arbeidstaker"),
@@ -39,8 +35,6 @@ public enum Arbeidskategori implements Kodeverdi {
 
     private static final Map<String, Arbeidskategori> KODER = new LinkedHashMap<>();
 
-    public static final String KODEVERK = "ARBEIDSKATEGORI";
-
     static {
         for (var v : values()) {
             if (KODER.putIfAbsent(v.kode, v) != null) {
@@ -50,15 +44,11 @@ public enum Arbeidskategori implements Kodeverdi {
     }
 
     @JsonIgnore
-    private String navn;
+    private final String navn;
+    @JsonValue
+    private final String kode;
 
-    private String kode;
-
-    private Arbeidskategori(String kode) {
-        this.kode = kode;
-    }
-
-    private Arbeidskategori(String kode, String navn) {
+    Arbeidskategori(String kode, String navn) {
         this.kode = kode;
         this.navn = navn;
     }
@@ -76,20 +66,10 @@ public enum Arbeidskategori implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, Arbeidskategori> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
-
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
-    
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
-    }
+
 
 }

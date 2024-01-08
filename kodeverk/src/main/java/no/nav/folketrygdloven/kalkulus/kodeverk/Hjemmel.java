@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -8,15 +7,12 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 
-@JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum Hjemmel implements Kodeverdi {
+public enum Hjemmel implements Kodeverdi, DatabaseKode, KontraktKode {
 
     F_9_9("F_9_9", "folketrygdloven § 9-9"),
 
@@ -49,13 +45,10 @@ public enum Hjemmel implements Kodeverdi {
     KORONALOVEN_3("KORONALOVEN_3", "koronaloven § 3"),
 
 
-
     UDEFINERT("-", "Ikke definert"),
     ;
 
     private static final Map<String, Hjemmel> KODER = new LinkedHashMap<>();
-
-    public static final String KODEVERK = "BG_HJEMMEL";
 
     static {
         for (var v : values()) {
@@ -66,15 +59,11 @@ public enum Hjemmel implements Kodeverdi {
     }
 
     @JsonIgnore
-    private String navn;
+    private final String navn;
+    @JsonValue
+    private final String kode;
 
-    private String kode;
-
-    private Hjemmel(String kode) {
-        this.kode = kode;
-    }
-
-    private Hjemmel(String kode, String navn) {
+    Hjemmel(String kode, String navn) {
         this.kode = kode;
         this.navn = navn;
     }
@@ -92,19 +81,13 @@ public enum Hjemmel implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, Hjemmel> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
-
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
 
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
+    public static Hjemmel fraDatabaseKode(String databaseKode) {
+        return fraKode(databaseKode);
     }
+
 }

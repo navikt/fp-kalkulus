@@ -7,13 +7,10 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
-@JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum Vilkårsavslagsårsak implements Kodeverdi{
+public enum Vilkårsavslagsårsak implements Kodeverdi, KontraktKode {
 
     ATFL_SAMME_ORG("ATFL_SAMME_ORG"),
     SØKT_FL_INGEN_FL_INNTEKT("SØKT_FL_INGEN_FL_INNTEKT"),
@@ -21,7 +18,6 @@ public enum Vilkårsavslagsårsak implements Kodeverdi{
     FOR_LAVT_BG_8_47("FOR_LAVT_BG_8_47"),
     AVKORTET_GRUNNET_ANNEN_INNTEKT("AVKORTET_GRUNNET_ANNEN_INNTEKT");
 
-    private static final String KODEVERK = "AVSLAGSÅRSAK";
     private static final Map<String, Vilkårsavslagsårsak> KODER = new LinkedHashMap<>();
 
     static {
@@ -32,23 +28,18 @@ public enum Vilkårsavslagsårsak implements Kodeverdi{
         }
     }
 
+    @JsonValue
     private final String kode;
 
     Vilkårsavslagsårsak(String kode) {
         this.kode = kode;
     }
 
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
 
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
-    }
 
     @JsonCreator(mode = Mode.DELEGATING)
     public static Vilkårsavslagsårsak fraKode(Object node) {

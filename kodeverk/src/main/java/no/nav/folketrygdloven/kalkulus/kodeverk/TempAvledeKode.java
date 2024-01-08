@@ -2,26 +2,31 @@ package no.nav.folketrygdloven.kalkulus.kodeverk;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
 /**
  * for avledning av kode for enum som ikke er mappet direkte på navn der både ny (@JsonValue) og gammel (@JsonProperty kode + kodeverk) kan
  * bli sendt. Brukes til eksisterende kode er konvertert til @JsonValue på alle grensesnitt.
- * 
+ *
  * <h3>Eksempel - {@link BehandlingType}</h3>
  * <b>Gammel</b>: {"kode":"BT-004","kodeverk":"BEHANDLING_TYPE"}
  * <p>
  * <b>Ny</b>: "BT-004"
  * <p>
- * 
+ *
  * @deprecated endre grensesnitt til @JsonValue istdf @JsonProperty + @JsonCreator
  */
 @Deprecated(since = "2020-12-09")
 public class TempAvledeKode {
 
+    private static final Logger LOG = LoggerFactory.getLogger(TempAvledeKode.class);
+
     @SuppressWarnings("rawtypes")
-    public static String getVerdi(Class<?> cls, Object node, String key) {
+    public static String getVerdi(Class<? extends Enum> enumCls, Object node, String key) {
         // TODO logge hvilke enum so sendes inn på gammelt format og hvor hen
         String kode;
         if (node instanceof String) {
@@ -34,8 +39,9 @@ public class TempAvledeKode {
             } else if (node instanceof Map) {
                 kode = (String) ((Map) node).get(key);
             } else {
-                throw new IllegalArgumentException("Støtter ikke node av type: " + node.getClass() + " for klasse:" + cls.getName());
+                throw new IllegalArgumentException("Støtter ikke node av type: " + node.getClass() + " for enum:" + enumCls.getName());
             }
+            LOG.info("KODEVERK-OBJEKT-KALKULUS: mottok kodeverdiobjekt som ikke var String - kode {} fra kodeverk {} ", kode, enumCls.getName());
         }
         return kode;
     }

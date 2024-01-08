@@ -4,10 +4,8 @@ package no.nav.folketrygdloven.kalkulus.kodeverk;
  * <h3>Internt kodeverk</h3>
  * Definerer status/type av {@link SammenligningsgrunnlagPrStatus}
  * <p>
- *
  */
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -15,28 +13,22 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 
-@JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum SammenligningsgrunnlagType implements Kodeverdi {
+public enum SammenligningsgrunnlagType implements Kodeverdi, DatabaseKode, KontraktKode {
 
-    SAMMENLIGNING_AT("SAMMENLIGNING_AT", "Sammenligningsgrunnlag arbeidstaker"),
-    SAMMENLIGNING_FL("SAMMENLIGNING_FL", "Sammenligningsgrunnlag frilans"),
-    SAMMENLIGNING_AT_FL("SAMMENLIGNING_AT_FL", "Sammenligningsgrunnlag arbeidstaker og frilans samlet"),
-    SAMMENLIGNING_SN("SAMMENLIGNING_SN", "Sammenligningsgrunnlag næring"),
-    SAMMENLIGNING_ATFL_SN("SAMMENLIGNING_ATFL_SN", "Sammenligningsgrunnlag for Arbeidstaker, frilans og selvstendig næringsdrivende"),
-    SAMMENLIGNING_MIDL_INAKTIV("SAMMENLIGNING_MIDL_INAKTIV", "Sammenligningsgrunnlag for midlertidig inaktiv"),
+    SAMMENLIGNING_AT("SAMMENLIGNING_AT"),
+    SAMMENLIGNING_FL("SAMMENLIGNING_FL"),
+    SAMMENLIGNING_AT_FL("SAMMENLIGNING_AT_FL"),
+    SAMMENLIGNING_SN("SAMMENLIGNING_SN"),
+    SAMMENLIGNING_ATFL_SN("SAMMENLIGNING_ATFL_SN"),
+    SAMMENLIGNING_MIDL_INAKTIV("SAMMENLIGNING_MIDL_INAKTIV"),
 
     ;
 
     private static final Map<String, SammenligningsgrunnlagType> KODER = new LinkedHashMap<>();
-
-    public static final String KODEVERK = "SAMMENLIGNINGSGRUNNLAG_TYPE";
 
     static {
         for (var v : values()) {
@@ -46,18 +38,11 @@ public enum SammenligningsgrunnlagType implements Kodeverdi {
         }
     }
 
-    @JsonIgnore
-    private String navn;
+    @JsonValue
+    private final String kode;
 
-    private String kode;
-
-    private SammenligningsgrunnlagType(String kode) {
+    SammenligningsgrunnlagType(String kode) {
         this.kode = kode;
-    }
-
-    private SammenligningsgrunnlagType(String kode, String navn) {
-        this.kode = kode;
-        this.navn = navn;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -73,19 +58,13 @@ public enum SammenligningsgrunnlagType implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, SammenligningsgrunnlagType> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
-
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
 
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
+    public static SammenligningsgrunnlagType fraDatabaseKode(String databaseKode) {
+        return fraKode(databaseKode);
     }
+
 }

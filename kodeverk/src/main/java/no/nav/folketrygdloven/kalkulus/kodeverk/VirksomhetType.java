@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -8,26 +7,21 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum VirksomhetType implements Kodeverdi {
+public enum VirksomhetType implements Kodeverdi, KontraktKode {
 
-    DAGMAMMA("DAGMAMMA", "Dagmamma i eget hjem/familiebarnehage"),
-    FISKE("FISKE", "Fiske"),
-    FRILANSER("FRILANSER", "Frilanser"),
-    JORDBRUK_SKOGBRUK("JORDBRUK_SKOGBRUK", "Jordbruk"),
-    ENKELTPERSONFORETAK("ENK", "Enkeltpersonforetak"),
-    ANNEN("ANNEN", "Annen næringsvirksomhet"),
-    UDEFINERT("-", "Ikke definert"),
+    DAGMAMMA("DAGMAMMA"),
+    FISKE("FISKE"),
+    FRILANSER("FRILANSER"),
+    JORDBRUK_SKOGBRUK("JORDBRUK_SKOGBRUK"),
+    ENKELTPERSONFORETAK("ENK"),
+    ANNEN("ANNEN"),
+    UDEFINERT("-"),
     ;
     private static final Map<String, VirksomhetType> KODER = new LinkedHashMap<>();
-
-    public static final String KODEVERK = "VIRKSOMHET_TYPE";
 
     static {
         for (var v : values()) {
@@ -37,14 +31,11 @@ public enum VirksomhetType implements Kodeverdi {
         }
     }
 
-    @JsonIgnore
-    private String navn;
+    @JsonValue
+    private final String kode;
 
-    private String kode;
-
-    VirksomhetType(String kode, String navn) {
+    VirksomhetType(String kode) {
         this.kode = kode;
-        this.navn = navn;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -60,19 +51,10 @@ public enum VirksomhetType implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, VirksomhetType> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
 
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
 
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
-    }
 }

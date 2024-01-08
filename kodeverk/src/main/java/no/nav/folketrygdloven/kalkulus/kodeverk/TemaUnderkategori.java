@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -8,44 +7,39 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
-@JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum TemaUnderkategori implements Kodeverdi {
+public enum TemaUnderkategori implements Kodeverdi, KontraktKode {
 
-    FORELDREPENGER("FP", "Foreldrepenger", "FP"),
-    FORELDREPENGER_FODSEL("FØ", "Foreldrepenger fødsel", "FØ"),
-    FORELDREPENGER_ADOPSJON("AP", "Foreldrepenger adopsjon", "AP"),
-    FORELDREPENGER_SVANGERSKAPSPENGER("SV", "Svangerskapspenger", "SV"),
-    SYKEPENGER_SYKEPENGER("SP", "Sykepenger", "SP"),
-    PÅRØRENDE_OMSORGSPENGER("OM", "Pårørende omsorgsmpenger", "OM"),
-    PÅRØRENDE_OPPLÆRINGSPENGER("OP", "Pårørende opplæringspenger", "OP"),
-    PÅRØRENDE_PLEIETRENGENDE_SYKT_BARN("PB", "Pårørende pleietrengende sykt barn", "PB"),
-    PÅRØRENDE_PLEIETRENGENDE("PI", "Pårørende pleietrengende", "PI"),
-    PÅRØRENDE_PLEIETRENGENDE_PÅRØRENDE("PP", "Pårørende pleietrengende pårørende", "PP"),
-    PÅRØRENDE_PLEIEPENGER("PN", "Pårørende pleiepenger", "PN"),
-    SYKEPENGER_FORSIKRINGSRISIKO("SU", "Sykepenger utenlandsopphold", "SU"),
-    SYKEPENGER_REISETILSKUDD("RT", "Reisetilskudd", "RT"),
-    SYKEPENGER_UTENLANDSOPPHOLD("RS", "Forsikr.risiko sykefravær", "RS"),
-    OVERGANGSSTØNAD("OG", "Overgangsstønad", "OG"),
-    FORELDREPENGER_FODSEL_UTLAND("FU", "Foreldrepenger fødsel, utland", "FU"),
-    ENGANGSSTONAD_ADOPSJON("AE", "Adopsjon engangsstønad", "AE"),
-    ENGANGSSTONAD_FODSEL("FE", "Fødsel engangsstønad", "FE"),
+    FORELDREPENGER("FP", "Foreldrepenger"),
+    FORELDREPENGER_FODSEL("FØ", "Foreldrepenger fødsel"),
+    FORELDREPENGER_ADOPSJON("AP", "Foreldrepenger adopsjon"),
+    FORELDREPENGER_SVANGERSKAPSPENGER("SV", "Svangerskapspenger"),
+    SYKEPENGER_SYKEPENGER("SP", "Sykepenger"),
+    PÅRØRENDE_OMSORGSPENGER("OM", "Pårørende omsorgsmpenger"),
+    PÅRØRENDE_OPPLÆRINGSPENGER("OP", "Pårørende opplæringspenger"),
+    PÅRØRENDE_PLEIETRENGENDE_SYKT_BARN("PB", "Pårørende pleietrengende sykt barn"),
+    PÅRØRENDE_PLEIETRENGENDE("PI", "Pårørende pleietrengende"),
+    PÅRØRENDE_PLEIETRENGENDE_PÅRØRENDE("PP", "Pårørende pleietrengende pårørende"),
+    PÅRØRENDE_PLEIEPENGER("PN", "Pårørende pleiepenger"),
+    SYKEPENGER_FORSIKRINGSRISIKO("SU", "Sykepenger utenlandsopphold"),
+    SYKEPENGER_REISETILSKUDD("RT", "Reisetilskudd"),
+    SYKEPENGER_UTENLANDSOPPHOLD("RS", "Forsikr.risiko sykefravær"),
+    OVERGANGSSTØNAD("OG", "Overgangsstønad"),
+    FORELDREPENGER_FODSEL_UTLAND("FU", "Foreldrepenger fødsel, utland"),
+    ENGANGSSTONAD_ADOPSJON("AE", "Adopsjon engangsstønad"),
+    ENGANGSSTONAD_FODSEL("FE", "Fødsel engangsstønad"),
 
-    BT("BT", "Stønad til barnetilsyn", "BT"),
-    FL("FL", "Tilskudd til flytting", "FL"),
-    UT("UT", "Skolepenger", "UT"),
+    BT("BT", "Stønad til barnetilsyn"),
+    FL("FL", "Tilskudd til flytting"),
+    UT("UT", "Skolepenger"),
 
-    UDEFINERT("-", "Udefinert", null),
+    UDEFINERT("-", "Udefinert"),
     ;
 
     private static final Map<String, TemaUnderkategori> KODER = new LinkedHashMap<>();
-
-    private static final String KODEVERK = "TEMA_UNDERKATEGORI";
 
     static {
         for (var v : values()) {
@@ -56,21 +50,13 @@ public enum TemaUnderkategori implements Kodeverdi {
     }
 
     @JsonIgnore
-    private String navn;
+    private final String navn;
+    @JsonValue
+    private final String kode;
 
-    private String kode;
-    
-    @JsonIgnore
-    private String offisiellKode;
-
-    private TemaUnderkategori(String kode) {
-        this.kode = kode;
-    }
-
-    private TemaUnderkategori(String kode, String navn, String offisiellKode) {
+    TemaUnderkategori(String kode, String navn) {
         this.kode = kode;
         this.navn = navn;
-        this.offisiellKode = offisiellKode;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -86,19 +72,10 @@ public enum TemaUnderkategori implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, TemaUnderkategori> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
 
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
-    
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
-    }
+
 }

@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -8,30 +7,24 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 
-@JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum SkatteOgAvgiftsregelType implements Kodeverdi {
+public enum SkatteOgAvgiftsregelType implements Kodeverdi, KontraktKode {
 
-    SÆRSKILT_FRADRAG_FOR_SJØFOLK("SÆRSKILT_FRADRAG_FOR_SJØFOLK", "Særskilt fradrag for sjøfolk", "saerskiltFradragForSjoefolk"),
-    SVALBARD("SVALBARD", "Svalbardinntekt", "svalbard"),
-    SKATTEFRI_ORGANISASJON("SKATTEFRI_ORGANISASJON", "Skattefri Organisasjon", "skattefriOrganisasjon"),
-    NETTOLØNN_FOR_SJØFOLK("NETTOLØNN_FOR_SJØFOLK", "Nettolønn for sjøfolk", "nettoloennForSjoefolk"),
-    NETTOLØNN("NETTOLØNN", "Nettolønn", "nettoloenn"),
-    KILDESKATT_PÅ_PENSJONER("KILDESKATT_PÅ_PENSJONER", "Kildeskatt på pensjoner", "kildeskattPaaPensjoner"),
-    JAN_MAYEN_OG_BILANDENE("JAN_MAYEN_OG_BILANDENE", "Inntekt på Jan Mayen og i norske biland i Antarktis", "janMayenOgBilandene"),
+    SÆRSKILT_FRADRAG_FOR_SJØFOLK("SÆRSKILT_FRADRAG_FOR_SJØFOLK"),
+    SVALBARD("SVALBARD"),
+    SKATTEFRI_ORGANISASJON("SKATTEFRI_ORGANISASJON"),
+    NETTOLØNN_FOR_SJØFOLK("NETTOLØNN_FOR_SJØFOLK"),
+    NETTOLØNN("NETTOLØNN"),
+    KILDESKATT_PÅ_PENSJONER("KILDESKATT_PÅ_PENSJONER"),
+    JAN_MAYEN_OG_BILANDENE("JAN_MAYEN_OG_BILANDENE"),
 
-    UDEFINERT("-", "Udefinert", "Ikke definert"),
+    UDEFINERT("-"),
     ;
 
     private static final Map<String, SkatteOgAvgiftsregelType> KODER = new LinkedHashMap<>();
-
-    public static final String KODEVERK = "SKATTE_OG_AVGIFTSREGEL";
 
     static {
         for (var v : values()) {
@@ -41,22 +34,11 @@ public enum SkatteOgAvgiftsregelType implements Kodeverdi {
         }
     }
 
-    @JsonIgnore
-    private String navn;
+    @JsonValue
+    private final String kode;
 
-    private String kode;
-
-    @JsonIgnore
-    private String offisiellKode;
-
-    private SkatteOgAvgiftsregelType(String kode) {
+    SkatteOgAvgiftsregelType(String kode) {
         this.kode = kode;
-    }
-
-    private SkatteOgAvgiftsregelType(String kode, String navn, String offisiellKode) {
-        this.kode = kode;
-        this.navn = navn;
-        this.offisiellKode = offisiellKode;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -72,19 +54,10 @@ public enum SkatteOgAvgiftsregelType implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, SkatteOgAvgiftsregelType> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
 
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
 
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
-    }
 }

@@ -4,22 +4,16 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
+import com.fasterxml.jackson.annotation.JsonValue;
 
-@JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum FrisinnBehandlingType implements Kodeverdi {
+public enum FrisinnBehandlingType implements Kodeverdi, KontraktKode {
 
-    REVURDERING("REVURDERING", "Revurdering"),
-    NY_SØKNADSPERIODE("NY_SØKNADSPERIODE", "Ny søknadsperiode ");
-
-    public static final String KODEVERK = "FRISINN_BEHANDLING_TYPE";
+    REVURDERING("REVURDERING"),
+    NY_SØKNADSPERIODE("NY_SØKNADSPERIODE");
 
     private static final Map<String, FrisinnBehandlingType> KODER = new LinkedHashMap<>();
 
@@ -31,32 +25,19 @@ public enum FrisinnBehandlingType implements Kodeverdi {
         }
     }
 
-    @JsonIgnore
-    private String kode;
-    
-    private String navn;
+    @JsonValue
+    private final String kode;
 
-    FrisinnBehandlingType(String kode, String navn) {
+    FrisinnBehandlingType(String kode) {
         this.kode = kode;
-        this.navn = navn;
     }
 
-    @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
-    
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
-    }
-    
-    public String getNavn() {
-        return navn;
-    }
-    
+
+
     @JsonCreator(mode = Mode.DELEGATING)
     public static FrisinnBehandlingType fraKode(Object node) {
         if (node == null) {
