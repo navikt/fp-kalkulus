@@ -8,8 +8,6 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 public class OmsorgspengerGrunnlag extends UtbetalingsgradGrunnlag implements YtelsespesifiktGrunnlag {
 
-    private final int dekningsgrad = 100;
-
     private List<Intervall> brukerSøkerPerioder;
 
     public OmsorgspengerGrunnlag(List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet, List<Intervall> brukerSøkerPerioder) {
@@ -17,11 +15,6 @@ public class OmsorgspengerGrunnlag extends UtbetalingsgradGrunnlag implements Yt
         this.brukerSøkerPerioder = brukerSøkerPerioder;
     }
 
-    @Override
-    public int getDekningsgrad() {
-        return dekningsgrad;
-    }
-    
     public Optional<List<Intervall>> getBrukerSøkerPerioder() {
         return Optional.ofNullable(brukerSøkerPerioder);
     }

@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
+
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BeregningUtfallÅrsak;
@@ -80,7 +82,7 @@ public class AvklaringsbehovUtlederForeslåBeregningTest {
     }
 
     private BeregningsgrunnlagInput lagInput() {
-        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(80, false);
+        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_80, false);
         return new BeregningsgrunnlagInput(referanse, null, null, List.of(), foreldrepengerGrunnlag);
     }
 
@@ -130,7 +132,7 @@ public class AvklaringsbehovUtlederForeslåBeregningTest {
     }
 
     private BeregningsgrunnlagInput lagInput(KoblingReferanse referanse) {
-        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
+        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false);
         return new BeregningsgrunnlagInput(referanse, null, null, List.of(), foreldrepengerGrunnlag);
     }
 

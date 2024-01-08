@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus;
@@ -22,6 +23,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.TilkommetI
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.YtelsesSpesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.adapter.util.BeregningsgrunnlagUtil;
+import no.nav.folketrygdloven.kalkulator.adapter.util.Dekningsgradtjeneste;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapArbeidsforholdFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.fastsett.PleiepengerGrunnlagMapperFastsett;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.frisinn.FrisinnGrunnlagMapperFastsett;
@@ -85,13 +87,6 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         };
     }
 
-    private static Dekningsgrad finnDekningsgrad(YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, LocalDate periodeFom) {
-        if (ytelsespesifiktGrunnlag instanceof FrisinnGrunnlag frisinngrunnlag && periodeFom != null) {
-            return Dekningsgrad.fra(frisinngrunnlag.getDekningsgradForDato(periodeFom));
-        }
-        return Dekningsgrad.fra(ytelsespesifiktGrunnlag.getDekningsgrad());
-    }
-
     private static AktivitetStatusMedHjemmel mapVLAktivitetStatusMedHjemmel(final BeregningsgrunnlagAktivitetStatusDto vlBGAktivitetStatus) {
         BeregningsgrunnlagHjemmel hjemmel = null;
         if (!Hjemmel.UDEFINERT.equals(vlBGAktivitetStatus.getHjemmel())) {
@@ -131,7 +126,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
     }
 
     private static BeregningsgrunnlagPeriode mapPeriode(BeregningsgrunnlagPeriodeDto vlBGPeriode, BeregningsgrunnlagInput input) {
-        Dekningsgrad dekningsgradPeriode = input.getYtelsespesifiktGrunnlag() == null ? null : finnDekningsgrad(input.getYtelsespesifiktGrunnlag(), vlBGPeriode.getBeregningsgrunnlagPeriodeFom());
+        Dekningsgrad dekningsgradPeriode = input.getYtelsespesifiktGrunnlag() == null ? null : Dekningsgradtjeneste.mapTilDekningsgradRegel(input.getYtelsespesifiktGrunnlag(), Optional.of(vlBGPeriode.getBeregningsgrunnlagPeriodeFom()));
         final BeregningsgrunnlagPeriode.Builder regelBGPeriode = BeregningsgrunnlagPeriode.builder()
                 .medPeriode(Periode.of(vlBGPeriode.getBeregningsgrunnlagPeriodeFom(), vlBGPeriode.getBeregningsgrunnlagPeriodeTom()))
                 .medDekningsgrad(dekningsgradPeriode)

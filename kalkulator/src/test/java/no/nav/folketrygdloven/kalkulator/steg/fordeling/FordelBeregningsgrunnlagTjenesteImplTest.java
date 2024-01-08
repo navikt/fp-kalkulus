@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -100,7 +102,7 @@ public class FordelBeregningsgrunnlagTjenesteImplTest {
         var inntektsmeldinger = List.of(im1, im2, im3);
 
         var iayGrunnlag = iayGrunnlagBuilder.medInntektsmeldinger(inntektsmeldinger).build();
-        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, opprett(iayGrunnlag, koblingReferanse.getSkjæringstidspunktBeregning()), new ForeldrepengerGrunnlag(100, false))
+        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, opprett(iayGrunnlag, koblingReferanse.getSkjæringstidspunktBeregning()), new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false))
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Act

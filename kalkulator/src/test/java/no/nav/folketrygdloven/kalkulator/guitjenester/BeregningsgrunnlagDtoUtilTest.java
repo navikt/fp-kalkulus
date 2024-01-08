@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
+
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
@@ -60,7 +62,7 @@ public class BeregningsgrunnlagDtoUtilTest {
         graderinger.forEach(graderingBuilder::leggTilGradering);
         graderingBuilder.medArbeidsgiver(ARBEIDSGIVER);
         graderingBuilder.medStatus(AktivitetStatus.ARBEIDSTAKER);
-        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false, new AktivitetGradering(List.of(graderingBuilder.build())));
+        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false, new AktivitetGradering(List.of(graderingBuilder.build())));
         return foreldrepengerGrunnlag;
     }
 

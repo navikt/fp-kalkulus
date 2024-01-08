@@ -6,13 +6,11 @@ import java.util.List;
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FrisinnBehandlingType;
 
 public class FrisinnGrunnlag extends UtbetalingsgradGrunnlag implements YtelsespesifiktGrunnlag {
 
-    private final int DEKNINGSGRAD_80 = 80;
-    private final int DEKNINGSGRAD_60 = 60;
-    private final int DEKNINGSGRAD_70 = 70;
     private final LocalDate FØRSTE_DAG_MED_REDUSERT_DEKNINGSGRAD = LocalDate.of(2020,11,1);
     private final LocalDate ENDRET_DEKNINGSGRAD_DATO_70_PROSENT = LocalDate.of(2022,1,1);
 
@@ -25,23 +23,18 @@ public class FrisinnGrunnlag extends UtbetalingsgradGrunnlag implements Ytelsesp
         this.frisinnBehandlingType = frisinnBehandlingType;
     }
 
-    @Override
-    public int getDekningsgrad() {
-        return DEKNINGSGRAD_80;
-    }
-
     /**
      * Det er besluttet at frisinnsøknader som gjelder de to siste månedene det er mulig å søke (november og desember)
      * skal utbetales med redusert dekningsgrad.
      * https://jira.adeo.no/browse/TSF-1370
      */
-    public int getDekningsgradForDato(LocalDate dato) {
+    public Dekningsgrad getDekningsgradForDato(LocalDate dato) {
         if (dato.isBefore(FØRSTE_DAG_MED_REDUSERT_DEKNINGSGRAD)) {
-            return DEKNINGSGRAD_80;
+            return Dekningsgrad.DEKNINGSGRAD_80;
         } else if (dato.isBefore(ENDRET_DEKNINGSGRAD_DATO_70_PROSENT)) {
-            return DEKNINGSGRAD_60;
+            return Dekningsgrad.DEKNINGSGRAD_60;
         } else {
-            return DEKNINGSGRAD_70;
+            return Dekningsgrad.DEKNINGSGRAD_70;
         }
     }
 

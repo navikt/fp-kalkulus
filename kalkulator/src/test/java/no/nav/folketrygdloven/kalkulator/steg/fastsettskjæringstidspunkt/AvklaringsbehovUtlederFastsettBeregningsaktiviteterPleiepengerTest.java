@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -369,13 +371,13 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterPleiepengerTest 
     }
 
     private BeregningsgrunnlagInput lagBeregningsgrunnlagInput(int rapporteringsfrist) {
-        BeregningsgrunnlagInput beregningsgrunnlagInput = new BeregningsgrunnlagInput(ref, getIAYGrunnlag(), opptjeningAktiviteter, List.of(), new ForeldrepengerGrunnlag(100, false));
+        BeregningsgrunnlagInput beregningsgrunnlagInput = new BeregningsgrunnlagInput(ref, getIAYGrunnlag(), opptjeningAktiviteter, List.of(), new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false));
         beregningsgrunnlagInput.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, rapporteringsfrist);
         return beregningsgrunnlagInput;
     }
 
     private BeregningsgrunnlagInput lagMockBeregningsgrunnlagInput() {
-        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(ref, getMockedIAYGrunnlag(), opptjeningAktiviteter, List.of(), new ForeldrepengerGrunnlag(100, false));
+        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(ref, getMockedIAYGrunnlag(), opptjeningAktiviteter, List.of(), new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false));
         input.leggTilKonfigverdi("inntekt.rapportering.frist.dato", 5);
         return input;
     }

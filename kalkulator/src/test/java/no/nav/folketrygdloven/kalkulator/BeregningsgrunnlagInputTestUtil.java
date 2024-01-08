@@ -24,6 +24,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
 import no.nav.folketrygdloven.utils.Tuple;
 
 
@@ -91,7 +92,7 @@ public class BeregningsgrunnlagInputTestUtil {
 
     public static BeregningsgrunnlagInput lagInputMedIAYOgOpptjeningsaktiviteter(KoblingReferanse koblingReferanse,
                                                                                  OpptjeningAktiviteterDto opptjeningAktiviteterDto,
-                                                                                 InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad, int grunnbeløpMilitærHarKravPå) {
+                                                                                 InntektArbeidYtelseGrunnlagDto iayGrunnlag, Dekningsgrad dekningsgrad) {
         var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(dekningsgrad, false);
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, opptjeningAktiviteterDto,
                 opprett(iayGrunnlag, koblingReferanse.getSkjæringstidspunktBeregning()), foreldrepengerGrunnlag);
@@ -103,7 +104,7 @@ public class BeregningsgrunnlagInputTestUtil {
                                                                                      BeregningsgrunnlagGrunnlagDtoBuilder beregningsgrunnlagGrunnlagBuilder,
                                                                                      BeregningsgrunnlagTilstand tilstand,
                                                                                      InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
+        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false);
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null,
                 opprett(iayGrunnlag, koblingReferanse.getSkjæringstidspunktBeregning()), foreldrepengerGrunnlag);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
@@ -117,7 +118,7 @@ public class BeregningsgrunnlagInputTestUtil {
                                                                                      BeregningsgrunnlagGrunnlagDtoBuilder beregningsgrunnlagGrunnlagBuilder,
                                                                                      BeregningsgrunnlagTilstand tilstand,
                                                                                      InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
+        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false);
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null,
                 opprett(iayGrunnlag, koblingReferanse.getSkjæringstidspunktBeregning()), foreldrepengerGrunnlag);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
@@ -131,7 +132,7 @@ public class BeregningsgrunnlagInputTestUtil {
                                                                              BeregningsgrunnlagGrunnlagDtoBuilder beregningsgrunnlagGrunnlagBuilder,
                                                                              BeregningsgrunnlagTilstand tilstand,
                                                                              InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
+        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false);
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null,
                 opprett(iayGrunnlag, koblingReferanse.getSkjæringstidspunktBeregning()), foreldrepengerGrunnlag);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
@@ -143,7 +144,7 @@ public class BeregningsgrunnlagInputTestUtil {
     public static BeregningsgrunnlagInput lagInputMedBeregningsgrunnlagGrunnlag(KoblingReferanse koblingReferanse,
                                                                                 BeregningsgrunnlagGrunnlagDtoBuilder beregningsgrunnlagGrunnlagBuilder,
                                                                                 BeregningsgrunnlagTilstand tilstand) {
-        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
+        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false);
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, null,
                 Collections.emptyList(), foreldrepengerGrunnlag);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);

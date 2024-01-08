@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
+
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
@@ -67,7 +69,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         byggAndelFl(bgPeriode, arbeidsgiver, 2L);
         byggAndelSn(bgPeriode, arbeidsgiver, 3L);
         lagBehandling(Beregningsgrunnlag, arbeidsgiver, null);
-        var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
+        var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, List.of(),  ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
@@ -89,7 +91,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         byggAndelAt(bgPeriode, arbeidsgiver, 1L);
         byggAndelFl(bgPeriode, arbeidsgiver, 2L);
         lagBehandling(Beregningsgrunnlag, arbeidsgiver, null);
-        var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
+        var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, List.of(),  ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
@@ -114,7 +116,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
                 .medErNyIArbeidslivetSNFastsattAvSaksbehandler(true)
                 .build()).build();
         lagBehandling(Beregningsgrunnlag, arbeidsgiver, fakta);
-        var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
+        var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, List.of(),  ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
@@ -138,7 +140,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
                 .medErNyIArbeidslivetSNFastsattAvSaksbehandler(false)
                 .build()).build();
         lagBehandling(Beregningsgrunnlag, arbeidsgiver, fakta);
-        var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
+        var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, List.of(),  ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
@@ -157,7 +159,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(Beregningsgrunnlag);
         byggAndelerAapDpVentelønn(bgPeriode, arbeidsgiver);
         lagBehandling(Beregningsgrunnlag, arbeidsgiver, null);
-        var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
+        var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, List.of(),  ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
@@ -175,7 +177,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         byggAndelAt(bgPeriode, arbeidsgiver, 1L);
         byggAndelFl(bgPeriode, arbeidsgiver, 2L);
         lagBehandling(Beregningsgrunnlag, arbeidsgiver, null);
-        var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
+        var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, List.of(),  ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
@@ -196,7 +198,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         byggAndelAt(bgPeriode, arbeidsgiver, 1L);
         byggAndelFl(bgPeriode, arbeidsgiver, 2L);
         lagBehandling(Beregningsgrunnlag, arbeidsgiver, null);
-        var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
+        var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, List.of(),  ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
@@ -221,7 +223,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
                 .medErNyIArbeidslivetSNFastsattAvSaksbehandler(false)
                 .build()).build();
         lagBehandling(Beregningsgrunnlag, arbeidsgiver, fakta);
-        var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
+        var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, List.of(),  ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
@@ -242,7 +244,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(Beregningsgrunnlag);
         byggAndelerAapDpVentelønn(bgPeriode, arbeidsgiver);
         lagBehandling(Beregningsgrunnlag, arbeidsgiver, null);
-        var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
+        var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, List.of(),  ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();

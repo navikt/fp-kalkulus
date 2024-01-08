@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
+
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
@@ -80,7 +82,7 @@ class VurderBesteberegningTilfelleUtlederTest {
                 OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, Intervall.fraOgMed(STP.minusMonths(10)), virksomhet.getIdentifikator()),
                 OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.DAGPENGER, Intervall.fraOgMed(STP.minusMonths(10))),
                 OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.FRILANS, Intervall.fraOgMed(STP.minusMonths(10)))));
-        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, opptjeningAktiviteter, null, new ForeldrepengerGrunnlag(100, true));
+        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, opptjeningAktiviteter, null, new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, true));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Act
@@ -124,7 +126,7 @@ class VurderBesteberegningTilfelleUtlederTest {
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(List.of(
                 OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, Intervall.fraOgMed(STP.minusMonths(10)), virksomhet.getIdentifikator()),
                 OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.DAGPENGER, Intervall.fraOgMed(STP.minusMonths(10)))));
-        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, opptjeningAktiviteter, null, new ForeldrepengerGrunnlag(100, true));
+        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, opptjeningAktiviteter, null, new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, true));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Act
@@ -169,7 +171,7 @@ class VurderBesteberegningTilfelleUtlederTest {
                 OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, Intervall.fraOgMed(STP.minusMonths(10)), virksomhet.getIdentifikator()),
                 OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.DAGPENGER, Intervall.fraOgMed(STP.minusMonths(10))),
                 OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.FRILANS, Intervall.fraOgMed(STP.minusMonths(10)))));
-        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, opptjeningAktiviteter, null, new ForeldrepengerGrunnlag(100, true));
+        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, opptjeningAktiviteter, null, new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, true));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Act

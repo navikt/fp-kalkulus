@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -262,7 +264,7 @@ public class FordelPerioderTjenesteTest {
                                                                          InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder) {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = iayGrunnlagBuilder.build();
         var refusjonskravDatoDtos = OpprettKravPerioderFraInntektsmeldinger.opprett(iayGrunnlag, ref.getSkjæringstidspunktBeregning());
-        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false, aktivitetGradering);
+        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false, aktivitetGradering);
         var input = new BeregningsgrunnlagInput(ref, iayGrunnlag, null, refusjonskravDatoDtos, foreldrepengerGrunnlag)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
         var refusjonBg = tjeneste.fastsettPerioderForRefusjon(input).getBeregningsgrunnlag();
@@ -273,7 +275,7 @@ public class FordelPerioderTjenesteTest {
                                                                            BeregningsgrunnlagGrunnlagDto grunnlag,
                                                                            InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder,
                                                                            List<KravperioderPrArbeidsforholdDto> refusjonskravDatoer) {
-        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false, AktivitetGradering.INGEN_GRADERING);
+        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false, AktivitetGradering.INGEN_GRADERING);
         var input = new BeregningsgrunnlagInput(ref, iayGrunnlagBuilder.build(), null, refusjonskravDatoer, foreldrepengerGrunnlag)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
         var refusjonBg = tjeneste.fastsettPerioderForRefusjon(input).getBeregningsgrunnlag();
@@ -1739,7 +1741,7 @@ public class FordelPerioderTjenesteTest {
                 .build());
 
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = iayGrunnlagBuilder.build();
-        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false, aktivitetGradering);
+        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false, aktivitetGradering);
         var input = new BeregningsgrunnlagInput(behandlingRef, iayGrunnlag, null, List.of(), foreldrepengerGrunnlag)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
 
@@ -1827,7 +1829,7 @@ public class FordelPerioderTjenesteTest {
                 .build());
 
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = iayGrunnlagBuilder.build();
-        ForeldrepengerGrunnlag foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false, aktivitetGradering);
+        ForeldrepengerGrunnlag foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false, aktivitetGradering);
         var input = new BeregningsgrunnlagInput(behandlingRef, iayGrunnlag, null, List.of(), foreldrepengerGrunnlag)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
 

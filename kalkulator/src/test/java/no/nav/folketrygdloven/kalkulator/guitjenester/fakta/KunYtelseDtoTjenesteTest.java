@@ -8,6 +8,8 @@ import java.time.Month;
 import java.util.List;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -57,7 +59,7 @@ public class KunYtelseDtoTjenesteTest {
                 SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING, periode, OpptjeningAktivitetType.SYKEPENGER);
         var beregningsgrunnlagGrunnlag = lagBeregningsgrunnlag(beregningAktivitetAggregat);
-        ForeldrepengerGrunnlag medBesteberegning = new ForeldrepengerGrunnlag(100, false);
+        ForeldrepengerGrunnlag medBesteberegning = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false);
 
         // Act
         var input = new BeregningsgrunnlagGUIInput(koblingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), List.of(), medBesteberegning)
@@ -97,7 +99,7 @@ public class KunYtelseDtoTjenesteTest {
         // Arrange
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = beregningAktivitetSykepengerOgDagpenger();
         var beregningsgrunnlagGrunnlag = lagBeregningsgrunnlag(beregningAktivitetAggregat);
-        ForeldrepengerGrunnlag medBesteberegning = new ForeldrepengerGrunnlag(100, true);
+        ForeldrepengerGrunnlag medBesteberegning = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, true);
 
         // Act
         var input = new BeregningsgrunnlagGUIInput(koblingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), List.of(), medBesteberegning)
@@ -117,7 +119,7 @@ public class KunYtelseDtoTjenesteTest {
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = beregningAktivitetSykepengerOgDagpenger();
 
         var beregningsgrunnlagGrunnlag = lagBeregningsgrunnlag(beregningAktivitetAggregat);
-        ForeldrepengerGrunnlag utenBesteberegning = new ForeldrepengerGrunnlag(100, false);
+        ForeldrepengerGrunnlag utenBesteberegning = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false);
 
         // Act
         var input = new BeregningsgrunnlagGUIInput(koblingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), List.of(), utenBesteberegning)
@@ -150,7 +152,7 @@ public class KunYtelseDtoTjenesteTest {
         // Arrange
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = beregningAktivitetSykepengerOgDagpenger();
         var beregningsgrunnlagGrunnlag = lagBeregningsgrunnlag(beregningAktivitetAggregat);
-        ForeldrepengerGrunnlag utenBesteberegning = new ForeldrepengerGrunnlag(100, false);
+        ForeldrepengerGrunnlag utenBesteberegning = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false);
 
         // Act
         var input = new BeregningsgrunnlagGUIInput(koblingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), List.of(), utenBesteberegning)
@@ -169,7 +171,7 @@ public class KunYtelseDtoTjenesteTest {
         // Arrange
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = beregningAktivitetSykepengerOgDagpenger();
         var beregningsgrunnlagGrunnlag = lagForrigeBeregningsgrunnlagMedLagtTilAndel(beregningAktivitetAggregat);
-        ForeldrepengerGrunnlag utenBesteberegning = new ForeldrepengerGrunnlag(100, false);
+        ForeldrepengerGrunnlag utenBesteberegning = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false);
         // Act
         var input = new BeregningsgrunnlagGUIInput(koblingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), List.of(), utenBesteberegning)
                 .medBeregningsgrunnlagGrunnlag(beregningsgrunnlagGrunnlag);
@@ -196,7 +198,7 @@ public class KunYtelseDtoTjenesteTest {
                 SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING, periode, OpptjeningAktivitetType.SYKEPENGER);
         var beregningsgrunnlagGrunnlag = lagForrigeBeregningsgrunnlag(true, beregningAktivitetAggregat);
-        ForeldrepengerGrunnlag medBesteberegning = new ForeldrepengerGrunnlag(100, true);
+        ForeldrepengerGrunnlag medBesteberegning = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, true);
 
         // Act
         var input = new BeregningsgrunnlagGUIInput(koblingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), List.of(), medBesteberegning)
@@ -224,7 +226,7 @@ public class KunYtelseDtoTjenesteTest {
                 SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING, periode, OpptjeningAktivitetType.SYKEPENGER);
         var beregningsgrunnlagGrunnlag = lagForrigeBeregningsgrunnlag(false, beregningAktivitetAggregat);
-        ForeldrepengerGrunnlag utenBesteberegning = new ForeldrepengerGrunnlag(100, false);
+        ForeldrepengerGrunnlag utenBesteberegning = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false);
 
         // Act
         var input = new BeregningsgrunnlagGUIInput(koblingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), List.of(), utenBesteberegning)

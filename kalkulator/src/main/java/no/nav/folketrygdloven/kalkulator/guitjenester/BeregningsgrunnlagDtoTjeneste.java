@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.adapter.util.Dekningsgradtjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.BeregningsgrunnlagPrStatusOgAndelDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.inntektsgrunnlag.InntektsgrunnlagTjeneste;
@@ -112,8 +113,8 @@ public class BeregningsgrunnlagDtoTjeneste {
     }
 
     private void mapDekningsgrad(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
-        int dekningsgrad = input.getYtelsespesifiktGrunnlag().getDekningsgrad();
-        dto.setDekningsgrad(dekningsgrad);
+        var dekningsgradProsentverdi = Dekningsgradtjeneste.finnDekningsgradProsentverdi(input.getYtelsespesifiktGrunnlag(), Optional.of(dto.getSkjæringstidspunkt()));
+        dto.setDekningsgrad(dekningsgradProsentverdi);
     }
 
     private void mapFaktaOmFordeling(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {

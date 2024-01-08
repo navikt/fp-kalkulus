@@ -8,6 +8,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -277,7 +279,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
     }
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlagDto(KoblingReferanse ref, BeregningsgrunnlagGrunnlagDto grunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
+        var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false);
         var input = new BeregningsgrunnlagGUIInput(ref, iayGrunnlag, List.of(),  ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         return beregningsgrunnlagDtoTjeneste.lagBeregningsgrunnlagDto(input);
     }

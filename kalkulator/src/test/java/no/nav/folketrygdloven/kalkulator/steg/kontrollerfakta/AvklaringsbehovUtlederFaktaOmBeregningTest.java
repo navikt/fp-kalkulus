@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -374,7 +376,7 @@ public class AvklaringsbehovUtlederFaktaOmBeregningTest {
     }
 
     private FaktaOmBeregningInput lagInput(InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseGrunnlagBuilder) {
-        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
+        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false);
         return new FaktaOmBeregningInput(koblingReferanse, inntektArbeidYtelseGrunnlagBuilder.build(), new OpptjeningAktiviteterDto(), List.of(), foreldrepengerGrunnlag);
     }
 

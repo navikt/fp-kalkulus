@@ -7,19 +7,11 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDt
 
 public class PleiepengerNærståendeGrunnlag extends UtbetalingsgradGrunnlag implements YtelsespesifiktGrunnlag {
 
-    protected final int dekningsgrad = 100;
-    protected final int dekningsgrad_inaktiv = 65;
-
     public PleiepengerNærståendeGrunnlag(List<UtbetalingsgradPrAktivitetDto> tilretteleggingMedUtbelingsgrad) {
         super(tilretteleggingMedUtbelingsgrad);
     }
 
     public PleiepengerNærståendeGrunnlag(List<UtbetalingsgradPrAktivitetDto> tilretteleggingMedUtbelingsgrad, LocalDate tilkommetInntektHensyntasFom) {
         super(tilretteleggingMedUtbelingsgrad, tilkommetInntektHensyntasFom);
-    }
-
-    @Override
-    public int getDekningsgrad() {
-        return dekningsgrad;
     }
 }

@@ -2,15 +2,17 @@ package no.nav.folketrygdloven.kalkulator.input;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningVurderingGrunnlag;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.Ytelsegrunnlag;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
 
 public class ForeldrepengerGrunnlag implements YtelsespesifiktGrunnlag {
 
-    private int dekningsgrad = 100;
+    private Dekningsgrad dekningsgrad;
 
     private boolean kvalifisererTilBesteberegning = false;
 
@@ -32,25 +34,24 @@ public class ForeldrepengerGrunnlag implements YtelsespesifiktGrunnlag {
     ForeldrepengerGrunnlag() {
     }
 
-    public ForeldrepengerGrunnlag(int dekningsgrad, boolean kvalifisererTilBesteberegning) {
-        this.dekningsgrad = dekningsgrad;
+    public ForeldrepengerGrunnlag(Dekningsgrad dekningsgrad, boolean kvalifisererTilBesteberegning) {
+        this.dekningsgrad = Objects.requireNonNull(dekningsgrad);
         this.kvalifisererTilBesteberegning = kvalifisererTilBesteberegning;
     }
 
-    public ForeldrepengerGrunnlag(int dekningsgrad, boolean kvalifisererTilBesteberegning, AktivitetGradering aktivitetGradering) {
-        this.dekningsgrad = dekningsgrad;
+    public ForeldrepengerGrunnlag(Dekningsgrad dekningsgrad, boolean kvalifisererTilBesteberegning, AktivitetGradering aktivitetGradering) {
+        this.dekningsgrad = Objects.requireNonNull(dekningsgrad);
         this.kvalifisererTilBesteberegning = kvalifisererTilBesteberegning;
         this.aktivitetGradering = aktivitetGradering;
     }
 
-    public ForeldrepengerGrunnlag(int dekningsgrad, BesteberegningVurderingGrunnlag besteberegningVurderingGrunnlag) {
-        this.dekningsgrad = dekningsgrad;
+    public ForeldrepengerGrunnlag(Dekningsgrad dekningsgrad, BesteberegningVurderingGrunnlag besteberegningVurderingGrunnlag) {
+        this.dekningsgrad = Objects.requireNonNull(dekningsgrad);
         this.kvalifisererTilBesteberegning = besteberegningVurderingGrunnlag != null;
         this.besteberegningVurderingGrunnlag = besteberegningVurderingGrunnlag;
     }
 
-    @Override
-    public int getDekningsgrad() {
+    public Dekningsgrad getDekningsgrad() {
         return dekningsgrad;
     }
 

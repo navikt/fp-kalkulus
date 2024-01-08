@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -237,7 +239,7 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
         var opptjening = new OpptjeningAktiviteterDto(Arrays.asList(arbeidOpptjening));
 
 
-        var input = new BeregningsgrunnlagInput(lagKoblingRefDto(kobling), iay, opptjening, Collections.emptyList(), new ForeldrepengerGrunnlag(100, false));
+        var input = new BeregningsgrunnlagInput(lagKoblingRefDto(kobling), iay, opptjening, Collections.emptyList(), new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false));
         input.leggTilKonfigverdi("inntekt.rapportering.frist.dato", 5);
         var inputMedBG = input.medBeregningsgrunnlagGrunnlag(bg);
         var faktaInput = new FaktaOmBeregningInput(new StegProsesseringInput(inputMedBG, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER))
@@ -269,7 +271,7 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
         var opptjening = new OpptjeningAktiviteterDto(Arrays.asList(arbeidOpptjening));
 
 
-        var input = new BeregningsgrunnlagInput(lagKoblingRefDto(kobling), iay, opptjening, Collections.emptyList(), new ForeldrepengerGrunnlag(100, false));
+        var input = new BeregningsgrunnlagInput(lagKoblingRefDto(kobling), iay, opptjening, Collections.emptyList(), new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false));
         input.leggTilKonfigverdi("inntekt.rapportering.frist.dato", 5);
         var inputMedBG = input.medBeregningsgrunnlagGrunnlag(bg);
 
