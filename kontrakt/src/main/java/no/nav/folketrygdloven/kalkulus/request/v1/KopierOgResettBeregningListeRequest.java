@@ -16,7 +16,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 
 /**
@@ -49,7 +49,7 @@ public class KopierOgResettBeregningListeRequest implements KalkulusRequest {
      */
     @JsonProperty(value = "stegType")
     @Valid
-    private StegType stegType;
+    private BeregningSteg stegType;
 
     @JsonProperty(value = "kopierBeregningListe", required = true)
     @Size(min=1)
@@ -75,7 +75,7 @@ public class KopierOgResettBeregningListeRequest implements KalkulusRequest {
     public KopierOgResettBeregningListeRequest(String saksnummer,
                                                UUID behandlingUuid,
                                                YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
-                                               StegType stegType,
+                                               BeregningSteg stegType,
                                                List<KopierBeregningRequest> kopierBeregningListe,
                                                LocalDateTime originalBehandlingAvsluttetTid,
                                                LocalDateTime behandlingAvsluttetTid) {
@@ -106,7 +106,7 @@ public class KopierOgResettBeregningListeRequest implements KalkulusRequest {
         return kopierBeregningListe;
     }
 
-    public StegType getStegType() {
+    public BeregningSteg getStegType() {
         return stegType;
     }
 

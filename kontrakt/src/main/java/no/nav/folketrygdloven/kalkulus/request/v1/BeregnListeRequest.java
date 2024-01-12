@@ -17,7 +17,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.felles.v1.PersonIdent;
-import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 
 /**
@@ -53,7 +53,7 @@ public class BeregnListeRequest implements KalkulusRequest {
     @JsonProperty(value = "stegType", required = true)
     @NotNull
     @Valid
-    private StegType stegType;
+    private BeregningSteg stegType;
 
     @JsonProperty(value = "beregnForListe", required = true)
     @Size(min = 1)
@@ -69,7 +69,7 @@ public class BeregnListeRequest implements KalkulusRequest {
                               @JsonProperty(value = "behandlingUuid") UUID behandlingUuid,
                               @JsonProperty(value = "aktør", required = true) PersonIdent aktør,
                               @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
-                              @JsonProperty(value = "stegType", required = true) StegType stegType,
+                              @JsonProperty(value = "stegType", required = true) BeregningSteg stegType,
                               @JsonProperty(value = "beregnForListe") List<BeregnForRequest> beregnForListe) {
         this.saksnummer = saksnummer;
         this.behandlingUuid = behandlingUuid;
@@ -97,7 +97,7 @@ public class BeregnListeRequest implements KalkulusRequest {
         return ytelseSomSkalBeregnes;
     }
 
-    public StegType getStegType() {
+    public BeregningSteg getStegType() {
         return stegType;
     }
 
@@ -107,7 +107,7 @@ public class BeregnListeRequest implements KalkulusRequest {
 
     @AssertTrue
     public boolean isSkalHaInputForFørsteSteg() {
-        return stegType != StegType.FASTSETT_STP_BER || beregnForListe.stream().noneMatch(r -> r.getKalkulatorInput() == null);
+        return stegType != BeregningSteg.FASTSETT_STP_BER || beregnForListe.stream().noneMatch(r -> r.getKalkulatorInput() == null);
     }
 
 

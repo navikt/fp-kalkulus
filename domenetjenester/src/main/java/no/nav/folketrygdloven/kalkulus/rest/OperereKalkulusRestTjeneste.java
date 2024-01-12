@@ -44,7 +44,6 @@ import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
-import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.kopiering.KopierBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulus.request.v1.BeregnForRequest;
@@ -112,7 +111,7 @@ public class OperereKalkulusRestTjeneste {
         Map<Long, KalkulusRespons> respons;
         try {
             respons = orkestrerer.beregn(
-                    BeregningSteg.fraKode(spesifikasjon.getStegType().getKode()),
+                    spesifikasjon.getStegType(),
                     new Saksnummer(spesifikasjon.getSaksnummer()),
                     new AktørId(spesifikasjon.getAktør().getIdent()),
                     spesifikasjon.getYtelseSomSkalBeregnes(),
@@ -140,7 +139,7 @@ public class OperereKalkulusRestTjeneste {
                 spesifikasjon.getKopierBeregningListe(),
                 spesifikasjon.getYtelseSomSkalBeregnes(),
                 new Saksnummer(spesifikasjon.getSaksnummer()),
-                spesifikasjon.getStegType() == null ? BeregningSteg.VURDER_VILKAR_BERGRUNN : BeregningSteg.fraKode(spesifikasjon.getStegType().getKode()),
+                spesifikasjon.getStegType() == null ? BeregningSteg.VURDER_VILKAR_BERGRUNN : spesifikasjon.getStegType(),
                 null);
         return Response.ok(spesifikasjon.getKopierBeregningListe()
                 .stream()
@@ -217,7 +216,7 @@ public class OperereKalkulusRestTjeneste {
                                          UUID behandlingUuid,
                                          PersonIdent aktør,
                                          YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
-                                         StegType stegType,
+                                         BeregningSteg stegType,
                                          List<BeregnForRequest> beregnForListe) {
             super(saksnummer, behandlingUuid, aktør, ytelseSomSkalBeregnes, stegType, beregnForListe);
         }
@@ -244,7 +243,7 @@ public class OperereKalkulusRestTjeneste {
         public KopierBeregningListeRequestAbacDto(String saksnummer,
                                                   UUID behandlingUuid,
                                                   YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
-                                                  List<KopierBeregningRequest> kopierBeregningListe, StegType stegType) {
+                                                  List<KopierBeregningRequest> kopierBeregningListe, BeregningSteg stegType) {
             super(saksnummer, behandlingUuid, ytelseSomSkalBeregnes, stegType, kopierBeregningListe);
         }
 

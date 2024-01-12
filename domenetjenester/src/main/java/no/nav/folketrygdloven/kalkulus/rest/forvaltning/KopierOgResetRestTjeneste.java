@@ -36,7 +36,6 @@ import jakarta.ws.rs.core.Response;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.forvaltning.ResetGrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
-import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.kopiering.KopierBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulus.request.v1.KopierBeregningRequest;
@@ -84,7 +83,7 @@ public class KopierOgResetRestTjeneste {
                 spesifikasjon.getKopierBeregningListe(),
                 spesifikasjon.getYtelseSomSkalBeregnes(),
                 new Saksnummer(spesifikasjon.getSaksnummer()),
-                spesifikasjon.getStegType() == null ? BeregningSteg.FAST_BERGRUNN : BeregningSteg.fraKode(spesifikasjon.getStegType().getKode()),
+                spesifikasjon.getStegType() == null ? BeregningSteg.FAST_BERGRUNN : spesifikasjon.getStegType(),
                 spesifikasjon.getBehandlingAvsluttetTid());
         resetGrunnlagTjeneste.resetGrunnlag(spesifikasjon.getKopierBeregningListe().stream().map(KopierBeregningRequest::getKopierFraReferanse).toList(), spesifikasjon.getOriginalBehandlingAvsluttetTid());
         return Response.ok(spesifikasjon.getKopierBeregningListe()
@@ -117,7 +116,7 @@ public class KopierOgResetRestTjeneste {
         public KopierOgResettBeregningListeRequestAbacDto(String saksnummer,
                                                           UUID behandlingUuid,
                                                           YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
-                                                          List<KopierBeregningRequest> kopierBeregningListe, StegType stegType,
+                                                          List<KopierBeregningRequest> kopierBeregningListe, BeregningSteg stegType,
                                                           LocalDateTime originalBehandlingAvsluttetTid,
                                                           LocalDateTime behandlingAvsluttetTid) {
             super(saksnummer, behandlingUuid, ytelseSomSkalBeregnes, stegType, kopierBeregningListe, originalBehandlingAvsluttetTid, behandlingAvsluttetTid);

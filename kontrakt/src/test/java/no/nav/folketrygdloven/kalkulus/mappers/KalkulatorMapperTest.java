@@ -41,12 +41,12 @@ import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseDto;
 import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelserDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.RelatertYtelseType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.TemaUnderkategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
@@ -87,7 +87,7 @@ public class KalkulatorMapperTest {
         UuidDto koblingReferanse = new UuidDto(UUID.randomUUID());
         BeregnListeRequest spesifikasjon = new BeregnListeRequest(
                 saksnummer, UUID.randomUUID(), dummy, YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN,
-                StegType.FASTSETT_STP_BER,
+                BeregningSteg.FASTSETT_STP_BER,
                 List.of(new BeregnForRequest(koblingReferanse.toUuidReferanse(), List.of(UUID.randomUUID()), kalkulatorInputDto, null)));
 
         String json = WRITER_JSON.writeValueAsString(spesifikasjon);

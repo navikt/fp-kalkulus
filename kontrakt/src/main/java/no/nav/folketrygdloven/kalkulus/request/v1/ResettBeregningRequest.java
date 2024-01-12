@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.request.v1;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -14,8 +13,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 
 /**
  * Spesifikasjon for å fortsette en beregning.
