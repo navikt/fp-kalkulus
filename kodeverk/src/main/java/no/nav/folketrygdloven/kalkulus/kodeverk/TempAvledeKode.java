@@ -41,7 +41,14 @@ public class TempAvledeKode {
             } else {
                 throw new IllegalArgumentException("Støtter ikke node av type: " + node.getClass() + " for enum:" + enumCls.getName());
             }
-            LOG.info("KODEVERK-OBJEKT-KALKULUS: mottok kodeverdiobjekt som ikke var String - kode {} fra kodeverk {} ", kode, enumCls.getName());
+            if (LOG.isDebugEnabled()) {
+                try {
+                    throw new IllegalArgumentException("Kodeverk");
+                } catch (Exception e) {
+                    var melding = String.format("KODEVERK-OBJEKT-KALKULUS: mottok kodeverdiobjekt som ikke var String - kode %s fra kodeverk %s", kode, enumCls.getName());
+                    LOG.debug(melding, e);
+                }
+            }
         }
         return kode;
     }
