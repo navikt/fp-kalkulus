@@ -41,7 +41,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterFP implements Av
             return emptyList();
         }
 
-        if (AvklarAktiviteterTjeneste.skalAvklareAktiviteter(beregningAktivitetAggregat, aktørYtelse, input.getFagsakYtelseType())) {
+        if (AvklarAktiviteterTjeneste.skalAvklareAktiviteter(beregningAktivitetAggregat, aktørYtelse)) {
             return List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.AVKLAR_AKTIVITETER));
         }
         return emptyList();

@@ -12,12 +12,10 @@ import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.AktørYtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
-import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AvklarAktiviteterTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AvklaringsbehovUtlederFastsettBeregningsaktiviteter;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
@@ -27,23 +25,13 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterSVP implements A
 
     private static List<BeregningAvklaringsbehovResultat> utledAvklaringsbehovForFelles(BeregningAktivitetAggregatDto beregningAktivitetAggregat,
                                                                                         BeregningsgrunnlagInput input,
-                                                                                        boolean erOverstyrt,
                                                                                         LocalDate skjæringstidspunktForBeregning) {
-        Optional<AktørYtelseDto> aktørYtelse = input.getIayGrunnlag().getAktørYtelseFraRegister();
         Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();
         List<Arbeidsgiver> arbeidsgivere = inntektsmeldinger.stream().map(InntektsmeldingDto::getArbeidsgiver).collect(Collectors.toList());
         Optional<LocalDate> ventPåRapporteringAvInntektFrist = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntektATFL(input, arbeidsgivere, LocalDate.now(), beregningAktivitetAggregat, skjæringstidspunktForBeregning);
-        if (ventPåRapporteringAvInntektFrist.isPresent()) {
-            return List.of(autopunkt(AvklaringsbehovDefinisjon.AUTO_VENT_PÅ_INNTKT_RAP_FRST, BeregningVenteårsak.VENT_INNTEKT_RAPPORTERINGSFRIST, ventPåRapporteringAvInntektFrist.get()));
-        }
-        if (erOverstyrt) {
-            return emptyList();
-        }
-
-        if (AvklarAktiviteterTjeneste.skalAvklareAktiviteter(beregningAktivitetAggregat, aktørYtelse, input.getFagsakYtelseType())) {
-            return List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.AVKLAR_AKTIVITETER));
-        }
-        return emptyList();
+        return ventPåRapporteringAvInntektFrist
+                .map(localDate -> List.of(autopunkt(AvklaringsbehovDefinisjon.AUTO_VENT_PÅ_INNTKT_RAP_FRST, BeregningVenteårsak.VENT_INNTEKT_RAPPORTERINGSFRIST, localDate)))
+                .orElse(emptyList());
     }
 
     protected static BeregningAvklaringsbehovResultat autopunkt(AvklaringsbehovDefinisjon apDef, BeregningVenteårsak venteårsak, LocalDate settPåVentTom) {
@@ -54,6 +42,6 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterSVP implements A
     public List<BeregningAvklaringsbehovResultat> utledAvklaringsbehov(BeregningsgrunnlagRegelResultat regelResultat, BeregningsgrunnlagInput input, boolean erOverstyrt) {
         BeregningAktivitetAggregatDto registerAktiviteter = regelResultat.getRegisterAktiviteter();
         LocalDate skjæringstidspunkt = regelResultat.getBeregningsgrunnlag().getSkjæringstidspunkt();
-        return utledAvklaringsbehovForFelles(registerAktiviteter, input, erOverstyrt, skjæringstidspunkt);
+        return utledAvklaringsbehovForFelles(registerAktiviteter, input, skjæringstidspunkt);
     }
 }

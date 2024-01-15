@@ -19,16 +19,20 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
+/**
+ * Tjeneste som brukes i beregning av foreldrepenger for å se om søker har aktiviteter som må avklares manuelt av saksbehandler
+ * Ikke relevant for beregning av andre ytelser da kun foreldrepenger tar AAP med i beregningen
+ */
 public class AvklarAktiviteterTjeneste {
 
     private AvklarAktiviteterTjeneste() {
         // Skjul meg
     }
 
-    public static boolean skalAvklareAktiviteter(BeregningAktivitetAggregatDto beregningAktivitetAggregat, Optional<AktørYtelseDto> aktørYtelse, FagsakYtelseType fagsakYtelseType) {
+    public static boolean skalAvklareAktiviteter(BeregningAktivitetAggregatDto beregningAktivitetAggregat,
+                                                 Optional<AktørYtelseDto> aktørYtelse) {
         return harVentelønnEllerVartpengerSomSisteAktivitetIOpptjeningsperioden(beregningAktivitetAggregat)
-                || harFullAAPPåStpMedAndreAktiviteter(beregningAktivitetAggregat, aktørYtelse, fagsakYtelseType)
-                || harFullDPPåStpMedAndreAktiviteter(beregningAktivitetAggregat, aktørYtelse, fagsakYtelseType);
+                || harFullAAPITilleggTilAnnenAktivitet(beregningAktivitetAggregat, aktørYtelse);
     }
 
     public static boolean harVentelønnEllerVartpengerSomSisteAktivitetIOpptjeningsperioden(BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
@@ -37,12 +41,13 @@ public class AvklarAktiviteterTjeneste {
         List<BeregningAktivitetDto> aktiviteterPåStp = relevanteAktiviteter.stream()
                 .filter(opptjeningsperiode -> opptjeningsperiode.getPeriode().getFomDato().isBefore(skjæringstidspunkt))
                 .filter(opptjeningsperiode -> !opptjeningsperiode.getPeriode().getTomDato().isBefore(skjæringstidspunkt))
-                .collect(Collectors.toList());
+                .toList();
         return aktiviteterPåStp.stream()
                 .anyMatch(aktivitet -> aktivitet.getOpptjeningAktivitetType().equals(OpptjeningAktivitetType.VENTELØNN_VARTPENGER));
     }
 
-    public static boolean harFullAAPPåStpMedAndreAktiviteter(BeregningAktivitetAggregatDto beregningAktivitetAggregat, Optional<AktørYtelseDto> aktørYtelse, FagsakYtelseType fagsakYtelseType) {
+    public static boolean harFullAAPITilleggTilAnnenAktivitet(BeregningAktivitetAggregatDto beregningAktivitetAggregat,
+                                                              Optional<AktørYtelseDto> aktørYtelse) {
         LocalDate skjæringstidspunkt = beregningAktivitetAggregat.getSkjæringstidspunktOpptjening();
         List<OpptjeningAktivitetType> opptjeningsaktivitetTyper = beregningAktivitetAggregat.getAktiviteterPåDato(skjæringstidspunkt).stream()
                 .map(BeregningAktivitetDto::getOpptjeningAktivitetType).collect(Collectors.toList());
@@ -52,27 +57,12 @@ public class AvklarAktiviteterTjeneste {
         if (beregningAktivitetAggregat.getAktiviteterPåDato(skjæringstidspunkt).size() <= 1) {
             return false;
         }
-        return hentUtbetalingsprosent(aktørYtelse, skjæringstidspunkt, fagsakYtelseType, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER)
+        return hentUtbetalingsprosent(aktørYtelse, skjæringstidspunkt, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER)
                 .filter(verdi -> verdi.compareTo(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG) == 0)
                 .isPresent();
     }
 
-    public static boolean harFullDPPåStpMedAndreAktiviteter(BeregningAktivitetAggregatDto beregningAktivitetAggregat, Optional<AktørYtelseDto> aktørYtelse, FagsakYtelseType fagsakYtelseType) {
-        LocalDate skjæringstidspunkt = beregningAktivitetAggregat.getSkjæringstidspunktOpptjening();
-        List<OpptjeningAktivitetType> opptjeningsaktivitetTyper = beregningAktivitetAggregat.getAktiviteterPåDato(skjæringstidspunkt).stream()
-                .map(BeregningAktivitetDto::getOpptjeningAktivitetType).collect(Collectors.toList());
-        if (opptjeningsaktivitetTyper.stream().noneMatch(type -> type.equals(OpptjeningAktivitetType.DAGPENGER))) {
-            return false;
-        }
-        if (beregningAktivitetAggregat.getAktiviteterPåDato(skjæringstidspunkt).size() <= 1) {
-            return false;
-        }
-        return hentUtbetalingsprosent(aktørYtelse, skjæringstidspunkt, fagsakYtelseType, FagsakYtelseType.DAGPENGER)
-                .filter(verdi -> verdi.compareTo(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG) == 0)
-                .isPresent();
-    }
-
-    private static Optional<BigDecimal> hentUtbetalingsprosent(Optional<AktørYtelseDto> aktørYtelse, LocalDate skjæringstidspunkt, FagsakYtelseType ytelseUnderBehandling, FagsakYtelseType ytelseTypeForMeldekort) {
+    private static Optional<BigDecimal> hentUtbetalingsprosent(Optional<AktørYtelseDto> aktørYtelse, LocalDate skjæringstidspunkt, FagsakYtelseType ytelseTypeForMeldekort) {
         var ytelseFilter = new YtelseFilterDto(aktørYtelse).før(skjæringstidspunkt);
 
         Optional<YtelseDto> nyligsteVedtak = MeldekortUtils.sisteVedtakFørStpForType(ytelseFilter, skjæringstidspunkt, Set.of(ytelseTypeForMeldekort));
@@ -86,7 +76,7 @@ public class AvklarAktiviteterTjeneste {
             );
             return meldekort.map(MeldekortUtils.Meldekort::utbetalingsfaktor).map(f -> f.multiply(BigDecimal.valueOf(200)));
         } else {
-            Optional<YtelseAnvistDto> nyligsteMeldekort = MeldekortUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyligsteVedtak.get(), skjæringstidspunkt, Set.of(ytelseTypeForMeldekort), ytelseUnderBehandling);
+            Optional<YtelseAnvistDto> nyligsteMeldekort = MeldekortUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyligsteVedtak.get(), skjæringstidspunkt, Set.of(ytelseTypeForMeldekort), FagsakYtelseType.FORELDREPENGER);
             return Optional.of(nyligsteMeldekort.flatMap(YtelseAnvistDto::getUtbetalingsgradProsent).map(Stillingsprosent::getVerdi).orElse(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG));
         }
     }

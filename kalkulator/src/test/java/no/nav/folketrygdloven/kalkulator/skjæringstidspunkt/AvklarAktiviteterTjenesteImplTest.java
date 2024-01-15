@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.skjæringstidspunkt;
 
 import static no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType.ARBEIDSAVKLARINGSPENGER;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType.FORELDREPENGER;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType.ARBEID;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType.VENTELØNN_VARTPENGER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,7 +26,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AvklarAktiviteterTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.utils.Tuple;
 
@@ -171,7 +171,7 @@ public class AvklarAktiviteterTjenesteImplTest {
         var aktivitetAggregat = lagBeregningAktivitetAggregatMedType(ARBEID);
 
         //Act
-        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(aktivitetAggregat, Optional.empty(), FagsakYtelseType.FORELDREPENGER);
+        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPITilleggTilAnnenAktivitet(aktivitetAggregat, Optional.empty());
 
         //Assert
         assertThat(harFullAAPMedAndreAktiviteter).isFalse();
@@ -183,7 +183,7 @@ public class AvklarAktiviteterTjenesteImplTest {
         var aktivitetAggregat = lagBeregningAktivitetAggregatMedType(OpptjeningAktivitetType.ARBEIDSAVKLARING);
 
         //Act
-        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(aktivitetAggregat, Optional.empty(), FagsakYtelseType.FORELDREPENGER);
+        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPITilleggTilAnnenAktivitet(aktivitetAggregat, Optional.empty());
 
         //Assert
         assertThat(harFullAAPMedAndreAktiviteter).isFalse();
@@ -199,7 +199,7 @@ public class AvklarAktiviteterTjenesteImplTest {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagAktørYtelse(meldekort1, meldekort2);
 
         //Act
-        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(aktivitetAggregatDto, getAktørYtelseFraRegister(iayGrunnlag), FagsakYtelseType.FORELDREPENGER);
+        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPITilleggTilAnnenAktivitet(aktivitetAggregatDto, getAktørYtelseFraRegister(iayGrunnlag));
 
         //Assert
         assertThat(harFullAAPMedAndreAktiviteter).isFalse();
@@ -216,7 +216,7 @@ public class AvklarAktiviteterTjenesteImplTest {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagAktørYtelse(meldekort1, meldekort2, meldekort3);
 
         //Act
-        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(aktivitetAggregatDto, getAktørYtelseFraRegister(iayGrunnlag), FagsakYtelseType.FORELDREPENGER);
+        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPITilleggTilAnnenAktivitet(aktivitetAggregatDto, getAktørYtelseFraRegister(iayGrunnlag));
 
         //Assert
         assertThat(harFullAAPMedAndreAktiviteter).isTrue();
