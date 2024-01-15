@@ -54,15 +54,6 @@ public class AvklaringsbehovKontrollTjeneste {
         setVurdert(avklaringsbehovEntitet);
     }
 
-    public void løsForMigrering(AvklaringsbehovEntitet avklaringsbehovEntitet, String begrunnelse) {
-        avklaringsbehovEntitet.setStatus(AvklaringsbehovStatus.UTFØRT);
-        if (begrunnelse != null) {
-            avklaringsbehovEntitet.setBegrunnelse(begrunnelse);
-        }
-        setVurdert(avklaringsbehovEntitet);
-    }
-
-
     public AvklaringsbehovEntitet avbryt(no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet avklaringsbehovEntitet) {
         avklaringsbehovEntitet.setStatus(AvklaringsbehovStatus.AVBRUTT);
         return avklaringsbehovEntitet;
