@@ -266,6 +266,7 @@ public class MapIAYTilKalulator {
             builder.medLønnsinntektBeskrivelse(inntektspost.getLønnsinntektBeskrivelse());
         }
         builder.medYtelse(mapUtbetaltYtelseTypeTilGrunnlag(inntektspost.getYtelseType()));
+        builder.medInntektYtelse(inntektspost.getInntektYtelseType());
         return builder;
     }
 
@@ -304,7 +305,6 @@ public class MapIAYTilKalulator {
         if (ytelse.getVedtaksDagsats() != null) {
             builder.medVedtaksDagsats(ytelse.getVedtaksDagsats().getVerdi());
         }
-        builder.medBehandlingsTema(ytelse.getTemaUnderkategori());
         builder.medPeriode(mapDatoIntervall(ytelse.getPeriode()));
         builder.medYtelseType(FagsakYtelseType.fraKode(ytelse.getRelatertYtelseType().getKode()));
         builder.medYtelseGrunnlag(mapYtelseGrunnlag(ytelse.getYtelseGrunnlag()));

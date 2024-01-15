@@ -60,7 +60,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.RelatertYtelseType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.TemaUnderkategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.mappers.JsonMapper;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
@@ -283,6 +282,6 @@ public class BeregningsgrunnlagRepositoryTest extends EntityManagerAwareTest {
                         Inntektskategori.ARBEIDSTAKER)));
         return List.of(new YtelseDto(beløpDto, Set.of(ytelseAnvistDto), RelatertYtelseType.FORELDREPENGER,
                 periode,
-                TemaUnderkategori.FORELDREPENGER, null));
+                null));
     }
 }

@@ -41,12 +41,6 @@ public enum FagsakYtelseType implements Kodeverdi {
     OPPLÆRINGSPENGER("OLP"),
 
     /**
-     * @deprecated Gammel infotrygd kode for K9 ytelser. Må tolkes om til ovenstående sammen med TemaUnderkategori.
-     */
-    @Deprecated
-    PÅRØRENDESYKDOM("PS", "PÅRØRENDESYKDOM"),
-
-    /**
      * Folketrygdloven K11 ytelser.
      */
     ARBEIDSAVKLARINGSPENGER("AAP", "ARBEIDSAVKLARINGSPENGER"),

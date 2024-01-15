@@ -47,7 +47,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.RelatertYtelseType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.TemaUnderkategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningPeriodeDto;
@@ -135,6 +134,6 @@ public class KalkulatorMapperTest {
                 BigDecimal.valueOf(100),
                 BigDecimal.valueOf(100),
                 Inntektskategori.ARBEIDSTAKER)));
-        return List.of(new YtelseDto(beløpDto, Set.of(ytelseAnvistDto), RelatertYtelseType.FORELDREPENGER, periode, TemaUnderkategori.FORELDREPENGER, null));
+        return List.of(new YtelseDto(beløpDto, Set.of(ytelseAnvistDto), RelatertYtelseType.FORELDREPENGER, periode, null));
     }
 }

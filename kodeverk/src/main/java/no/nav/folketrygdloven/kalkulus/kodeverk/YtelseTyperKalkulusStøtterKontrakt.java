@@ -36,11 +36,6 @@ public enum YtelseTyperKalkulusStøtterKontrakt implements Kodeverdi, DatabaseKo
     OPPLÆRINGSPENGER("OLP"),
 
     /**
-     * @deprecated Legacy infotrygd K9 ytelse type (må tolkes sammen med TemaUnderkategori).
-     */
-    PÅRØRENDESYKDOM("PS"),
-
-    /**
      * Folketrygdloven K11 ytelser.
      */
     ARBEIDSAVKLARINGSPENGER("AAP"),

@@ -22,7 +22,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
-import no.nav.folketrygdloven.kalkulus.kodeverk.TemaUnderkategori;
 
 class DirekteOvergangTjenesteTest {
 
@@ -170,7 +169,6 @@ class DirekteOvergangTjenesteTest {
         var ytelse = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
                 .medYtelseType(FagsakYtelseType.FORELDREPENGER)
                 .medVedtaksDagsats(BigDecimal.valueOf(1000))
-                .medBehandlingsTema(TemaUnderkategori.FORELDREPENGER)
                 .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode1)
                         .medBeløp(BigDecimal.valueOf(5000))
                         .medDagsats(BigDecimal.valueOf(1000))
@@ -231,7 +229,6 @@ class DirekteOvergangTjenesteTest {
         var ytelse = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
                 .medYtelseType(FagsakYtelseType.FORELDREPENGER)
                 .medVedtaksDagsats(BigDecimal.valueOf(1000))
-                .medBehandlingsTema(TemaUnderkategori.FORELDREPENGER)
                 .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode1)
                         .medBeløp(BigDecimal.valueOf(5000))
                         .medDagsats(BigDecimal.valueOf(1000))
@@ -257,7 +254,6 @@ class DirekteOvergangTjenesteTest {
         var ytelse = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
                 .medYtelseType(FagsakYtelseType.FORELDREPENGER)
                 .medVedtaksDagsats(BigDecimal.valueOf(1000))
-                .medBehandlingsTema(TemaUnderkategori.FORELDREPENGER)
                 .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode1)
                         .medBeløp(BigDecimal.valueOf(5000))
                         .medDagsats(BigDecimal.valueOf(1000))
@@ -283,7 +279,6 @@ class DirekteOvergangTjenesteTest {
         var ytelse = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
                 .medYtelseType(FagsakYtelseType.FORELDREPENGER)
                 .medVedtaksDagsats(BigDecimal.valueOf(1000))
-                .medBehandlingsTema(TemaUnderkategori.FORELDREPENGER)
                 .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode1)
                         .medBeløp(BigDecimal.valueOf(5000))
                         .medDagsats(BigDecimal.valueOf(1000))
@@ -309,7 +304,6 @@ class DirekteOvergangTjenesteTest {
         var ytelse = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
                 .medYtelseType(FagsakYtelseType.FORELDREPENGER)
                 .medVedtaksDagsats(BigDecimal.valueOf(1000))
-                .medBehandlingsTema(TemaUnderkategori.FORELDREPENGER)
                 .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode1)
                         .medBeløp(BigDecimal.valueOf(5000))
                         .medDagsats(BigDecimal.valueOf(1000))
@@ -335,7 +329,6 @@ class DirekteOvergangTjenesteTest {
         var ytelse = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
                 .medYtelseType(FagsakYtelseType.FORELDREPENGER)
                 .medVedtaksDagsats(BigDecimal.valueOf(1000))
-                .medBehandlingsTema(TemaUnderkategori.FORELDREPENGER)
                 .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode1)
                         .medBeløp(BigDecimal.valueOf(5000))
                         .medDagsats(BigDecimal.valueOf(1000))
@@ -361,7 +354,6 @@ class DirekteOvergangTjenesteTest {
         var ytelse = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
                 .medYtelseType(FagsakYtelseType.FORELDREPENGER)
                 .medVedtaksDagsats(BigDecimal.valueOf(1000))
-                .medBehandlingsTema(TemaUnderkategori.FORELDREPENGER)
                 .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode1)
                         .medBeløp(BigDecimal.valueOf(5000))
                         .medDagsats(BigDecimal.valueOf(1000))
@@ -390,7 +382,6 @@ class DirekteOvergangTjenesteTest {
         return YtelseDtoBuilder.ny().medPeriode(periode)
                 .medYtelseType(FagsakYtelseType.FORELDREPENGER)
                 .medVedtaksDagsats(BigDecimal.valueOf(1000))
-                .medBehandlingsTema(TemaUnderkategori.FORELDREPENGER)
                 .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode)
                         .medBeløp(BigDecimal.valueOf(5000))
                         .medDagsats(BigDecimal.valueOf(1000))

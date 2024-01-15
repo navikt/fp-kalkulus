@@ -41,7 +41,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OffentligYtelseType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 public class MapTilBesteberegningRegelmodell {
 
@@ -188,19 +187,29 @@ public class MapTilBesteberegningRegelmodell {
      */
     private static List<Periodeinntekt> lagInntektForYtelseFraSammenligningsgrunnlag(InntektFilterDto filter) {
         List<InntektspostDto> ytelseposter = filter.filterSammenligningsgrunnlag().getFiltrertInntektsposter().stream()
-                .filter(ip -> ip.getYtelseType() != null && !ip.getYtelseType().equals(OffentligYtelseType.UDEFINERT))
+                .filter(ip -> ip.getInntektYtelseType() != null || (ip.getYtelseType() != null && !ip.getYtelseType().equals(OffentligYtelseType.UDEFINERT)))
                 .collect(Collectors.toList());
 
         return ytelseposter.stream().map(e -> Periodeinntekt.builder()
                 .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSKOMPONENTEN_SAMMENLIGNING)
                 .medAktivitetStatus(AktivitetStatus.KUN_YTELSE)
-                .medYtelse(mapTilRegelytelse(e.getYtelseType()))
+                .medYtelse(mapTilRegelytelse(e))
                 .medMåned(e.getPeriode().getFomDato())
                 .medInntekt(e.getBeløp().getVerdi())
                 .build()).collect(Collectors.toList());
     }
 
-    private static RelatertYtelseType mapTilRegelytelse(YtelseType ytelseType) {
+    private static RelatertYtelseType mapTilRegelytelse(InntektspostDto dto) {
+        if (dto.getInntektYtelseType() != null) {
+            return switch (dto.getInntektYtelseType()) {
+                case FORELDREPENGER -> RelatertYtelseType.FORELDREPENGER;
+                case SVANGERSKAPSPENGER -> RelatertYtelseType.SVANGERSKAPSPENGER;
+                case SYKEPENGER -> RelatertYtelseType.SYKEPENGER;
+                // TODO: Fyll på med ytelser fra InntektYtelseType - det er mange nye
+                default -> throw new IllegalStateException("Støtte på ukjent ytelse under besteberegning " + dto.getInntektYtelseType());
+            };
+        }
+        var ytelseType = dto.getYtelseType();
         if (!(ytelseType instanceof OffentligYtelseType ytelse)) {
             throw new IllegalStateException("Støtte på ukjent ytelse under besteberegning " + ytelseType.getKode());
         }

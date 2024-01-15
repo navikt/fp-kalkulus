@@ -8,6 +8,7 @@ import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.LønnsinntektBeskrivelse;
 import no.nav.folketrygdloven.kalkulus.kodeverk.NæringsinntektType;
@@ -34,6 +35,7 @@ public class InntektspostDto {
     private String ytelse = OffentligYtelseType.UDEFINERT.getKode();
     private Intervall periode;
     private Beløp beløp;
+    private InntektYtelseType inntektYtelseType;
 
     public InntektspostDto() {
         // hibernate
@@ -49,6 +51,7 @@ public class InntektspostDto {
         this.periode = inntektspost.getPeriode();
         this.beløp = inntektspost.getBeløp();
         this.ytelseType = inntektspost.getYtelseType().getKodeverk();
+        this.inntektYtelseType = inntektspost.getInntektYtelseType();
     }
 
     /**
@@ -133,6 +136,14 @@ public class InntektspostDto {
         this.ytelse = ytelse.getKode();
     }
 
+    public InntektYtelseType getInntektYtelseType() {
+        return inntektYtelseType;
+    }
+
+    public void setInntektYtelseType(InntektYtelseType inntektYtelseType) {
+        this.inntektYtelseType = inntektYtelseType;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
@@ -143,6 +154,7 @@ public class InntektspostDto {
         InntektspostDto other = (InntektspostDto) obj;
         return Objects.equals(this.getInntektspostType(), other.getInntektspostType())
                 && Objects.equals(this.getYtelseType(), other.getYtelseType())
+                && Objects.equals(this.getInntektYtelseType(), other.getInntektYtelseType())
                 && Objects.equals(this.getSkatteOgAvgiftsregelType(), other.getSkatteOgAvgiftsregelType())
                 && Objects.equals(this.getPeriode().getFomDato(), other.getPeriode().getFomDato())
                 && Objects.equals(this.getPeriode().getTomDato(), other.getPeriode().getTomDato());
@@ -150,13 +162,14 @@ public class InntektspostDto {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getInntektspostType(), getYtelseType(), getSkatteOgAvgiftsregelType(), getPeriode().getFomDato(), getPeriode().getTomDato());
+        return Objects.hash(getInntektspostType(), getYtelseType(), getInntektYtelseType(), getSkatteOgAvgiftsregelType(), getPeriode().getFomDato(), getPeriode().getTomDato());
     }
 
     @Override
     public String toString() {
         return getClass().getSimpleName() + "<" +
                 "ytelseType=" + ytelseType +
+                "inntektYtelseType=" + inntektYtelseType +
                 "inntektspostType=" + inntektspostType +
                 "skatteOgAvgiftsregelType=" + skatteOgAvgiftsregelType +
                 ", fraOgMed=" + periode.getFomDato() +

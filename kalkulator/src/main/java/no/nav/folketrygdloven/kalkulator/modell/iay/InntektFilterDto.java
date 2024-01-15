@@ -16,7 +16,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 
 /**
@@ -77,10 +76,6 @@ public class InntektFilterDto {
 
     public InntektFilterDto filter(Set<InntektspostType> typer) {
         return filter((inntekt, inntektspost) -> typer.contains(inntektspost.getInntektspostType()));
-    }
-
-    public InntektFilterDto filter(YtelseType ytelseType) {
-        return filter((inntekt, inntektspost) -> ytelseType.equals(inntektspost.getYtelseType()));
     }
 
     public InntektFilterDto filterBeregnetSkatt() {

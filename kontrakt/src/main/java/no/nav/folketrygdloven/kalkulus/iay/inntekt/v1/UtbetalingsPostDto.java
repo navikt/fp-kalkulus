@@ -16,6 +16,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.LønnsinntektBeskrivelse;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SkatteOgAvgiftsregelType;
@@ -60,6 +61,10 @@ public class UtbetalingsPostDto {
     @JsonProperty(value = "ytelseType")
     @Valid
     private UtbetaltYtelseType ytelseType;
+
+    @JsonProperty(value = "inntektYtelseType")
+    @Valid
+    private InntektYtelseType inntektYtelseType;
 
     protected UtbetalingsPostDto() {
     }
@@ -140,6 +145,14 @@ public class UtbetalingsPostDto {
 
     public UtbetaltYtelseType getYtelseType() {
         return ytelseType;
+    }
+
+    public InntektYtelseType getInntektYtelseType() {
+        return inntektYtelseType;
+    }
+
+    public void setInntektYtelseType(InntektYtelseType inntektYtelseType) {
+        this.inntektYtelseType = inntektYtelseType;
     }
 
     @Override

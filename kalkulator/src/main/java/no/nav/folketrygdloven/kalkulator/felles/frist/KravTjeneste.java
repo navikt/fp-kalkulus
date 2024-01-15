@@ -63,7 +63,7 @@ public class KravTjeneste {
         return switch (ytelseType) {
             case FORELDREPENGER, SVANGERSKAPSPENGER -> TreMånedersFristVurderer.finnTidslinje(krav, overstyrtGodkjentRefusjonFom);
             case PLEIEPENGER_SYKT_BARN, OPPLÆRINGSPENGER, OMSORGSPENGER, PLEIEPENGER_NÆRSTÅENDE -> AllePerioderGodkjentFristVurderer.finnTidslinje();
-            case UDEFINERT, FRISINN, ENGANGSTØNAD, DAGPENGER, SYKEPENGER, PÅRØRENDESYKDOM, ARBEIDSAVKLARINGSPENGER, ENSLIG_FORSØRGER ->
+            case UDEFINERT, FRISINN, ENGANGSTØNAD, DAGPENGER, SYKEPENGER, ARBEIDSAVKLARINGSPENGER, ENSLIG_FORSØRGER ->
                     throw new IllegalStateException("Utviklerfeil: Fant ingen fristvurderer for ytelsetype=" + ytelseType);
         };
     }

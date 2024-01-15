@@ -7,7 +7,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.TemaUnderkategori;
 
 public class YtelseDtoBuilder {
 
@@ -46,11 +45,6 @@ public class YtelseDtoBuilder {
 
     public YtelseDtoBuilder leggTilYtelseAnvist(YtelseAnvistDto ytelseAnvist) {
         ytelse.leggTilYtelseAnvist(ytelseAnvist);
-        return this;
-    }
-
-    public YtelseDtoBuilder medBehandlingsTema(TemaUnderkategori behandlingsTema) {
-        ytelse.setBehandlingsTema(behandlingsTema);
         return this;
     }
 

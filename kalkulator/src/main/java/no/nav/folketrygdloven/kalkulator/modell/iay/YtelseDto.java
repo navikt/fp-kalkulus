@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.TemaUnderkategori;
 
 public class YtelseDto {
 
@@ -19,7 +18,6 @@ public class YtelseDto {
     private FagsakYtelseType ytelseType = FagsakYtelseType.UDEFINERT;
     private Intervall periode;
     // Brukes til å skille ulike ytelser med samme ytelsetype
-    private TemaUnderkategori temaUnderkategori = TemaUnderkategori.UDEFINERT;
     private Set<YtelseAnvistDto> ytelseAnvist = new LinkedHashSet<>();
     private YtelseGrunnlagDto ytelseGrunnlag;
 
@@ -30,7 +28,6 @@ public class YtelseDto {
     public YtelseDto(YtelseDto ytelse) {
         this.ytelseType = ytelse.getYtelseType();
         this.periode = ytelse.getPeriode();
-        this.temaUnderkategori = ytelse.getBehandlingsTema();
         this.ytelseAnvist = ytelse.getYtelseAnvist().stream().map(YtelseAnvistDto::new).collect(Collectors.toCollection(LinkedHashSet::new));
         ytelse.getVedtaksDagsats().ifPresent(dagsats -> this.vedtaksDagsats = new Beløp(dagsats.getVerdi()));
     }
@@ -49,14 +46,6 @@ public class YtelseDto {
 
     void setYtelseType(FagsakYtelseType ytelseType) {
         this.ytelseType = ytelseType;
-    }
-
-    public TemaUnderkategori getBehandlingsTema() {
-        return temaUnderkategori;
-    }
-
-    void setBehandlingsTema(TemaUnderkategori behandlingsTema) {
-        this.temaUnderkategori = behandlingsTema;
     }
 
     public Intervall getPeriode() {
@@ -92,7 +81,6 @@ public class YtelseDto {
             return false;
         YtelseDto that = (YtelseDto) o;
         return Objects.equals(ytelseType, that.ytelseType) &&
-                Objects.equals(temaUnderkategori, that.temaUnderkategori) &&
                 Objects.equals(periode, that.periode);
     }
 
@@ -105,7 +93,6 @@ public class YtelseDto {
     public String toString() {
         return "YtelseEntitet{" + //$NON-NLS-1$
                 "relatertYtelseType=" + ytelseType + //$NON-NLS-1$
-                ", typeUnderkategori=" + temaUnderkategori + //$NON-NLS-1$
                 ", periode=" + periode + //$NON-NLS-1$
                 '}';
     }

@@ -2,20 +2,18 @@ package no.nav.folketrygdloven.kalkulus.iay.ytelse.v1;
 
 import java.util.Set;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.RelatertYtelseType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.TemaUnderkategori;
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -43,10 +41,6 @@ public class YtelseDto {
     @NotNull
     private Periode periode;
 
-    @JsonProperty("temaUnderkategori")
-    @Valid
-    private TemaUnderkategori temaUnderkategori;
-
     @JsonProperty(value = "ytelseGrunnlag")
     @Valid
     private YtelseGrunnlagDto ytelseGrunnlag;
@@ -60,13 +54,11 @@ public class YtelseDto {
                      @Valid @Size Set<YtelseAnvistDto> ytelseAnvist,
                      @Valid @NotNull RelatertYtelseType relatertYtelseType,
                      @Valid @NotNull Periode periode,
-                     @Valid TemaUnderkategori temaUnderkategori,
                      @Valid YtelseGrunnlagDto ytelseGrunnlag) {
         this.vedtaksDagsats = vedtaksDagsats;
         this.ytelseAnvist = ytelseAnvist;
         this.relatertYtelseType = relatertYtelseType;
         this.periode = periode;
-        this.temaUnderkategori = temaUnderkategori;
         this.ytelseGrunnlag = ytelseGrunnlag;
     }
 
@@ -80,10 +72,6 @@ public class YtelseDto {
 
     public Periode getPeriode() {
         return periode;
-    }
-
-    public TemaUnderkategori getTemaUnderkategori() {
-        return temaUnderkategori;
     }
 
     public BeløpDto getVedtaksDagsats() {

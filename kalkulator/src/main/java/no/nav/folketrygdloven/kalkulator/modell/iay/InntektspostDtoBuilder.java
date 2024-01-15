@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.LønnsinntektBeskrivelse;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SkatteOgAvgiftsregelType;
@@ -48,6 +49,11 @@ public class InntektspostDtoBuilder {
 
     public InntektspostDtoBuilder medYtelse(YtelseType offentligYtelseType) {
         this.inntektspost.setYtelse(offentligYtelseType);
+        return this;
+    }
+
+    public InntektspostDtoBuilder medInntektYtelse(InntektYtelseType inntektYtelseType) {
+        this.inntektspost.setInntektYtelseType(inntektYtelseType);
         return this;
     }
 
