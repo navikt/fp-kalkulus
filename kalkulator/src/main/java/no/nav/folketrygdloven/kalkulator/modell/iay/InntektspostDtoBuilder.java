@@ -57,16 +57,4 @@ public class InntektspostDtoBuilder {
         }
         throw new IllegalStateException();
     }
-
-    public InntektspostDtoBuilder medInntektspostType(String kode) {
-        return medInntektspostType(InntektspostType.fraKode(kode));
-    }
-
-    public InntektspostDtoBuilder medSkatteOgAvgiftsregelType(String kode) {
-        return medSkatteOgAvgiftsregelType(SkatteOgAvgiftsregelType.fraKode(kode));
-    }
-
-    public InntektspostDtoBuilder medLønnsinntektBeskrivelse(String kode) {
-        return medLønnsinntektBeskrivelse(LønnsinntektBeskrivelse.fraKode(kode));
-    }
 }

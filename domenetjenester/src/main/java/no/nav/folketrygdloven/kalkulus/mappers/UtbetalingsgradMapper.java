@@ -54,6 +54,4 @@ class UtbetalingsgradMapper {
     private static InternArbeidsforholdRefDto mapReferanse(no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetDto aktivitetDto) {
         return aktivitetDto.getInternArbeidsforholdRef() == null ? InternArbeidsforholdRefDto.nullRef() : InternArbeidsforholdRefDto.ref(aktivitetDto.getInternArbeidsforholdRef().getAbakusReferanse());
     }
-
-
 }

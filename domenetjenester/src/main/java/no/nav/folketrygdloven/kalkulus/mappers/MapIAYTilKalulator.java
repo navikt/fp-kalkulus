@@ -114,7 +114,7 @@ public class MapIAYTilKalulator {
 
         arbeidsforholdInformasjon.getOverstyringer().forEach(arbeidsforholdOverstyringDto -> {
             ArbeidsforholdOverstyringDtoBuilder ny = ArbeidsforholdOverstyringDtoBuilder.oppdatere(Optional.empty());
-            ny.medHandling(ArbeidsforholdHandlingType.fraKode(arbeidsforholdOverstyringDto.getHandling().getKode()));
+            ny.medHandling(arbeidsforholdOverstyringDto.getHandling());
             ny.medArbeidsgiver(MapFraKalkulator.mapArbeidsgiver(arbeidsforholdOverstyringDto.getArbeidsgiver()));
             ny.medArbeidsforholdRef(mapArbeidsforholdRef(arbeidsforholdOverstyringDto.getArbeidsforholdRefDto()));
             builder.leggTil(ny);
@@ -257,13 +257,13 @@ public class MapIAYTilKalulator {
     private static InntektspostDtoBuilder mapInntektspost(UtbetalingsPostDto inntektspost) {
         InntektspostDtoBuilder builder = InntektspostDtoBuilder.ny();
         builder.medBeløp(inntektspost.getBeløp());
-        builder.medInntektspostType(inntektspost.getInntektspostType().getKode());
+        builder.medInntektspostType(inntektspost.getInntektspostType());
         builder.medPeriode(inntektspost.getPeriode().getFom(), inntektspost.getPeriode().getTom());
         if (inntektspost.getSkattAvgiftType() != null) {
-            builder.medSkatteOgAvgiftsregelType(inntektspost.getSkattAvgiftType().getKode());
+            builder.medSkatteOgAvgiftsregelType(inntektspost.getSkattAvgiftType());
         }
         if (inntektspost.getLønnsinntektBeskrivelse() != null) {
-            builder.medLønnsinntektBeskrivelse(inntektspost.getLønnsinntektBeskrivelse().getKode());
+            builder.medLønnsinntektBeskrivelse(inntektspost.getLønnsinntektBeskrivelse());
         }
         builder.medYtelse(mapUtbetaltYtelseTypeTilGrunnlag(inntektspost.getYtelseType()));
         return builder;

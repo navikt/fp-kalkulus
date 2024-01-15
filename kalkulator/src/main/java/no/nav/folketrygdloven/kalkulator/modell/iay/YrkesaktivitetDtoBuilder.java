@@ -83,9 +83,4 @@ public class YrkesaktivitetDtoBuilder {
         oppdater.medPeriode(periode);
         return oppdater;
     }
-
-    public YrkesaktivitetDtoBuilder medArbeidType(String kode) {
-        return medArbeidType(ArbeidType.fraKode(kode));
-    }
-
 }
