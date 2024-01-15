@@ -53,6 +53,12 @@ public class FinnArbeidsperiode {
             }
         }
 
+        if (arbeidsperiodeFom == null) {
+            throw new IllegalStateException("Fant ingen arbeidsperide for skjæringstidspunkt " + skjæringstidspunkt +
+                    ", arbeidsgiver " + arbeidsgiver +
+                    " og referanse " + iaRef);
+        }
+
         return Intervall.fraOgMedTilOgMed(arbeidsperiodeFom, arbeidsperiodeTom);
     }
 
