@@ -136,7 +136,7 @@ public class MidlertidigForvaltningRestTjeneste {
     private static boolean erBrukerKontekst() {
         // enkel sjekk på forventet systembruker fra k9-sak
         // Brukes kun for å unngå unødvendige opprettelser av diagnostikk-logg
-        return SubjectHandler.getSubjectHandler().getUid() == null || !SubjectHandler.getSubjectHandler().getUid().equals("srvk9sak");
+        return SubjectHandler.getSubjectHandler().getUid() == null || !SubjectHandler.getSubjectHandler().getUid().equals("srvk9sak")  || !SubjectHandler.getSubjectHandler().getUid().equals("k9-sak") ;
     }
 
     private Map<Long, StegProsesseringInput> lagInputPrKoblingId(OppdaterYtelsesspesifiktGrunnlagListeRequestAbacDto spesifikasjon, List<KoblingEntitet> koblinger, Set<Long> koblingIder) {
