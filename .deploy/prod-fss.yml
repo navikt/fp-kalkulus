@@ -128,3 +128,5 @@ spec:
       value: "false"
     - name: ENABLE_AZURE_CC_SYSTEMCONTEXT
       value: "false"
+    - name: VURDER_REFUSJON_SKAL_HA_UTBETALING
+      value: "false"

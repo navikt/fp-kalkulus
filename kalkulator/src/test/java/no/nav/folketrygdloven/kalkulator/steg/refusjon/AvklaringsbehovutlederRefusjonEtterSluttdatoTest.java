@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
+import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -25,6 +26,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 
 class AvklaringsbehovutlederRefusjonEtterSluttdatoTest {
@@ -129,7 +131,8 @@ class AvklaringsbehovutlederRefusjonEtterSluttdatoTest {
                 REFERANSE,
                 Optional.of(sisteUttak),
                 Optional.of(behandlingstidspunkt),
-                grunnlagBuilder.build());
+                grunnlagBuilder.build(),
+                new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false));
     }
 
     private BeregningsgrunnlagPrStatusOgAndelDto.Builder lagBGAndel(Arbeidsgiver ag, InternArbeidsforholdRefDto ref, int refusjonPrÅr) {

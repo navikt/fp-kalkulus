@@ -34,7 +34,7 @@ public final class AvklaringsbehovutlederVurderRefusjon {
         var orginaleBG = orginaltBGGrunnlag.stream().flatMap(gr -> gr.getBeregningsgrunnlag().stream())
                 .collect(Collectors.toList());
         Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjonIUtbetaltPeriode = orginaleBG.stream()
-                .flatMap(originaltBg -> AndelerMedØktRefusjonTjeneste.finnAndelerMedØktRefusjon(periodisertMedRefusjonOgGradering, originaltBg, grenseverdi).entrySet().stream())
+                .flatMap(originaltBg -> AndelerMedØktRefusjonTjeneste.finnAndelerMedØktRefusjon(periodisertMedRefusjonOgGradering, originaltBg, grenseverdi, input.getYtelsespesifiktGrunnlag()).entrySet().stream())
                 .filter(e -> perioderTilVurderingTjeneste.erTilVurdering(e.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 

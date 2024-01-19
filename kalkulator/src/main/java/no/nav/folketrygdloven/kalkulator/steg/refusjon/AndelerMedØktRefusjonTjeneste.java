@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -20,8 +21,9 @@ public final class AndelerMedØktRefusjonTjeneste {
     }
 
     public static Map<Intervall, List<RefusjonAndel>> finnAndelerMedØktRefusjon(BeregningsgrunnlagDto beregningsgrunnlag,
-                                                                         BeregningsgrunnlagDto originaltGrunnlag,
-                                                                         BigDecimal grenseverdi) {
+                                                                                BeregningsgrunnlagDto originaltGrunnlag,
+                                                                                BigDecimal grenseverdi,
+                                                                                YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         if (beregningsgrunnlag == null || originaltGrunnlag == null) {
             return Collections.emptyMap();
         }
@@ -29,6 +31,6 @@ public final class AndelerMedØktRefusjonTjeneste {
         if (alleredeUtbetaltTOM.isEmpty()) {
             return Collections.emptyMap();
         }
-        return BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(beregningsgrunnlag, originaltGrunnlag, alleredeUtbetaltTOM.get(), grenseverdi);
+        return BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(beregningsgrunnlag, originaltGrunnlag, alleredeUtbetaltTOM.get(), grenseverdi, ytelsespesifiktGrunnlag);
     }
 }

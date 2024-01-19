@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndelNøkkel;
@@ -37,19 +38,21 @@ public final class BeregningRefusjonTjeneste {
      * @param revurderingBeregningsgrunnlag - nytt beregningsgrunnlag
      * @param originaltBeregningsgrunnlag   - beregningsgrunnlag fra forrige behandling
      * @param alleredeUtbetaltTOM           - datoen ytelse er utbetalt til, det er kun relevant å se på perioder frem til denne datoen
+     * @param ytelsespesifiktGrunnlag
      * @return - Ser på revurderingBeregningsgrunnlag og sjekker hvilke andeler i hvilke perioder
      * frem til alleredeUtbetaltTOM som har hatt økt refusjon i forhold til originaltBeregningsgrunnlag
      */
     public static Map<Intervall, List<RefusjonAndel>> finnUtbetaltePerioderMedAndelerMedØktRefusjon(BeregningsgrunnlagDto revurderingBeregningsgrunnlag,
                                                                                                     BeregningsgrunnlagDto originaltBeregningsgrunnlag,
                                                                                                     LocalDate alleredeUtbetaltTOM,
-                                                                                                    BigDecimal grenseverdi) {
+                                                                                                    BigDecimal grenseverdi,
+                                                                                                    YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         if (alleredeUtbetaltTOM.isBefore(revurderingBeregningsgrunnlag.getSkjæringstidspunkt())) {
             return Collections.emptyMap();
         }
         LocalDateTimeline<RefusjonPeriode> alleredeUtbetaltPeriode = finnAlleredeUtbetaltPeriode(alleredeUtbetaltTOM);
-        LocalDateTimeline<RefusjonPeriode> originalUtbetaltTidslinje = RefusjonTidslinjeTjeneste.lagTidslinje(originaltBeregningsgrunnlag, true).intersection(alleredeUtbetaltPeriode);
-        LocalDateTimeline<RefusjonPeriode> revurderingTidslinje = RefusjonTidslinjeTjeneste.lagTidslinje(revurderingBeregningsgrunnlag, false);
+        LocalDateTimeline<RefusjonPeriode> originalUtbetaltTidslinje = RefusjonTidslinjeTjeneste.lagTidslinje(originaltBeregningsgrunnlag, true, ytelsespesifiktGrunnlag).intersection(alleredeUtbetaltPeriode);
+        LocalDateTimeline<RefusjonPeriode> revurderingTidslinje = RefusjonTidslinjeTjeneste.lagTidslinje(revurderingBeregningsgrunnlag, false, ytelsespesifiktGrunnlag);
         LocalDateTimeline<RefusjonPeriodeEndring> endringTidslinje = RefusjonTidslinjeTjeneste.kombinerTidslinjer(originalUtbetaltTidslinje, revurderingTidslinje);
         var helgekomprimertTidslinje = komprimerForHelg(endringTidslinje);
         return vurderPerioder(helgekomprimertTidslinje, grenseverdi);

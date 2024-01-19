@@ -31,7 +31,7 @@ public class AvklaringsbehovutledertjenesteVurderRefusjonFP {
                     .orElse(Collections.emptyList());
             // Skal ikke gi avklaringsbehov enda, ønsker analyse på hvor mange slike saker vi har
             AvklaringsbehovutlederRefusjonEtterSluttdato.harRefusjonEtterSisteDatoIArbeidsforhold(yrkesaktiviteter,
-                    input.getKoblingReferanse().getKoblingUuid(), fpGrunnlag.getSisteSøkteUttaksdag(), fpGrunnlag.getBehandlingstidspunkt(), periodisertMedRefusjonOgGradering);
+                    input.getKoblingReferanse().getKoblingUuid(), fpGrunnlag.getSisteSøkteUttaksdag(), fpGrunnlag.getBehandlingstidspunkt(), periodisertMedRefusjonOgGradering, input.getYtelsespesifiktGrunnlag());
 
         }
 

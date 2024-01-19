@@ -37,7 +37,7 @@ public final class VurderRefusjonDtoTjeneste {
         BigDecimal grenseverdi = KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi().multiply(beregningsgrunnlag.get().getGrunnbeløp().getVerdi());
 
         Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjon = originaleGrunnlag.stream()
-                .flatMap(originaltBg -> AndelerMedØktRefusjonTjeneste.finnAndelerMedØktRefusjon(beregningsgrunnlag.get(), originaltBg, grenseverdi).entrySet().stream())
+                .flatMap(originaltBg -> AndelerMedØktRefusjonTjeneste.finnAndelerMedØktRefusjon(beregningsgrunnlag.get(), originaltBg, grenseverdi, input.getYtelsespesifiktGrunnlag()).entrySet().stream())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, unikeElementer()));
         if (!andelerMedØktRefusjon.isEmpty()) {
             return LagVurderRefusjonDto.lagDto(andelerMedØktRefusjon, input);

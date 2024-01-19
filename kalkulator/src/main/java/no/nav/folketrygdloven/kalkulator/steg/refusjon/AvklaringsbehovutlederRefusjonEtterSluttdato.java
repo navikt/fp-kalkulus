@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
@@ -40,12 +41,13 @@ public final class AvklaringsbehovutlederRefusjonEtterSluttdato {
                                                                    UUID koblingUuid,
                                                                    Optional<LocalDate> sisteSøkteUttaksdag,
                                                                    Optional<LocalDate> behandlingstidspunkt,
-                                                                   BeregningsgrunnlagDto periodisertMedRefusjonOgGradering) {
+                                                                   BeregningsgrunnlagDto periodisertMedRefusjonOgGradering,
+                                                                   YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         // Trenger ikke sjekke om søker ikke er i jobb eller om det ikke finnes uttak
         if (yrkesaktiviteter.isEmpty() || sisteSøkteUttaksdag.isEmpty() || behandlingstidspunkt.isEmpty()) {
             return false;
         }
-        LocalDateTimeline<RefusjonPeriode> allePerioder = RefusjonTidslinjeTjeneste.lagTidslinje(periodisertMedRefusjonOgGradering, false);
+        LocalDateTimeline<RefusjonPeriode> allePerioder = RefusjonTidslinjeTjeneste.lagTidslinje(periodisertMedRefusjonOgGradering, false, ytelsespesifiktGrunnlag);
         LocalDateTimeline<RefusjonPeriode> perioderMedPotensieltUttak = allePerioder.intersection(finnPeriodeFremTilSisteUttak(sisteSøkteUttaksdag.get()));
 
         List<RefusjonAndel> andelerSomMåSjekkes = perioderMedPotensieltUttak.toSegments()
