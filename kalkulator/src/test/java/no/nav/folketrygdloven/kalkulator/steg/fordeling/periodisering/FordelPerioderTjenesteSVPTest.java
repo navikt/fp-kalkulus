@@ -44,7 +44,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulator.ytelse.svp.MapRefusjonPerioderFraVLTilRegelSVP;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
@@ -74,7 +73,7 @@ public class FordelPerioderTjenesteSVPTest {
 
     @BeforeEach
     public void setUp() {
-        this.tjeneste = lagTjeneste();
+        this.tjeneste = new FordelPerioderTjeneste();
 
     }
 
@@ -271,9 +270,4 @@ public class FordelPerioderTjenesteSVPTest {
         return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(skjæringstidspunkt, tomDato), utbetalingsgrad);
     }
 
-    private FordelPerioderTjeneste lagTjeneste() {
-        var oversetterTilRegelRefusjon = new MapRefusjonPerioderFraVLTilRegelSVP();
-        return new FordelPerioderTjeneste(
-        );
-    }
 }

@@ -19,10 +19,8 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.ytelse.fp.MapRefusjonPerioderFraVLTilRegelFP;
-import no.nav.folketrygdloven.kalkulator.ytelse.k9.MapRefusjonPerioderFraVLTilRegelOMP;
-import no.nav.folketrygdloven.kalkulator.ytelse.k9.MapRefusjonPerioderFraVLTilRegelPleiepenger;
-import no.nav.folketrygdloven.kalkulator.ytelse.svp.MapRefusjonPerioderFraVLTilRegelSVP;
 import no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.MapPerioderForUtbetalingsgradFraVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.MapRefusjonPerioderFraVLTilRegelUtbgrad;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
@@ -30,7 +28,7 @@ import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
 
 /**
  * Splitter periode ved endring i refusjon, gradering og utbetalingsgrad
- *
+ * <p>
  * Sette refusjon på andeler med gyldig refusjon
  */
 public class FordelPerioderTjeneste {
@@ -50,10 +48,8 @@ public class FordelPerioderTjeneste {
                                                                              BeregningsgrunnlagDto beregningsgrunnlag) {
         var modell = switch (input.getFagsakYtelseType()) {
             case FORELDREPENGER -> new MapRefusjonPerioderFraVLTilRegelFP().map(input, beregningsgrunnlag);
-            case SVANGERSKAPSPENGER -> new MapRefusjonPerioderFraVLTilRegelSVP().map(input, beregningsgrunnlag);
-            case OMSORGSPENGER -> new MapRefusjonPerioderFraVLTilRegelOMP().map(input, beregningsgrunnlag);
-            case PLEIEPENGER_SYKT_BARN, OPPLÆRINGSPENGER, PLEIEPENGER_NÆRSTÅENDE ->
-                    new MapRefusjonPerioderFraVLTilRegelPleiepenger().map(input, beregningsgrunnlag);
+            case PLEIEPENGER_SYKT_BARN, OPPLÆRINGSPENGER, PLEIEPENGER_NÆRSTÅENDE, SVANGERSKAPSPENGER, OMSORGSPENGER ->
+                    new MapRefusjonPerioderFraVLTilRegelUtbgrad().map(input, beregningsgrunnlag);
             default -> null;
         };
         return Optional.ofNullable(modell);
@@ -69,13 +65,13 @@ public class FordelPerioderTjeneste {
     }
 
     private BeregningsgrunnlagRegelResultat fastsettPerioderForUtbetalingsgrad(BeregningsgrunnlagInput input,
-                                                                                            BeregningsgrunnlagDto beregningsgrunnlag) {
+                                                                               BeregningsgrunnlagDto beregningsgrunnlag) {
         var periodeModell = MapPerioderForUtbetalingsgradFraVLTilRegel.map(input, beregningsgrunnlag);
         return kjørRegelOgMapTilVLUtbetalingsgrad(beregningsgrunnlag, periodeModell);
     }
 
     private BeregningsgrunnlagRegelResultat fastsettPerioderForGradering(BeregningsgrunnlagInput input,
-                                                                                         BeregningsgrunnlagDto beregningsgrunnlag) {
+                                                                         BeregningsgrunnlagDto beregningsgrunnlag) {
         var periodeModell = MapPerioderForGraderingFraVLTilRegel.map(input, beregningsgrunnlag);
         return kjørRegelOgMapTilVLGradering(beregningsgrunnlag, periodeModell);
     }
@@ -92,7 +88,7 @@ public class FordelPerioderTjeneste {
 
 
     private BeregningsgrunnlagRegelResultat kjørRegelOgMapTilVLGradering(BeregningsgrunnlagDto beregningsgrunnlag,
-                                                                                          PeriodeModellGradering input) {
+                                                                         PeriodeModellGradering input) {
         List<SplittetPeriode> splittedePerioder = new ArrayList<>();
         RegelResultat regelResultat = KalkulusRegler.fastsettPerioderGradering(input, splittedePerioder);
         var nyttBeregningsgrunnlag = oversetterFraRegelGraderingOgUtbetalingsgrad.mapFraRegel(splittedePerioder, beregningsgrunnlag);

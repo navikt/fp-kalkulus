@@ -44,7 +44,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulator.ytelse.svp.MapRefusjonPerioderFraVLTilRegelSVP;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
@@ -57,9 +56,9 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 public class FordelPerioderTjenestePSBTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019, Month.JANUARY, 4);
     private static final Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder()
-        .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT)
-        .medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
-        .build();
+            .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT)
+            .medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
+            .build();
     private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(90000L);
     private static final String ORG_NUMMER = "45345";
     private static final String ORG_NUMMER_2 = "15345";
@@ -74,7 +73,7 @@ public class FordelPerioderTjenestePSBTest {
 
     @BeforeEach
     public void setUp() {
-        this.tjeneste = lagTjeneste();
+        this.tjeneste = new FordelPerioderTjeneste();
 
     }
 
@@ -88,7 +87,7 @@ public class FordelPerioderTjenestePSBTest {
         PeriodeMedUtbetalingsgradDto periodeTilkommet2 = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT.plusDays(10), SKJÆRINGSTIDSPUNKT.plusMonths(1), BigDecimal.ZERO, BigDecimal.valueOf(50));
 
         UtbetalingsgradPrAktivitetDto utbetalingsgrader1 = lagUtbetalingsgradPrAktivitet(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORG_NUMMER),
-            periode1);
+                periode1);
 
 
         UtbetalingsgradPrAktivitetDto utbetalingsgraderTilkommet = lagUtbetalingsgradPrAktivitet(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORG_NUMMER_2), periodeTilkommet1, periodeTilkommet2);
@@ -106,8 +105,8 @@ public class FordelPerioderTjenestePSBTest {
 
         // Act
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
-            .medData(iayAggregatBuilder)
-            .medInntektsmeldinger(im1).build();
+                .medData(iayAggregatBuilder)
+                .medInntektsmeldinger(im1).build();
         BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(koblingReferanse, grunnlag, beregningsgrunnlag, iayGrunnlag, skjæringstidspunkt, svangerskapspengerGrunnlag);
 
         // Assert
@@ -208,15 +207,15 @@ public class FordelPerioderTjenestePSBTest {
                                                                 BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
         BeregningsgrunnlagPeriodeDto.Builder beregningsgrunnlagPeriodeBuilder = lagBeregningsgrunnlagPerioderBuilder(SKJÆRINGSTIDSPUNKT, null, orgnrs);
         BeregningsgrunnlagDto.Builder beregningsgrunnlagBuilder = BeregningsgrunnlagDto.builder()
-            .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
-            .medGrunnbeløp(GRUNNBELØP)
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER).medHjemmel(Hjemmel.F_14_7));
+                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
+                .medGrunnbeløp(GRUNNBELØP)
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER).medHjemmel(Hjemmel.F_14_7));
         beregningsgrunnlagBuilder.leggTilBeregningsgrunnlagPeriode(beregningsgrunnlagPeriodeBuilder);
         BeregningsgrunnlagDto bg = beregningsgrunnlagBuilder.build();
         return BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
-            .medBeregningsgrunnlag(bg)
-            .medRegisterAktiviteter(beregningAktivitetAggregat)
-            .build(BeregningsgrunnlagTilstand.FORESLÅTT);
+                .medBeregningsgrunnlag(bg)
+                .medRegisterAktiviteter(beregningAktivitetAggregat)
+                .build(BeregningsgrunnlagTilstand.FORESLÅTT);
     }
 
     private BeregningsgrunnlagPeriodeDto.Builder lagBeregningsgrunnlagPerioderBuilder(LocalDate fom, LocalDate tom, List<String> orgnrs) {
@@ -224,14 +223,14 @@ public class FordelPerioderTjenestePSBTest {
         for (String orgnr : orgnrs) {
             Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(orgnr);
             BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
-                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
-                    .medArbeidsgiver(arbeidsgiver)
-                    .medArbeidsperiodeFom(SKJÆRINGSTIDSPUNKT.minusYears(1)));
+                    .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                    .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
+                            .medArbeidsgiver(arbeidsgiver)
+                            .medArbeidsperiodeFom(SKJÆRINGSTIDSPUNKT.minusYears(1)));
             builder.leggTilBeregningsgrunnlagPrStatusOgAndel(andelBuilder);
         }
         return builder
-            .medBeregningsgrunnlagPeriode(fom, tom);
+                .medBeregningsgrunnlagPeriode(fom, tom);
     }
 
     private UtbetalingsgradPrAktivitetDto lagUtbetalingsgradPrAktivitet(UttakArbeidType uttakArbeidType, Arbeidsgiver arbeidsgiver,
@@ -244,9 +243,4 @@ public class FordelPerioderTjenestePSBTest {
         return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(skjæringstidspunkt, tomDato), utbetalingsgrad, aktivitetsgrad);
     }
 
-    private FordelPerioderTjeneste lagTjeneste() {
-        var oversetterTilRegelRefusjon = new MapRefusjonPerioderFraVLTilRegelSVP();
-        return new FordelPerioderTjeneste(
-        );
-    }
 }
