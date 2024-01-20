@@ -1,9 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
@@ -11,28 +8,14 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.LønnsinntektBeskrivelse;
-import no.nav.folketrygdloven.kalkulus.kodeverk.NæringsinntektType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.OffentligYtelseType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.PensjonTrygdType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SkatteOgAvgiftsregelType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 public class InntektspostDto {
-
-    private static final Map<String, Map<String, ? extends YtelseType>> YTELSE_TYPER = new LinkedHashMap<>();
-
-    static {
-        YTELSE_TYPER.put(OffentligYtelseType.KODEVERK, OffentligYtelseType.kodeMap());
-        YTELSE_TYPER.put(NæringsinntektType.KODEVERK, NæringsinntektType.kodeMap());
-        YTELSE_TYPER.put(PensjonTrygdType.KODEVERK, PensjonTrygdType.kodeMap());
-    }
 
     private InntektspostType inntektspostType;
     private SkatteOgAvgiftsregelType skatteOgAvgiftsregelType = SkatteOgAvgiftsregelType.UDEFINERT;
     private InntektDto inntekt;
-    private String ytelseType = OffentligYtelseType.KODEVERK;
     private LønnsinntektBeskrivelse lønnsinnntektBeskrivelse = LønnsinntektBeskrivelse.UDEFINERT;
-    private String ytelse = OffentligYtelseType.UDEFINERT.getKode();
     private Intervall periode;
     private Beløp beløp;
     private InntektYtelseType inntektYtelseType;
@@ -47,11 +30,10 @@ public class InntektspostDto {
     InntektspostDto(InntektspostDto inntektspost) {
         this.inntektspostType = inntektspost.getInntektspostType();
         this.skatteOgAvgiftsregelType = inntektspost.getSkatteOgAvgiftsregelType();
-        this.ytelse = inntektspost.getYtelseType().getKode();
         this.periode = inntektspost.getPeriode();
         this.beløp = inntektspost.getBeløp();
-        this.ytelseType = inntektspost.getYtelseType().getKodeverk();
         this.inntektYtelseType = inntektspost.getInntektYtelseType();
+        this.lønnsinnntektBeskrivelse = inntektspost.getLønnsinnntektBeskrivelse();
     }
 
     /**
@@ -118,22 +100,12 @@ public class InntektspostDto {
         this.beløp = beløp;
     }
 
-    public YtelseType getYtelseType() {
-        var yt = YTELSE_TYPER.getOrDefault(ytelseType, Collections.emptyMap()).get(ytelse);
-        return yt != null ? yt : OffentligYtelseType.UDEFINERT;
-    }
-
     public InntektDto getInntekt() {
         return inntekt;
     }
 
     void setInntekt(InntektDto inntekt) {
         this.inntekt = inntekt;
-    }
-
-    void setYtelse(YtelseType ytelse) {
-        this.ytelseType = ytelse.getKodeverk();
-        this.ytelse = ytelse.getKode();
     }
 
     public InntektYtelseType getInntektYtelseType() {
@@ -148,12 +120,11 @@ public class InntektspostDto {
     public boolean equals(Object obj) {
         if (obj == this) {
             return true;
-        } else if (obj == null || !(obj instanceof InntektspostDto)) {
+        } else if (!(obj instanceof InntektspostDto)) {
             return false;
         }
         InntektspostDto other = (InntektspostDto) obj;
         return Objects.equals(this.getInntektspostType(), other.getInntektspostType())
-                && Objects.equals(this.getYtelseType(), other.getYtelseType())
                 && Objects.equals(this.getInntektYtelseType(), other.getInntektYtelseType())
                 && Objects.equals(this.getSkatteOgAvgiftsregelType(), other.getSkatteOgAvgiftsregelType())
                 && Objects.equals(this.getPeriode().getFomDato(), other.getPeriode().getFomDato())
@@ -162,13 +133,12 @@ public class InntektspostDto {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getInntektspostType(), getYtelseType(), getInntektYtelseType(), getSkatteOgAvgiftsregelType(), getPeriode().getFomDato(), getPeriode().getTomDato());
+        return Objects.hash(getInntektspostType(), getInntektYtelseType(), getSkatteOgAvgiftsregelType(), getPeriode().getFomDato(), getPeriode().getTomDato());
     }
 
     @Override
     public String toString() {
         return getClass().getSimpleName() + "<" +
-                "ytelseType=" + ytelseType +
                 "inntektYtelseType=" + inntektYtelseType +
                 "inntektspostType=" + inntektspostType +
                 "skatteOgAvgiftsregelType=" + skatteOgAvgiftsregelType +

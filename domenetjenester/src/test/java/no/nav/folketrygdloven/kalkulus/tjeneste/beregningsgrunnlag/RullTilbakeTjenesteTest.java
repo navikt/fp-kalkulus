@@ -228,19 +228,20 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
     }
 
     private String getTestJSON() {
-        return "{\n" +
-                "  \"jeg\" : {\n" +
-                "    \"er\" : \"en\",\n" +
-                "    \"test\" : \"json\",\n" +
-                "    \"fordi\" : \"jeg\",\n" +
-                "    \"tester\" : \"jsonb\",\n" +
-                "    \"lagring\" : {\n" +
-                "      \"i\" : \"postgres\",\n" +
-                "      \"databasen\" : \"til\"\n" +
-                "    }\n" +
-                "  },\n" +
-                "  \"kalkulus\" : \"okey?\"\n" +
-                "}";
+        return """
+                {
+                  "jeg" : {
+                    "er" : "en",
+                    "test" : "json",
+                    "fordi" : "jeg",
+                    "tester" : "jsonb",
+                    "lagring" : {
+                      "i" : "postgres",
+                      "databasen" : "til"
+                    }
+                  },
+                  "kalkulus" : "okey?"
+                }""";
     }
 
 

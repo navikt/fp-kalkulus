@@ -78,10 +78,6 @@ Starter en beregning med gitt inputdata
           "kilde": {
             "kodeverk": "FAGSYSTEM",
             "kode": "INFOTRYGD"
-          },
-          "temaUnderkategori": {
-            "kodeverk": "TEMA_UNDERKATEGORI",
-            "kode": "FØ"
           }
         }
       ]

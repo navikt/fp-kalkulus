@@ -14,13 +14,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "kodeverk", defaultImpl = Void.class)
 @JsonSubTypes({
         @JsonSubTypes.Type(value = RelatertYtelseType.class, name = RelatertYtelseType.KODEVERK),
-        @JsonSubTypes.Type(value = UtbetaltNæringsYtelseType.class, name = UtbetaltNæringsYtelseType.KODEVERK),
-        @JsonSubTypes.Type(value = UtbetaltPensjonTrygdType.class, name = UtbetaltPensjonTrygdType.KODEVERK),
-        @JsonSubTypes.Type(value = UtbetaltYtelseFraOffentligeType.class, name = UtbetaltYtelseFraOffentligeType.KODEVERK),
         @JsonSubTypes.Type(value = UttakArbeidType.class, name = UttakArbeidType.KODEVERK),
 })
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public sealed abstract class Kodeverk permits RelatertYtelseType, UtbetaltNæringsYtelseType, UtbetaltPensjonTrygdType, UtbetaltYtelseFraOffentligeType, UttakArbeidType {
+public sealed abstract class Kodeverk permits RelatertYtelseType, UttakArbeidType {
 
     protected Kodeverk() {
         // default ctor

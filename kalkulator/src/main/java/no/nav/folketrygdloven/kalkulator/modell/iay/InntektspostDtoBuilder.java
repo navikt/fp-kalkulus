@@ -8,7 +8,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.InntektYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.LønnsinntektBeskrivelse;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SkatteOgAvgiftsregelType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 public class InntektspostDtoBuilder {
     private InntektspostDto inntektspost;
@@ -44,11 +43,6 @@ public class InntektspostDtoBuilder {
 
     public InntektspostDtoBuilder medBeløp(BigDecimal verdi) {
         this.inntektspost.setBeløp(new Beløp(verdi));
-        return this;
-    }
-
-    public InntektspostDtoBuilder medYtelse(YtelseType offentligYtelseType) {
-        this.inntektspost.setYtelse(offentligYtelseType);
         return this;
     }
 

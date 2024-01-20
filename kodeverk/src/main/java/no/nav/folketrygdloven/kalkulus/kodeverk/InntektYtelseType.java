@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum InntektYtelseType implements Kodeverdi {
+public enum InntektYtelseType implements Kodeverdi, KontraktKode {
 
     // Ytelse utbetalt til person som er arbeidstaker/frilanser/ytelsesmottaker
     AAP(Kategori.YTELSE),
@@ -64,8 +64,8 @@ public enum InntektYtelseType implements Kodeverdi {
         if (node == null) {
             return null;
         }
-        String kode = TempAvledeKode.getVerdi(OffentligYtelseType.class, node, "kode");
-        return kode != null ? InntektYtelseType.valueOf(kode) : null;
+        String kode = TempAvledeKode.getVerdi(InntektYtelseType.class, node, "kode");
+        return fraKode(kode);
     }
 
     @Override

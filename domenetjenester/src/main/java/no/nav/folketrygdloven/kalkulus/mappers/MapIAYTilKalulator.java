@@ -47,15 +47,7 @@ import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.UtbetalingsPostDto;
 import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseDto;
 import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseFordelingDto;
 import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelserDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidsforholdHandlingType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.NæringsinntektType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.OffentligYtelseType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.PensjonTrygdType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltNæringsYtelseType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltPensjonTrygdType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltYtelseFraOffentligeType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltYtelseType;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittEgenNæringDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittFrilansInntekt;
@@ -265,7 +257,6 @@ public class MapIAYTilKalulator {
         if (inntektspost.getLønnsinntektBeskrivelse() != null) {
             builder.medLønnsinntektBeskrivelse(inntektspost.getLønnsinntektBeskrivelse());
         }
-        builder.medYtelse(mapUtbetaltYtelseTypeTilGrunnlag(inntektspost.getYtelseType()));
         builder.medInntektYtelse(inntektspost.getInntektYtelseType());
         return builder;
     }
@@ -347,23 +338,6 @@ public class MapIAYTilKalulator {
         }
         builder.medAnvisteAndeler(AnvistAndelMapper.mapAnvisteAndeler(ytelseAnvist));
         return builder.build();
-    }
-
-
-    static no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType mapUtbetaltYtelseTypeTilGrunnlag(UtbetaltYtelseType type) {
-
-        if (type == null)
-            return OffentligYtelseType.UDEFINERT;
-
-        if (type instanceof UtbetaltNæringsYtelseType) {
-            return NæringsinntektType.fraKode(((UtbetaltNæringsYtelseType) type).getKode());
-
-        } else if (type instanceof UtbetaltPensjonTrygdType) {
-            return PensjonTrygdType.fraKode(((UtbetaltPensjonTrygdType) type).getKode());
-        } else if (type instanceof UtbetaltYtelseFraOffentligeType) {
-            return OffentligYtelseType.fraKode(((UtbetaltYtelseFraOffentligeType) type).getKode());
-        }
-        throw new IllegalStateException("Kunne ikke mappe" + type);
     }
 
 }

@@ -20,7 +20,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.InntektYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.LønnsinntektBeskrivelse;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SkatteOgAvgiftsregelType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltYtelseType;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
@@ -58,10 +57,6 @@ public class UtbetalingsPostDto {
     /**
      * Satt dersom dette gjelder en ytelse, ellers ikke (henger sammen med {@link UtbetalingDto#getKilde()})
      */
-    @JsonProperty(value = "ytelseType")
-    @Valid
-    private UtbetaltYtelseType ytelseType;
-
     @JsonProperty(value = "inntektYtelseType")
     @Valid
     private InntektYtelseType inntektYtelseType;
@@ -95,15 +90,6 @@ public class UtbetalingsPostDto {
 
     public void setLønnsinntektBeskrivelse(LønnsinntektBeskrivelse lønnsinntektBeskrivelse) {
         this.lønnsinntektBeskrivelse = lønnsinntektBeskrivelse;
-    }
-
-    public void setUtbetaltYtelseType(UtbetaltYtelseType ytelseType) {
-        this.ytelseType = ytelseType;
-    }
-
-    public UtbetalingsPostDto medUtbetaltYtelseType(UtbetaltYtelseType ytelseType) {
-        setUtbetaltYtelseType(ytelseType);
-        return this;
     }
 
     public UtbetalingsPostDto medSkattAvgiftType(SkatteOgAvgiftsregelType skattAvgiftType) {
@@ -143,10 +129,6 @@ public class UtbetalingsPostDto {
         return this;
     }
 
-    public UtbetaltYtelseType getYtelseType() {
-        return ytelseType;
-    }
-
     public InntektYtelseType getInntektYtelseType() {
         return inntektYtelseType;
     }
@@ -157,7 +139,7 @@ public class UtbetalingsPostDto {
 
     @Override
     public int hashCode() {
-        return Objects.hash(inntektspostType, periode, ytelseType);
+        return Objects.hash(inntektspostType, periode, inntektYtelseType);
     }
 
     @Override
@@ -170,6 +152,6 @@ public class UtbetalingsPostDto {
 
         return Objects.equals(inntektspostType, other.inntektspostType)
                 && Objects.equals(periode, other.periode)
-                && Objects.equals(ytelseType, other.ytelseType);
+                && Objects.equals(inntektYtelseType, other.inntektYtelseType);
     }
 }
