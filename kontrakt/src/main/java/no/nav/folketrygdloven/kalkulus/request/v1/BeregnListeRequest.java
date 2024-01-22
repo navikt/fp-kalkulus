@@ -18,7 +18,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.felles.v1.PersonIdent;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 /**
  * Spesifikasjon for å fortsette en beregning.
@@ -48,7 +48,7 @@ public class BeregnListeRequest implements KalkulusRequest {
     @JsonProperty(value = "ytelseSomSkalBeregnes", required = true)
     @NotNull
     @Valid
-    private YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes;
+    private FagsakYtelseType ytelseSomSkalBeregnes;
 
     @JsonProperty(value = "stegType", required = true)
     @NotNull
@@ -68,7 +68,7 @@ public class BeregnListeRequest implements KalkulusRequest {
     public BeregnListeRequest(@JsonProperty(value = "saksnummer", required = true) String saksnummer,
                               @JsonProperty(value = "behandlingUuid") UUID behandlingUuid,
                               @JsonProperty(value = "aktør", required = true) PersonIdent aktør,
-                              @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                              @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) FagsakYtelseType ytelseSomSkalBeregnes,
                               @JsonProperty(value = "stegType", required = true) BeregningSteg stegType,
                               @JsonProperty(value = "beregnForListe") List<BeregnForRequest> beregnForListe) {
         this.saksnummer = saksnummer;
@@ -93,7 +93,7 @@ public class BeregnListeRequest implements KalkulusRequest {
         return aktør;
     }
 
-    public YtelseTyperKalkulusStøtterKontrakt getYtelseSomSkalBeregnes() {
+    public FagsakYtelseType getYtelseSomSkalBeregnes() {
         return ytelseSomSkalBeregnes;
     }
 

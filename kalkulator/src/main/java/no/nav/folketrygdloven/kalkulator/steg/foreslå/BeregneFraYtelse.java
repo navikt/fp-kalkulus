@@ -26,6 +26,7 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.tid.Virkedager;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 class BeregneFraYtelse {
 
@@ -69,7 +70,7 @@ class BeregneFraYtelse {
         return input.getIayGrunnlag().getAktørYtelseFraRegister()
                 .stream()
                 .flatMap(aktørYtelseDto -> aktørYtelseDto.getAlleYtelser().stream())
-                .filter(y -> y.getYtelseType().equals(FagsakYtelseType.SYKEPENGER))
+                .filter(y -> y.getYtelseType().equals(YtelseType.SYKEPENGER))
                 .filter(y -> y.getPeriode().overlapper(beregningsperiode))
                 .flatMap(y -> y.getYtelseAnvist().stream())
                 .filter(a -> a.getAnvistPeriode().overlapper(beregningsperiode))

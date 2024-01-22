@@ -22,8 +22,8 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Årsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.GrunnbeløpReguleringStatus;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 
 class GreguleringsstatusutlederTest {
     private static final LocalDate STP = LocalDate.of(2021, 1, 1);
@@ -50,7 +50,7 @@ class GreguleringsstatusutlederTest {
                 .medBeregningsgrunnlag(bg)
                 .build(1L, BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER));
 
-        GrunnbeløpReguleringStatus resultat = Greguleringsstatusutleder.utledStatus(gr, NY_G, YtelseTyperKalkulusStøtterKontrakt.OMSORGSPENGER);
+        GrunnbeløpReguleringStatus resultat = Greguleringsstatusutleder.utledStatus(gr, NY_G, FagsakYtelseType.OMSORGSPENGER);
 
         assertThat(resultat).isEqualTo(GrunnbeløpReguleringStatus.IKKE_VURDERT);
     }
@@ -80,7 +80,7 @@ class GreguleringsstatusutlederTest {
                 .medBeregningsgrunnlag(bg)
                 .build(1L, BeregningsgrunnlagTilstand.FASTSATT));
 
-        GrunnbeløpReguleringStatus resultat = Greguleringsstatusutleder.utledStatus(gr, NY_G, YtelseTyperKalkulusStøtterKontrakt.OMSORGSPENGER);
+        GrunnbeløpReguleringStatus resultat = Greguleringsstatusutleder.utledStatus(gr, NY_G, FagsakYtelseType.OMSORGSPENGER);
 
         assertThat(resultat).isEqualTo(GrunnbeløpReguleringStatus.IKKE_NØDVENDIG);
     }
@@ -106,7 +106,7 @@ class GreguleringsstatusutlederTest {
                 .medBeregningsgrunnlag(bg)
                 .build(1L, BeregningsgrunnlagTilstand.FASTSATT));
 
-        GrunnbeløpReguleringStatus resultat = Greguleringsstatusutleder.utledStatus(gr, NY_G, YtelseTyperKalkulusStøtterKontrakt.OMSORGSPENGER);
+        GrunnbeløpReguleringStatus resultat = Greguleringsstatusutleder.utledStatus(gr, NY_G, FagsakYtelseType.OMSORGSPENGER);
 
         assertThat(resultat).isEqualTo(GrunnbeløpReguleringStatus.NØDVENDIG);
     }
@@ -132,7 +132,7 @@ class GreguleringsstatusutlederTest {
                 .medBeregningsgrunnlag(bg)
                 .build(1L, BeregningsgrunnlagTilstand.FASTSATT));
 
-        GrunnbeløpReguleringStatus resultat = Greguleringsstatusutleder.utledStatus(gr, NY_G, YtelseTyperKalkulusStøtterKontrakt.OMSORGSPENGER);
+        GrunnbeløpReguleringStatus resultat = Greguleringsstatusutleder.utledStatus(gr, NY_G, FagsakYtelseType.OMSORGSPENGER);
 
         assertThat(resultat).isEqualTo(GrunnbeløpReguleringStatus.NØDVENDIG);
     }
@@ -158,7 +158,7 @@ class GreguleringsstatusutlederTest {
                 .medBeregningsgrunnlag(bg)
                 .build(1L, BeregningsgrunnlagTilstand.FASTSATT));
 
-        GrunnbeløpReguleringStatus resultat = Greguleringsstatusutleder.utledStatus(gr, NY_G, YtelseTyperKalkulusStøtterKontrakt.OMSORGSPENGER);
+        GrunnbeløpReguleringStatus resultat = Greguleringsstatusutleder.utledStatus(gr, NY_G, FagsakYtelseType.OMSORGSPENGER);
 
         assertThat(resultat).isEqualTo(GrunnbeløpReguleringStatus.NØDVENDIG);
     }

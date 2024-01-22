@@ -44,7 +44,7 @@ import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kopiering.KopierBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulus.request.v1.BeregnForRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.BeregnListeRequest;
@@ -215,7 +215,7 @@ public class OperereKalkulusRestTjeneste {
         public BeregnListeRequestAbacDto(String saksnummer,
                                          UUID behandlingUuid,
                                          PersonIdent aktør,
-                                         YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                         FagsakYtelseType ytelseSomSkalBeregnes,
                                          BeregningSteg stegType,
                                          List<BeregnForRequest> beregnForListe) {
             super(saksnummer, behandlingUuid, aktør, ytelseSomSkalBeregnes, stegType, beregnForListe);
@@ -242,7 +242,7 @@ public class OperereKalkulusRestTjeneste {
 
         public KopierBeregningListeRequestAbacDto(String saksnummer,
                                                   UUID behandlingUuid,
-                                                  YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                                  FagsakYtelseType ytelseSomSkalBeregnes,
                                                   List<KopierBeregningRequest> kopierBeregningListe, BeregningSteg stegType) {
             super(saksnummer, behandlingUuid, ytelseSomSkalBeregnes, stegType, kopierBeregningListe);
         }

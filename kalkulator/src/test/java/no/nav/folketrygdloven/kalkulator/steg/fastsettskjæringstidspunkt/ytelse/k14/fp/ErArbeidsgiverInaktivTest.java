@@ -29,10 +29,10 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Arbeidskategori;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektPeriodeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 
 class ErArbeidsgiverInaktivTest {
@@ -105,7 +105,7 @@ class ErArbeidsgiverInaktivTest {
     public void er_aktiv_når_det_er_arbeid_uten_inntekt_men_med_ytelse() {
         // Arrange
         lagArbeid(arbeidsgiver("999999999"), STP.minusYears(2), LocalDateInterval.TIDENES_ENDE);
-        lagYtelse(arbeidsgiver("999999999"), STP.minusMonths(2), STP.minusMonths(1), FagsakYtelseType.FORELDREPENGER);
+        lagYtelse(arbeidsgiver("999999999"), STP.minusMonths(2), STP.minusMonths(1), YtelseType.FORELDREPENGER);
 
         // Act
         var erInaktivt = utled(arbeidsgiver("999999999"), byggIAY());
@@ -118,7 +118,7 @@ class ErArbeidsgiverInaktivTest {
     public void er_inaktiv_når_det_er_arbeid_uten_inntekt_med_ytelse_som_ikke_er_relevant_for_vurderingen() {
         // Arrange
         lagArbeid(arbeidsgiver("999999999"), STP.minusYears(2), LocalDateInterval.TIDENES_ENDE);
-        lagYtelse(arbeidsgiver("999999999"), STP.minusMonths(2), STP.minusMonths(1), FagsakYtelseType.DAGPENGER);
+        lagYtelse(arbeidsgiver("999999999"), STP.minusMonths(2), STP.minusMonths(1), YtelseType.DAGPENGER);
 
         // Act
         var erInaktivt = utled(arbeidsgiver("999999999"), byggIAY());
@@ -147,7 +147,7 @@ class ErArbeidsgiverInaktivTest {
         inntektsmeldinger.add(im);
     }
 
-    private void lagYtelse(Arbeidsgiver ag, LocalDate fom, LocalDate tom, FagsakYtelseType ytelse) {
+    private void lagYtelse(Arbeidsgiver ag, LocalDate fom, LocalDate tom, YtelseType ytelse) {
         YtelseDtoBuilder builder = YtelseDtoBuilder.ny()
                 .medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
                 .medYtelseType(ytelse);

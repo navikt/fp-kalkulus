@@ -13,7 +13,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
-import no.nav.folketrygdloven.kalkulus.kodeverk.RelatertYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -34,7 +34,7 @@ public class YtelseDto {
     @JsonProperty(value = "relatertYtelseType", required = true)
     @Valid
     @NotNull
-    private RelatertYtelseType relatertYtelseType;
+    private YtelseType relatertYtelseType;
 
     @JsonProperty(value = "periode", required = true)
     @Valid
@@ -52,7 +52,7 @@ public class YtelseDto {
 
     public YtelseDto(@Valid BeløpDto vedtaksDagsats,
                      @Valid @Size Set<YtelseAnvistDto> ytelseAnvist,
-                     @Valid @NotNull RelatertYtelseType relatertYtelseType,
+                     @Valid @NotNull YtelseType relatertYtelseType,
                      @Valid @NotNull Periode periode,
                      @Valid YtelseGrunnlagDto ytelseGrunnlag) {
         this.vedtaksDagsats = vedtaksDagsats;
@@ -66,7 +66,7 @@ public class YtelseDto {
         return ytelseAnvist;
     }
 
-    public RelatertYtelseType getRelatertYtelseType() {
+    public YtelseType getRelatertYtelseType() {
         return relatertYtelseType;
     }
 

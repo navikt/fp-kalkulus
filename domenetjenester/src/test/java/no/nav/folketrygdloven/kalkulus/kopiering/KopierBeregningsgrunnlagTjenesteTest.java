@@ -61,12 +61,12 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.RelatertYtelseType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.request.v1.KopierBeregningRequest;
@@ -122,7 +122,7 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         SubjectHandlerUtils.setInternBruker("noen");
 
         var originalKoblingReferanse = UUID.randomUUID();
-        var originalKobling = new KoblingEntitet(new KoblingReferanse(originalKoblingReferanse), YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN, SAK, AKTØR_ID);
+        var originalKobling = new KoblingEntitet(new KoblingReferanse(originalKoblingReferanse), FagsakYtelseType.PLEIEPENGER_SYKT_BARN, SAK, AKTØR_ID);
         koblingRepository.lagre(originalKobling);
         kalkulatorInputTjeneste.lagreKalkulatorInput(originalKobling.getId(), byggKalkulatorInput());
 
@@ -136,7 +136,7 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         var nyReferanse2 = UUID.randomUUID();
         tjeneste.kopierGrunnlagOgOpprettKoblinger(
                 List.of(new KopierBeregningRequest(nyReferanse2, originalKoblingReferanse)),
-                YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN,
+                FagsakYtelseType.PLEIEPENGER_SYKT_BARN,
                 SAK,
                 BeregningSteg.FAST_BERGRUNN,
                 null
@@ -163,10 +163,10 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
     @Test
     void skal_kopiere_grunnlag_fra_forrige_original_kobling_til_ny_kobling() {
         var forrigeOriginalKoblingReferanse = UUID.randomUUID();
-        var forrigeOriginalKobling = new KoblingEntitet(new KoblingReferanse(forrigeOriginalKoblingReferanse), YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN, SAK, AKTØR_ID);
+        var forrigeOriginalKobling = new KoblingEntitet(new KoblingReferanse(forrigeOriginalKoblingReferanse), FagsakYtelseType.PLEIEPENGER_SYKT_BARN, SAK, AKTØR_ID);
         koblingRepository.lagre(forrigeOriginalKobling);
         var originalKoblingReferanse = UUID.randomUUID();
-        var originalKobling = new KoblingEntitet(new KoblingReferanse(originalKoblingReferanse), YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN, SAK, AKTØR_ID);
+        var originalKobling = new KoblingEntitet(new KoblingReferanse(originalKoblingReferanse), FagsakYtelseType.PLEIEPENGER_SYKT_BARN, SAK, AKTØR_ID);
         koblingRepository.lagre(originalKobling);
 
         koblingRepository.lagre(new KoblingRelasjon(originalKobling.getId(), forrigeOriginalKobling.getId()));
@@ -178,7 +178,7 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         var nyReferanse2 = UUID.randomUUID();
         tjeneste.kopierGrunnlagOgOpprettKoblinger(
                 List.of(new KopierBeregningRequest(nyReferanse2, originalKoblingReferanse)),
-                YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN,
+                FagsakYtelseType.PLEIEPENGER_SYKT_BARN,
                 SAK,
                 BeregningSteg.FAST_BERGRUNN,
                 null
@@ -282,7 +282,7 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
                         BigDecimal.valueOf(100),
                         BigDecimal.valueOf(100),
                         Inntektskategori.ARBEIDSTAKER)));
-        return List.of(new YtelseDto(beløpDto, Set.of(ytelseAnvistDto), RelatertYtelseType.FORELDREPENGER,
+        return List.of(new YtelseDto(beløpDto, Set.of(ytelseAnvistDto), YtelseType.FORELDREPENGER,
                 periode,
                 null));
     }

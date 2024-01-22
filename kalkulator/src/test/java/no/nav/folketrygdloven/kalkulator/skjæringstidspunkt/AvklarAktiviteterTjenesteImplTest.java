@@ -1,9 +1,8 @@
 package no.nav.folketrygdloven.kalkulator.skjæringstidspunkt;
 
-import static no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType.ARBEIDSAVKLARINGSPENGER;
-import static no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType.FORELDREPENGER;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType.ARBEID;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType.VENTELØNN_VARTPENGER;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType.ARBEIDSAVKLARINGSPENGER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;

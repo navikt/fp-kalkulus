@@ -10,8 +10,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -39,8 +37,9 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningVenteårsak;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 
 public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterPleiepengerTest {
@@ -121,7 +120,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterPleiepengerTest 
         LocalDate skjæringstidspunkt = LocalDate.now();
         LocalDate ytelsePeriodeFom = skjæringstidspunkt.minusMonths(2);
         YtelseDtoBuilder yb = YtelseDtoBuilder.ny();
-        YtelseDto ytelse = yb.medYtelseType(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER)
+        YtelseDto ytelse = yb.medYtelseType(YtelseType.ARBEIDSAVKLARINGSPENGER)
                 .medPeriode(Intervall.fraOgMed(ytelsePeriodeFom))
                 .leggTilYtelseAnvist(lagYtelseAnvist(yb.getAnvistBuilder(), skjæringstidspunkt.minusWeeks(3), skjæringstidspunkt.minusWeeks(1)))
                 .build();
@@ -159,7 +158,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterPleiepengerTest 
         LocalDate skjæringstidspunkt = LocalDate.now();
         LocalDate ytelsePeriodeFom = skjæringstidspunkt.minusMonths(2);
         YtelseDtoBuilder yb = YtelseDtoBuilder.ny();
-        YtelseDto ytelse = yb.medYtelseType(FagsakYtelseType.DAGPENGER)
+        YtelseDto ytelse = yb.medYtelseType(YtelseType.DAGPENGER)
             .medPeriode(Intervall.fraOgMed(ytelsePeriodeFom))
             .leggTilYtelseAnvist(lagYtelseAnvist(yb.getAnvistBuilder(), skjæringstidspunkt.minusWeeks(3), skjæringstidspunkt.minusWeeks(1)))
             .build();
@@ -222,7 +221,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterPleiepengerTest 
         YtelseAnvistDto meldekort2 = YtelseAnvistDtoBuilder.ny().medAnvistPeriode(Intervall.fraOgMedTilOgMed(skjæringstidspunkt.minusWeeks(4), skjæringstidspunkt.minusWeeks(2))).build();
         YtelseAnvistDto meldekort3 = YtelseAnvistDtoBuilder.ny().medAnvistPeriode(Intervall.fraOgMedTilOgMed(skjæringstidspunkt.minusWeeks(1), skjæringstidspunkt)).build();
         YtelseAnvistDto meldekort4 = YtelseAnvistDtoBuilder.ny().medAnvistPeriode(Intervall.fraOgMedTilOgMed(skjæringstidspunkt.plusDays(1), skjæringstidspunkt.plusWeeks(2))).build();
-        YtelseDto ytelse = yb.medYtelseType(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER)
+        YtelseDto ytelse = yb.medYtelseType(YtelseType.ARBEIDSAVKLARINGSPENGER)
                 .medPeriode(Intervall.fraOgMed(ytelsePeriodeFom))
                 .leggTilYtelseAnvist(meldekort1)
                 .leggTilYtelseAnvist(meldekort2)
@@ -262,7 +261,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterPleiepengerTest 
         Intervall periodeIntervallForAktivitet = Intervall.fraOgMedTilOgMed(skjæringstidspunkt.minusMonths(10), skjæringstidspunkt.minusDays(2));
         YtelseDtoBuilder yb = YtelseDtoBuilder.ny();
         YtelseAnvistDto meldekort1 = YtelseAnvistDtoBuilder.ny().medAnvistPeriode(Intervall.fraOgMedTilOgMed(skjæringstidspunkt.minusWeeks(6), skjæringstidspunkt.minusWeeks(4))).build();
-        YtelseDto ytelse = yb.medYtelseType(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER)
+        YtelseDto ytelse = yb.medYtelseType(YtelseType.ARBEIDSAVKLARINGSPENGER)
                 .medPeriode(periodeIntervallForAktivitet)
                 .leggTilYtelseAnvist(meldekort1)
                 .build();
@@ -300,7 +299,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterPleiepengerTest 
         Intervall periodeIntervallForAktivitet = Intervall.fraOgMedTilOgMed(skjæringstidspunkt.minusMonths(10), skjæringstidspunkt.minusDays(1));
         YtelseDtoBuilder yb = YtelseDtoBuilder.ny();
         YtelseAnvistDto meldekort1 = YtelseAnvistDtoBuilder.ny().medAnvistPeriode(Intervall.fraOgMedTilOgMed(skjæringstidspunkt.minusWeeks(4), skjæringstidspunkt.minusWeeks(2))).build();
-        YtelseDto ytelse = yb.medYtelseType(FagsakYtelseType.DAGPENGER)
+        YtelseDto ytelse = yb.medYtelseType(YtelseType.DAGPENGER)
                 .medPeriode(periodeIntervallForAktivitet)
                 .leggTilYtelseAnvist(meldekort1)
                 .build();
@@ -340,7 +339,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterPleiepengerTest 
         Intervall periodeIntervallForAktivitet = Intervall.fraOgMedTilOgMed(skjæringstidspunkt.minusMonths(10), skjæringstidspunkt.minusDays(1));
         YtelseDtoBuilder yb = YtelseDtoBuilder.ny();
         YtelseAnvistDto meldekort1 = YtelseAnvistDtoBuilder.ny().medAnvistPeriode(Intervall.fraOgMedTilOgMed(skjæringstidspunkt.minusWeeks(2), skjæringstidspunkt.minusDays(1))).build();
-        YtelseDto ytelse = yb.medYtelseType(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER)
+        YtelseDto ytelse = yb.medYtelseType(YtelseType.ARBEIDSAVKLARINGSPENGER)
                 .medPeriode(periodeIntervallForAktivitet)
                 .leggTilYtelseAnvist(meldekort1)
                 .build();

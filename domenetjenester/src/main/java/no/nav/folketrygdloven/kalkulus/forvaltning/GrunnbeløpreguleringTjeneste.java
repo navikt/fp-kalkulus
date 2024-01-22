@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
@@ -48,7 +47,7 @@ public class GrunnbeløpreguleringTjeneste {
         var inputresultat = kalkulatorInputTjeneste.hentForKoblinger(Collections.singletonList(koblingEntitetOpt.get().getId()));
         KalkulatorInputDto input = inputresultat.get(koblingEntitetOpt.get().getId());
         BeregningSats nySats = beregningsgrunnlagRepository.finnGrunnbeløp(input.getSkjæringstidspunkt());
-        return Greguleringsstatusutleder.utledStatus(gjeldendeBG, BigDecimal.valueOf(nySats.getVerdi()), koblingEntitetOpt.get().getYtelseTyperKalkulusStøtter());
+        return Greguleringsstatusutleder.utledStatus(gjeldendeBG, BigDecimal.valueOf(nySats.getVerdi()), koblingEntitetOpt.get().getYtelseType());
     }
 
     private boolean koblingErGyldig(Optional<KoblingEntitet> koblingEntitetOpt, String saksnummer) {

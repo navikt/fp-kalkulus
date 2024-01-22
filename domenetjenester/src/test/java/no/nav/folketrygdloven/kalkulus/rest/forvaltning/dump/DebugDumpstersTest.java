@@ -32,11 +32,11 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.extensions.JpaExtension;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
@@ -74,7 +74,7 @@ class DebugDumpstersTest extends EntityManagerAwareTest {
     }
 
     private KoblingEntitet lagKobling() {
-        var koblingEntitet = new KoblingEntitet(new KoblingReferanse(UUID.randomUUID()), YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN,
+        var koblingEntitet = new KoblingEntitet(new KoblingReferanse(UUID.randomUUID()), FagsakYtelseType.PLEIEPENGER_SYKT_BARN,
                 new Saksnummer("sak"), new AktørId("123456789"));
         getEntityManager().persist(koblingEntitet);
         return koblingEntitet;

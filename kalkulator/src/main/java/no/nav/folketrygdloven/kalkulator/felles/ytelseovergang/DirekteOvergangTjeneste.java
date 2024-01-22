@@ -23,20 +23,21 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 import no.nav.fpsak.tidsserie.StandardCombinators;
 
 public class DirekteOvergangTjeneste {
 
-    private static final List<FagsakYtelseType> YTELSER_FRA_KAP_8 = List.of(
-            FagsakYtelseType.PLEIEPENGER_NÆRSTÅENDE,
-            FagsakYtelseType.PLEIEPENGER_SYKT_BARN,
-            FagsakYtelseType.SYKEPENGER,
-            FagsakYtelseType.FORELDREPENGER,
-            FagsakYtelseType.OMSORGSPENGER,
-            FagsakYtelseType.OPPLÆRINGSPENGER,
-            FagsakYtelseType.SVANGERSKAPSPENGER
+    private static final List<YtelseType> YTELSER_FRA_KAP_8 = List.of(
+            YtelseType.PLEIEPENGER_NÆRSTÅENDE,
+            YtelseType.PLEIEPENGER_SYKT_BARN,
+            YtelseType.SYKEPENGER,
+            YtelseType.FORELDREPENGER,
+            YtelseType.OMSORGSPENGER,
+            YtelseType.OPPLÆRINGSPENGER,
+            YtelseType.SVANGERSKAPSPENGER
     );
 
     /**
@@ -129,7 +130,7 @@ public class DirekteOvergangTjeneste {
      */
     public static boolean harSammeYtelseKantIKant(InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDate skjæringstidspunktForBeregning, FagsakYtelseType ytelseType) {
         return getYtelseFilterKap8(iayGrunnlag, skjæringstidspunktForBeregning)
-                .filter(y -> y.getYtelseType().equals(ytelseType))
+                .filter(y -> y.getYtelseType().equals(ytelseType.getTilsvarendeYtelseType()))
                 .getFiltrertYtelser()
                 .stream()
                 .anyMatch(it -> DirekteOvergangTjeneste.harAnvisningSomTilstøterSkjæringstidspunkt(it, skjæringstidspunktForBeregning));

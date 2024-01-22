@@ -40,7 +40,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 public class MapInntektsgrunnlagVLTilRegelFRISINN {
 
@@ -126,7 +126,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN {
                                 YtelseFilterDto ytelseFilter,
                                 LocalDate skjæringstidspunktOpptjening) {
         ytelseFilter.getAlleYtelser().stream()
-                .filter(y -> !y.getYtelseType().equals(FagsakYtelseType.FRISINN))
+                .filter(y -> !y.getYtelseType().equals(YtelseType.FRISINN))
                 .forEach(ytelse -> ytelse.getYtelseAnvist().stream()
                         .filter(ytelseAnvistDto -> !ytelseAnvistDto.getAnvistTOM().isBefore(skjæringstidspunktOpptjening.minusMonths(MÅNEDER_FØR_STP)))
                         .filter(this::harHattUtbetalingForPeriode)
@@ -139,7 +139,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN {
                 .orElse(false);
     }
 
-    private Periodeinntekt byggPeriodeinntektForYtelse(YtelseAnvistDto anvist, Optional<Beløp> vedtaksDagsats, FagsakYtelseType ytelsetype) {
+    private Periodeinntekt byggPeriodeinntektForYtelse(YtelseAnvistDto anvist, Optional<Beløp> vedtaksDagsats, YtelseType ytelsetype) {
         return Periodeinntekt.builder()
                 .medInntektskildeOgPeriodeType(erAAPEllerDP(ytelsetype) ? Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP : Inntektskilde.ANNEN_YTELSE)
                 .medInntekt(finnBeløp(anvist, vedtaksDagsats))
@@ -149,8 +149,8 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN {
                 .build();
     }
 
-    private boolean erAAPEllerDP(FagsakYtelseType ytelsetype) {
-        return ytelsetype.equals(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER) || ytelsetype.equals(FagsakYtelseType.DAGPENGER);
+    private boolean erAAPEllerDP(YtelseType ytelsetype) {
+        return ytelsetype.equals(YtelseType.ARBEIDSAVKLARINGSPENGER) || ytelsetype.equals(YtelseType.DAGPENGER);
     }
 
     private BigDecimal finnBeløp(YtelseAnvistDto anvist, Optional<Beløp> vedtaksDagsats) {

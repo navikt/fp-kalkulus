@@ -10,17 +10,16 @@ import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingGrunnlagskopiSporing;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
-import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingGrunnlagskopiSporing;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingLås;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.LåsRepository;
+import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 @ApplicationScoped
 public class KoblingTjeneste {
@@ -37,15 +36,15 @@ public class KoblingTjeneste {
         this.låsRepository = låsRepository;
     }
 
-    public List<KoblingEntitet> finnEllerOpprett(List<KoblingReferanse> referanser, YtelseTyperKalkulusStøtterKontrakt ytelseTyperKalkulusStøtter, AktørId aktørId, Saksnummer saksnummer) {
-        var eksisterendeKoblinger = hentKoblinger(referanser, ytelseTyperKalkulusStøtter);
+    public List<KoblingEntitet> finnEllerOpprett(List<KoblingReferanse> referanser, FagsakYtelseType ytelseType, AktørId aktørId, Saksnummer saksnummer) {
+        var eksisterendeKoblinger = hentKoblinger(referanser, ytelseType);
         var alleKoblinger = new ArrayList<>(eksisterendeKoblinger);
         if (eksisterendeKoblinger.size() != referanser.size()) {
             List<KoblingEntitet> nyeKoblinger = referanser.stream()
                     .filter(ref -> eksisterendeKoblinger.stream().map(KoblingEntitet::getKoblingReferanse)
                             .map(KoblingReferanse::getReferanse)
                             .noneMatch(koblingRef -> koblingRef.equals(ref.getReferanse())))
-                    .map(ref -> new KoblingEntitet(ref, ytelseTyperKalkulusStøtter, saksnummer, aktørId))
+                    .map(ref -> new KoblingEntitet(ref, ytelseType, saksnummer, aktørId))
                     .collect(Collectors.toList());
             nyeKoblinger.forEach(kobling -> repository.lagre(kobling));
             alleKoblinger.addAll(nyeKoblinger);
@@ -86,11 +85,11 @@ public class KoblingTjeneste {
         return repository.hentForKoblingReferanse(referanse);
     }
 
-    public Optional<Long> hentKoblingHvisFinnes(KoblingReferanse referanse, YtelseTyperKalkulusStøtterKontrakt ytelseType) {
+    public Optional<Long> hentKoblingHvisFinnes(KoblingReferanse referanse, FagsakYtelseType ytelseType) {
         return repository.hentFor(referanse, ytelseType);
     }
 
-    public List<KoblingEntitet> hentKoblinger(Collection<KoblingReferanse> koblingReferanser, YtelseTyperKalkulusStøtterKontrakt ytelseType) {
+    public List<KoblingEntitet> hentKoblinger(Collection<KoblingReferanse> koblingReferanser, FagsakYtelseType ytelseType) {
         return repository.hentKoblingerFor(koblingReferanser, ytelseType);
     }
 

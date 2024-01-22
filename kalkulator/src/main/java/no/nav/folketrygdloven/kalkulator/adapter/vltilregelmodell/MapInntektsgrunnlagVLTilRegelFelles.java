@@ -46,6 +46,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 public class MapInntektsgrunnlagVLTilRegelFelles {
     private static final String INNTEKT_RAPPORTERING_FRIST_DATO = "inntekt.rapportering.frist.dato";
@@ -177,17 +178,17 @@ public class MapInntektsgrunnlagVLTilRegelFelles {
                                          LocalDate skjæringstidspunkt,
                                          FagsakYtelseType fagsakYtelseType) {
 
-        Optional<YtelseDto> nyesteVedtakForDagsats = MeldekortUtils.sisteVedtakFørStpForType(ytelseFilter, skjæringstidspunkt, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER));
+        Optional<YtelseDto> nyesteVedtakForDagsats = MeldekortUtils.sisteVedtakFørStpForType(ytelseFilter, skjæringstidspunkt, Set.of(YtelseType.ARBEIDSAVKLARINGSPENGER));
 
         if (nyesteVedtakForDagsats.isEmpty()) {
             return;
         }
 
-        Periodeinntekt aap = mapYtelseFraArenavedtak(ytelseFilter, skjæringstidspunkt, fagsakYtelseType, nyesteVedtakForDagsats.get(), FagsakYtelseType.ARBEIDSAVKLARINGSPENGER);
+        Periodeinntekt aap = mapYtelseFraArenavedtak(ytelseFilter, skjæringstidspunkt, fagsakYtelseType, nyesteVedtakForDagsats.get(), YtelseType.ARBEIDSAVKLARINGSPENGER);
         inntektsgrunnlag.leggTilPeriodeinntekt(aap);
     }
 
-    private Periodeinntekt mapYtelseFraArenavedtak(YtelseFilterDto ytelseFilter, LocalDate skjæringstidspunkt, FagsakYtelseType fagsakYtelseType, YtelseDto nyesteVedtakForDagsats, FagsakYtelseType arenaYtelse) {
+    private Periodeinntekt mapYtelseFraArenavedtak(YtelseFilterDto ytelseFilter, LocalDate skjæringstidspunkt, FagsakYtelseType fagsakYtelseType, YtelseDto nyesteVedtakForDagsats, YtelseType arenaYtelse) {
         BigDecimal dagsats;
         BigDecimal utbetalingsfaktor;
 
@@ -221,27 +222,27 @@ public class MapInntektsgrunnlagVLTilRegelFelles {
                                                FagsakYtelseType fagsakYtelseType) {
 
         Collection<YtelseDto> ytelser = ytelseFilter.getFiltrertYtelser();
-        Boolean harSPAvDP = harYtelsePåGrunnlagAvDagpenger(ytelser, skjæringstidspunkt, FagsakYtelseType.SYKEPENGER);
-        Boolean harPSBAvDP = harYtelsePåGrunnlagAvDagpenger(ytelser, skjæringstidspunkt, FagsakYtelseType.PLEIEPENGER_SYKT_BARN);
+        Boolean harSPAvDP = harYtelsePåGrunnlagAvDagpenger(ytelser, skjæringstidspunkt, YtelseType.SYKEPENGER);
+        Boolean harPSBAvDP = harYtelsePåGrunnlagAvDagpenger(ytelser, skjæringstidspunkt, YtelseType.PLEIEPENGER_SYKT_BARN);
 
         if (harSPAvDP && KonfigurasjonVerdi.get("BEREGNE_DAGPENGER_FRA_SYKEPENGER", false)) {
-            var dagpenger = mapDagpengerFraInfotrygdvedtak(skjæringstidspunkt, ytelser, FagsakYtelseType.SYKEPENGER);
+            var dagpenger = mapDagpengerFraInfotrygdvedtak(skjæringstidspunkt, ytelser, YtelseType.SYKEPENGER);
             inntektsgrunnlag.leggTilPeriodeinntekt(dagpenger);
         }
         if (harPSBAvDP && KonfigurasjonVerdi.get("BEREGNE_DAGPENGER_FRA_PLEIEPENGER", false)) {
-            var dagpenger = mapDagpengerFraInfotrygdvedtak(skjæringstidspunkt, ytelser, FagsakYtelseType.PLEIEPENGER_SYKT_BARN);
+            var dagpenger = mapDagpengerFraInfotrygdvedtak(skjæringstidspunkt, ytelser, YtelseType.PLEIEPENGER_SYKT_BARN);
             inntektsgrunnlag.leggTilPeriodeinntekt(dagpenger);
         } else {
-            Optional<YtelseDto> nyesteVedtakForDagsats = MeldekortUtils.sisteVedtakFørStpForType(ytelseFilter, skjæringstidspunkt, Set.of(FagsakYtelseType.DAGPENGER));
+            Optional<YtelseDto> nyesteVedtakForDagsats = MeldekortUtils.sisteVedtakFørStpForType(ytelseFilter, skjæringstidspunkt, Set.of(YtelseType.DAGPENGER));
             if (nyesteVedtakForDagsats.isEmpty()) {
                 return;
             }
-            Periodeinntekt dagpenger = mapYtelseFraArenavedtak(ytelseFilter, skjæringstidspunkt, fagsakYtelseType, nyesteVedtakForDagsats.get(), FagsakYtelseType.DAGPENGER);
+            Periodeinntekt dagpenger = mapYtelseFraArenavedtak(ytelseFilter, skjæringstidspunkt, fagsakYtelseType, nyesteVedtakForDagsats.get(), YtelseType.DAGPENGER);
             inntektsgrunnlag.leggTilPeriodeinntekt(dagpenger);
         }
     }
 
-    private Periodeinntekt mapDagpengerFraInfotrygdvedtak(LocalDate skjæringstidspunkt, Collection<YtelseDto> ytelser, FagsakYtelseType ytelse) {
+    private Periodeinntekt mapDagpengerFraInfotrygdvedtak(LocalDate skjæringstidspunkt, Collection<YtelseDto> ytelser, YtelseType ytelse) {
         BigDecimal dagsats = finnDagsatsFraYtelsevedtak(ytelser, skjæringstidspunkt, ytelse);
 
         return Periodeinntekt.builder()

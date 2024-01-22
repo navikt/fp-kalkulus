@@ -16,7 +16,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.GrunnbeløpReguleringStatus;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 
 public class Greguleringsstatusutleder {
     private static final Set<AktivitetStatus> SN_REGULERING = Set.of(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE, AktivitetStatus.KOMBINERT_AT_SN,
@@ -29,7 +28,7 @@ public class Greguleringsstatusutleder {
 
     public static GrunnbeløpReguleringStatus utledStatus(Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet,
                                                          BigDecimal nyttGrunnbeløp,
-                                                         YtelseTyperKalkulusStøtterKontrakt ytelse) {
+                                                         FagsakYtelseType ytelse) {
         Optional<BeregningsgrunnlagEntitet> bgOpt = beregningsgrunnlagGrunnlagEntitet.flatMap(BeregningsgrunnlagGrunnlagEntitet::getBeregningsgrunnlag);
         if (bgOpt.isEmpty() || beregningsgrunnlagGrunnlagEntitet.get().getBeregningsgrunnlagTilstand().erFør(BeregningsgrunnlagTilstand.FORESLÅTT)) {
             return GrunnbeløpReguleringStatus.IKKE_VURDERT;
@@ -42,13 +41,13 @@ public class Greguleringsstatusutleder {
     }
 
     private static boolean måGreguleres(BigDecimal nyttGrunnbeløp,
-                                                           YtelseTyperKalkulusStøtterKontrakt ytelse,
-                                                           BeregningsgrunnlagEntitet bg,
-                                                           BigDecimal grunnbeløpBenyttetIBeregningen) {
+                                        FagsakYtelseType ytelse,
+                                        BeregningsgrunnlagEntitet bg,
+                                        BigDecimal grunnbeløpBenyttetIBeregningen) {
         if (grunnbeløpBenyttetIBeregningen.compareTo(nyttGrunnbeløp) == 0) {
             return false;
         }
-        Konfigverdier konfigverdier = KonfigTjeneste.forYtelse(FagsakYtelseType.fraKode(ytelse.getKode()));
+        Konfigverdier konfigverdier = KonfigTjeneste.forYtelse(ytelse);
         if (harGrunnlagSomBleAvkortet(bg, konfigverdier, grunnbeløpBenyttetIBeregningen)) {
             return true;
         }

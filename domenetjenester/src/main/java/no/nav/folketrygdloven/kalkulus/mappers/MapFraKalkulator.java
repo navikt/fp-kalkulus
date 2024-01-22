@@ -37,7 +37,6 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.MidlertidigInaktivType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.mapFraEntitet.BehandlingslagerTilKalkulusMapper;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
@@ -59,7 +58,7 @@ public class MapFraKalkulator {
         var koblingId = kobling.getId();
         var skjæringstidspunkt = input.getSkjæringstidspunkt();
 
-        var ytelseType = FagsakYtelseType.fraKode(kobling.getYtelseTyperKalkulusStøtter().getKode());
+        var ytelseType = kobling.getYtelseType();
         var aktørId = new AktørId(kobling.getAktørId().getId());
         var build = Skjæringstidspunkt.builder()
                 .medFørsteUttaksdato(skjæringstidspunkt)
@@ -76,7 +75,7 @@ public class MapFraKalkulator {
                 iayGrunnlagMappet,
                 mapFraDto(opptjeningAktiviteter),
                 mapFraDto(kravPrArbeidsforhold, input.getRefusjonskravDatoer(), iayGrunnlag, input.getSkjæringstidspunkt()),
-                mapFraDto(kobling.getYtelseTyperKalkulusStøtter(),
+                mapFraDto(kobling.getYtelseType(),
                         input,
                         iayGrunnlagMappet,
                         beregningsgrunnlagGrunnlagEntitet));
@@ -123,7 +122,7 @@ public class MapFraKalkulator {
         return new RefusjonsperiodeDto(mapPeriode(rp.getPeriode()), rp.getBeløp());
     }
 
-    public static YtelsespesifiktGrunnlag mapFraDto(YtelseTyperKalkulusStøtterKontrakt ytelseType,
+    public static YtelsespesifiktGrunnlag mapFraDto(FagsakYtelseType ytelseType,
                                                     KalkulatorInputDto input,
                                                     no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                     Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {

@@ -34,7 +34,6 @@ import jakarta.ws.rs.core.Response.Status;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagGuiTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.KalkulatorGuiInterface;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
-import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulus.beregning.GUIBeregningsgrunnlagInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
@@ -42,7 +41,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingRef
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapBeregningsgrunnlagFRISINN;
 import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapBrevBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapDetaljertBeregningsgrunnlag;
@@ -111,7 +110,7 @@ public class HentKalkulusRestTjeneste {
         if (ytelseTyper.size() != 1) {
             return Response.status(Status.BAD_REQUEST).entity("Feil input, alle requests må ha samme ytelsetype. Fikk: " + ytelseTyper).build();
         }
-        var ytelseType = YtelseTyperKalkulusStøtterKontrakt.fraKode(ytelseTyper.iterator().next().getKode());
+        var ytelseType = ytelseTyper.iterator().next();
         var koblingReferanser = spesifikasjon.getRequestPrReferanse().stream().map(v -> new KoblingReferanse(v.getKoblingReferanse()))
                 .collect(Collectors.toList());
         List<BeregningsgrunnlagGrunnlagDto> dtoer;
@@ -119,7 +118,7 @@ public class HentKalkulusRestTjeneste {
         // TODO Fjern dette, lag egen tjeneste for brev
         var koblinger = koblingTjeneste.hentKoblinger(koblingReferanser, ytelseType);
         var input = guiInputTjeneste.lagInputForKoblinger(koblinger.stream().map(KoblingEntitet::getId).toList(), List.of());
-        if (YtelseTyperKalkulusStøtterKontrakt.OMSORGSPENGER.equals(ytelseType) || YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN.equals(ytelseType)) {
+        if (FagsakYtelseType.OMSORGSPENGER.equals(ytelseType) || FagsakYtelseType.PLEIEPENGER_SYKT_BARN.equals(ytelseType)) {
             dtoer = input.values().stream().map(v -> MapDetaljertBeregningsgrunnlag.mapMedBrevfelt(v.getBeregningsgrunnlagGrunnlag(), v)).toList();
         } else {
             dtoer = input.values().stream().map(v -> MapDetaljertBeregningsgrunnlag.mapGrunnlag(v.getBeregningsgrunnlagGrunnlag(), v.getYtelsespesifiktGrunnlag())).toList();
@@ -142,7 +141,7 @@ public class HentKalkulusRestTjeneste {
         if (ytelseTyper.size() != 1) {
             return Response.status(Status.BAD_REQUEST).entity("Feil input, alle requests må ha samme ytelsetype. Fikk: " + ytelseTyper).build();
         }
-        var ytelseType = YtelseTyperKalkulusStøtterKontrakt.fraKode(ytelseTyper.iterator().next().getKode());
+        var ytelseType = ytelseTyper.iterator().next();
         var koblingReferanser = spesifikasjon.getRequestPrReferanse().stream().map(v -> new KoblingReferanse(v.getKoblingReferanse()))
                 .collect(Collectors.toList());
         var koblinger = koblingTjeneste.hentKoblinger(koblingReferanser, ytelseType);
@@ -169,7 +168,7 @@ public class HentKalkulusRestTjeneste {
         List<HentBeregningsgrunnlagDtoForGUIRequest> spesifikasjoner = spesifikasjon.getRequestPrReferanse();
         if (spesifikasjon.getKalkulatorInputPerKoblingReferanse() != null) {
             var ytelseTyper = spesifikasjoner.stream().map(HentBeregningsgrunnlagDtoForGUIRequest::getYtelseSomSkalBeregnes).collect(Collectors.toSet());
-            var ytelseType = YtelseTyperKalkulusStøtterKontrakt.fraKode(ytelseTyper.iterator().next().getKode());
+            var ytelseType = ytelseTyper.iterator().next();
             kalkulatorInputTjeneste.lagreKalkulatorInput(ytelseType, spesifikasjon.getKalkulatorInputPerKoblingReferanse());
         }
         Map<Long, BeregningsgrunnlagGUIInput> inputResultat;
@@ -222,8 +221,7 @@ public class HentKalkulusRestTjeneste {
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
         koblingTjeneste.hentFor(koblingReferanse).map(KoblingEntitet::getSaksnummer)
                 .ifPresent(saksnummer -> MDC.put("prosess_saksnummer", saksnummer.getVerdi()));
-        var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtterKontrakt.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
-        Optional<Long> koblingId = koblingTjeneste.hentKoblingHvisFinnes(koblingReferanse, ytelseTyperKalkulusStøtter);
+        Optional<Long> koblingId = koblingTjeneste.hentKoblingHvisFinnes(koblingReferanse, spesifikasjon.getYtelseSomSkalBeregnes());
         if (koblingId.isEmpty() || !harKalkulatorInput(koblingId)) {
             return Response.noContent().build();
         }
@@ -252,7 +250,6 @@ public class HentKalkulusRestTjeneste {
 
         var ytelseSomSkalBeregnes = spesifikasjoner.stream()
                 .map(HentBeregningsgrunnlagDtoForGUIRequest::getYtelseSomSkalBeregnes)
-                .map(y -> YtelseTyperKalkulusStøtterKontrakt.fraKode(y.getKode()))
                 .collect(Collectors.toSet());
 
         if (ytelseSomSkalBeregnes.isEmpty()) {

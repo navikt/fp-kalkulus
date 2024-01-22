@@ -10,12 +10,12 @@ import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 public class YtelseDto {
 
     private Beløp vedtaksDagsats;
-    private FagsakYtelseType ytelseType = FagsakYtelseType.UDEFINERT;
+    private YtelseType ytelseType = YtelseType.UDEFINERT;
     private Intervall periode;
     // Brukes til å skille ulike ytelser med samme ytelsetype
     private Set<YtelseAnvistDto> ytelseAnvist = new LinkedHashSet<>();
@@ -28,6 +28,7 @@ public class YtelseDto {
     public YtelseDto(YtelseDto ytelse) {
         this.ytelseType = ytelse.getYtelseType();
         this.periode = ytelse.getPeriode();
+        this.ytelseGrunnlag = ytelse.getYtelseGrunnlag().orElse(null);
         this.ytelseAnvist = ytelse.getYtelseAnvist().stream().map(YtelseAnvistDto::new).collect(Collectors.toCollection(LinkedHashSet::new));
         ytelse.getVedtaksDagsats().ifPresent(dagsats -> this.vedtaksDagsats = new Beløp(dagsats.getVerdi()));
     }
@@ -40,11 +41,11 @@ public class YtelseDto {
         this.vedtaksDagsats = vedtaksDagsats;
     }
 
-    public FagsakYtelseType getYtelseType() {
+    public YtelseType getYtelseType() {
         return ytelseType;
     }
 
-    void setYtelseType(FagsakYtelseType ytelseType) {
+    void setYtelseType(YtelseType ytelseType) {
         this.ytelseType = ytelseType;
     }
 

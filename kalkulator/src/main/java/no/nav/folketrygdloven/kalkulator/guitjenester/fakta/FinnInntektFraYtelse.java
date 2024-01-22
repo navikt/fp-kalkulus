@@ -21,7 +21,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 
 class FinnInntektFraYtelse {
@@ -81,26 +81,26 @@ class FinnInntektFraYtelse {
                                                         LocalDate skjæringstidspunkt) {
 
         Collection<YtelseDto> ytelser = ytelseFilter.getFiltrertYtelser();
-        Boolean harSPAvDP = harYtelsePåGrunnlagAvDagpenger(ytelser, skjæringstidspunkt, FagsakYtelseType.SYKEPENGER);
+        Boolean harSPAvDP = harYtelsePåGrunnlagAvDagpenger(ytelser, skjæringstidspunkt, YtelseType.SYKEPENGER);
         if (harSPAvDP && KonfigurasjonVerdi.get("BEREGNE_DAGPENGER_FRA_SYKEPENGER", false)) {
-            return Optional.of(finnDagsatsFraYtelsevedtak(ytelser, skjæringstidspunkt, FagsakYtelseType.SYKEPENGER).multiply(VIRKEDAGER_I_1_ÅR));
+            return Optional.of(finnDagsatsFraYtelsevedtak(ytelser, skjæringstidspunkt, YtelseType.SYKEPENGER).multiply(VIRKEDAGER_I_1_ÅR));
         }
-        Boolean harPSBAvDP = harYtelsePåGrunnlagAvDagpenger(ytelser, skjæringstidspunkt, FagsakYtelseType.PLEIEPENGER_SYKT_BARN);
+        Boolean harPSBAvDP = harYtelsePåGrunnlagAvDagpenger(ytelser, skjæringstidspunkt, YtelseType.PLEIEPENGER_SYKT_BARN);
         if (harPSBAvDP && KonfigurasjonVerdi.get("BEREGNE_DAGPENGER_FRA_PLEIEPENGER", false)) {
-            return Optional.of(finnDagsatsFraYtelsevedtak(ytelser, skjæringstidspunkt, FagsakYtelseType.PLEIEPENGER_SYKT_BARN).multiply(VIRKEDAGER_I_1_ÅR));
+            return Optional.of(finnDagsatsFraYtelsevedtak(ytelser, skjæringstidspunkt, YtelseType.PLEIEPENGER_SYKT_BARN).multiply(VIRKEDAGER_I_1_ÅR));
         }
         return finnÅrbeløpFraMeldekortForAndel(ref, andel, ytelseFilter);
     }
 
 
-    private static FagsakYtelseType mapTilYtelseType(AktivitetStatus aktivitetStatus) {
+    private static YtelseType mapTilYtelseType(AktivitetStatus aktivitetStatus) {
         if (AktivitetStatus.DAGPENGER.equals(aktivitetStatus)) {
-            return FagsakYtelseType.DAGPENGER;
+            return YtelseType.DAGPENGER;
         }
         if (AktivitetStatus.ARBEIDSAVKLARINGSPENGER.equals(aktivitetStatus)) {
-            return FagsakYtelseType.ARBEIDSAVKLARINGSPENGER;
+            return YtelseType.ARBEIDSAVKLARINGSPENGER;
         }
-        return FagsakYtelseType.UDEFINERT;
+        return YtelseType.UDEFINERT;
     }
 
     private static BigDecimal finnÅrsbeløpMedHensynTilUtbetalingsfaktor(YtelseDto ytelse, Optional<YtelseAnvistDto> ytelseAnvist) {

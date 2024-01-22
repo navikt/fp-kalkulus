@@ -47,7 +47,6 @@ import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.UtbetalingsPostDto;
 import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseDto;
 import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseFordelingDto;
 import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelserDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittEgenNæringDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittFrilansInntekt;
@@ -297,7 +296,7 @@ public class MapIAYTilKalulator {
             builder.medVedtaksDagsats(ytelse.getVedtaksDagsats().getVerdi());
         }
         builder.medPeriode(mapDatoIntervall(ytelse.getPeriode()));
-        builder.medYtelseType(FagsakYtelseType.fraKode(ytelse.getRelatertYtelseType().getKode()));
+        builder.medYtelseType(ytelse.getRelatertYtelseType());
         builder.medYtelseGrunnlag(mapYtelseGrunnlag(ytelse.getYtelseGrunnlag()));
         return builder;
     }

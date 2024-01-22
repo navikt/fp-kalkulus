@@ -15,9 +15,9 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.KontrollerFaktaBeregningTjeneste;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 
 public class KunYtelseTilfelleUtleder implements TilfelleUtleder {
@@ -42,7 +42,7 @@ public class KunYtelseTilfelleUtleder implements TilfelleUtleder {
     // Sjekker for å kunne manuelt avgjere om grunnlaget er besteberegnet
     private static boolean harForeldrepengerAvDagpenger(FaktaOmBeregningInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
         return getYtelseFilterKap8(input, beregningsgrunnlag)
-                .filter(y -> y.getYtelseType().equals(FagsakYtelseType.FORELDREPENGER))
+                .filter(y -> y.getYtelseType().equals(YtelseType.FORELDREPENGER))
                 .getFiltrertYtelser()
                 .stream()
                 .anyMatch(KunYtelseTilfelleUtleder::erBasertPåDagpenger);
@@ -56,7 +56,7 @@ public class KunYtelseTilfelleUtleder implements TilfelleUtleder {
     private static YtelseFilterDto getYtelseFilterKap8(FaktaOmBeregningInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
         return new YtelseFilterDto(input.getIayGrunnlag().getAktørYtelseFraRegister())
                 .før(beregningsgrunnlag.getSkjæringstidspunkt())
-                .filter(y -> !y.getYtelseType().equals(FagsakYtelseType.DAGPENGER) && !y.getYtelseType().equals(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER))
+                .filter(y -> !y.getYtelseType().equals(YtelseType.DAGPENGER) && !y.getYtelseType().equals(YtelseType.ARBEIDSAVKLARINGSPENGER))
                 .filter(y -> !y.getPeriode().getTomDato().isBefore(beregningsgrunnlag.getSkjæringstidspunkt().minusMonths(3).withDayOfMonth(1)));
     }
 

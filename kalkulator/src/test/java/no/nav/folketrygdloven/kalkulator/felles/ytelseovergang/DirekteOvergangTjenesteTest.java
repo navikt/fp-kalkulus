@@ -22,6 +22,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 class DirekteOvergangTjenesteTest {
 
@@ -124,7 +125,7 @@ class DirekteOvergangTjenesteTest {
         var periode = Intervall.fraOgMedTilOgMed(fom, fom.plusDays(5));
         var ytelse = lagYtelse(periode, null);
 
-        var tidslinje = DirekteOvergangTjeneste.direkteUtbetalingTidslinje(List.of(ytelse), y -> !y.getYtelseType().equals(FagsakYtelseType.FORELDREPENGER));
+        var tidslinje = DirekteOvergangTjeneste.direkteUtbetalingTidslinje(List.of(ytelse), y -> !y.getYtelseType().equals(YtelseType.FORELDREPENGER));
 
         assertThat(tidslinje.isEmpty()).isTrue();
     }
@@ -167,7 +168,7 @@ class DirekteOvergangTjenesteTest {
 
 
         var ytelse = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
-                .medYtelseType(FagsakYtelseType.FORELDREPENGER)
+                .medYtelseType(YtelseType.FORELDREPENGER)
                 .medVedtaksDagsats(BigDecimal.valueOf(1000))
                 .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode1)
                         .medBeløp(BigDecimal.valueOf(5000))
@@ -227,7 +228,7 @@ class DirekteOvergangTjenesteTest {
         var periode1 = Intervall.fraOgMedTilOgMed(fom, tom);
         var arbeidsgiver1 = Arbeidsgiver.virksomhet("12345587");
         var ytelse = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
-                .medYtelseType(FagsakYtelseType.FORELDREPENGER)
+                .medYtelseType(YtelseType.FORELDREPENGER)
                 .medVedtaksDagsats(BigDecimal.valueOf(1000))
                 .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode1)
                         .medBeløp(BigDecimal.valueOf(5000))
@@ -252,7 +253,7 @@ class DirekteOvergangTjenesteTest {
         var periode1 = Intervall.fraOgMedTilOgMed(fom, tom);
         var arbeidsgiver1 = Arbeidsgiver.virksomhet("12345587");
         var ytelse = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
-                .medYtelseType(FagsakYtelseType.FORELDREPENGER)
+                .medYtelseType(YtelseType.FORELDREPENGER)
                 .medVedtaksDagsats(BigDecimal.valueOf(1000))
                 .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode1)
                         .medBeløp(BigDecimal.valueOf(5000))
@@ -277,7 +278,7 @@ class DirekteOvergangTjenesteTest {
         var periode1 = Intervall.fraOgMedTilOgMed(fom, tom);
         var arbeidsgiver1 = Arbeidsgiver.virksomhet("12345587");
         var ytelse = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
-                .medYtelseType(FagsakYtelseType.FORELDREPENGER)
+                .medYtelseType(YtelseType.FORELDREPENGER)
                 .medVedtaksDagsats(BigDecimal.valueOf(1000))
                 .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode1)
                         .medBeløp(BigDecimal.valueOf(5000))
@@ -302,7 +303,7 @@ class DirekteOvergangTjenesteTest {
         var periode1 = Intervall.fraOgMedTilOgMed(fom, tom);
         var arbeidsgiver1 = Arbeidsgiver.virksomhet("12345587");
         var ytelse = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
-                .medYtelseType(FagsakYtelseType.FORELDREPENGER)
+                .medYtelseType(YtelseType.FORELDREPENGER)
                 .medVedtaksDagsats(BigDecimal.valueOf(1000))
                 .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode1)
                         .medBeløp(BigDecimal.valueOf(5000))
@@ -327,7 +328,7 @@ class DirekteOvergangTjenesteTest {
         var periode1 = Intervall.fraOgMedTilOgMed(fom, tom);
         var arbeidsgiver1 = Arbeidsgiver.virksomhet("12345587");
         var ytelse = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
-                .medYtelseType(FagsakYtelseType.FORELDREPENGER)
+                .medYtelseType(YtelseType.FORELDREPENGER)
                 .medVedtaksDagsats(BigDecimal.valueOf(1000))
                 .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode1)
                         .medBeløp(BigDecimal.valueOf(5000))
@@ -352,7 +353,7 @@ class DirekteOvergangTjenesteTest {
         var periode1 = Intervall.fraOgMedTilOgMed(fom, tom);
         var arbeidsgiver1 = Arbeidsgiver.virksomhet("12345587");
         var ytelse = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
-                .medYtelseType(FagsakYtelseType.FORELDREPENGER)
+                .medYtelseType(YtelseType.FORELDREPENGER)
                 .medVedtaksDagsats(BigDecimal.valueOf(1000))
                 .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode1)
                         .medBeløp(BigDecimal.valueOf(5000))
@@ -380,7 +381,7 @@ class DirekteOvergangTjenesteTest {
 
     private static YtelseDto lagYtelse(Intervall periode, List<AnvistAndel> andeler) {
         return YtelseDtoBuilder.ny().medPeriode(periode)
-                .medYtelseType(FagsakYtelseType.FORELDREPENGER)
+                .medYtelseType(YtelseType.FORELDREPENGER)
                 .medVedtaksDagsats(BigDecimal.valueOf(1000))
                 .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode)
                         .medBeløp(BigDecimal.valueOf(5000))

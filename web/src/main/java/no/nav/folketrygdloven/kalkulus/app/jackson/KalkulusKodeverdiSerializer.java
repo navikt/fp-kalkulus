@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulus.mappers;
+package no.nav.folketrygdloven.kalkulus.app.jackson;
 
 import java.io.IOException;
 

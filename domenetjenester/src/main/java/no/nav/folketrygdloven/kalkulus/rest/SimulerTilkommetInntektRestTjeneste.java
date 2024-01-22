@@ -50,7 +50,7 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.mappers.MapFraKalkulator;
 import no.nav.folketrygdloven.kalkulus.request.v1.simulerTilkommetInntekt.FinnSimulerTilkommetInntektInputRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.simulerTilkommetInntekt.SimulerTilkommetInntektForRequest;
@@ -188,7 +188,7 @@ public class SimulerTilkommetInntektRestTjeneste {
     @BeskyttetRessurs(action = READ, property = DRIFT)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response simulerTilkommetInntekt(@NotNull @Valid SimulerTilkommetInntektRequestAbacDto spesifikasjon) {
-        var koblinger = koblingRepository.hentKoblingerOpprettetIPeriode(spesifikasjon.getPeriode(), YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN);
+        var koblinger = koblingRepository.hentKoblingerOpprettetIPeriode(spesifikasjon.getPeriode(), FagsakYtelseType.PLEIEPENGER_SYKT_BARN);
         var koblingIder = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
         var beregningsgrunnlag = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingIder);
         var inputer = kalkulatorInputTjeneste.hentForKoblinger(beregningsgrunnlag.stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId).collect(Collectors.toSet()));

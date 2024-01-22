@@ -26,7 +26,7 @@ import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseGraph;
 import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseJpaEntityGraphConfig;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
 
@@ -71,17 +71,17 @@ public class KoblingRepository {
         return query.getResultList();
     }
 
-    public Optional<Long> hentFor(KoblingReferanse referanse, YtelseTyperKalkulusStøtterKontrakt ytelseType) {
+    public Optional<Long> hentFor(KoblingReferanse referanse, FagsakYtelseType ytelseType) {
         TypedQuery<Long> query = entityManager
-                .createQuery("SELECT k.id FROM Kobling k WHERE k.koblingReferanse = :referanse AND k.ytelseTyperKalkulusStøtter = :ytelse", Long.class);
+                .createQuery("SELECT k.id FROM Kobling k WHERE k.koblingReferanse = :referanse AND k.ytelseType = :ytelse", Long.class);
         query.setParameter("referanse", referanse);
         query.setParameter("ytelse", ytelseType);
         return HibernateVerktøy.hentUniktResultat(query);
     }
 
-    public List<KoblingEntitet> hentKoblingerFor(Collection<KoblingReferanse> referanser, YtelseTyperKalkulusStøtterKontrakt ytelseType) {
+    public List<KoblingEntitet> hentKoblingerFor(Collection<KoblingReferanse> referanser, FagsakYtelseType ytelseType) {
         TypedQuery<KoblingEntitet> query = entityManager.createQuery(
-                "SELECT k FROM Kobling k WHERE k.koblingReferanse IN(:referanser) AND k.ytelseTyperKalkulusStøtter = :ytelseType", KoblingEntitet.class);
+                "SELECT k FROM Kobling k WHERE k.koblingReferanse IN(:referanser) AND k.ytelseType = :ytelseType", KoblingEntitet.class);
         query.setParameter("referanser", referanser);
         query.setParameter("ytelseType", ytelseType);
         return query.getResultList();
@@ -94,14 +94,14 @@ public class KoblingRepository {
         return query.getResultList();
     }
 
-    public List<KoblingEntitet> hentKoblingerOpprettetIPeriode(Periode periode, YtelseTyperKalkulusStøtterKontrakt ytelsetype) {
+    public List<KoblingEntitet> hentKoblingerOpprettetIPeriode(Periode periode, FagsakYtelseType ytelseType) {
         TypedQuery<KoblingEntitet> query = entityManager.createQuery(
                 "SELECT k FROM Kobling k WHERE k.opprettetTidspunkt >= :fom " +
                         "and k.opprettetTidspunkt < :tom " +
-                        "and k.ytelseTyperKalkulusStøtter = :ytelsetype order by k.opprettetTidspunkt desc", KoblingEntitet.class);
+                        "and k.ytelseType = :ytelsetype order by k.opprettetTidspunkt desc", KoblingEntitet.class);
         query.setParameter("fom", periode.getFom().atStartOfDay());
         query.setParameter("tom", periode.getTom().plusDays(1).atStartOfDay());
-        query.setParameter("ytelsetype", ytelsetype);
+        query.setParameter("ytelsetype", ytelseType);
         return query.getResultList();
     }
 

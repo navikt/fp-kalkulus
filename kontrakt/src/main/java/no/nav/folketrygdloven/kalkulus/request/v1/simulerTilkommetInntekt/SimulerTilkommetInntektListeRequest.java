@@ -14,8 +14,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import no.nav.folketrygdloven.kalkulus.felles.v1.PersonIdent;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 /**
  * Spesifikasjon for å fortsette en beregning.
@@ -36,7 +35,7 @@ public class SimulerTilkommetInntektListeRequest {
     @JsonProperty(value = "ytelseSomSkalBeregnes", required = true)
     @NotNull
     @Valid
-    private YtelseTyperKalkulusStøtterKontrakt ytelseType;
+    private FagsakYtelseType ytelseType;
 
     @JsonProperty(value = "beregnForListe")
     @Size(min = 1)
@@ -49,7 +48,7 @@ public class SimulerTilkommetInntektListeRequest {
 
     @JsonCreator
     public SimulerTilkommetInntektListeRequest(@JsonProperty(value = "saksnummer", required = true) String saksnummer,
-                                               @JsonProperty(value = "ytelseType", required = true) YtelseTyperKalkulusStøtterKontrakt ytelseType,
+                                               @JsonProperty(value = "ytelseType", required = true) FagsakYtelseType ytelseType,
                                                @JsonProperty(value = "beregnForListe") List<SimulerTilkommetInntektForRequest> simulerForListe) {
         this.saksnummer = saksnummer;
         this.ytelseType = ytelseType;
@@ -60,7 +59,7 @@ public class SimulerTilkommetInntektListeRequest {
         return saksnummer;
     }
 
-    public YtelseTyperKalkulusStøtterKontrakt getYtelseType() {
+    public FagsakYtelseType getYtelseType() {
         return ytelseType;
     }
 

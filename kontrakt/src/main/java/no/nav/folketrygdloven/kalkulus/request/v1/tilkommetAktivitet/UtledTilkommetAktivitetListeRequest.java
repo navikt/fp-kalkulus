@@ -14,8 +14,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import no.nav.folketrygdloven.kalkulus.felles.v1.PersonIdent;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE, creatorVisibility = Visibility.NONE)
@@ -31,7 +30,7 @@ public class UtledTilkommetAktivitetListeRequest {
     @JsonProperty(value = "ytelseSomSkalBeregnes", required = true)
     @NotNull
     @Valid
-    private YtelseTyperKalkulusStøtterKontrakt ytelseType;
+    private FagsakYtelseType ytelseType;
 
     @JsonProperty(value = "liste")
     @Size(min = 1)
@@ -44,7 +43,7 @@ public class UtledTilkommetAktivitetListeRequest {
 
     @JsonCreator
     public UtledTilkommetAktivitetListeRequest(@JsonProperty(value = "saksnummer", required = true) String saksnummer,
-                                               @JsonProperty(value = "ytelseType", required = true) YtelseTyperKalkulusStøtterKontrakt ytelseType,
+                                               @JsonProperty(value = "ytelseType", required = true) FagsakYtelseType ytelseType,
                                                @JsonProperty(value = "liste") List<UtledTilkommetAktivitetForRequest> liste) {
         this.saksnummer = saksnummer;
         this.ytelseType = ytelseType;
@@ -55,7 +54,7 @@ public class UtledTilkommetAktivitetListeRequest {
         return saksnummer;
     }
 
-    public YtelseTyperKalkulusStøtterKontrakt getYtelseType() {
+    public FagsakYtelseType getYtelseType() {
         return ytelseType;
     }
 

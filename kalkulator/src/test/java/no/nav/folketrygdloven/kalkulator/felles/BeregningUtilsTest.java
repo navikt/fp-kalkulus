@@ -16,18 +16,19 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 public class BeregningUtilsTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019,1,1);
     @Test
     public void skal_finne_ytelse_med_korrekt_ytelsetype() {
-        YtelseDto aapYtelse = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(2), SKJÆRINGSTIDSPUNKT.minusMonths(1)).build();
-        YtelseDto dpYtelse = lagYtelse(FagsakYtelseType.DAGPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.minusDays(1)).build();
+        YtelseDto aapYtelse = lagYtelse(YtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(2), SKJÆRINGSTIDSPUNKT.minusMonths(1)).build();
+        YtelseDto dpYtelse = lagYtelse(YtelseType.DAGPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.minusDays(1)).build();
 
         YtelseFilterDto filter = new YtelseFilterDto(Arrays.asList(aapYtelse, dpYtelse));
 
-        Optional<YtelseDto> ytelse = MeldekortUtils.sisteVedtakFørStpForType(filter, SKJÆRINGSTIDSPUNKT, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER));
+        Optional<YtelseDto> ytelse = MeldekortUtils.sisteVedtakFørStpForType(filter, SKJÆRINGSTIDSPUNKT, Set.of(YtelseType.ARBEIDSAVKLARINGSPENGER));
 
         assertThat(ytelse).isPresent();
         assertThat(ytelse.get()).isEqualTo(aapYtelse);
@@ -35,12 +36,12 @@ public class BeregningUtilsTest {
 
     @Test
     public void skal_finne_ytelse_med_vedtak_nærmest_skjæringstidspunkt() {
-        YtelseDto aapYtelseGammel = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(2), SKJÆRINGSTIDSPUNKT.minusMonths(1)).build();
-        YtelseDto aapYtelseNy = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.minusDays(1)).build();
+        YtelseDto aapYtelseGammel = lagYtelse(YtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(2), SKJÆRINGSTIDSPUNKT.minusMonths(1)).build();
+        YtelseDto aapYtelseNy = lagYtelse(YtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.minusDays(1)).build();
 
         YtelseFilterDto filter = new YtelseFilterDto(Arrays.asList(aapYtelseNy, aapYtelseGammel));
 
-        Optional<YtelseDto> ytelse = MeldekortUtils.sisteVedtakFørStpForType(filter, SKJÆRINGSTIDSPUNKT, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER));
+        Optional<YtelseDto> ytelse = MeldekortUtils.sisteVedtakFørStpForType(filter, SKJÆRINGSTIDSPUNKT, Set.of(YtelseType.ARBEIDSAVKLARINGSPENGER));
 
         assertThat(ytelse).isPresent();
         assertThat(ytelse.get()).isEqualTo(aapYtelseNy);
@@ -48,13 +49,13 @@ public class BeregningUtilsTest {
 
     @Test
     public void skal_ikke_ta_med_vedtak_med_fom_etter_skjæringstidspunkt() {
-        YtelseDto aapYtelseGammel = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(2), SKJÆRINGSTIDSPUNKT.minusMonths(1)).build();
-        YtelseDto aapYtelseNy = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.minusDays(15)).build();
-        YtelseDto aapYtelseEtterStp = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.plusDays(1), SKJÆRINGSTIDSPUNKT.plusMonths(1)).build();
+        YtelseDto aapYtelseGammel = lagYtelse(YtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(2), SKJÆRINGSTIDSPUNKT.minusMonths(1)).build();
+        YtelseDto aapYtelseNy = lagYtelse(YtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.minusDays(15)).build();
+        YtelseDto aapYtelseEtterStp = lagYtelse(YtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.plusDays(1), SKJÆRINGSTIDSPUNKT.plusMonths(1)).build();
 
         YtelseFilterDto filter = new YtelseFilterDto(Arrays.asList(aapYtelseNy, aapYtelseGammel, aapYtelseEtterStp));
 
-        Optional<YtelseDto> ytelse = MeldekortUtils.sisteVedtakFørStpForType(filter, SKJÆRINGSTIDSPUNKT, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER));
+        Optional<YtelseDto> ytelse = MeldekortUtils.sisteVedtakFørStpForType(filter, SKJÆRINGSTIDSPUNKT, Set.of(YtelseType.ARBEIDSAVKLARINGSPENGER));
 
         assertThat(ytelse).isPresent();
         assertThat(ytelse.get()).isEqualTo(aapYtelseNy);
@@ -62,8 +63,8 @@ public class BeregningUtilsTest {
 
     @Test
     public void skal_finne_korrekt_meldekort_når_det_tilhører_nyeste_vedtak() {
-        YtelseDtoBuilder aapGammelBuilder = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(2), SKJÆRINGSTIDSPUNKT.minusMonths(1));
-        YtelseDtoBuilder aapYtelseNyBuilder = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.minusDays(15));
+        YtelseDtoBuilder aapGammelBuilder = lagYtelse(YtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(2), SKJÆRINGSTIDSPUNKT.minusMonths(1));
+        YtelseDtoBuilder aapYtelseNyBuilder = lagYtelse(YtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.minusDays(15));
 
         YtelseAnvistDto nyttMeldekort = lagMeldekort(BigDecimal.valueOf(100), SKJÆRINGSTIDSPUNKT.minusDays(45), SKJÆRINGSTIDSPUNKT.minusDays(31));
         YtelseAnvistDto gammeltMeldekort = lagMeldekort(BigDecimal.valueOf(100), SKJÆRINGSTIDSPUNKT.minusDays(60), SKJÆRINGSTIDSPUNKT.minusDays(46));
@@ -72,7 +73,7 @@ public class BeregningUtilsTest {
         YtelseDto nyYtelse = aapYtelseNyBuilder.leggTilYtelseAnvist(nyttMeldekort).build();
 
         YtelseFilterDto filter = new YtelseFilterDto(Arrays.asList(gammelYtelse, nyYtelse));
-        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.sisteHeleMeldekortFørStp(filter, nyYtelse, SKJÆRINGSTIDSPUNKT, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), FagsakYtelseType.FORELDREPENGER);
+        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.sisteHeleMeldekortFørStp(filter, nyYtelse, SKJÆRINGSTIDSPUNKT, Set.of(YtelseType.ARBEIDSAVKLARINGSPENGER), FagsakYtelseType.FORELDREPENGER);
 
         assertThat(ytelseAnvist).isPresent();
         assertThat(ytelseAnvist.get()).isEqualTo(nyttMeldekort);
@@ -80,8 +81,8 @@ public class BeregningUtilsTest {
 
     @Test
     public void skal_finne_korrekt_meldekort_når_det_tilhører_eldste_vedtak() {
-        YtelseDtoBuilder aapGammelBuilder = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(2), SKJÆRINGSTIDSPUNKT.minusMonths(1));
-        YtelseDtoBuilder aapYtelseNyBuilder = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.minusDays(15));
+        YtelseDtoBuilder aapGammelBuilder = lagYtelse(YtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(2), SKJÆRINGSTIDSPUNKT.minusMonths(1));
+        YtelseDtoBuilder aapYtelseNyBuilder = lagYtelse(YtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.minusDays(15));
 
         YtelseAnvistDto nyttMeldekort = lagMeldekort(BigDecimal.valueOf(100), SKJÆRINGSTIDSPUNKT.minusDays(45), SKJÆRINGSTIDSPUNKT.minusDays(31));
         YtelseAnvistDto gammeltMeldekort = lagMeldekort(BigDecimal.valueOf(100), SKJÆRINGSTIDSPUNKT.minusDays(60), SKJÆRINGSTIDSPUNKT.minusDays(46));
@@ -90,7 +91,7 @@ public class BeregningUtilsTest {
         YtelseDto nyYtelse = aapYtelseNyBuilder.leggTilYtelseAnvist(gammeltMeldekort).build();
 
         YtelseFilterDto filter = new YtelseFilterDto(Arrays.asList(gammelYtelse, nyYtelse));
-        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.sisteHeleMeldekortFørStp(filter, nyYtelse, SKJÆRINGSTIDSPUNKT, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), FagsakYtelseType.FORELDREPENGER);
+        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.sisteHeleMeldekortFørStp(filter, nyYtelse, SKJÆRINGSTIDSPUNKT, Set.of(YtelseType.ARBEIDSAVKLARINGSPENGER), FagsakYtelseType.FORELDREPENGER);
 
         assertThat(ytelseAnvist).isPresent();
         assertThat(ytelseAnvist.get()).isEqualTo(nyttMeldekort);
@@ -98,8 +99,8 @@ public class BeregningUtilsTest {
 
     @Test
     public void skal_finne_meldekort_fra_nyeste_vedtak_når_to_vedtak_har_meldekort_med_samme_periode() {
-        YtelseDtoBuilder aapGammelBuilder = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(2), SKJÆRINGSTIDSPUNKT.minusMonths(1));
-        YtelseDtoBuilder aapYtelseNyBuilder = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.minusDays(15));
+        YtelseDtoBuilder aapGammelBuilder = lagYtelse(YtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(2), SKJÆRINGSTIDSPUNKT.minusMonths(1));
+        YtelseDtoBuilder aapYtelseNyBuilder = lagYtelse(YtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.minusDays(15));
 
         YtelseAnvistDto meldekortHundre = lagMeldekort(BigDecimal.valueOf(100), SKJÆRINGSTIDSPUNKT.minusDays(45), SKJÆRINGSTIDSPUNKT.minusDays(31));
         YtelseAnvistDto meldekortFemti = lagMeldekort(BigDecimal.valueOf(50), SKJÆRINGSTIDSPUNKT.minusDays(45), SKJÆRINGSTIDSPUNKT.minusDays(31));
@@ -108,7 +109,7 @@ public class BeregningUtilsTest {
         YtelseDto nyYtelse = aapYtelseNyBuilder.leggTilYtelseAnvist(meldekortFemti).build();
 
         YtelseFilterDto filter = new YtelseFilterDto(Arrays.asList(gammelYtelse, nyYtelse));
-        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.sisteHeleMeldekortFørStp(filter, nyYtelse, SKJÆRINGSTIDSPUNKT, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), FagsakYtelseType.FORELDREPENGER);
+        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.sisteHeleMeldekortFørStp(filter, nyYtelse, SKJÆRINGSTIDSPUNKT, Set.of(YtelseType.ARBEIDSAVKLARINGSPENGER), FagsakYtelseType.FORELDREPENGER);
 
         assertThat(ytelseAnvist).isPresent();
         assertThat(ytelseAnvist.get()).isEqualTo(meldekortFemti);
@@ -116,9 +117,9 @@ public class BeregningUtilsTest {
 
     @Test
     public void skal_ikke_ta_med_meldekort_fra_vedtak_etter_stp() {
-        YtelseDtoBuilder aapGammelBuilder = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(2), SKJÆRINGSTIDSPUNKT.minusMonths(1));
-        YtelseDtoBuilder aapYtelseNyBuilder = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.minusDays(15));
-        YtelseDtoBuilder aapYtelseEtterStpBuilder = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.minusDays(15));
+        YtelseDtoBuilder aapGammelBuilder = lagYtelse(YtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(2), SKJÆRINGSTIDSPUNKT.minusMonths(1));
+        YtelseDtoBuilder aapYtelseNyBuilder = lagYtelse(YtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.minusDays(15));
+        YtelseDtoBuilder aapYtelseEtterStpBuilder = lagYtelse(YtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.minusDays(15));
 
         YtelseAnvistDto meldekortGammel = lagMeldekort(BigDecimal.valueOf(50), SKJÆRINGSTIDSPUNKT.minusDays(45), SKJÆRINGSTIDSPUNKT.minusDays(31));
         YtelseAnvistDto meldekortNytt = lagMeldekort(BigDecimal.valueOf(50), SKJÆRINGSTIDSPUNKT.minusDays(30), SKJÆRINGSTIDSPUNKT.minusDays(16));
@@ -129,7 +130,7 @@ public class BeregningUtilsTest {
         YtelseDto ytelseEtterStp = aapYtelseEtterStpBuilder.leggTilYtelseAnvist(meldekortNyest).build();
 
         YtelseFilterDto filter = new YtelseFilterDto(Arrays.asList(gammelYtelse, nyYtelse, ytelseEtterStp));
-        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.sisteHeleMeldekortFørStp(filter, nyYtelse, SKJÆRINGSTIDSPUNKT, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), FagsakYtelseType.FORELDREPENGER);
+        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.sisteHeleMeldekortFørStp(filter, nyYtelse, SKJÆRINGSTIDSPUNKT, Set.of(YtelseType.ARBEIDSAVKLARINGSPENGER), FagsakYtelseType.FORELDREPENGER);
 
         assertThat(ytelseAnvist).isPresent();
         assertThat(ytelseAnvist.get()).isEqualTo(meldekortNytt);
@@ -137,8 +138,8 @@ public class BeregningUtilsTest {
 
     @Test
     public void skalFinneMeldekortVedGittDatoNårMeldekortetFinnes() {
-        YtelseDtoBuilder aapGammelBuilder = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(5), SKJÆRINGSTIDSPUNKT.minusMonths(1));
-        YtelseDtoBuilder aapYtelseNyBuilder = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.plusMonths(1));
+        YtelseDtoBuilder aapGammelBuilder = lagYtelse(YtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(5), SKJÆRINGSTIDSPUNKT.minusMonths(1));
+        YtelseDtoBuilder aapYtelseNyBuilder = lagYtelse(YtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.plusMonths(1));
 
         YtelseAnvistDto meldekort1 = lagMeldekort(BigDecimal.valueOf(100), SKJÆRINGSTIDSPUNKT.minusWeeks(6), SKJÆRINGSTIDSPUNKT.minusWeeks(4));
         YtelseAnvistDto meldekort2 = lagMeldekort(BigDecimal.valueOf(100), SKJÆRINGSTIDSPUNKT.minusWeeks(4), SKJÆRINGSTIDSPUNKT.minusWeeks(2));
@@ -153,7 +154,7 @@ public class BeregningUtilsTest {
                 .leggTilYtelseAnvist(meldekort4).build();
 
         YtelseFilterDto filter = new YtelseFilterDto(Arrays.asList(gammelYtelse, nyYtelse));
-        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.finnMeldekortSomInkludererGittDato(filter, nyYtelse, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), SKJÆRINGSTIDSPUNKT);
+        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.finnMeldekortSomInkludererGittDato(filter, nyYtelse, Set.of(YtelseType.ARBEIDSAVKLARINGSPENGER), SKJÆRINGSTIDSPUNKT);
 
         assertThat(ytelseAnvist).isPresent();
         assertThat(ytelseAnvist.get()).isEqualTo(meldekort3);
@@ -161,8 +162,8 @@ public class BeregningUtilsTest {
 
     @Test
     public void skalIkkeFinneMeldekortNårMeldekortVedGittDatoIkkeFinnes() {
-        YtelseDtoBuilder aapGammelBuilder = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(5), SKJÆRINGSTIDSPUNKT.minusMonths(1));
-        YtelseDtoBuilder aapYtelseNyBuilder = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.plusMonths(1));
+        YtelseDtoBuilder aapGammelBuilder = lagYtelse(YtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(5), SKJÆRINGSTIDSPUNKT.minusMonths(1));
+        YtelseDtoBuilder aapYtelseNyBuilder = lagYtelse(YtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.plusMonths(1));
 
         YtelseAnvistDto meldekort1 = lagMeldekort(BigDecimal.valueOf(100), SKJÆRINGSTIDSPUNKT.minusWeeks(6), SKJÆRINGSTIDSPUNKT.minusWeeks(4));
         YtelseAnvistDto meldekort2 = lagMeldekort(BigDecimal.valueOf(100), SKJÆRINGSTIDSPUNKT.minusWeeks(4), SKJÆRINGSTIDSPUNKT.minusWeeks(2));
@@ -177,7 +178,7 @@ public class BeregningUtilsTest {
                 .leggTilYtelseAnvist(meldekort4).build();
 
         YtelseFilterDto filter = new YtelseFilterDto(Arrays.asList(gammelYtelse, nyYtelse));
-        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.finnMeldekortSomInkludererGittDato(filter, nyYtelse, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), SKJÆRINGSTIDSPUNKT.plusDays(1));
+        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.finnMeldekortSomInkludererGittDato(filter, nyYtelse, Set.of(YtelseType.ARBEIDSAVKLARINGSPENGER), SKJÆRINGSTIDSPUNKT.plusDays(1));
 
         assertThat(ytelseAnvist).isEmpty();
     }
@@ -189,7 +190,7 @@ public class BeregningUtilsTest {
     }
 
 
-    private YtelseDtoBuilder lagYtelse(FagsakYtelseType ytelsetype, LocalDate fom, LocalDate tom) {
+    private YtelseDtoBuilder lagYtelse(YtelseType ytelsetype, LocalDate fom, LocalDate tom) {
         return YtelseDtoBuilder.ny()
                 .medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
                 .medYtelseType(ytelsetype);

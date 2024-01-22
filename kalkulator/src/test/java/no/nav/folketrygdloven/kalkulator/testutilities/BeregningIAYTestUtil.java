@@ -34,10 +34,10 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidsforholdHandlingType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.VirksomhetType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 
 public class BeregningIAYTestUtil {
@@ -122,7 +122,7 @@ public class BeregningIAYTestUtil {
     public static AktørYtelseDto leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseGrunnlagBuilder,
                                                     LocalDate fom,
                                                     LocalDate tom, // NOSONAR - brukes bare til test
-                                                    FagsakYtelseType ytelseType,
+                                                    YtelseType ytelseType,
                                                     Periode... meldekortPerioder) {
         InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(inntektArbeidYtelseGrunnlagBuilder.getKladd().getRegisterVersjon(), VersjonTypeDto.REGISTER);
         InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder = inntektArbeidYtelseAggregatBuilder

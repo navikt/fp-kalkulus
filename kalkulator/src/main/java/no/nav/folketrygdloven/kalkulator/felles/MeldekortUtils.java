@@ -20,6 +20,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.tid.Virkedager;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 public class MeldekortUtils {
 
@@ -28,7 +29,7 @@ public class MeldekortUtils {
 
     private MeldekortUtils() {}
 
-    public static Optional<YtelseDto> sisteVedtakFørStpForType(YtelseFilterDto ytelseFilter, LocalDate skjæringstidspunkt, Set<FagsakYtelseType> ytelseTyper) {
+    public static Optional<YtelseDto> sisteVedtakFørStpForType(YtelseFilterDto ytelseFilter, LocalDate skjæringstidspunkt, Set<YtelseType> ytelseTyper) {
         return ytelseFilter.getFiltrertYtelser().stream()
             .filter(ytelse -> ytelseTyper.contains(ytelse.getYtelseType()))
             .filter(ytelse -> !skjæringstidspunkt.isBefore(ytelse.getPeriode().getFomDato()))
@@ -38,7 +39,7 @@ public class MeldekortUtils {
     public static Optional<YtelseAnvistDto> sisteHeleMeldekortFørStp(YtelseFilterDto ytelseFilter,
                                                                      YtelseDto sisteVedtak,
                                                                      LocalDate skjæringstidspunkt,
-                                                                     Set<FagsakYtelseType> ytelseTyper,
+                                                                     Set<YtelseType> ytelseTyper,
                                                                      FagsakYtelseType ytelseType) {
         final LocalDate sisteVedtakFom = sisteVedtak.getPeriode().getFomDato();
 
@@ -64,7 +65,7 @@ public class MeldekortUtils {
 
     }
 
-    public static Optional<YtelseAnvistDto> finnMeldekortSomInkludererGittDato(YtelseFilterDto ytelseFilter, YtelseDto sisteVedtak, Set<FagsakYtelseType> ytelseTyper, LocalDate gittDato) {
+    public static Optional<YtelseAnvistDto> finnMeldekortSomInkludererGittDato(YtelseFilterDto ytelseFilter, YtelseDto sisteVedtak, Set<YtelseType> ytelseTyper, LocalDate gittDato) {
         List<YtelseAnvistDto> alleMeldekort = finnAlleMeldekort(ytelseFilter, ytelseTyper);
 
         Optional<YtelseAnvistDto> sisteMeldekort = alleMeldekort.stream()
@@ -84,14 +85,14 @@ public class MeldekortUtils {
         return sisteMeldekort;
     }
 
-    public static List<YtelseAnvistDto> finnAlleMeldekort(YtelseFilterDto ytelseFilter, Set<FagsakYtelseType> ytelseTyper){
+    public static List<YtelseAnvistDto> finnAlleMeldekort(YtelseFilterDto ytelseFilter, Set<YtelseType> ytelseTyper){
         return ytelseFilter.getFiltrertYtelser().stream()
                 .filter(ytelse -> ytelseTyper.contains(ytelse.getYtelseType()))
                 .flatMap(ytelse -> ytelse.getYtelseAnvist().stream()).collect(Collectors.toList());
     }
 
 
-    public static List<Meldekort> finnAlleMeldekortJustertForGyldigPeriodeOgUtbetaling(YtelseFilterDto ytelseFilter, Set<FagsakYtelseType> ytelseTyper){
+    public static List<Meldekort> finnAlleMeldekortJustertForGyldigPeriodeOgUtbetaling(YtelseFilterDto ytelseFilter, Set<YtelseType> ytelseTyper){
         return ytelseFilter.getFiltrertYtelser().stream()
                 .filter(ytelse -> ytelseTyper.contains(ytelse.getYtelseType()))
                 .flatMap(ytelse ->  {
@@ -117,7 +118,7 @@ public class MeldekortUtils {
 
     public static Optional<Meldekort> finnSisteHeleMeldekortFørStpMedJustertPeriode(YtelseFilterDto ytelseFilter,
                                                                                     LocalDate skjæringstidspunkt,
-                                                                                    Set<FagsakYtelseType> ytelseTyper) {
+                                                                                    Set<YtelseType> ytelseTyper) {
 
 
         var alleMeldekort = finnAlleMeldekortJustertForGyldigPeriodeOgUtbetaling(ytelseFilter, ytelseTyper);

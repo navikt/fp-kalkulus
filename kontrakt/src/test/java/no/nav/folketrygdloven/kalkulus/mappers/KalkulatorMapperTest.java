@@ -42,12 +42,12 @@ import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelserDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.RelatertYtelseType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.request.v1.BeregnForRequest;
@@ -85,7 +85,7 @@ public class KalkulatorMapperTest {
 
         UuidDto koblingReferanse = new UuidDto(UUID.randomUUID());
         BeregnListeRequest spesifikasjon = new BeregnListeRequest(
-                saksnummer, UUID.randomUUID(), dummy, YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN,
+                saksnummer, UUID.randomUUID(), dummy, FagsakYtelseType.PLEIEPENGER_SYKT_BARN,
                 BeregningSteg.FASTSETT_STP_BER,
                 List.of(new BeregnForRequest(koblingReferanse.toUuidReferanse(), List.of(UUID.randomUUID()), kalkulatorInputDto, null)));
 
@@ -134,6 +134,6 @@ public class KalkulatorMapperTest {
                 BigDecimal.valueOf(100),
                 BigDecimal.valueOf(100),
                 Inntektskategori.ARBEIDSTAKER)));
-        return List.of(new YtelseDto(beløpDto, Set.of(ytelseAnvistDto), RelatertYtelseType.FORELDREPENGER, periode, null));
+        return List.of(new YtelseDto(beløpDto, Set.of(ytelseAnvistDto), YtelseType.FORELDREPENGER, periode, null));
     }
 }

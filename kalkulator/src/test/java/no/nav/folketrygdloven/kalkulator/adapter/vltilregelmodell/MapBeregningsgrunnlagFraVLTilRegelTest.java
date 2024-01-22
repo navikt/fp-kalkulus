@@ -64,12 +64,12 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 @ExtendWith(MockitoExtension.class)
@@ -110,7 +110,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         LocalDate skjæring = beregningsgrunnlag.getSkjæringstidspunkt();
         InntektArbeidYtelseAggregatBuilder iayBuilder = opprettForBehandling(iayGrunnlagBuilder);
         InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder = iayBuilder.getAktørYtelseBuilder();
-        YtelseDtoBuilder ytelse = lagYtelse(FagsakYtelseType.DAGPENGER, aktørYtelseBuilder,
+        YtelseDtoBuilder ytelse = lagYtelse(YtelseType.DAGPENGER, aktørYtelseBuilder,
                 skjæring.minusMonths(1).plusDays(1),
                 skjæring.plusMonths(6),
                 new BigDecimal(MELDEKORTSATS1),
@@ -118,7 +118,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
                 skjæring.minusMonths(1).plusDays(2),
                 skjæring.minusMonths(1).plusDays(16));
         aktørYtelseBuilder.leggTilYtelse(ytelse);
-        ytelse = lagYtelse(FagsakYtelseType.DAGPENGER, aktørYtelseBuilder,
+        ytelse = lagYtelse(YtelseType.DAGPENGER, aktørYtelseBuilder,
                 skjæring.minusMonths(3),
                 skjæring.minusMonths(1),
                 new BigDecimal(MELDEKORTSATS2),
@@ -134,7 +134,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         LocalDate skjæring = beregningsgrunnlag.getSkjæringstidspunkt();
         InntektArbeidYtelseAggregatBuilder iayBuilder = opprettForBehandling(iayGrunnlagBuilder);
         InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder = iayBuilder.getAktørYtelseBuilder();
-        YtelseDtoBuilder ytelse = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, aktørYtelseBuilder,
+        YtelseDtoBuilder ytelse = lagYtelse(YtelseType.ARBEIDSAVKLARINGSPENGER, aktørYtelseBuilder,
                 skjæring.minusWeeks(2),
                 skjæring.plusMonths(6),
                 new BigDecimal(MELDEKORTSATS1),
@@ -147,11 +147,11 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         return koblingReferanse;
     }
 
-    private YtelseDtoBuilder lagYtelse(FagsakYtelseType relatertYtelseType, InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder,
+    private YtelseDtoBuilder lagYtelse(YtelseType relatertYtelseType, InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder,
                                        LocalDate fom, LocalDate tom, BigDecimal beløp, BigDecimal utbetalingsgrad,
                                        LocalDate meldekortFom, LocalDate meldekortTom) {
         YtelseDtoBuilder ytelselseBuilder = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom)).medYtelseType(relatertYtelseType);
-        return ytelselseBuilder.medYtelseType(FagsakYtelseType.DAGPENGER)
+        return ytelselseBuilder.medYtelseType(YtelseType.DAGPENGER)
                 .medVedtaksDagsats(beløp)
                 .leggTilYtelseAnvist(ytelselseBuilder.getAnvistBuilder()
                         .medAnvistPeriode(Intervall.fraOgMedTilOgMed(meldekortFom, meldekortTom))

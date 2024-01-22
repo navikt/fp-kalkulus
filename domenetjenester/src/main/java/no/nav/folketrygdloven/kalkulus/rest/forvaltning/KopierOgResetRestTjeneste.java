@@ -36,7 +36,7 @@ import jakarta.ws.rs.core.Response;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.forvaltning.ResetGrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kopiering.KopierBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulus.request.v1.KopierBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.KopierOgResettBeregningListeRequest;
@@ -115,7 +115,7 @@ public class KopierOgResetRestTjeneste {
 
         public KopierOgResettBeregningListeRequestAbacDto(String saksnummer,
                                                           UUID behandlingUuid,
-                                                          YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                                          FagsakYtelseType ytelseSomSkalBeregnes,
                                                           List<KopierBeregningRequest> kopierBeregningListe, BeregningSteg stegType,
                                                           LocalDateTime originalBehandlingAvsluttetTid,
                                                           LocalDateTime behandlingAvsluttetTid) {

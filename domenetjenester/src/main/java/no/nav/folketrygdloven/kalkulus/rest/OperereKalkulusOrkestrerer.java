@@ -31,7 +31,7 @@ import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.request.v1.BeregnForRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.HåndterBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.KalkulusRespons;
@@ -76,7 +76,7 @@ public class OperereKalkulusOrkestrerer {
     public Map<Long, KalkulusRespons> beregn(BeregningSteg steg,
                                              Saksnummer saksnummer,
                                              AktørId aktørId,
-                                             YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                             FagsakYtelseType ytelseSomSkalBeregnes,
                                              List<BeregnForRequest> beregnForListe) {
         // Finn/opprett koblinger og lagre informasjon
         var referanser = beregnForListe.stream().map(BeregnForRequest::getEksternReferanse).toList();
@@ -106,7 +106,7 @@ public class OperereKalkulusOrkestrerer {
     }
 
     public Map<Long, KalkulusRespons> håndter(Map<UUID, KalkulatorInputDto> inputPrReferanse,
-                                              YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                              FagsakYtelseType ytelseSomSkalBeregnes,
                                               Saksnummer saksnummer,
                                               List<HåndterBeregningRequest> håndterBeregningListe) {
         List<UUID> referanseListe = håndterBeregningListe.stream().map(HåndterBeregningRequest::getEksternReferanse).collect(Collectors.toList());
@@ -146,7 +146,7 @@ public class OperereKalkulusOrkestrerer {
         return lagInputTjeneste.utfør(koblingIder, kalkulatorInputPrKobling);
     }
 
-    private List<KoblingEntitet> finnKoblinger(YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+    private List<KoblingEntitet> finnKoblinger(FagsakYtelseType ytelseSomSkalBeregnes,
                                                Saksnummer saksnummer,
                                                List<UUID> refranser,
                                                AktørId aktørId) {
@@ -156,8 +156,7 @@ public class OperereKalkulusOrkestrerer {
             validerKoblingOgSak(koblinger, saksnummer.getVerdi());
             return koblinger;
         } else {
-            var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtterKontrakt.fraKode(ytelseSomSkalBeregnes.getKode());
-            var koblinger = koblingTjeneste.finnEllerOpprett(referanser, ytelseTyperKalkulusStøtter, aktørId, saksnummer);
+            var koblinger = koblingTjeneste.finnEllerOpprett(referanser, ytelseSomSkalBeregnes, aktørId, saksnummer);
             validerKoblingOgSak(koblinger, saksnummer.getVerdi());
             return koblinger;
         }

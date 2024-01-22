@@ -18,7 +18,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.tid.TimelineWeekendCompressor;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 import no.nav.fpsak.tidsserie.StandardCombinators;
@@ -26,7 +26,7 @@ import no.nav.fpsak.tidsserie.StandardCombinators;
 
 public class PermisjonFilter {
 
-    private final Map<FagsakYtelseType, LocalDateTimeline<Boolean>> tidslinjePerYtelse;
+    private final Map<YtelseType, LocalDateTimeline<Boolean>> tidslinjePerYtelse;
     private final Collection<YrkesaktivitetDto> yrkesaktiviteter;
     private final LocalDate skjæringstidspunkt;
 
@@ -75,10 +75,10 @@ public class PermisjonFilter {
         return new LocalDateTimeline<>(permisjonOver14Dager);
     }
 
-    private Map<FagsakYtelseType, LocalDateTimeline<Boolean>> utledYtelsesTidslinjer(Collection<Ytelseperiode> aktiviteter) {
+    private Map<YtelseType, LocalDateTimeline<Boolean>> utledYtelsesTidslinjer(Collection<Ytelseperiode> aktiviteter) {
         var gruppertPåYtelse = aktiviteter.stream()
                 .collect(Collectors.groupingBy(Ytelseperiode::ytelseType));
-        var timelinePerYtelse = new HashMap<FagsakYtelseType, LocalDateTimeline<Boolean>>();
+        var timelinePerYtelse = new HashMap<YtelseType, LocalDateTimeline<Boolean>>();
 
         for (var entry : gruppertPåYtelse.entrySet()) {
             var segmenter = entry.getValue()
@@ -100,7 +100,7 @@ public class PermisjonFilter {
         return new LocalDateTimeline<>(compressor.getSegmenter());
     }
 
-    private record Ytelseperiode(FagsakYtelseType ytelseType, Intervall periode) {
+    private record Ytelseperiode(YtelseType ytelseType, Intervall periode) {
 
         private Ytelseperiode(YtelseDto ytelse) {
             this(ytelse.getYtelseType(), ytelse.getPeriode());

@@ -39,7 +39,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 public class MapTilBesteberegningRegelmodell {
 
@@ -69,11 +69,11 @@ public class MapTilBesteberegningRegelmodell {
             return Collections.emptyList();
         }
         return fpgrunnlag.getBesteberegningYtelsegrunnlag().stream()
-                .map(yg -> new Ytelsegrunnlag(mapYtelse(yg.getYtelse()), mapYtelseperioder(yg.getPerioder())))
+                .map(yg -> new Ytelsegrunnlag(mapYtelse(yg.ytelse()), mapYtelseperioder(yg.perioder())))
                 .collect(Collectors.toList());
     }
 
-    private static RelatertYtelseType mapYtelse(FagsakYtelseType ytelse) {
+    private static RelatertYtelseType mapYtelse(YtelseType ytelse) {
         return switch (ytelse) {
             case FORELDREPENGER -> RelatertYtelseType.FORELDREPENGER;
             case SVANGERSKAPSPENGER -> RelatertYtelseType.SVANGERSKAPSPENGER;

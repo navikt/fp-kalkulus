@@ -10,7 +10,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 public class MapTilGUIInputFraKalkulator {
@@ -24,7 +23,7 @@ public class MapTilGUIInputFraKalkulator {
                 .medFørsteUttaksdato(input.getSkjæringstidspunkt())
                 .medSkjæringstidspunktOpptjening(input.getSkjæringstidspunkt()).build();
         var ref = KoblingReferanse.fra(
-                FagsakYtelseType.fraKode(kobling.getYtelseTyperKalkulusStøtter().getKode()),
+                kobling.getYtelseType(),
                 new AktørId(kobling.getAktørId().getId()),
                 kobling.getId(),
                 kobling.getKoblingReferanse().getReferanse(),
@@ -35,7 +34,7 @@ public class MapTilGUIInputFraKalkulator {
                 ref,
                 iayGrunnlagMappet,
                 MapFraKalkulator.mapFraDto(input.getRefusjonskravPrArbeidsforhold(), input.getRefusjonskravDatoer(), input.getIayGrunnlag(), input.getSkjæringstidspunkt()),
-                MapFraKalkulator.mapFraDto(kobling.getYtelseTyperKalkulusStøtter(), input, iayGrunnlagMappet, beregningsgrunnlagGrunnlagEntitet));
+                MapFraKalkulator.mapFraDto(kobling.getYtelseType(), input, iayGrunnlagMappet, beregningsgrunnlagGrunnlagEntitet));
         beregningsgrunnlagGUIInput.setForlengelseperioder(MapFraKalkulator.mapPerioder(forlengelseperioder));
         return beregningsgrunnlagGUIInput;
     }

@@ -16,7 +16,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.felles.v1.PersonIdent;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.request.v1.KalkulusRequest;
 
 /**
@@ -47,7 +47,7 @@ public class OppdaterYtelsesspesifiktGrunnlagListeRequest implements KalkulusReq
     @JsonProperty(value = "ytelseSomSkalBeregnes", required = true)
     @NotNull
     @Valid
-    private YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes;
+    private FagsakYtelseType ytelseSomSkalBeregnes;
 
     @JsonProperty(value = "ytelsespesifiktGrunnlagListe")
     @Size(min = 1)
@@ -62,7 +62,7 @@ public class OppdaterYtelsesspesifiktGrunnlagListeRequest implements KalkulusReq
     public OppdaterYtelsesspesifiktGrunnlagListeRequest(@JsonProperty(value = "saksnummer", required = true) String saksnummer,
                                                         @JsonProperty(value = "behandlingUuid") UUID behandlingUuid,
                                                         @JsonProperty(value = "aktør", required = true) PersonIdent aktør,
-                                                        @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                                        @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) FagsakYtelseType ytelseSomSkalBeregnes,
                                                         @JsonProperty(value = "ytelsespesifiktGrunnlagListe", required = true) List<OppdaterYtelsesspesifiktGrunnlagForRequest> ytelsespesifiktGrunnlagListe) {
         this.saksnummer = saksnummer;
         this.behandlingUuid = behandlingUuid;
@@ -85,7 +85,7 @@ public class OppdaterYtelsesspesifiktGrunnlagListeRequest implements KalkulusReq
         return aktør;
     }
 
-    public YtelseTyperKalkulusStøtterKontrakt getYtelseSomSkalBeregnes() {
+    public FagsakYtelseType getYtelseSomSkalBeregnes() {
         return ytelseSomSkalBeregnes;
     }
 

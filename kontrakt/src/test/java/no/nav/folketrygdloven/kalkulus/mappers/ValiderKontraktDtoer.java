@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -29,10 +31,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import no.nav.folketrygdloven.kalkulus.kodeverk.Kodeverk;
 
 public class ValiderKontraktDtoer {
 
@@ -73,11 +71,7 @@ public class ValiderKontraktDtoer {
                 if (field.getType().isPrimitive()) {
                     continue; // primitiv OK
                 }
-                if (erKodeverk(field.getType())) {
-                    continue; // antatt OK
-                } else {
-                    validerRiktigAnnotert(field);
-                }
+                validerRiktigAnnotert(field);
             }
         }
     }
@@ -109,10 +103,6 @@ public class ValiderKontraktDtoer {
             return singletonList(List.of(Valid.class, Size.class));
         }
         return VALIDERINGSALTERNATIVER.get(type);
-    }
-
-    private static boolean erKodeverk(Class<?> klasse) {
-        return Kodeverk.class.isAssignableFrom(klasse);
     }
 
     private static Set<Field> getRelevantFields(Class<?> klasse) {

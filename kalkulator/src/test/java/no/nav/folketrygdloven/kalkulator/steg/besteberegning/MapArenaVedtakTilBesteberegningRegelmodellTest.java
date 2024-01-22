@@ -17,14 +17,14 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 class MapArenaVedtakTilBesteberegningRegelmodellTest {
     private static final LocalDate STP = LocalDate.of(2021,5,1);
 
     @Test
     public void skal_mappe_et_meldekort_dagpenger() {
-        List<YtelseDto> vedtak = Collections.singletonList(lagVedtak(STP, stpPluss(30), FagsakYtelseType.DAGPENGER,
+        List<YtelseDto> vedtak = Collections.singletonList(lagVedtak(STP, stpPluss(30), YtelseType.DAGPENGER,
                 lagMeldekort(STP, stpPluss(14), 500)));
 
         List<Periodeinntekt> inntekter = kjørMapping(vedtak);
@@ -35,7 +35,7 @@ class MapArenaVedtakTilBesteberegningRegelmodellTest {
 
     @Test
     public void meldekort_skal_ikke_starte_før_vedtak() {
-        List<YtelseDto> vedtak = Collections.singletonList(lagVedtak(STP, stpPluss(30), FagsakYtelseType.DAGPENGER,
+        List<YtelseDto> vedtak = Collections.singletonList(lagVedtak(STP, stpPluss(30), YtelseType.DAGPENGER,
                 lagMeldekort(STP.plusDays(10), stpPluss(14), 500)));
 
         List<Periodeinntekt> inntekter = kjørMapping(vedtak);
@@ -46,10 +46,10 @@ class MapArenaVedtakTilBesteberegningRegelmodellTest {
 
     @Test
     public void skal_mappe_flere_meldekort_ulike_vedtak_aap() {
-        List<YtelseDto> vedtak = Arrays.asList(lagVedtak(STP, stpPluss(30), FagsakYtelseType.ARBEIDSAVKLARINGSPENGER,
+        List<YtelseDto> vedtak = Arrays.asList(lagVedtak(STP, stpPluss(30), YtelseType.ARBEIDSAVKLARINGSPENGER,
                 lagMeldekort(STP, stpPluss(14), 500),
                 lagMeldekort(stpPluss(15), stpPluss(35), 600)),
-        lagVedtak(stpPluss(40), stpPluss(60), FagsakYtelseType.ARBEIDSAVKLARINGSPENGER,
+        lagVedtak(stpPluss(40), stpPluss(60), YtelseType.ARBEIDSAVKLARINGSPENGER,
                 lagMeldekort(stpPluss(40), stpPluss(54), 700)));
 
         List<Periodeinntekt> inntekter = kjørMapping(vedtak);
@@ -85,7 +85,7 @@ class MapArenaVedtakTilBesteberegningRegelmodellTest {
                 .build();
     }
 
-    private YtelseDto lagVedtak(LocalDate fom, LocalDate tom, FagsakYtelseType ytelse, YtelseAnvistDto... meldekort) {
+    private YtelseDto lagVedtak(LocalDate fom, LocalDate tom, YtelseType ytelse, YtelseAnvistDto... meldekort) {
         YtelseDtoBuilder builder = YtelseDtoBuilder.ny()
                 .medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
                 .medYtelseType(ytelse);

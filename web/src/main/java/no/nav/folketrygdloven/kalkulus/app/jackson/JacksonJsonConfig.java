@@ -10,7 +10,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import jakarta.ws.rs.ext.ContextResolver;
 import jakarta.ws.rs.ext.Provider;
-import no.nav.folketrygdloven.kalkulus.mappers.KalkulusKodeverdiSerializer;
 
 @Provider
 public class JacksonJsonConfig implements ContextResolver<ObjectMapper> {
@@ -23,7 +22,7 @@ public class JacksonJsonConfig implements ContextResolver<ObjectMapper> {
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        objectMapper.registerModule(createModule());
+        objectMapper.registerModule(createModule()); // TODO: fjerne når kodeverk er lagt om til String konsekvent
 
 
     }

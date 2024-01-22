@@ -52,7 +52,7 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.felles.v1.PersonIdent;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.request.v1.forvaltning.OppdaterYtelsesspesifiktGrunnlagForRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.forvaltning.OppdaterYtelsesspesifiktGrunnlagListeRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
@@ -229,7 +229,7 @@ public class MidlertidigForvaltningRestTjeneste {
         public OppdaterYtelsesspesifiktGrunnlagListeRequestAbacDto(String saksnummer,
                                                                    UUID behandlingUuid,
                                                                    PersonIdent aktør,
-                                                                   YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                                                   FagsakYtelseType ytelseSomSkalBeregnes,
                                                                    List<OppdaterYtelsesspesifiktGrunnlagForRequest> liste) {
             super(saksnummer, behandlingUuid, aktør, ytelseSomSkalBeregnes, liste);
         }

@@ -55,12 +55,12 @@ import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelserDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.RelatertYtelseType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 import no.nav.folketrygdloven.kalkulus.mappers.JsonMapper;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningPeriodeDto;
@@ -105,7 +105,7 @@ public class BeregningsgrunnlagRepositoryTest extends EntityManagerAwareTest {
         Saksnummer saksnummer = new Saksnummer("1234");
 
         KoblingEntitet koblingEntitet = new KoblingEntitet(koblingReferanse,
-                YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_NÆRSTÅENDE, saksnummer, aktørId);
+                FagsakYtelseType.PLEIEPENGER_NÆRSTÅENDE, saksnummer, aktørId);
         koblingRepository.lagre(koblingEntitet);
 
         Long koblingId = koblingEntitet.getId();
@@ -135,7 +135,7 @@ public class BeregningsgrunnlagRepositoryTest extends EntityManagerAwareTest {
         Saksnummer saksnummer = new Saksnummer("1234");
 
         KoblingEntitet koblingEntitet = new KoblingEntitet(koblingReferanse,
-                YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_NÆRSTÅENDE, saksnummer, aktørId);
+                FagsakYtelseType.PLEIEPENGER_NÆRSTÅENDE, saksnummer, aktørId);
         koblingRepository.lagre(koblingEntitet);
 
         Long koblingId = koblingEntitet.getId();
@@ -170,7 +170,7 @@ public class BeregningsgrunnlagRepositoryTest extends EntityManagerAwareTest {
         Saksnummer saksnummer = new Saksnummer("1234");
 
         KoblingEntitet koblingEntitet = new KoblingEntitet(koblingReferanse,
-                YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_NÆRSTÅENDE, saksnummer, aktørId);
+                FagsakYtelseType.PLEIEPENGER_NÆRSTÅENDE, saksnummer, aktørId);
         koblingRepository.lagre(koblingEntitet);
 
         Long koblingId = koblingEntitet.getId();
@@ -280,7 +280,7 @@ public class BeregningsgrunnlagRepositoryTest extends EntityManagerAwareTest {
                         BigDecimal.valueOf(100),
                         BigDecimal.valueOf(100),
                         Inntektskategori.ARBEIDSTAKER)));
-        return List.of(new YtelseDto(beløpDto, Set.of(ytelseAnvistDto), RelatertYtelseType.FORELDREPENGER,
+        return List.of(new YtelseDto(beløpDto, Set.of(ytelseAnvistDto), YtelseType.FORELDREPENGER,
                 periode,
                 null));
     }

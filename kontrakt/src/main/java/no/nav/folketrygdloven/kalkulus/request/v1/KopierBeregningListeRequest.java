@@ -16,7 +16,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 /**
  * Spesifikasjon for å fortsette en beregning.
@@ -41,7 +41,7 @@ public class KopierBeregningListeRequest implements KalkulusRequest {
     @JsonProperty(value = "ytelseSomSkalBeregnes", required = true)
     @NotNull
     @Valid
-    private YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes;
+    private FagsakYtelseType ytelseSomSkalBeregnes;
 
     /**
      * Definerer steget som det kopieres fra
@@ -63,7 +63,7 @@ public class KopierBeregningListeRequest implements KalkulusRequest {
     @JsonCreator
     public KopierBeregningListeRequest(String saksnummer,
                                        UUID behandlingUuid,
-                                       YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                       FagsakYtelseType ytelseSomSkalBeregnes,
                                        BeregningSteg stegType,
                                        List<KopierBeregningRequest> kopierBeregningListe) {
         this.saksnummer = saksnummer;
@@ -83,7 +83,7 @@ public class KopierBeregningListeRequest implements KalkulusRequest {
         return behandlingUuid;
     }
 
-    public YtelseTyperKalkulusStøtterKontrakt getYtelseSomSkalBeregnes() {
+    public FagsakYtelseType getYtelseSomSkalBeregnes() {
         return ytelseSomSkalBeregnes;
     }
 

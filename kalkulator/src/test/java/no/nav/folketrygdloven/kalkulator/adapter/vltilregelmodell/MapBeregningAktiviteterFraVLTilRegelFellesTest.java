@@ -39,9 +39,9 @@ import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingT
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PermisjonsbeskrivelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
@@ -450,7 +450,7 @@ class MapBeregningAktiviteterFraVLTilRegelFellesTest {
         var alleAktiviteter = new OpptjeningAktiviteterDto(opptjeningAktiviteter, opptjeningAktiviteter2, opptjeningAktiviteter3);
         var ya1 = lagYA(opptjeningAktiviteter, null, null).orElseThrow();
         var ya2 = lagYA(opptjeningAktiviteter2, PermisjonsbeskrivelseType.PERMISJON_MED_FORELDREPENGER, Intervall.fraOgMedTilOgMed(periode.getFomDato(), SKJÆRINGSTIDSPUNKT.plusYears(12))).orElseThrow();
-        var foreldrepengerYtelse = YtelseDtoBuilder.ny().medYtelseType(FagsakYtelseType.FORELDREPENGER).medPeriode(periode);
+        var foreldrepengerYtelse = YtelseDtoBuilder.ny().medYtelseType(YtelseType.FORELDREPENGER).medPeriode(periode);
 
         // Act
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()

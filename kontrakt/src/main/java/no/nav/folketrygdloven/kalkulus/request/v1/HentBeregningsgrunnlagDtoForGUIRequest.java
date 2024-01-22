@@ -4,9 +4,6 @@ import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -14,8 +11,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsforholdReferanseDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 
 /**
@@ -35,7 +34,7 @@ public class HentBeregningsgrunnlagDtoForGUIRequest {
     @JsonProperty(value = "ytelseSomSkalBeregnes", required = true)
     @NotNull
     @Valid
-    private YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes;
+    private FagsakYtelseType ytelseSomSkalBeregnes;
 
     @JsonProperty(value = "referanser")
     @Valid
@@ -50,7 +49,7 @@ public class HentBeregningsgrunnlagDtoForGUIRequest {
     }
 
     public HentBeregningsgrunnlagDtoForGUIRequest(@Valid @NotNull UUID eksternReferanse,
-                                                  @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                                  @NotNull @Valid FagsakYtelseType ytelseSomSkalBeregnes,
                                                   @Valid Set<ArbeidsforholdReferanseDto> referanser,
                                                   @Valid LocalDate vilkårsperiodeFom) {
         this.eksternReferanse = eksternReferanse;
@@ -60,7 +59,7 @@ public class HentBeregningsgrunnlagDtoForGUIRequest {
     }
 
     public HentBeregningsgrunnlagDtoForGUIRequest(@Valid @NotNull UUID eksternReferanse,
-                                                  @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                                  @NotNull @Valid FagsakYtelseType ytelseSomSkalBeregnes,
                                                   @Valid Set<ArbeidsforholdReferanseDto> referanser) {
         this.eksternReferanse = eksternReferanse;
         this.ytelseSomSkalBeregnes = ytelseSomSkalBeregnes;
@@ -71,7 +70,7 @@ public class HentBeregningsgrunnlagDtoForGUIRequest {
         return eksternReferanse;
     }
 
-    public YtelseTyperKalkulusStøtterKontrakt getYtelseSomSkalBeregnes() {
+    public FagsakYtelseType getYtelseSomSkalBeregnes() {
         return ytelseSomSkalBeregnes;
     }
 

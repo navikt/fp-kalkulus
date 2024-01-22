@@ -6,7 +6,7 @@ import java.util.Optional;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 public class YtelseDtoBuilder {
 
@@ -22,7 +22,7 @@ public class YtelseDtoBuilder {
         return new YtelseDtoBuilder(new YtelseDto(), false);
     }
 
-    public YtelseDtoBuilder medYtelseType(FagsakYtelseType relatertYtelseType) {
+    public YtelseDtoBuilder medYtelseType(YtelseType relatertYtelseType) {
         ytelse.setYtelseType(relatertYtelseType);
         return this;
     }

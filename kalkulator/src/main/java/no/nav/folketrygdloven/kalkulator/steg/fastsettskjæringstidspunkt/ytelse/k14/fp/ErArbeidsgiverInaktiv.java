@@ -22,8 +22,8 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFordelingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 public class ErArbeidsgiverInaktiv {
 
@@ -32,7 +32,7 @@ public class ErArbeidsgiverInaktiv {
     }
 
     private static final Set<String> NØDNUMRE = Set.of("971278420", "971278439", "971248106", "971373032", "871400172");
-    private static final Set<FagsakYtelseType> YTELSER_SOM_IKKE_PÅVIRKER_IM = Set.of(FagsakYtelseType.PLEIEPENGER_NÆRSTÅENDE, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, FagsakYtelseType.DAGPENGER, FagsakYtelseType.OMSORGSPENGER);
+    private static final Set<YtelseType> YTELSER_SOM_IKKE_PÅVIRKER_IM = Set.of(YtelseType.PLEIEPENGER_NÆRSTÅENDE, YtelseType.ARBEIDSAVKLARINGSPENGER, YtelseType.DAGPENGER, YtelseType.OMSORGSPENGER);
     private static final int AKTIVE_MÅNEDER_FØR_STP = 10;
     private static final int NYOPPSTARTEDE_ARBEIDSFORHOLD_ALDER_I_MND = 4;
 

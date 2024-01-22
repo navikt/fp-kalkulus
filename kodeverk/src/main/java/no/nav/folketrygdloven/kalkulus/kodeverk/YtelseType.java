@@ -1,7 +1,10 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -9,8 +12,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+/*
+ * Alle ytelser som kalkulus forholder seg til i prosessen og som kan være innhentet i IAY-grunnlag
+ */
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum YtelseTyperKalkulusStøtterKontrakt implements Kodeverdi, DatabaseKode, KontraktKode {
+public enum YtelseType implements Kodeverdi {
 
     /**
      * Folketrygdloven K4 ytelser.
@@ -18,7 +24,7 @@ public enum YtelseTyperKalkulusStøtterKontrakt implements Kodeverdi, DatabaseKo
     DAGPENGER("DAG"),
 
     /**
-     * Ytelse for kompenasasjon for koronatiltak for Selvstendig næringsdrivende og Frilansere (Anmodning 10).
+     * Ny ytelse for kompenasasjon for koronatiltak for Selvstendig næringsdrivende og Frilansere (Anmodning 10).
      */
     FRISINN("FRISINN"),
 
@@ -50,9 +56,21 @@ public enum YtelseTyperKalkulusStøtterKontrakt implements Kodeverdi, DatabaseKo
     /**
      * Folketrygdloven K15 ytelser.
      */
-    ENSLIG_FORSØRGER("EF");
+    ENSLIG_FORSØRGER("EF"),
 
-    private static final Map<String, YtelseTyperKalkulusStøtterKontrakt> KODER = new LinkedHashMap<>();
+    UDEFINERT("-"),
+    ;
+
+    private static final Map<String, YtelseType> KODER = new LinkedHashMap<>();
+
+    private static final Set<YtelseType> ARENA_YTELSER = new HashSet<>(Arrays.asList(DAGPENGER,
+            ARBEIDSAVKLARINGSPENGER));
+
+    public static final Set<YtelseType> K9_YTELSER = Set.of(
+            OMSORGSPENGER,
+            PLEIEPENGER_SYKT_BARN,
+            PLEIEPENGER_NÆRSTÅENDE,
+            OPPLÆRINGSPENGER);
 
     static {
         for (var v : values()) {
@@ -62,24 +80,29 @@ public enum YtelseTyperKalkulusStøtterKontrakt implements Kodeverdi, DatabaseKo
         }
     }
 
+
     @JsonValue
     private final String kode;
 
-    YtelseTyperKalkulusStøtterKontrakt(String kode) {
+    YtelseType(String kode) {
         this.kode = kode;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
-    public static YtelseTyperKalkulusStøtterKontrakt fraKode(Object node) {
+    public static YtelseType fraKode(Object node) {
         if (node == null) {
             return null;
         }
-        String kode = TempAvledeKode.getVerdi(YtelseTyperKalkulusStøtterKontrakt.class, node, "kode");
+        String kode = TempAvledeKode.getVerdi(YtelseType.class, node, "kode");
         var ad = KODER.get(kode);
         if (ad == null) {
-            throw new IllegalArgumentException("Ukjent YtelseTyperKalkulusStøtter: " + kode);
+            throw new IllegalArgumentException("Ukjent FagsakYtelseType: " + kode);
         }
         return ad;
+    }
+
+    public boolean erArenaytelse() {
+        return ARENA_YTELSER.contains(this);
     }
 
     @Override
@@ -87,9 +110,5 @@ public enum YtelseTyperKalkulusStøtterKontrakt implements Kodeverdi, DatabaseKo
         return kode;
     }
 
-    public static YtelseTyperKalkulusStøtterKontrakt fraDatabaseKode(String databaseKode) {
-        return fraKode(databaseKode);
-    }
 
 }
-

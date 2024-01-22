@@ -25,7 +25,7 @@ import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.request.v1.KopierBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
@@ -65,7 +65,7 @@ public class KopierBeregningsgrunnlagTjeneste {
      * @param opprettetTidMax Opprettet tid max
      */
     public void kopierGrunnlagOgOpprettKoblinger(List<KopierBeregningRequest> kopiRequests,
-                                                 YtelseTyperKalkulusStøtterKontrakt ytelseType,
+                                                 FagsakYtelseType ytelseType,
                                                  Saksnummer saksnummer, BeregningSteg steg, LocalDateTime opprettetTidMax) {
         var eksisterendeKoblinger = finnEksisterendeKoblinger(kopiRequests, ytelseType);
         var aktørId = validerKoblingerOgFinnAktørId(eksisterendeKoblinger, ytelseType, saksnummer);
@@ -90,13 +90,13 @@ public class KopierBeregningsgrunnlagTjeneste {
         koblingTjeneste.finnOgOpprettKoblingRelasjoner(koblingrelasjoner);
     }
 
-    private AktørId validerKoblingerOgFinnAktørId(List<KoblingEntitet> eksisterendeKoblinger, YtelseTyperKalkulusStøtterKontrakt ytelseType, Saksnummer saksnummer) {
+    private AktørId validerKoblingerOgFinnAktørId(List<KoblingEntitet> eksisterendeKoblinger, FagsakYtelseType ytelseType, Saksnummer saksnummer) {
 
         if (eksisterendeKoblinger.stream().anyMatch(k -> !k.getSaksnummer().equals(saksnummer))) {
             throw new IllegalStateException("Prøvde å forlenge periode for en annen sak");
         }
 
-        if (eksisterendeKoblinger.stream().anyMatch(k -> !k.getYtelseTyperKalkulusStøtter().equals(ytelseType))) {
+        if (eksisterendeKoblinger.stream().anyMatch(k -> !k.getYtelseType().equals(ytelseType))) {
             throw new IllegalStateException("Prøvde å forlenge periode for en annen ytelse");
         }
 
@@ -111,14 +111,14 @@ public class KopierBeregningsgrunnlagTjeneste {
         return aktørIder.get(0);
     }
 
-    private List<KoblingEntitet> opprettNyeKoblinger(List<KopierBeregningRequest> kopiRequests, YtelseTyperKalkulusStøtterKontrakt ytelseType, AktørId aktørId, Saksnummer saksnummer) {
+    private List<KoblingEntitet> opprettNyeKoblinger(List<KopierBeregningRequest> kopiRequests, FagsakYtelseType ytelseType, AktørId aktørId, Saksnummer saksnummer) {
         var nyeKoblingReferanser = kopiRequests.stream().map(KopierBeregningRequest::getEksternReferanse)
                 .map(KoblingReferanse::new)
                 .collect(Collectors.toList());
         return koblingTjeneste.finnEllerOpprett(nyeKoblingReferanser, ytelseType, aktørId, saksnummer);
     }
 
-    private List<KoblingEntitet> finnEksisterendeKoblinger(List<KopierBeregningRequest> kopiRequests, YtelseTyperKalkulusStøtterKontrakt ytelseType) {
+    private List<KoblingEntitet> finnEksisterendeKoblinger(List<KopierBeregningRequest> kopiRequests, FagsakYtelseType ytelseType) {
         var eksisterendeKoblingReferanser = kopiRequests.stream().map(KopierBeregningRequest::getKopierFraReferanse)
                 .map(KoblingReferanse::new)
                 .collect(Collectors.toList());

@@ -32,10 +32,10 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 public class VurderMottarYtelseTjenesteTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, 9, 30);
@@ -273,7 +273,7 @@ public class VurderMottarYtelseTjenesteTest {
 
     private InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder lagAktørYtelseForFrilans() {
         return InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder.oppdatere(Optional.empty())
-                .leggTilYtelse(YtelseDtoBuilder.ny().medYtelseType(FagsakYtelseType.SYKEPENGER)
+                .leggTilYtelse(YtelseDtoBuilder.ny().medYtelseType(YtelseType.SYKEPENGER)
                         .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10), SKJÆRINGSTIDSPUNKT_OPPTJENING))
                         .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny()
                                 .medBeløp(BigDecimal.TEN)
@@ -286,7 +286,7 @@ public class VurderMottarYtelseTjenesteTest {
 
     private InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder lagAktørYtelseForArbeidsgiver(Arbeidsgiver arbeidsgiver, boolean fullRefusjon) {
         return InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder.oppdatere(Optional.empty())
-                .leggTilYtelse(YtelseDtoBuilder.ny().medYtelseType(FagsakYtelseType.SYKEPENGER)
+                .leggTilYtelse(YtelseDtoBuilder.ny().medYtelseType(YtelseType.SYKEPENGER)
                         .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10), SKJÆRINGSTIDSPUNKT_OPPTJENING))
                         .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny()
                                 .medBeløp(BigDecimal.TEN)

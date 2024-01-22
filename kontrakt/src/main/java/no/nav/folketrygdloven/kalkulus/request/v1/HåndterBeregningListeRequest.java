@@ -8,17 +8,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 /**
  * Spesifikasjon for å oppdatere grunnlaget med informasjon fra saksbehandler.
@@ -54,7 +53,7 @@ public class HåndterBeregningListeRequest implements KalkulusRequest {
     // TODO: Sett NotNull og required når k9-sak er oppdatert
     @JsonProperty(value = "ytelseSomSkalBeregnes", required = false)
     @Valid
-    private YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes;
+    private FagsakYtelseType ytelseSomSkalBeregnes;
 
     @Deprecated
     public HåndterBeregningListeRequest(@NotNull @Valid List<HåndterBeregningRequest> håndterBeregningListe,
@@ -69,7 +68,7 @@ public class HåndterBeregningListeRequest implements KalkulusRequest {
 
     public HåndterBeregningListeRequest(@NotNull @Valid List<HåndterBeregningRequest> håndterBeregningListe,
                                         @Valid Map<UUID, KalkulatorInputDto> kalkulatorInputPerKoblingReferanse,
-                                        @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                        @Valid FagsakYtelseType ytelseSomSkalBeregnes,
                                         @Valid String saksnummer,
                                         @Valid @NotNull UUID behandlingUuid) {
         this.håndterBeregningListe = håndterBeregningListe;
@@ -88,7 +87,7 @@ public class HåndterBeregningListeRequest implements KalkulusRequest {
     }
 
     public HåndterBeregningListeRequest(@NotNull @Valid List<HåndterBeregningRequest> håndterBeregningListe,
-                                        @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                        @Valid FagsakYtelseType ytelseSomSkalBeregnes,
                                         @Valid String saksnummer,
                                         @Valid @NotNull UUID behandlingUuid) {
         this.håndterBeregningListe = håndterBeregningListe;
@@ -118,7 +117,7 @@ public class HåndterBeregningListeRequest implements KalkulusRequest {
         return saksnummer;
     }
 
-    public YtelseTyperKalkulusStøtterKontrakt getYtelseSomSkalBeregnes() {
+    public FagsakYtelseType getYtelseSomSkalBeregnes() {
         return ytelseSomSkalBeregnes;
     }
 }

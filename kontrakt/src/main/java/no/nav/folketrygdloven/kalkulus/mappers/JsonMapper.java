@@ -2,11 +2,9 @@ package no.nav.folketrygdloven.kalkulus.mappers;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -25,7 +23,6 @@ public class JsonMapper {
         objectMapper.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.NONE);
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         objectMapper.setVisibility(PropertyAccessor.CREATOR, JsonAutoDetect.Visibility.ANY);
-        objectMapper.registerModule(createModule());
 
         OM = objectMapper;
     }
@@ -34,10 +31,5 @@ public class JsonMapper {
         return OM;
     }
 
-    private static SimpleModule createModule() {
-        var module = new SimpleModule("FT-KALKULUS", new Version(1, 0, 0, null, null, null));
-        module.addSerializer(new KalkulusKodeverdiSerializer());
-        return module;
-    }
 
 }

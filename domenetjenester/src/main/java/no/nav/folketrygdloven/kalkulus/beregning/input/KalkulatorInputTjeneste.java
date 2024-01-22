@@ -26,7 +26,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.mappers.JsonMapper;
 import no.nav.folketrygdloven.kalkulus.rest.UgyldigInputException;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
@@ -151,12 +151,12 @@ public class KalkulatorInputTjeneste {
         return beregningsgrunnlagRepository.lagreOgSjekkStatus(new KalkulatorInputEntitet(koblingId, input));
     }
 
-    public void lagreKalkulatorInput(YtelseTyperKalkulusStøtterKontrakt ytelseTyperKalkulusStøtter,
+    public void lagreKalkulatorInput(FagsakYtelseType ytelseType,
                                      Map<UUID, KalkulatorInputDto> kalkulatorInputPerKoblingReferanse) {
         List<KoblingEntitet> koblinger = koblingTjeneste.hentKoblinger(kalkulatorInputPerKoblingReferanse.keySet()
                 .stream()
                 .map(KoblingReferanse::new)
-                .collect(Collectors.toList()), ytelseTyperKalkulusStøtter);
+                .collect(Collectors.toList()), ytelseType);
         kalkulatorInputPerKoblingReferanse.forEach((ref, input) -> {
             Optional<KoblingEntitet> kobling = koblinger.stream()
                     .filter(k -> k.getKoblingReferanse().getReferanse().equals(ref)).findFirst();

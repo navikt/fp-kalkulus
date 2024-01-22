@@ -18,6 +18,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 /**
  * Tjeneste som brukes i beregning av foreldrepenger for å se om søker har aktiviteter som må avklares manuelt av saksbehandler
@@ -57,12 +58,12 @@ public class AvklarAktiviteterTjeneste {
         if (beregningAktivitetAggregat.getAktiviteterPåDato(skjæringstidspunkt).size() <= 1) {
             return false;
         }
-        return hentUtbetalingsprosent(aktørYtelse, skjæringstidspunkt, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER)
+        return hentUtbetalingsprosent(aktørYtelse, skjæringstidspunkt, YtelseType.ARBEIDSAVKLARINGSPENGER)
                 .filter(verdi -> verdi.compareTo(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG) == 0)
                 .isPresent();
     }
 
-    private static Optional<BigDecimal> hentUtbetalingsprosent(Optional<AktørYtelseDto> aktørYtelse, LocalDate skjæringstidspunkt, FagsakYtelseType ytelseTypeForMeldekort) {
+    private static Optional<BigDecimal> hentUtbetalingsprosent(Optional<AktørYtelseDto> aktørYtelse, LocalDate skjæringstidspunkt, YtelseType ytelseTypeForMeldekort) {
         var ytelseFilter = new YtelseFilterDto(aktørYtelse).før(skjæringstidspunkt);
 
         Optional<YtelseDto> nyligsteVedtak = MeldekortUtils.sisteVedtakFørStpForType(ytelseFilter, skjæringstidspunkt, Set.of(ytelseTypeForMeldekort));

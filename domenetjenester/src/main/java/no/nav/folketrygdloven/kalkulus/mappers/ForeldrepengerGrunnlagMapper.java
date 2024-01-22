@@ -19,7 +19,6 @@ import no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetGraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.YtelsespesifiktGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 class ForeldrepengerGrunnlagMapper {
 
@@ -70,7 +69,7 @@ class ForeldrepengerGrunnlagMapper {
             return Collections.emptyList();
         }
         return ytelsegrunnlagForBesteberegning.stream()
-                .map(yg -> new Ytelsegrunnlag(FagsakYtelseType.fraKode(yg.getYtelse().getKode()), mapYtelseperioder(yg.getPerioder())))
+                .map(yg -> new Ytelsegrunnlag(yg.getYtelse(), mapYtelseperioder(yg.getPerioder())))
                 .collect(Collectors.toList());
     }
 

@@ -15,13 +15,13 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Arbeidskategori;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektPeriodeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 public class InfotrygdvedtakMedDagpengerTjeneste {
 
-    public static Boolean harYtelsePåGrunnlagAvDagpenger(Collection<YtelseDto> ytelser, LocalDate skjæringstidspunkt, FagsakYtelseType ytelse) {
+    public static Boolean harYtelsePåGrunnlagAvDagpenger(Collection<YtelseDto> ytelser, LocalDate skjæringstidspunkt, YtelseType ytelse) {
         LocalDate beregningstidspunkt = finnBeregningstidspunkt(skjæringstidspunkt);
         if (KonfigurasjonVerdi.get("MAP_YTELSE_DAGPENGER_FRA_ANDELER", false)) {
             return finnYtelseBasertPåDagpengerFraAnvisteAndeler(ytelser, beregningstidspunkt, ytelse).compareTo(BigDecimal.ZERO) > 0;
@@ -29,7 +29,7 @@ public class InfotrygdvedtakMedDagpengerTjeneste {
         return finnYtelseBasertPåDagpenger(ytelser, beregningstidspunkt, ytelse).isPresent();
     }
 
-    public static BigDecimal finnDagsatsFraYtelsevedtak(Collection<YtelseDto> ytelser, LocalDate skjæringstidspunkt, FagsakYtelseType ytelse) {
+    public static BigDecimal finnDagsatsFraYtelsevedtak(Collection<YtelseDto> ytelser, LocalDate skjæringstidspunkt, YtelseType ytelse) {
         LocalDate beregningstidspunkt = finnBeregningstidspunkt(skjæringstidspunkt);
 
         if (KonfigurasjonVerdi.get("MAP_YTELSE_DAGPENGER_FRA_ANDELER", false)) {
@@ -41,7 +41,7 @@ public class InfotrygdvedtakMedDagpengerTjeneste {
         }
     }
 
-    private static BigDecimal finnYtelseBasertPåDagpengerFraYtelseGrunnlag(Collection<YtelseDto> ytelser, FagsakYtelseType ytelse, LocalDate beregningstidspunkt) {
+    private static BigDecimal finnYtelseBasertPåDagpengerFraYtelseGrunnlag(Collection<YtelseDto> ytelser, YtelseType ytelse, LocalDate beregningstidspunkt) {
         var ytelseGrunnlag = finnYtelseBasertPåDagpenger(ytelser, beregningstidspunkt, ytelse);
 
         var spAvDP = ytelseGrunnlag.stream()
@@ -59,7 +59,7 @@ public class InfotrygdvedtakMedDagpengerTjeneste {
         }).orElse(BigDecimal.ZERO);
     }
 
-    private static BigDecimal finnYtelseBasertPåDagpengerFraAnvisteAndeler(Collection<YtelseDto> ytelser, LocalDate beregningstidspunkt, FagsakYtelseType ytelse) {
+    private static BigDecimal finnYtelseBasertPåDagpengerFraAnvisteAndeler(Collection<YtelseDto> ytelser, LocalDate beregningstidspunkt, YtelseType ytelse) {
         var anvisning = finnAnvisning(ytelser, beregningstidspunkt, ytelse);
         return anvisning.stream().flatMap(y -> y.getAnvisteAndeler().stream())
                 .filter(a  -> a.getInntektskategori().equals(Inntektskategori.DAGPENGER))
@@ -68,7 +68,7 @@ public class InfotrygdvedtakMedDagpengerTjeneste {
                 .orElse(BigDecimal.ZERO);
     }
 
-    private static Optional<YtelseAnvistDto> finnAnvisning(Collection<YtelseDto> ytelser, LocalDate beregningstidspunkt, FagsakYtelseType ytelse) {
+    private static Optional<YtelseAnvistDto> finnAnvisning(Collection<YtelseDto> ytelser, LocalDate beregningstidspunkt, YtelseType ytelse) {
         var anvisning = ytelser.stream()
                 .filter(y -> y.getPeriode().inkluderer(beregningstidspunkt))
                 .filter(y -> y.getYtelseType().equals(ytelse))
@@ -88,7 +88,7 @@ public class InfotrygdvedtakMedDagpengerTjeneste {
     }
 
 
-    private static Optional<YtelseGrunnlagDto> finnYtelseBasertPåDagpenger(Collection<YtelseDto> ytelser, LocalDate beregningstidspunkt, FagsakYtelseType ytelse) {
+    private static Optional<YtelseGrunnlagDto> finnYtelseBasertPåDagpenger(Collection<YtelseDto> ytelser, LocalDate beregningstidspunkt, YtelseType ytelse) {
         return ytelser.stream()
                 .filter(y -> y.getPeriode().inkluderer(beregningstidspunkt))
                 .filter(y -> y.getYtelseType().equals(ytelse))

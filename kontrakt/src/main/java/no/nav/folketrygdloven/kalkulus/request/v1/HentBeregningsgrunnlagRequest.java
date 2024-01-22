@@ -2,10 +2,6 @@ package no.nav.folketrygdloven.kalkulus.request.v1;
 
 import java.util.UUID;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -13,7 +9,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 /**
  * Spesifikasjon for å hente aktivt beregningsgrunnlag.
@@ -32,7 +31,7 @@ public class HentBeregningsgrunnlagRequest implements KalkulusRequest {
     @JsonProperty(value = "ytelseSomSkalBeregnes", required = true)
     @NotNull
     @Valid
-    private YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes;
+    private FagsakYtelseType ytelseSomSkalBeregnes;
 
     @JsonProperty(value = "inkluderRegelSporing", required = false)
     private boolean inkluderRegelSporing;
@@ -54,7 +53,7 @@ public class HentBeregningsgrunnlagRequest implements KalkulusRequest {
     public HentBeregningsgrunnlagRequest(@Valid @NotNull UUID eksternReferanse,
                                          @Valid String saksnummer,
                                          @Valid UUID behandlingUuid,
-                                         @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes) {
+                                         @NotNull @Valid FagsakYtelseType ytelseSomSkalBeregnes) {
 
         this.eksternReferanse = eksternReferanse;
         this.saksnummer = saksnummer;
@@ -64,7 +63,7 @@ public class HentBeregningsgrunnlagRequest implements KalkulusRequest {
 
     public HentBeregningsgrunnlagRequest(@Valid @NotNull UUID eksternReferanse,
                                          @Valid String saksnummer,
-                                         @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                         @NotNull @Valid FagsakYtelseType ytelseSomSkalBeregnes,
                                          Boolean inkluderRegelSporing) {
 
         this.eksternReferanse = eksternReferanse;
@@ -77,7 +76,7 @@ public class HentBeregningsgrunnlagRequest implements KalkulusRequest {
         return eksternReferanse;
     }
 
-    public YtelseTyperKalkulusStøtterKontrakt getYtelseSomSkalBeregnes() {
+    public FagsakYtelseType getYtelseSomSkalBeregnes() {
         return ytelseSomSkalBeregnes;
     }
 
