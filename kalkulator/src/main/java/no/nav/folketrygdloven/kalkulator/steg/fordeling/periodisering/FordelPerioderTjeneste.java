@@ -19,6 +19,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.ytelse.fp.MapRefusjonPerioderFraVLTilRegelFP;
+import no.nav.folketrygdloven.kalkulator.ytelse.k9.MapRefusjonPerioderFraVLTilRegelPleiepenger;
 import no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.MapPerioderForUtbetalingsgradFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.MapRefusjonPerioderFraVLTilRegelUtbgrad;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
@@ -48,8 +49,9 @@ public class FordelPerioderTjeneste {
                                                                              BeregningsgrunnlagDto beregningsgrunnlag) {
         var modell = switch (input.getFagsakYtelseType()) {
             case FORELDREPENGER -> new MapRefusjonPerioderFraVLTilRegelFP().map(input, beregningsgrunnlag);
-            case PLEIEPENGER_SYKT_BARN, OPPLÆRINGSPENGER, PLEIEPENGER_NÆRSTÅENDE, SVANGERSKAPSPENGER, OMSORGSPENGER ->
-                    new MapRefusjonPerioderFraVLTilRegelUtbgrad().map(input, beregningsgrunnlag);
+            case SVANGERSKAPSPENGER, OMSORGSPENGER -> new MapRefusjonPerioderFraVLTilRegelUtbgrad().map(input, beregningsgrunnlag);
+            case PLEIEPENGER_SYKT_BARN, OPPLÆRINGSPENGER, PLEIEPENGER_NÆRSTÅENDE->
+                    new MapRefusjonPerioderFraVLTilRegelPleiepenger().map(input, beregningsgrunnlag);
             default -> null;
         };
         return Optional.ofNullable(modell);
