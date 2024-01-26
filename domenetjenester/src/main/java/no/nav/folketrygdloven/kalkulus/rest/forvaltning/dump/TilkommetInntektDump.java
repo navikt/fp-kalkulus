@@ -32,7 +32,7 @@ public class TilkommetInntektDump implements DebugDumpSak {
                         k.id kobling_id,
                         periode.bg_periode_fom fom,
                         periode.bg_periode_tom tom,
-                        ti.aktivitetStatus,
+                        ti.aktivitet_status,
                         ti.arbeidsgiver_orgnr orgnr,
                         ti.arbeidsgiver_aktor_id aktørId,
                         ti.arbeidsforholdRef,
