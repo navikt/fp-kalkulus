@@ -24,6 +24,9 @@ public class InntektGraderingPeriode {
     @NotNull
     private Periode periode;
 
+    /**
+     * Inntektgradering mellom 0 og 1
+     */
     @Valid
     @JsonProperty(value = "inntektgradering")
     @NotNull
