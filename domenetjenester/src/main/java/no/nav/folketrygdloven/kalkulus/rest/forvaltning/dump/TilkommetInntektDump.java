@@ -35,7 +35,7 @@ public class TilkommetInntektDump implements DebugDumpSak {
                         ti.aktivitet_status,
                         ti.arbeidsgiver_orgnr orgnr,
                         ti.arbeidsgiver_aktor_id aktørId,
-                        ti.arbeidsforholdRef,
+                        ti.arbeidsforhold_intern_id,
                         ti.brutto_inntekt_pr_aar brutto,
                         ti.tilkommet_inntekt_pr_aar tilkommet,
                         ti.skal_redusere_utbetaling reduserer
