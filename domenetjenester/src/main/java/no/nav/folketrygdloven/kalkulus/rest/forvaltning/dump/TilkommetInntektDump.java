@@ -43,7 +43,7 @@ public class TilkommetInntektDump implements DebugDumpSak {
                               inner join GR_BEREGNINGSGRUNNLAG gr on gr.kobling_id = k.id
                               inner join BEREGNINGSGRUNNLAG_PERIODE periode on periode.beregningsgrunnlag_id = gr.beregningsgrunnlag_id
                               inner join TILKOMMET_INNTEKT ti on ti.bg_periode_id = periode.id
-                    where k.saksnummer = :saksnummer and gr.aktiv = true;
+                    where k.saksnummer = :saksnummer and gr.aktiv = true
                    """;
 
 
