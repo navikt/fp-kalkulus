@@ -22,7 +22,7 @@
 
     <properties>
         <java.version>21</java.version>
-        <kontrakt.java.version>17</kontrakt.java.version> <!--Brukes av kontrakter,kodeverk for publisering. Til K9 er på J21 -->
+        <kontrakt.java.version>21</kontrakt.java.version>
         <argLine>-Xms256m -Dfile.encoding=UTF-8 -Dlog.level.no.nav=WARN</argLine>
         <jacoco.skip>true</jacoco.skip> <!-- default skip coverage -->
 
@@ -37,7 +37,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <beregningsgrunnlag.regelmodell.version>4.3.0</beregningsgrunnlag.regelmodell.version>
+        <beregningsgrunnlag.regelmodell.version>4.3.1</beregningsgrunnlag.regelmodell.version>
 
         <felles.version>2.4.2</felles.version>
 
@@ -94,7 +94,7 @@
             <dependency>
                 <groupId>no.nav.fpsak.tidsserie</groupId>
                 <artifactId>fpsak-tidsserie</artifactId>
-                <version>2.6.8</version> <!-- behold inntil kontrakter er på java 21 -->
+                <version>2.7.1</version>
             </dependency>
 
             <dependency>
