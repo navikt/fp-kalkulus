@@ -11,6 +11,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 
@@ -29,6 +31,8 @@ public class InntektGraderingPeriode {
      */
     @Valid
     @JsonProperty(value = "inntektgradering")
+    @DecimalMin("0.00")
+    @DecimalMax("1.00")
     @NotNull
     private BigDecimal inntektgradering;
 
