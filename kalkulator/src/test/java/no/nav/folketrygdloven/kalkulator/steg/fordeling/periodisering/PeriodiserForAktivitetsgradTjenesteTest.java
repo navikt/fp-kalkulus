@@ -6,15 +6,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.input.PleiepengerSyktBarnGrunnlag;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto;
@@ -22,19 +17,10 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
-import no.nav.folketrygdloven.kalkulus.typer.AktørId;
+import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 
 class PeriodiserForAktivitetsgradTjenesteTest {
-
-    public static final KoblingReferanse KOBLING_REFERANSE = KoblingReferanse.fra(FagsakYtelseType.PLEIEPENGER_SYKT_BARN, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(),
-            Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(LocalDate.now()).build());
-
-    @BeforeEach
-    void setUp() {
-    }
 
     @Test
     void skal_ikke_splitte_grunnlag_uten_aktivitetsgrad() {

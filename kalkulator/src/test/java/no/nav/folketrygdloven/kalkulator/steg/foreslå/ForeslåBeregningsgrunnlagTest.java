@@ -73,7 +73,6 @@ import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 @ExtendWith(MockitoExtension.class)
 public class ForeslåBeregningsgrunnlagTest {
 
-    private static final String ORGNR = "987123987";
     private static final double MÅNEDSINNTEKT1 = 12345d;
     private static final double MÅNEDSINNTEKT2 = 6000d;
     private static final double ÅRSINNTEKT1 = MÅNEDSINNTEKT1 * 12;
@@ -250,7 +249,6 @@ public class ForeslåBeregningsgrunnlagTest {
                 .medBeregningsgrunnlag(beregningsgrunnlag)
                 .medRegisterAktiviteter(BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING, OpptjeningAktivitetType.ARBEID));
         ForeslåBeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagForeslåttBeregningsgrunnlagInput(koblingReferanse, bgGrunnlagBuilder, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag);
-        Map<String, Boolean> toggles = input.getToggles();
         return foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
     }
 
@@ -262,7 +260,6 @@ public class ForeslåBeregningsgrunnlagTest {
         var ompKobling = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING, FagsakYtelseType.OMSORGSPENGER);
         ForeslåBeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagForeslåttBeregningsgrunnlagInput(ompKobling, bgGrunnlagBuilder,
                 BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag, omsorgspengerGrunnlag);
-        Map<String, Boolean> toggles = input.getToggles();
         var foreslåBeregningsgrunnlag = new ForeslåBeregningsgrunnlag();
         return foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
     }

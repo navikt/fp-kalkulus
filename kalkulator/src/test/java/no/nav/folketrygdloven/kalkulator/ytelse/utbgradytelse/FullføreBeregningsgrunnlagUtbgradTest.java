@@ -76,7 +76,6 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
     private static final LocalDate ARBEIDSPERIODE_TOM = SKJÆRINGSTIDSPUNKT_OPPTJENING.plusYears(2);
 
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
-    private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel();
     private FullføreBeregningsgrunnlag tjeneste;
     private BeregningsgrunnlagDto beregningsgrunnlag;
 

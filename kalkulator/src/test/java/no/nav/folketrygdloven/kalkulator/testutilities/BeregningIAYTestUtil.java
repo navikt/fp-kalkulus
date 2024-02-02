@@ -90,21 +90,6 @@ public class BeregningIAYTestUtil {
     }
 
     /**
-     * Lager oppgitt opptjening for annen aktivitet som f.eks militærtjeneste, vartpenger, ventelønn m.m.
-     *  @param arbeidType arbeidType for aktivitet
-     * @param fom fra dato
-     * @param tom til dato
-     * @return Oppgitt opptjening
-     */
-    public static OppgittOpptjeningDtoBuilder lagAnnenAktivitetOppgittOpptjening(ArbeidType arbeidType, LocalDate fom, LocalDate tom) {
-        OppgittOpptjeningDtoBuilder oppgittOpptjeningBuilder = OppgittOpptjeningDtoBuilder.ny();
-        OppgittAnnenAktivitetDto annenAktivitet = new OppgittAnnenAktivitetDto(
-            tom == null ? Intervall.fraOgMed(fom) : Intervall.fraOgMedTilOgMed(fom, tom), arbeidType);
-        oppgittOpptjeningBuilder.leggTilAnnenAktivitet(annenAktivitet);
-        return oppgittOpptjeningBuilder;
-    }
-
-    /**
      * Lager oppgitt opptjening for frilans.
      *
      * @param erNyOppstartet spesifiserer om frilans er nyoppstartet

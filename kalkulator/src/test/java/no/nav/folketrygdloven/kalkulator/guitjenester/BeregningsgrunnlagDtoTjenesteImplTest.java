@@ -57,8 +57,6 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
     private static final LocalDate ANDEL_TOM = LocalDate.now();
     private static final String ORGNR = "973093681";
     private static final Long ANDELSNR = 1L;
-    private static final String PRIVATPERSON_NAVN = "Skrue McDuck";
-    private static final String VIRKSOMHET_NAVN = "NAV AS";
     private static final BigDecimal RAPPORTERT_PR_AAR = BigDecimal.valueOf(300000);
     private static final BigDecimal AVVIK_OVER_25_PROSENT = BigDecimal.valueOf(500L);
     private static final BigDecimal AVVIK_UNDER_25_PROSENT = BigDecimal.valueOf(30L);
@@ -67,19 +65,9 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
     private static Arbeidsgiver virksomhet = Arbeidsgiver.virksomhet(ORGNR);
     private BigDecimal GRUNNBELØP = BigDecimal.valueOf(99_888);
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock();
-    private BeregningsgrunnlagDtoTjeneste beregningsgrunnlagDtoTjeneste;
+    private BeregningsgrunnlagDtoTjeneste beregningsgrunnlagDtoTjeneste = new BeregningsgrunnlagDtoTjeneste();
     private BeregningsgrunnlagGrunnlagDto grunnlag;
     private BeregningAktivitetAggregatDto beregningAktiviteter;
-
-    @BeforeEach
-    public void setup() {
-        FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste = new FaktaOmBeregningDtoTjeneste();
-        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste beregningsgrunnlagPrStatusOgAndelDtoTjeneste =
-                new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
-        beregningsgrunnlagDtoTjeneste = new BeregningsgrunnlagDtoTjeneste(
-        );
-        virksomhet.setNavn(VIRKSOMHET_NAVN);
-    }
 
     @Test
     public void skal_teste_at_beregningsgrunnlagDto_aktivitetStatus_får_korrekte_verdier() {
@@ -157,10 +145,10 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         var beregningsgrunnlagPeriodeDtoList = beregningsgrunnlagDto.getBeregningsgrunnlagPeriode();
         assertThat(beregningsgrunnlagPeriodeDtoList).hasSize(1);
 
-        var periodeDto = beregningsgrunnlagPeriodeDtoList.get(0);
+        var periodeDto = beregningsgrunnlagPeriodeDtoList.getFirst();
         var andelList = periodeDto.getBeregningsgrunnlagPrStatusOgAndel();
         assertThat(andelList).hasSize(1);
-        var andelDto = andelList.get(0);
+        var andelDto = andelList.getFirst();
         assertThat(andelDto.getInntektskategori()).isEqualTo(INNTEKTSKATEGORI);
         assertThat(andelDto.getAndelsnr()).isEqualTo(ANDELSNR);
         assertThat(andelDto.getAvkortetPrAar()).isEqualTo(AVKORTET_PR_AAR);
@@ -184,10 +172,10 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         var beregningsgrunnlagPeriodeDtoList = beregningsgrunnlagDto.getBeregningsgrunnlagPeriode();
         assertThat(beregningsgrunnlagPeriodeDtoList).hasSize(1);
 
-        var periodeDto = beregningsgrunnlagPeriodeDtoList.get(0);
+        var periodeDto = beregningsgrunnlagPeriodeDtoList.getFirst();
         var andelList = periodeDto.getBeregningsgrunnlagPrStatusOgAndel();
         assertThat(andelList).hasSize(1);
-        var andelDto = andelList.get(0);
+        var andelDto = andelList.getFirst();
         assertThat(andelDto.getInntektskategori()).isEqualTo(INNTEKTSKATEGORI);
         assertThat(andelDto.getAndelsnr()).isEqualTo(ANDELSNR);
         assertThat(andelDto.getAvkortetPrAar()).isEqualTo(AVKORTET_PR_AAR);

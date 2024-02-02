@@ -33,16 +33,11 @@ public class BeregningsgrunnlagInputTestUtil {
     private static final String INNTEKT_RAPPORTERING_FRIST_DATO = "inntekt.rapportering.frist.dato";
 
 
-    @SafeVarargs
     public static BeregningsgrunnlagInput lagInputMedBeregningsgrunnlag(KoblingReferanse koblingReferanse,
-                                                                        Tuple<BeregningsgrunnlagDto, BeregningsgrunnlagTilstand> aktivt,
-                                                                        Tuple<BeregningsgrunnlagDto, BeregningsgrunnlagTilstand>... forrige) {
+                                                                        Tuple<BeregningsgrunnlagDto, BeregningsgrunnlagTilstand> aktivt) {
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, null, List.of(), null);
         BeregningsgrunnlagGrunnlagDto grunnlag = lagGrunnlag(aktivt.getElement1(), aktivt.getElement2());
         BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        for (Tuple<BeregningsgrunnlagDto, BeregningsgrunnlagTilstand> bg : forrige) {
-            BeregningsgrunnlagGrunnlagDto gr = lagGrunnlag(bg.getElement1(), bg.getElement2());
-        }
         inputMedBeregningsgrunnlag.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
         return inputMedBeregningsgrunnlag;
     }

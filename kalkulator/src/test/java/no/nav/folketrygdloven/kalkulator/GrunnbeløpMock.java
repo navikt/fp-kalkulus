@@ -38,19 +38,8 @@ public class GrunnbeløpMock {
             .gVerdi();
     }
 
-    public static Long finnGrunnbeløpsnitt(LocalDate dato) {
-        return finnGSNITTPåDato(dato)
-            .gSnitt();
-    }
-
     private static GrunnbeløpInput finnGyldigGrunnbeløpPåDato(LocalDate dato) {
         return GRUNNBELØPINPUT.stream().filter(gb -> Periode.of(gb.fom(), gb.tom()).inneholder(dato))
-            .findFirst().orElseThrow();
-    }
-
-    private static GrunnbeløpInput finnGSNITTPåDato(LocalDate dato) {
-        int year = dato.getYear();
-        return GRUNNBELØPINPUT.stream().filter(gb -> year == gb.fom().getYear())
             .findFirst().orElseThrow();
     }
 }

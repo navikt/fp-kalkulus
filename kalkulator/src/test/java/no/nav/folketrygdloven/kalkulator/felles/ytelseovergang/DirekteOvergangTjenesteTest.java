@@ -29,7 +29,7 @@ class DirekteOvergangTjenesteTest {
 
     @Test
     void skal_returnere_tom_tidslinje_uten_ytelser() {
-        var tidslinje = DirekteOvergangTjeneste.direkteUtbetalingTidslinje(List.of(), DirekteOvergangTjenesteTest::alwaysTrue);
+        var tidslinje = DirekteOvergangTjeneste.direkteUtbetalingTidslinje(List.of(), y -> alwaysTrue());
 
         assertThat(tidslinje.isEmpty()).isTrue();
     }
@@ -39,7 +39,7 @@ class DirekteOvergangTjenesteTest {
         var fom = LocalDate.now();
         var periode = Intervall.fraOgMedTilOgMed(fom, fom.plusDays(5));
         var ytelse = lagYtelse(periode, List.of(frilansAndel()));
-        var tidslinje = DirekteOvergangTjeneste.direkteUtbetalingTidslinje(List.of(ytelse), DirekteOvergangTjenesteTest::alwaysTrue);
+        var tidslinje = DirekteOvergangTjeneste.direkteUtbetalingTidslinje(List.of(ytelse), y -> alwaysTrue());
 
         var segmenter = tidslinje.toSegments();
         assertThat(segmenter.size()).isEqualTo(1);
@@ -58,7 +58,7 @@ class DirekteOvergangTjenesteTest {
         var periode = Intervall.fraOgMedTilOgMed(fom, fom.plusDays(5));
         var arbeidsgiver = Arbeidsgiver.virksomhet("12345587");
         var ytelse = lagYtelse(periode, List.of(arbeidstakerAndel(arbeidsgiver, new Stillingsprosent(0))));
-        var tidslinje = DirekteOvergangTjeneste.direkteUtbetalingTidslinje(List.of(ytelse), DirekteOvergangTjenesteTest::alwaysTrue);
+        var tidslinje = DirekteOvergangTjeneste.direkteUtbetalingTidslinje(List.of(ytelse), y -> alwaysTrue());
 
         var segmenter = tidslinje.toSegments();
         assertThat(segmenter.size()).isEqualTo(1);
@@ -77,7 +77,7 @@ class DirekteOvergangTjenesteTest {
         var periode = Intervall.fraOgMedTilOgMed(fom, fom.plusDays(5));
         var arbeidsgiver = Arbeidsgiver.virksomhet("12345587");
         var ytelse = lagYtelse(periode, List.of(arbeidstakerAndel(arbeidsgiver, new Stillingsprosent(50))));
-        var tidslinje = DirekteOvergangTjeneste.direkteUtbetalingTidslinje(List.of(ytelse), DirekteOvergangTjenesteTest::alwaysTrue);
+        var tidslinje = DirekteOvergangTjeneste.direkteUtbetalingTidslinje(List.of(ytelse), y -> alwaysTrue());
 
         var segmenter = tidslinje.toSegments();
         assertThat(segmenter.size()).isEqualTo(1);
@@ -96,7 +96,7 @@ class DirekteOvergangTjenesteTest {
         var periode = Intervall.fraOgMedTilOgMed(fom, fom.plusDays(5));
         var arbeidsgiver = Arbeidsgiver.virksomhet("12345587");
         var ytelse = lagYtelse(periode, List.of(arbeidstakerAndel(arbeidsgiver, new Stillingsprosent(100))));
-        var tidslinje = DirekteOvergangTjeneste.direkteUtbetalingTidslinje(List.of(ytelse), DirekteOvergangTjenesteTest::alwaysTrue);
+        var tidslinje = DirekteOvergangTjeneste.direkteUtbetalingTidslinje(List.of(ytelse), y -> alwaysTrue());
 
         assertThat(tidslinje.isEmpty()).isTrue();
     }
@@ -106,7 +106,7 @@ class DirekteOvergangTjenesteTest {
         var fom = LocalDate.now();
         var periode = Intervall.fraOgMedTilOgMed(fom, fom.plusDays(5));
         var ytelse = lagYtelse(periode, null);
-        var tidslinje = DirekteOvergangTjeneste.direkteUtbetalingTidslinje(List.of(ytelse), DirekteOvergangTjenesteTest::alwaysTrue);
+        var tidslinje = DirekteOvergangTjeneste.direkteUtbetalingTidslinje(List.of(ytelse), y -> alwaysTrue());
 
         var segmenter = tidslinje.toSegments();
         assertThat(segmenter.size()).isEqualTo(1);
@@ -138,7 +138,7 @@ class DirekteOvergangTjenesteTest {
         var arbeidsgiver2 = Arbeidsgiver.virksomhet("76345114");
 
         var ytelse = lagYtelse(periode, List.of(arbeidstakerAndel(arbeidsgiver1, new Stillingsprosent(0)), arbeidstakerAndel(arbeidsgiver2, new Stillingsprosent(0))));
-        var tidslinje = DirekteOvergangTjeneste.direkteUtbetalingTidslinje(List.of(ytelse), DirekteOvergangTjenesteTest::alwaysTrue);
+        var tidslinje = DirekteOvergangTjeneste.direkteUtbetalingTidslinje(List.of(ytelse), y -> alwaysTrue());
 
         var segmenter = tidslinje.toSegments();
         assertThat(segmenter.size()).isEqualTo(1);
@@ -181,7 +181,7 @@ class DirekteOvergangTjenesteTest {
                         .medUtbetalingsgradProsent(BigDecimal.valueOf(100))
                         .medAnvisteAndeler(List.of(arbeidstakerAndel(arbeidsgiver1, new Stillingsprosent(0)))).build()).build();
 
-        var tidslinje = DirekteOvergangTjeneste.direkteUtbetalingTidslinje(List.of(ytelse), DirekteOvergangTjenesteTest::alwaysTrue);
+        var tidslinje = DirekteOvergangTjeneste.direkteUtbetalingTidslinje(List.of(ytelse), y -> alwaysTrue());
 
         var segmenter = tidslinje.toSegments();
         assertThat(segmenter.size()).isEqualTo(2);
@@ -390,7 +390,7 @@ class DirekteOvergangTjenesteTest {
                         .medAnvisteAndeler(andeler).build()).build();
     }
 
-    private static boolean alwaysTrue(YtelseDto y) {
+    private static boolean alwaysTrue() {
         return true;
     }
 }

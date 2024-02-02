@@ -33,7 +33,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -51,17 +50,6 @@ class VurderRefusjonTilfelleDtoTjenesteTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
 
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
-
-    private static Map<String, String> arbeidsgiverNavnMap = new HashMap<>();
-
-    public static final String ARBEIDSGIVER_NAVN = "NAV AS";
-
-    public static final String ARBEIDSGIVER_NAVN2 = "Norges beste arbeidsplass";
-
-    static {
-        arbeidsgiverNavnMap.put(ORGNR, ARBEIDSGIVER_NAVN);
-        arbeidsgiverNavnMap.put(ORGNR2, ARBEIDSGIVER_NAVN2);
-    }
 
     private final VurderRefusjonTilfelleDtoTjeneste vurderRefusjonTilfelleDtoTjeneste = new VurderRefusjonTilfelleDtoTjeneste();
 
@@ -97,7 +85,6 @@ class VurderRefusjonTilfelleDtoTjenesteTest {
                 .medRegisterAktiviteter(aktivitetAggregat)
                 .medBeregningsgrunnlag(lagBeregningsgrunnlag(arbeidsgivere.stream().map(a -> {
                     Arbeidsgiver virksomhet = Arbeidsgiver.virksomhet(a.getOrgnr());
-                    virksomhet.setNavn(arbeidsgiverNavnMap.get(a.getOrgnr()));
                     return virksomhet;
                 }).collect(Collectors.toList())));
     }
@@ -126,7 +113,6 @@ class VurderRefusjonTilfelleDtoTjenesteTest {
         for (String nr : orgnr) {
             leggTilYrkesaktivitet(arbeidsperiode1, aktørArbeidBuilder, nr);
             Arbeidsgiver virksomhet = Arbeidsgiver.virksomhet(nr);
-            virksomhet.setNavn(arbeidsgiverNavnMap.get(nr));
             aktivitetAggregatBuilder.leggTilAktivitet(lagAktivitet(arbeidsperiode1, virksomhet));
         }
         iayAggregatBuilder.leggTilAktørArbeid(aktørArbeidBuilder);

@@ -17,8 +17,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -56,11 +54,11 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningIAYTestUtil;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulator.ytelse.fp.MapRefusjonPerioderFraVLTilRegelFP;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAktivitetHandlingType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
@@ -97,7 +95,6 @@ public class FordelPerioderTjenesteTest {
     }
 
     private FordelPerioderTjeneste lagTjeneste() {
-        var oversetterTilRegelRefusjon = new MapRefusjonPerioderFraVLTilRegelFP();
         return new FordelPerioderTjeneste(
         );
     }
@@ -461,7 +458,6 @@ public class FordelPerioderTjenesteTest {
         List<String> orgnrs = List.of(ORG_NUMMER, ORG_NUMMER_3, ORG_NUMMER_2);
         leggTilYrkesaktiviteterOgBeregningAktiviteter(orgnrs, newGrunnlagBuilder);
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(orgnrs, beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
 
         BigDecimal inntekt1 = BigDecimal.valueOf(90000);
         BigDecimal refusjonskrav1 = inntekt1;
@@ -536,7 +532,6 @@ public class FordelPerioderTjenesteTest {
         var arbeidsgiverGradering = Arbeidsgiver.virksomhet(ORG_NUMMER);
 
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER_2), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
         var arbId = InternArbeidsforholdRefDto.namedRef("A");
         var arbId2 = InternArbeidsforholdRefDto.namedRef("B");
 
@@ -581,7 +576,6 @@ public class FordelPerioderTjenesteTest {
         var arbeidsgiverGradering = Arbeidsgiver.virksomhet(ORG_NUMMER);
 
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER_2), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
         var arbId = InternArbeidsforholdRefDto.namedRef("A");
         var arbId2 = InternArbeidsforholdRefDto.namedRef("B");
 
@@ -627,7 +621,6 @@ public class FordelPerioderTjenesteTest {
         var arbeidsgiverGradering = Arbeidsgiver.virksomhet(ORG_NUMMER);
 
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER_2), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
         var arbId = InternArbeidsforholdRefDto.namedRef("A");
 
         LocalDate ansettelsesDato = graderingFom;
@@ -673,7 +666,6 @@ public class FordelPerioderTjenesteTest {
         var arbeidsgiverGradering = Arbeidsgiver.virksomhet(ORG_NUMMER);
 
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER_2), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
         var arbId = InternArbeidsforholdRefDto.namedRef("A");
         Arbeidsgiver arbeidsgiver3 = Arbeidsgiver.virksomhet(ORG_NUMMER);
         Arbeidsgiver arbeidsgiver4 = Arbeidsgiver.virksomhet(ORG_NUMMER_2);
@@ -716,7 +708,6 @@ public class FordelPerioderTjenesteTest {
 
         // Arrange
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
         LocalDate ansettelsesDato = SKJÆRINGSTIDSPUNKT.plusWeeks(2);
         LocalDate startDatoRefusjon = SKJÆRINGSTIDSPUNKT.plusWeeks(1);
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORG_NUMMER);
@@ -746,7 +737,6 @@ public class FordelPerioderTjenesteTest {
 
         // Arrange
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
         LocalDate startDatoRefusjon = SKJÆRINGSTIDSPUNKT.plusWeeks(1);
         LocalDate ansattFom = SKJÆRINGSTIDSPUNKT.minusYears(2);
         LocalDate ansattTom = SKJÆRINGSTIDSPUNKT.minusMonths(2);
@@ -773,7 +763,6 @@ public class FordelPerioderTjenesteTest {
 
         LocalDate startDatoPermisjon = SKJÆRINGSTIDSPUNKT.plusWeeks(1);
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
         BeregningIAYTestUtil.byggArbeidForBehandling(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.minusYears(2), TIDENES_ENDE,
                 arbId, Arbeidsgiver.virksomhet(ORG_NUMMER), iayGrunnlagBuilder);
         BeregningIAYTestUtil.byggArbeidForBehandling(SKJÆRINGSTIDSPUNKT, startDatoPermisjon, TIDENES_ENDE,
@@ -926,7 +915,6 @@ public class FordelPerioderTjenesteTest {
         BeregningAktivitetHandlingType handlingIkkeBenytt = BeregningAktivitetHandlingType.IKKE_BENYTT;
         BeregningAktivitetOverstyringerDto overstyring = BeregningAktivitetOverstyringerDto.builder().leggTilOverstyring(lagOverstyringForAktivitet(InternArbeidsforholdRefDto.nullRef(), arbeidsgiver, handlingIkkeBenytt)).build();
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(List.of(), beregningAktivitetAggregat, overstyring);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
         BigDecimal inntekt1 = BigDecimal.valueOf(90000);
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORG_NUMMER, SKJÆRINGSTIDSPUNKT, inntekt1, inntekt1,
                 null);
@@ -948,7 +936,6 @@ public class FordelPerioderTjenesteTest {
         // Arrange
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedSaksbehandlet(List.of(),
                 beregningAktivitetAggregat, BeregningAktivitetAggregatDto.builder().medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build());
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
         BigDecimal inntekt1 = BigDecimal.valueOf(90000);
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORG_NUMMER, SKJÆRINGSTIDSPUNKT, inntekt1, inntekt1,
                 null);
@@ -1121,7 +1108,6 @@ public class FordelPerioderTjenesteTest {
         InntektArbeidYtelseGrunnlagDtoBuilder newGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         leggTilYrkesaktiviteterOgBeregningAktiviteter(List.of(ORG_NUMMER, ORG_NUMMER_2), newGrunnlagBuilder);
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER, ORG_NUMMER_2), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
 
         BigDecimal inntekt1 = BigDecimal.valueOf(90000);
         BigDecimal refusjonskrav1 = inntekt1;
@@ -1517,7 +1503,6 @@ public class FordelPerioderTjenesteTest {
         InntektArbeidYtelseGrunnlagDtoBuilder newGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         leggTilYrkesaktiviteterOgBeregningAktiviteter(List.of(ORG_NUMMER, ORG_NUMMER_2), newGrunnlagBuilder);
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER, ORG_NUMMER_2), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
 
         BigDecimal inntekt1 = BigDecimal.valueOf(90000);
         BigDecimal refusjonskrav1 = inntekt1;
@@ -1551,7 +1536,6 @@ public class FordelPerioderTjenesteTest {
 
         leggTilYrkesaktiviteterOgBeregningAktiviteter(List.of(ORG_NUMMER, ORG_NUMMER_2), newGrunnlagBuilder);
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER, ORG_NUMMER_2), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
 
         BigDecimal inntekt1 = BigDecimal.valueOf(90000);
         BigDecimal refusjonskrav1 = inntekt1;
@@ -1582,8 +1566,6 @@ public class FordelPerioderTjenesteTest {
     @Test
     public void skalLageEnPeriodeNårGraderingPåVirksomhetOgAndelMedRefusjonIkkeHarNullIBruttoOgFlereArbeidsforholdISammeOrganisasjon() {
         // Arrange
-        LocalDate graderingFom = SKJÆRINGSTIDSPUNKT.plusMonths(1);
-        LocalDate graderingTom = SKJÆRINGSTIDSPUNKT.plusMonths(2);
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
                 .medGrunnbeløp(GRUNNBELØP)
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
@@ -1648,12 +1630,6 @@ public class FordelPerioderTjenesteTest {
                 .build();
 
         iayGrunnlagBuilder.medInntektsmeldinger(im1, im2);
-
-        AktivitetGradering aktivitetGradering = new AktivitetGradering(AndelGradering.builder()
-                .medArbeidsgiver(arbeidsgiver)
-                .medStatus(AktivitetStatus.ARBEIDSTAKER)
-                .medGradering(graderingFom, graderingTom, 50)
-                .build());
 
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = iayGrunnlagBuilder.build();
         var input = new BeregningsgrunnlagInput(behandlingRef, iayGrunnlag, null, List.of(), null)

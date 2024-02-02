@@ -8,12 +8,10 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 
 public class SammenligningsgrunnlagTest {
-    private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
     private static final BigDecimal RAPPORTERT_PR_ÅR = BigDecimal.valueOf(400000d);
     private static final BigDecimal AVVIK_PROMILLE = BigDecimal.valueOf(240L);
     private final LocalDate PERIODE_FOM = LocalDate.now();
@@ -152,13 +150,5 @@ public class SammenligningsgrunnlagTest {
             .medSammenligningsperiode(PERIODE_FOM, PERIODE_TOM)
             .medRapportertPrÅr(RAPPORTERT_PR_ÅR)
             .medAvvikPromilleNy(AVVIK_PROMILLE);
-    }
-
-    private static BeregningsgrunnlagDto lagBeregningsgrunnlag() {
-        return lagBeregningsgrunnlagMedSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT);
-    }
-
-    private static BeregningsgrunnlagDto lagBeregningsgrunnlagMedSkjæringstidspunkt(LocalDate skjæringstidspunkt) {
-        return BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(skjæringstidspunkt).build();
     }
 }

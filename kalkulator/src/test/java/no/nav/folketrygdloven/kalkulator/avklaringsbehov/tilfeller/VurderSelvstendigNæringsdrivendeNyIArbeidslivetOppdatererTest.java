@@ -31,7 +31,6 @@ public class VurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdatererTest {
 
     private static final List<FaktaOmBeregningTilfelle> FAKTA_OM_BEREGNING_TILFELLER = Collections
         .singletonList(FaktaOmBeregningTilfelle.VURDER_SN_NY_I_ARBEIDSLIVET);
-    public static final String ORGNR = "8934232423";
     private final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
     private final Beløp GRUNNBELØP = new Beløp(600000);
 

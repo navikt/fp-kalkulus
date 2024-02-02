@@ -544,7 +544,7 @@ class KalkulatorInputTjenesteTest {
 
     @Test
     void skal_konvertere_input() {
-        var dto = KalkulatorInputTjeneste.konverterTilInput(GYLDIG_INPUT, 1L);
+        KalkulatorInputTjeneste.konverterTilInput(GYLDIG_INPUT, 1L);
     }
 
     @Test
@@ -554,7 +554,7 @@ class KalkulatorInputTjenesteTest {
 
     @Test
     void skal_konvertere_input_med_nytt_felt() {
-        var dto = KalkulatorInputTjeneste.konverterTilInput(GYLDIG_INPUT_MED_NYTT_FELT, 1L);
+        KalkulatorInputTjeneste.konverterTilInput(GYLDIG_INPUT_MED_NYTT_FELT, 1L);
     }
 
 

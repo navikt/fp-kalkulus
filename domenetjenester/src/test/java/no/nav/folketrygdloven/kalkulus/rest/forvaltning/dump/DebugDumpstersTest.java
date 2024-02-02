@@ -91,7 +91,7 @@ class DebugDumpstersTest extends EntityManagerAwareTest {
                 .build(bg);
 
         var virksomhet = Arbeidsgiver.virksomhet("112345689");
-        var andel = BeregningsgrunnlagPrStatusOgAndel.builder()
+        BeregningsgrunnlagPrStatusOgAndel.builder()
                 .medAndelsnr(1L)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforhold.builder()

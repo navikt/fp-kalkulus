@@ -180,7 +180,7 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
         // Act 2 kjør igjen
         var resultat2 = beregningStegTjeneste.beregnFor(BeregningSteg.FASTSETT_STP_BER, inputMedG);
         var bg2 = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(kobling.getId());
-        assertResultatOgAktiviteter(resultat, bg, BeregningsgrunnlagTilstand.OPPRETTET, false, 1, 0);
+        assertResultatOgAktiviteter(resultat2, bg2, BeregningsgrunnlagTilstand.OPPRETTET, false, 1, 0);
 
     }
 

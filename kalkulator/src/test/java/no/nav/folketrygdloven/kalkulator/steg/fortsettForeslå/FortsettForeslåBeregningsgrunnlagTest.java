@@ -68,8 +68,6 @@ public class FortsettForeslåBeregningsgrunnlagTest {
     private final KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
     private final TestHjelper testHjelper = new TestHjelper();
     private InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder;
-    private final MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(
-    );
     private final FortsettForeslåBeregningsgrunnlag fortsettForeslåBeregningsgrunnlag = new FortsettForeslåBeregningsgrunnlag();
 
     @BeforeEach

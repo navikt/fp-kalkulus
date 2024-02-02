@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulator;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 import java.time.LocalDate;
 
@@ -9,7 +8,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.felles.MatchBeregningsgrunnlagTjeneste;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -25,7 +23,6 @@ public class MatchBeregningsgrunnlagTjenesteTest {
 
     private final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
     private static final Arbeidsgiver arbeidsgiverEn = Arbeidsgiver.virksomhet("973152351");
-    public KoblingReferanse koblingReferanse = mock(KoblingReferanse.class);
 
 
     private BeregningsgrunnlagPeriodeDto lagPeriode(BeregningsgrunnlagDto bg) {
@@ -80,6 +77,7 @@ public class MatchBeregningsgrunnlagTjenesteTest {
         assertThat(korrektAndel).isEqualTo(andel);
     }
 
+    @Test
     public void skal_kaste_exception_om_andel_ikkje_eksisterer_i_grunnlag() {
         // Arrange
         var arbId = InternArbeidsforholdRefDto.nyRef();
@@ -96,8 +94,6 @@ public class MatchBeregningsgrunnlagTjenesteTest {
                 .build(periode);
 
         // Act
-        Assertions.assertThrows(KalkulatorException.class, () -> {
-            MatchBeregningsgrunnlagTjeneste.matchMedAndelFraPeriode(periode, 2L, InternArbeidsforholdRefDto.nyRef());
-        });
+        Assertions.assertThrows(KalkulatorException.class, () -> MatchBeregningsgrunnlagTjeneste.matchMedAndelFraPeriode(periode, 2L, InternArbeidsforholdRefDto.nyRef()));
     }
 }

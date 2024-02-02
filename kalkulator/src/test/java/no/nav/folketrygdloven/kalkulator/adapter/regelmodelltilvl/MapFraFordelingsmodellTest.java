@@ -78,7 +78,6 @@ class MapFraFordelingsmodellTest {
     @Test
     public void skal_teste_mapping_av_tre_andeler_blir_fire_med_ny_andel_frilans() {
         // Arrange
-        var ref = UUID.randomUUID();
         lagBGPeriode(STP, STP.plusMonths(1),
                 lagBGAndel(1L, AktivitetStatus.BRUKERS_ANDEL,
                         null, null, Inntektskategori.ARBEIDSTAKER),

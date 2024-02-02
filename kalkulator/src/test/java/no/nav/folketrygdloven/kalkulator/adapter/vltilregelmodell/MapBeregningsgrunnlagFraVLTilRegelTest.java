@@ -110,7 +110,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         LocalDate skjæring = beregningsgrunnlag.getSkjæringstidspunkt();
         InntektArbeidYtelseAggregatBuilder iayBuilder = opprettForBehandling(iayGrunnlagBuilder);
         InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder = iayBuilder.getAktørYtelseBuilder();
-        YtelseDtoBuilder ytelse = lagYtelse(YtelseType.DAGPENGER, aktørYtelseBuilder,
+        YtelseDtoBuilder ytelse = lagYtelse(YtelseType.DAGPENGER,
                 skjæring.minusMonths(1).plusDays(1),
                 skjæring.plusMonths(6),
                 new BigDecimal(MELDEKORTSATS1),
@@ -118,7 +118,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
                 skjæring.minusMonths(1).plusDays(2),
                 skjæring.minusMonths(1).plusDays(16));
         aktørYtelseBuilder.leggTilYtelse(ytelse);
-        ytelse = lagYtelse(YtelseType.DAGPENGER, aktørYtelseBuilder,
+        ytelse = lagYtelse(YtelseType.DAGPENGER,
                 skjæring.minusMonths(3),
                 skjæring.minusMonths(1),
                 new BigDecimal(MELDEKORTSATS2),
@@ -134,7 +134,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         LocalDate skjæring = beregningsgrunnlag.getSkjæringstidspunkt();
         InntektArbeidYtelseAggregatBuilder iayBuilder = opprettForBehandling(iayGrunnlagBuilder);
         InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder = iayBuilder.getAktørYtelseBuilder();
-        YtelseDtoBuilder ytelse = lagYtelse(YtelseType.ARBEIDSAVKLARINGSPENGER, aktørYtelseBuilder,
+        YtelseDtoBuilder ytelse = lagYtelse(YtelseType.ARBEIDSAVKLARINGSPENGER,
                 skjæring.minusWeeks(2),
                 skjæring.plusMonths(6),
                 new BigDecimal(MELDEKORTSATS1),
@@ -147,7 +147,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         return koblingReferanse;
     }
 
-    private YtelseDtoBuilder lagYtelse(YtelseType relatertYtelseType, InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder,
+    private YtelseDtoBuilder lagYtelse(YtelseType relatertYtelseType,
                                        LocalDate fom, LocalDate tom, BigDecimal beløp, BigDecimal utbetalingsgrad,
                                        LocalDate meldekortFom, LocalDate meldekortTom) {
         YtelseDtoBuilder ytelselseBuilder = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom)).medYtelseType(relatertYtelseType);

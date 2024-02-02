@@ -17,8 +17,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
@@ -62,11 +60,6 @@ public class RefusjonDtoTjenesteImplTest {
             .medRefusjonskravPrÅr(SEKS_G.add(BigDecimal.valueOf(100)), Utfall.GODKJENT))
         .build(periode);
 
-        List<InntektsmeldingDto> inntektsmeldinger = List.of(InntektsmeldingDtoBuilder.builder()
-            .medRefusjon(SEKS_G.add(BigDecimal.valueOf(100)))
-            .medArbeidsgiver(ARBEIDSGIVER2)
-            .build());
-
         // Act
         boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel, periode, AktivitetGradering.INGEN_GRADERING, new Beløp(GRUNNBELØP));
 
@@ -95,17 +88,6 @@ public class RefusjonDtoTjenesteImplTest {
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER2)
                 .medRefusjonskravPrÅr(SEKS_G.add(BigDecimal.valueOf(100)), Utfall.GODKJENT))
             .build(periode);
-
-        InntektsmeldingDto im = InntektsmeldingDtoBuilder.builder()
-            .medRefusjon(refPrMnd.multiply(BigDecimal.valueOf(12)))
-            .medArbeidsgiver(ARBEIDSGIVER)
-            .build();
-        InntektsmeldingDto im2 = InntektsmeldingDtoBuilder.builder()
-            .medRefusjon(SEKS_G.add(BigDecimal.valueOf(100)))
-            .medArbeidsgiver(ARBEIDSGIVER2)
-            .build();
-        List<InntektsmeldingDto> inntektsmeldinger = List.of(im, im2);
-
         // Act
         boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel, periode, AktivitetGradering.INGEN_GRADERING, new Beløp(GRUNNBELØP));
 
@@ -133,16 +115,6 @@ public class RefusjonDtoTjenesteImplTest {
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER2)
                 .medRefusjonskravPrÅr(SEKS_G.subtract(BigDecimal.valueOf(100)), Utfall.GODKJENT))
             .build(periode);
-
-        InntektsmeldingDto im = InntektsmeldingDtoBuilder.builder()
-            .medRefusjon(BigDecimal.ZERO)
-            .medArbeidsgiver(ARBEIDSGIVER)
-            .build();
-        InntektsmeldingDto im2 = InntektsmeldingDtoBuilder.builder()
-            .medRefusjon(SEKS_G.subtract(BigDecimal.valueOf(100)))
-            .medArbeidsgiver(ARBEIDSGIVER2)
-            .build();
-        List<InntektsmeldingDto> inntektsmeldinger = List.of(im, im2);
 
         // Act
         boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel, periode, AktivitetGradering.INGEN_GRADERING, new Beløp(GRUNNBELØP));

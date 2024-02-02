@@ -46,7 +46,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 class VurderTilkommetInntektTjenesteTest {
 
     public static final String ORGNR = "974652269";
-    public static final Arbeidsgiver ARBEIDSGIVER = Arbeidsgiver.virksomhet(ORGNR);
     public static final String ORGNR2 = "910909088";
     private static final LocalDate STP = LocalDate.now();
 
