@@ -25,7 +25,7 @@ import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 
-public class MapBeregningAktiviteterFraVLTilRegelFelles {
+public class MapBeregningAktiviteterFraVLTilRegelFelles implements MapBeregningAktiviteterFraVLTilRegel {
 
     public AktivitetStatusModell mapForSkjæringstidspunkt(FastsettBeregningsaktiviteterInput input) {
         var opptjeningSkjæringstidspunkt = input.getSkjæringstidspunktOpptjening();

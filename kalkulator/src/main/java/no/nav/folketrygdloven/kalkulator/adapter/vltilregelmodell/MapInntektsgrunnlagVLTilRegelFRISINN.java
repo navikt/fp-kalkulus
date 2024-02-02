@@ -42,7 +42,7 @@ import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
-public class MapInntektsgrunnlagVLTilRegelFRISINN {
+public class MapInntektsgrunnlagVLTilRegelFRISINN implements MapInntektsgrunnlagVLTilRegel {
 
     public static final int MÅNEDER_FØR_STP = 36;
 

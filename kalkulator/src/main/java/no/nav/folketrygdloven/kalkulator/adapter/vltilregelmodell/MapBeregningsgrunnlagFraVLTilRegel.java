@@ -19,6 +19,8 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BeregningsgrunnlagH
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Dekningsgrad;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.MidlertidigInaktivType;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrStatus;
@@ -61,8 +63,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
 public class MapBeregningsgrunnlagFraVLTilRegel {
 
-    public no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag map(BeregningsgrunnlagInput input,
-                                                                                                 BeregningsgrunnlagGrunnlagDto oppdatertGrunnlag) {
+    public Beregningsgrunnlag map(BeregningsgrunnlagInput input,
+                                  BeregningsgrunnlagGrunnlagDto oppdatertGrunnlag) {
         var ref = input.getKoblingReferanse();
         Objects.requireNonNull(ref, "BehandlingReferanse kan ikke være null!");
         Objects.requireNonNull(oppdatertGrunnlag, "BeregningsgrunnlagGrunnlag kan ikke være null");
@@ -74,15 +76,13 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .sorted()
                 .collect(Collectors.toList());
 
-        var inntektsgrunnlag = FagsakYtelseType.FRISINN.equals(ref.getFagsakYtelseType()) ?
-            new MapInntektsgrunnlagVLTilRegelFRISINN().map(input, beregningsgrunnlag.getSkjæringstidspunkt()) :
-            new MapInntektsgrunnlagVLTilRegelFelles().map(input, beregningsgrunnlag.getSkjæringstidspunkt());
+        var inntektsgrunnlag = finnMapper(ref.getFagsakYtelseType()).map(input, beregningsgrunnlag.getSkjæringstidspunkt());
         List<BeregningsgrunnlagPeriode> perioder = mapBeregningsgrunnlagPerioder(beregningsgrunnlag, input);
         LocalDate skjæringstidspunkt = beregningsgrunnlag.getSkjæringstidspunkt();
 
         boolean erMilitærIOpptjeningsperioden = harHattMilitærIOpptjeningsperioden(oppdatertGrunnlag.getGjeldendeAktiviteter());
 
-        var builder = no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag.builder();
+        var builder = Beregningsgrunnlag.builder();
 
         return builder
                 .medInntektsgrunnlag(inntektsgrunnlag)
@@ -102,6 +102,14 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medGrunnbeløpSatser(grunnbeløpSatser(input))
                 .medFomDatoForIndividuellSammenligningATFLSN(LocalDate.of(2023,1,1))
                 .build();
+    }
+
+    private MapInntektsgrunnlagVLTilRegel finnMapper(FagsakYtelseType ytelseType) {
+        return switch (ytelseType) {
+            case PLEIEPENGER_SYKT_BARN, PLEIEPENGER_NÆRSTÅENDE, OMSORGSPENGER, OPPLÆRINGSPENGER, FORELDREPENGER, SVANGERSKAPSPENGER -> new MapInntektsgrunnlagVLTilRegelFelles();
+            case FRISINN -> new MapInntektsgrunnlagVLTilRegelFRISINN();
+            default -> throw new IllegalArgumentException("Finner ikke MapInntektsgrunnlagVLTilRegel implementasjon for ytelse " + ytelseType);
+        };
     }
 
     private List<Grunnbeløp> grunnbeløpSatser(BeregningsgrunnlagInput input) {
@@ -150,7 +158,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         };
     }
 
-    private List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak> mapPeriodeÅrsak(List<BeregningsgrunnlagPeriodeÅrsakDto> beregningsgrunnlagPeriodeÅrsaker) {
+    private List<PeriodeÅrsak> mapPeriodeÅrsak(List<BeregningsgrunnlagPeriodeÅrsakDto> beregningsgrunnlagPeriodeÅrsaker) {
         return beregningsgrunnlagPeriodeÅrsaker.stream().map(BeregningsgrunnlagPeriodeÅrsakDto::getPeriodeÅrsak).map(MapPeriodeÅrsakFraVlTilRegel::map).collect(Collectors.toList());
     }
 
