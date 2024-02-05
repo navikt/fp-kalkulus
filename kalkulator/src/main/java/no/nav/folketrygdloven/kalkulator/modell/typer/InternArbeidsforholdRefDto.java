@@ -22,9 +22,6 @@ public class InternArbeidsforholdRefDto implements Serializable, IndexKey {
 
     private UUID referanse;
 
-    InternArbeidsforholdRefDto() {
-    }
-
     private InternArbeidsforholdRefDto(UUID referanse) {
         this.referanse = referanse;
     }

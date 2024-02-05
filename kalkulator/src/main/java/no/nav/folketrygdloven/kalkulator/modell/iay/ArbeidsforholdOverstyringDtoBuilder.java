@@ -51,18 +51,8 @@ public class ArbeidsforholdOverstyringDtoBuilder {
         return this;
     }
 
-    public ArbeidsforholdOverstyringDtoBuilder medAngittArbeidsgiverNavn(String navn) {
-        kladd.setNavn(navn);
-        return this;
-    }
-
     public ArbeidsforholdOverstyringDtoBuilder medAngittStillingsprosent(Stillingsprosent stillingsprosent) {
         kladd.setStillingsprosent(stillingsprosent);
-        return this;
-    }
-
-    public ArbeidsforholdOverstyringDtoBuilder medBeskrivelse(String beskrivelse) {
-        kladd.setBeskrivelse(beskrivelse);
         return this;
     }
 

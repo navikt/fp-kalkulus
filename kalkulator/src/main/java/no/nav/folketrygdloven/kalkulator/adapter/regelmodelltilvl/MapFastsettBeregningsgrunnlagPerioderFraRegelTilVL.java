@@ -42,10 +42,10 @@ abstract class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL {
                 .map(MapPeriodeÅrsakFraRegelTilVL::map)
                 .forEach(bgPeriodeBuilder::leggTilPeriodeÅrsak);
         var beregningsgrunnlagPeriode = bgPeriodeBuilder.build(nyttBeregningsgrunnlag);
-        mapAndeler(nyttBeregningsgrunnlag, splittetPeriode, andelListe, beregningsgrunnlagPeriode);
+        mapAndeler(splittetPeriode, andelListe, beregningsgrunnlagPeriode);
     }
 
-    protected abstract void mapAndeler(BeregningsgrunnlagDto nyttBeregningsgrunnlag, SplittetPeriode splittetPeriode, List<BeregningsgrunnlagPrStatusOgAndelDto> andelListe, BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode);
+    protected abstract void mapAndeler(SplittetPeriode splittetPeriode, List<BeregningsgrunnlagPrStatusOgAndelDto> andelListe, BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode);
 
     LocalDate utledPeriodeTom(SplittetPeriode splittetPeriode) {
         LocalDate tom = splittetPeriode.getPeriode().getTom();

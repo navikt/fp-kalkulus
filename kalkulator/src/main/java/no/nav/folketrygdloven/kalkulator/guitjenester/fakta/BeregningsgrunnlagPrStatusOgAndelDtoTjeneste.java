@@ -21,8 +21,6 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.Beregn
 
 public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
 
-    private static final int MND_I_ÅR = 12;
-
     public List<BeregningsgrunnlagPrStatusOgAndelDto> lagBeregningsgrunnlagPrStatusOgAndelDto(BeregningsgrunnlagGUIInput input,
                                                                                               List<no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList) {
 

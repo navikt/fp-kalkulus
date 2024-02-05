@@ -102,10 +102,6 @@ public class YrkesaktivitetDto {
         return gjelderFor(im.getArbeidsgiver(), im.getArbeidsforholdRef());
     }
 
-    public boolean gjelderFor(InntektsmeldingSomIkkeKommerDto im) {
-        return gjelderFor(im.getArbeidsgiver(), im.getRef());
-    }
-
     public Collection<AktivitetsAvtaleDto> getAlleAktivitetsAvtaler() {
         return Collections.unmodifiableSet(aktivitetsAvtale);
     }

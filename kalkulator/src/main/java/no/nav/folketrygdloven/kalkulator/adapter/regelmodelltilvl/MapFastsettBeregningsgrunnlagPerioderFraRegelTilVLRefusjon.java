@@ -8,7 +8,6 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetAn
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.kodeverk.MapHjemmelFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
@@ -21,7 +20,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjon extends MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL {
 
     @Override
-    protected void mapAndeler(BeregningsgrunnlagDto nyttBeregningsgrunnlag, SplittetPeriode splittetPeriode,
+    protected void mapAndeler(SplittetPeriode splittetPeriode,
                               List<BeregningsgrunnlagPrStatusOgAndelDto> andelListe, BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
         andelListe.forEach(eksisterendeAndel -> mapEksisterendeAndel(splittetPeriode, beregningsgrunnlagPeriode, eksisterendeAndel));
         splittetPeriode.getNyeAndeler()

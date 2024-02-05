@@ -2,21 +2,15 @@ package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode
 
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
-import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.BevegeligeHelligdagerUtil;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
@@ -30,27 +24,6 @@ public class BeregningsperiodeTjeneste {
         LocalDate fom = skjæringstidspunkt.minusMonths(3).withDayOfMonth(1);
         LocalDate tom = skjæringstidspunkt.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
         return Intervall.fraOgMedTilOgMed(fom, tom);
-    }
-
-    public Optional<Intervall> finnFullstendigBeregningsperiodeForArbeidIGrunnlag(BeregningsgrunnlagDto beregningsgrunnlagDto) {
-        var arbeidsandelerMedBeregningsperiode = beregningsgrunnlagDto.getBeregningsgrunnlagPerioder().stream()
-                .map(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPrStatusOgAndelList)
-                .flatMap(Collection::stream)
-                .filter(a -> a.getAktivitetStatus().erArbeidstaker())
-                .filter(a -> a.getBeregningsperiode() != null)
-                .collect(Collectors.toList());
-        if (arbeidsandelerMedBeregningsperiode.isEmpty()) {
-            return Optional.empty();
-        }
-        var fom = arbeidsandelerMedBeregningsperiode.stream()
-                .map(BeregningsgrunnlagPrStatusOgAndelDto::getBeregningsperiodeFom)
-                .min(Comparator.naturalOrder())
-                .orElseThrow();
-        var tom = arbeidsandelerMedBeregningsperiode.stream()
-                .map(BeregningsgrunnlagPrStatusOgAndelDto::getBeregningsperiodeTom)
-                .max(Comparator.naturalOrder())
-                .orElseThrow();
-        return Optional.of(Intervall.fraOgMedTilOgMed(fom, tom));
     }
 
     public static Optional<LocalDate> skalVentePåInnrapporteringAvInntektATFL(BeregningsgrunnlagInput input,

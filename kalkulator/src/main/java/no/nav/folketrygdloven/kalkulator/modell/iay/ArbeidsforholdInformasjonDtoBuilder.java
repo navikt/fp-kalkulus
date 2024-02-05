@@ -33,11 +33,6 @@ public class ArbeidsforholdInformasjonDtoBuilder {
         return kladd;
     }
 
-
-    public void leggTil(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto internReferanse, EksternArbeidsforholdRef eksternReferanse) {
-        kladd.leggTilNyReferanse(new ArbeidsforholdReferanseDto(arbeidsgiver, internReferanse, eksternReferanse));
-    }
-
     public void leggTilNyReferanse(ArbeidsforholdReferanseDto arbeidsforholdReferanse) {
         kladd.leggTilNyReferanse(arbeidsforholdReferanse);
     }

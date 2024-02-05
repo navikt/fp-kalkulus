@@ -15,7 +15,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse extends MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL {
 
     @Override
-    protected void mapAndeler(BeregningsgrunnlagDto nyttBeregningsgrunnlag, SplittetPeriode splittetPeriode, List<BeregningsgrunnlagPrStatusOgAndelDto> andelListe, BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
+    protected void mapAndeler(SplittetPeriode splittetPeriode, List<BeregningsgrunnlagPrStatusOgAndelDto> andelListe, BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
         andelListe.forEach(eksisterendeAndel -> mapEksisterendeAndel(splittetPeriode, beregningsgrunnlagPeriode, eksisterendeAndel));
     }
 
@@ -36,7 +36,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse ext
             .map(MapPeriodeÅrsakFraRegelTilVL::map)
             .forEach(bgPeriodeBuilder::leggTilPeriodeÅrsak);
         var beregningsgrunnlagPeriode = bgPeriodeBuilder.build(nyttBeregningsgrunnlag);
-        mapAndeler(nyttBeregningsgrunnlag, splittetPeriode, andelListe, beregningsgrunnlagPeriode);
+        mapAndeler(splittetPeriode, andelListe, beregningsgrunnlagPeriode);
     }
 
     private void mapEksisterendeAndel(SplittetPeriode splittetPeriode, BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, BeregningsgrunnlagPrStatusOgAndelDto eksisterendeAndel) {

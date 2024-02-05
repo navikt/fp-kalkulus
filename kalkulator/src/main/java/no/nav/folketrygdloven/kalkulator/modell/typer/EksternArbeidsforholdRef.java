@@ -19,9 +19,6 @@ public class EksternArbeidsforholdRef implements Serializable {
 
     private String referanse;
 
-    EksternArbeidsforholdRef() {
-    }
-
     private EksternArbeidsforholdRef(String referanse) {
         this.referanse = referanse;
     }

@@ -12,7 +12,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 
 public class InntektDto {
 
-    private AktørInntektDto aktørInntekt;
     private Arbeidsgiver arbeidsgiver;
     private InntektskildeType inntektsKilde;
     private List<InntektspostDto> inntektspost = new ArrayList<>();
@@ -88,14 +87,6 @@ public class InntektDto {
     void leggTilInntektspost(InntektspostDto inntektspost) {
         inntektspost.setInntekt(this);
         this.inntektspost.add(inntektspost);
-    }
-
-    public AktørInntektDto getAktørInntekt() {
-        return aktørInntekt;
-    }
-
-    void setAktørInntekt(AktørInntektDto aktørInntekt) {
-        this.aktørInntekt = aktørInntekt;
     }
 
     public InntektspostDtoBuilder getInntektspostBuilder() {

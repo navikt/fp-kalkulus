@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.KalkulatorException;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -105,27 +104,6 @@ public class MatchBeregningsgrunnlagTjeneste {
     private static Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchMedAndelFraPeriodePåAndelsnrOmFinnes(BeregningsgrunnlagPeriodeDto periode, Long andelsnr) {
         return periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(a -> a.getAndelsnr().equals(andelsnr))
-                .findFirst();
-    }
-
-
-    /**
-     * Matcher arbeidsforhold i siste beregningsgrunnlag med som ble lagret i steg,
-     *
-     * @param input            input for beregning som har beregningsgrunnlag med tilhørende beregningsgrunnlagperiode
-     * @param arbeidsforholdId arbeidsforholdId til arbeidsforholdet som andelen er knyttet til
-     * @return andel som matcher oppgitt informasjon, ellers kastes exception
-     */
-    public static Optional<BGAndelArbeidsforholdDto> matchArbeidsforholdIAktivtGrunnlag(BeregningsgrunnlagInput input,
-                                                                                        String arbeidsgiverId,
-                                                                                        InternArbeidsforholdRefDto arbeidsforholdId) {
-
-        return input.getBeregningsgrunnlag()
-                .getBeregningsgrunnlagPerioder()
-                .stream()
-                .flatMap(periode -> periode.getBeregningsgrunnlagPrStatusOgAndelList().stream())
-                .flatMap(arbeidsforhold -> arbeidsforhold.getBgAndelArbeidsforhold().stream())
-                .filter(a -> a.getArbeidsgiver().getIdentifikator().equals(arbeidsgiverId) && a.getArbeidsforholdRef().gjelderFor(arbeidsforholdId))
                 .findFirst();
     }
 

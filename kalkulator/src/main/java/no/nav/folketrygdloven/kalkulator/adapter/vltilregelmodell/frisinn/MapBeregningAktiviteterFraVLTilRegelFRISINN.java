@@ -42,7 +42,7 @@ public class MapBeregningAktiviteterFraVLTilRegelFRISINN implements MapBeregning
             throw new IllegalStateException(INGEN_AKTIVITET_MELDING);
         } else {
             relevanteAktiviteter.forEach(opptjeningsperiode -> modell.leggTilEllerOppdaterAktivPeriode(
-                    lagAktivPeriode(input.getInntektsmeldinger(), opptjeningsperiode, harFLEtterStp, harSNEtterStp, opptjeningSkjæringstidspunkt, relevanteAktiviteter)));
+                    lagAktivPeriode(input.getInntektsmeldinger(), opptjeningsperiode, harFLEtterStp, harSNEtterStp, opptjeningSkjæringstidspunkt)));
         }
 
         // Legger til 48 mnd med frilans og næring rundt stp om det ikkje finnes, legger også til arbeidsaktivitet om det ikke finnes fra før og er oppgitt
@@ -90,8 +90,7 @@ public class MapBeregningAktiviteterFraVLTilRegelFRISINN implements MapBeregning
                                          OpptjeningAktiviteterDto.OpptjeningPeriodeDto opptjeningsperiode,
                                          boolean harFLEtterStp,
                                          boolean harSNEtterStp,
-                                         LocalDate opptjeningSkjæringstidspunkt,
-                                         Collection<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> alleAktiviteter) {
+                                         LocalDate opptjeningSkjæringstidspunkt) {
         Aktivitet aktivitetType = MapOpptjeningAktivitetTypeFraVLTilRegel.map(opptjeningsperiode.getOpptjeningAktivitetType());
         var gjeldendePeriode = opptjeningsperiode.getPeriode();
         var regelPeriode = Periode.of(gjeldendePeriode.getFomDato(), gjeldendePeriode.getTomDato());

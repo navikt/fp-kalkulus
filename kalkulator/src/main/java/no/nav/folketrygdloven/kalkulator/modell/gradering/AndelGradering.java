@@ -118,10 +118,6 @@ public class AndelGradering {
             return this;
         }
 
-        public Builder leggTilGradering(Intervall periode, BigDecimal arbeidstidsprosent) {
-            return leggTilGradering(new Gradering(periode, arbeidstidsprosent));
-        }
-
         public Builder medGradering(LocalDate fom, LocalDate tom, int arbeidstidsprosent) {
             return leggTilGradering(fom, tom, BigDecimal.valueOf(arbeidstidsprosent));
         }

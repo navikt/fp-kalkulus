@@ -23,8 +23,6 @@ public class ArbeidsforholdOverstyringDto {
     private InternArbeidsforholdRefDto arbeidsforholdRef;
     private InternArbeidsforholdRefDto nyArbeidsforholdRef;
     private ArbeidsforholdHandlingType handling = ArbeidsforholdHandlingType.UDEFINERT;
-    private String begrunnelse;
-    private String navn;
     private Stillingsprosent stillingsprosent;
     private List<ArbeidsforholdOverstyrtePerioderDto> arbeidsforholdOverstyrtePerioder = new ArrayList<>();
 
@@ -36,16 +34,13 @@ public class ArbeidsforholdOverstyringDto {
         this.arbeidsforholdRef = arbeidsforholdOverstyringEntitet.arbeidsforholdRef;
         this.handling = arbeidsforholdOverstyringEntitet.getHandling();
         this.nyArbeidsforholdRef = arbeidsforholdOverstyringEntitet.nyArbeidsforholdRef;
-        this.navn = arbeidsforholdOverstyringEntitet.getArbeidsgiverNavn();
         this.stillingsprosent = arbeidsforholdOverstyringEntitet.getStillingsprosent();
-        this.begrunnelse = arbeidsforholdOverstyringEntitet.getBegrunnelse();
         leggTilOverstyrtePerioder(arbeidsforholdOverstyringEntitet);
     }
 
     private void leggTilOverstyrtePerioder(ArbeidsforholdOverstyringDto arbeidsforholdOverstyringEntitet) {
         for (ArbeidsforholdOverstyrtePerioderDto overstyrtePerioderEntitet : arbeidsforholdOverstyringEntitet.getArbeidsforholdOverstyrtePerioder()) {
             ArbeidsforholdOverstyrtePerioderDto perioderEntitet = new ArbeidsforholdOverstyrtePerioderDto(overstyrtePerioderEntitet);
-            perioderEntitet.setArbeidsforholdOverstyring(this);
             this.arbeidsforholdOverstyrtePerioder.add(perioderEntitet);
         }
     }
@@ -74,18 +69,9 @@ public class ArbeidsforholdOverstyringDto {
         this.handling = handling;
     }
 
-    public String getBegrunnelse() {
-        return begrunnelse;
-    }
-
-    void setBeskrivelse(String begrunnelse) {
-        this.begrunnelse = begrunnelse;
-    }
-
     void leggTilOverstyrtPeriode(LocalDate fom, LocalDate tom) {
         ArbeidsforholdOverstyrtePerioderDto overstyrtPeriode = new ArbeidsforholdOverstyrtePerioderDto();
         overstyrtPeriode.setPeriode(Intervall.fraOgMedTilOgMed(fom, tom));
-        overstyrtPeriode.setArbeidsforholdOverstyring(this);
         arbeidsforholdOverstyrtePerioder.add(overstyrtPeriode);
     }
 
@@ -131,13 +117,5 @@ public class ArbeidsforholdOverstyringDto {
 
     void setStillingsprosent(Stillingsprosent stillingsprosent) {
         this.stillingsprosent = stillingsprosent;
-    }
-
-    public String getArbeidsgiverNavn() {
-        return navn;
-    }
-
-    void setNavn(String navn) {
-        this.navn = navn;
     }
 }

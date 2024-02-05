@@ -15,16 +15,6 @@ public class Arbeidsgiver implements Serializable, IndexKey {
     private String arbeidsgiverOrgnr;
     private AktørId arbeidsgiverAktørId;
 
-    private String navn;
-
-    public String getNavn() {
-        return navn;
-    }
-
-    public void setNavn(String navn) {
-        this.navn = navn;
-    }
-
     @SuppressWarnings("unused")
     private Arbeidsgiver() {
         // for JPA

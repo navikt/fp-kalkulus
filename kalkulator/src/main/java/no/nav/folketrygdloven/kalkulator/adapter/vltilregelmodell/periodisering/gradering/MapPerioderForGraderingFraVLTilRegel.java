@@ -1,8 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.gradering;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,8 +15,6 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 
 
@@ -66,29 +62,4 @@ public class MapPerioderForGraderingFraVLTilRegel {
                 ((ForeldrepengerGrunnlag) input.getYtelsespesifiktGrunnlag()).getAktivitetGradering().getAndelGradering()
                 : new HashSet<>();
     }
-
-
-    public static class Input {
-        private final BeregningsgrunnlagInput beregningsgrunnlagInput;
-        private final List<BeregningsgrunnlagPrStatusOgAndelDto> andeler;
-
-        public Input(BeregningsgrunnlagInput input, List<BeregningsgrunnlagPrStatusOgAndelDto> andeler) {
-            this.beregningsgrunnlagInput = input;
-            this.andeler = Collections.unmodifiableList(andeler);
-        }
-
-        public Collection<InntektsmeldingDto> getInntektsmeldinger() {
-            return beregningsgrunnlagInput.getInntektsmeldinger();
-        }
-
-        public BeregningsgrunnlagInput getBeregningsgrunnlagInput() {
-            return beregningsgrunnlagInput;
-        }
-
-        public List<BeregningsgrunnlagPrStatusOgAndelDto> getAndeler() {
-            return andeler;
-        }
-    }
-
-
 }

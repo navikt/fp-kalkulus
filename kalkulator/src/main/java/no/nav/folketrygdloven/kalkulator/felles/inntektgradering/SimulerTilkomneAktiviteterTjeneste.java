@@ -27,7 +27,7 @@ public class SimulerTilkomneAktiviteterTjeneste {
         /*
          * XXX: Koden her bør trekkes ut i en egen tjeneste for "tilkommet aktivitet".
          */
-        if (!(beregningsgrunnlagInput.getYtelsespesifiktGrunnlag() instanceof UtbetalingsgradGrunnlag utbetalingsgradGrunnlag)) {
+        if (!(beregningsgrunnlagInput.getYtelsespesifiktGrunnlag() instanceof UtbetalingsgradGrunnlag)) {
             // Om vi ikke har utbetalingsgradsgrunnlag har vi ikke grunnlag for å vurdere tilkommet inntekt
             return new LocalDateTimeline<>(LocalDateInterval.TIDENES_BEGYNNELSE, LocalDateInterval.TIDENES_ENDE, Set.of());
         }

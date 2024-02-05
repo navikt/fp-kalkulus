@@ -27,7 +27,6 @@ public class AktørInntektDto {
 
         this.inntekt = aktørInntekt.inntekt.stream().map(i -> {
             var inntekt = new InntektDto(i);
-            inntekt.setAktørInntekt(this);
             return inntekt;
         }).collect(Collectors.toCollection(LinkedHashSet::new));
     }
@@ -56,7 +55,6 @@ public class AktørInntektDto {
 
     void leggTilInntekt(InntektDto inntekt) {
         this.inntekt.add(inntekt);
-        inntekt.setAktørInntekt(this);
     }
 
     @Override

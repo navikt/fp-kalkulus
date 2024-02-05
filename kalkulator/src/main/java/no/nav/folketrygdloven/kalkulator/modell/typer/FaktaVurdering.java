@@ -11,11 +11,6 @@ public class FaktaVurdering implements Serializable {
     private Boolean vurdering;
     private FaktaVurderingKilde kilde;
 
-
-    public FaktaVurdering() {
-        // hibernate
-    }
-
     public FaktaVurdering(Boolean vurdering, FaktaVurderingKilde kilde) {
         this.vurdering = vurdering;
         this.kilde = kilde;

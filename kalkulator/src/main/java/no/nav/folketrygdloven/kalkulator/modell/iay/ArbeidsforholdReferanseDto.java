@@ -12,9 +12,6 @@ public class ArbeidsforholdReferanseDto {
     private InternArbeidsforholdRefDto internReferanse;
     private EksternArbeidsforholdRef eksternReferanse;
 
-    ArbeidsforholdReferanseDto() {
-    }
-
     public ArbeidsforholdReferanseDto(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto internReferanse, EksternArbeidsforholdRef eksternReferanse) {
         this.arbeidsgiver = arbeidsgiver;
         this.internReferanse = internReferanse != null ? internReferanse : InternArbeidsforholdRefDto.nullRef();
