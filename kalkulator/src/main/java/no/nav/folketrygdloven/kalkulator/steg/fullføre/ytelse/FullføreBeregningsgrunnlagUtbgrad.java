@@ -1,16 +1,18 @@
-package no.nav.folketrygdloven.kalkulator.steg.fullføre.ytelse.utbgrad;
+package no.nav.folketrygdloven.kalkulator.steg.fullføre.ytelse;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.Beregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.steg.fullføre.FullføreBeregningsgrunnlag;
+import no.nav.folketrygdloven.kalkulator.steg.fullføre.FullføreBeregningsgrunnlagUtils;
 import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
 
-public abstract class FullføreBeregningsgrunnlagUtbgrad extends FullføreBeregningsgrunnlag {
+public class FullføreBeregningsgrunnlagUtbgrad extends FullføreBeregningsgrunnlag {
 
     public FullføreBeregningsgrunnlagUtbgrad() {
         super();
@@ -18,27 +20,14 @@ public abstract class FullføreBeregningsgrunnlagUtbgrad extends FullføreBeregn
 
     @Override
     protected List<RegelResultat> evaluerRegelmodell(Beregningsgrunnlag beregningsgrunnlagRegel, BeregningsgrunnlagInput bgInput) {
-        String input = toJson(beregningsgrunnlagRegel);
+        String input = FullføreBeregningsgrunnlagUtils.toJson(beregningsgrunnlagRegel);
         // Regel for å finne grenseverdi for andre gjennomkjøring
         List<String> sporingerFinnGrenseverdi = kjørRegelFinnGrenseverdi(beregningsgrunnlagRegel);
 
         //Andre gjennomkjøring av regel
         List<RegelResultat> regelResultater = kjørRegelFullførberegningsgrunnlag(beregningsgrunnlagRegel);
 
-        return leggTilSporingerForFinnGrenseverdi(input, sporingerFinnGrenseverdi, regelResultater);
-    }
-
-    protected List<RegelResultat> leggTilSporingerForFinnGrenseverdi(String input, List<String> sporingerFinnGrenseverdi, List<RegelResultat> regelResultater) {
-        List<RegelResultat> medSporingFinnGrenseverdi = new ArrayList<>();
-        if (regelResultater.size() == sporingerFinnGrenseverdi.size()) {
-            for (int i = 0; i < regelResultater.size(); i++) {
-                RegelResultat res = regelResultater.get(i);
-                medSporingFinnGrenseverdi.add(RegelResultat.medRegelsporingFinnGrenseverdi(res, input, sporingerFinnGrenseverdi.get(i)));
-            }
-            return medSporingFinnGrenseverdi;
-        } else {
-            throw new IllegalStateException("Utviklerfeil: Antall kjøringer for finn grenseverdi var ulik fastsetting.");
-        }
+        return FullføreBeregningsgrunnlagUtils.leggTilSporingerForFinnGrenseverdi(input, sporingerFinnGrenseverdi, regelResultater);
     }
 
     protected List<RegelResultat> kjørRegelFullførberegningsgrunnlag(Beregningsgrunnlag beregningsgrunnlagRegel) {
@@ -49,6 +38,10 @@ public abstract class FullføreBeregningsgrunnlagUtbgrad extends FullføreBeregn
         return regelResultater;
     }
 
-    protected abstract List<String> kjørRegelFinnGrenseverdi(Beregningsgrunnlag beregningsgrunnlagRegel);
+    protected List<String> kjørRegelFinnGrenseverdi(Beregningsgrunnlag beregningsgrunnlagRegel) {
+        return beregningsgrunnlagRegel.getBeregningsgrunnlagPerioder().stream()
+                .map(periode -> KalkulusRegler.finnGrenseverdi(periode).sporing().sporing())
+                .collect(Collectors.toList());
+    }
 
 }

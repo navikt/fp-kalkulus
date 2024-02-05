@@ -1,32 +1,18 @@
 package no.nav.folketrygdloven.kalkulator.steg.fullføre;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
-import no.nav.folketrygdloven.kalkulator.KalkulatorException;
-import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.fastsett.MapFastsattBeregningsgrunnlagFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.fastsett.MapBeregningsgrunnlagFraVLTilRegel;
-import no.nav.folketrygdloven.kalkulator.avklaringsbehov.PerioderTilVurderingTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingPeriode;
 import no.nav.folketrygdloven.kalkulator.steg.BeregningsgrunnlagVerifiserer;
-import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
-import no.nav.folketrygdloven.kalkulus.mappers.JsonMapper;
 
 
 public abstract class FullføreBeregningsgrunnlag {
-
-    private final MapFastsattBeregningsgrunnlagFraRegelTilVL mapBeregningsgrunnlagFraRegelTilVL = new MapFastsattBeregningsgrunnlagFraRegelTilVL();
 
     public BeregningsgrunnlagRegelResultat fullføreBeregningsgrunnlag(BeregningsgrunnlagInput input) {
         var grunnlag = input.getBeregningsgrunnlagGrunnlag();
@@ -39,52 +25,13 @@ public abstract class FullføreBeregningsgrunnlag {
 
         // Oversett endelig resultat av regelmodell til fastsatt Beregningsgrunnlag  (+ spore input -> evaluation)
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().orElse(null);
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = mapBeregningsgrunnlagFraRegelTilVL.mapFastsettBeregningsgrunnlag(beregningsgrunnlagRegel, beregningsgrunnlag);
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = FullføreBeregningsgrunnlagUtils.mapBeregningsgrunnlagFraRegelTilVL(beregningsgrunnlagRegel, beregningsgrunnlag);
 
-        List<RegelSporingPeriode> regelsporinger = mapRegelSporinger(regelResultater, fastsattBeregningsgrunnlag, input.getForlengelseperioder());
+        List<RegelSporingPeriode> regelsporinger = FullføreBeregningsgrunnlagUtils.mapRegelSporinger(regelResultater, fastsattBeregningsgrunnlag, input.getForlengelseperioder());
         BeregningsgrunnlagVerifiserer.verifiserFastsattBeregningsgrunnlag(fastsattBeregningsgrunnlag, input.getYtelsespesifiktGrunnlag(), input.getForlengelseperioder());
         return new BeregningsgrunnlagRegelResultat(fastsattBeregningsgrunnlag, new RegelSporingAggregat(regelsporinger));
     }
 
-    private List<RegelSporingPeriode> mapRegelSporinger(List<RegelResultat> regelResultater, BeregningsgrunnlagDto fastsattBeregningsgrunnlag, List<Intervall> forlengelseperioder) {
-        var vurdertePerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().stream().map(BeregningsgrunnlagPeriodeDto::getPeriode)
-                .filter(p -> new PerioderTilVurderingTjeneste(forlengelseperioder, fastsattBeregningsgrunnlag).erTilVurdering(p))
-                .collect(Collectors.toList());
-        return mapRegelsporingPerioder(regelResultater, vurdertePerioder);
-    }
-
     protected abstract List<RegelResultat> evaluerRegelmodell(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.Beregningsgrunnlag beregningsgrunnlagRegel, BeregningsgrunnlagInput input);
 
-    protected static String toJson(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.Beregningsgrunnlag beregningsgrunnlagRegel) {
-        try {
-            return JsonMapper.getMapper().writerWithDefaultPrettyPrinter().writeValueAsString(beregningsgrunnlagRegel);
-        } catch (JsonProcessingException e) {
-            throw new KalkulatorException("FT-370602", "Kunne ikke serialisere regelinput for beregningsgrunnlag.");
-        }
-    }
-
-    /**
-     * Mapper liste med sporing pr periode til regelresultat. Listen med resultater må vere like lang som listen med perioder.
-     *
-     * @param regelResultater Liste med resultat pr periode
-     * @param perioder        perioder som regel er kjørt for
-     * @return Mappet regelsporing for perioder
-     */
-    public static List<RegelSporingPeriode> mapRegelsporingPerioder(List<RegelResultat> regelResultater,
-                                                                    List<Intervall> perioder) {
-        if (regelResultater.size() != perioder.size()) {
-            throw new IllegalArgumentException("Listene må vere like lange.");
-        }
-        List<RegelSporingPeriode> regelsporingPerioder = new ArrayList<>();
-        var resultatIterator = regelResultater.iterator();
-        for (var periode : perioder) {
-            RegelResultat resultat = resultatIterator.next();
-            var hovedRegelResultat = resultat.sporing();
-            regelsporingPerioder.add(new RegelSporingPeriode(hovedRegelResultat.sporing(), hovedRegelResultat.input(), periode, BeregningsgrunnlagPeriodeRegelType.FASTSETT, hovedRegelResultat.versjon()));
-            Optional.ofNullable(resultat.sporingFinnGrenseverdi())
-                    .map(res -> new RegelSporingPeriode(hovedRegelResultat.sporing(), hovedRegelResultat.input(), periode, BeregningsgrunnlagPeriodeRegelType.FINN_GRENSEVERDI, hovedRegelResultat.versjon()))
-                    .ifPresent(regelsporingPerioder::add);
-        }
-        return regelsporingPerioder;
-    }
 }

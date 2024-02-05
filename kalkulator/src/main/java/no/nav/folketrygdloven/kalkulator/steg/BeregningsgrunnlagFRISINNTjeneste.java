@@ -17,19 +17,17 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAkti
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
-import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat.Builder;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningResultat;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ForeslåSkjæringstidspunktTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.OpprettBeregningsgrunnlagTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ytelse.frisinn.AvklaringsbehovUtlederFastsettBeregningsaktiviteterFRISINN;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.FordelBeregningsgrunnlagTjenesteImpl;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.AvklaringsbehovUtlederFordelBeregning;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.vilkår.VilkårTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.ytelse.VurderRefusjonBeregningsgrunnlagFRISINN;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.AvklaringsbehovUtlederFaktaOmBeregningFRISINN;
-import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.AvklaringsbehovUtlederFastsettBeregningsaktiviteterFRISINN;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.ForeslåBeregningsgrunnlagFRISINN;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FortsettForeslåBeregningsgrunnlagFRISINN;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FullføreBeregningsgrunnlagFRISINN;
@@ -37,13 +35,14 @@ import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.VilkårTjenesteFRISINN;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.VurderBeregningsgrunnlagTjenesteFRISINN;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 
 /**
  * Fasadetjeneste for å delegere alle kall fra steg
  */
 public class BeregningsgrunnlagFRISINNTjeneste implements KalkulatorInterface {
 
-    private final VilkårTjeneste vilkårTjeneste = new VilkårTjenesteFRISINN();
+    private final VilkårTjenesteFRISINN vilkårTjeneste = new VilkårTjenesteFRISINN();
 
     @Override
     public BeregningResultatAggregat fastsettBeregningsaktiviteter(FastsettBeregningsaktiviteterInput input) {
@@ -206,7 +205,7 @@ public class BeregningsgrunnlagFRISINNTjeneste implements KalkulatorInterface {
                 .medBeregningsgrunnlag(beregningsgrunnlag)
                 .build(input.getStegTilstand());
         var avklaringsbehovresultat = new AvklaringsbehovUtlederFaktaOmBeregningFRISINN()
-                .utledAvklaringsbehovFor(input, nyttGrunnlag, harOverstyrtBergningsgrunnlag(input));
+                .utledAvklaringsbehovFor(input, nyttGrunnlag);
 
         BeregningsgrunnlagDto grunnlagMedTilfeller = BeregningsgrunnlagDto.builder(beregningsgrunnlag)
                 .leggTilFaktaOmBeregningTilfeller(avklaringsbehovresultat.getFaktaOmBeregningTilfeller())
@@ -218,13 +217,6 @@ public class BeregningsgrunnlagFRISINNTjeneste implements KalkulatorInterface {
                 .medAvklaringsbehov(avklaringsbehovresultat.getBeregningAvklaringsbehovResultatList())
                 .medRegelSporingAggregat(resultat.getRegelsporinger().orElse(null))
                 .build();
-    }
-
-    private boolean harOverstyrtBergningsgrunnlag(StegProsesseringInput input) {
-        return input.getForrigeGrunnlagFraStegUt()
-                .flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag)
-                .stream()
-                .anyMatch(BeregningsgrunnlagDto::isOverstyrt);
     }
 
     private Optional<BeregningAktivitetOverstyringerDto> hentTidligereOverstyringer(FastsettBeregningsaktiviteterInput input) {

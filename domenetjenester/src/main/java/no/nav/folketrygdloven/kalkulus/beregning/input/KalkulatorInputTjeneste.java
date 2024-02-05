@@ -10,8 +10,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -35,8 +34,7 @@ import no.nav.k9.felles.exception.TekniskException;
 @ApplicationScoped
 public class KalkulatorInputTjeneste {
 
-    private static final ObjectWriter WRITER = JsonMapper.getMapper().writerWithDefaultPrettyPrinter();
-    private static final ObjectReader READER = JsonMapper.getMapper().reader();
+    private static final ObjectMapper MAPPER = JsonMapper.getMapper();
     private static final Validator VALIDATOR = Validation.buildDefaultValidatorFactory().getValidator();
 
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
@@ -120,7 +118,7 @@ public class KalkulatorInputTjeneste {
     static KalkulatorInputDto konverterTilInput(String json, Long koblingId) {
         KalkulatorInputDto input;
         try {
-            input = READER.forType(KalkulatorInputDto.class).readValue(json);
+            input = MAPPER.readValue(json, KalkulatorInputDto.class);
         } catch (JsonProcessingException e) {
             throw new TekniskException("FT-KALKULUS-INPUT-1000002",
                     String.format("Kalkulus klarte ikke lese opp input for koblingId %s med følgende feilmelding %s",
@@ -141,7 +139,7 @@ public class KalkulatorInputTjeneste {
     public boolean lagreKalkulatorInput(Long koblingId, KalkulatorInputDto kalkulatorInput) {
         String input;
         try {
-            input = WRITER.writeValueAsString(kalkulatorInput);
+            input = MAPPER.writeValueAsString(kalkulatorInput);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             throw new TekniskException("FT-KALKULUS-INPUT-1000002",

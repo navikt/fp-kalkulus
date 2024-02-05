@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.ytelse.frisinn;
+package no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ytelse.frisinn;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

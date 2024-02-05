@@ -32,13 +32,13 @@ import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
 
 public class VurderBeregningsgrunnlagTjeneste {
 
-    protected static final Set<BeregningUtfallÅrsak> AVSLAGSÅRSAKER = Set.of(
+    private static final Set<BeregningUtfallÅrsak> AVSLAGSÅRSAKER = Set.of(
             BeregningUtfallÅrsak.AVSLAG_UNDER_HALV_G,
             BeregningUtfallÅrsak.AVSLAG_UNDER_EN_G,
             BeregningUtfallÅrsak.AVSLAG_UNDER_TREKVART_G,
             BeregningUtfallÅrsak.FRISINN_FRILANS_UTEN_INNTEKT);
 
-    protected final MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel();
+    private static final MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel();
 
     public VurderBeregningsgrunnlagTjeneste() {
     }
@@ -52,7 +52,7 @@ public class VurderBeregningsgrunnlagTjeneste {
         return mapTilRegelresultat(input, regelResultater, beregningsgrunnlag, avklaringsbehov);
     }
 
-    protected BeregningsgrunnlagRegelResultat mapTilRegelresultat(BeregningsgrunnlagInput input, List<RegelResultat> regelResultater,
+    private BeregningsgrunnlagRegelResultat mapTilRegelresultat(BeregningsgrunnlagInput input, List<RegelResultat> regelResultater,
                                                                   BeregningsgrunnlagDto beregningsgrunnlag,
                                                                   List<BeregningAvklaringsbehovResultat> avklaringsbehov) {
         List<Intervall> perioder = beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream().map(BeregningsgrunnlagPeriodeDto::getPeriode).collect(Collectors.toList());
@@ -65,7 +65,7 @@ public class VurderBeregningsgrunnlagTjeneste {
         return beregningsgrunnlagRegelResultat;
     }
 
-    protected List<BeregningVilkårResultat> mapTilVilkårResultatListe(List<RegelResultat> regelResultater,
+    private List<BeregningVilkårResultat> mapTilVilkårResultatListe(List<RegelResultat> regelResultater,
                                                                       BeregningsgrunnlagDto beregningsgrunnlag,
                                                                       YtelsespesifiktGrunnlag ytelsesSpesifiktGrunnlag) {
         List<BeregningVilkårResultat> vilkårsResultatListe = new ArrayList<>();
@@ -90,7 +90,7 @@ public class VurderBeregningsgrunnlagTjeneste {
         }
     }
 
-    protected List<RegelResultat> kjørRegel(BeregningsgrunnlagInput input, Beregningsgrunnlag beregningsgrunnlagRegel) {
+    private List<RegelResultat> kjørRegel(BeregningsgrunnlagInput input, Beregningsgrunnlag beregningsgrunnlagRegel) {
         // Evaluerer hver BeregningsgrunnlagPeriode fra foreslått Beregningsgrunnlag
         List<RegelResultat> regelResultater = new ArrayList<>();
         for (BeregningsgrunnlagPeriode periode : beregningsgrunnlagRegel.getBeregningsgrunnlagPerioder()) {

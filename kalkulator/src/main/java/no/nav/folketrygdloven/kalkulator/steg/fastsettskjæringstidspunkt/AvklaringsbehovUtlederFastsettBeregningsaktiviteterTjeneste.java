@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ytelse.k14.fp.AvklaringsbehovUtlederFastsettBeregningsaktiviteterFP;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ytelse.k14.svp.AvklaringsbehovUtlederFastsettBeregningsaktiviteterSVP;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ytelse.k9.omp.AvklaringsbehovUtlederFastsettBeregningsaktiviteterOMP;
+import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ytelse.k9.psb.AvklaringsbehovUtlederFastsettBeregningsaktiviteterPleiepenger;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterTjeneste {

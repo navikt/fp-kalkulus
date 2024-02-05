@@ -8,14 +8,21 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.Beregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.BeregningsgrunnlagPeriode;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.fastsett.MapBeregningsgrunnlagFraVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.avklaringsbehov.PerioderTilVurderingTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningVilkårResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
-import no.nav.folketrygdloven.kalkulator.steg.fullføre.ytelse.utbgrad.FullføreBeregningsgrunnlagUtbgrad;
+import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
+import no.nav.folketrygdloven.kalkulator.output.RegelSporingPeriode;
+import no.nav.folketrygdloven.kalkulator.steg.BeregningsgrunnlagVerifiserer;
+import no.nav.folketrygdloven.kalkulator.steg.fullføre.FullføreBeregningsgrunnlagUtils;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
 
-public class FullføreBeregningsgrunnlagFRISINN extends FullføreBeregningsgrunnlagUtbgrad {
+public class FullføreBeregningsgrunnlagFRISINN {
 
     private final VurderBeregningsgrunnlagTjenesteFRISINN vurderBeregningsgrunnlagTjeneste = new VurderBeregningsgrunnlagTjenesteFRISINN();
 
@@ -23,9 +30,34 @@ public class FullføreBeregningsgrunnlagFRISINN extends FullføreBeregningsgrunn
         super();
     }
 
-    @Override
+    public BeregningsgrunnlagRegelResultat fullføreBeregningsgrunnlag(BeregningsgrunnlagInput input) {
+        var grunnlag = input.getBeregningsgrunnlagGrunnlag();
+
+        // Oversetter foreslått Beregningsgrunnlag -> regelmodell
+        var beregningsgrunnlagRegel = new MapBeregningsgrunnlagFraVLTilRegel().map(input, grunnlag.getBeregningsgrunnlag().orElse(null));
+
+        // Evaluerer hver BeregningsgrunnlagPeriode fra foreslått Beregningsgrunnlag
+        List<RegelResultat> regelResultater = evaluerRegelmodell(beregningsgrunnlagRegel, input);
+
+        // Oversett endelig resultat av regelmodell til fastsatt Beregningsgrunnlag  (+ spore input -> evaluation)
+        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().orElse(null);
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = FullføreBeregningsgrunnlagUtils.mapBeregningsgrunnlagFraRegelTilVL(beregningsgrunnlagRegel, beregningsgrunnlag);
+
+        List<RegelSporingPeriode> regelsporinger = mapRegelSporinger(regelResultater, fastsattBeregningsgrunnlag, input.getForlengelseperioder());
+        BeregningsgrunnlagVerifiserer.verifiserFastsattBeregningsgrunnlag(fastsattBeregningsgrunnlag, input.getYtelsespesifiktGrunnlag(), input.getForlengelseperioder());
+        return new BeregningsgrunnlagRegelResultat(fastsattBeregningsgrunnlag, new RegelSporingAggregat(regelsporinger));
+    }
+
+    private List<RegelSporingPeriode> mapRegelSporinger(List<RegelResultat> regelResultater, BeregningsgrunnlagDto fastsattBeregningsgrunnlag, List<Intervall> forlengelseperioder) {
+        var vurdertePerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().stream().map(BeregningsgrunnlagPeriodeDto::getPeriode)
+                .filter(p -> new PerioderTilVurderingTjeneste(forlengelseperioder, fastsattBeregningsgrunnlag).erTilVurdering(p))
+                .collect(Collectors.toList());
+        return FullføreBeregningsgrunnlagUtils.mapRegelsporingPerioder(regelResultater, vurdertePerioder);
+    }
+
+
     protected List<RegelResultat> evaluerRegelmodell(Beregningsgrunnlag beregningsgrunnlagRegel, BeregningsgrunnlagInput bgInput) {
-        String input = toJson(beregningsgrunnlagRegel);
+        String input = FullføreBeregningsgrunnlagUtils.toJson(beregningsgrunnlagRegel);
 
         // Vurdere vilkår
         List<BeregningVilkårResultat> beregningVilkårResultatListe = vurderVilkår(bgInput);
@@ -35,10 +67,10 @@ public class FullføreBeregningsgrunnlagFRISINN extends FullføreBeregningsgrunn
         List<String> sporingerFinnGrenseverdi = finnGrenseverdi(beregningsgrunnlagRegel, beregningVilkårResultatListe, frisinnGrunnlag);
 
         // Fullfører grenseverdi
-        String inputNrTo = toJson(beregningsgrunnlagRegel);
+        String inputNrTo = FullføreBeregningsgrunnlagUtils.toJson(beregningsgrunnlagRegel);
         List<RegelResultat> regelResultater = kjørRegelFullførberegningsgrunnlag(beregningsgrunnlagRegel);
 
-        leggTilSporingerForFinnGrenseverdi(input, sporingerFinnGrenseverdi, regelResultater);
+        FullføreBeregningsgrunnlagUtils.leggTilSporingerForFinnGrenseverdi(input, sporingerFinnGrenseverdi, regelResultater);
 
         return regelResultater;
     }
@@ -48,16 +80,7 @@ public class FullføreBeregningsgrunnlagFRISINN extends FullføreBeregningsgrunn
         return beregningsgrunnlagRegelResultat.getVilkårsresultat();
     }
 
-    @Override
-    protected List<String> kjørRegelFinnGrenseverdi(Beregningsgrunnlag beregningsgrunnlagRegel) {
-        return beregningsgrunnlagRegel.getBeregningsgrunnlagPerioder().stream()
-                .map(periode -> KalkulusRegler.finnGrenseverdi(periode).sporing().sporing())
-                .collect(Collectors.toList());
-    }
-
-
-    @Override
-    protected List<RegelResultat> kjørRegelFullførberegningsgrunnlag(Beregningsgrunnlag beregningsgrunnlagRegel) {
+    private List<RegelResultat> kjørRegelFullførberegningsgrunnlag(Beregningsgrunnlag beregningsgrunnlagRegel) {
         List<RegelResultat> regelResultater = new ArrayList<>();
         for (BeregningsgrunnlagPeriode periode : beregningsgrunnlagRegel.getBeregningsgrunnlagPerioder()) {
             regelResultater.add(KalkulusRegler.fullføreBeregningsgrunnlagFRISINN(periode));

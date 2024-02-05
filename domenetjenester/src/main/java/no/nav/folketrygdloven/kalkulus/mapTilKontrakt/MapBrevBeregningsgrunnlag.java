@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
-import no.nav.folketrygdloven.kalkulator.konfig.DefaultKonfig;
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
@@ -139,7 +139,7 @@ public class MapBrevBeregningsgrunnlag {
             avkortetFørGraderingPrÅr = andel.getAvkortetFørGraderingPrÅr();
         } else if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
             // Fallback for saker der avkortetFørGraderingPrÅr ikke er satt
-            var grenseverdi = grunnbeløp.multiply(new DefaultKonfig().getAntallGØvreGrenseverdi());
+            var grenseverdi = grunnbeløp.multiply(KonfigTjeneste.forUtbetalingsgradYtelse().getAntallGØvreGrenseverdi());
             avkortetFørGraderingPrÅr = FinnInntektstak.finnInntektstakForAndel(andel, periode, utbetalingsgradGrunnlag, grenseverdi);
         } else {
             avkortetFørGraderingPrÅr = andel.getAvkortetPrÅr();

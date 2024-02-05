@@ -76,7 +76,7 @@ public class Greguleringsstatusutleder {
                 .flatMap(p -> p.getBeregningsgrunnlagPrStatusOgAndelList().stream())
                 .anyMatch(a -> a.getAktivitetStatus().equals(AktivitetStatus.MILITÆR_ELLER_SIVIL)
                         && (a.getBeregningsgrunnlagPeriode().getBruttoPrÅr().getVerdi()
-                        .compareTo(konfigverdier.getAntallGMilitærHarKravPå().multiply(nyG))) < 0);
+                        .compareTo(konfigverdier.antallGMilitærHarKravPå().multiply(nyG))) < 0);
     }
 
     private static boolean erBeregnetSomNæringsdrivende(BeregningsgrunnlagEntitet bg) {

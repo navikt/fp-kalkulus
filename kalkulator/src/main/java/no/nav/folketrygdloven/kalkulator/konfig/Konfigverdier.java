@@ -1,54 +1,45 @@
 package no.nav.folketrygdloven.kalkulator.konfig;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.Period;
+import java.util.Objects;
 
-import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
+public record Konfigverdier(BigDecimal antallGMilitærHarKravPå) {
 
-public abstract class Konfigverdier {
+    public Konfigverdier() {
+        this(STANDARD_MINSTE_G_MILITÆR_SIVIL);
+    }
+
+    public Konfigverdier {
+        Objects.requireNonNull(antallGMilitærHarKravPå);
+    }
+
     // Standardverdier
     public static final int FRIST_MÅNEDER_ETTER_REFUSJON = 3;
-    private final BigDecimal avviksgrenseProsent = BigDecimal.valueOf(25);
-    private final BigDecimal antallGØvreGrenseverdi = BigDecimal.valueOf(6);
-    private final Period meldekortPeriode = Period.parse("P30D");
-
-    // Verdier som ikke skal endres
-    private final BigDecimal ytelsesdagerIÅr = BigDecimal.valueOf(260);
-
-    // Verdier som må settes for hver ytelse
-    private final BigDecimal antallGMilitærHarKravPå;
-
-
-    public Konfigverdier(BigDecimal antallGMilitærHarKravPå) {
-        this.antallGMilitærHarKravPå = antallGMilitærHarKravPå;
-    }
-
-    public BigDecimal getAntallGMilitærHarKravPå() {
-        return antallGMilitærHarKravPå;
-    }
+    private static final BigDecimal AVVIKSGRENSE_PROSENT = BigDecimal.valueOf(25);
+    private static final BigDecimal ANTALL_G_ØVRE_GRENSEVERDI = BigDecimal.valueOf(6);
+    private static final Period MELDEKORT_PERIODE = Period.parse("P30D");
+    private static final BigDecimal YTELSESDAGER_I_ÅR = BigDecimal.valueOf(260);
+    private static final BigDecimal STANDARD_MINSTE_G_MILITÆR_SIVIL = BigDecimal.valueOf(2);
 
     public BigDecimal getAvviksgrenseProsent() {
-        return avviksgrenseProsent;
+        return AVVIKSGRENSE_PROSENT;
     }
 
     public BigDecimal getAntallGØvreGrenseverdi() {
-        return antallGØvreGrenseverdi;
+        return ANTALL_G_ØVRE_GRENSEVERDI;
     }
 
     public Period getMeldekortPeriode() {
-        return meldekortPeriode;
+        return MELDEKORT_PERIODE;
     }
 
     public BigDecimal getYtelsesdagerIÅr() {
-        return ytelsesdagerIÅr;
+        return YTELSESDAGER_I_ÅR;
     }
 
-    public int getFristMånederEtterRefusjon(LocalDate datoForInnsendtRefKrav) {
+    public int getFristMånederEtterRefusjon() {
         return FRIST_MÅNEDER_ETTER_REFUSJON;
     }
 
-    public Hjemmel getHjemmelForRefusjonfrist(LocalDate datoForInnsendtRefKrav) {
-        return Hjemmel.F_22_13_6;
-    }
 }

@@ -28,12 +28,12 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
-class BeregneFraYtelse {
+public class BeregneFraYtelse {
 
     private static final Logger log = LoggerFactory.getLogger(BeregneFraYtelse.class);
 
 
-    static void sjekkBeregningFraYtelse(ForeslåBeregningsgrunnlagInput input, BeregningsgrunnlagDto foreslåttBeregningsgrunnlag, Beregningsgrunnlag regelmodell) {
+    public static void sjekkBeregningFraYtelse(ForeslåBeregningsgrunnlagInput input, BeregningsgrunnlagDto foreslåttBeregningsgrunnlag, Beregningsgrunnlag regelmodell) {
         // Legges inn kun for å unngå spam i loggen. Vil håndteres når endelig løsning implementeres
         if (input.getFagsakYtelseType().equals(FagsakYtelseType.FRISINN)) {
             return;

@@ -14,7 +14,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.konfig.FRISINNKonfig;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -28,6 +27,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.frisinn.Avslagsårsak;
 
 public class MapTilAvslagsårsakerFRISINN {
+
+    private static final BigDecimal ANTALL_G_FOR_OPPFYLT_VILKÅR = BigDecimal.valueOf(0.75);
 
     public static Optional<Avslagsårsak> map(BeregningsgrunnlagPrStatusOgAndelDto andel,
                                              List<BeregningsgrunnlagPrStatusOgAndelDto> andelerISammePeriode,
@@ -224,7 +225,6 @@ public class MapTilAvslagsårsakerFRISINN {
             grunnlagFraSøkteStatuser = grunnlagFraSøkteStatuser.add(næringBrutto);
         }
 
-        BigDecimal antallGForOppfyltVilkår = FRISINNKonfig.getAntallGForOppfyltVilkår();
-        return grunnlagFraSøkteStatuser.compareTo(gbeløp.multiply(antallGForOppfyltVilkår)) < 0;
+        return grunnlagFraSøkteStatuser.compareTo(gbeløp.multiply(ANTALL_G_FOR_OPPFYLT_VILKÅR)) < 0;
     }
 }

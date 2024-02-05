@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.steg.fullføre.ytelse.fp;
+package no.nav.folketrygdloven.kalkulator.steg.fullføre.ytelse;
 
 import java.util.ArrayList;
 import java.util.List;
