@@ -112,7 +112,7 @@ public class MapArbeidsforholdFraVLTilRegel {
                 .map(Intervall::getFomDato)
                 .filter(fomDato -> ansettelsesperioder.stream().noneMatch(ap -> fomDato.equals(ap.getTomDato().plusDays(1))))
                 .filter(stp::isAfter)
-                .max(Comparator.naturalOrder())
+                .min(Comparator.naturalOrder())
                 .orElse(null);
     }
 
