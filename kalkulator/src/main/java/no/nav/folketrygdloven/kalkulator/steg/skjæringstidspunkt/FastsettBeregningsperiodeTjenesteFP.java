@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.ytelse.fp;
+package no.nav.folketrygdloven.kalkulator.steg.skjæringstidspunkt;
 
 
 import java.time.LocalDate;
@@ -8,13 +8,14 @@ import java.util.Collection;
 import no.nav.folketrygdloven.beregningsgrunnlag.BevegeligeHelligdagerUtil;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 public class FastsettBeregningsperiodeTjenesteFP {
 
-    public BeregningsgrunnlagDto fastsettBeregningsperiode(BeregningsgrunnlagDto beregningsgrunnlag,
+    public static BeregningsgrunnlagDto fastsettBeregningsperiode(BeregningsgrunnlagDto beregningsgrunnlag,
+                                                           InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
                                                            Collection<InntektsmeldingDto> inntektsmeldinger) {
         BeregningsgrunnlagDto nyttBeregningsgrunnlag = BeregningsgrunnlagDto.builder(beregningsgrunnlag).build();
         nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(periode -> {
@@ -25,7 +26,7 @@ public class FastsettBeregningsperiodeTjenesteFP {
         return nyttBeregningsgrunnlag;
     }
 
-    private Intervall finnBeregningsperiode(BeregningsgrunnlagPrStatusOgAndelDto andel, Collection<InntektsmeldingDto> inntektsmeldinger, LocalDate skjæringstidspunkt) {
+    private static Intervall finnBeregningsperiode(BeregningsgrunnlagPrStatusOgAndelDto andel, Collection<InntektsmeldingDto> inntektsmeldinger, LocalDate skjæringstidspunkt) {
         var harIM = inntektsmeldinger.stream().anyMatch(im -> andel.gjelderInntektsmeldingFor(im.getArbeidsgiver(), im.getArbeidsforholdRef()));
         var beregningsperiodeUjustert = new BeregningsperiodeTjeneste().fastsettBeregningsperiodeForATFLAndeler(skjæringstidspunkt);
         if (harIM) {

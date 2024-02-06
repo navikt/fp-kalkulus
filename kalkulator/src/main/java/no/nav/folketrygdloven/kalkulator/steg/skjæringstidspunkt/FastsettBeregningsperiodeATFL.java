@@ -1,8 +1,7 @@
-package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode;
+package no.nav.folketrygdloven.kalkulator.steg.skjæringstidspunkt;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 

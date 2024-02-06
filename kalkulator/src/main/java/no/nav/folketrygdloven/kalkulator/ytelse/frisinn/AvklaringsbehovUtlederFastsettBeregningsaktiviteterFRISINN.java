@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ytelse.frisinn;
+package no.nav.folketrygdloven.kalkulator.ytelse.frisinn;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -6,19 +6,14 @@ import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
-import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AvklaringsbehovUtlederFastsettBeregningsaktiviteter;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningVenteårsak;
 
-public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterFRISINN implements AvklaringsbehovUtlederFastsettBeregningsaktiviteter {
+public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterFRISINN  {
 
-    @Override
-    public List<BeregningAvklaringsbehovResultat> utledAvklaringsbehov(BeregningsgrunnlagRegelResultat regelResultat,
-                                                                       BeregningsgrunnlagInput input,
-                                                                       boolean erOverstyrt) {
+    public List<BeregningAvklaringsbehovResultat> utledAvklaringsbehov(BeregningsgrunnlagRegelResultat regelResultat) {
         if (regelResultat.getBeregningsgrunnlagHvisFinnes().isEmpty()) {
             if (regelResultat.getAvklaringsbehov().stream().anyMatch(bar -> bar.getBeregningAvklaringsbehovDefinisjon().equals(AvklaringsbehovDefinisjon.AUTO_VENT_FRISINN))) {
                 return List.of(BeregningAvklaringsbehovResultat.opprettMedFristFor(

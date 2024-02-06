@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode;
+package no.nav.folketrygdloven.kalkulator.steg.skjæringstidspunkt;
 
 import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.LønnsendringTjeneste.finnAktiviteterMedLønnsendringUtenInntektsmelding;
 

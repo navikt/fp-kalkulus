@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ytelse.k14.fp;
+package no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt;
 
 import static no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType.ARBEID;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType.VENTELØNN_VARTPENGER;
@@ -40,7 +40,7 @@ public class AvklarAktiviteterTjenesteImplTest {
             .build();
 
         // Act
-        boolean harVentelønnEllerVartpenger = AvklarAktiviteterTjeneste.harVentelønnEllerVartpengerSomSisteAktivitetIOpptjeningsperioden(beregningAktivitetAggregat);
+        boolean harVentelønnEllerVartpenger = AvklaringsbehovUtlederFastsettBeregningsaktiviteterFP.harVentelønnEllerVartpengerSomSisteAktivitetIOpptjeningsperioden(beregningAktivitetAggregat);
 
         // Assert
         assertThat(harVentelønnEllerVartpenger).isFalse();
@@ -58,7 +58,7 @@ public class AvklarAktiviteterTjenesteImplTest {
             ).build();
 
         // Act
-        boolean harVentelønnEllerVartpenger = AvklarAktiviteterTjeneste.harVentelønnEllerVartpengerSomSisteAktivitetIOpptjeningsperioden(beregningAktivitetAggregat);
+        boolean harVentelønnEllerVartpenger = AvklaringsbehovUtlederFastsettBeregningsaktiviteterFP.harVentelønnEllerVartpengerSomSisteAktivitetIOpptjeningsperioden(beregningAktivitetAggregat);
 
         // Assert
         assertThat(harVentelønnEllerVartpenger).isFalse();
@@ -78,7 +78,7 @@ public class AvklarAktiviteterTjenesteImplTest {
             .build();
 
         // Act
-        boolean harVentelønnEllerVartpenger = AvklarAktiviteterTjeneste.harVentelønnEllerVartpengerSomSisteAktivitetIOpptjeningsperioden(beregningAktivitetAggregat);
+        boolean harVentelønnEllerVartpenger = AvklaringsbehovUtlederFastsettBeregningsaktiviteterFP.harVentelønnEllerVartpengerSomSisteAktivitetIOpptjeningsperioden(beregningAktivitetAggregat);
 
         // Assert
         assertThat(harVentelønnEllerVartpenger).isFalse();
@@ -98,7 +98,7 @@ public class AvklarAktiviteterTjenesteImplTest {
             .build();
 
         // Act
-        boolean harVentelønnEllerVartpenger = AvklarAktiviteterTjeneste.harVentelønnEllerVartpengerSomSisteAktivitetIOpptjeningsperioden(beregningAktivitetAggregat);
+        boolean harVentelønnEllerVartpenger = AvklaringsbehovUtlederFastsettBeregningsaktiviteterFP.harVentelønnEllerVartpengerSomSisteAktivitetIOpptjeningsperioden(beregningAktivitetAggregat);
 
         // Assert
         assertThat(harVentelønnEllerVartpenger).isTrue();
@@ -118,7 +118,7 @@ public class AvklarAktiviteterTjenesteImplTest {
             .build();
 
         // Act
-        boolean harVentelønnEllerVartpenger = AvklarAktiviteterTjeneste.harVentelønnEllerVartpengerSomSisteAktivitetIOpptjeningsperioden(beregningAktivitetAggregat);
+        boolean harVentelønnEllerVartpenger = AvklaringsbehovUtlederFastsettBeregningsaktiviteterFP.harVentelønnEllerVartpengerSomSisteAktivitetIOpptjeningsperioden(beregningAktivitetAggregat);
 
         // Assert
         assertThat(harVentelønnEllerVartpenger).isTrue();
@@ -137,7 +137,7 @@ public class AvklarAktiviteterTjenesteImplTest {
             .build();
 
         // Act
-        boolean harVentelønnEllerVartpenger = AvklarAktiviteterTjeneste.harVentelønnEllerVartpengerSomSisteAktivitetIOpptjeningsperioden(beregningAktivitetAggregat);
+        boolean harVentelønnEllerVartpenger = AvklaringsbehovUtlederFastsettBeregningsaktiviteterFP.harVentelønnEllerVartpengerSomSisteAktivitetIOpptjeningsperioden(beregningAktivitetAggregat);
 
         // Assert
         assertThat(harVentelønnEllerVartpenger).isTrue();
@@ -157,7 +157,7 @@ public class AvklarAktiviteterTjenesteImplTest {
             .build();
 
         // Act
-        boolean harVentelønnEllerVartpenger = AvklarAktiviteterTjeneste.harVentelønnEllerVartpengerSomSisteAktivitetIOpptjeningsperioden(beregningAktivitetAggregat);
+        boolean harVentelønnEllerVartpenger = AvklaringsbehovUtlederFastsettBeregningsaktiviteterFP.harVentelønnEllerVartpengerSomSisteAktivitetIOpptjeningsperioden(beregningAktivitetAggregat);
 
         // Assert
         assertThat(harVentelønnEllerVartpenger).isFalse();
@@ -169,7 +169,7 @@ public class AvklarAktiviteterTjenesteImplTest {
         var aktivitetAggregat = lagBeregningAktivitetAggregatMedType(ARBEID);
 
         //Act
-        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPITilleggTilAnnenAktivitet(aktivitetAggregat, Optional.empty());
+        boolean harFullAAPMedAndreAktiviteter = AvklaringsbehovUtlederFastsettBeregningsaktiviteterFP.harFullAAPITilleggTilAnnenAktivitet(aktivitetAggregat, Optional.empty());
 
         //Assert
         assertThat(harFullAAPMedAndreAktiviteter).isFalse();
@@ -181,7 +181,7 @@ public class AvklarAktiviteterTjenesteImplTest {
         var aktivitetAggregat = lagBeregningAktivitetAggregatMedType(OpptjeningAktivitetType.ARBEIDSAVKLARING);
 
         //Act
-        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPITilleggTilAnnenAktivitet(aktivitetAggregat, Optional.empty());
+        boolean harFullAAPMedAndreAktiviteter = AvklaringsbehovUtlederFastsettBeregningsaktiviteterFP.harFullAAPITilleggTilAnnenAktivitet(aktivitetAggregat, Optional.empty());
 
         //Assert
         assertThat(harFullAAPMedAndreAktiviteter).isFalse();
@@ -197,7 +197,7 @@ public class AvklarAktiviteterTjenesteImplTest {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagAktørYtelse(meldekort1, meldekort2);
 
         //Act
-        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPITilleggTilAnnenAktivitet(aktivitetAggregatDto, getAktørYtelseFraRegister(iayGrunnlag));
+        boolean harFullAAPMedAndreAktiviteter = AvklaringsbehovUtlederFastsettBeregningsaktiviteterFP.harFullAAPITilleggTilAnnenAktivitet(aktivitetAggregatDto, getAktørYtelseFraRegister(iayGrunnlag));
 
         //Assert
         assertThat(harFullAAPMedAndreAktiviteter).isFalse();
@@ -214,7 +214,7 @@ public class AvklarAktiviteterTjenesteImplTest {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagAktørYtelse(meldekort1, meldekort2, meldekort3);
 
         //Act
-        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPITilleggTilAnnenAktivitet(aktivitetAggregatDto, getAktørYtelseFraRegister(iayGrunnlag));
+        boolean harFullAAPMedAndreAktiviteter = AvklaringsbehovUtlederFastsettBeregningsaktiviteterFP.harFullAAPITilleggTilAnnenAktivitet(aktivitetAggregatDto, getAktørYtelseFraRegister(iayGrunnlag));
 
         //Assert
         assertThat(harFullAAPMedAndreAktiviteter).isTrue();

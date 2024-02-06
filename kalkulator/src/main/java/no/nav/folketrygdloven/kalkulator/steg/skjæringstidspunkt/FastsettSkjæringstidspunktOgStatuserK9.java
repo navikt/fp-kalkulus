@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ytelse.k9;
+package no.nav.folketrygdloven.kalkulator.steg.skjæringstidspunkt;
 
 import static no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapBGSkjæringstidspunktOgStatuserFraRegelTilVL.mapForSkjæringstidspunktOgStatuser;
 import static no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapRegelSporingFraRegelTilVL.mapRegelSporingGrunnlag;
@@ -14,7 +14,6 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.FastsettBeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
@@ -23,9 +22,7 @@ import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusMod
 
 public class FastsettSkjæringstidspunktOgStatuserK9 {
 
-    private final FastsettBeregningsperiodeTjeneste fastsettBeregningsperiodeTjeneste = new FastsettBeregningsperiodeTjeneste();
-
-    public BeregningsgrunnlagRegelResultat fastsett(BeregningsgrunnlagInput input, BeregningAktivitetAggregatDto beregningAktivitetAggregat, List<Grunnbeløp> grunnbeløpSatser) {
+    public static BeregningsgrunnlagRegelResultat fastsett(BeregningsgrunnlagInput input, BeregningAktivitetAggregatDto beregningAktivitetAggregat, List<Grunnbeløp> grunnbeløpSatser) {
         AktivitetStatusModell regelmodell = MapBGStatuserFraVLTilRegel.map(beregningAktivitetAggregat);
 
         MidlertidigInaktivType midlertidigInaktivType = null;
@@ -50,7 +47,7 @@ public class FastsettSkjæringstidspunktOgStatuserK9 {
                 regelResultatFastsettSkjæringstidspunkt,
                 regelResultatFastsettStatus);
         var nyttBeregningsgrunnlag = mapForSkjæringstidspunktOgStatuser(input.getKoblingReferanse(), k9Modell, regelResultater, input.getIayGrunnlag(), grunnbeløpSatser);
-        var fastsattBeregningsperiode = fastsettBeregningsperiodeTjeneste.fastsettBeregningsperiode(nyttBeregningsgrunnlag, input.getIayGrunnlag(), input.getInntektsmeldinger());
+        var fastsattBeregningsperiode = FastsettBeregningsperiodeTjeneste.fastsettBeregningsperiode(nyttBeregningsgrunnlag, input.getIayGrunnlag(), input.getInntektsmeldinger());
 
         return new BeregningsgrunnlagRegelResultat(fastsattBeregningsperiode,
                 new RegelSporingAggregat(
@@ -58,12 +55,12 @@ public class FastsettSkjæringstidspunktOgStatuserK9 {
                         mapRegelSporingGrunnlag(regelResultatFastsettStatus, BeregningsgrunnlagRegelType.BRUKERS_STATUS)));
     }
 
-    private RegelResultat fastsettSkjæringstidspunkt(AktivitetStatusModell regelmodell) {
+    private static RegelResultat fastsettSkjæringstidspunkt(AktivitetStatusModell regelmodell) {
         // Tar sporingssnapshot av regelmodell, deretter oppdateres modell med fastsatt skjæringstidspunkt for Beregning
         return KalkulusRegler.fastsettSkjæringstidspunktK9(regelmodell);
     }
 
-    private RegelResultat fastsettStatus(AktivitetStatusModell regelmodell) {
+    private static RegelResultat fastsettStatus(AktivitetStatusModell regelmodell) {
         // Tar sporingssnapshot av regelmodell, deretter oppdateres modell med status per beregningsgrunnlag
         return KalkulusRegler.fastsettStatusVedSkjæringstidspunkt(regelmodell);
     }

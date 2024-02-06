@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ytelse.k9.psb;
+package no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt;
 
 import static java.util.Collections.emptyList;
 
@@ -18,9 +18,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
-import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AutopunktUtlederFastsettBeregningsaktiviteterTjeneste;
-import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AvklaringsbehovUtlederFastsettBeregningsaktiviteter;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningVenteårsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
@@ -33,11 +30,11 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterPleiepenger impl
         Optional<AktørYtelseDto> aktørYtelse = input.getIayGrunnlag().getAktørYtelseFraRegister();
         Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();
         List<Arbeidsgiver> arbeidsgivere = inntektsmeldinger.stream().map(InntektsmeldingDto::getArbeidsgiver).collect(Collectors.toList());
-        Optional<LocalDate> ventPåRapporteringAvInntektFrist = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntektATFL(input, arbeidsgivere, LocalDate.now(), beregningAktivitetAggregat, skjæringstidspunktForBeregning);
+        Optional<LocalDate> ventPåRapporteringAvInntektFrist = AutopunktUtlederFastsettBeregningsaktiviteterInntektrapporteringTjeneste.skalVentePåInnrapporteringAvInntektATFL(input, arbeidsgivere, LocalDate.now(), beregningAktivitetAggregat, skjæringstidspunktForBeregning);
         if (ventPåRapporteringAvInntektFrist.isPresent()) {
             return List.of(autopunkt(AvklaringsbehovDefinisjon.AUTO_VENT_PÅ_INNTKT_RAP_FRST, BeregningVenteårsak.VENT_INNTEKT_RAPPORTERINGSFRIST, ventPåRapporteringAvInntektFrist.get()));
         }
-        Optional<LocalDate> ventPåMeldekortFrist = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(aktørYtelse, LocalDate.now(), beregningAktivitetAggregat.getSkjæringstidspunktOpptjening(), Set.of(YtelseType.DAGPENGER));
+        Optional<LocalDate> ventPåMeldekortFrist = AutopunktUtlederFastsettBeregningsaktiviteterMeldekortTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(aktørYtelse, LocalDate.now(), beregningAktivitetAggregat.getSkjæringstidspunktOpptjening(), Set.of(YtelseType.DAGPENGER));
         if (ventPåMeldekortFrist.isPresent()) {
             return List.of(autopunkt(AvklaringsbehovDefinisjon.AUTO_VENT_PÅ_SISTE_AAP_DP_MELDKRT, BeregningVenteårsak.VENT_PÅ_SISTE_AAP_ELLER_DP_MELDEKORT, ventPåMeldekortFrist.get()));
         }

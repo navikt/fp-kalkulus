@@ -1,7 +1,7 @@
-package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode;
+package no.nav.folketrygdloven.kalkulator.steg.skjæringstidspunkt;
 
-import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.FastsettBeregningsperiodeATFL.fastsettBeregningsperiodeForATFL;
-import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.FastsettBeregningsperiodeForLønnsendring.fastsettBeregningsperiodeForLønnsendring;
+import static no.nav.folketrygdloven.kalkulator.steg.skjæringstidspunkt.FastsettBeregningsperiodeATFL.fastsettBeregningsperiodeForATFL;
+import static no.nav.folketrygdloven.kalkulator.steg.skjæringstidspunkt.FastsettBeregningsperiodeForLønnsendring.fastsettBeregningsperiodeForLønnsendring;
 
 import java.util.Collection;
 
@@ -12,7 +12,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 
 public class FastsettBeregningsperiodeTjeneste {
 
-    public BeregningsgrunnlagDto fastsettBeregningsperiode(BeregningsgrunnlagDto beregningsgrunnlag,
+    public static BeregningsgrunnlagDto fastsettBeregningsperiode(BeregningsgrunnlagDto beregningsgrunnlag,
                                                            InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
                                                            Collection<InntektsmeldingDto> inntektsmeldinger) {
         // Fastsetter først for alle ATFL-andeler

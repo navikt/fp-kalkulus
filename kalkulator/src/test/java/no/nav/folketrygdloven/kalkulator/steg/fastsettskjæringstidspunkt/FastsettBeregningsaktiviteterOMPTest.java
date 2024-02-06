@@ -42,8 +42,6 @@ public class FastsettBeregningsaktiviteterOMPTest {
     public static final InternArbeidsforholdRefDto ARBEIDSFORHOLD_ID = InternArbeidsforholdRefDto.nyRef();
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
     private static final KoblingReferanseMock KOBLING_REFERANSE = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT, OMSORGSPENGER);
-    private FastsettBeregningAktiviteter fastsettBeregningAktiviteter = new FastsettBeregningAktiviteter(
-    );
 
     @Test
     void skal_inkludere_aktiviteter_som_starter_en_dag_skjæringstidspunkt() {
@@ -54,7 +52,7 @@ public class FastsettBeregningsaktiviteterOMPTest {
 
         // Act
         FastsettBeregningsaktiviteterInput input = lagFastsettBeregningsaktiviteterInput(iayGrunnlagBuilder, opptjeningAktiviteterDto);
-        BeregningAktivitetAggregatDto beregningAktivitetAggregatDto = fastsettBeregningAktiviteter.fastsettAktiviteter(input);
+        BeregningAktivitetAggregatDto beregningAktivitetAggregatDto = ForeslåSkjæringstidspunktTjeneste.fastsettAktiviteter(input);
 
         // Assert
         assertThat(beregningAktivitetAggregatDto.getBeregningAktiviteter()).hasSize(1);
@@ -69,7 +67,7 @@ public class FastsettBeregningsaktiviteterOMPTest {
 
         // Act
         FastsettBeregningsaktiviteterInput input = lagFastsettBeregningsaktiviteterInput(iayGrunnlagBuilder, opptjeningAktiviteterDto);
-        BeregningAktivitetAggregatDto beregningAktivitetAggregatDto = fastsettBeregningAktiviteter.fastsettAktiviteter(input);
+        BeregningAktivitetAggregatDto beregningAktivitetAggregatDto = ForeslåSkjæringstidspunktTjeneste.fastsettAktiviteter(input);
 
         // Assert
         assertThat(beregningAktivitetAggregatDto.getBeregningAktiviteter()).isEmpty();
@@ -84,7 +82,7 @@ public class FastsettBeregningsaktiviteterOMPTest {
 
         // Act
         FastsettBeregningsaktiviteterInput input = lagFastsettBeregningsaktiviteterInput(iayGrunnlagBuilder, opptjeningAktiviteterDto);
-        BeregningAktivitetAggregatDto beregningAktivitetAggregatDto = fastsettBeregningAktiviteter.fastsettAktiviteter(input);
+        BeregningAktivitetAggregatDto beregningAktivitetAggregatDto = ForeslåSkjæringstidspunktTjeneste.fastsettAktiviteter(input);
 
         // Assert
         assertThat(beregningAktivitetAggregatDto.getBeregningAktiviteter()).hasSize(1);

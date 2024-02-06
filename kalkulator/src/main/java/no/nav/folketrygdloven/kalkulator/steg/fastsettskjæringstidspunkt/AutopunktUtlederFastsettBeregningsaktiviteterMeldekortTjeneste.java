@@ -15,9 +15,9 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
-public class AutopunktUtlederFastsettBeregningsaktiviteterTjeneste {
+public class AutopunktUtlederFastsettBeregningsaktiviteterMeldekortTjeneste {
 
-    private AutopunktUtlederFastsettBeregningsaktiviteterTjeneste() {
+    private AutopunktUtlederFastsettBeregningsaktiviteterMeldekortTjeneste() {
         // Skjuler default konstruktør
     }
 

@@ -24,9 +24,7 @@ import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusMod
 
 public class FastsettSkjæringstidspunktOgStatuserFRISINN {
 
-    private final FastsettBeregningsperiodeTjenesteFRISINN fastsettBeregningsperiodeTjeneste = new FastsettBeregningsperiodeTjenesteFRISINN();
-
-    public BeregningsgrunnlagRegelResultat fastsett(BeregningsgrunnlagInput input, BeregningAktivitetAggregatDto beregningAktivitetAggregat, List<Grunnbeløp> grunnbeløpSatser) {
+    public static BeregningsgrunnlagRegelResultat fastsett(BeregningsgrunnlagInput input, BeregningAktivitetAggregatDto beregningAktivitetAggregat, List<Grunnbeløp> grunnbeløpSatser) {
         AktivitetStatusModell regelmodell = MapBGStatuserFraVLTilRegel.map(beregningAktivitetAggregat);
         RegelResultat regelResultatFastsettSkjæringstidspunkt = fastsettSkjæringstidspunkt(input, regelmodell);
         if (regelmodell.getSkjæringstidspunktForBeregning() == null) {
@@ -42,12 +40,12 @@ public class FastsettSkjæringstidspunktOgStatuserFRISINN {
                 regelResultatFastsettSkjæringstidspunkt,
                 regelResultatFastsettStatus);
         BeregningsgrunnlagDto nyttBeregningsgrunnlag = mapForSkjæringstidspunktOgStatuser(input.getKoblingReferanse(), regelmodell, regelResultater, input.getIayGrunnlag(), grunnbeløpSatser);
-        var fastsattBeregningsperiode = fastsettBeregningsperiodeTjeneste.fastsettBeregningsperiode(nyttBeregningsgrunnlag);
+        var fastsattBeregningsperiode = FastsettBeregningsperiodeTjenesteFRISINN.fastsettBeregningsperiode(nyttBeregningsgrunnlag, input.getIayGrunnlag(), input.getInntektsmeldinger());
         return new BeregningsgrunnlagRegelResultat(fastsattBeregningsperiode, Collections.emptyList());
 
     }
 
-    private RegelResultat fastsettSkjæringstidspunkt(BeregningsgrunnlagInput input, AktivitetStatusModell regelmodell) {
+    private static RegelResultat fastsettSkjæringstidspunkt(BeregningsgrunnlagInput input, AktivitetStatusModell regelmodell) {
         // Tar sporingssnapshot av regelmodell, deretter oppdateres modell med fastsatt skjæringstidspunkt for Beregning
         var inntektsgrunnlagMapper = new MapInntektsgrunnlagVLTilRegelFRISINN();
         Inntektsgrunnlag inntektsgrunnlag = inntektsgrunnlagMapper.map(input, regelmodell.getSkjæringstidspunktForOpptjening());
@@ -60,7 +58,7 @@ public class FastsettSkjæringstidspunktOgStatuserFRISINN {
         return resultat;
     }
 
-    private RegelResultat fastsettStatus(BeregningsgrunnlagInput input, AktivitetStatusModell regelmodell) {
+    private static RegelResultat fastsettStatus(BeregningsgrunnlagInput input, AktivitetStatusModell regelmodell) {
         // Tar sporingssnapshot av regelmodell, deretter oppdateres modell med status per beregningsgrunnlag
         var inntektsgrunnlagMapper = new MapInntektsgrunnlagVLTilRegelFRISINN();
         Inntektsgrunnlag inntektsgrunnlag = inntektsgrunnlagMapper.map(input, regelmodell.getSkjæringstidspunktForOpptjening());

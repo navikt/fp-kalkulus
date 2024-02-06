@@ -21,14 +21,16 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat.Builder;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningResultat;
-import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ForeslåSkjæringstidspunktTjeneste;
-import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.OpprettBeregningsgrunnlagTjeneste;
-import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ytelse.frisinn.AvklaringsbehovUtlederFastsettBeregningsaktiviteterFRISINN;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.FordelBeregningsgrunnlagTjenesteImpl;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.AvklaringsbehovUtlederFordelBeregning;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.OpprettBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.ytelse.VurderRefusjonBeregningsgrunnlagFRISINN;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.AvklaringsbehovUtlederFaktaOmBeregningFRISINN;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.AvklaringsbehovUtlederFastsettBeregningsaktiviteterFRISINN;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FastsettBeregningsperiodeTjenesteFRISINN;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FastsettSkjæringstidspunktOgStatuserFRISINN;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.ForeslåBeregningsgrunnlagFRISINN;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.ForeslåSkjæringstidspunktTjenesteFRISINN;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FortsettForeslåBeregningsgrunnlagFRISINN;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FullføreBeregningsgrunnlagFRISINN;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.VilkårTjenesteFRISINN;
@@ -47,10 +49,10 @@ public class BeregningsgrunnlagFRISINNTjeneste implements KalkulatorInterface {
     @Override
     public BeregningResultatAggregat fastsettBeregningsaktiviteter(FastsettBeregningsaktiviteterInput input) {
         validerFrisinn(input);
-        var beregningsgrunnlagRegelResultat = new ForeslåSkjæringstidspunktTjeneste().foreslåSkjæringstidspunkt(input);
+        var beregningsgrunnlagRegelResultat = new ForeslåSkjæringstidspunktTjenesteFRISINN().foreslåSkjæringstidspunkt(input);
         var tidligereAktivitetOverstyring = hentTidligereOverstyringer(input);
         var avklaringsbehov = new AvklaringsbehovUtlederFastsettBeregningsaktiviteterFRISINN()
-                .utledAvklaringsbehov(beregningsgrunnlagRegelResultat, input, tidligereAktivitetOverstyring.isPresent());
+                .utledAvklaringsbehov(beregningsgrunnlagRegelResultat);
         var vilkårResultat = vilkårTjeneste
                 .lagVilkårResultatFastsettAktiviteter(input, beregningsgrunnlagRegelResultat.getVilkårsresultat());
         return Builder.fra(input)
@@ -198,7 +200,9 @@ public class BeregningsgrunnlagFRISINNTjeneste implements KalkulatorInterface {
     @Override
     public BeregningResultatAggregat kontrollerFaktaBeregningsgrunnlag(FaktaOmBeregningInput input) {
         validerFrisinn(input);
-        var resultat = new OpprettBeregningsgrunnlagTjeneste().opprettOgLagreBeregningsgrunnlag(input);
+        var resultat = new OpprettBeregningsgrunnlagTjeneste().opprettOgLagreBeregningsgrunnlag(input,
+                FastsettSkjæringstidspunktOgStatuserFRISINN::fastsett,
+                FastsettBeregningsperiodeTjenesteFRISINN::fastsettBeregningsperiode);
 
         BeregningsgrunnlagDto beregningsgrunnlag = resultat.getBeregningsgrunnlag();
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag())

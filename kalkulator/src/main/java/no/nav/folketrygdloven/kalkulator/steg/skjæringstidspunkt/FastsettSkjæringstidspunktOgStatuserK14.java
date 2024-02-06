@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ytelse.k14;
+package no.nav.folketrygdloven.kalkulator.steg.skjæringstidspunkt;
 
 import static no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapBGSkjæringstidspunktOgStatuserFraRegelTilVL.mapForSkjæringstidspunktOgStatuser;
 import static no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapRegelSporingFraRegelTilVL.mapRegelSporingGrunnlag;
@@ -12,8 +12,6 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.FastsettBeregningsperiodeTjeneste;
-import no.nav.folketrygdloven.kalkulator.ytelse.fp.FastsettBeregningsperiodeTjenesteFP;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
@@ -21,7 +19,7 @@ import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusMod
 
 public class FastsettSkjæringstidspunktOgStatuserK14 {
 
-    public BeregningsgrunnlagRegelResultat fastsett(BeregningsgrunnlagInput input, BeregningAktivitetAggregatDto beregningAktivitetAggregat, List<Grunnbeløp> grunnbeløpSatser) {
+    public static BeregningsgrunnlagRegelResultat fastsett(BeregningsgrunnlagInput input, BeregningAktivitetAggregatDto beregningAktivitetAggregat, List<Grunnbeløp> grunnbeløpSatser) {
         AktivitetStatusModell regelmodell = MapBGStatuserFraVLTilRegel.map(beregningAktivitetAggregat);
         RegelResultat regelResultatFastsettSkjæringstidspunkt = fastsettSkjæringstidspunkt(regelmodell);
         RegelResultat regelResultatFastsettStatus = fastsettStatus(regelmodell);
@@ -32,8 +30,8 @@ public class FastsettSkjæringstidspunktOgStatuserK14 {
                 regelResultatFastsettStatus);
         var nyttBeregningsgrunnlag = mapForSkjæringstidspunktOgStatuser(input.getKoblingReferanse(), regelmodell, regelResultater, input.getIayGrunnlag(), grunnbeløpSatser);
         var fastsattBeregningsperiode = FagsakYtelseType.FORELDREPENGER.equals(input.getFagsakYtelseType())
-                ? new FastsettBeregningsperiodeTjenesteFP().fastsettBeregningsperiode(nyttBeregningsgrunnlag, input.getInntektsmeldinger())
-                : new FastsettBeregningsperiodeTjeneste().fastsettBeregningsperiode(nyttBeregningsgrunnlag, input.getIayGrunnlag(), input.getInntektsmeldinger());
+                ? FastsettBeregningsperiodeTjenesteFP.fastsettBeregningsperiode(nyttBeregningsgrunnlag, input.getIayGrunnlag(), input.getInntektsmeldinger())
+                : FastsettBeregningsperiodeTjeneste.fastsettBeregningsperiode(nyttBeregningsgrunnlag, input.getIayGrunnlag(), input.getInntektsmeldinger());
         return new BeregningsgrunnlagRegelResultat(fastsattBeregningsperiode,
                 new RegelSporingAggregat(
                         mapRegelSporingGrunnlag(regelResultatFastsettSkjæringstidspunkt, BeregningsgrunnlagRegelType.SKJÆRINGSTIDSPUNKT),
@@ -41,12 +39,12 @@ public class FastsettSkjæringstidspunktOgStatuserK14 {
     }
 
 
-    private RegelResultat fastsettSkjæringstidspunkt(AktivitetStatusModell regelmodell) {
+    private static RegelResultat fastsettSkjæringstidspunkt(AktivitetStatusModell regelmodell) {
         // Tar sporingssnapshot av regelmodell, deretter oppdateres modell med fastsatt skjæringstidspunkt for Beregning
         return KalkulusRegler.fastsettSkjæringstidspunkt(regelmodell);
     }
 
-    private RegelResultat fastsettStatus(AktivitetStatusModell regelmodell) {
+    private static RegelResultat fastsettStatus(AktivitetStatusModell regelmodell) {
         // Tar sporingssnapshot av regelmodell, deretter oppdateres modell med status per beregningsgrunnlag
         return KalkulusRegler.fastsettStatusVedSkjæringstidspunkt(regelmodell);
     }

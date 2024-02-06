@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ytelse.k9.omp;
+package no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt;
 
 import static java.util.Collections.emptyList;
 
@@ -16,23 +16,20 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
-import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AvklaringsbehovUtlederFastsettBeregningsaktiviteter;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningVenteårsak;
 
-public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterOMP implements AvklaringsbehovUtlederFastsettBeregningsaktiviteter {
+public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterSVP implements AvklaringsbehovUtlederFastsettBeregningsaktiviteter {
 
-    private static List<BeregningAvklaringsbehovResultat> utledAvklaringsbehovForOMP(BeregningAktivitetAggregatDto beregningAktivitetAggregat,
-                                                                                     BeregningsgrunnlagInput input,
-                                                                                     LocalDate skjæringstidspunktForBeregning) {
+    private static List<BeregningAvklaringsbehovResultat> utledAvklaringsbehovForFelles(BeregningAktivitetAggregatDto beregningAktivitetAggregat,
+                                                                                        BeregningsgrunnlagInput input,
+                                                                                        LocalDate skjæringstidspunktForBeregning) {
         Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();
         List<Arbeidsgiver> arbeidsgivere = inntektsmeldinger.stream().map(InntektsmeldingDto::getArbeidsgiver).collect(Collectors.toList());
-        Optional<LocalDate> ventPåRapporteringAvInntektFrist = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntektATFL(input, arbeidsgivere, LocalDate.now(), beregningAktivitetAggregat, skjæringstidspunktForBeregning);
-        if (ventPåRapporteringAvInntektFrist.isPresent()) {
-            return List.of(autopunkt(AvklaringsbehovDefinisjon.AUTO_VENT_PÅ_INNTKT_RAP_FRST, BeregningVenteårsak.VENT_INNTEKT_RAPPORTERINGSFRIST, ventPåRapporteringAvInntektFrist.get()));
-        }
-        return emptyList();
+        Optional<LocalDate> ventPåRapporteringAvInntektFrist = AutopunktUtlederFastsettBeregningsaktiviteterInntektrapporteringTjeneste.skalVentePåInnrapporteringAvInntektATFL(input, arbeidsgivere, LocalDate.now(), beregningAktivitetAggregat, skjæringstidspunktForBeregning);
+        return ventPåRapporteringAvInntektFrist
+                .map(localDate -> List.of(autopunkt(AvklaringsbehovDefinisjon.AUTO_VENT_PÅ_INNTKT_RAP_FRST, BeregningVenteårsak.VENT_INNTEKT_RAPPORTERINGSFRIST, localDate)))
+                .orElse(emptyList());
     }
 
     protected static BeregningAvklaringsbehovResultat autopunkt(AvklaringsbehovDefinisjon apDef, BeregningVenteårsak venteårsak, LocalDate settPåVentTom) {
@@ -41,11 +38,8 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterOMP implements A
 
     @Override
     public List<BeregningAvklaringsbehovResultat> utledAvklaringsbehov(BeregningsgrunnlagRegelResultat regelResultat, BeregningsgrunnlagInput input, boolean erOverstyrt) {
-        if (regelResultat.getVilkårOppfylt() != null && !regelResultat.getVilkårOppfylt()) {
-            return emptyList();
-        }
-        LocalDate skjæringstidspunkt = regelResultat.getBeregningsgrunnlag().getSkjæringstidspunkt();
         BeregningAktivitetAggregatDto registerAktiviteter = regelResultat.getRegisterAktiviteter();
-        return utledAvklaringsbehovForOMP(registerAktiviteter, input, skjæringstidspunkt);
+        LocalDate skjæringstidspunkt = regelResultat.getBeregningsgrunnlag().getSkjæringstidspunkt();
+        return utledAvklaringsbehovForFelles(registerAktiviteter, input, skjæringstidspunkt);
     }
 }

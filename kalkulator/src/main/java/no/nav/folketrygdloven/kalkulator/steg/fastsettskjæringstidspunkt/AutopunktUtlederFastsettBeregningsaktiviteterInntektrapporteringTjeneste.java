@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode;
+package no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt;
 
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
@@ -12,19 +12,17 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
 
-public class BeregningsperiodeTjeneste {
+public class AutopunktUtlederFastsettBeregningsaktiviteterInntektrapporteringTjeneste {
 
-    public static final String INNTEKT_RAPPORTERING_FRIST_DATO = "inntekt.rapportering.frist.dato";
+    private static final String INNTEKT_RAPPORTERING_FRIST_DATO = "inntekt.rapportering.frist.dato";
 
-    public Intervall fastsettBeregningsperiodeForATFLAndeler(LocalDate skjæringstidspunkt) {
-        LocalDate fom = skjæringstidspunkt.minusMonths(3).withDayOfMonth(1);
-        LocalDate tom = skjæringstidspunkt.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
-        return Intervall.fraOgMedTilOgMed(fom, tom);
+    private AutopunktUtlederFastsettBeregningsaktiviteterInntektrapporteringTjeneste() {
+        // Skjuler default konstruktør
     }
+
 
     public static Optional<LocalDate> skalVentePåInnrapporteringAvInntektATFL(BeregningsgrunnlagInput input,
                                                                               List<Arbeidsgiver> arbeidsgivere,
@@ -106,6 +104,4 @@ public class BeregningsperiodeTjeneste {
                 .map(BeregningAktivitetDto::getArbeidsgiver)
                 .filter(Objects::nonNull);
     }
-
-
 }

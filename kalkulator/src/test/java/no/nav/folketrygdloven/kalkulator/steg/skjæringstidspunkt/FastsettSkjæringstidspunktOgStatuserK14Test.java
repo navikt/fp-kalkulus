@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ytelse.k14;
+package no.nav.folketrygdloven.kalkulator.steg.skjæringstidspunkt;
 
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_BEGYNNELSE;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;

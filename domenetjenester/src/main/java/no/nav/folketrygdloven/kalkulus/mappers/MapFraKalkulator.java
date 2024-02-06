@@ -22,7 +22,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.PerioderForKravDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonsperiodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.skjæringstidspunkt.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.KravperioderPrArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.PerioderForKrav;

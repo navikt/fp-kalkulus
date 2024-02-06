@@ -19,16 +19,14 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAkti
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
-import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat.Builder;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningRegelResultat;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningResultat;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.ForeslåBesteberegning;
-import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AvklaringsbehovUtlederFastsettBeregningsaktiviteterTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AvklaringsbehovUtlederFastsettBeregningsaktiviteter;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ForeslåSkjæringstidspunktTjeneste;
-import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.OpprettBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.FordelBeregningsgrunnlagTjenesteImpl;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.AvklaringsbehovUtlederFordelBeregning;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.vilkår.VilkårTjeneste;
@@ -37,12 +35,16 @@ import no.nav.folketrygdloven.kalkulator.steg.foreslå.ForeslåBeregningsgrunnla
 import no.nav.folketrygdloven.kalkulator.steg.fortsettForeslå.FortsettForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.steg.fullføre.FullføreBeregningsgrunnlagTjenesteVelger;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.AvklaringsbehovUtlederFaktaOmBeregning;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.OpprettBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.VurderRefusjonBeregningsgrunnlagFelles;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.ytelse.VurderRefusjonBeregningsgrunnlagPleiepenger;
+import no.nav.folketrygdloven.kalkulator.steg.skjæringstidspunkt.BeregningsperiodeFastsetter;
+import no.nav.folketrygdloven.kalkulator.steg.skjæringstidspunkt.SkjæringstidspunktFastsetter;
 import no.nav.folketrygdloven.kalkulator.steg.tilkommetInntekt.AvklaringsbehovUtlederTilkommetInntekt;
 import no.nav.folketrygdloven.kalkulator.steg.tilkommetInntekt.TilkommetInntektTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 
 /**
  * Fasadetjeneste for å delegere alle kall fra steg
@@ -56,7 +58,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
         validerIkkeFrisinn(input);
         var beregningsgrunnlagRegelResultat = new ForeslåSkjæringstidspunktTjeneste().foreslåSkjæringstidspunkt(input);
         var tidligereAktivitetOverstyring = hentTidligereOverstyringer(input);
-        var avklaringsbehov = AvklaringsbehovUtlederFastsettBeregningsaktiviteterTjeneste.utledTjeneste(input.getFagsakYtelseType())
+        var avklaringsbehov = AvklaringsbehovUtlederFastsettBeregningsaktiviteter.utledTjeneste(input.getFagsakYtelseType())
                 .utledAvklaringsbehov(beregningsgrunnlagRegelResultat, input, tidligereAktivitetOverstyring.isPresent());
         var vilkårResultat = vilkårTjeneste
                 .lagVilkårResultatFastsettAktiviteter(input, beregningsgrunnlagRegelResultat.getVilkårsresultat());
@@ -234,7 +236,9 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
     @Override
     public BeregningResultatAggregat kontrollerFaktaBeregningsgrunnlag(FaktaOmBeregningInput input) {
         validerIkkeFrisinn(input);
-        var resultat = new OpprettBeregningsgrunnlagTjeneste().opprettOgLagreBeregningsgrunnlag(input);
+        var resultat = new OpprettBeregningsgrunnlagTjeneste().opprettOgLagreBeregningsgrunnlag(input,
+                SkjæringstidspunktFastsetter.utledFastsettSkjæringstidspunktTjeneste(input.getFagsakYtelseType()),
+                BeregningsperiodeFastsetter.utledFastsettBeregningsperiodeTjeneste(input.getFagsakYtelseType()));
 
         BeregningsgrunnlagDto beregningsgrunnlag = resultat.getBeregningsgrunnlag();
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag())
