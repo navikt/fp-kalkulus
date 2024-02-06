@@ -73,7 +73,7 @@ public class MapArbeidsforholdFraVLTilRegel {
     }
 
     private static Arbeidsforhold lagArbeidsforholdHosArbeidsgiverMedStartdato(Arbeidsgiver arbeidsgiver, String arbeidsforholdRef, InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDate stp) {
-        LocalDate startdato = utledStartdato(arbeidsgiver, arbeidsforholdRef, iayGrunnlag, stp);
+        LocalDate startdato = UtledStartdato.utledStartdato(arbeidsgiver, arbeidsforholdRef, iayGrunnlag, stp);
         if (arbeidsgiver.getErVirksomhet()) {
             return Arbeidsforhold.builder()
                     .medAktivitet(Aktivitet.ARBEIDSTAKERINNTEKT)
@@ -92,30 +92,7 @@ public class MapArbeidsforholdFraVLTilRegel {
         }
         throw new IllegalStateException("Arbeidsgiver må være enten aktør eller virksomhet, men var: " + arbeidsgiver);
     }
-
-    /**
-     * Finner siste startdato før skjæringstidspunktet for arbeidsforholdet.
-     */
-    private static LocalDate utledStartdato(Arbeidsgiver arbeidsgiver, String arbeidsforholdRef, InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDate stp) {
-        List<Intervall> ansettelsesperioder = iayGrunnlag.getAktørArbeidFraRegister().stream()
-                .flatMap(aar -> aar.hentAlleYrkesaktiviteter().stream())
-                .filter(ya -> ya.gjelderFor(arbeidsgiver, InternArbeidsforholdRefDto.ref(arbeidsforholdRef)))
-                .flatMap(ya -> ya.getAlleAnsettelsesperioder().stream())
-                .map(AktivitetsAvtaleDto::getPeriode)
-                .toList();
-
-        return hentStartdatoFraAnsettelsesperioder(stp, ansettelsesperioder);
-    }
-
-    private static LocalDate hentStartdatoFraAnsettelsesperioder(LocalDate stp, List<Intervall> ansettelsesperioder) {
-        return ansettelsesperioder.stream()
-                .map(Intervall::getFomDato)
-                .filter(fomDato -> ansettelsesperioder.stream().noneMatch(ap -> fomDato.equals(ap.getTomDato().plusDays(1))))
-                .filter(stp::isAfter)
-                .min(Comparator.naturalOrder())
-                .orElse(null);
-    }
-
+    
     private static Arbeidsforhold lagArbeidsforholdHosArbeidsgiver(Arbeidsgiver arbeidsgiver, String arbeidsforholdRef) {
         String arbRef = arbeidsforholdRef;
         if (arbeidsgiver.getErVirksomhet()) {
