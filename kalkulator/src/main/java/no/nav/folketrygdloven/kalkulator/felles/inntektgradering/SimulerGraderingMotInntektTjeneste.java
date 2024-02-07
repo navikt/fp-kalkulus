@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.Beregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.fastsett.MapBeregningsgrunnlagFraVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.fastsett.MapFullføreBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.PeriodeSplitter;
 import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.SplittPeriodeConfig;
 import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.StandardPeriodeSplittMappers;
@@ -55,7 +55,7 @@ public class SimulerGraderingMotInntektTjeneste {
 
     private static final Logger LOG = LoggerFactory.getLogger(SimulerGraderingMotInntektTjeneste.class);
 
-    private final MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel();
+    private final MapFullføreBeregningsgrunnlagFraVLTilRegel mapFullføreBeregningsgrunnlagFraVLTilRegel = new MapFullføreBeregningsgrunnlagFraVLTilRegel();
 
 
     public List<ReduksjonVedGradering> simulerGraderingMotInntekt(BeregningsgrunnlagInput beregningsgrunnlagInput) {
@@ -114,7 +114,7 @@ public class SimulerGraderingMotInntektTjeneste {
     }
 
     private List<BeregningsgrunnlagPeriode> kjørRegel(BeregningsgrunnlagInput beregningsgrunnlagInput, BeregningsgrunnlagDto nyttBg) {
-        var regelBg = mapBeregningsgrunnlagFraVLTilRegel.map(beregningsgrunnlagInput, nyttBg);
+        var regelBg = mapFullføreBeregningsgrunnlagFraVLTilRegel.map(beregningsgrunnlagInput, nyttBg);
         Beregningsgrunnlag.builder(regelBg).leggTilToggle("GRADERING_MOT_INNTEKT", true);
         var regelPerioder = regelBg.getBeregningsgrunnlagPerioder().stream()
                 .filter(p -> !p.getTilkommetInntektsforholdListe().isEmpty())

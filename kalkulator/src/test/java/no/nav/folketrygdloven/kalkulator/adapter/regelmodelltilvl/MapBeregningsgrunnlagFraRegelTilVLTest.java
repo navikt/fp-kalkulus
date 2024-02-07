@@ -61,25 +61,6 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock();
 
     @Test
-    public void testMappingBGForSN() {
-        final BeregningsgrunnlagDto vlBG = buildVLBG();
-
-        final BeregningsgrunnlagDto mappedBG = new MapBeregningsgrunnlagFraRegelTilVL()
-                .mapFastsettBeregningsgrunnlag(buildRegelBGForSN(), vlBG);
-
-        assertThat(mappedBG).isNotSameAs(vlBG);
-
-        final BeregningsgrunnlagPeriodeDto vlBGP = mappedBG.getBeregningsgrunnlagPerioder()
-                .get(0);
-        assertThat(vlBGP.getBruttoPrÅr().doubleValue()).isEqualTo(400000.42, within(0.01));
-        assertThat(vlBGP.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(1);
-        final BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus = vlBGP.getBeregningsgrunnlagPrStatusOgAndelList().get(0);
-        assertThat(vlBGPStatus.getAktivitetStatus())
-                .isEqualTo(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
-        assertVLBGPStatusSN(vlBGPStatus);
-    }
-
-    @Test
     public void testMappingBGForArbeidstaker() {
         final BeregningsgrunnlagDto vlBG = buildVLBGForATOgFL();
 
@@ -96,29 +77,6 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
         final BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus2 = vlBGP.getBeregningsgrunnlagPrStatusOgAndelList().get(1);
         assertVLBGPStatusFL(vlBGPStatus2);
         assertVLSammenligningsgrunnlagPrStatus(mappedBG.getSammenligningsgrunnlagPrStatusListe().get(0), SammenligningsgrunnlagType.SAMMENLIGNING_AT_FL);
-    }
-
-    @Test
-    public void testMappingBGForATFLogSN() {
-        final BeregningsgrunnlagDto vlBG = buildVLBGForATFLogSN();
-        final BeregningsgrunnlagDto mappedBG = new MapBeregningsgrunnlagFraRegelTilVL()
-                .mapFastsettBeregningsgrunnlag(buildRegelBGForATFLogSN(), vlBG);
-
-        final BeregningsgrunnlagPeriodeDto vlBGP = mappedBG.getBeregningsgrunnlagPerioder()
-                .get(0);
-
-        assertThat(vlBGP.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(3);
-        final BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus = vlBGP.getBeregningsgrunnlagPrStatusOgAndelList().get(0);
-        assertThat(vlBGPStatus.getAktivitetStatus())
-                .isEqualTo(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
-        assertVLBGPStatusSN(vlBGPStatus);
-        final BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus1 = vlBGP.getBeregningsgrunnlagPrStatusOgAndelList().get(1);
-        assertThat(vlBGPStatus1.getAktivitetStatus())
-                .isEqualTo(AktivitetStatus.ARBEIDSTAKER);
-        assertVLBGPStatusAT(vlBGPStatus1);
-        final BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus2 = vlBGP.getBeregningsgrunnlagPrStatusOgAndelList().get(2);
-        assertThat(vlBGPStatus2.getAktivitetStatus()).isEqualTo(AktivitetStatus.FRILANSER);
-        assertVLBGPStatusFL(vlBGPStatus2);
     }
 
     @Test

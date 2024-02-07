@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulator.steg.fullføre;
 import java.util.List;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.fastsett.MapBeregningsgrunnlagFraVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.fastsett.MapFullføreBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
@@ -18,7 +18,7 @@ public abstract class FullføreBeregningsgrunnlag {
         var grunnlag = input.getBeregningsgrunnlagGrunnlag();
 
         // Oversetter foreslått Beregningsgrunnlag -> regelmodell
-        var beregningsgrunnlagRegel = new MapBeregningsgrunnlagFraVLTilRegel().map(input, grunnlag.getBeregningsgrunnlag().orElse(null));
+        var beregningsgrunnlagRegel = new MapFullføreBeregningsgrunnlagFraVLTilRegel().map(input, grunnlag.getBeregningsgrunnlag().orElse(null));
 
         // Evaluerer hver BeregningsgrunnlagPeriode fra foreslått Beregningsgrunnlag
         List<RegelResultat> regelResultater = evaluerRegelmodell(beregningsgrunnlagRegel, input);

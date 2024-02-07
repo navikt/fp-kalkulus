@@ -73,7 +73,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 @ExtendWith(MockitoExtension.class)
-public class MapBeregningsgrunnlagFraVLTilRegelTest {
+public class MapFullføreBeregningsgrunnlagFraVLTilRegelTest {
 
     private static final int MELDEKORTSATS1 = 1000;
     private static final int MELDEKORTSATS2 = 1100;

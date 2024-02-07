@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.SammenligningGrunnlagType;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrStatus;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SammenligningsGrunnlag;
@@ -28,41 +30,30 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 
 public class MapBeregningsgrunnlagFraRegelTilVL {
 
-    protected enum Steg {
-        FORESLÅ,
-        FORDEL,
-        FASTSETT,
-    }
-
     public BeregningsgrunnlagDto mapForeslåBeregningsgrunnlag(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatGrunnlag,
                                                               BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
-        return map(resultatGrunnlag, eksisterendeVLGrunnlag, Steg.FORESLÅ);
+        return map(resultatGrunnlag, eksisterendeVLGrunnlag);
     }
 
-    public BeregningsgrunnlagDto mapFastsettBeregningsgrunnlag(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatGrunnlag,
-                                                               BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
-        return map(resultatGrunnlag, eksisterendeVLGrunnlag, Steg.FASTSETT);
-    }
-
-    private BeregningsgrunnlagDto map(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatGrunnlag, BeregningsgrunnlagDto eksisterendeVLGrunnlag, Steg steg) {
+    private BeregningsgrunnlagDto map(Beregningsgrunnlag resultatGrunnlag, BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
         var builder = BeregningsgrunnlagDto.builder(eksisterendeVLGrunnlag);
         var sgPrStatus = resultatGrunnlag.getSammenligningsgrunnlagPrStatus().stream()
                 .map(this::mapSammenligningsgrunnlagPrStatus)
                 // Har vi allerede et sammenligningsgrunnlag av denne typen trenger vi ikke flere
                 .filter(sg -> eksisterendeVLGrunnlag.getSammenligningsgrunnlagForStatus(sg.getSammenligningsgrunnlagType()).isEmpty())
-                .collect(Collectors.toList());
+                .toList();
         sgPrStatus.forEach(builder::leggTilSammenligningsgrunnlag);
         BeregningsgrunnlagDto nyttBeregningsgrunnlag = builder.build();
 
         Objects.requireNonNull(resultatGrunnlag, "resultatGrunnlag");
-        MapAktivitetStatusMedHjemmel.mapAktivitetStatusMedHjemmel(resultatGrunnlag.getAktivitetStatuser(), nyttBeregningsgrunnlag, resultatGrunnlag.getBeregningsgrunnlagPerioder().get(0));
+        MapAktivitetStatusMedHjemmel.mapAktivitetStatusMedHjemmel(resultatGrunnlag.getAktivitetStatuser(), nyttBeregningsgrunnlag, resultatGrunnlag.getBeregningsgrunnlagPerioder().getFirst());
 
-        mapPerioder(nyttBeregningsgrunnlag, steg, resultatGrunnlag.getBeregningsgrunnlagPerioder());
+        mapPerioder(nyttBeregningsgrunnlag, resultatGrunnlag.getBeregningsgrunnlagPerioder());
 
         return nyttBeregningsgrunnlag;
     }
 
-    public SammenligningsgrunnlagPrStatusDto mapSammenligningsgrunnlagPrStatus(SammenligningsGrunnlag sgRegel) {
+    private SammenligningsgrunnlagPrStatusDto mapSammenligningsgrunnlagPrStatus(SammenligningsGrunnlag sgRegel) {
         return SammenligningsgrunnlagPrStatusDto.builder()
                 .medSammenligningsgrunnlagType(mapSammenligningstype(sgRegel.getSammenligningstype()))
                 .medSammenligningsperiode(sgRegel.getSammenligningsperiode().getFom(), sgRegel.getSammenligningsperiode().getTom())
@@ -79,8 +70,8 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
         };
     }
 
-    protected void mapPerioder(BeregningsgrunnlagDto eksisterendeVLGrunnlag, Steg steg,
-                               List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode> beregningsgrunnlagPerioder) {
+    private void mapPerioder(BeregningsgrunnlagDto eksisterendeVLGrunnlag,
+                             List<BeregningsgrunnlagPeriode> beregningsgrunnlagPerioder) {
 
         int vlBGnummer = 0;
         for (var resultatBGPeriode : beregningsgrunnlagPerioder) {
@@ -93,7 +84,7 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
                 if (regelAndel.getAndelNr() == null) {
                     mapAndelMedArbeidsforhold(mappetPeriode, regelAndel);
                 } else {
-                    mapAndel(mappetPeriode, regelAndel, steg);
+                    mapAndel(mappetPeriode, regelAndel);
                 }
             }
             vlBGnummer++;
@@ -101,19 +92,19 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
         }
     }
 
-    private static void mapAndel(BeregningsgrunnlagPeriodeDto mappetPeriode, BeregningsgrunnlagPrStatus regelAndel, Steg steg) {
+    private static void mapAndel(BeregningsgrunnlagPeriodeDto mappetPeriode, BeregningsgrunnlagPrStatus regelAndel) {
         mappetPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(bgpsa -> regelAndel.getAndelNr().equals(bgpsa.getAndelsnr()))
-                .forEach(resultatAndel -> mapBeregningsgrunnlagPrStatus(mappetPeriode, regelAndel, resultatAndel, steg));
+                .forEach(resultatAndel -> mapBeregningsgrunnlagPrStatus(mappetPeriode, regelAndel, resultatAndel));
     }
 
-    protected void mapAndelMedArbeidsforhold(BeregningsgrunnlagPeriodeDto mappetPeriode, BeregningsgrunnlagPrStatus regelAndel) {
+    private void mapAndelMedArbeidsforhold(BeregningsgrunnlagPeriodeDto mappetPeriode, BeregningsgrunnlagPrStatus regelAndel) {
         for (BeregningsgrunnlagPrArbeidsforhold regelAndelForArbeidsforhold : regelAndel.getArbeidsforhold()) {
             mapEksisterendeAndelForArbeidsforhold(mappetPeriode, regelAndel, regelAndelForArbeidsforhold);
         }
     }
 
-    protected void mapEksisterendeAndelForArbeidsforhold(BeregningsgrunnlagPeriodeDto mappetPeriode, BeregningsgrunnlagPrStatus regelAndel, BeregningsgrunnlagPrArbeidsforhold regelAndelForArbeidsforhold) {
+    private void mapEksisterendeAndelForArbeidsforhold(BeregningsgrunnlagPeriodeDto mappetPeriode, BeregningsgrunnlagPrStatus regelAndel, BeregningsgrunnlagPrArbeidsforhold regelAndelForArbeidsforhold) {
         Optional<BeregningsgrunnlagPrStatusOgAndelDto> andelOpt = mappetPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(bgpsa -> regelAndelForArbeidsforhold.getAndelNr().equals(bgpsa.getAndelsnr()))
                 .findFirst();
@@ -161,14 +152,14 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
         }
     }
 
-    protected BGAndelArbeidsforholdDto.Builder mapArbeidsforhold(BeregningsgrunnlagPrStatusOgAndelDto vlBGPAndel,
+    private BGAndelArbeidsforholdDto.Builder mapArbeidsforhold(BeregningsgrunnlagPrStatusOgAndelDto vlBGPAndel,
                                                                       BeregningsgrunnlagPrArbeidsforhold arbeidsforhold) {
         return BGAndelArbeidsforholdDto.Builder.oppdater(vlBGPAndel.getBgAndelArbeidsforhold())
                 .medNaturalytelseBortfaltPrÅr(arbeidsforhold.getNaturalytelseBortfaltPrÅr().orElse(null))
                 .medNaturalytelseTilkommetPrÅr(arbeidsforhold.getNaturalytelseTilkommetPrÅr().orElse(null));
     }
 
-    protected static BeregningsgrunnlagPrStatusOgAndelDto.Builder settFasteVerdier(BeregningsgrunnlagPrStatusOgAndelDto.Builder builder,
+    private static BeregningsgrunnlagPrStatusOgAndelDto.Builder settFasteVerdier(BeregningsgrunnlagPrStatusOgAndelDto.Builder builder,
                                                                                    BeregningsgrunnlagPrArbeidsforhold arbeidsforhold,
                                                                                    Optional<BeregningsgrunnlagPrStatusOgAndelDto> eksisterendeAndel) {
         if (arbeidsforhold.getBeregningsperiode() != null && arbeidsforhold.getBeregningsperiode().getFom() != null) {
@@ -253,9 +244,7 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
 
     private static void mapBeregningsgrunnlagPrStatus(BeregningsgrunnlagPeriodeDto vlBGPeriode,
                                                       BeregningsgrunnlagPrStatus resultatBGPStatus,
-                                                      BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatusOgAndel,
-                                                      Steg steg) {
-        boolean gjelderForeslå = steg.equals(Steg.FORESLÅ);
+                                                      BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatusOgAndel) {
         BeregningsgrunnlagPrStatusOgAndelDto.Builder builder = BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(Optional.of(vlBGPStatusOgAndel));
         if (resultatBGPStatus.getBeregningsperiode() != null && resultatBGPStatus.getBeregningsperiode().getFom() != null) {
             builder.medBeregningsperiode(resultatBGPStatus.getBeregningsperiode().getFom(), resultatBGPStatus.getBeregningsperiode().getTom());
@@ -267,18 +256,12 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
                 .medFordeltPrÅr(verifisertBeløp(resultatBGPStatus.getFordeltPrÅr()))
                 .medAvkortetPrÅr(verifisertBeløp(resultatBGPStatus.getAvkortetPrÅr()))
                 .medRedusertPrÅr(verifisertBeløp(resultatBGPStatus.getRedusertPrÅr()))
-                .medAvkortetBrukersAndelPrÅr(gjelderForeslå ? null : verifisertBeløp(resultatBGPStatus.getAvkortetPrÅr()))
-                .medRedusertBrukersAndelPrÅr(gjelderForeslå ? null : verifisertBeløp(resultatBGPStatus.getRedusertPrÅr()))
-                .medMaksimalRefusjonPrÅr(gjelderForeslå ? null : BigDecimal.ZERO)
-                .medAvkortetRefusjonPrÅr(gjelderForeslå ? null : BigDecimal.ZERO)
-                .medRedusertRefusjonPrÅr(gjelderForeslå ? null : BigDecimal.ZERO)
                 .medPgi(resultatBGPStatus.getGjennomsnittligPGI(), resultatBGPStatus.getPgiListe())
                 .medÅrsbeløpFraTilstøtendeYtelse(resultatBGPStatus.getÅrsbeløpFraTilstøtendeYtelse())
                 .medInntektskategori(MapInntektskategoriRegelTilVL.map(resultatBGPStatus.getInntektskategori()))
                 .medFastsattAvSaksbehandler(resultatBGPStatus.erFastsattAvSaksbehandler())
                 .medBesteberegningPrÅr(resultatBGPStatus.getBesteberegningPrÅr())
                 .medOrginalDagsatsFraTilstøtendeYtelse(resultatBGPStatus.getOrginalDagsatsFraTilstøtendeYtelse())
-                .medAvkortetFørGraderingPrÅr(resultatBGPStatus.getAndelsmessigFørGraderingPrAar())
                 .build(vlBGPeriode);
     }
 

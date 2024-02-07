@@ -37,7 +37,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.TilkommetInnt
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
-public class MapBeregningsgrunnlagFraVLTilRegel {
+public class MapFullføreBeregningsgrunnlagFraVLTilRegel {
 
     public no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.Beregningsgrunnlag map(BeregningsgrunnlagInput input,
                                                                                                  BeregningsgrunnlagDto beregningsgrunnlag) {
@@ -46,7 +46,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         Objects.requireNonNull(beregningsgrunnlag, "Beregningsgrunnlag kan ikke være null!");
 
         List<AktivitetStatusMedHjemmel> aktivitetStatuser = beregningsgrunnlag.getAktivitetStatuser().stream()
-                .map(MapBeregningsgrunnlagFraVLTilRegel::mapVLAktivitetStatusMedHjemmel)
+                .map(MapFullføreBeregningsgrunnlagFraVLTilRegel::mapVLAktivitetStatusMedHjemmel)
                 .sorted()
                 .collect(Collectors.toList());
 
@@ -135,7 +135,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
     }
 
     private static List<TilkommetInntekt> mapTilkomneInntekter(BeregningsgrunnlagPeriodeDto vlBGPeriode) {
-        return vlBGPeriode.getTilkomneInntekter().stream().filter(TilkommetInntektDto::skalRedusereUtbetaling).map(MapBeregningsgrunnlagFraVLTilRegel::mapTilkommetInntekt).toList();
+        return vlBGPeriode.getTilkomneInntekter().stream().filter(TilkommetInntektDto::skalRedusereUtbetaling).map(MapFullføreBeregningsgrunnlagFraVLTilRegel::mapTilkommetInntekt).toList();
     }
 
     private static TilkommetInntekt mapTilkommetInntekt(TilkommetInntektDto ti) {

@@ -16,7 +16,6 @@ import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatusMedHjemmel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BeregningsgrunnlagHjemmel;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Dekningsgrad;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.MidlertidigInaktivType;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak;
@@ -28,7 +27,6 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.YtelsesSpesi
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.psb.PleiepengerGrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.svp.SvangerskapspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.adapter.util.BeregningsgrunnlagUtil;
-import no.nav.folketrygdloven.kalkulator.adapter.util.Dekningsgradtjeneste;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapInntektskategoriFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapPeriodeÅrsakFraVlTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.ForeldrepengerGrunnlagMapper;
@@ -42,10 +40,7 @@ import no.nav.folketrygdloven.kalkulator.input.FullføreBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.GrunnbeløpMapper;
 import no.nav.folketrygdloven.kalkulator.input.VurderBeregningsgrunnlagvilkårInput;
 import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
@@ -57,9 +52,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDt
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
-import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
 public class MapBeregningsgrunnlagFraVLTilRegel {
 
@@ -80,8 +73,6 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         List<BeregningsgrunnlagPeriode> perioder = mapBeregningsgrunnlagPerioder(beregningsgrunnlag, input);
         LocalDate skjæringstidspunkt = beregningsgrunnlag.getSkjæringstidspunkt();
 
-        boolean erMilitærIOpptjeningsperioden = harHattMilitærIOpptjeningsperioden(oppdatertGrunnlag.getGjeldendeAktiviteter());
-
         var builder = Beregningsgrunnlag.builder();
 
         return builder
@@ -90,7 +81,6 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medAktivitetStatuser(aktivitetStatuser)
                 .medBeregningsgrunnlagPerioder(perioder)
                 .medGrunnbeløp(beregningsgrunnlag.getGrunnbeløp().getVerdi())
-                .medMilitærIOpptjeningsperioden(erMilitærIOpptjeningsperioden)
                 .medYtelsesdagerIEtÅr(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getYtelsesdagerIÅr())
                 .medAvviksgrenseProsent(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAvviksgrenseProsent())
                 .medYtelsesSpesifiktGrunnlag(mapYtelsesSpesifiktGrunnlag(input, beregningsgrunnlag))
@@ -194,15 +184,11 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                                                                           BeregningsgrunnlagInput input) {
         List<BeregningsgrunnlagPeriode> perioder = new ArrayList<>();
         vlBeregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(vlBGPeriode -> {
-            YtelsespesifiktGrunnlag ytelsesgrunnlag = input.getYtelsespesifiktGrunnlag();
-
-            Dekningsgrad dekningsgradPeriode = ytelsesgrunnlag == null ? null : Dekningsgradtjeneste.mapTilDekningsgradRegel(ytelsesgrunnlag, Optional.of(vlBGPeriode.getBeregningsgrunnlagPeriodeFom()));
             final BeregningsgrunnlagPeriode.Builder regelBGPeriode = BeregningsgrunnlagPeriode.builder()
                     .medPeriode(Periode.of(vlBGPeriode.getBeregningsgrunnlagPeriodeFom(), vlBGPeriode.getBeregningsgrunnlagPeriodeTom()))
-                    .medDekningsgrad(dekningsgradPeriode)
                     .leggTilPeriodeÅrsaker(mapPeriodeÅrsak(vlBGPeriode.getBeregningsgrunnlagPeriodeÅrsaker()));
 
-            List<BeregningsgrunnlagPrStatus> beregningsgrunnlagPrStatus = mapVLBGPrStatus(vlBGPeriode, vlBeregningsgrunnlag.getFaktaOmBeregningTilfeller(), input);
+            List<BeregningsgrunnlagPrStatus> beregningsgrunnlagPrStatus = mapVLBGPrStatus(vlBGPeriode, input);
             beregningsgrunnlagPrStatus.forEach(regelBGPeriode::medBeregningsgrunnlagPrStatus);
             perioder.add(regelBGPeriode.build());
         });
@@ -211,7 +197,6 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
     }
 
     private List<BeregningsgrunnlagPrStatus> mapVLBGPrStatus(BeregningsgrunnlagPeriodeDto vlBGPeriode,
-                                                             List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller,
                                                              BeregningsgrunnlagInput input) {
         List<BeregningsgrunnlagPrStatus> liste = new ArrayList<>();
         BeregningsgrunnlagPrStatus bgpsATFL = null;
@@ -220,7 +205,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
             final AktivitetStatus regelAktivitetStatus = mapVLAktivitetStatus(vlBGPStatus.getAktivitetStatus());
             if (AktivitetStatus.ATFL.equals(regelAktivitetStatus) || AktivitetStatus.AT.equals(regelAktivitetStatus)) {
                 if (bgpsATFL == null) {  // Alle ATFL håndteres samtidig her
-                    bgpsATFL = mapVLBGPStatusForATFL(vlBGPeriode, regelAktivitetStatus, faktaOmBeregningTilfeller, input);
+                    bgpsATFL = mapVLBGPStatusForATFL(vlBGPeriode, regelAktivitetStatus, input);
                     liste.add(bgpsATFL);
                 }
             } else {
@@ -252,10 +237,9 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medAndelNr(vlBGPStatus.getAndelsnr())
                 .medInntektskategori(MapInntektskategoriFraVLTilRegel.map(vlBGPStatus.getGjeldendeInntektskategori()))
                 .medFastsattAvSaksbehandler(vlBGPStatus.getFastsattAvSaksbehandler())
-                .medLagtTilAvSaksbehandler(vlBGPStatus.erLagtTilAvSaksbehandler())
                 .medBesteberegningPrÅr(vlBGPStatus.getBesteberegningPrÅr())
                 .medOrginalDagsatsFraTilstøtendeYtelse(vlBGPStatus.getOrginalDagsatsFraTilstøtendeYtelse())
-                .medUtbetalingsprosentSVP(finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false))
+                .medUtbetalingsprosent(finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false))
                 .build();
     }
 
@@ -270,11 +254,9 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
     // Felles mapping av alle statuser som mapper til ATFL
     private BeregningsgrunnlagPrStatus mapVLBGPStatusForATFL(BeregningsgrunnlagPeriodeDto vlBGPeriode,
                                                              AktivitetStatus regelAktivitetStatus,
-                                                             List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller,
                                                              BeregningsgrunnlagInput input) {
 
-        BeregningsgrunnlagPrStatus.Builder regelBGPStatusATFL = BeregningsgrunnlagPrStatus.builder().medAktivitetStatus(regelAktivitetStatus)
-                .medFlOgAtISammeOrganisasjon(faktaOmBeregningTilfeller.contains(FaktaOmBeregningTilfelle.VURDER_AT_OG_FL_I_SAMME_ORGANISASJON));
+        BeregningsgrunnlagPrStatus.Builder regelBGPStatusATFL = BeregningsgrunnlagPrStatus.builder().medAktivitetStatus(regelAktivitetStatus);
 
         for (BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus : vlBGPeriode.getBeregningsgrunnlagPrStatusOgAndelList()) {
             if (regelAktivitetStatus.equals(mapVLAktivitetStatus(vlBGPStatus.getAktivitetStatus()))) {
@@ -310,12 +292,4 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
 
         return builder.build();
     }
-
-    private boolean harHattMilitærIOpptjeningsperioden(BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
-        Objects.requireNonNull(beregningAktivitetAggregat, "beregningAktivitetAggregat");
-        return beregningAktivitetAggregat.getBeregningAktiviteter().stream()
-                .map(BeregningAktivitetDto::getOpptjeningAktivitetType)
-                .anyMatch(OpptjeningAktivitetType.MILITÆR_ELLER_SIVILTJENESTE::equals);
-    }
-
 }
