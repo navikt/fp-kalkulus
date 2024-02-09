@@ -2,9 +2,6 @@ package no.nav.folketrygdloven.kalkulus.beregning.v1;
 
 import java.util.List;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -12,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FrisinnBehandlingType;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -19,7 +18,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FrisinnBehandlingType;
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
 public class FrisinnGrunnlag extends YtelsespesifiktGrunnlagDto {
 
-    public static final String YTELSE_TYPE = "FRISINN";
     /**
      * Er det søkt ytelse for frilansaktivitet
      */
@@ -72,10 +70,6 @@ public class FrisinnGrunnlag extends YtelsespesifiktGrunnlagDto {
 
     public List<PeriodeMedSøkerInfoDto> getPerioderMedSøkerInfo() {
         return perioderMedSøkerInfo;
-    }
-
-    public static String getYtelseType() {
-        return YTELSE_TYPE;
     }
 
     public Boolean getSøkerYtelseForFrilans() {

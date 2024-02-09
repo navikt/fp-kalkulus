@@ -21,7 +21,7 @@ public enum InntektPeriodeType implements Kodeverdi, KontraktKode {
     ÅRLIG("AARLG", Period.ofYears(1)),
     FASTSATT25PAVVIK("INNFS", Period.ofYears(1)),
     PREMIEGRUNNLAG("PREMGR", Period.ofYears(1)),
-    UDEFINERT("-", null),
+    UDEFINERT(KodeKonstanter.UDEFINERT, null),
     ;
 
     /**

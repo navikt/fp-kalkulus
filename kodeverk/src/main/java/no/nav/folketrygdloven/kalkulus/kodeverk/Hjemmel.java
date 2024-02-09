@@ -45,7 +45,7 @@ public enum Hjemmel implements Kodeverdi, DatabaseKode, KontraktKode {
     KORONALOVEN_3("KORONALOVEN_3", "koronaloven § 3"),
 
 
-    UDEFINERT("-", "Ikke definert"),
+    UDEFINERT(KodeKonstanter.UDEFINERT, "Ikke definert"),
     ;
 
     private static final Map<String, Hjemmel> KODER = new LinkedHashMap<>();

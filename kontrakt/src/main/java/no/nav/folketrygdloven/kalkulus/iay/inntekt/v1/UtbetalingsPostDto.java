@@ -97,16 +97,6 @@ public class UtbetalingsPostDto {
         return this;
     }
 
-    public UtbetalingsPostDto medSkattAvgiftType(String kode) {
-        setSkattAvgiftType(SkatteOgAvgiftsregelType.fraKode(kode));
-        return this;
-    }
-
-    public UtbetalingsPostDto medLønnsinntektBeskrivelse(String kode) {
-        setLønnsinntektBeskrivelse(LønnsinntektBeskrivelse.fraKode(kode));
-        return this;
-    }
-
     public Periode getPeriode() {
         return periode;
     }

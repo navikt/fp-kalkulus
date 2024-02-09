@@ -15,7 +15,7 @@ public enum BeregningAktivitetHandlingType implements Kodeverdi, DatabaseKode, K
 
     BENYTT("BENYTT"),
     IKKE_BENYTT("IKKE_BENYTT"),
-    UDEFINERT("-"),
+    UDEFINERT(KodeKonstanter.UDEFINERT),
     ;
     private static final Map<String, BeregningAktivitetHandlingType> KODER = new LinkedHashMap<>();
 

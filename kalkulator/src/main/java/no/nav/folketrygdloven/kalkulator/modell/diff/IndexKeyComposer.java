@@ -4,11 +4,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BasisKodeverdi;
-import no.nav.folketrygdloven.kalkulus.kodeverk.Kodeverdi;
+import no.nav.folketrygdloven.kalkulus.kodeverk.KodeKonstanter;
 
 /**
  * Hjelpemetoder for å raskere sette sammen en IndexKey fra flere deler.
@@ -37,7 +35,7 @@ final class IndexKeyComposer {
 
     private static String toString(Object obj, int i) {
         if (obj == null) {
-            return "-";
+            return KodeKonstanter.UDEFINERT;
         }
         Class<? extends Object> objClass = obj.getClass();
         if (String.class.isAssignableFrom(objClass)) {

@@ -29,7 +29,7 @@ public enum BeregningsgrunnlagPeriodeRegelType implements Kodeverdi, DatabaseKod
     @Deprecated
     FASTSETT2("FASTSETT2", "Fastsette/fullføre beregningsgrunnlag for andre gangs kjøring for SVP", FASTSATT),
     FINN_GRENSEVERDI("FINN_GRENSEVERDI", "Finne grenseverdi til kjøring av fastsett beregningsgrunnlag for SVP", FASTSATT),
-    UDEFINERT("-", "Ikke definert", BeregningsgrunnlagTilstand.UDEFINERT),
+    UDEFINERT(KodeKonstanter.UDEFINERT, "Ikke definert", BeregningsgrunnlagTilstand.UDEFINERT),
     ;
 
     private static final Map<String, BeregningsgrunnlagPeriodeRegelType> KODER = new LinkedHashMap<>();

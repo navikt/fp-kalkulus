@@ -4,12 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -17,14 +11,17 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotNull;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.besteberegning.Ytelsegrunnlag;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE, creatorVisibility = Visibility.NONE)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
 public class ForeldrepengerGrunnlag extends YtelsespesifiktGrunnlagDto {
-
-    public static final String YTELSE_TYPE = "FP";
 
     @JsonProperty(value = "aktivitetGradering")
     @Valid
@@ -67,10 +64,6 @@ public class ForeldrepengerGrunnlag extends YtelsespesifiktGrunnlagDto {
         this.aktivitetGradering = aktivitetGradering;
         this.sisteSøkteUttaksdag = sisteSøkteUttaksdag;
         this.ytelsegrunnlagForBesteberegning = ytelsegrunnlagForBesteberegning;
-    }
-
-    public static String getYtelseType() {
-        return YTELSE_TYPE;
     }
 
     public AktivitetGraderingDto getAktivitetGradering() {

@@ -19,8 +19,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class VurderRepresentererStortingetHåndteringDto extends HåndterBeregningDto {
 
-    public static final String AVKLARINGSBEHOV_KODE = "VURDER_REPRSNTR_STORTNGT";
-
     @JsonProperty("fom")
     @Valid
     private LocalDate fom;
@@ -42,11 +40,6 @@ public class VurderRepresentererStortingetHåndteringDto extends HåndterBeregni
         this.fom = fom;
         this.tom = tom;
         this.representererStortinget = representererStortinget;
-    }
-
-    @Override
-    public String getAvklaringsbehovKode() {
-        return AVKLARINGSBEHOV_KODE;
     }
 
 

@@ -20,8 +20,6 @@ import jakarta.validation.constraints.Size;
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
 public class OmsorgspengerGrunnlag extends YtelsespesifiktGrunnlagDto {
 
-    public static final String YTELSE_TYPE = "OMP";
-
     @JsonProperty(value = "utbetalingsgradPrAktivitet", required = true)
     @Size(min = 1)
     @Valid
@@ -49,11 +47,6 @@ public class OmsorgspengerGrunnlag extends YtelsespesifiktGrunnlagDto {
     public List<SøktPeriode> getSøktePerioder() {
         return søktePerioder;
     }
-
-    public static String getYtelseType() {
-        return YTELSE_TYPE;
-    }
-
 
     @Override
     public String toString() {

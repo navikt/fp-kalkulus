@@ -18,8 +18,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class FastsettBGTidsbegrensetArbeidsforholdHåndteringDto extends HåndterBeregningDto {
 
-    public static final String AVKLARINGSBEHOV_KODE = "FASTSETT_BG_TB_ARB";
-
     @JsonProperty("fastsettBGTidsbegrensetArbeidsforholdDto")
     @Valid
     @NotNull
@@ -32,11 +30,6 @@ public class FastsettBGTidsbegrensetArbeidsforholdHåndteringDto extends Håndte
     public FastsettBGTidsbegrensetArbeidsforholdHåndteringDto(@Valid @NotNull FastsettBGTidsbegrensetArbeidsforholdDto fastsettBGTidsbegrensetArbeidsforholdDto) {
         super(AvklaringsbehovDefinisjon.FASTSETT_BG_TB_ARB);
         this.fastsettBGTidsbegrensetArbeidsforholdDto = fastsettBGTidsbegrensetArbeidsforholdDto;
-    }
-
-    @Override
-    public String getAvklaringsbehovKode() {
-        return AVKLARINGSBEHOV_KODE;
     }
 
     public FastsettBGTidsbegrensetArbeidsforholdDto getFastsettBGTidsbegrensetArbeidsforholdDto() {

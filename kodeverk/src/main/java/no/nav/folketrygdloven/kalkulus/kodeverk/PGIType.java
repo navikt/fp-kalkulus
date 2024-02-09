@@ -16,7 +16,7 @@ public enum PGIType implements Kodeverdi, KontraktKode {
 
     LØNN("LØNN", "Pensjonsgivende inntekt gjennom lønn"),
     NÆRING("NÆRING", "Pensjonsgivende inntekt gjennom næring"),
-    UDEFINERT("-", "Udefinert");
+    UDEFINERT(KodeKonstanter.UDEFINERT, "Udefinert");
 
     private static final Map<String, PGIType> KODER = new LinkedHashMap<>();
 

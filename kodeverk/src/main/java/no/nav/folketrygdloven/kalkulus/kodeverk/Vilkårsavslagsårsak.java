@@ -12,32 +12,26 @@ import com.fasterxml.jackson.annotation.JsonValue;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum Vilkårsavslagsårsak implements Kodeverdi, KontraktKode {
 
-    ATFL_SAMME_ORG("ATFL_SAMME_ORG"),
-    SØKT_FL_INGEN_FL_INNTEKT("SØKT_FL_INGEN_FL_INNTEKT"),
-    FOR_LAVT_BG("FOR_LAVT_BG"),
-    FOR_LAVT_BG_8_47("FOR_LAVT_BG_8_47"),
-    AVKORTET_GRUNNET_ANNEN_INNTEKT("AVKORTET_GRUNNET_ANNEN_INNTEKT");
+    ATFL_SAMME_ORG(),
+    SØKT_FL_INGEN_FL_INNTEKT(),
+    FOR_LAVT_BG(),
+    FOR_LAVT_BG_8_47(),
+    AVKORTET_GRUNNET_ANNEN_INNTEKT();
 
     private static final Map<String, Vilkårsavslagsårsak> KODER = new LinkedHashMap<>();
 
     static {
         for (var v : values()) {
-            if (KODER.putIfAbsent(v.kode, v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.kode);
+            if (KODER.putIfAbsent(v.name(), v) != null) {
+                throw new IllegalArgumentException("Duplikat : " + v.name());
             }
         }
     }
 
-    @JsonValue
-    private final String kode;
-
-    Vilkårsavslagsårsak(String kode) {
-        this.kode = kode;
-    }
-
     @Override
+    @JsonValue
     public String getKode() {
-        return kode;
+        return name();
     }
 
 

@@ -14,29 +14,29 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Ytelser som kalkulus kan beregne etter Ftl kap 8, 9, 14
  */
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum FagsakYtelseType implements Kodeverdi, DatabaseKode {
+public enum FagsakYtelseType implements Kodeverdi, DatabaseKode, KontraktKode {
 
     /**
      * Folketrygdloven K9 ytelser.
      */
-    PLEIEPENGER_SYKT_BARN("PSB", YtelseType.PLEIEPENGER_SYKT_BARN),
-    PLEIEPENGER_NÆRSTÅENDE("PPN", YtelseType.PLEIEPENGER_NÆRSTÅENDE),
-    OMSORGSPENGER("OMP", YtelseType.OMSORGSPENGER),
-    OPPLÆRINGSPENGER("OLP", YtelseType.OPPLÆRINGSPENGER),
+    PLEIEPENGER_SYKT_BARN(KodeKonstanter.YT_PLEIEPENGER_SYKT_BARN, YtelseType.PLEIEPENGER_SYKT_BARN),
+    PLEIEPENGER_NÆRSTÅENDE(KodeKonstanter.YT_PLEIEPENGER_NÆRSTÅENDE, YtelseType.PLEIEPENGER_NÆRSTÅENDE),
+    OMSORGSPENGER(KodeKonstanter.YT_OMSORGSPENGER, YtelseType.OMSORGSPENGER),
+    OPPLÆRINGSPENGER(KodeKonstanter.YT_OPPLÆRINGSPENGER, YtelseType.OPPLÆRINGSPENGER),
 
     /**
      * Folketrygdloven K14 ytelser.
      * - Engangsstønad beregnes ikke i kalkulus
      */
-    FORELDREPENGER("FP", YtelseType.FORELDREPENGER),
-    SVANGERSKAPSPENGER("SVP", YtelseType.SVANGERSKAPSPENGER),
+    FORELDREPENGER(KodeKonstanter.YT_FORELDREPENGER, YtelseType.FORELDREPENGER),
+    SVANGERSKAPSPENGER(KodeKonstanter.YT_SVANGERSKAPSPENGER, YtelseType.SVANGERSKAPSPENGER),
 
     /**
      * Ny ytelse for kompenasasjon for koronatiltak for Selvstendig næringsdrivende og Frilansere (Anmodning 10).
      */
-    FRISINN("FRISINN", YtelseType.FRISINN),
+    FRISINN(KodeKonstanter.YT_FRISINN, YtelseType.FRISINN),
 
-    UDEFINERT("-", YtelseType.UDEFINERT),
+    UDEFINERT(KodeKonstanter.UDEFINERT, YtelseType.UDEFINERT),
     ;
 
     private static final Map<String, FagsakYtelseType> KODER = new LinkedHashMap<>();

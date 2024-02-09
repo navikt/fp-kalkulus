@@ -16,7 +16,7 @@ public enum InntektAktivitetType implements Kodeverdi, KontraktKode {
     ARBEIDSTAKERINNTEKT("ARBEIDSTAKERINNTEKT"),
     FRILANSINNTEKT("FRILANSINNTEKT"),
     YTELSEINNTEKT("YTELSEINNTEKT"),
-    UDEFINERT("-");
+    UDEFINERT(KodeKonstanter.UDEFINERT);
 
     private static final Map<String, InntektAktivitetType> KODER = new LinkedHashMap<>();
 

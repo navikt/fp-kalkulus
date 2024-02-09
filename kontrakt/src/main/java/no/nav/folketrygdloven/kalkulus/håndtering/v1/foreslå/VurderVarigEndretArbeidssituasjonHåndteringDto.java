@@ -18,8 +18,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class VurderVarigEndretArbeidssituasjonHåndteringDto extends HåndterBeregningDto implements FastsettBruttoBeregningsgrunnlag {
 
-    public static final String AVKLARINGSBEHOV_KODE = "VURDER_VARIG_ENDRT_ARB_SITSJN_MDL_INAKTV";
-
     @JsonProperty("vurderVarigEndringEllerNyoppstartetDto")
     @Valid
     @NotNull
@@ -32,11 +30,6 @@ public class VurderVarigEndretArbeidssituasjonHåndteringDto extends HåndterBer
     public VurderVarigEndretArbeidssituasjonHåndteringDto(@Valid @NotNull VurderVarigEndringEllerNyoppstartetDto vurderVarigEndringEllerNyoppstartetDto) {
         super(AvklaringsbehovDefinisjon.VURDER_VARIG_ENDRT_ARB_SITSJN_MDL_INAKTV);
         this.vurderVarigEndringEllerNyoppstartetDto = vurderVarigEndringEllerNyoppstartetDto;
-    }
-
-    @Override
-    public String getAvklaringsbehovKode() {
-        return AVKLARINGSBEHOV_KODE;
     }
 
     public VurderVarigEndringEllerNyoppstartetDto getVurderVarigEndringEllerNyoppstartetDto() {

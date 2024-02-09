@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum PermisjonsbeskrivelseType implements Kodeverdi, KontraktKode {
 
-    UDEFINERT("-"),
+    UDEFINERT(KodeKonstanter.UDEFINERT),
     PERMISJON("PERMISJON"),
     UTDANNINGSPERMISJON("UTDANNINGSPERMISJON"),
     UTDANNINGSPERMISJON_IKKE_LOVFESTET("UTDANNINGSPERMISJON_IKKE_LOVFESTET"),

@@ -7,37 +7,26 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum LønnsendringScenario implements Kodeverdi, KontraktKode {
 
-    MANUELT_BEHANDLET("MANUELT_BEHANDLET", "Inntekt er manuelt satt i fakta om beregning"),
-    DELVIS_MÅNEDSINNTEKT_SISTE_MND("DELVIS_MÅNEDSINNTEKT_SISTE_MND", "Inntekt er beregnet fra siste måned som har delvis ny og gammel inntekt"),
-    FULL_MÅNEDSINNTEKT_EN_MND("FULL_MÅNEDSINNTEKT_EN_MND", "Inntekt er beregnet fra siste måned som kun har ny inntekt."),
-    FULL_MÅNEDSINNTEKT_TO_MND("FULL_MÅNEDSINNTEKT_TO_MND", "Inntekt er beregnet fra de siste to månedene som begge har ny inntekt"),
+    MANUELT_BEHANDLET, // Inntekt er manuelt satt i fakta om beregning
+    DELVIS_MÅNEDSINNTEKT_SISTE_MND, // Inntekt er beregnet fra siste måned som har delvis ny og gammel inntekt
+    FULL_MÅNEDSINNTEKT_EN_MND, // Inntekt er beregnet fra siste måned som kun har ny inntekt.
+    FULL_MÅNEDSINNTEKT_TO_MND, // Inntekt er beregnet fra de siste to månedene som begge har ny inntekt
 
     ;
     private static final Map<String, LønnsendringScenario> KODER = new LinkedHashMap<>();
 
     static {
         for (var v : values()) {
-            if (KODER.putIfAbsent(v.kode, v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.kode);
+            if (KODER.putIfAbsent(v.name(), v) != null) {
+                throw new IllegalArgumentException("Duplikat : " + v.name());
             }
         }
-    }
-
-    @JsonIgnore
-    private final String navn;
-    @JsonValue
-    private final String kode;
-
-    LønnsendringScenario(String kode, String navn) {
-        this.kode = kode;
-        this.navn = navn;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -54,8 +43,9 @@ public enum LønnsendringScenario implements Kodeverdi, KontraktKode {
     }
 
     @Override
+    @JsonValue
     public String getKode() {
-        return kode;
+        return name();
     }
 
 }

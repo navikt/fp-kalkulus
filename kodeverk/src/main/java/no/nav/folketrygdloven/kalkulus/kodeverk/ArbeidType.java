@@ -45,7 +45,7 @@ public enum ArbeidType implements Kodeverdi, KontraktKode {
     UTENLANDSK_ARBEIDSFORHOLD("UTENLANDSK_ARBEIDSFORHOLD", "Arbeid i utlandet"),
     VENTELØNN_VARTPENGER("VENTELØNN_VARTPENGER", "Ventelønn eller vartpenger"),
     VANLIG("VANLIG", "Vanlig"),
-    UDEFINERT("-", "Ikke definert"),
+    UDEFINERT(KodeKonstanter.UDEFINERT, "Ikke definert"),
     ;
 
     public static final Set<ArbeidType> AA_REGISTER_TYPER = Set.of(

@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum BeregningVenteårsak implements Kodeverdi, KontraktKode {
 
-    UDEFINERT("-", "Ikke definert"),
+    UDEFINERT(KodeKonstanter.UDEFINERT, "Ikke definert"),
     VENT_INNTEKT_RAPPORTERINGSFRIST("VENT_INNTEKT_RAPPORTERINGSFRIST", "Inntekt rapporteringsfrist"),
     VENT_PÅ_SISTE_AAP_ELLER_DP_MELDEKORT("VENT_PÅ_SISTE_AAP_MELDEKORT", "Venter på siste meldekort for AAP eller dagpenger før første uttaksdag."),
     INGEN_PERIODE_UTEN_YTELSE("INGEN_PERIODE_UTEN_YTELSE", "FRISINN: Sak settes på vent fordi søker har ytelse de 3 siste årene."),

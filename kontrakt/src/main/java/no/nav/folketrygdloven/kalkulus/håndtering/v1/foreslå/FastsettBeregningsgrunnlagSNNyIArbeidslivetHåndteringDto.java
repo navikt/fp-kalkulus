@@ -19,8 +19,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto extends HåndterBeregningDto {
 
-    public static final String AVKLARINGSBEHOV_KODE = "FASTSETT_BG_SN_NY_I_ARB_LIVT";
-
     @JsonProperty("fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto")
     @Valid
     @NotNull
@@ -30,11 +28,6 @@ public class FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto extends H
     public FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto(@JsonProperty("fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto") @Valid @NotNull FastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto) {
         super(AvklaringsbehovDefinisjon.FASTSETT_BG_SN_NY_I_ARB_LIVT);
         this.fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto = fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto;
-    }
-
-    @Override
-    public String getAvklaringsbehovKode() {
-        return AVKLARINGSBEHOV_KODE;
     }
 
     public FastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto getFastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto() {

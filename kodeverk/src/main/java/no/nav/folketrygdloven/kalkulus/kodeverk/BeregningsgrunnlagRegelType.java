@@ -32,7 +32,7 @@ public enum BeregningsgrunnlagRegelType implements Kodeverdi, DatabaseKode {
     PERIODISERING_UTBETALINGSGRAD("PERIODISERING_UTBETALINGSGRAD", "Periodiser beregningsgrunnlag pga endring i utbetalingsgrad", VURDERT_REFUSJON),
     BESTEBEREGNING("BESTEBEREGNING", "Sammenligner beregning etter kap 8 med beregning ved besteberegning.", BESTEBEREGNET),
 
-    UDEFINERT("-", "Ikke definert", BeregningsgrunnlagTilstand.UDEFINERT),
+    UDEFINERT(KodeKonstanter.UDEFINERT, "Ikke definert", BeregningsgrunnlagTilstand.UDEFINERT),
     ;
 
     private static final Map<String, BeregningsgrunnlagRegelType> KODER = new LinkedHashMap<>();

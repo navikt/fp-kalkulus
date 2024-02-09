@@ -29,10 +29,7 @@ Starter en beregning med gitt inputdata
           "abakusReferanse": {
             "abakusReferanse": "3f15eb0a-7d0e-48e0-86b1-299663a7c324"
           },
-          "arbeidType": {
-            "kodeverk": "ARBEID_TYPE",
-            "kode": "ORDINÆRT_ARBEIDSFORHOLD"
-          },
+          "arbeidType": "ORDINÆRT_ARBEIDSFORHOLD",
           "aktivitetsAvtaler": [
             {
               "periode": {
@@ -67,17 +64,10 @@ Starter en beregning med gitt inputdata
               "utbetalingsgradProsent": 100.00
             }
           ],
-          "relatertYtelseType": {
-            "kodeverk": "RELATERT_YTELSE_TYPE",
-            "kode": "FP"
-          },
+          "relatertYtelseType": "FP",
           "periode": {
             "fom": "2019-06-25",
             "tom": "2020-03-25"
-          },
-          "kilde": {
-            "kodeverk": "FAGSYSTEM",
-            "kode": "INFOTRYGD"
           }
         }
       ]
@@ -94,10 +84,7 @@ Starter en beregning med gitt inputdata
           "arbeidsforholdRefDto": {
             "abakusReferanse": "3f15eb0a-7d0e-48e0-86b1-299663a7c324"
           },
-          "handling": {
-            "kodeverk": "ARBEIDSFORHOLD_HANDLING_TYPE",
-            "kode": "BRUK_UTEN_INNTEKTSMELDING"
-          }
+          "handling": "BRUK_UTEN_INNTEKTSMELDING"
         }
       ]
     }
@@ -105,10 +92,7 @@ Starter en beregning med gitt inputdata
   "opptjeningAktiviteter": {
     "perioder": [
       {
-        "opptjeningAktivitetType": {
-          "kodeverk": "OPPTJENING_AKTIVITET_TYPE",
-          "kode": "ARBEID"
-        },
+        "opptjeningAktivitetType": "ARBEID",
         "periode": {
           "fom": "2016-03-25",
           "tom": "9999-12-31"
@@ -122,10 +106,7 @@ Starter en beregning med gitt inputdata
         }
       },
       {
-        "opptjeningAktivitetType": {
-          "kodeverk": "OPPTJENING_AKTIVITET_TYPE",
-          "kode": "FORELDREPENGER"
-        },
+        "opptjeningAktivitetType": "FORELDREPENGER",
         "periode": {
           "fom": "2019-06-25",
           "tom": "2020-03-25"
@@ -149,10 +130,7 @@ Starter en beregning med gitt inputdata
             "identType": "ORGNUMMER",
             "ident": "910909088"
           },
-          "uttakArbeidType": {
-            "kodeverk": "UTTAK_ARBEID_TYPE",
-            "kode": "AT"
-          }
+          "uttakArbeidType": "AT"
         },
         "periodeMedUtbetalingsgrad": [
           {
@@ -170,10 +148,7 @@ Starter en beregning med gitt inputdata
             "identType": "ORGNUMMER",
             "ident": "910909088"
           },
-          "uttakArbeidType": {
-            "kode": "AT",
-            "kodeverk": "UTTAK_ARBEID_TYPE"
-          }
+          "uttakArbeidType": "AT"
         },
         "periodeMedUtbetalingsgrad": [
           {
@@ -198,10 +173,7 @@ HTTP 200 - Liste med avklaringsbehov som må løses av sakssystemet (K9-SAK elle
 ```json
 {
   "avklaringsbehovMedTilstandDto" : [ {
-    "beregningAvklaringsbehovDefinisjon" : {
-      "kodeverk" : "BEREGNING_AKSJONSPUNKT_DEF",
-      "kode" : "5058"
-    },
+    "beregningAvklaringsbehovDefinisjon" : "5058",
     "venteårsak" : null,
     "ventefrist" : null
   } ]
@@ -217,14 +189,8 @@ Kjører angitt steg av beregningsprosessen
 ```json
 {
   "eksternReferanse" : "af2ef59f-5151-4b50-9e6b-0e32b9ddac87",
-  "ytelseSomSkalBeregnes" : {
-    "kodeverk" : "YTELSE_TYPE",
-    "kode" : "FP"
-  },
-  "stegType" : {
-    "kodeverk" : "STEG_TYPE",
-    "kode" : "KOFAKBER"
-  }
+  "ytelseSomSkalBeregnes" : "FP",
+  "stegType" : "KOFAKBER"
 }
 ```
 
@@ -234,10 +200,7 @@ HTTP 200 - Liste med avklaringsbehov som må løses av sakssystemet (K9-SAK elle
 ```json
 {
   "avklaringsbehovMedTilstandDto" : [ {
-    "beregningAvklaringsbehovDefinisjon" : {
-      "kodeverk" : "BEREGNING_AKSJONSPUNKT_DEF",
-      "kode" : "5058"
-    },
+    "beregningAvklaringsbehovDefinisjon" : "5058",
     "venteårsak" : null,
     "ventefrist" : null
   } ]
@@ -253,19 +216,12 @@ Oppdater beregningsgrunnlaget med input fra sakssystemet(K9-SAK eller FP-SAK)
 {
   "håndterBeregning" : {
     "identType" : "5058",
-    "kode" : {
-      "kodeverk" : "HÅNDTERING_KODE",
-      "kode" : "5058"
-    },
+    "kode" : "5058",
     "fakta" : {
       "faktaOmBeregningTilfelleDto" : {
-        "tilfeller" : [ {
-          "kodeverk" : "FAKTA_OM_BEREGNING_TILFELLE",
-          "kode" : "VURDER_BESTEBEREGNING"
-        }, {
-          "kodeverk" : "FAKTA_OM_BEREGNING_TILFELLE",
-          "kode" : "FASTSETT_BESTEBEREGNING_FØDENDE_KVINNE"
-        } ]
+        "tilfeller" : [ "VURDER_BESTEBEREGNING", 
+        "FASTSETT_BESTEBEREGNING_FØDENDE_KVINNE"
+        ]
       },
       "besteberegningAndeler" : {
         "besteberegningAndelListe" : [ {
@@ -273,19 +229,13 @@ Oppdater beregningsgrunnlaget med input fra sakssystemet(K9-SAK eller FP-SAK)
           "lagtTilAvSaksbehandler" : false,
           "fastsatteVerdier" : {
             "fastsattBeløp" : 30000,
-            "inntektskategori" : {
-              "kodeverk" : "INNTEKTSKATEGORI",
-              "kode" : "ARBEIDSTAKER"
-            }
+            "inntektskategori" : "ARBEIDSTAKER"
           }
         } ],
         "nyDagpengeAndel" : {
           "fastsatteVerdier" : {
             "fastsattBeløp" : 10000,
-            "inntektskategori" : {
-              "kodeverk" : "INNTEKTSKATEGORI",
-              "kode" : "ARBEIDSTAKER"
-            }
+            "inntektskategori" : "ARBEIDSTAKER"
           }
         }
       }
@@ -306,10 +256,7 @@ HTTP 200 - Liste med endringer i beregningsgrunnlaget benyttet av sakssystemet (
         "inntektEndring" : {
           "tilInntekt" : 360000
         },
-        "aktivitetStatus" : {
-          "kodeverk" : "AKTIVITET_STATUS",
-          "kode" : "AT"
-        },
+        "aktivitetStatus" : "AT",
         "arbeidsgiver" : {
           "identType" : "ORGNUMMER",
           "ident" : "994507508"
@@ -319,17 +266,7 @@ HTTP 200 - Liste med endringer i beregningsgrunnlaget benyttet av sakssystemet (
         "inntektEndring" : {
           "tilInntekt" : 120000
         },
-        "inntektskategoriEndring" : {
-          "kodeverk" : "INNTEKTSKATEGORI",
-          "tilVerdi" : {
-            "kodeverk" : "INNTEKTSKATEGORI",
-            "kode" : "ARBEIDSTAKER"
-          }
-        },
-        "aktivitetStatus" : {
-          "kodeverk" : "AKTIVITET_STATUS",
-          "kode" : "DP"
-        }
+        "aktivitetStatus" : "DP"
       } ],
       "periode" : {
         "fom" : "2020-01-01",
@@ -349,19 +286,12 @@ Hent beregningsgrunnlagDto for angitt behandling som brukes av frontend til saks
 {
   "håndterBeregning" : {
     "identType" : "5058",
-    "kode" : {
-      "kodeverk" : "HÅNDTERING_KODE",
-      "kode" : "5058"
-    },
+    "kode" : "5058",
     "fakta" : {
       "faktaOmBeregningTilfelleDto" : {
-        "tilfeller" : [ {
-          "kodeverk" : "FAKTA_OM_BEREGNING_TILFELLE",
-          "kode" : "VURDER_BESTEBEREGNING"
-        }, {
-          "kodeverk" : "FAKTA_OM_BEREGNING_TILFELLE",
-          "kode" : "FASTSETT_BESTEBEREGNING_FØDENDE_KVINNE"
-        } ]
+        "tilfeller" : [ "VURDER_BESTEBEREGNING",
+          "FASTSETT_BESTEBEREGNING_FØDENDE_KVINNE"
+        ]
       },
       "besteberegningAndeler" : {
         "besteberegningAndelListe" : [ {
@@ -369,19 +299,13 @@ Hent beregningsgrunnlagDto for angitt behandling som brukes av frontend til saks
           "lagtTilAvSaksbehandler" : false,
           "fastsatteVerdier" : {
             "fastsattBeløp" : 30000,
-            "inntektskategori" : {
-              "kodeverk" : "INNTEKTSKATEGORI",
-              "kode" : "ARBEIDSTAKER"
-            }
+            "inntektskategori" : "ARBEIDSTAKER"
           }
         } ],
         "nyDagpengeAndel" : {
           "fastsatteVerdier" : {
             "fastsattBeløp" : 10000,
-            "inntektskategori" : {
-              "kodeverk" : "INNTEKTSKATEGORI",
-              "kode" : "ARBEIDSTAKER"
-            }
+            "inntektskategori" : "ARBEIDSTAKER"
           }
         }
       }
@@ -398,10 +322,7 @@ HTTP 200 - BeregningsgrunnlagDto
 {
   "skjaeringstidspunktBeregning" : "2020-01-01",
   "skjæringstidspunkt" : "2020-01-01",
-  "aktivitetStatus" : [ {
-    "kodeverk" : "AKTIVITET_STATUS",
-    "kode" : "AT"
-  } ],
+  "aktivitetStatus" : [ "AT"],
   "beregningsgrunnlagPeriode" : [ {
     "beregningsgrunnlagPeriodeFom" : "2020-01-01",
     "beregningsgrunnlagPeriodeTom" : "9999-12-31",
@@ -413,10 +334,7 @@ HTTP 200 - BeregningsgrunnlagDto
     "beregningsgrunnlagPrStatusOgAndel" : [ {
       "beregningsgrunnlagFom" : "2019-10-01",
       "beregningsgrunnlagTom" : "2019-12-31",
-      "aktivitetStatus" : {
-        "kodeverk" : "AKTIVITET_STATUS",
-        "kode" : "AT"
-      },
+      "aktivitetStatus" : "AT",
       "beregningsperiodeFom" : "2019-10-01",
       "beregningsperiodeTom" : "2019-12-31",
       "beregnetPrAar" : null,
@@ -429,10 +347,7 @@ HTTP 200 - BeregningsgrunnlagDto
       "lonnsendringIBeregningsperioden" : null,
       "andelsnr" : 1,
       "besteberegningPrAar" : null,
-      "inntektskategori" : {
-        "kodeverk" : "INNTEKTSKATEGORI",
-        "kode" : "ARBEIDSTAKER"
-      },
+      "inntektskategori" : "ARBEIDSTAKER",
       "arbeidsforhold" : {
         "arbeidsgiverNavn" : "Arbeidsgiveren",
         "arbeidsgiverId" : "994507508",
@@ -440,10 +355,7 @@ HTTP 200 - BeregningsgrunnlagDto
         "startdato" : "2019-07-01",
         "opphoersdato" : "2020-03-31",
         "arbeidsforholdId" : "127b7791-8f38-4910-9424-0d764d7b2298",
-        "arbeidsforholdType" : {
-          "kodeverk" : "OPPTJENING_AKTIVITET_TYPE",
-          "kode" : "ARBEID"
-        },
+        "arbeidsforholdType" : "ARBEID",
         "belopFraInntektsmeldingPrMnd" : 44733.33
       },
       "fastsattAvSaksbehandler" : false,
@@ -464,10 +376,7 @@ HTTP 200 - BeregningsgrunnlagDto
   "halvG" : 49929.0,
   "grunnbeløp" : 99858.0,
   "faktaOmBeregning" : {
-    "faktaOmBeregningTilfeller" : [ {
-      "kodeverk" : "FAKTA_OM_BEREGNING_TILFELLE",
-      "kode" : "VURDER_BESTEBEREGNING"
-    } ],
+    "faktaOmBeregningTilfeller" : [ "VURDER_BESTEBEREGNING" ],
     "avklarAktiviteter" : {
       "aktiviteterTomDatoMapping" : [ {
         "tom" : "2020-01-01",
@@ -478,34 +387,22 @@ HTTP 200 - BeregningsgrunnlagDto
           "fom" : "2019-07-01",
           "tom" : "2020-03-31",
           "arbeidsforholdId" : "127b7791-8f38-4910-9424-0d764d7b2298",
-          "arbeidsforholdType" : {
-            "kodeverk" : "OPPTJENING_AKTIVITET_TYPE",
-            "kode" : "ARBEID"
-          }
+          "arbeidsforholdType" : "ARBEID"
         } ]
       }, {
         "tom" : "2019-07-01",
         "aktiviteter" : [ {
           "fom" : "2019-01-01",
           "tom" : "2019-06-30",
-          "arbeidsforholdType" : {
-            "kodeverk" : "OPPTJENING_AKTIVITET_TYPE",
-            "kode" : "DAGPENGER"
-          }
+          "arbeidsforholdType" : "DAGPENGER"
         } ]
       } ]
     },
     "vurderBesteberegning" : { },
     "andelerForFaktaOmBeregning" : [ {
       "belopReadOnly" : 44733.33,
-      "inntektskategori" : {
-        "kodeverk" : "INNTEKTSKATEGORI",
-        "kode" : "ARBEIDSTAKER"
-      },
-      "aktivitetStatus" : {
-        "kodeverk" : "AKTIVITET_STATUS",
-        "kode" : "AT"
-      },
+      "inntektskategori" : "ARBEIDSTAKER",
+      "aktivitetStatus" : "AT",
       "refusjonskrav" : 44733.33,
       "visningsnavn" : "Arbeidsgiveren (994507508) ...2298",
       "arbeidsforhold" : {
@@ -515,10 +412,7 @@ HTTP 200 - BeregningsgrunnlagDto
         "startdato" : "2019-07-01",
         "opphoersdato" : "2020-03-31",
         "arbeidsforholdId" : "127b7791-8f38-4910-9424-0d764d7b2298",
-        "arbeidsforholdType" : {
-          "kodeverk" : "OPPTJENING_AKTIVITET_TYPE",
-          "kode" : "ARBEID"
-        },
+        "arbeidsforholdType" : "ARBEID",
         "belopFraInntektsmeldingPrMnd" : 44733.33
       },
       "andelsnr" : 1,
@@ -527,10 +421,7 @@ HTTP 200 - BeregningsgrunnlagDto
     } ],
     "vurderMilitaer" : { }
   },
-  "hjemmel" : {
-    "kodeverk" : "BG_HJEMMEL",
-    "kode" : "-"
-  },
+  "hjemmel" : "-",
   "årsinntektVisningstall" : 0,
   "dekningsgrad" : 100
 }
@@ -544,10 +435,7 @@ Deaktiver et beregningsgrunnlagt i kalkulus, fører til at det ikke lengre finne
 ```json
 {
   "håndterBeregning": {
-    "kode": {
-      "kode": "string",
-      "kodeverk": "string"
-    },
+    "kode": "string",
     "identType": "string"
   },
   "eksternReferanse": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
@@ -564,10 +452,7 @@ Henter fastsatt beregningsgrunnlag (Bare tilgjengelig når alle beregningssteg e
 ```json
 {
   "eksternReferanse": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "ytelseSomSkalBeregnes": {
-    "kode": "string",
-    "kodeverk": "string"
-  }
+  "ytelseSomSkalBeregnes": "string"
 }
 ```
 ### Response
@@ -577,36 +462,24 @@ HTTP 200
 {
   "skjæringstidspunkt": "2020-01-15",
   "aktivitetStatuser": [
-    {
-      "kodeverk": "AKTIVITET_STATUS",
-      "kode": "AT"
-    }
+    "AT"
   ],
   "beregningsgrunnlagPerioder": [
     {
       "beregningsgrunnlagPrStatusOgAndelList": [
         {
-          "aktivitetStatus": {
-            "kodeverk": "AKTIVITET_STATUS",
-            "kode": "AT"
-          },
+          "aktivitetStatus": "AT",
           "beregningsperiode": {
             "fom": "2019-10-01",
             "tom": "2019-12-31"
           },
-          "arbeidsforholdType": {
-            "kodeverk": "OPPTJENING_AKTIVITET_TYPE",
-            "kode": "ARBEID"
-          },
+          "arbeidsforholdType": "ARBEID",
           "bruttoPrÅr": 360000,
           "redusertRefusjonPrÅr": 0,
           "redusertBrukersAndelPrÅr": 0,
           "dagsatsBruker": 0,
           "dagsatsArbeidsgiver": 0,
-          "inntektskategori": {
-            "kodeverk": "INNTEKTSKATEGORI",
-            "kode": "ARBEIDSTAKER"
-          },
+          "inntektskategori": "ARBEIDSTAKER",
           "bgAndelArbeidsforhold": {
             "arbeidsgiver": {
               "arbeidsgiverOrgnr": "910909088"
@@ -648,10 +521,7 @@ POST /grunnlag
 ```json
 {
   "eksternReferanse": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "ytelseSomSkalBeregnes": {
-    "kode": "string",
-    "koderverk": "string"
-  }
+  "ytelseSomSkalBeregnes": "string"
 }
 ```
 ### Response
@@ -661,37 +531,25 @@ HTTP 200
 {
   "skjæringstidspunkt": "2020-01-23",
   "aktivitetStatuser": [
-    {
-      "kodeverk": "AKTIVITET_STATUS",
-      "kode": "AT"
-    }
+    "AT"
   ],
   "beregningsgrunnlagPerioder": [
     {
       "beregningsgrunnlagPrStatusOgAndelList": [
         {
           "andelsnr": 1,
-          "aktivitetStatus": {
-            "kodeverk": "AKTIVITET_STATUS",
-            "kode": "AT"
-          },
+          "aktivitetStatus": "AT",
           "beregningsperiode": {
             "fom": "2019-10-01",
             "tom": "2019-12-31"
           },
-          "arbeidsforholdType": {
-            "kodeverk": "OPPTJENING_AKTIVITET_TYPE",
-            "kode": "ARBEID"
-          },
+          "arbeidsforholdType": "ARBEID",
           "bruttoPrÅr": 360000,
           "redusertRefusjonPrÅr": 0,
           "redusertBrukersAndelPrÅr": 0,
           "dagsatsBruker": 0,
           "dagsatsArbeidsgiver": 0,
-          "inntektskategori": {
-            "kodeverk": "INNTEKTSKATEGORI",
-            "kode": "ARBEIDSTAKER"
-          },
+          "inntektskategori": "ARBEIDSTAKER",
           "bgAndelArbeidsforhold": {
             "arbeidsgiver": {
               "arbeidsgiverOrgnr": "910909088"
@@ -725,40 +583,25 @@ HTTP 200
         "BG_PERIODE_REGEL_TYPE<VILKÅR_VURDERING>": {
           "regelEvaluering": "{}",
           "regelInput": "{}",
-          "regelType": {
-            "kodeverk": "BG_PERIODE_REGEL_TYPE",
-            "kode": "VILKÅR_VURDERING"
-          }
+          "regelType": "VILKÅR_VURDERING"
         },
         "BG_PERIODE_REGEL_TYPE<FORESLÅ>": {
           "regelEvaluering": "{}",
           "regelInput": "{}",
-          "regelType": {
-            "kodeverk": "BG_PERIODE_REGEL_TYPE",
-            "kode": "FORESLÅ"
-          }
+          "regelType": "FORESLÅ"
         },
         "BG_PERIODE_REGEL_TYPE<FASTSETT>": {
           "regelEvaluering": "{}",
           "regelInput": "{}",
-          "regelType": {
-            "kodeverk": "BG_PERIODE_REGEL_TYPE",
-            "kode": "FASTSETT"
-          }
+          "regelType": "FASTSETT"
         },
         "BG_PERIODE_REGEL_TYPE<FORDEL>": {
-          "regelType": {
-            "kodeverk": "BG_PERIODE_REGEL_TYPE",
-            "kode": "FORDEL"
-          }
+          "regelType": "FORDEL"
         },
         "BG_PERIODE_REGEL_TYPE<FINN_GRENSEVERDI>": {
           "regelEvaluering": "{}",
           "regelInput": "{}",
-          "regelType": {
-            "kodeverk": "BG_PERIODE_REGEL_TYPE",
-            "kode": "FINN_GRENSEVERDI"
-          }
+          "regelType": "FINN_GRENSEVERDI"
         }
       }
     },
@@ -766,27 +609,18 @@ HTTP 200
       "beregningsgrunnlagPrStatusOgAndelList": [
         {
           "andelsnr": 1,
-          "aktivitetStatus": {
-            "kodeverk": "AKTIVITET_STATUS",
-            "kode": "AT"
-          },
+          "aktivitetStatus": "AT",
           "beregningsperiode": {
             "fom": "2019-10-01",
             "tom": "2019-12-31"
           },
-          "arbeidsforholdType": {
-            "kodeverk": "OPPTJENING_AKTIVITET_TYPE",
-            "kode": "ARBEID"
-          },
+          "arbeidsforholdType": "ARBEID",
           "bruttoPrÅr": 360000,
           "redusertRefusjonPrÅr": 0,
           "redusertBrukersAndelPrÅr": 360000,
           "dagsatsBruker": 1385,
           "dagsatsArbeidsgiver": 0,
-          "inntektskategori": {
-            "kodeverk": "INNTEKTSKATEGORI",
-            "kode": "ARBEIDSTAKER"
-          },
+          "inntektskategori": "ARBEIDSTAKER",
           "bgAndelArbeidsforhold": {
             "arbeidsgiver": {
               "arbeidsgiverOrgnr": "910909088"
@@ -816,49 +650,31 @@ HTTP 200
       "redusertPrÅr": 360000,
       "dagsats": 1385,
       "periodeÅrsaker": [
-        {
-          "kodeverk": "PERIODE_AARSAK",
-          "kode": "ENDRING_I_AKTIVITETER_SØKT_FOR"
-        }
+        "ENDRING_I_AKTIVITETER_SØKT_FOR"
       ],
       "regelSporingMap": {
         "BG_PERIODE_REGEL_TYPE<VILKÅR_VURDERING>": {
           "regelEvaluering": "{}",
           "regelInput": "{}",
-          "regelType": "{}",
-            "kodeverk": "BG_PERIODE_REGEL_TYPE",
-            "kode": "VILKÅR_VURDERING"
-          }
+          "regelType": "VILKÅR_VURDERING"
         },
         "BG_PERIODE_REGEL_TYPE<FORESLÅ>": {
           "regelEvaluering": "{}",
           "regelInput": "{}",
-          "regelType": {
-            "kodeverk": "BG_PERIODE_REGEL_TYPE",
-            "kode": "FORESLÅ"
-          }
+          "regelType": "FORESLÅ"
         },
         "BG_PERIODE_REGEL_TYPE<FASTSETT>": {
           "regelEvaluering": "{}",
           "regelInput": "{}",
-          "regelType": {
-            "kodeverk": "BG_PERIODE_REGEL_TYPE",
-            "kode": "FASTSETT"
-          }
+          "regelType": "FASTSETT"
         },
         "BG_PERIODE_REGEL_TYPE<FORDEL>": {
-          "regelType": {
-            "kodeverk": "BG_PERIODE_REGEL_TYPE",
-            "kode": "FORDEL"
-          }
+          "regelType": "FORDEL"
         },
         "BG_PERIODE_REGEL_TYPE<FINN_GRENSEVERDI>": {
           "regelEvaluering": "{}",
           "regelInput": "{}",
-          "regelType": {
-            "kodeverk": "BG_PERIODE_REGEL_TYPE",
-            "kode": "FINN_GRENSEVERDI"
-          }
+          "regelType": "FINN_GRENSEVERDI"
         }
       }
     }
@@ -877,26 +693,17 @@ HTTP 200
   "regelSporingMap": {
     "BG_REGEL_TYPE<PERIODISERING>": {
       "regelInput": "{}",
-      "regelType": "{}",
-        "kodeverk": "BG_REGEL_TYPE",
-        "kode": "PERIODISERING"
-      }
+      "regelType": "PERIODISERING"
     },
     "BG_REGEL_TYPE<BRUKERS_STATUS>": {
       "regelEvaluering": "{}",
       "regelInput": "{}",
-      "regelType": {
-        "kodeverk": "BG_REGEL_TYPE",
-        "kode": "BRUKERS_STATUS"
-      }
+      "regelType": "BRUKERS_STATUS"
     },
     "BG_REGEL_TYPE<SKJÆRINGSTIDSPUNKT>": {
       "regelEvaluering": "{}",
       "regelInput": "{}",
-      "regelType": {
-        "kodeverk": "BG_REGEL_TYPE",
-        "kode": "SKJÆRINGSTIDSPUNKT"
-      }
+      "regelType": "SKJÆRINGSTIDSPUNKT"
     }
   },
   "grunnbeløp": 99858
@@ -910,10 +717,7 @@ POST /erEndring
 {
   "eksternReferanse1": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "eksternReferanse2": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "ytelseSomSkalBeregnes": {
-    "kode": "PSB",
-    "kodeverk": "YTELSE_TYPE"
-  }
+  "ytelseSomSkalBeregnes": "PSB"
 }
 ```
 ### Response

@@ -21,25 +21,18 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class VurderTilkommetInntektHåndteringDto extends HåndterBeregningDto {
 
-    public static final String AVKLARINGSBEHOV_KODE = "VURDER_NYTT_INNTKTSFRHLD";
-
     @JsonProperty("tilkomneInntektsforhold")
     @Valid
     @Size(min = 1, max = 500)
     private List<VurderTilkomneInntektsforholdPeriodeDto> tilkomneInntektsforholdPerioder;
 
     public VurderTilkommetInntektHåndteringDto() {
-        // For Json deserialisering
+        super(AvklaringsbehovDefinisjon.VURDER_NYTT_INNTKTSFRHLD);
     }
 
     public VurderTilkommetInntektHåndteringDto(@Valid @NotNull @Size() List<VurderTilkomneInntektsforholdPeriodeDto> tilkomneInntektsforholdPerioder) {
         super(AvklaringsbehovDefinisjon.VURDER_NYTT_INNTKTSFRHLD);
         this.tilkomneInntektsforholdPerioder = tilkomneInntektsforholdPerioder;
-    }
-
-    @Override
-    public String getAvklaringsbehovKode() {
-        return AVKLARINGSBEHOV_KODE;
     }
 
     public List<VurderTilkomneInntektsforholdPeriodeDto> getTilkomneInntektsforholdPerioder() {

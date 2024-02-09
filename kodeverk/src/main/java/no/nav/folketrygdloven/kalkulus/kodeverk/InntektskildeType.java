@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum InntektskildeType implements Kodeverdi, KontraktKode {
 
-    UDEFINERT("-"),
+    UDEFINERT(KodeKonstanter.UDEFINERT),
     INNTEKT_OPPTJENING("INNTEKT_OPPTJENING"),
     INNTEKT_BEREGNING("INNTEKT_BEREGNING"),
     INNTEKT_SAMMENLIGNING("INNTEKT_SAMMENLIGNING"),

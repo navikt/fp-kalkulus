@@ -24,8 +24,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class OverstyrBeregningsgrunnlagHåndteringDto extends HåndterBeregningDto {
 
-    public static final String AVKLARINGSBEHOV_KODE = "OVST_INNTEKT";
-
     @JsonProperty("fakta")
     @Valid
     private FaktaBeregningLagreDto fakta;
@@ -59,8 +57,4 @@ public class OverstyrBeregningsgrunnlagHåndteringDto extends HåndterBeregningD
         return overstyrteAndeler;
     }
 
-    @Override
-    public String getAvklaringsbehovKode() {
-        return AVKLARINGSBEHOV_KODE;
-    }
 }

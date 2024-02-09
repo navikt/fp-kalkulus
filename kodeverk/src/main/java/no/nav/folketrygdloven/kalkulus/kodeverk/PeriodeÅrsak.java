@@ -28,7 +28,7 @@ public enum PeriodeÅrsak implements Kodeverdi, DatabaseKode, KontraktKode {
     REPRESENTERER_STORTINGET("REPRESENTERER_STORTINGET"),
     REPRESENTERER_STORTINGET_AVSLUTTET("REPRESENTERER_STORTINGET_AVSLUTTET"),
 
-    UDEFINERT("-"),
+    UDEFINERT(KodeKonstanter.UDEFINERT),
     ;
 
     private static final Map<String, PeriodeÅrsak> KODER = new LinkedHashMap<>();

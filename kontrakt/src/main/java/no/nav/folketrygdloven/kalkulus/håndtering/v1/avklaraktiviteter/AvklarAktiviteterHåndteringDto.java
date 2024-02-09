@@ -19,8 +19,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class AvklarAktiviteterHåndteringDto extends HåndterBeregningDto {
 
-    public static final String AVKLARINGSBEHOV_KODE = "AVKLAR_AKTIVITETER";
-
     @JsonProperty("avklarteAktiviteterDto")
     @Valid
     @NotNull
@@ -30,11 +28,6 @@ public class AvklarAktiviteterHåndteringDto extends HåndterBeregningDto {
     public AvklarAktiviteterHåndteringDto(@JsonProperty("avklarteAktiviteterDto") AvklarteAktiviteterDto avklarteAktiviteterDto) {
         super(AvklaringsbehovDefinisjon.AVKLAR_AKTIVITETER);
         this.avklarteAktiviteterDto = avklarteAktiviteterDto;
-    }
-
-    @Override
-    public String getAvklaringsbehovKode() {
-        return AVKLARINGSBEHOV_KODE;
     }
 
 

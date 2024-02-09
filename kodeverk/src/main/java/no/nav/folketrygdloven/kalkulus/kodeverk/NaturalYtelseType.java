@@ -32,7 +32,7 @@ public enum NaturalYtelseType implements Kodeverdi, KontraktKode {
     YRKEBIL_TJENESTLIGBEHOV_KILOMETER("YRKESBIL_KILOMETER"),
     YRKEBIL_TJENESTLIGBEHOV_LISTEPRIS("YRKESBIL_LISTEPRIS"),
     INNBETALING_TIL_UTENLANDSK_PENSJONSORDNING("UTENLANDSK_PENSJONSORDNING"),
-    UDEFINERT("-"),
+    UDEFINERT(KodeKonstanter.UDEFINERT),
     ;
 
     private static final Map<String, NaturalYtelseType> KODER = new LinkedHashMap<>();

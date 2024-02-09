@@ -15,7 +15,7 @@ public enum BeregningSatsType implements Kodeverdi, DatabaseKode {
     ENGANG("ENGANG"),
     GRUNNBELØP("GRUNNBELØP"),
     GSNITT("GSNITT"),
-    UDEFINERT("-"),
+    UDEFINERT(KodeKonstanter.UDEFINERT),
     ;
 
     private static final Map<String, BeregningSatsType> KODER = new LinkedHashMap<>();

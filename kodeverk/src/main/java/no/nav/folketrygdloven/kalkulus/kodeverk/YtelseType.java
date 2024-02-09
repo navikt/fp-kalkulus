@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Alle ytelser som kalkulus forholder seg til i prosessen og som kan være innhentet i IAY-grunnlag
  */
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum YtelseType implements Kodeverdi {
+public enum YtelseType implements Kodeverdi, KontraktKode {
 
     /**
      * Folketrygdloven K4 ytelser.
@@ -26,7 +26,7 @@ public enum YtelseType implements Kodeverdi {
     /**
      * Ny ytelse for kompenasasjon for koronatiltak for Selvstendig næringsdrivende og Frilansere (Anmodning 10).
      */
-    FRISINN("FRISINN"),
+    FRISINN(KodeKonstanter.YT_FRISINN),
 
     /**
      * Folketrygdloven K8 ytelser.
@@ -36,10 +36,10 @@ public enum YtelseType implements Kodeverdi {
     /**
      * Folketrygdloven K9 ytelser.
      */
-    PLEIEPENGER_SYKT_BARN("PSB"),
-    PLEIEPENGER_NÆRSTÅENDE("PPN"),
-    OMSORGSPENGER("OMP"),
-    OPPLÆRINGSPENGER("OLP"),
+    PLEIEPENGER_SYKT_BARN(KodeKonstanter.YT_PLEIEPENGER_SYKT_BARN),
+    PLEIEPENGER_NÆRSTÅENDE(KodeKonstanter.YT_PLEIEPENGER_NÆRSTÅENDE),
+    OMSORGSPENGER(KodeKonstanter.YT_OMSORGSPENGER),
+    OPPLÆRINGSPENGER(KodeKonstanter.YT_OPPLÆRINGSPENGER),
 
     /**
      * Folketrygdloven K11 ytelser.
@@ -50,15 +50,15 @@ public enum YtelseType implements Kodeverdi {
      * Folketrygdloven K14 ytelser.
      */
     ENGANGSTØNAD("ES"),
-    FORELDREPENGER("FP"),
-    SVANGERSKAPSPENGER("SVP"),
+    FORELDREPENGER(KodeKonstanter.YT_FORELDREPENGER),
+    SVANGERSKAPSPENGER(KodeKonstanter.YT_SVANGERSKAPSPENGER),
 
     /**
      * Folketrygdloven K15 ytelser.
      */
     ENSLIG_FORSØRGER("EF"),
 
-    UDEFINERT("-"),
+    UDEFINERT(KodeKonstanter.UDEFINERT),
     ;
 
     private static final Map<String, YtelseType> KODER = new LinkedHashMap<>();

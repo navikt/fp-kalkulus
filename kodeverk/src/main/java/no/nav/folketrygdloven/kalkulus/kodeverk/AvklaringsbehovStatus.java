@@ -17,8 +17,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * AVBRUTT - Avklaringsbehovet var før opprettet men er blitt avbrutt
  */
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public
-enum AvklaringsbehovStatus implements Kodeverdi, DatabaseKode, KontraktKode {
+public enum AvklaringsbehovStatus implements Kodeverdi, DatabaseKode, KontraktKode {
 
     OPPRETTET("OPPR"),
     UTFØRT("UTFO"),

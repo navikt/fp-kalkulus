@@ -36,7 +36,7 @@ public enum AktivitetStatus implements Kodeverdi, DatabaseKode, KontraktKode {
     TTLSTØTENDE_YTELSE("TY", Inntektskategori.UDEFINERT),
     VENTELØNN_VARTPENGER("VENTELØNN_VARTPENGER", Inntektskategori.UDEFINERT),
 
-    UDEFINERT("-", Inntektskategori.UDEFINERT);
+    UDEFINERT(KodeKonstanter.UDEFINERT, Inntektskategori.UDEFINERT);
 
     private static final Map<String, AktivitetStatus> KODER = new LinkedHashMap<>();
 

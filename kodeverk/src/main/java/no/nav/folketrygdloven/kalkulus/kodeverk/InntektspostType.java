@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum InntektspostType implements Kodeverdi, KontraktKode {
 
-    UDEFINERT("-"),
+    UDEFINERT(KodeKonstanter.UDEFINERT),
     LØNN("LØNN"),
     YTELSE("YTELSE"),
     VANLIG("VANLIG"),

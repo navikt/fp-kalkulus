@@ -3,22 +3,21 @@ package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.kodeverk.KodeKonstanter;
 
 
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
@@ -27,11 +26,11 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
         include=JsonTypeInfo.As.PROPERTY,
         property="dtoType")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value=BeregningsgrunnlagPrStatusOgAndelATDto.class, name= BeregningsgrunnlagPrStatusOgAndelATDto.DTO_TYPE),
-        @JsonSubTypes.Type(value=BeregningsgrunnlagPrStatusOgAndelSNDto.class, name= BeregningsgrunnlagPrStatusOgAndelSNDto.DTO_TYPE),
-        @JsonSubTypes.Type(value=BeregningsgrunnlagPrStatusOgAndelFLDto.class, name= BeregningsgrunnlagPrStatusOgAndelFLDto.DTO_TYPE),
-        @JsonSubTypes.Type(value=BeregningsgrunnlagPrStatusOgAndelYtelseDto.class, name= BeregningsgrunnlagPrStatusOgAndelYtelseDto.DTO_TYPE),
-        @JsonSubTypes.Type(value=BeregningsgrunnlagPrStatusOgAndelDtoFelles.class, name= BeregningsgrunnlagPrStatusOgAndelDtoFelles.DTO_TYPE)
+        @JsonSubTypes.Type(value=BeregningsgrunnlagPrStatusOgAndelATDto.class, name= "AT"),
+        @JsonSubTypes.Type(value=BeregningsgrunnlagPrStatusOgAndelSNDto.class, name= "SN"),
+        @JsonSubTypes.Type(value=BeregningsgrunnlagPrStatusOgAndelFLDto.class, name= "FL"),
+        @JsonSubTypes.Type(value=BeregningsgrunnlagPrStatusOgAndelYtelseDto.class, name= "KUN_YTELSE"),
+        @JsonSubTypes.Type(value=BeregningsgrunnlagPrStatusOgAndelDtoFelles.class, name= "GENERELL")
 })
 public abstract class BeregningsgrunnlagPrStatusOgAndelDto {
 

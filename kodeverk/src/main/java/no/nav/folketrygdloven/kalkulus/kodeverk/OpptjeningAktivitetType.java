@@ -41,7 +41,7 @@ public enum OpptjeningAktivitetType implements Kodeverdi, DatabaseKode, Kontrakt
     UTENLANDSK_ARBEIDSFORHOLD("UTENLANDSK_ARBEIDSFORHOLD"),
 
     UTDANNINGSPERMISJON("UTDANNINGSPERMISJON"),
-    UDEFINERT("-"),
+    UDEFINERT(KodeKonstanter.UDEFINERT),
     ;
 
     private static final Map<String, OpptjeningAktivitetType> KODER = new LinkedHashMap<>();

@@ -21,7 +21,7 @@ public enum SkatteOgAvgiftsregelType implements Kodeverdi, KontraktKode {
     KILDESKATT_PÅ_PENSJONER("KILDESKATT_PÅ_PENSJONER"),
     JAN_MAYEN_OG_BILANDENE("JAN_MAYEN_OG_BILANDENE"),
 
-    UDEFINERT("-"),
+    UDEFINERT(KodeKonstanter.UDEFINERT),
     ;
 
     private static final Map<String, SkatteOgAvgiftsregelType> KODER = new LinkedHashMap<>();

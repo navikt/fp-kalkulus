@@ -34,7 +34,7 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi, DatabaseKode, Kontr
     OPPDATERT_MED_REFUSJON_OG_GRADERING("OPPDATERT_MED_REFUSJON_OG_GRADERING", true),
     FASTSATT_INN("FASTSATT_INN", false),
     FASTSATT("FASTSATT", true),
-    UDEFINERT("-", false),
+    UDEFINERT(KodeKonstanter.UDEFINERT, false),
     ;
 
     private static final Map<String, BeregningsgrunnlagTilstand> KODER = new LinkedHashMap<>();

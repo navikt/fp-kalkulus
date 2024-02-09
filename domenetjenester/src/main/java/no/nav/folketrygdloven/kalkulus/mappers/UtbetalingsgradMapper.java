@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.UtbetalingsgradPrAktivitetDto;
 
@@ -44,11 +43,7 @@ class UtbetalingsgradMapper {
     }
 
     public static AktivitetDto mapArbeidsforhold(no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetDto aktivitetDto) {
-        return new AktivitetDto(MapFraKalkulator.mapArbeidsgiver(aktivitetDto.getArbeidsgiver()), mapReferanse(aktivitetDto), mapUttakArbeidType(aktivitetDto.getUttakArbeidType()));
-    }
-
-    private static UttakArbeidType mapUttakArbeidType(no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType uttakArbeidType) {
-        return UttakArbeidType.fraKode(uttakArbeidType.getKode());
+        return new AktivitetDto(MapFraKalkulator.mapArbeidsgiver(aktivitetDto.getArbeidsgiver()), mapReferanse(aktivitetDto), aktivitetDto.getUttakArbeidType());
     }
 
     private static InternArbeidsforholdRefDto mapReferanse(no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetDto aktivitetDto) {

@@ -7,33 +7,23 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum KalkulusResultatKode implements Kodeverdi, KontraktKode {
 
-    BEREGNET("BEREGNET", "Beregning fullført uten avklaringsbehov"),
-    BEREGNET_MED_AVKLARINGSBEHOV("BEREGNET_MED_AVKLARINGSBEHOV", "Beregning fullført med avklaringsbehov");
+    BEREGNET, // Beregning fullført uten avklaringsbehov
+    BEREGNET_MED_AVKLARINGSBEHOV // Beregning fullført med avklaringsbehov
+    ;
     private static final Map<String, KalkulusResultatKode> KODER = new LinkedHashMap<>();
 
     static {
         for (var v : values()) {
-            if (KODER.putIfAbsent(v.kode, v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.kode);
+            if (KODER.putIfAbsent(v.name(), v) != null) {
+                throw new IllegalArgumentException("Duplikat : " + v.name());
             }
         }
-    }
-
-    @JsonIgnore
-    private final String navn;
-    @JsonValue
-    private final String kode;
-
-    KalkulusResultatKode(String kode, String navn) {
-        this.kode = kode;
-        this.navn = navn;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -50,8 +40,9 @@ public enum KalkulusResultatKode implements Kodeverdi, KontraktKode {
     }
 
     @Override
+    @JsonValue
     public String getKode() {
-        return kode;
+        return name();
     }
 
 }

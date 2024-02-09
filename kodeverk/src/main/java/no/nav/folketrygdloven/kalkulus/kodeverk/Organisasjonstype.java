@@ -15,7 +15,7 @@ public enum Organisasjonstype implements Kodeverdi, KontraktKode {
     JURIDISK_ENHET("JURIDISK_ENHET"),
     VIRKSOMHET("VIRKSOMHET"),
     KUNSTIG("KUNSTIG"),
-    UDEFINERT("-"),
+    UDEFINERT(KodeKonstanter.UDEFINERT),
     ;
 
     private static final Map<String, Organisasjonstype> KODER = new LinkedHashMap<>();

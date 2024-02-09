@@ -19,7 +19,7 @@ public enum VirksomhetType implements Kodeverdi, KontraktKode {
     JORDBRUK_SKOGBRUK("JORDBRUK_SKOGBRUK"),
     ENKELTPERSONFORETAK("ENK"),
     ANNEN("ANNEN"),
-    UDEFINERT("-"),
+    UDEFINERT(KodeKonstanter.UDEFINERT),
     ;
     private static final Map<String, VirksomhetType> KODER = new LinkedHashMap<>();
 

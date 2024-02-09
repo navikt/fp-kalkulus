@@ -22,7 +22,7 @@ public enum Inntektskategori implements Kodeverdi, DatabaseKode, KontraktKode {
     JORDBRUKER("JORDBRUKER"),
     FISKER("FISKER"),
     ARBEIDSTAKER_UTEN_FERIEPENGER("ARBEIDSTAKER_UTEN_FERIEPENGER"),
-    UDEFINERT("-"),
+    UDEFINERT(KodeKonstanter.UDEFINERT),
     ;
 
     private static final Map<String, Inntektskategori> KODER = new LinkedHashMap<>();

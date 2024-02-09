@@ -20,7 +20,7 @@ public enum Utfall implements Kodeverdi, DatabaseKode {
     private static final Map<String, Utfall> KODER = new LinkedHashMap<>();
 
     static {
-        KODER.putIfAbsent("-", UDEFINERT);
+        KODER.putIfAbsent(KodeKonstanter.UDEFINERT, UDEFINERT);
         for (var v : values()) {
             if (KODER.putIfAbsent(v.name(), v) != null) {
                 throw new IllegalArgumentException("Duplikat : " + v.name());
@@ -44,12 +44,12 @@ public enum Utfall implements Kodeverdi, DatabaseKode {
     @Override
     @JsonValue
     public String getKode() {
-        return this == UDEFINERT ? "-" : name();
+        return this == UDEFINERT ? KodeKonstanter.UDEFINERT : name();
     }
 
     @Override
     public String getDatabaseKode() {
-        return this == UDEFINERT ? "-" : name();
+        return this == UDEFINERT ? KodeKonstanter.UDEFINERT : name();
     }
 
 

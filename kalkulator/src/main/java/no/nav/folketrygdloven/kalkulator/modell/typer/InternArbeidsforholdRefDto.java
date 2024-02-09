@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
+import no.nav.folketrygdloven.kalkulus.kodeverk.KodeKonstanter;
 
 /**
  * Intern arbeidsforhold referanse.
@@ -94,6 +95,6 @@ public class InternArbeidsforholdRefDto implements Serializable, IndexKey {
 
     @Override
     public String getIndexKey() {
-        return referanse != null ? getReferanse() : "-";
+        return referanse != null ? getReferanse() : KodeKonstanter.UDEFINERT;
     }
 }

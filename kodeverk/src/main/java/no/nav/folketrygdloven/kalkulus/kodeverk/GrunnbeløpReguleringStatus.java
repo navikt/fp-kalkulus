@@ -17,33 +17,26 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * IKKE_VURDERT - Beregningen har ikke hensyntatt grunnbeløp på koblingen enda
  */
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public
-enum GrunnbeløpReguleringStatus implements Kodeverdi, KontraktKode {
+public enum GrunnbeløpReguleringStatus implements Kodeverdi, KontraktKode {
 
-    NØDVENDIG("NØDVENDIG"),
-    IKKE_NØDVENDIG("IKKE_NØDVENDIG"),
-    IKKE_VURDERT("IKKE_VURDERT");
+    NØDVENDIG,
+    IKKE_NØDVENDIG,
+    IKKE_VURDERT;
 
     private static final Map<String, GrunnbeløpReguleringStatus> KODER = new LinkedHashMap<>();
 
     static {
         for (var v : values()) {
-            if (KODER.putIfAbsent(v.kode, v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.kode);
+            if (KODER.putIfAbsent(v.name(), v) != null) {
+                throw new IllegalArgumentException("Duplikat : " + v.name());
             }
         }
     }
 
-    @JsonValue
-    private final String kode;
-
-    GrunnbeløpReguleringStatus(String kode) {
-        this.kode = kode;
-    }
-
     @Override
+    @JsonValue
     public String getKode() {
-        return kode;
+        return name();
     }
 
     @JsonCreator(mode = Mode.DELEGATING)

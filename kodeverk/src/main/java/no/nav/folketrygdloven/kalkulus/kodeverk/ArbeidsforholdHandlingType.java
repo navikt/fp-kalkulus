@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum ArbeidsforholdHandlingType implements Kodeverdi, KontraktKode {
 
-    UDEFINERT("-", "Udefinert"),
+    UDEFINERT(KodeKonstanter.UDEFINERT, "Udefinert"),
     BRUK("BRUK", "Bruk"),
     NYTT_ARBEIDSFORHOLD("NYTT_ARBEIDSFORHOLD", "Arbeidsforholdet er ansett som nytt"),
     BRUK_UTEN_INNTEKTSMELDING("BRUK_UTEN_INNTEKTSMELDING", "Bruk, men ikke benytt inntektsmelding"),

@@ -12,29 +12,24 @@ import com.fasterxml.jackson.annotation.JsonValue;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum FrisinnBehandlingType implements Kodeverdi, KontraktKode {
 
-    REVURDERING("REVURDERING"),
-    NY_SØKNADSPERIODE("NY_SØKNADSPERIODE");
+    REVURDERING,
+    NY_SØKNADSPERIODE;
 
     private static final Map<String, FrisinnBehandlingType> KODER = new LinkedHashMap<>();
 
     static {
         for (var v : values()) {
-            if (KODER.putIfAbsent(v.kode, v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.kode);
+            if (KODER.putIfAbsent(v.name(), v) != null) {
+                throw new IllegalArgumentException("Duplikat : " + v.name());
             }
         }
     }
 
-    @JsonValue
-    private final String kode;
-
-    FrisinnBehandlingType(String kode) {
-        this.kode = kode;
-    }
 
     @Override
+    @JsonValue
     public String getKode() {
-        return kode;
+        return name();
     }
 
 

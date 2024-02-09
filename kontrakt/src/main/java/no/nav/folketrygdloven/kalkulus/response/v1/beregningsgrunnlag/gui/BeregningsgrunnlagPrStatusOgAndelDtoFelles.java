@@ -11,8 +11,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class BeregningsgrunnlagPrStatusOgAndelDtoFelles extends BeregningsgrunnlagPrStatusOgAndelDto {
-    public static final String DTO_TYPE = "GENERELL";
-
     public BeregningsgrunnlagPrStatusOgAndelDtoFelles() {
         super();
     }
