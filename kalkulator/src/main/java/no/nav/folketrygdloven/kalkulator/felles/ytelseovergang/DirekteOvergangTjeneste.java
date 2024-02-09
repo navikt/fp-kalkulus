@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.felles.ytelseovergang;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,7 +20,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
@@ -115,38 +113,6 @@ public class DirekteOvergangTjeneste {
                 })
                 .toList();
         return new LocalDateTimeline<>(ytelserPrStatusOgArbeidsgiver, StandardCombinators::union).filterValue(v -> !v.isEmpty()).mapValue(TreeSet::new);
-    }
-
-
-    /**
-     * Finner ut som det finnes ytelse av samme type som går kant-i-kant.
-     * <p>
-     * Slike tilfeller må vurderes manuelt fordi vi ikke klarer å skille mellom saker som gjelder andre barn/pleietrengende eller om det gjelder samme sak
-     *
-     * @param iayGrunnlag                    iay-grunnlag
-     * @param skjæringstidspunktForBeregning skjæringstidspunkt
-     * @param ytelseType                     Ytelsetype
-     * @return verdi som sier som det finnes ytelse kant i kant
-     */
-    public static boolean harSammeYtelseKantIKant(InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDate skjæringstidspunktForBeregning, FagsakYtelseType ytelseType) {
-        return getYtelseFilterKap8(iayGrunnlag, skjæringstidspunktForBeregning)
-                .filter(y -> y.getYtelseType().equals(ytelseType.getTilsvarendeYtelseType()))
-                .getFiltrertYtelser()
-                .stream()
-                .anyMatch(it -> DirekteOvergangTjeneste.harAnvisningSomTilstøterSkjæringstidspunkt(it, skjæringstidspunktForBeregning));
-    }
-
-    private static boolean harAnvisningSomTilstøterSkjæringstidspunkt(YtelseDto ytelseDto, LocalDate skjæringstidspunktForBeregning) {
-        return ytelseDto.getYtelseAnvist().stream().anyMatch(ya -> tilstøter(ya.getAnvistPeriode(), skjæringstidspunktForBeregning));
-    }
-
-    private static boolean tilstøter(Intervall periode, LocalDate dato) {
-        if (periode.getTomDato().getDayOfWeek().equals(DayOfWeek.FRIDAY)) {
-            return periode.getTomDato().plusDays(1).equals(dato) || periode.getTomDato().plusDays(2).equals(dato) || periode.getTomDato().plusDays(3).equals(dato);
-        } else if (periode.getTomDato().getDayOfWeek().equals(DayOfWeek.SATURDAY)) {
-            return periode.getTomDato().plusDays(1).equals(dato) || periode.getTomDato().plusDays(2).equals(dato);
-        }
-        return periode.getTomDato().plusDays(1).equals(dato);
     }
 
 

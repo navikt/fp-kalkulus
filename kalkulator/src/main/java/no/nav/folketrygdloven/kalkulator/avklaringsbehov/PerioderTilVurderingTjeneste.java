@@ -25,9 +25,6 @@ public class PerioderTilVurderingTjeneste {
 
 
     public boolean erTilVurdering(Intervall periode) {
-        if (!KonfigurasjonVerdi.get("KOPIERING_VED_FORLENGELSE", false)) {
-            return true;
-        }
         return finnPerioderTilVurdering().stream().anyMatch(periode::overlapper);
     }
 

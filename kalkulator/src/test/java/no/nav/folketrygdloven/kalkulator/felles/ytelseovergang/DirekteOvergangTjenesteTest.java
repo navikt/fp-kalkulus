@@ -5,14 +5,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.modell.iay.AnvistAndel;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
@@ -20,7 +16,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
@@ -208,167 +203,6 @@ class DirekteOvergangTjenesteTest {
         var value1Segment2 = valueIterator.next();
         assertThat(value1Segment2.arbeidsgiver()).isEqualTo(arbeidsgiver1);
         assertThat(value1Segment2.inntektskategori()).isEqualTo(Inntektskategori.ARBEIDSTAKER);
-    }
-
-
-    @Test
-    void skal_ikke_vurdere_kant_i_kant_uten_ytelser() {
-        var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
-                .medData(InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER))
-                .build();
-
-        var harKanIKant = DirekteOvergangTjeneste.harSammeYtelseKantIKant(iayGrunnlag, LocalDate.now(), FagsakYtelseType.OPPLÆRINGSPENGER);
-
-        assertThat(harKanIKant).isFalse();
-    }
-    @Test
-    void skal_ikke_vurdere_kant_i_kant_uten_ytelse_av_samme_type() {
-        var fom = LocalDate.of(2023, 10, 30);
-        var tom = LocalDate.of(2023, 11, 1);
-        var periode1 = Intervall.fraOgMedTilOgMed(fom, tom);
-        var arbeidsgiver1 = Arbeidsgiver.virksomhet("12345587");
-        var ytelse = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
-                .medYtelseType(YtelseType.FORELDREPENGER)
-                .medVedtaksDagsats(BigDecimal.valueOf(1000))
-                .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode1)
-                        .medBeløp(BigDecimal.valueOf(5000))
-                        .medDagsats(BigDecimal.valueOf(1000))
-                        .medUtbetalingsgradProsent(BigDecimal.valueOf(100))
-                        .medAnvisteAndeler(List.of(arbeidstakerAndel(arbeidsgiver1, new Stillingsprosent(100)))).build());
-        var register = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER)
-                .leggTilAktørYtelse(InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder.oppdatere(Optional.empty()).leggTilYtelse(ytelse));
-        var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
-                .medData(register)
-                .build();
-
-        var harKanIKant = DirekteOvergangTjeneste.harSammeYtelseKantIKant(iayGrunnlag, tom.plusDays(1), FagsakYtelseType.OPPLÆRINGSPENGER);
-
-        assertThat(harKanIKant).isFalse();
-    }
-
-    @Test
-    void skal_ikke_vurdere_kant_i_kant_for_samme_ytelse_med_hverdag_mellom() {
-        var fom = LocalDate.of(2023, 10, 30);
-        var tom = LocalDate.of(2023, 11, 1);
-        var periode1 = Intervall.fraOgMedTilOgMed(fom, tom);
-        var arbeidsgiver1 = Arbeidsgiver.virksomhet("12345587");
-        var ytelse = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
-                .medYtelseType(YtelseType.FORELDREPENGER)
-                .medVedtaksDagsats(BigDecimal.valueOf(1000))
-                .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode1)
-                        .medBeløp(BigDecimal.valueOf(5000))
-                        .medDagsats(BigDecimal.valueOf(1000))
-                        .medUtbetalingsgradProsent(BigDecimal.valueOf(100))
-                        .medAnvisteAndeler(List.of(arbeidstakerAndel(arbeidsgiver1, new Stillingsprosent(100)))).build());
-        var register = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER)
-                .leggTilAktørYtelse(InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder.oppdatere(Optional.empty()).leggTilYtelse(ytelse));
-        var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
-                .medData(register)
-                .build();
-
-        var harKanIKant = DirekteOvergangTjeneste.harSammeYtelseKantIKant(iayGrunnlag, tom.plusDays(2), FagsakYtelseType.FORELDREPENGER);
-
-        assertThat(harKanIKant).isFalse();
-    }
-
-    @Test
-    void skal_gi_kant_i_kant_for_samme_ytelse_uten_dag_mellom() {
-        var fom = LocalDate.of(2023, 10, 30);
-        var tom = LocalDate.of(2023, 11, 1);
-        var periode1 = Intervall.fraOgMedTilOgMed(fom, tom);
-        var arbeidsgiver1 = Arbeidsgiver.virksomhet("12345587");
-        var ytelse = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
-                .medYtelseType(YtelseType.FORELDREPENGER)
-                .medVedtaksDagsats(BigDecimal.valueOf(1000))
-                .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode1)
-                        .medBeløp(BigDecimal.valueOf(5000))
-                        .medDagsats(BigDecimal.valueOf(1000))
-                        .medUtbetalingsgradProsent(BigDecimal.valueOf(100))
-                        .medAnvisteAndeler(List.of(arbeidstakerAndel(arbeidsgiver1, new Stillingsprosent(100)))).build());
-        var register = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER)
-                .leggTilAktørYtelse(InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder.oppdatere(Optional.empty()).leggTilYtelse(ytelse));
-        var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
-                .medData(register)
-                .build();
-
-        var harKanIKant = DirekteOvergangTjeneste.harSammeYtelseKantIKant(iayGrunnlag, tom.plusDays(1), FagsakYtelseType.FORELDREPENGER);
-
-        assertThat(harKanIKant).isTrue();
-    }
-
-    @Test
-    void skal_gi_kant_i_kant_for_samme_ytelse_når_lørdag_og_søndag_mellom() {
-        var fom = LocalDate.of(2023, 10, 27);
-        var tom = LocalDate.of(2023, 10, 27);
-        var periode1 = Intervall.fraOgMedTilOgMed(fom, tom);
-        var arbeidsgiver1 = Arbeidsgiver.virksomhet("12345587");
-        var ytelse = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
-                .medYtelseType(YtelseType.FORELDREPENGER)
-                .medVedtaksDagsats(BigDecimal.valueOf(1000))
-                .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode1)
-                        .medBeløp(BigDecimal.valueOf(5000))
-                        .medDagsats(BigDecimal.valueOf(1000))
-                        .medUtbetalingsgradProsent(BigDecimal.valueOf(100))
-                        .medAnvisteAndeler(List.of(arbeidstakerAndel(arbeidsgiver1, new Stillingsprosent(100)))).build());
-        var register = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER)
-                .leggTilAktørYtelse(InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder.oppdatere(Optional.empty()).leggTilYtelse(ytelse));
-        var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
-                .medData(register)
-                .build();
-
-        var harKanIKant = DirekteOvergangTjeneste.harSammeYtelseKantIKant(iayGrunnlag, tom.plusDays(3), FagsakYtelseType.FORELDREPENGER);
-
-        assertThat(harKanIKant).isTrue();
-    }
-
-    @Test
-    void skal_gi_kant_i_kant_for_samme_ytelse_når_søndag_mellom() {
-        var fom = LocalDate.of(2023, 10, 27);
-        var tom = LocalDate.of(2023, 10, 28);
-        var periode1 = Intervall.fraOgMedTilOgMed(fom, tom);
-        var arbeidsgiver1 = Arbeidsgiver.virksomhet("12345587");
-        var ytelse = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
-                .medYtelseType(YtelseType.FORELDREPENGER)
-                .medVedtaksDagsats(BigDecimal.valueOf(1000))
-                .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode1)
-                        .medBeløp(BigDecimal.valueOf(5000))
-                        .medDagsats(BigDecimal.valueOf(1000))
-                        .medUtbetalingsgradProsent(BigDecimal.valueOf(100))
-                        .medAnvisteAndeler(List.of(arbeidstakerAndel(arbeidsgiver1, new Stillingsprosent(100)))).build());
-        var register = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER)
-                .leggTilAktørYtelse(InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder.oppdatere(Optional.empty()).leggTilYtelse(ytelse));
-        var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
-                .medData(register)
-                .build();
-
-        var harKanIKant = DirekteOvergangTjeneste.harSammeYtelseKantIKant(iayGrunnlag, tom.plusDays(2), FagsakYtelseType.FORELDREPENGER);
-
-        assertThat(harKanIKant).isTrue();
-    }
-
-    @Test
-    void skal_gi_kant_i_kant_for_samme_ytelse_når_tom_lik_søndag_og_stp_på_mandag_mellom() {
-        var fom = LocalDate.of(2023, 10, 27);
-        var tom = LocalDate.of(2023, 10, 29);
-        var periode1 = Intervall.fraOgMedTilOgMed(fom, tom);
-        var arbeidsgiver1 = Arbeidsgiver.virksomhet("12345587");
-        var ytelse = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
-                .medYtelseType(YtelseType.FORELDREPENGER)
-                .medVedtaksDagsats(BigDecimal.valueOf(1000))
-                .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode1)
-                        .medBeløp(BigDecimal.valueOf(5000))
-                        .medDagsats(BigDecimal.valueOf(1000))
-                        .medUtbetalingsgradProsent(BigDecimal.valueOf(100))
-                        .medAnvisteAndeler(List.of(arbeidstakerAndel(arbeidsgiver1, new Stillingsprosent(100)))).build());
-        var register = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER)
-                .leggTilAktørYtelse(InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder.oppdatere(Optional.empty()).leggTilYtelse(ytelse));
-        var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
-                .medData(register)
-                .build();
-
-        var harKanIKant = DirekteOvergangTjeneste.harSammeYtelseKantIKant(iayGrunnlag, tom.plusDays(1), FagsakYtelseType.FORELDREPENGER);
-
-        assertThat(harKanIKant).isTrue();
     }
 
     private static AnvistAndel frilansAndel() {

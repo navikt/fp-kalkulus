@@ -89,7 +89,7 @@ public class ForlengelseTjeneste {
                                                                            Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlagFraStegOpt,
                                                                            List<Intervall> forlengelseperioder) {
 
-        if (!KonfigurasjonVerdi.get("KOPIERING_VED_FORLENGELSE", false) || forlengelseperioder.isEmpty() || forrigeGrunnlagFraStegOpt.isEmpty() || forrigeGrunnlagFraStegOpt.get().getBeregningsgrunnlag().isEmpty()) {
+        if (forlengelseperioder.isEmpty() || forrigeGrunnlagFraStegOpt.isEmpty() || forrigeGrunnlagFraStegOpt.get().getBeregningsgrunnlag().isEmpty()) {
             return nyttGrunnlag;
         }
 

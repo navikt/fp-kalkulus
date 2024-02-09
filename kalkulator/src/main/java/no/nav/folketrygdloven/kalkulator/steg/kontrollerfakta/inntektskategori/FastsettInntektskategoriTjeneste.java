@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.inntektskategori;
 
-import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.inntektskategori.FastsettInntektskategoriFraYtelseVedtak.opprettAndelerOgSettInntektskategorierFraYtelseVedtak;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.MIDLERTIDIG_INAKTIV;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE;
@@ -42,7 +41,7 @@ public class FastsettInntektskategoriTjeneste {
                 .forEach(andel -> BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(Optional.of(andel))
                         .medInntektskategori(finnInntektskategoriForStatus(andel, iayGrunnlag, beregningsgrunnlag.getAktivitetStatuser())));
 
-        return opprettAndelerOgSettInntektskategorierFraYtelseVedtak(nyttGrunnlag, iayGrunnlag);
+        return nyttGrunnlag;
 
     }
 

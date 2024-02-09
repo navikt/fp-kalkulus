@@ -104,21 +104,13 @@ spec:
       value: "true"
     - name: BEREGNE_DAGPENGER_FRA_PLEIEPENGER
       value: "true"
-    - name: MELDEKORT_DELVIS_PERIODE
-      value: "false"
-    - name: BEREGNE_FRA_YTELSE_VEDTAK
-      value: "false"
     - name: VURDER_MOTTAR_YTELSE_FL_FILTRERING
       value: "true"
     - name: VURDER_MOTTAR_YTELSE_AT_FILTRERING
       value: "true"
     - name: MAP_YTELSE_DAGPENGER_FRA_ANDELER
       value: "true"
-    - name: REKURSIV_TASK_KOMPRIMERING_ENABLED
-      value: "true"
     - name: TREKKE_OVERSTYRING_ENABLED
-      value: "true"
-    - name: KOPIERING_VED_FORLENGELSE
       value: "true"
     - name: GRADERING_MOT_INNTEKT
       value: "false"

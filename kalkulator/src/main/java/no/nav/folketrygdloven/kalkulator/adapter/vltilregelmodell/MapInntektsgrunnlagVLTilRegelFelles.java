@@ -192,22 +192,16 @@ public class MapInntektsgrunnlagVLTilRegelFelles implements MapInntektsgrunnlagV
         BigDecimal dagsats;
         BigDecimal utbetalingsfaktor;
 
-        if (KonfigurasjonVerdi.get("MELDEKORT_DELVIS_PERIODE", false)) {
-            var meldekort = MeldekortUtils.finnSisteHeleMeldekortFørStpMedJustertPeriode(ytelseFilter, skjæringstidspunkt, Set.of(arenaYtelse));
-            utbetalingsfaktor = meldekort.map(MeldekortUtils.Meldekort::utbetalingsfaktor).orElse(BigDecimal.ONE);
-            dagsats = nyesteVedtakForDagsats.getVedtaksDagsats().map(Beløp::getVerdi)
-                    .orElse(meldekort.map(MeldekortUtils.Meldekort::dagsats).map(Beløp::getVerdi).orElse(BigDecimal.ZERO));
-        } else {
-            Optional<YtelseAnvistDto> sisteUtbetalingFørStp = MeldekortUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyesteVedtakForDagsats,
-                    skjæringstidspunkt,
-                    Set.of(arenaYtelse), fagsakYtelseType);
-            utbetalingsfaktor = sisteUtbetalingFørStp.flatMap(YtelseAnvistDto::getUtbetalingsgradProsent)
-                    .map(Stillingsprosent::getVerdi)
-                    .map(v -> v.divide(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG, 10, RoundingMode.HALF_UP))
-                    .orElse(BigDecimal.ONE);
-            dagsats = nyesteVedtakForDagsats.getVedtaksDagsats().map(Beløp::getVerdi)
-                    .orElse(sisteUtbetalingFørStp.flatMap(YtelseAnvistDto::getBeløp).map(Beløp::getVerdi).orElse(BigDecimal.ZERO));
-        }
+
+        Optional<YtelseAnvistDto> sisteUtbetalingFørStp = MeldekortUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyesteVedtakForDagsats,
+                skjæringstidspunkt,
+                Set.of(arenaYtelse), fagsakYtelseType);
+        utbetalingsfaktor = sisteUtbetalingFørStp.flatMap(YtelseAnvistDto::getUtbetalingsgradProsent)
+                .map(Stillingsprosent::getVerdi)
+                .map(v -> v.divide(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG, 10, RoundingMode.HALF_UP))
+                .orElse(BigDecimal.ONE);
+        dagsats = nyesteVedtakForDagsats.getVedtaksDagsats().map(Beløp::getVerdi)
+                .orElse(sisteUtbetalingFørStp.flatMap(YtelseAnvistDto::getBeløp).map(Beløp::getVerdi).orElse(BigDecimal.ZERO));
         return Periodeinntekt.builder()
                 .medInntektskildeOgPeriodeType(Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP)
                 .medInntekt(dagsats)

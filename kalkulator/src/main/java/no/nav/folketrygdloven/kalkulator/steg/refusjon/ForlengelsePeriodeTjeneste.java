@@ -13,7 +13,7 @@ import no.nav.fpsak.tidsserie.LocalDateTimeline;
 public class ForlengelsePeriodeTjeneste {
 
     public static BeregningsgrunnlagDto splittVedStartAvForlengelse(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
-        if (KonfigurasjonVerdi.get("KOPIERING_VED_FORLENGELSE", false)) {
+        if (!input.getForlengelseperioder().isEmpty()) {
             var forlengelseSegmenter = input.getForlengelseperioder().stream()
                     .map(p -> new LocalDateSegment<>(p.getFomDato(), p.getTomDato(), Boolean.TRUE))
                     .toList();
