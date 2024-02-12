@@ -53,7 +53,7 @@ public class RefusjonTidslinjeTjeneste {
         // Ref: https://jira.adeo.no/browse/TSF-2590
         var gjelderOriginaltIkkeUtbetaltAndel = gjelderOriginaltGrunnlag && (a.getDagsats() == null || a.getDagsats() == 0L);
         var gjelderRevurdertIkkeUtbetaltAndel = !gjelderOriginaltGrunnlag && !skalHaUtbetaling;
-        if (gjelderOriginaltIkkeUtbetaltAndel || (KonfigurasjonVerdi.get("VURDER_REFUSJON_SKAL_HA_UTBETALING", false) && gjelderRevurdertIkkeUtbetaltAndel)) {
+        if (gjelderOriginaltIkkeUtbetaltAndel || gjelderRevurdertIkkeUtbetaltAndel) {
             return BigDecimal.ZERO;
         } else {
             return a.getBruttoPrÅr() == null ? BigDecimal.ZERO : a.getBruttoPrÅr();

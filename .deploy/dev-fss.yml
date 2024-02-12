@@ -121,5 +121,3 @@ spec:
       value: "true"
     - name: PSB_IKKE_OPPHOER_REFUSJON_VED_ENDT_ARBEIDSFORHOLD
       value: "true"
-    - name: VURDER_REFUSJON_SKAL_HA_UTBETALING
-      value: "true"
