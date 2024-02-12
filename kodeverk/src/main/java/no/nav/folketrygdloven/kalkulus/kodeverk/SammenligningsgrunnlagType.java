@@ -19,30 +19,22 @@ import com.fasterxml.jackson.annotation.JsonValue;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum SammenligningsgrunnlagType implements Kodeverdi, DatabaseKode, KontraktKode {
 
-    SAMMENLIGNING_AT("SAMMENLIGNING_AT"),
-    SAMMENLIGNING_FL("SAMMENLIGNING_FL"),
-    SAMMENLIGNING_AT_FL("SAMMENLIGNING_AT_FL"),
-    SAMMENLIGNING_SN("SAMMENLIGNING_SN"),
-    SAMMENLIGNING_ATFL_SN("SAMMENLIGNING_ATFL_SN"),
-    SAMMENLIGNING_MIDL_INAKTIV("SAMMENLIGNING_MIDL_INAKTIV"),
-
+    SAMMENLIGNING_AT,
+    SAMMENLIGNING_FL,
+    SAMMENLIGNING_AT_FL,
+    SAMMENLIGNING_SN,
+    SAMMENLIGNING_ATFL_SN,
+    SAMMENLIGNING_MIDL_INAKTIV,
     ;
 
     private static final Map<String, SammenligningsgrunnlagType> KODER = new LinkedHashMap<>();
 
     static {
         for (var v : values()) {
-            if (KODER.putIfAbsent(v.kode, v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.kode);
+            if (KODER.putIfAbsent(v.name(), v) != null) {
+                throw new IllegalArgumentException("Duplikat : " + v.name());
             }
         }
-    }
-
-    @JsonValue
-    private final String kode;
-
-    SammenligningsgrunnlagType(String kode) {
-        this.kode = kode;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -59,8 +51,9 @@ public enum SammenligningsgrunnlagType implements Kodeverdi, DatabaseKode, Kontr
     }
 
     @Override
+    @JsonValue
     public String getKode() {
-        return kode;
+        return name();
     }
 
     public static SammenligningsgrunnlagType fraDatabaseKode(String databaseKode) {

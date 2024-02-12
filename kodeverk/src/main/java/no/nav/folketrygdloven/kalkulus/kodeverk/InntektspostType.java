@@ -13,29 +13,23 @@ import com.fasterxml.jackson.annotation.JsonValue;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum InntektspostType implements Kodeverdi, KontraktKode {
 
-    UDEFINERT(KodeKonstanter.UDEFINERT),
-    LØNN("LØNN"),
-    YTELSE("YTELSE"),
-    VANLIG("VANLIG"),
-    SELVSTENDIG_NÆRINGSDRIVENDE("SELVSTENDIG_NÆRINGSDRIVENDE"),
-    NÆRING_FISKE_FANGST_FAMBARNEHAGE("NÆRING_FISKE_FANGST_FAMBARNEHAGE"),
+    UDEFINERT,
+    LØNN,
+    YTELSE,
+    VANLIG,
+    SELVSTENDIG_NÆRINGSDRIVENDE,
+    NÆRING_FISKE_FANGST_FAMBARNEHAGE,
     ;
 
     private static final Map<String, InntektspostType> KODER = new LinkedHashMap<>();
 
     static {
+        KODER.putIfAbsent(KodeKonstanter.UDEFINERT, UDEFINERT);
         for (var v : values()) {
-            if (KODER.putIfAbsent(v.kode, v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.kode);
+            if (KODER.putIfAbsent(v.name(), v) != null) {
+                throw new IllegalArgumentException("Duplikat : " + v.name());
             }
         }
-    }
-
-    @JsonValue
-    private final String kode;
-
-    InntektspostType(String kode) {
-        this.kode = kode;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -52,8 +46,9 @@ public enum InntektspostType implements Kodeverdi, KontraktKode {
     }
 
     @Override
+    @JsonValue
     public String getKode() {
-        return kode;
+        return this == UDEFINERT ? KodeKonstanter.UDEFINERT : name();
     }
 
 }

@@ -24,42 +24,6 @@ public enum InntektPeriodeType implements Kodeverdi, KontraktKode {
     UDEFINERT(KodeKonstanter.UDEFINERT, null),
     ;
 
-    /**
-     * @deprecated bruk enum konstant.
-     */
-    @Deprecated(forRemoval = true)
-    public static final InntektPeriodeType PER_ÅR = ÅRLIG;
-    /**
-     * @deprecated bruk enum konstant.
-     */
-    @Deprecated(forRemoval = true)
-    public static final InntektPeriodeType PER_DAG = DAGLIG;
-    /**
-     * @deprecated bruk enum konstant.
-     */
-    @Deprecated(forRemoval = true)
-    public static final InntektPeriodeType PER_MÅNED = MÅNEDLIG;
-    /**
-     * @deprecated bruk enum konstant.
-     */
-    @Deprecated(forRemoval = true)
-    public static final InntektPeriodeType PER_UKE = UKENTLIG;
-    /**
-     * @deprecated bruk enum konstant.
-     */
-    @Deprecated(forRemoval = true)
-    public static final InntektPeriodeType PER_14DAGER = BIUKENTLIG;
-    /**
-     * @deprecated bruk enum konstant.
-     */
-    @Deprecated(forRemoval = true)
-    public static final InntektPeriodeType PREMIEGRUNNLAG_OPPDRAGSGIVER = PREMIEGRUNNLAG;
-    /**
-     * @deprecated bruk enum konstant.
-     */
-    @Deprecated(forRemoval = true)
-    public static final InntektPeriodeType FASTSATT_ETTER_AVVIKHÅNDTERING = FASTSATT25PAVVIK;
-
     private static final Map<String, InntektPeriodeType> KODER = new LinkedHashMap<>();
 
     static {

@@ -122,7 +122,7 @@ public class FastsettInntektskategoriTjeneste {
             case FISKE -> Inntektskategori.FISKER;
             case FRILANSER -> Inntektskategori.FRILANSER;
             case JORDBRUK_SKOGBRUK -> Inntektskategori.JORDBRUKER;
-            case ENKELTPERSONFORETAK, ANNEN, UDEFINERT -> Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE;
+            case ANNEN, UDEFINERT -> Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE;
         };
     }
 }

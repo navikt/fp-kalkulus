@@ -13,39 +13,32 @@ import com.fasterxml.jackson.annotation.JsonValue;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum PeriodeÅrsak implements Kodeverdi, DatabaseKode, KontraktKode {
 
-    NATURALYTELSE_BORTFALT("NATURALYTELSE_BORTFALT"),
-    ARBEIDSFORHOLD_AVSLUTTET("ARBEIDSFORHOLD_AVSLUTTET"),
-    NATURALYTELSE_TILKOMMER("NATURALYTELSE_TILKOMMER"),
-    ENDRING_I_REFUSJONSKRAV("ENDRING_I_REFUSJONSKRAV"),
-    REFUSJON_OPPHØRER("REFUSJON_OPPHØRER"),
-    GRADERING("GRADERING"),
-    GRADERING_OPPHØRER("GRADERING_OPPHØRER"),
-    ENDRING_I_AKTIVITETER_SØKT_FOR("ENDRING_I_AKTIVITETER_SØKT_FOR"),
-    TILKOMMET_INNTEKT("TILKOMMET_INNTEKT"),
-    TILKOMMET_INNTEKT_MANUELT("TILKOMMET_INNTEKT_MANUELT"),
-    TILKOMMET_INNTEKT_AVSLUTTET("TILKOMMET_INNTEKT_AVSLUTTET"),
-    REFUSJON_AVSLÅTT("REFUSJON_AVSLÅTT"),
-    REPRESENTERER_STORTINGET("REPRESENTERER_STORTINGET"),
-    REPRESENTERER_STORTINGET_AVSLUTTET("REPRESENTERER_STORTINGET_AVSLUTTET"),
-
-    UDEFINERT(KodeKonstanter.UDEFINERT),
+    NATURALYTELSE_BORTFALT,
+    ARBEIDSFORHOLD_AVSLUTTET,
+    NATURALYTELSE_TILKOMMER,
+    ENDRING_I_REFUSJONSKRAV,
+    REFUSJON_OPPHØRER,
+    GRADERING,
+    GRADERING_OPPHØRER,
+    ENDRING_I_AKTIVITETER_SØKT_FOR,
+    TILKOMMET_INNTEKT,
+    TILKOMMET_INNTEKT_MANUELT,
+    TILKOMMET_INNTEKT_AVSLUTTET,
+    REFUSJON_AVSLÅTT,
+    REPRESENTERER_STORTINGET,
+    REPRESENTERER_STORTINGET_AVSLUTTET,
+    UDEFINERT,
     ;
 
     private static final Map<String, PeriodeÅrsak> KODER = new LinkedHashMap<>();
 
     static {
+        KODER.putIfAbsent(KodeKonstanter.UDEFINERT, UDEFINERT);
         for (var v : values()) {
-            if (KODER.putIfAbsent(v.kode, v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.kode);
+            if (KODER.putIfAbsent(v.name(), v) != null) {
+                throw new IllegalArgumentException("Duplikat : " + v.name());
             }
         }
-    }
-
-    @JsonValue
-    private final String kode;
-
-    PeriodeÅrsak(String kode) {
-        this.kode = kode;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -63,8 +56,9 @@ public enum PeriodeÅrsak implements Kodeverdi, DatabaseKode, KontraktKode {
 
 
     @Override
+    @JsonValue
     public String getKode() {
-        return kode;
+        return this == UDEFINERT ? KodeKonstanter.UDEFINERT : name();
     }
 
     public static PeriodeÅrsak fraDatabaseKode(String databaseKode) {

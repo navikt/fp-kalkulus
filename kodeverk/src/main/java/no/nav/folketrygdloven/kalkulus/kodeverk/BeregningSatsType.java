@@ -3,54 +3,27 @@ package no.nav.folketrygdloven.kalkulus.kodeverk;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonValue;
 
-
-@JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum BeregningSatsType implements Kodeverdi, DatabaseKode {
-    ENGANG("ENGANG"),
-    GRUNNBELØP("GRUNNBELØP"),
-    GSNITT("GSNITT"),
-    UDEFINERT(KodeKonstanter.UDEFINERT),
+    ENGANG,
+    GRUNNBELØP,
+    GSNITT,
+    UDEFINERT,
     ;
 
-    private static final Map<String, BeregningSatsType> KODER = new LinkedHashMap<>();
-
-    static {
-        for (var v : values()) {
-            if (KODER.putIfAbsent(v.kode, v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.kode);
-            }
-        }
-    }
-
-    @JsonValue
-    private String kode;
-
-    BeregningSatsType(String kode) {
-        this.kode = kode;
-    }
-
-    @JsonCreator(mode = Mode.DELEGATING)
-    public static BeregningSatsType fraKode(Object node) {
-        if (node == null) {
+    public static BeregningSatsType fraKode(String kode) {
+        if (kode == null) {
             return null;
         }
-        String kode = TempAvledeKode.getVerdi(BeregningSatsType.class, node, "kode");
-        var ad = KODER.get(kode);
-        if (ad == null) {
-            throw new IllegalArgumentException("Ukjent BeregningSatsType: " + kode);
+        if (KodeKonstanter.UDEFINERT.equals(kode)) {
+            return UDEFINERT;
         }
-        return ad;
+        return BeregningSatsType.valueOf(kode);
     }
 
     @Override
     public String getKode() {
-        return kode;
+        return this == UDEFINERT ? KodeKonstanter.UDEFINERT : name();
     }
 
     public static BeregningSatsType fraDatabaseKode(String databaseKode) {

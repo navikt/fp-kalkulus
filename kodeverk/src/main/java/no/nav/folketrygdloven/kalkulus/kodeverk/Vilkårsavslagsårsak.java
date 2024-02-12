@@ -12,11 +12,11 @@ import com.fasterxml.jackson.annotation.JsonValue;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum Vilkårsavslagsårsak implements Kodeverdi, KontraktKode {
 
-    ATFL_SAMME_ORG(),
-    SØKT_FL_INGEN_FL_INNTEKT(),
-    FOR_LAVT_BG(),
-    FOR_LAVT_BG_8_47(),
-    AVKORTET_GRUNNET_ANNEN_INNTEKT();
+    ATFL_SAMME_ORG,
+    SØKT_FL_INGEN_FL_INNTEKT,
+    FOR_LAVT_BG,
+    FOR_LAVT_BG_8_47,
+    AVKORTET_GRUNNET_ANNEN_INNTEKT;
 
     private static final Map<String, Vilkårsavslagsårsak> KODER = new LinkedHashMap<>();
 

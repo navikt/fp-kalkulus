@@ -7,35 +7,26 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum PGIType implements Kodeverdi, KontraktKode {
 
-    LØNN("LØNN", "Pensjonsgivende inntekt gjennom lønn"),
-    NÆRING("NÆRING", "Pensjonsgivende inntekt gjennom næring"),
-    UDEFINERT(KodeKonstanter.UDEFINERT, "Udefinert");
+    LØNN, // Pensjonsgivende inntekt gjennom lønn
+    NÆRING, // Pensjonsgivende inntekt gjennom næring
+    UDEFINERT
+    ;
 
     private static final Map<String, PGIType> KODER = new LinkedHashMap<>();
 
     static {
+        KODER.putIfAbsent(KodeKonstanter.UDEFINERT, UDEFINERT);
         for (var v : values()) {
-            if (KODER.putIfAbsent(v.kode, v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.kode);
+            if (KODER.putIfAbsent(v.name(), v) != null) {
+                throw new IllegalArgumentException("Duplikat : " + v.name());
             }
         }
-    }
-
-    @JsonIgnore
-    private final String navn;
-    @JsonValue
-    private final String kode;
-
-    PGIType(String kode, String navn) {
-        this.kode = kode;
-        this.navn = navn;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -53,8 +44,9 @@ public enum PGIType implements Kodeverdi, KontraktKode {
 
 
     @Override
+    @JsonValue
     public String getKode() {
-        return kode;
+        return this == UDEFINERT ? KodeKonstanter.UDEFINERT : name();
     }
 
 }

@@ -13,25 +13,19 @@ import com.fasterxml.jackson.annotation.JsonValue;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum BeregningAktivitetHandlingType implements Kodeverdi, DatabaseKode, KontraktKode {
 
-    BENYTT("BENYTT"),
-    IKKE_BENYTT("IKKE_BENYTT"),
-    UDEFINERT(KodeKonstanter.UDEFINERT),
+    BENYTT,
+    IKKE_BENYTT,
+    UDEFINERT,
     ;
     private static final Map<String, BeregningAktivitetHandlingType> KODER = new LinkedHashMap<>();
 
     static {
+        KODER.putIfAbsent(KodeKonstanter.UDEFINERT, UDEFINERT);
         for (var v : values()) {
-            if (KODER.putIfAbsent(v.kode, v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.kode);
+            if (KODER.putIfAbsent(v.name(), v) != null) {
+                throw new IllegalArgumentException("Duplikat : " + v.name());
             }
         }
-    }
-
-    @JsonValue
-    private final String kode;
-
-    BeregningAktivitetHandlingType(String kode) {
-        this.kode = kode;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -48,8 +42,9 @@ public enum BeregningAktivitetHandlingType implements Kodeverdi, DatabaseKode, K
     }
 
     @Override
+    @JsonValue
     public String getKode() {
-        return kode;
+        return this == UDEFINERT ? KodeKonstanter.UDEFINERT : name();
     }
 
     public static BeregningAktivitetHandlingType fraDatabaseKode(String databaseKode) {

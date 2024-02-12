@@ -13,29 +13,23 @@ import com.fasterxml.jackson.annotation.JsonValue;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum InntektskildeType implements Kodeverdi, KontraktKode {
 
-    UDEFINERT(KodeKonstanter.UDEFINERT),
-    INNTEKT_OPPTJENING("INNTEKT_OPPTJENING"),
-    INNTEKT_BEREGNING("INNTEKT_BEREGNING"),
-    INNTEKT_SAMMENLIGNING("INNTEKT_SAMMENLIGNING"),
-    SIGRUN("SIGRUN"),
-    VANLIG("VANLIG"),
+    UDEFINERT,
+    INNTEKT_OPPTJENING,
+    INNTEKT_BEREGNING,
+    INNTEKT_SAMMENLIGNING,
+    SIGRUN,
+    VANLIG,
     ;
 
     private static final Map<String, InntektskildeType> KODER = new LinkedHashMap<>();
 
     static {
+        KODER.putIfAbsent(KodeKonstanter.UDEFINERT, UDEFINERT);
         for (var v : values()) {
-            if (KODER.putIfAbsent(v.kode, v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.kode);
+            if (KODER.putIfAbsent(v.name(), v) != null) {
+                throw new IllegalArgumentException("Duplikat : " + v.name());
             }
         }
-    }
-
-    @JsonValue
-    private final String kode;
-
-    InntektskildeType(String kode) {
-        this.kode = kode;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -52,8 +46,9 @@ public enum InntektskildeType implements Kodeverdi, KontraktKode {
     }
 
     @Override
+    @JsonValue
     public String getKode() {
-        return kode;
+        return this == UDEFINERT ? KodeKonstanter.UDEFINERT : name();
     }
 
 }

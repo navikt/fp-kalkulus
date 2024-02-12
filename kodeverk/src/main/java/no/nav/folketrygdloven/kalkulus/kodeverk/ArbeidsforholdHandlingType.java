@@ -14,22 +14,21 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum ArbeidsforholdHandlingType implements Kodeverdi, KontraktKode {
 
-    UDEFINERT(KodeKonstanter.UDEFINERT, "Udefinert"),
-    BRUK("BRUK", "Bruk"),
-    NYTT_ARBEIDSFORHOLD("NYTT_ARBEIDSFORHOLD", "Arbeidsforholdet er ansett som nytt"),
-    BRUK_UTEN_INNTEKTSMELDING("BRUK_UTEN_INNTEKTSMELDING", "Bruk, men ikke benytt inntektsmelding"),
-    IKKE_BRUK("IKKE_BRUK", "Ikke bruk"),
-    SLÅTT_SAMMEN_MED_ANNET("SLÅTT_SAMMEN_MED_ANNET", "Arbeidsforholdet er slått sammen med et annet"),
-    LAGT_TIL_AV_SAKSBEHANDLER("LAGT_TIL_AV_SAKSBEHANDLER", "Arbeidsforhold lagt til av saksbehandler"),
-    BASERT_PÅ_INNTEKTSMELDING("BASERT_PÅ_INNTEKTSMELDING", "Arbeidsforholdet som ikke ligger i AA-reg er basert på inntektsmelding"),
-    BRUK_MED_OVERSTYRT_PERIODE("BRUK_MED_OVERSTYRT_PERIODE", "Bruk arbeidsforholdet med overstyrt periode"),
-    INNTEKT_IKKE_MED_I_BG("INNTEKT_IKKE_MED_I_BG", "Inntekten til arbeidsforholdet skal ikke være med i beregningsgrunnlaget"),
+    UDEFINERT,
+    BRUK,
+    NYTT_ARBEIDSFORHOLD, // Arbeidsforholdet er ansett som nytt
+    BRUK_UTEN_INNTEKTSMELDING, // Bruk, men ikke benytt inntektsmelding
+    IKKE_BRUK,
+    SLÅTT_SAMMEN_MED_ANNET, // Arbeidsforholdet er slått sammen med et annet
+    LAGT_TIL_AV_SAKSBEHANDLER, // Arbeidsforhold lagt til av saksbehandler
+    BASERT_PÅ_INNTEKTSMELDING, // Arbeidsforholdet som ikke ligger i AA-reg er basert på inntektsmelding
+    BRUK_MED_OVERSTYRT_PERIODE, // Bruk arbeidsforholdet med overstyrt periode
+    INNTEKT_IKKE_MED_I_BG, // Inntekten til arbeidsforholdet skal ikke være med i beregningsgrunnlaget
     ;
 
     private static final Set<ArbeidsforholdHandlingType> MED_OVERSTYRT_PERIODE = Set.of(BRUK_MED_OVERSTYRT_PERIODE, BASERT_PÅ_INNTEKTSMELDING, LAGT_TIL_AV_SAKSBEHANDLER);
@@ -37,22 +36,12 @@ public enum ArbeidsforholdHandlingType implements Kodeverdi, KontraktKode {
     private static final Map<String, ArbeidsforholdHandlingType> KODER = new LinkedHashMap<>();
 
     static {
+        KODER.putIfAbsent(KodeKonstanter.UDEFINERT, UDEFINERT);
         for (var v : values()) {
-            if (KODER.putIfAbsent(v.kode, v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.kode);
+            if (KODER.putIfAbsent(v.name(), v) != null) {
+                throw new IllegalArgumentException("Duplikat : " + v.name());
             }
         }
-    }
-
-    @JsonIgnore
-    private final String navn;
-
-    @JsonValue
-    private final String kode;
-
-    ArbeidsforholdHandlingType(String kode, String navn) {
-        this.kode = kode;
-        this.navn = navn;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -69,8 +58,9 @@ public enum ArbeidsforholdHandlingType implements Kodeverdi, KontraktKode {
     }
 
     @Override
+    @JsonValue
     public String getKode() {
-        return kode;
+        return this == UDEFINERT ? KodeKonstanter.UDEFINERT : name();
     }
 
     public boolean erPeriodeOverstyrt() {

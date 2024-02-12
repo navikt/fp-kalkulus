@@ -13,32 +13,26 @@ import com.fasterxml.jackson.annotation.JsonValue;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum SkatteOgAvgiftsregelType implements Kodeverdi, KontraktKode {
 
-    SÆRSKILT_FRADRAG_FOR_SJØFOLK("SÆRSKILT_FRADRAG_FOR_SJØFOLK"),
-    SVALBARD("SVALBARD"),
-    SKATTEFRI_ORGANISASJON("SKATTEFRI_ORGANISASJON"),
-    NETTOLØNN_FOR_SJØFOLK("NETTOLØNN_FOR_SJØFOLK"),
-    NETTOLØNN("NETTOLØNN"),
-    KILDESKATT_PÅ_PENSJONER("KILDESKATT_PÅ_PENSJONER"),
-    JAN_MAYEN_OG_BILANDENE("JAN_MAYEN_OG_BILANDENE"),
+    SÆRSKILT_FRADRAG_FOR_SJØFOLK,
+    SVALBARD,
+    SKATTEFRI_ORGANISASJON,
+    NETTOLØNN_FOR_SJØFOLK,
+    NETTOLØNN,
+    KILDESKATT_PÅ_PENSJONER,
+    JAN_MAYEN_OG_BILANDENE,
 
-    UDEFINERT(KodeKonstanter.UDEFINERT),
+    UDEFINERT,
     ;
 
     private static final Map<String, SkatteOgAvgiftsregelType> KODER = new LinkedHashMap<>();
 
     static {
+        KODER.putIfAbsent(KodeKonstanter.UDEFINERT, UDEFINERT);
         for (var v : values()) {
-            if (KODER.putIfAbsent(v.kode, v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.kode);
+            if (KODER.putIfAbsent(v.name(), v) != null) {
+                throw new IllegalArgumentException("Duplikat : " + v.name());
             }
         }
-    }
-
-    @JsonValue
-    private final String kode;
-
-    SkatteOgAvgiftsregelType(String kode) {
-        this.kode = kode;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -56,8 +50,9 @@ public enum SkatteOgAvgiftsregelType implements Kodeverdi, KontraktKode {
 
 
     @Override
+    @JsonValue
     public String getKode() {
-        return kode;
+        return this == UDEFINERT ? KodeKonstanter.UDEFINERT : name();
     }
 
 }
