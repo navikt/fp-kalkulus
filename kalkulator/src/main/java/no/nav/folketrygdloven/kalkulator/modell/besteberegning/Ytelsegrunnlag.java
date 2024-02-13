@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.steg.besteberegning;
+package no.nav.folketrygdloven.kalkulator.modell.besteberegning;
 
 import java.util.List;
 import java.util.Objects;

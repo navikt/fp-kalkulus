@@ -35,7 +35,6 @@ import no.nav.folketrygdloven.kalkulus.rest.TilkommetAktivitetRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.forvaltning.DiagnostikkBeregningRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.forvaltning.ForvaltningFrisinnRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.forvaltning.KopierOgResetRestTjeneste;
-import no.nav.folketrygdloven.kalkulus.rest.forvaltning.MidlertidigForvaltningRestTjeneste;
 
 @ApplicationPath(ApplicationConfig.API_URI)
 public class ApplicationConfig extends Application {
@@ -96,7 +95,6 @@ public class ApplicationConfig extends Application {
         // forvaltning
         classes.add(ForvaltningFrisinnRestTjeneste.class);
         classes.add(DiagnostikkBeregningRestTjeneste.class);
-        classes.add(MidlertidigForvaltningRestTjeneste.class);
         classes.add(KopierOgResetRestTjeneste.class);
         classes.add(SimulerTilkommetInntektRestTjeneste.class);
         classes.add(TilkommetAktivitetRestTjeneste.class);

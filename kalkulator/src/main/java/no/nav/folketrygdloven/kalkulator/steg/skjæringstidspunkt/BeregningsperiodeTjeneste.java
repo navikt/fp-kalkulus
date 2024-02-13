@@ -7,8 +7,6 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 public class BeregningsperiodeTjeneste {
 
-    public static final String INNTEKT_RAPPORTERING_FRIST_DATO = "inntekt.rapportering.frist.dato";
-
     public Intervall fastsettBeregningsperiodeForATFLAndeler(LocalDate skjæringstidspunkt) {
         LocalDate fom = skjæringstidspunkt.minusMonths(3).withDayOfMonth(1);
         LocalDate tom = skjæringstidspunkt.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
