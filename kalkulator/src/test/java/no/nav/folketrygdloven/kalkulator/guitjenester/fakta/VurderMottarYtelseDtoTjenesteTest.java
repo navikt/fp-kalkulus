@@ -32,7 +32,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
@@ -149,7 +148,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
         Intervall frilansPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(10));
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = oppdatere.getAktørArbeidBuilder();
         YrkesaktivitetDtoBuilder yrkesaktivitetBuilderForType = aktørArbeidBuilder
-                .getYrkesaktivitetBuilderForType(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
+                .getYrkesaktivitetBuilderForType(ArbeidType.FRILANSER_OPPDRAGSTAKER);
         yrkesaktivitetBuilderForType
                 .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medPeriode(frilansPeriode))
                 .medArbeidsgiver(arbeidsgiver);

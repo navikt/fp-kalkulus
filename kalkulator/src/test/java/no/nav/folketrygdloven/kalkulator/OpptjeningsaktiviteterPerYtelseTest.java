@@ -14,7 +14,7 @@ public class OpptjeningsaktiviteterPerYtelseTest {
     public void aap_relevant_for_foreldrepenger() {
         // Act
         var opptjeningsaktiviteterPerYtelse =  new OpptjeningsaktiviteterPerYtelse(FagsakYtelseType.FORELDREPENGER);
-        boolean relevant = opptjeningsaktiviteterPerYtelse.erRelevantAktivitet(OpptjeningAktivitetType.ARBEIDSAVKLARING, null);
+        boolean relevant = opptjeningsaktiviteterPerYtelse.erRelevantAktivitet(OpptjeningAktivitetType.AAP, null);
 
         // Assert
         assertThat(relevant).isTrue();
@@ -34,7 +34,7 @@ public class OpptjeningsaktiviteterPerYtelseTest {
     public void aap_ikke_relevant_for_svp() {
         // Act
         var opptjeningsaktiviteterPerYtelse = new OpptjeningsaktiviteterPerYtelse(FagsakYtelseType.SVANGERSKAPSPENGER);
-        boolean relevant = opptjeningsaktiviteterPerYtelse.erRelevantAktivitet(OpptjeningAktivitetType.ARBEIDSAVKLARING, null);
+        boolean relevant = opptjeningsaktiviteterPerYtelse.erRelevantAktivitet(OpptjeningAktivitetType.AAP, null);
 
         // Assert
         assertThat(relevant).isFalse();

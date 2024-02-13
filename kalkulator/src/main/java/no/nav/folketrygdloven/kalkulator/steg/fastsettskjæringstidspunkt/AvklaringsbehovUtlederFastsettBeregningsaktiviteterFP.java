@@ -79,7 +79,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterFP implements Av
         LocalDate skjæringstidspunkt = beregningAktivitetAggregat.getSkjæringstidspunktOpptjening();
         List<OpptjeningAktivitetType> opptjeningsaktivitetTyper = beregningAktivitetAggregat.getAktiviteterPåDato(skjæringstidspunkt).stream()
                 .map(BeregningAktivitetDto::getOpptjeningAktivitetType).collect(Collectors.toList());
-        if (opptjeningsaktivitetTyper.stream().noneMatch(type -> type.equals(OpptjeningAktivitetType.ARBEIDSAVKLARING))) {
+        if (opptjeningsaktivitetTyper.stream().noneMatch(type -> type.equals(OpptjeningAktivitetType.AAP))) {
             return false;
         }
         if (beregningAktivitetAggregat.getAktiviteterPåDato(skjæringstidspunkt).size() <= 1) {

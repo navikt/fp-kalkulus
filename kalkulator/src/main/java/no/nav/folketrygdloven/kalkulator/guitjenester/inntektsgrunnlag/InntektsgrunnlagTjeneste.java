@@ -18,7 +18,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.InntektsgrunnlagDto;
 
 public class InntektsgrunnlagTjeneste {
-    private static final List<ArbeidType> FRILANS_TYPER = Arrays.asList(ArbeidType.FRILANSER, ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
+    private static final List<ArbeidType> FRILANS_TYPER = Arrays.asList(ArbeidType.FRILANSER, ArbeidType.FRILANSER_OPPDRAGSTAKER);
 
     public static Optional<InntektsgrunnlagDto> lagDto(BeregningsgrunnlagGUIInput input) {
         var harStatusSomKreverDetaljertInntektsgrunnlag = input.getBeregningsgrunnlag() != null && input.getBeregningsgrunnlag().getAktivitetStatuser().stream()

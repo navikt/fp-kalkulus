@@ -8,28 +8,27 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum BeregningSteg implements Kodeverdi, KontraktKode {
 
-    FASTSETT_STP_BER("FASTSETT_STP_BER", "Fastsett skjæringstidspunkt beregning"),
-    KOFAKBER("KOFAKBER", "Kontroller fakta for beregning"),
-    FORS_BERGRUNN("FORS_BERGRUNN", "Foreslå beregningsgrunnlag"),
-    FORTS_FORS_BERGRUNN("FORS_BERGRUNN_2", "Fortsett foreslå beregningsgrunnlag"),
+    FASTSETT_STP_BER, // Fastsett skjæringstidspunkt beregning
+    KOFAKBER, // Kontroller fakta for beregning
+    FORS_BERGRUNN, // Foreslå beregningsgrunnlag
+    FORS_BERGRUNN_2, // Fortsett foreslå beregningsgrunnlag
 
     // Kun for foreldrepenger
-    FORS_BESTEBEREGNING("FORS_BESTEBEREGNING", "Foreslå besteberegning"),
+    FORS_BESTEBEREGNING, // Foreslå besteberegning
 
-    VURDER_VILKAR_BERGRUNN("VURDER_VILKAR_BERGRUNN", "Vurder beregningsgrunnlagsvilkår"),
+    VURDER_VILKAR_BERGRUNN, // Vurder beregningsgrunnlagsvilkår
 
-    VURDER_TILKOMMET_INNTEKT("VURDER_TILKOMMET_INNTEKT", "Vurder tilkommet inntekt"),
+    VURDER_TILKOMMET_INNTEKT, // Vurder tilkommet inntekt
 
-    VURDER_REF_BERGRUNN("VURDER_REF_BERGRUNN", "Vurder refusjon for beregningsgrunnlaget"),
-    FORDEL_BERGRUNN("FORDEL_BERGRUNN", "Fordel beregningsgrunnlag"),
-    FAST_BERGRUNN("FAST_BERGRUNN", "Fastsett beregningsgrunnlag");
+    VURDER_REF_BERGRUNN, // Vurder refusjon for beregningsgrunnlaget
+    FORDEL_BERGRUNN, // Fordel beregningsgrunnlag
+    FAST_BERGRUNN; // Fastsett beregningsgrunnlag
 
     /**
      * Rekkefølge stegene opptrer i løsningen.
@@ -40,7 +39,7 @@ public enum BeregningSteg implements Kodeverdi, KontraktKode {
             FASTSETT_STP_BER,
             KOFAKBER,
             FORS_BERGRUNN,
-            FORTS_FORS_BERGRUNN,
+            FORS_BERGRUNN_2,
             FORS_BESTEBEREGNING,
             VURDER_VILKAR_BERGRUNN,
             VURDER_TILKOMMET_INNTEKT,
@@ -52,22 +51,11 @@ public enum BeregningSteg implements Kodeverdi, KontraktKode {
 
     static {
         for (var v : values()) {
-            if (KODER.putIfAbsent(v.kode, v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.kode);
+            if (KODER.putIfAbsent(v.name(), v) != null) {
+                throw new IllegalArgumentException("Duplikat : " + v.name());
             }
         }
     }
-
-    @JsonIgnore
-    private final String navn;
-    @JsonValue // Avklar om intern eller skal brukes i kontrakt. Ikke DB
-    private final String kode;
-
-    BeregningSteg(String kode, String navn) {
-        this.kode = kode;
-        this.navn = navn;
-    }
-
     @JsonCreator(mode = Mode.DELEGATING)
     public static BeregningSteg fraKode(Object node) {
         if (node == null) {
@@ -82,8 +70,9 @@ public enum BeregningSteg implements Kodeverdi, KontraktKode {
     }
 
     @Override
+    @JsonValue
     public String getKode() {
-        return kode;
+        return name();
     }
 
 

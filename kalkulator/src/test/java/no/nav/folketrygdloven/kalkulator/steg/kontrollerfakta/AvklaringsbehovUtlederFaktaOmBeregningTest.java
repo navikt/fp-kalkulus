@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -41,6 +39,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
@@ -165,7 +164,7 @@ public class AvklaringsbehovUtlederFaktaOmBeregningTest {
                 SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(10), arbId3, Arbeidsgiver.virksomhet(orgnr3), iayGrunnlag);
         BeregningIAYTestUtil.byggArbeidForBehandling(SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1),
                 SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2), null, arbeidsgiver,
-                ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER, singletonList(BigDecimal.TEN), false, Optional.empty(), iayGrunnlag);
+                ArbeidType.FRILANSER_OPPDRAGSTAKER, singletonList(BigDecimal.TEN), false, Optional.empty(), iayGrunnlag);
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedATFL(periode);
 
         // Act

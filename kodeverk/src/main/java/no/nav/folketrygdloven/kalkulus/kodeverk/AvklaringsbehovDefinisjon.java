@@ -25,16 +25,15 @@ enum AvklaringsbehovDefinisjon implements Kodeverdi, DatabaseKode, KontraktKode 
 
     // 5000 vanlig saksbehandlig
     FASTSETT_BG_AT_FL(KodeKonstanter.AB_FASTSETT_BG_AT_FL, MANUELL, BeregningSteg.FORS_BERGRUNN, "Fastsette beregningsgrunnlag for arbeidstaker/frilanser skjønnsmessig"),
-    VURDER_VARIG_ENDRT_NYOPPSTR_NAERNG_SN(KodeKonstanter.AB_VURDER_VARIG_ENDRT_NYOPPSTR_NAERNG_SN, MANUELL, BeregningSteg.FORTS_FORS_BERGRUNN, "Vurder varig endret/nyoppstartet næring selvstendig næringsdrivende"),
-    VURDER_VARIG_ENDRT_ARB_SITSJN_MDL_INAKTV(KodeKonstanter.AB_VURDER_VARIG_ENDRT_ARB_SITSJN_MDL_INAKTV, MANUELL, BeregningSteg.FORTS_FORS_BERGRUNN, "Vurder varig endret arbeidssituasjon for bruker som er midlertidig inaktiv"),
-    FASTSETT_BG_SN(KodeKonstanter.AB_FASTSETT_BG_SN, MANUELL, BeregningSteg.FORTS_FORS_BERGRUNN, "Fastsett beregningsgrunnlag for selvstendig næringsdrivende"),
+    VURDER_VARIG_ENDRT_NYOPPSTR_NAERNG_SN(KodeKonstanter.AB_VURDER_VARIG_ENDRT_NYOPPSTR_NAERNG_SN, MANUELL, BeregningSteg.FORS_BERGRUNN_2, "Vurder varig endret/nyoppstartet næring selvstendig næringsdrivende"),
+    VURDER_VARIG_ENDRT_ARB_SITSJN_MDL_INAKTV(KodeKonstanter.AB_VURDER_VARIG_ENDRT_ARB_SITSJN_MDL_INAKTV, MANUELL, BeregningSteg.FORS_BERGRUNN_2, "Vurder varig endret arbeidssituasjon for bruker som er midlertidig inaktiv"),
+    FASTSETT_BG_SN(KodeKonstanter.AB_FASTSETT_BG_SN, MANUELL, BeregningSteg.FORS_BERGRUNN_2, "Fastsett beregningsgrunnlag for selvstendig næringsdrivende"),
     FORDEL_BG(KodeKonstanter.AB_FORDEL_BG, MANUELL, BeregningSteg.FORDEL_BERGRUNN, "Fordel beregningsgrunnlag"),
     FASTSETT_BG_TB_ARB(KodeKonstanter.AB_FASTSETT_BG_TB_ARB, MANUELL, BeregningSteg.FORS_BERGRUNN, "Fastsett beregningsgrunnlag for tidsbegrenset arbeidsforhold"),
     VURDER_NYTT_INNTKTSFRHLD(KodeKonstanter.AB_VURDER_NYTT_INNTKTSFRHLD, MANUELL, BeregningSteg.VURDER_TILKOMMET_INNTEKT, "Vurder nytt inntektsforhold"),
     VURDER_REPRESENTERER_STORTINGET(KodeKonstanter.AB_VURDER_REPRESENTERER_STORTINGET, MANUELL, BeregningSteg.FORDEL_BERGRUNN, "Vurder om bruker representerer stortinget i perioden"),
 
-    FASTSETT_BG_SN_NY_I_ARB_LIVT(KodeKonstanter.AB_FASTSETT_BG_SN_NY_I_ARB_LIVT, MANUELL, BeregningSteg.FORTS_FORS_BERGRUNN, "Fastsett beregningsgrunnlag for SN som er ny i arbeidslivet"),
-    VURDER_GRADERING_UTEN_BG(KodeKonstanter.AB_VURDER_GRADERING_UTEN_BG, MANUELL, BeregningSteg.FAST_BERGRUNN, "Vurder gradering på andel uten beregningsgrunnlag"), // TODO: Er denne i bruk - hvis kun finnes historisk i DB - flytt ned til deprecated?
+    FASTSETT_BG_SN_NY_I_ARB_LIVT(KodeKonstanter.AB_FASTSETT_BG_SN_NY_I_ARB_LIVT, MANUELL, BeregningSteg.FORS_BERGRUNN_2, "Fastsett beregningsgrunnlag for SN som er ny i arbeidslivet"),
     AVKLAR_AKTIVITETER(KodeKonstanter.AB_AVKLAR_AKTIVITETER, MANUELL, BeregningSteg.FASTSETT_STP_BER, "Avklar aktivitet for beregning"),
     VURDER_FAKTA_ATFL_SN(KodeKonstanter.AB_VURDER_FAKTA_ATFL_SN, MANUELL, BeregningSteg.KOFAKBER, "Vurder fakta for arbeidstaker, frilans og selvstendig næringsdrivende"),
     VURDER_REFUSJONSKRAV(KodeKonstanter.AB_VURDER_REFUSJONSKRAV, MANUELL, BeregningSteg.VURDER_REF_BERGRUNN, "Vurder refusjonskrav for beregningen"),
@@ -52,6 +51,8 @@ enum AvklaringsbehovDefinisjon implements Kodeverdi, DatabaseKode, KontraktKode 
     INGEN_AKTIVITETER("INGEN_AKTIVITETER", AUTOPUNKT, BeregningSteg.FASTSETT_STP_BER, "Gir avslag"),
 
     // Punkter som ikke lenger utledes, tas vare på så vi vet hvilke koder kalkulus har brukt før
+    @Deprecated
+    VURDER_GRADERING_UTEN_BG("VURDER_GRADERING_UTEN_BG", MANUELL, BeregningSteg.FAST_BERGRUNN, "Vurder gradering på andel uten beregningsgrunnlag"),
     @Deprecated
     AUTO_VENT_ULIKE_STARTDTR_SVP("AUTO_VENT_ULIKE_STARTDTR_SVP", AUTOPUNKT, null, "Autopunkt ulike startdatoer svangerskapspenger"),
     @Deprecated

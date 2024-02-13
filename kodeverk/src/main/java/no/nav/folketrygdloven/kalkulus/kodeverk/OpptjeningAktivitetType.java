@@ -20,45 +20,39 @@ import com.fasterxml.jackson.annotation.JsonValue;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum OpptjeningAktivitetType implements Kodeverdi, DatabaseKode, KontraktKode {
 
-    ARBEIDSAVKLARING("AAP"),
-    ARBEID("ARBEID"),
-    DAGPENGER("DAGPENGER"),
-    FORELDREPENGER("FORELDREPENGER"),
-    FRILANS("FRILANS"),
-    MILITÆR_ELLER_SIVILTJENESTE("MILITÆR_ELLER_SIVILTJENESTE"),
-    NÆRING("NÆRING"),
-    OMSORGSPENGER("OMSORGSPENGER"),
-    OPPLÆRINGSPENGER("OPPLÆRINGSPENGER"),
-    PLEIEPENGER("PLEIEPENGER"),
-    FRISINN("FRISINN"),
-    ETTERLØNN_SLUTTPAKKE("ETTERLØNN_SLUTTPAKKE"),
-    SVANGERSKAPSPENGER("SVANGERSKAPSPENGER"),
-    SYKEPENGER("SYKEPENGER"),
-    SYKEPENGER_AV_DAGPENGER("SYKEPENGER_AV_DAGPENGER"),
-    PLEIEPENGER_AV_DAGPENGER("PLEIEPENGER_AV_DAGPENGER"),
-    VENTELØNN_VARTPENGER("VENTELØNN_VARTPENGER"),
-    VIDERE_ETTERUTDANNING("VIDERE_ETTERUTDANNING"),
-    UTENLANDSK_ARBEIDSFORHOLD("UTENLANDSK_ARBEIDSFORHOLD"),
+    AAP, // Arbeidsavklaringspenger
+    ARBEID,
+    DAGPENGER,
+    FORELDREPENGER,
+    FRILANS,
+    MILITÆR_ELLER_SIVILTJENESTE,
+    NÆRING,
+    OMSORGSPENGER,
+    OPPLÆRINGSPENGER,
+    PLEIEPENGER,
+    FRISINN,
+    ETTERLØNN_SLUTTPAKKE,
+    SVANGERSKAPSPENGER,
+    SYKEPENGER,
+    SYKEPENGER_AV_DAGPENGER,
+    PLEIEPENGER_AV_DAGPENGER,
+    VENTELØNN_VARTPENGER,
+    VIDERE_ETTERUTDANNING,
+    UTENLANDSK_ARBEIDSFORHOLD,
 
-    UTDANNINGSPERMISJON("UTDANNINGSPERMISJON"),
-    UDEFINERT(KodeKonstanter.UDEFINERT),
+    UTDANNINGSPERMISJON,
+    UDEFINERT,
     ;
 
     private static final Map<String, OpptjeningAktivitetType> KODER = new LinkedHashMap<>();
 
     static {
+        KODER.putIfAbsent(KodeKonstanter.UDEFINERT, UDEFINERT);
         for (var v : values()) {
-            if (KODER.putIfAbsent(v.kode, v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.kode);
+            if (KODER.putIfAbsent(v.name(), v) != null) {
+                throw new IllegalArgumentException("Duplikat : " + v.name());
             }
         }
-    }
-
-    @JsonValue
-    private final String kode;
-
-    OpptjeningAktivitetType(String kode) {
-        this.kode = kode;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -76,8 +70,9 @@ public enum OpptjeningAktivitetType implements Kodeverdi, DatabaseKode, Kontrakt
 
 
     @Override
+    @JsonValue
     public String getKode() {
-        return kode;
+        return this == UDEFINERT ? KodeKonstanter.UDEFINERT : name();
     }
 
     public static OpptjeningAktivitetType fraDatabaseKode(String databaseKode) {

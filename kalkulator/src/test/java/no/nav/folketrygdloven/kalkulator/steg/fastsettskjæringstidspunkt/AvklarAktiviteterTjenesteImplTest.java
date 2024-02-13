@@ -178,7 +178,7 @@ public class AvklarAktiviteterTjenesteImplTest {
     @Test
     public void skal_returnere_false_når_bare_AAP_uten_andre_aktiviteter_på_stp() {
         //Arrange
-        var aktivitetAggregat = lagBeregningAktivitetAggregatMedType(OpptjeningAktivitetType.ARBEIDSAVKLARING);
+        var aktivitetAggregat = lagBeregningAktivitetAggregatMedType(OpptjeningAktivitetType.AAP);
 
         //Act
         boolean harFullAAPMedAndreAktiviteter = AvklaringsbehovUtlederFastsettBeregningsaktiviteterFP.harFullAAPITilleggTilAnnenAktivitet(aktivitetAggregat, Optional.empty());
@@ -190,7 +190,7 @@ public class AvklarAktiviteterTjenesteImplTest {
     @Test
     public void skal_returnere_false_når_AAP_med_andre_aktiviteter_på_stp_med_siste_meldekort_uten_full_utbetaling() {
         //Arrange
-        var aktivitetAggregatDto = lagBeregningAktivitetAggregatMedType(OpptjeningAktivitetType.ARBEIDSAVKLARING, ARBEID);
+        var aktivitetAggregatDto = lagBeregningAktivitetAggregatMedType(OpptjeningAktivitetType.AAP, ARBEID);
 
         Tuple<Periode, Integer> meldekort1 = lagMeldekort(SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(15), 200);
         Tuple<Periode, Integer> meldekort2 = lagMeldekort(SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1), 180);
@@ -206,7 +206,7 @@ public class AvklarAktiviteterTjenesteImplTest {
     @Test
     public void skal_returnere_true_når_AAP_med_andre_aktiviteter_på_stp_med_siste_meldekort_med_full_utbetaling() {
         //Arrange
-        var aktivitetAggregatDto = lagBeregningAktivitetAggregatMedType(OpptjeningAktivitetType.ARBEIDSAVKLARING, OpptjeningAktivitetType.NÆRING);
+        var aktivitetAggregatDto = lagBeregningAktivitetAggregatMedType(OpptjeningAktivitetType.AAP, OpptjeningAktivitetType.NÆRING);
 
         Tuple<Periode, Integer> meldekort1 = lagMeldekort(SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(15), 99);
         Tuple<Periode, Integer> meldekort2 = lagMeldekort(SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1), 200);

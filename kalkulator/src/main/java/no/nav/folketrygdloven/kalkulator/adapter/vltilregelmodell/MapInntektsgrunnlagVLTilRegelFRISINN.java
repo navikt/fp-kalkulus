@@ -110,7 +110,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN implements MapInntektsgrunnlag
         boolean erFrilanser = yrkesaktiviteter.stream()
                 .map(YrkesaktivitetDto::getArbeidType)
                 .anyMatch(ArbeidType.FRILANSER::equals);
-        return (arbeidType.isEmpty() && erFrilanser) || arbeidType.contains(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
+        return (arbeidType.isEmpty() && erFrilanser) || arbeidType.contains(ArbeidType.FRILANSER_OPPDRAGSTAKER);
     }
 
     private Arbeidsforhold lagNyttArbeidsforholdHosArbeidsgiver(Arbeidsgiver arbeidsgiver) {

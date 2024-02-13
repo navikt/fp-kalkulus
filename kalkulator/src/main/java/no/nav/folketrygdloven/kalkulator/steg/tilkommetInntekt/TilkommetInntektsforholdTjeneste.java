@@ -26,10 +26,10 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.StatusOgArbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
+import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 import no.nav.fpsak.tidsserie.StandardCombinators;
@@ -215,8 +215,8 @@ public class TilkommetInntektsforholdTjeneste {
         return switch (yrkesaktivitet.getArbeidType()) {
             case FORENKLET_OPPGJØRSORDNING, MARITIMT_ARBEIDSFORHOLD, ORDINÆRT_ARBEIDSFORHOLD ->
                     AktivitetStatus.ARBEIDSTAKER;
-            case FRILANSER_OPPDRAGSTAKER_MED_MER -> AktivitetStatus.FRILANSER;
-            case SELVSTENDIG_NÆRINGSDRIVENDE -> AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE;
+            case FRILANSER_OPPDRAGSTAKER -> AktivitetStatus.FRILANSER;
+            case NÆRING -> AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE;
             default -> AktivitetStatus.UDEFINERT;
         };
     }

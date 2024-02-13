@@ -96,7 +96,7 @@ public class BeregningStegTjeneste {
             case KOFAKBER -> kontrollerFaktaBeregningsgrunnlag((FaktaOmBeregningInput) input);
             case FORS_BESTEBEREGNING -> foreslåBesteberegning((ForeslåBesteberegningInput) input);
             case FORS_BERGRUNN -> foreslåBeregningsgrunnlag((ForeslåBeregningsgrunnlagInput) input);
-            case FORTS_FORS_BERGRUNN -> fortsettForeslåBeregningsgrunnlag((FortsettForeslåBeregningsgrunnlagInput) input);
+            case FORS_BERGRUNN_2 -> fortsettForeslåBeregningsgrunnlag((FortsettForeslåBeregningsgrunnlagInput) input);
             case VURDER_VILKAR_BERGRUNN -> vurderBeregningsgrunnlagsvilkår((VurderBeregningsgrunnlagvilkårInput) input);
             case VURDER_TILKOMMET_INNTEKT -> vurderTilkommetInntekt(input);
             case VURDER_REF_BERGRUNN -> vurderRefusjonForBeregningsgrunnlaget((VurderRefusjonBeregningsgrunnlagInput) input);

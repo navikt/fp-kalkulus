@@ -22,32 +22,32 @@ public class OpptjeningsaktiviteterPerYtelse {
                     OpptjeningAktivitetType.VIDERE_ETTERUTDANNING,
                     OpptjeningAktivitetType.UTENLANDSK_ARBEIDSFORHOLD,
                     OpptjeningAktivitetType.DAGPENGER,
-                    OpptjeningAktivitetType.ARBEIDSAVKLARING,
+                    OpptjeningAktivitetType.AAP,
                     OpptjeningAktivitetType.VENTELØNN_VARTPENGER,
                     OpptjeningAktivitetType.ETTERLØNN_SLUTTPAKKE),
             FagsakYtelseType.PLEIEPENGER_SYKT_BARN, Set.of(
                     OpptjeningAktivitetType.VIDERE_ETTERUTDANNING,
                     OpptjeningAktivitetType.UTENLANDSK_ARBEIDSFORHOLD,
-                    OpptjeningAktivitetType.ARBEIDSAVKLARING,
+                    OpptjeningAktivitetType.AAP,
                     OpptjeningAktivitetType.VENTELØNN_VARTPENGER,
                     OpptjeningAktivitetType.ETTERLØNN_SLUTTPAKKE),
             FagsakYtelseType.OPPLÆRINGSPENGER, Set.of(
                     OpptjeningAktivitetType.VIDERE_ETTERUTDANNING,
                     OpptjeningAktivitetType.UTENLANDSK_ARBEIDSFORHOLD,
-                    OpptjeningAktivitetType.ARBEIDSAVKLARING,
+                    OpptjeningAktivitetType.AAP,
                     OpptjeningAktivitetType.VENTELØNN_VARTPENGER,
                     OpptjeningAktivitetType.ETTERLØNN_SLUTTPAKKE),
             FagsakYtelseType.PLEIEPENGER_NÆRSTÅENDE, Set.of(
                     OpptjeningAktivitetType.VIDERE_ETTERUTDANNING,
                     OpptjeningAktivitetType.UTENLANDSK_ARBEIDSFORHOLD,
-                    OpptjeningAktivitetType.ARBEIDSAVKLARING,
+                    OpptjeningAktivitetType.AAP,
                     OpptjeningAktivitetType.VENTELØNN_VARTPENGER,
                     OpptjeningAktivitetType.ETTERLØNN_SLUTTPAKKE),
             FagsakYtelseType.OMSORGSPENGER, Set.of(
                     OpptjeningAktivitetType.VIDERE_ETTERUTDANNING,
                     OpptjeningAktivitetType.UTENLANDSK_ARBEIDSFORHOLD,
                     OpptjeningAktivitetType.DAGPENGER,
-                    OpptjeningAktivitetType.ARBEIDSAVKLARING,
+                    OpptjeningAktivitetType.AAP,
                     OpptjeningAktivitetType.VENTELØNN_VARTPENGER,
                     OpptjeningAktivitetType.ETTERLØNN_SLUTTPAKKE));
 

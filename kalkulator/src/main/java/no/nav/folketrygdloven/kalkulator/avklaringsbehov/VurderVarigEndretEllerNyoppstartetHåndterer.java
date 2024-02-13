@@ -32,12 +32,12 @@ public class VurderVarigEndretEllerNyoppstartetHåndterer {
                 BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(bgAndel)
                     .medOverstyrtPrÅr(BigDecimal.valueOf(bruttoBeregningsgrunnlag));
             }
-            return grunnlagBuilder.build(BeregningsgrunnlagTilstand.FORESLÅTT_2_UT);
+            return grunnlagBuilder.build(BeregningsgrunnlagTilstand.FORESLÅTT_DEL_2_UT);
         } else {
             // Ingen endring
             BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder = BeregningsgrunnlagGrunnlagDtoBuilder
                     .oppdatere(input.getBeregningsgrunnlagGrunnlag());
-            return grunnlagBuilder.build(BeregningsgrunnlagTilstand.FORESLÅTT_2_UT);
+            return grunnlagBuilder.build(BeregningsgrunnlagTilstand.FORESLÅTT_DEL_2_UT);
         }
     }
 

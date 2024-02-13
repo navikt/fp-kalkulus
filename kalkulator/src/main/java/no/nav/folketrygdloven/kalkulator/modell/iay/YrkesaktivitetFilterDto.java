@@ -141,11 +141,11 @@ public class YrkesaktivitetFilterDto {
     }
 
     private boolean erFrilansOppdrag(YrkesaktivitetDto aktivitet) {
-        return ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER.equals(aktivitet.getArbeidType());
+        return ArbeidType.FRILANSER_OPPDRAGSTAKER.equals(aktivitet.getArbeidType());
     }
 
     private boolean erIkkeFrilansOppdrag(YrkesaktivitetDto aktivitet) {
-        return !ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER.equals(aktivitet.getArbeidType());
+        return !ArbeidType.FRILANSER_OPPDRAGSTAKER.equals(aktivitet.getArbeidType());
     }
 
     private Set<YrkesaktivitetDto> getYrkesaktiviteterInklusiveFiktive() {

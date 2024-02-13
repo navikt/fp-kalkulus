@@ -34,7 +34,6 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDt
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.StatusOgArbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.steg.tilkommetInntekt.TilkommetInntektsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
@@ -43,6 +42,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PermisjonsbeskrivelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 
@@ -655,7 +655,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
         return YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
                 .medArbeidsgiver(arbeidsgiver2)
                 .medArbeidsforholdId(arbeidsforholdId)
-                .medArbeidType(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER)
+                .medArbeidType(ArbeidType.FRILANSER_OPPDRAGSTAKER)
                 .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny()
                         .medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
                         .medErAnsettelsesPeriode(true))

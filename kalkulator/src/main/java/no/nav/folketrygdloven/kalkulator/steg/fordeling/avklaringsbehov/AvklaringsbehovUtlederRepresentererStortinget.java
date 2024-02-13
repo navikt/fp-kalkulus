@@ -35,7 +35,7 @@ public class AvklaringsbehovUtlederRepresentererStortinget {
     private static boolean representererStortingetIPeriode(Intervall periode, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         var storingetFrilansArbeid = iayGrunnlag.getAktørArbeidFraRegister().stream()
                 .flatMap(a -> a.hentAlleYrkesaktiviteter().stream())
-                .filter(ya -> ya.getArbeidType().equals(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER))
+                .filter(ya -> ya.getArbeidType().equals(ArbeidType.FRILANSER_OPPDRAGSTAKER))
                 .filter(ya -> ya.getArbeidsgiver().getIdentifikator().equals(STORTINGET))
                 .collect(Collectors.toList());
 

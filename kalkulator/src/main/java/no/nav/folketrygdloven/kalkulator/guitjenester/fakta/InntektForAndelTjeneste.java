@@ -161,7 +161,7 @@ class InntektForAndelTjeneste {
     }
 
     private static boolean erFrilansInntekt(Collection<ArbeidType> arbeidTyper, boolean erFrilanser) {
-        return (arbeidTyper.isEmpty() && erFrilanser) || arbeidTyper.contains(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
+        return (arbeidTyper.isEmpty() && erFrilanser) || arbeidTyper.contains(ArbeidType.FRILANSER_OPPDRAGSTAKER);
     }
 
 }

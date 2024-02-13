@@ -11,7 +11,7 @@ public class MapOpptjeningAktivitetFraRegelTilVL {
         new EnumMap<>(Aktivitet.class);
 
     static {
-        aktivitetMap.put(Aktivitet.AAP_MOTTAKER, OpptjeningAktivitetType.ARBEIDSAVKLARING);
+        aktivitetMap.put(Aktivitet.AAP_MOTTAKER, OpptjeningAktivitetType.AAP);
         aktivitetMap.put(Aktivitet.ARBEIDSTAKERINNTEKT, OpptjeningAktivitetType.ARBEID);
         aktivitetMap.put(Aktivitet.DAGPENGEMOTTAKER, OpptjeningAktivitetType.DAGPENGER);
         aktivitetMap.put(Aktivitet.ETTERLØNN_SLUTTPAKKE, OpptjeningAktivitetType.ETTERLØNN_SLUTTPAKKE);

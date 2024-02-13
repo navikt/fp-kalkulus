@@ -144,7 +144,7 @@ public class KontrollerFaktaBeregningFrilanserTjenesteImplTest {
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2), arbId, Arbeidsgiver.virksomhet(orgnr), iayGrunnlagBuilder);
         String orgnrFrilans = "987654320";
         BeregningIAYTestUtil.byggArbeidForBehandling(SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2),
-                null, Arbeidsgiver.virksomhet(orgnrFrilans), ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER,
+                null, Arbeidsgiver.virksomhet(orgnrFrilans), ArbeidType.FRILANSER_OPPDRAGSTAKER,
             singletonList(BigDecimal.TEN), false, Optional.empty(), iayGrunnlagBuilder);
         BeregningsgrunnlagDto beregningsgrunnlagDto = BeregningsgrunnlagTestUtil.lagGjeldendeBeregningsgrunnlag(SKJÆRINGSTIDSPUNKT_OPPTJENING, Optional.empty(), AktivitetStatus.KOMBINERT_AT_FL);
 
@@ -164,7 +164,7 @@ public class KontrollerFaktaBeregningFrilanserTjenesteImplTest {
         BeregningIAYTestUtil.byggArbeidForBehandling(SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2), arbId, Arbeidsgiver.virksomhet(orgnr), iayGrunnlagBuilder);
         BeregningIAYTestUtil.byggArbeidForBehandling(SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2), null, Arbeidsgiver.virksomhet(orgnr),
-            ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER, singletonList(BigDecimal.TEN), false, Optional.empty(), iayGrunnlagBuilder);
+            ArbeidType.FRILANSER_OPPDRAGSTAKER, singletonList(BigDecimal.TEN), false, Optional.empty(), iayGrunnlagBuilder);
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = iayGrunnlagBuilder.build();
         BeregningsgrunnlagDto beregningsgrunnlagDto = BeregningsgrunnlagTestUtil.lagGjeldendeBeregningsgrunnlag(SKJÆRINGSTIDSPUNKT_OPPTJENING, Optional.of(iayGrunnlag), AktivitetStatus.KOMBINERT_AT_FL);
 

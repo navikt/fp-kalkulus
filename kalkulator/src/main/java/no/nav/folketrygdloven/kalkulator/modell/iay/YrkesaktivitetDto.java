@@ -8,10 +8,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
-import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDto;
 
 public class YrkesaktivitetDto {
 
@@ -51,11 +51,7 @@ public class YrkesaktivitetDto {
      * <li>{@link ArbeidType#ORDINÆRT_ARBEIDSFORHOLD}</li>
      * <li>{@link ArbeidType#MARITIMT_ARBEIDSFORHOLD}</li>
      * <li>{@link ArbeidType#FORENKLET_OPPGJØRSORDNING}</li>
-     * </ul>
-     * <p>
-     * Fra inntektskomponenten
-     * <ul>
-     * <li>{@link ArbeidType#FRILANSER_OPPDRAGSTAKER_MED_MER}</li>
+     * <li>{@link ArbeidType#FRILANSER_OPPDRAGSTAKER}</li>
      * </ul>
      * <p>
      * De resterende kommer fra søknaden

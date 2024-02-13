@@ -95,7 +95,7 @@ public class TestHjelper {
                                                                String virksomhetOrgnr, LocalDate fraOgMed, LocalDate tilOgMed, InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder) {
 
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(virksomhetOrgnr);
-        lagAktørArbeid(inntektArbeidYtelseAggregatBuilder, arbeidsgiver, fraOgMed, ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
+        lagAktørArbeid(inntektArbeidYtelseAggregatBuilder, arbeidsgiver, fraOgMed, ArbeidType.FRILANSER_OPPDRAGSTAKER);
         for (LocalDate dt = fraOgMed; dt.isBefore(tilOgMed); dt = dt.plusMonths(1)) {
             lagInntektForArbeidsforhold(inntektArbeidYtelseAggregatBuilder, dt, dt.plusMonths(1), inntektFrilans,
                     arbeidsgiver);

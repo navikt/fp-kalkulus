@@ -26,18 +26,15 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.tid.TimelineWeekendCompressor;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulator.tid.TimelineWeekendCompressor;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusjon.RefusjonAndelTilVurderingDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusjon.RefusjonTilVurderingDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusjon.TidligereUtbetalingDto;
-import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
-import no.nav.fpsak.tidsserie.LocalDateTimeline;
-import no.nav.fpsak.tidsserie.StandardCombinators;
 
 public final class LagVurderRefusjonDto {
     private static final BigDecimal MÅNEDER_I_ÅR = BigDecimal.valueOf(12);
@@ -231,12 +228,10 @@ public final class LagVurderRefusjonDto {
     }
 
     private static List<TidligereUtbetalingDto> komprimerForHelg(List<TidligereUtbetalingDto> utbetalinger) {
-        return utbetalinger.stream()
-                .map(t -> new LocalDateSegment<>(t.getFom(), t.getTom(), t.getErTildeltRefusjon()))
-                .collect(Collectors.collectingAndThen(Collectors.toList(), LocalDateTimeline::new))
-                .compress(LocalDateInterval::abutsWorkdays, Objects::equals, StandardCombinators::leftOnly).stream()
-                .map(s -> new TidligereUtbetalingDto(s.getFom(), s.getTom(), s.getValue()))
-                .collect(Collectors.toList());
+        var utbetalingSegmenter = utbetalinger.stream().map(t -> new LocalDateSegment<>(t.getFom(), t.getTom(), t.getErTildeltRefusjon()));
+        var factory = new TimelineWeekendCompressor.CompressorFactory<Boolean>(Objects::equals, (i, lhs, rhs) -> new LocalDateSegment<>(i, lhs.getValue()));
+        TimelineWeekendCompressor<Boolean> compressor = utbetalingSegmenter.collect(factory::get, TimelineWeekendCompressor::accept, TimelineWeekendCompressor::combine);
+        return compressor.getSegmenter().stream().map(s -> new TidligereUtbetalingDto(s.getFom(), s.getTom(), s.getValue())).collect(Collectors.toList());
     }
 
     private static Optional<LocalDate> getFastsattRefusjonStartdato(List<BeregningRefusjonOverstyringDto> gjeldendeOvertyringer, RefusjonAndel andel) {

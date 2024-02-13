@@ -161,7 +161,7 @@ public class LønnsendringTjeneste {
     private static Collection<YrkesaktivitetDto> finnAktiviteterMedLønnsendringIPerioden(YrkesaktivitetFilterDto filter, Intervall periode, LocalDate skjæringstidspunkt) {
         return filter.getYrkesaktiviteterForBeregning()
                 .stream()
-                .filter(ya -> !ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER.equals(ya.getArbeidType())
+                .filter(ya -> !ArbeidType.FRILANSER_OPPDRAGSTAKER.equals(ya.getArbeidType())
                         && !ArbeidType.FRILANSER.equals(ya.getArbeidType()))
                 .filter(ya -> filter.getAnsettelsesPerioder(ya).stream()
                         .anyMatch(ap -> ap.getPeriode().inkluderer(skjæringstidspunkt)))

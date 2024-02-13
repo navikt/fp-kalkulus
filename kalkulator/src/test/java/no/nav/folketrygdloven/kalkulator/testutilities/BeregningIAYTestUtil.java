@@ -266,7 +266,7 @@ public class BeregningIAYTestUtil {
     }
 
     private static Collection<YrkesaktivitetDto> finnKorresponderendeYrkesaktiviteter(YrkesaktivitetFilterDto filter, ArbeidType arbeidType) {
-        if (ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER.equals(arbeidType)) {
+        if (ArbeidType.FRILANSER_OPPDRAGSTAKER.equals(arbeidType)) {
             return filter.getFrilansOppdrag();
         } else {
             return filter.getYrkesaktiviteter();

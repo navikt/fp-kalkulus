@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -52,7 +51,6 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.testutilities.TestHjelper;
@@ -68,6 +66,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.NaturalYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 @ExtendWith(MockitoExtension.class)
@@ -670,7 +669,7 @@ public class ForeslåBeregningsgrunnlagTest {
         BigDecimal inntektSammenligningsgrunnlag = BigDecimal.valueOf(MÅNEDSINNTEKT1 * 2);
 
         var inntektArbeidYtelseBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
-        testHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_2.withDayOfMonth(1), ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
+        testHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_2.withDayOfMonth(1), ArbeidType.FRILANSER_OPPDRAGSTAKER);
         for (LocalDate dt = MINUS_YEARS_2.withDayOfMonth(1); dt.isBefore(MINUS_YEARS_1.withDayOfMonth(1).plusYears(2)); dt = dt.plusMonths(1)) {
             testHjelper.lagInntektForSammenligning(inntektArbeidYtelseBuilder, dt, dt.plusMonths(1), inntektSammenligningsgrunnlag,
                     Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1));

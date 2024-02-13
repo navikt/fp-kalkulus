@@ -4,8 +4,8 @@ import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FASTSETT_ST
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FAST_BERGRUNN;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FORDEL_BERGRUNN;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FORS_BERGRUNN;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FORS_BERGRUNN_2;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FORS_BESTEBEREGNING;
-import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FORTS_FORS_BERGRUNN;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.KOFAKBER;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.VURDER_REF_BERGRUNN;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.VURDER_TILKOMMET_INNTEKT;
@@ -15,8 +15,8 @@ import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstan
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FASTSATT_INN;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FORESLÅTT;
-import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FORESLÅTT_2;
-import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FORESLÅTT_2_UT;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FORESLÅTT_DEL_2;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FORESLÅTT_DEL_2_UT;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FORESLÅTT_UT;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.KOFAKBER_UT;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER;
@@ -46,8 +46,8 @@ public class MapTilstandTilSteg {
         MAP_TILSTAND_STEG.put(BESTEBEREGNET, FORS_BESTEBEREGNING);
         MAP_TILSTAND_STEG.put(FORESLÅTT, FORS_BERGRUNN);
         MAP_TILSTAND_STEG.put(FORESLÅTT_UT, FORS_BERGRUNN);
-        MAP_TILSTAND_STEG.put(FORESLÅTT_2, FORTS_FORS_BERGRUNN);
-        MAP_TILSTAND_STEG.put(FORESLÅTT_2_UT, FORTS_FORS_BERGRUNN);
+        MAP_TILSTAND_STEG.put(FORESLÅTT_DEL_2, FORS_BERGRUNN_2);
+        MAP_TILSTAND_STEG.put(FORESLÅTT_DEL_2_UT, FORS_BERGRUNN_2);
         MAP_TILSTAND_STEG.put(VURDERT_VILKÅR, VURDER_VILKAR_BERGRUNN);
         MAP_TILSTAND_STEG.put(VURDERT_TILKOMMET_INNTEKT, VURDER_TILKOMMET_INNTEKT);
         MAP_TILSTAND_STEG.put(VURDERT_TILKOMMET_INNTEKT_UT, VURDER_TILKOMMET_INNTEKT);

@@ -134,13 +134,13 @@ class FastsettSkjæringstidspunktOgStatuserK14Test {
                 Intervall.fraOgMedTilOgMed(førSTP(365), førSTP(15)), orgnr, null, InternArbeidsforholdRefDto.nyRef());
         var msOpptjening = OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.MILITÆR_ELLER_SIVILTJENESTE,
                 Intervall.fraOgMedTilOgMed(førSTP(365), førSTP(10)));
-        var aapOpptjening = OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.ARBEIDSAVKLARING,
+        var aapOpptjening = OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.AAP,
                 Intervall.fraOgMedTilOgMed(førSTP(365), etterStp(5)));
         var opptjening = new OpptjeningAktiviteterDto(Arrays.asList(arbeidOpptjening, msOpptjening, aapOpptjening));
         var bgInput = new BeregningsgrunnlagInput(lagRef(), iay, opptjening, Collections.emptyList(), null);
         var bgAktivitetAgg = lagBGAktivitetAggregat(Arrays.asList(lagBGAktivitet(OpptjeningAktivitetType.ARBEID, orgnr, førSTP(365), førSTP(15)),
                 lagBGAktivitet(OpptjeningAktivitetType.MILITÆR_ELLER_SIVILTJENESTE, orgnr, førSTP(365), førSTP(10)),
-                lagBGAktivitet(OpptjeningAktivitetType.ARBEIDSAVKLARING, orgnr, førSTP(365), etterStp(5))));
+                lagBGAktivitet(OpptjeningAktivitetType.AAP, orgnr, førSTP(365), etterStp(5))));
 
         // Act
         var resultat = fastsettSkjæringstidspunktOgStatuser.fastsett(bgInput, bgAktivitetAgg, G_VERDIER);

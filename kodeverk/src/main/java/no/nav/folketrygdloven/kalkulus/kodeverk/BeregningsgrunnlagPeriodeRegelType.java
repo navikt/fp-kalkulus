@@ -2,17 +2,14 @@ package no.nav.folketrygdloven.kalkulus.kodeverk;
 
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FASTSATT;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FORESLÅTT;
-import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FORESLÅTT_2;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FORESLÅTT_DEL_2;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.VURDERT_VILKÅR;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 
 public enum BeregningsgrunnlagPeriodeRegelType implements Kodeverdi, DatabaseKode {
     FORESLÅ(FORESLÅTT), // Foreslå beregningsgrunnlag
-    FORESLÅ_2(FORESLÅTT_2), // Foreslå beregningsgrunnlag del 2
+    FORESLÅ_2(FORESLÅTT_DEL_2), // Foreslå beregningsgrunnlag del 2
     VILKÅR_VURDERING(VURDERT_VILKÅR), // Vurder beregningsvilkår
     FORDEL(OPPDATERT_MED_REFUSJON_OG_GRADERING), // Fordel beregningsgrunnlag
     FASTSETT(FASTSATT), // Fastsett/fullføre beregningsgrunnlag

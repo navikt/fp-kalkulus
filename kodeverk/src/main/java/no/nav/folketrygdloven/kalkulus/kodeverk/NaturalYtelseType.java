@@ -13,43 +13,37 @@ import com.fasterxml.jackson.annotation.JsonValue;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum NaturalYtelseType implements Kodeverdi, KontraktKode {
 
-    ELEKTRISK_KOMMUNIKASJON("ELEKTRISK_KOMMUNIKASJON"),
-    AKSJER_GRUNNFONDSBEVIS_TIL_UNDERKURS("AKSJER_UNDERKURS"),
-    LOSJI("LOSJI"),
-    KOST_DØGN("KOST_DOEGN"),
-    BESØKSREISER_HJEMMET_ANNET("BESOEKSREISER_HJEM"),
-    KOSTBESPARELSE_I_HJEMMET("KOSTBESPARELSE_HJEM"),
-    RENTEFORDEL_LÅN("RENTEFORDEL_LAAN"),
-    BIL("BIL"),
-    KOST_DAGER("KOST_DAGER"),
-    BOLIG("BOLIG"),
-    SKATTEPLIKTIG_DEL_FORSIKRINGER("FORSIKRINGER"),
-    FRI_TRANSPORT("FRI_TRANSPORT"),
-    OPSJONER("OPSJONER"),
-    TILSKUDD_BARNEHAGEPLASS("TILSKUDD_BARNEHAGE"),
-    ANNET("ANNET"),
-    BEDRIFTSBARNEHAGEPLASS("BEDRIFTSBARNEHAGE"),
-    YRKEBIL_TJENESTLIGBEHOV_KILOMETER("YRKESBIL_KILOMETER"),
-    YRKEBIL_TJENESTLIGBEHOV_LISTEPRIS("YRKESBIL_LISTEPRIS"),
-    INNBETALING_TIL_UTENLANDSK_PENSJONSORDNING("UTENLANDSK_PENSJONSORDNING"),
-    UDEFINERT(KodeKonstanter.UDEFINERT),
+    ELEKTRISK_KOMMUNIKASJON,
+    AKSJER_UNDERKURS, // Aksjer og grunnfondsbevis til underkurs
+    LOSJI,
+    KOST_DOEGN,
+    BESOEKSREISER_HJEM,
+    KOSTBESPARELSE_HJEM,
+    RENTEFORDEL_LAAN,
+    BIL,
+    KOST_DAGER,
+    BOLIG,
+    FORSIKRINGER, // Skattepliktig del av forsikringer
+    FRI_TRANSPORT,
+    OPSJONER,
+    TILSKUDD_BARNEHAGE,
+    ANNET,
+    BEDRIFTSBARNEHAGE,
+    YRKESBIL_KILOMETER,
+    YRKESBIL_LISTEPRIS,
+    UTENLANDSK_PENSJONSORDNING, // Innbetaling til utenlandsk pensjonsordning
+    UDEFINERT,
     ;
 
     private static final Map<String, NaturalYtelseType> KODER = new LinkedHashMap<>();
 
     static {
+        KODER.putIfAbsent(KodeKonstanter.UDEFINERT, UDEFINERT);
         for (var v : values()) {
-            if (KODER.putIfAbsent(v.kode, v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.kode);
+            if (KODER.putIfAbsent(v.name(), v) != null) {
+                throw new IllegalArgumentException("Duplikat : " + v.name());
             }
         }
-    }
-
-    @JsonValue
-    private final String kode;
-
-    NaturalYtelseType(String kode) {
-        this.kode = kode;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -66,8 +60,9 @@ public enum NaturalYtelseType implements Kodeverdi, KontraktKode {
     }
 
     @Override
+    @JsonValue
     public String getKode() {
-        return kode;
+        return this == UDEFINERT ? KodeKonstanter.UDEFINERT : name();
     }
 
 

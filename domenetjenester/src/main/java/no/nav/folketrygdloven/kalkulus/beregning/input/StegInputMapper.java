@@ -59,7 +59,7 @@ class StegInputMapper {
             return lagInputForeslåBesteberegning(stegProsesseringInput);
         } else if (stegType.equals(BeregningSteg.FORS_BERGRUNN)) {
             return lagInputForeslå(stegProsesseringInput);
-        } else if (stegType.equals(BeregningSteg.FORTS_FORS_BERGRUNN)) {
+        } else if (stegType.equals(BeregningSteg.FORS_BERGRUNN_2)) {
             return lagInputFortsettForeslå(stegProsesseringInput);
         } else if (stegType.equals(BeregningSteg.VURDER_VILKAR_BERGRUNN)) {
             Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning());

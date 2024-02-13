@@ -223,12 +223,12 @@ public class BesteberegningInntektDtoForAndelTjenesteTest {
 
     private void byggFrilansOppdragAktivitet() {
         frilansOppdrag = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
-                .medArbeidType(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER)
+                .medArbeidType(ArbeidType.FRILANSER_OPPDRAGSTAKER)
                 .medArbeidsgiver(frilansArbeidsgiver)
                 .leggTilAktivitetsAvtale(lagAktivitetsavtale())
                 .build();
         frilansOppdrag2 = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
-                .medArbeidType(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER)
+                .medArbeidType(ArbeidType.FRILANSER_OPPDRAGSTAKER)
                 .medArbeidsgiver(frilansArbeidsgiver2)
                 .leggTilAktivitetsAvtale(lagAktivitetsavtale())
                 .build();

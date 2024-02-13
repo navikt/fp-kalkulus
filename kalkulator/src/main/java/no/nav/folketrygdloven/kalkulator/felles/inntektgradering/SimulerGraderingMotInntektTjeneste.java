@@ -312,7 +312,7 @@ public class SimulerGraderingMotInntektTjeneste {
         var frilansArbeidstaker = iay.getAktørArbeidFraRegister().map(AktørArbeidDto::hentAlleYrkesaktiviteter)
                 .orElse(Collections.emptyList())
                 .stream()
-                .filter(ya -> ya.getArbeidType().equals(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER))
+                .filter(ya -> ya.getArbeidType().equals(ArbeidType.FRILANSER_OPPDRAGSTAKER))
                 .map(YrkesaktivitetDto::getArbeidsgiver)
                 .distinct();
         return frilansArbeidstaker.map(a -> finnBeregnetÅrsinntekForArbeidSomFrilanser(periode, ytelsespesifiktGrunnlag, inntektFilterDto, a))

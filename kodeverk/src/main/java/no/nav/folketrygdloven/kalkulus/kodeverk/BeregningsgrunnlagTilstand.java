@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,31 +9,30 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum BeregningsgrunnlagTilstand implements Kodeverdi, DatabaseKode, KontraktKode {
 
-    OPPRETTET("OPPRETTET", true),
-    FASTSATT_BEREGNINGSAKTIVITETER("FASTSATT_BEREGNINGSAKTIVITETER", false),
-    OPPDATERT_MED_ANDELER("OPPDATERT_MED_ANDELER", true),
-    KOFAKBER_UT("KOFAKBER_UT", false),
-    BESTEBEREGNET("BESTEBEREGNET", false),
-    FORESLÅTT("FORESLÅTT", true),
-    FORESLÅTT_UT("FORESLÅTT_UT", false),
-    FORESLÅTT_2("FORESLÅTT_DEL_2", false),
-    FORESLÅTT_2_UT("FORESLÅTT_DEL_2_UT", false),
-    VURDERT_VILKÅR("VURDERT_VILKÅR", true),
-    VURDERT_TILKOMMET_INNTEKT("VURDERT_TILKOMMET_INNTEKT", false),
-    VURDERT_TILKOMMET_INNTEKT_UT("VURDERT_TILKOMMET_INNTEKT_UT", false),
-    VURDERT_REFUSJON("VURDERT_REFUSJON", true),
-    VURDERT_REFUSJON_UT("VURDERT_REFUSJON_UT", false),
-    OPPDATERT_MED_REFUSJON_OG_GRADERING("OPPDATERT_MED_REFUSJON_OG_GRADERING", true),
-    FASTSATT_INN("FASTSATT_INN", false),
-    FASTSATT("FASTSATT", true),
-    UDEFINERT(KodeKonstanter.UDEFINERT, false),
+    OPPRETTET,
+    FASTSATT_BEREGNINGSAKTIVITETER,
+    OPPDATERT_MED_ANDELER,
+    KOFAKBER_UT,
+    BESTEBEREGNET,
+    FORESLÅTT,
+    FORESLÅTT_UT,
+    FORESLÅTT_DEL_2,
+    FORESLÅTT_DEL_2_UT,
+    VURDERT_VILKÅR,
+    VURDERT_TILKOMMET_INNTEKT,
+    VURDERT_TILKOMMET_INNTEKT_UT,
+    VURDERT_REFUSJON,
+    VURDERT_REFUSJON_UT,
+    OPPDATERT_MED_REFUSJON_OG_GRADERING,
+    FASTSATT_INN,
+    FASTSATT,
+    UDEFINERT,
     ;
 
     private static final Map<String, BeregningsgrunnlagTilstand> KODER = new LinkedHashMap<>();
@@ -51,8 +49,8 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi, DatabaseKode, Kontr
             KOFAKBER_UT,
             FORESLÅTT,
             FORESLÅTT_UT,
-            FORESLÅTT_2,
-            FORESLÅTT_2_UT,
+            FORESLÅTT_DEL_2,
+            FORESLÅTT_DEL_2_UT,
             BESTEBEREGNET,
             VURDERT_VILKÅR,
             VURDERT_TILKOMMET_INNTEKT,
@@ -65,26 +63,17 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi, DatabaseKode, Kontr
     );
 
     static {
+        KODER.putIfAbsent(KodeKonstanter.UDEFINERT, UDEFINERT);
         for (var v : values()) {
-            if (KODER.putIfAbsent(v.kode, v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.kode);
+            if (KODER.putIfAbsent(v.name(), v) != null) {
+                throw new IllegalArgumentException("Duplikat : " + v.name());
             }
         }
     }
 
-    @JsonValue
-    private final String kode;
-
-    @JsonIgnore
-    private final boolean obligatoriskTilstand;
-
-    BeregningsgrunnlagTilstand(String kode, boolean obligatoriskTilstand) {
-        this.kode = kode;
-        this.obligatoriskTilstand = obligatoriskTilstand;
-    }
 
     public static List<BeregningsgrunnlagTilstand> getTilstandRekkefølge() {
-        return Collections.unmodifiableList(tilstandRekkefølge);
+        return tilstandRekkefølge;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -101,22 +90,9 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi, DatabaseKode, Kontr
     }
 
     public static BeregningsgrunnlagTilstand finnFørste() {
-        return tilstandRekkefølge.get(0);
+        return tilstandRekkefølge.getFirst();
     }
 
-
-    public static Optional<BeregningsgrunnlagTilstand> finnForrigeObligatoriskTilstand(BeregningsgrunnlagTilstand tilstand) {
-        int tilstandIndex = tilstandRekkefølge.indexOf(tilstand);
-        if (tilstandIndex == 0) {
-            return Optional.empty();
-        }
-        int id = tilstandIndex - 1;
-        while (!tilstandRekkefølge.get(id).obligatoriskTilstand && id > 0) {
-            id = id - 1;
-        }
-        BeregningsgrunnlagTilstand forrigeObligatoriskTilstand = tilstandRekkefølge.get(id);
-        return Optional.of(forrigeObligatoriskTilstand);
-    }
 
     public static Optional<BeregningsgrunnlagTilstand> finnForrigeTilstand(BeregningsgrunnlagTilstand tilstand) {
         int tilstandIndex = tilstandRekkefølge.indexOf(tilstand);
@@ -150,16 +126,13 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi, DatabaseKode, Kontr
     }
 
     @Override
+    @JsonValue
     public String getKode() {
-        return kode;
+        return this == UDEFINERT ? KodeKonstanter.UDEFINERT : name();
     }
 
     public static BeregningsgrunnlagTilstand fraDatabaseKode(String databaseKode) {
         return fraKode(databaseKode);
     }
 
-
-    public boolean erObligatoriskTilstand() {
-        return this.obligatoriskTilstand;
-    }
 }

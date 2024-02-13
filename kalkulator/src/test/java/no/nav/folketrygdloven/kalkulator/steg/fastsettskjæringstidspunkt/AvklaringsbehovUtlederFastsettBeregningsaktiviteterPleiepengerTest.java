@@ -276,7 +276,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterPleiepengerTest 
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSAVKLARINGSPENGER).build(periode);
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = lagBeregningAktivitetAggregatDto(skjæringstidspunkt,
-                OpptjeningAktivitetType.ARBEIDSAVKLARING, periodeIntervallForAktivitet);
+                OpptjeningAktivitetType.AAP, periodeIntervallForAktivitet);
 
 
         List<YtelseDto> liste = Collections.singletonList(ytelse);
@@ -354,7 +354,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterPleiepengerTest 
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSAVKLARINGSPENGER).build(periode);
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = lagBeregningAktivitetAggregatDto(skjæringstidspunkt,
-                OpptjeningAktivitetType.ARBEIDSAVKLARING, periodeIntervallForAktivitet);
+                OpptjeningAktivitetType.AAP, periodeIntervallForAktivitet);
 
         List<YtelseDto> liste = Collections.singletonList(ytelse);
         when(iayMock.getAktørYtelseFraRegister()).thenReturn(Optional.of(ay));
