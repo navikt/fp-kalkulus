@@ -82,7 +82,7 @@ public class MapTilFordelingsmodell {
                 return true;
             }
         }
-        var graderingMotInntektEnabled = KonfigurasjonVerdi.get("GRADERING_MOT_INNTEKT", false);
+        var graderingMotInntektEnabled = KonfigurasjonVerdi.instance().get("GRADERING_MOT_INNTEKT", false);
         if (graderingMotInntektEnabled) {
             var tilkommetAktivitetTidslinje = SimulerTilkomneAktiviteterTjeneste.utledTilkommetAktivitetPerioder(input);
             var erTilkommet = SimulerTilkomneAktiviteterTjeneste.erTilkommetAktivitetIPeriode(tilkommetAktivitetTidslinje,
@@ -113,7 +113,7 @@ public class MapTilFordelingsmodell {
     }
 
     private static boolean erSøktYtelseFor(BeregningsgrunnlagPrStatusOgAndelDto bgAndel, BeregningsgrunnlagInput input) {
-        var graderingMotInntektEnabled = KonfigurasjonVerdi.get("GRADERING_MOT_INNTEKT", false);
+        var graderingMotInntektEnabled = KonfigurasjonVerdi.instance().get("GRADERING_MOT_INNTEKT", false);
         if (graderingMotInntektEnabled) {
             var tilkommetAktivitetTidslinje = SimulerTilkomneAktiviteterTjeneste.utledTilkommetAktivitetPerioder(input);
             var erTilkommet = SimulerTilkomneAktiviteterTjeneste.erTilkommetAktivitetIPeriode(tilkommetAktivitetTidslinje,

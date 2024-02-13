@@ -8,7 +8,7 @@ import no.nav.folketrygdloven.kalkulator.steg.fordeling.periodisering.Periodiser
 
 public class TilkommetInntektTjeneste {
 
-    private static final boolean GRADERING_MOT_INNTEKT_ENABLED = KonfigurasjonVerdi.get("GRADERING_MOT_INNTEKT", false);
+    private static final boolean GRADERING_MOT_INNTEKT_ENABLED = KonfigurasjonVerdi.instance().get("GRADERING_MOT_INNTEKT", false);
 
     private final TilkommetInntektPeriodeTjeneste periodeTjeneste = new TilkommetInntektPeriodeTjeneste();
 

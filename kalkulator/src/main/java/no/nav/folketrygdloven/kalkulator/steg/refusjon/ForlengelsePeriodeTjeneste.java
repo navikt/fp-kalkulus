@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.steg.refusjon;
 
 import static no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak.ENDRING_I_AKTIVITETER_SØKT_FOR;
 
-import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.PeriodeSplitter;
 import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.SplittPeriodeConfig;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;

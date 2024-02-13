@@ -29,15 +29,15 @@ import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.resource.ResourceCollection;
 import org.eclipse.jetty.webapp.MetaData;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import jakarta.security.auth.message.config.AuthConfigFactory;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulus.app.konfig.ApplicationConfig;
+import no.nav.folketrygdloven.kalkulus.felles.verktøy.KalkulusKonfigurasjonVerdiProvider;
 import no.nav.folketrygdloven.kalkulus.jetty.db.DatabaseScript;
 import no.nav.folketrygdloven.kalkulus.jetty.db.DatasourceRole;
 import no.nav.folketrygdloven.kalkulus.jetty.db.DatasourceUtil;
@@ -99,6 +99,7 @@ public class JettyServer {
 
     protected void konfigurerMiljø() throws Exception {
         // template method
+        KonfigurasjonVerdi.configure(new KalkulusKonfigurasjonVerdiProvider()); // Sett opp SPI for KonfigurasjonsVerdi
     }
 
     protected void konfigurerJndi() throws Exception {

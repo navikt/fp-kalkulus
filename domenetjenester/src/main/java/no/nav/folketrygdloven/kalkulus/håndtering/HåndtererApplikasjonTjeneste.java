@@ -7,7 +7,6 @@ import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulus.beregning.MapStegTilTilstand;
@@ -67,7 +66,7 @@ public class HåndtererApplikasjonTjeneste {
     }
 
     private void opprettOverstyringAvklaringsbehov(Long koblingId, AvklaringsbehovDefinisjon avklaringsbehovdefinisjon, String begrunnelse) {
-        if (!KonfigurasjonVerdi.get("TREKKE_OVERSTYRING_ENABLED", false)) {
+        if (!KonfigurasjonVerdi.instance().get("TREKKE_OVERSTYRING_ENABLED", false)) {
             avklaringsbehovTjeneste.avbrytAndreAvklaringsbehovISammeSteg(koblingId, avklaringsbehovdefinisjon);
         } else {
             avklaringsbehovTjeneste.løsAndreAvklaringsbehovISammeSteg(koblingId, avklaringsbehovdefinisjon, begrunnelse);

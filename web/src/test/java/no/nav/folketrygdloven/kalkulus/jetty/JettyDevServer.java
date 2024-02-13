@@ -82,6 +82,7 @@ public class JettyDevServer extends JettyServer {
     @Override
 
     protected void konfigurerMiljø() throws Exception {
+        super.konfigurerMiljø();
         System.setProperty("develop-local", "true");
         PropertiesUtils.initProperties();
 

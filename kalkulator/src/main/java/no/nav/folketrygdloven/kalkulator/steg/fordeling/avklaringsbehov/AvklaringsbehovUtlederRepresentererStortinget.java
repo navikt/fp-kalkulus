@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.PerioderTilVurderingTjeneste;
-import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -19,7 +18,7 @@ public class AvklaringsbehovUtlederRepresentererStortinget {
                                                                        InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                        List<Intervall> forlengelseperioder) {
 
-        if (!KonfigurasjonVerdi.get("AKSJONSPUNKT_VURDER_STORTINGET", false)) {
+        if (!KonfigurasjonVerdi.instance().get("AKSJONSPUNKT_VURDER_STORTINGET", false)) {
             return false;
         }
 

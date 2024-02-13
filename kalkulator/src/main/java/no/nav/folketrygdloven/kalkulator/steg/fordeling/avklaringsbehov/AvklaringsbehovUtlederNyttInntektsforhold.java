@@ -23,7 +23,7 @@ public class AvklaringsbehovUtlederNyttInntektsforhold {
                                                          YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
                                                          List<Intervall> forlengelseperioder) {
 
-        if (!(ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) || !KonfigurasjonVerdi.get("GRADERING_MOT_INNTEKT", false)) {
+        if (!(ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) || !KonfigurasjonVerdi.instance().get("GRADERING_MOT_INNTEKT", false)) {
             return false;
         }
 

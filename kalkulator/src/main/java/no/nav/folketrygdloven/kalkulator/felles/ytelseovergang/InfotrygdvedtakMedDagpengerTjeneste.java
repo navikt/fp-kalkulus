@@ -23,7 +23,7 @@ public class InfotrygdvedtakMedDagpengerTjeneste {
 
     public static Boolean harYtelsePåGrunnlagAvDagpenger(Collection<YtelseDto> ytelser, LocalDate skjæringstidspunkt, YtelseType ytelse) {
         LocalDate beregningstidspunkt = finnBeregningstidspunkt(skjæringstidspunkt);
-        if (KonfigurasjonVerdi.get("MAP_YTELSE_DAGPENGER_FRA_ANDELER", false)) {
+        if (KonfigurasjonVerdi.instance().get("MAP_YTELSE_DAGPENGER_FRA_ANDELER", false)) {
             return finnYtelseBasertPåDagpengerFraAnvisteAndeler(ytelser, beregningstidspunkt, ytelse).compareTo(BigDecimal.ZERO) > 0;
         }
         return finnYtelseBasertPåDagpenger(ytelser, beregningstidspunkt, ytelse).isPresent();
@@ -32,7 +32,7 @@ public class InfotrygdvedtakMedDagpengerTjeneste {
     public static BigDecimal finnDagsatsFraYtelsevedtak(Collection<YtelseDto> ytelser, LocalDate skjæringstidspunkt, YtelseType ytelse) {
         LocalDate beregningstidspunkt = finnBeregningstidspunkt(skjæringstidspunkt);
 
-        if (KonfigurasjonVerdi.get("MAP_YTELSE_DAGPENGER_FRA_ANDELER", false)) {
+        if (KonfigurasjonVerdi.instance().get("MAP_YTELSE_DAGPENGER_FRA_ANDELER", false)) {
             // Returnerer graderte dagpenger
             return finnYtelseBasertPåDagpengerFraAnvisteAndeler(ytelser, beregningstidspunkt, ytelse);
         } else {

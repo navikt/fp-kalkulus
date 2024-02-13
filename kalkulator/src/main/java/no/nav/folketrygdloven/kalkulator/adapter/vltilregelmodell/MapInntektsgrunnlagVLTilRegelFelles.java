@@ -219,11 +219,11 @@ public class MapInntektsgrunnlagVLTilRegelFelles implements MapInntektsgrunnlagV
         Boolean harSPAvDP = harYtelsePåGrunnlagAvDagpenger(ytelser, skjæringstidspunkt, YtelseType.SYKEPENGER);
         Boolean harPSBAvDP = harYtelsePåGrunnlagAvDagpenger(ytelser, skjæringstidspunkt, YtelseType.PLEIEPENGER_SYKT_BARN);
 
-        if (harSPAvDP && KonfigurasjonVerdi.get("BEREGNE_DAGPENGER_FRA_SYKEPENGER", false)) {
+        if (harSPAvDP && KonfigurasjonVerdi.instance().get("BEREGNE_DAGPENGER_FRA_SYKEPENGER", false)) {
             var dagpenger = mapDagpengerFraInfotrygdvedtak(skjæringstidspunkt, ytelser, YtelseType.SYKEPENGER);
             inntektsgrunnlag.leggTilPeriodeinntekt(dagpenger);
         }
-        if (harPSBAvDP && KonfigurasjonVerdi.get("BEREGNE_DAGPENGER_FRA_PLEIEPENGER", false)) {
+        if (harPSBAvDP && KonfigurasjonVerdi.instance().get("BEREGNE_DAGPENGER_FRA_PLEIEPENGER", false)) {
             var dagpenger = mapDagpengerFraInfotrygdvedtak(skjæringstidspunkt, ytelser, YtelseType.PLEIEPENGER_SYKT_BARN);
             inntektsgrunnlag.leggTilPeriodeinntekt(dagpenger);
         } else {

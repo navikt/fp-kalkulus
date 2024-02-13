@@ -47,7 +47,7 @@ public class MapRefusjonPerioderFraVLTilRegelPleiepenger extends MapRefusjonPeri
                                                           Set<YrkesaktivitetDto> relaterteYrkesaktiviteter) {
 
 
-        if (KonfigurasjonVerdi.get("PSB_IKKE_OPPHOER_REFUSJON_VED_ENDT_ARBEIDSFORHOLD", false)) {
+        if (KonfigurasjonVerdi.instance().get("PSB_IKKE_OPPHOER_REFUSJON_VED_ENDT_ARBEIDSFORHOLD", false)) {
             return super.finnGyldigeRefusjonPerioder(startdatoEtterPermisjon, ytelsespesifiktGrunnlag, im, ansattperioder, relaterteYrkesaktiviteter);
         }
 
@@ -106,7 +106,7 @@ public class MapRefusjonPerioderFraVLTilRegelPleiepenger extends MapRefusjonPeri
 
     private static boolean harAktivitetsgradMedTilkommetInntektToggle(PeriodeMedUtbetalingsgradDto p) {
         return p.getAktivitetsgrad().map(ag -> ag.compareTo(BigDecimal.valueOf(100)) < 0).orElse(false)
-                && KonfigurasjonVerdi.get("GRADERING_MOT_INNTEKT", false);
+                && KonfigurasjonVerdi.instance().get("GRADERING_MOT_INNTEKT", false);
     }
 
 

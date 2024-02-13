@@ -62,7 +62,7 @@ public class MapFullføreBeregningsgrunnlagFraVLTilRegel {
                 .medYtelsesSpesifiktGrunnlag(mapYtelsesSpesifiktGrunnlag(input))
                 .medAntallGØvreGrenseverdi(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi())
                 .medMidlertidigInaktivType(mapMidlertidigInaktivType(input))
-                .leggTilToggle("GRADERING_MOT_INNTEKT", KonfigurasjonVerdi.get("GRADERING_MOT_INNTEKT", false))
+                .leggTilToggle("GRADERING_MOT_INNTEKT", KonfigurasjonVerdi.instance().get("GRADERING_MOT_INNTEKT", false))
                 .build();
     }
 

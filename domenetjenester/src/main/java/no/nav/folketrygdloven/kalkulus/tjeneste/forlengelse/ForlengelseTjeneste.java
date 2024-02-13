@@ -144,7 +144,7 @@ public class ForlengelseTjeneste {
                 .map(ForlengelseperiodeEntitet::getPeriode).sorted(Comparator.naturalOrder()).toList();
 
 
-        if (KonfigurasjonVerdi.get("SKAL_VALIDERE_FORLENGELSE_ENDRING", false)) {
+        if (KonfigurasjonVerdi.instance().get("SKAL_VALIDERE_FORLENGELSE_ENDRING", false)) {
             if (aktivForlengelse.isEmpty()) {
                 throw new IllegalStateException("Kan ikke lagre ny periode med forlengelse i steg " + steg);
             }

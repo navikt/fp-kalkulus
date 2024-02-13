@@ -31,7 +31,7 @@ public class FastsettBeregningsperiodeForLønnsendring {
     static BeregningsgrunnlagDto fastsettBeregningsperiodeForLønnsendring(BeregningsgrunnlagDto beregningsgrunnlag,
                                                                           InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
                                                                           Collection<InntektsmeldingDto> inntektsmeldinger) {
-        if (KonfigurasjonVerdi.get("AUTOMATISK_BEREGNE_LONNSENDRING_V2", false)) {
+        if (KonfigurasjonVerdi.instance().get("AUTOMATISK_BEREGNE_LONNSENDRING_V2", false)) {
             return fastsettBeregningsperiodeForLønnsendringV2(beregningsgrunnlag, inntektArbeidYtelseGrunnlag, inntektsmeldinger);
         } else {
             return fastsettBeregningsperiodeForLønnsendringV1(beregningsgrunnlag, inntektArbeidYtelseGrunnlag, inntektsmeldinger);

@@ -98,7 +98,7 @@ public class MapRefusjonPerioderFraVLTilRegelUtbgrad
 
     private static boolean harAktivitetsgradMedTilkommetInntektToggle(PeriodeMedUtbetalingsgradDto p) {
         return p.getAktivitetsgrad().map(ag -> ag.compareTo(BigDecimal.valueOf(100)) < 0).orElse(false)
-                && KonfigurasjonVerdi.get("GRADERING_MOT_INNTEKT", false);
+                && KonfigurasjonVerdi.instance().get("GRADERING_MOT_INNTEKT", false);
     }
 
 

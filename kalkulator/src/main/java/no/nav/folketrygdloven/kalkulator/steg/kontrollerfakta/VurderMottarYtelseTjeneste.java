@@ -1,13 +1,11 @@
 package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta;
 
-import java.math.BigDecimal;
 import java.util.Collection;
 
 import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.felles.ytelseovergang.DirekteOvergangTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.AnvistAndel;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
@@ -58,7 +56,7 @@ public class VurderMottarYtelseTjeneste {
 
     private static boolean harYtelseBasertPåFrilans(BeregningsgrunnlagDto beregningsgrunnlag,
                                                     YtelseFilterDto ytelseFilterDto) {
-        if (!KonfigurasjonVerdi.get("VURDER_MOTTAR_YTELSE_FL_FILTRERING", false)) {
+        if (!KonfigurasjonVerdi.instance().get("VURDER_MOTTAR_YTELSE_FL_FILTRERING", false)) {
             return true;
         }
         Intervall beregningsPeriodeForStatus = finnBeregningsperiodeForAktivitetStatus(beregningsgrunnlag, AktivitetStatus.FRILANSER);
@@ -70,7 +68,7 @@ public class VurderMottarYtelseTjeneste {
 
     private static boolean harDirekteMottattYtelseForArbeidsgiver(BeregningsgrunnlagDto beregningsgrunnlag,
                                                                   YtelseFilterDto ytelseFilterDto, Arbeidsgiver arbeidsgiver) {
-        if (!KonfigurasjonVerdi.get("VURDER_MOTTAR_YTELSE_AT_FILTRERING", false)) {
+        if (!KonfigurasjonVerdi.instance().get("VURDER_MOTTAR_YTELSE_AT_FILTRERING", false)) {
             return true;
         }
         Intervall beregningsPeriodeForStatus = finnBeregningsperiodeForAktivitetStatus(beregningsgrunnlag, AktivitetStatus.ARBEIDSTAKER);

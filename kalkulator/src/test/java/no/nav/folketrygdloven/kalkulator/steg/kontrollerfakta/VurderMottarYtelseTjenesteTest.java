@@ -9,9 +9,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -36,13 +39,29 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
+import no.nav.folketrygdloven.utils.TestKonfigurasjonVerdiProvider;
 
 public class VurderMottarYtelseTjenesteTest {
+
+    private static final TestKonfigurasjonVerdiProvider TEST_KONFIG = new TestKonfigurasjonVerdiProvider();
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, 9, 30);
     private static final String ORGNR = "3482934982384";
     private static final InternArbeidsforholdRefDto ARB_ID = InternArbeidsforholdRefDto.namedRef("TEST-REF");
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private BeregningsgrunnlagPeriodeDto periode;
+
+    @BeforeAll
+    public static void initAll() {
+        TEST_KONFIG.clear();
+        KonfigurasjonVerdi.clear();
+        KonfigurasjonVerdi.configure(TEST_KONFIG);
+    }
+
+    @AfterAll
+    public static void teardownAll() {
+        KonfigurasjonVerdi.clear();
+        TEST_KONFIG.clear();
+    }
 
     @BeforeEach
     public void setUp() {
@@ -53,8 +72,8 @@ public class VurderMottarYtelseTjenesteTest {
         periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
                 .build(beregningsgrunnlag);
-        System.setProperty("VURDER_MOTTAR_YTELSE_AT_FILTRERING", "false");
-        System.setProperty("VURDER_MOTTAR_YTELSE_FL_FILTRERING", "false");
+        TEST_KONFIG.put("VURDER_MOTTAR_YTELSE_AT_FILTRERING", "false");
+        TEST_KONFIG.put("VURDER_MOTTAR_YTELSE_FL_FILTRERING", "false");
     }
 
     @Test
@@ -123,7 +142,7 @@ public class VurderMottarYtelseTjenesteTest {
 
     @Test
     public void skal_ikke_vurdere_mottar_ytelse_for_frilans_uten_mottatt_ytelse_for_frilans() {
-        System.setProperty("VURDER_MOTTAR_YTELSE_FL_FILTRERING", "true");
+        TEST_KONFIG.put("VURDER_MOTTAR_YTELSE_FL_FILTRERING", "true");
 
         // Arrange
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
@@ -142,7 +161,7 @@ public class VurderMottarYtelseTjenesteTest {
 
     @Test
     public void skal_vurdere_mottar_ytelse_for_frilans_med_mottatt_ytelse_for_frilans() {
-        System.setProperty("VURDER_MOTTAR_YTELSE_FL_FILTRERING", "true");
+        TEST_KONFIG.put("VURDER_MOTTAR_YTELSE_FL_FILTRERING", "true");
 
         // Arrange
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
@@ -193,7 +212,7 @@ public class VurderMottarYtelseTjenesteTest {
 
     @Test
     public void skal_vurdere_mottar_ytelse_for_arbeidstaker_uten_inntektsmelding_med_ytelse() {
-        System.setProperty("VURDER_MOTTAR_YTELSE_AT_FILTRERING", "true");
+        TEST_KONFIG.put("VURDER_MOTTAR_YTELSE_AT_FILTRERING", "true");
 
         // Arrange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
@@ -222,7 +241,7 @@ public class VurderMottarYtelseTjenesteTest {
 
     @Test
     public void skal_ikke_vurdere_mottar_ytelse_for_arbeidstaker_uten_inntektsmelding_når_ytelse_er_utbetalt_til_arbeidsgiver() {
-        System.setProperty("VURDER_MOTTAR_YTELSE_AT_FILTRERING", "true");
+        TEST_KONFIG.put("VURDER_MOTTAR_YTELSE_AT_FILTRERING", "true");
 
         // Arrange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);

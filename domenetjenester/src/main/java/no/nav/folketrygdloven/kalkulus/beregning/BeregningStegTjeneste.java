@@ -52,7 +52,7 @@ import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
 
 @ApplicationScoped
 public class BeregningStegTjeneste {
-    private static final boolean GRADERING_MOT_INNTEKT_ENABLED = KonfigurasjonVerdi.get("GRADERING_MOT_INNTEKT", false);
+    private static final boolean GRADERING_MOT_INNTEKT_ENABLED = KonfigurasjonVerdi.instance().get("GRADERING_MOT_INNTEKT", false);
     private final KalkulatorInterface beregningsgrunnlagTjeneste = new BeregningsgrunnlagTjeneste();
     private final KalkulatorInterface beregningsgrunnlagFrisinnTjeneste = new BeregningsgrunnlagFRISINNTjeneste();
     private BeregningsgrunnlagRepository repository;

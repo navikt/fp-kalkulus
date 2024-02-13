@@ -70,11 +70,11 @@ class FinnInntektFraYtelse {
 
         Collection<YtelseDto> ytelser = ytelseFilter.getFiltrertYtelser();
         Boolean harSPAvDP = harYtelsePåGrunnlagAvDagpenger(ytelser, skjæringstidspunkt, YtelseType.SYKEPENGER);
-        if (harSPAvDP && KonfigurasjonVerdi.get("BEREGNE_DAGPENGER_FRA_SYKEPENGER", false)) {
+        if (harSPAvDP && KonfigurasjonVerdi.instance().get("BEREGNE_DAGPENGER_FRA_SYKEPENGER", false)) {
             return Optional.of(finnDagsatsFraYtelsevedtak(ytelser, skjæringstidspunkt, YtelseType.SYKEPENGER).multiply(VIRKEDAGER_I_1_ÅR));
         }
         Boolean harPSBAvDP = harYtelsePåGrunnlagAvDagpenger(ytelser, skjæringstidspunkt, YtelseType.PLEIEPENGER_SYKT_BARN);
-        if (harPSBAvDP && KonfigurasjonVerdi.get("BEREGNE_DAGPENGER_FRA_PLEIEPENGER", false)) {
+        if (harPSBAvDP && KonfigurasjonVerdi.instance().get("BEREGNE_DAGPENGER_FRA_PLEIEPENGER", false)) {
             return Optional.of(finnDagsatsFraYtelsevedtak(ytelser, skjæringstidspunkt, YtelseType.PLEIEPENGER_SYKT_BARN).multiply(VIRKEDAGER_I_1_ÅR));
         }
         return finnÅrbeløpFraMeldekortForAndel(ref, andel, ytelseFilter);

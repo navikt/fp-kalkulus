@@ -18,7 +18,7 @@ public class FastsettFaktaTjenesteK14 {
     public Optional<FaktaAggregatDto> fastsettFakta(BeregningsgrunnlagDto beregningsgrunnlag,
                                                     InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                     Collection<InntektsmeldingDto> inntektsmeldinger) {
-        if (KonfigurasjonVerdi.get("AUTOMATISK_BEREGNE_LONNSENDRING", false) || KonfigurasjonVerdi.get("AUTOMATISK_BEREGNE_LONNSENDRING_V2", false)) {
+        if (KonfigurasjonVerdi.instance().get("AUTOMATISK_BEREGNE_LONNSENDRING", false) || KonfigurasjonVerdi.instance().get("AUTOMATISK_BEREGNE_LONNSENDRING_V2", false)) {
             FaktaAggregatDto.Builder faktaBuilder = FaktaAggregatDto.builder();
             List<FaktaArbeidsforholdDto> faktaLønnsendring = fastsettFaktaForLønnsendring(beregningsgrunnlag, iayGrunnlag, inntektsmeldinger);
             faktaLønnsendring.forEach(faktaBuilder::kopierTilEksisterendeEllerLeggTil);

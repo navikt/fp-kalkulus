@@ -28,7 +28,7 @@ public class AvklaringsbehovUtlederFaktaOmBeregning {
 
         List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = FaktaOmBeregningTilfelleTjeneste.finnTilfellerForFellesAvklaringsbehov(input, beregningsgrunnlagGrunnlag);
 
-        if (erOverstyrt && !KonfigurasjonVerdi.get("TREKKE_OVERSTYRING_ENABLED", false)) {
+        if (erOverstyrt && !KonfigurasjonVerdi.instance().get("TREKKE_OVERSTYRING_ENABLED", false)) {
             return new FaktaOmBeregningAvklaringsbehovResultat(singletonList(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.OVST_INNTEKT)),
                     faktaOmBeregningTilfeller);
         }
