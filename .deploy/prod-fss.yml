@@ -118,7 +118,5 @@ spec:
       value: "false"
     - name: SKAL_VALIDERE_FORLENGELSE_ENDRING
       value: "false"
-    - name: ENABLE_AZURE_CC_SYSTEMCONTEXT
-      value: "true"
     - name: PSB_IKKE_OPPHOER_REFUSJON_VED_ENDT_ARBEIDSFORHOLD
       value: "false"
