@@ -47,7 +47,7 @@ public class AndelerForFaktaOmBeregningTjeneste {
         var inntektsmeldinger = input.getInntektsmeldinger();
         var inntektsmeldingForAndel = finnInntektsmelding(andel, inntektsmeldinger);
         var dto = new AndelForFaktaOmBeregningDto();
-        dto.setFastsattBelop(finnInntektForPreutfylling(andel));
+        dto.setFastsattBelop(no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(finnInntektForPreutfylling(andel)));
         dto.setInntektskategori(andel.getGjeldendeInntektskategori());
         dto.setAndelsnr(andel.getAndelsnr());
         dto.setAktivitetStatus(andel.getAktivitetStatus());
@@ -56,11 +56,11 @@ public class AndelerForFaktaOmBeregningTjeneste {
         dto.setLagtTilAvSaksbehandler(andel.erLagtTilAvSaksbehandler());
         BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, inntektsmeldingForAndel, inntektArbeidYtelseGrunnlag)
                 .ifPresent(dto::setArbeidsforhold);
-        finnRefusjonskravFraInntektsmelding(inntektsmeldingForAndel).ifPresent(dto::setRefusjonskrav);
+        finnRefusjonskravFraInntektsmelding(inntektsmeldingForAndel).map(no.nav.folketrygdloven.kalkulus.typer.Beløp::fra).ifPresent(dto::setRefusjonskrav);
         finnInntektForKunLese(ref, andel, inntektsmeldingForAndel, inntektArbeidYtelseGrunnlag,
                 input.getBeregningsgrunnlag().getFaktaOmBeregningTilfeller(),
                 input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList())
-                        .ifPresent(dto::setBelopReadOnly);
+                .map(no.nav.folketrygdloven.kalkulus.typer.Beløp::fra).ifPresent(dto::setBelopReadOnly);
         return dto;
     }
 

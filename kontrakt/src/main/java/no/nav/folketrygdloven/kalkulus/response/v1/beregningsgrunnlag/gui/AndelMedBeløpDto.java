@@ -5,15 +5,13 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.validation.Valid;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -22,16 +20,13 @@ public class AndelMedBeløpDto extends FaktaOmBeregningAndelDto {
 
     @Valid
     @JsonProperty("fastsattBelopPrMnd")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal fastsattBelopPrMnd;
+    private Beløp fastsattBelopPrMnd;
 
-    public BigDecimal getFastsattBelopPrMnd() {
+    public Beløp getFastsattBelopPrMnd() {
         return fastsattBelopPrMnd;
     }
 
-    public void setFastsattBelopPrMnd(BigDecimal fastsattBelopPrMnd) {
+    public void setFastsattBelopPrMnd(Beløp fastsattBelopPrMnd) {
         this.fastsattBelopPrMnd = fastsattBelopPrMnd;
     }
 

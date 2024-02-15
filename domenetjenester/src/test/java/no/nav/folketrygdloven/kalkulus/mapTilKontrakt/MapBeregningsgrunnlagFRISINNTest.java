@@ -58,7 +58,7 @@ class MapBeregningsgrunnlagFRISINNTest {
         );
 
         // Assert
-        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak()).isEqualByComparingTo(bruttoSN);
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak().verdi()).isEqualByComparingTo(bruttoSN);
     }
 
     @Test
@@ -76,7 +76,7 @@ class MapBeregningsgrunnlagFRISINNTest {
         );
 
         // Assert
-        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak()).isEqualByComparingTo(bruttoFL);
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak().verdi()).isEqualByComparingTo(bruttoFL);
     }
 
     @Test
@@ -97,7 +97,7 @@ class MapBeregningsgrunnlagFRISINNTest {
         );
 
         // Assert
-        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak()).isEqualByComparingTo(bruttoFL);
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak().verdi()).isEqualByComparingTo(bruttoFL);
     }
 
     @Test
@@ -118,7 +118,7 @@ class MapBeregningsgrunnlagFRISINNTest {
         );
 
         // Assert
-        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak()).isEqualByComparingTo(SEKS_G.subtract(bruttoAT));
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak().verdi()).isEqualByComparingTo(SEKS_G.subtract(bruttoAT));
     }
 
     @Test
@@ -137,7 +137,7 @@ class MapBeregningsgrunnlagFRISINNTest {
         BigDecimal inntektstak = MapBeregningsgrunnlagFRISINN.map(beregningsgrunnlagEntitet,
                 Optional.of(opptjening.build()),
                 frisinn(false, true)
-        ).getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak();
+        ).getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak().verdi();
 
         // Assert
         assertThat(inntektstak).isEqualByComparingTo(SEKS_G.subtract(bruttoAT));
@@ -158,7 +158,7 @@ class MapBeregningsgrunnlagFRISINNTest {
         BigDecimal inntektstak = MapBeregningsgrunnlagFRISINN.map(beregningsgrunnlagEntitet,
                 Optional.of(opptjening.build()),
                 frisinn(true, false)
-        ).getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak();
+        ).getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak().verdi();
 
         // Assert
         assertThat(inntektstak).isEqualByComparingTo(SEKS_G.subtract(bruttoSN));
@@ -179,7 +179,7 @@ class MapBeregningsgrunnlagFRISINNTest {
         BigDecimal inntektstak = MapBeregningsgrunnlagFRISINN.map(beregningsgrunnlagEntitet,
                 Optional.of(opptjening.build()),
                 frisinn(false, true)
-        ).getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak();
+        ).getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak().verdi();
 
         // Assert
         assertThat(inntektstak).isEqualByComparingTo(SEKS_G.subtract(bruttoFL));
@@ -202,7 +202,7 @@ class MapBeregningsgrunnlagFRISINNTest {
         BigDecimal inntektstak = MapBeregningsgrunnlagFRISINN.map(beregningsgrunnlagEntitet,
                 Optional.of(opptjening.build()),
                 frisinn(false, true)
-        ).getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak();
+        ).getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak().verdi();
 
         // Assert
         assertThat(inntektstak).isEqualByComparingTo(SEKS_G.subtract(bruttoFL).subtract(bruttoAT));
@@ -225,7 +225,7 @@ class MapBeregningsgrunnlagFRISINNTest {
         BigDecimal inntektstak = MapBeregningsgrunnlagFRISINN.map(beregningsgrunnlagEntitet,
                 Optional.of(opptjening.build()),
                 frisinn(false, true)
-        ).getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak();
+        ).getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak().verdi();
 
         // Assert
         assertThat(inntektstak).isEqualByComparingTo(bruttoSN);
@@ -248,7 +248,7 @@ class MapBeregningsgrunnlagFRISINNTest {
         BigDecimal inntektstak = MapBeregningsgrunnlagFRISINN.map(beregningsgrunnlagEntitet,
                 Optional.of(opptjening.build()),
                 frisinn(true, false)
-        ).getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak();
+        ).getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak().verdi();
 
         // Assert
         assertThat(inntektstak).isEqualByComparingTo(bruttoFL);
@@ -266,7 +266,7 @@ class MapBeregningsgrunnlagFRISINNTest {
         BigDecimal inntektstak = MapBeregningsgrunnlagFRISINN.map(beregningsgrunnlagEntitet,
                 Optional.of(opptjening.build()),
                 frisinn(false, false)
-        ).getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak();
+        ).getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak().verdi();
 
         // Assert
         assertThat(inntektstak).isEqualByComparingTo(SEKS_G);
@@ -288,7 +288,7 @@ class MapBeregningsgrunnlagFRISINNTest {
         BigDecimal inntektstak = MapBeregningsgrunnlagFRISINN.map(beregningsgrunnlagEntitet,
                 Optional.of(opptjening.build()),
                 frisinn(true, true)
-        ).getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak();
+        ).getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak().verdi();
 
         // Assert
         assertThat(inntektstak).isEqualByComparingTo(bruttoFL.add(bruttoSN));
@@ -312,7 +312,7 @@ class MapBeregningsgrunnlagFRISINNTest {
         BigDecimal inntektstak = MapBeregningsgrunnlagFRISINN.map(beregningsgrunnlagEntitet,
                 Optional.of(opptjening.build()),
                 frisinn(true, true)
-        ).getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak();
+        ).getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak().verdi();
 
         // Assert
         assertThat(inntektstak).isEqualByComparingTo(SEKS_G.subtract(bruttoAT));
@@ -333,7 +333,7 @@ class MapBeregningsgrunnlagFRISINNTest {
         BigDecimal inntektstak = MapBeregningsgrunnlagFRISINN.map(beregningsgrunnlagEntitet,
                 Optional.of(opptjening.build()),
                 frisinn(true, false)
-        ).getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak();
+        ).getBeregningsgrunnlagPerioder().get(0).getBgFratrukketInntektstak().verdi();
 
 
         // Assert

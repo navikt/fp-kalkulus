@@ -10,6 +10,8 @@ import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
 
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -210,7 +212,7 @@ public class KunYtelseDtoTjenesteTest {
         // Assert
         List<AndelMedBeløpDto> andeler = kunytelse.getAndeler();
         assertThat(andeler).hasSize(1);
-        assertThat(andeler.get(0).getFastsattBelopPrMnd()).isNotEqualByComparingTo(BigDecimal.valueOf(BRUTTO_PR_ÅR));
+        assertThat(andeler.get(0).getFastsattBelopPrMnd()).isNotEqualByComparingTo(Beløp.fra(BRUTTO_PR_ÅR));
         assertThat(andeler.get(0).getAktivitetStatus()).isEqualTo(AktivitetStatus.BRUKERS_ANDEL);
         assertThat(andeler.get(0).getAndelsnr()).isEqualTo(1L);
         assertThat(andeler.get(0).getInntektskategori()).isEqualTo(Inntektskategori.UDEFINERT);
@@ -238,7 +240,7 @@ public class KunYtelseDtoTjenesteTest {
         // Assert
         List<AndelMedBeløpDto> andeler = kunytelse.getAndeler();
         assertThat(andeler).hasSize(1);
-        assertThat(andeler.get(0).getFastsattBelopPrMnd()).isNotEqualByComparingTo(BigDecimal.valueOf(BRUTTO_PR_ÅR));
+        assertThat(andeler.get(0).getFastsattBelopPrMnd()).isNotEqualByComparingTo(Beløp.fra(BRUTTO_PR_ÅR));
         assertThat(andeler.get(0).getAktivitetStatus()).isEqualTo(AktivitetStatus.BRUKERS_ANDEL);
         assertThat(andeler.get(0).getAndelsnr()).isEqualTo(1L);
         assertThat(andeler.get(0).getInntektskategori()).isEqualTo(Inntektskategori.UDEFINERT);

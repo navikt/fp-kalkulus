@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -142,7 +144,7 @@ class LagKravperioder {
             return new LocalDateSegment<>(interval, lhs.getValue());
         });
         return refusjonTidslinje.stream()
-                .map(r -> new Refusjonsperiode(new Periode(r.getFom(), r.getTom()), r.getValue()))
+                .map(r -> new Refusjonsperiode(new Periode(r.getFom(), r.getTom()), Beløp.fra(r.getValue())))
                 .collect(Collectors.toList());
 
     }

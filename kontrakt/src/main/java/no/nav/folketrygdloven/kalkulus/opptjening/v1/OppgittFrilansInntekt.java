@@ -2,17 +2,14 @@ package no.nav.folketrygdloven.kalkulus.opptjening.v1;
 
 import java.math.BigDecimal;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
@@ -25,17 +22,14 @@ public class OppgittFrilansInntekt {
 
     @JsonProperty("inntekt")
     @NotNull
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
     @Valid
-    private BigDecimal inntekt;
+    private Beløp inntekt;
 
     public OppgittFrilansInntekt() {
         // Json deserilaisering
     }
 
-    public OppgittFrilansInntekt(@NotNull Periode periode, @NotNull BigDecimal inntekt) {
+    public OppgittFrilansInntekt(@NotNull Periode periode, @NotNull Beløp inntekt) {
         this.periode = periode;
         this.inntekt = inntekt;
     }
@@ -44,7 +38,7 @@ public class OppgittFrilansInntekt {
         return periode;
     }
 
-    public BigDecimal getInntekt() {
+    public Beløp getInntekt() {
         return inntekt;
     }
 }

@@ -16,6 +16,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -26,38 +27,23 @@ public class FordelBeregningsgrunnlagAndelDto extends FaktaOmBeregningAndelDto {
 
     @Valid
     @JsonProperty(value = "fordelingForrigeBehandlingPrAar")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal fordelingForrigeBehandlingPrAar;
+    private Beløp fordelingForrigeBehandlingPrAar;
 
     @Valid
     @JsonProperty(value = "refusjonskravPrAar")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal refusjonskravPrAar = BigDecimal.ZERO;
+    private Beløp refusjonskravPrAar = Beløp.ZERO;
 
     @Valid
     @JsonProperty(value = "fordeltPrAar")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal fordeltPrAar;
+    private Beløp fordeltPrAar;
 
     @Valid
     @JsonProperty(value = "belopFraInntektsmeldingPrAar")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal belopFraInntektsmeldingPrAar;
+    private Beløp belopFraInntektsmeldingPrAar;
 
     @Valid
     @JsonProperty(value = "refusjonskravFraInntektsmeldingPrAar")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal refusjonskravFraInntektsmeldingPrAar;
+    private Beløp refusjonskravFraInntektsmeldingPrAar;
 
     @Valid
     @JsonProperty(value = "nyttArbeidsforhold")
@@ -78,25 +64,25 @@ public class FordelBeregningsgrunnlagAndelDto extends FaktaOmBeregningAndelDto {
             superDto.getAktivitetStatus(), superDto.getLagtTilAvSaksbehandler(), superDto.getFastsattAvSaksbehandler(), superDto.getAndelIArbeid(), superDto.getKilde());
     }
 
-    public void setBelopFraInntektsmelding(BigDecimal belopFraInntektsmelding) {
-        this.belopFraInntektsmeldingPrAar = belopFraInntektsmelding == null ?
-            null : BigDecimal.valueOf(MÅNEDER_I_1_ÅR).multiply(belopFraInntektsmelding).setScale(0, RoundingMode.HALF_UP);
+    public void setBelopFraInntektsmelding(Beløp belopFraInntektsmelding) {
+        this.belopFraInntektsmeldingPrAar = belopFraInntektsmelding == null || belopFraInntektsmelding.verdi() == null ? null :
+                Beløp.fra(BigDecimal.valueOf(MÅNEDER_I_1_ÅR).multiply(belopFraInntektsmelding.verdi()).setScale(0, RoundingMode.HALF_UP));
     }
 
-    public void setFordelingForrigeBehandling(BigDecimal fordelingForrigeBehandling) {
-        this.fordelingForrigeBehandlingPrAar = fordelingForrigeBehandling == null ?
-            null : BigDecimal.valueOf(MÅNEDER_I_1_ÅR).multiply(fordelingForrigeBehandling).setScale(0, RoundingMode.HALF_UP);
+    public void setFordelingForrigeBehandling(Beløp fordelingForrigeBehandling) {
+        this.fordelingForrigeBehandlingPrAar = fordelingForrigeBehandling == null || fordelingForrigeBehandling.verdi() == null ? null :
+                Beløp.fra(BigDecimal.valueOf(MÅNEDER_I_1_ÅR).multiply(fordelingForrigeBehandling.verdi()).setScale(0, RoundingMode.HALF_UP));
     }
 
-    public void setRefusjonskravPrAar(BigDecimal refusjonskravPrAar) {
-        this.refusjonskravPrAar = refusjonskravPrAar == null ?
-            null : refusjonskravPrAar.setScale(0, RoundingMode.HALF_UP);
+    public void setRefusjonskravPrAar(Beløp refusjonskravPrAar) {
+        this.refusjonskravPrAar = refusjonskravPrAar == null || refusjonskravPrAar.verdi() == null ?
+                null : Beløp.fra(refusjonskravPrAar.verdi().setScale(0, RoundingMode.HALF_UP));
     }
 
 
-    public void setRefusjonskravFraInntektsmeldingPrÅr(BigDecimal refusjonskravFraInntektsmelding) {
-        this.refusjonskravFraInntektsmeldingPrAar = refusjonskravFraInntektsmelding == null ?
-            null : refusjonskravFraInntektsmelding.setScale(0, RoundingMode.HALF_UP);
+    public void setRefusjonskravFraInntektsmeldingPrÅr(Beløp refusjonskravFraInntektsmelding) {
+        this.refusjonskravFraInntektsmeldingPrAar = refusjonskravFraInntektsmelding == null || refusjonskravFraInntektsmelding.verdi() == null?
+            null : Beløp.fra(refusjonskravFraInntektsmelding.verdi().setScale(0, RoundingMode.HALF_UP));
 
     }
 
@@ -116,27 +102,27 @@ public class FordelBeregningsgrunnlagAndelDto extends FaktaOmBeregningAndelDto {
         this.nyttArbeidsforhold = nyttArbeidsforhold;
     }
 
-    public BigDecimal getFordelingForrigeBehandlingPrAar() {
+    public Beløp getFordelingForrigeBehandlingPrAar() {
         return fordelingForrigeBehandlingPrAar;
     }
 
-    public BigDecimal getRefusjonskravPrAar() {
+    public Beløp getRefusjonskravPrAar() {
         return refusjonskravPrAar;
     }
 
-    public BigDecimal getBelopFraInntektsmeldingPrAar() {
+    public Beløp getBelopFraInntektsmeldingPrAar() {
         return belopFraInntektsmeldingPrAar;
     }
 
-    public BigDecimal getRefusjonskravFraInntektsmeldingPrAar() {
+    public Beløp getRefusjonskravFraInntektsmeldingPrAar() {
         return refusjonskravFraInntektsmeldingPrAar;
     }
 
-    public BigDecimal getFordeltPrAar() {
+    public Beløp getFordeltPrAar() {
         return fordeltPrAar;
     }
 
-    public void setFordeltPrAar(BigDecimal fordeltPrAar) {
+    public void setFordeltPrAar(Beløp fordeltPrAar) {
         this.fordeltPrAar = fordeltPrAar;
     }
 }

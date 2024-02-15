@@ -12,6 +12,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
+
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
@@ -275,7 +277,7 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
                 .orElse(null);
         assertThat(andel).isNotNull();
         assertThat(andel.getAvkortetMotInntektstak()).isNotNull();
-        assertThat(andel.getAvkortetMotInntektstak().compareTo(BigDecimal.valueOf(inntektstak))).isEqualTo(0);
+        assertThat(andel.getAvkortetMotInntektstak().compareTo(Beløp.fra(inntektstak))).isEqualTo(0);
     }
 
     private BeregningsgrunnlagGrunnlagDto mapForOmsorgspenger() {
@@ -293,7 +295,7 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
                 Optional.empty(), STP), null, null, (YtelsespesifiktGrunnlag) grunnlag);
 
         BeregningsgrunnlagDto bg = new BeregningsgrunnlagDto(null, null, bgPerioder,
-                null, null, false, GRUNNBELØP);
+                null, null, false, Beløp.fra(GRUNNBELØP));
 
         BeregningsgrunnlagGrunnlagDto gr = new BeregningsgrunnlagGrunnlagDto(bg, null, null,
                 null, null, null, BeregningsgrunnlagTilstand.FASTSATT);
@@ -339,7 +341,7 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
         }
         return new BeregningsgrunnlagPrStatusOgAndelDto.Builder()
                 .medAktivitetStatus(status)
-                .medBruttoPrÅr(BigDecimal.valueOf(brutto))
+                .medBruttoPrÅr(Beløp.fra(brutto))
                 .medBgAndelArbeidsforhold(arb)
                 .build();
     }

@@ -19,6 +19,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Organisasjonstype;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningAndelDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
 
 public class BeregningsgrunnlagDtoUtil {
@@ -92,10 +93,10 @@ public class BeregningsgrunnlagDtoUtil {
             arbeidsforhold.setStartdato(bga.getArbeidsperiodeFom());
             arbeidsforhold.setOpphoersdato(finnKorrektOpphørsdato(andel));
             arbeidsforhold.setArbeidsforholdId(bga.getArbeidsforholdRef().getReferanse());
-            arbeidsforhold.setRefusjonPrAar(bga.getGjeldendeRefusjonPrÅr());
-            arbeidsforhold.setNaturalytelseBortfaltPrÅr(bga.getNaturalytelseBortfaltPrÅr().orElse(null));
-            arbeidsforhold.setNaturalytelseTilkommetPrÅr(bga.getNaturalytelseTilkommetPrÅr().orElse(null));
-            inntektsmelding.ifPresent(im -> arbeidsforhold.setBelopFraInntektsmeldingPrMnd(im.getInntektBeløp().getVerdi()));
+            arbeidsforhold.setRefusjonPrAar(Beløp.fra(bga.getGjeldendeRefusjonPrÅr()));
+            arbeidsforhold.setNaturalytelseBortfaltPrÅr(Beløp.fra(bga.getNaturalytelseBortfaltPrÅr().orElse(null)));
+            arbeidsforhold.setNaturalytelseTilkommetPrÅr(Beløp.fra(bga.getNaturalytelseTilkommetPrÅr().orElse(null)));
+            inntektsmelding.ifPresent(im -> arbeidsforhold.setBelopFraInntektsmeldingPrMnd(Beløp.fra(im.getInntektBeløp().getVerdi())));
             mapArbeidsgiver(arbeidsforhold, arbeidsgiver);
             finnEksternArbeidsforholdId(andel, inntektArbeidYtelseGrunnlag).ifPresent(ref -> arbeidsforhold.setEksternArbeidsforholdId(ref.getReferanse()));
         });

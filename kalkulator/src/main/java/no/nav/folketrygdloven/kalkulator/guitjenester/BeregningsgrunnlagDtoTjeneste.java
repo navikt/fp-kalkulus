@@ -149,9 +149,9 @@ public class BeregningsgrunnlagDtoTjeneste {
     private void mapBeløp(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
         var beregningsgrunnlag = input.getBeregningsgrunnlag();
         Beløp grunnbeløp = Optional.ofNullable(beregningsgrunnlag.getGrunnbeløp()).orElse(Beløp.ZERO);
-        double halvG = grunnbeløp.getVerdi().divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP).doubleValue();
-        dto.setHalvG(halvG);
-        dto.setGrunnbeløp(grunnbeløp.getVerdi());
+        var halvG = grunnbeløp.getVerdi().divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP);
+        dto.setHalvG(no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(halvG));
+        dto.setGrunnbeløp(no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(grunnbeløp.getVerdi()));
         dto.setHjemmel(beregningsgrunnlag.getHjemmel());
     }
 
@@ -173,12 +173,12 @@ public class BeregningsgrunnlagDtoTjeneste {
             SammenligningsgrunnlagDto dto = new SammenligningsgrunnlagDto();
             dto.setSammenligningsgrunnlagFom(s.getSammenligningsperiodeFom());
             dto.setSammenligningsgrunnlagTom(s.getSammenligningsperiodeTom());
-            dto.setRapportertPrAar(s.getRapportertPrÅr());
+            dto.setRapportertPrAar(no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(s.getRapportertPrÅr()));
             dto.setAvvikPromille(s.getAvvikPromilleNy());
             BigDecimal avvikProsent = s.getAvvikPromilleNy() == null ? null : s.getAvvikPromilleNy().scaleByPowerOfTen(-1);
             dto.setAvvikProsent(avvikProsent);
             dto.setSammenligningsgrunnlagType(s.getSammenligningsgrunnlagType());
-            dto.setDifferanseBeregnet(finnDifferanseBeregnet(beregningsgrunnlag, s));
+            dto.setDifferanseBeregnet(no.nav.folketrygdloven.kalkulus.typer.DiffBeløp.fra(finnDifferanseBeregnet(beregningsgrunnlag, s)));
             sammenligningsgrunnlagDtos.add(dto);
         });
         return sammenligningsgrunnlagDtos;
@@ -244,16 +244,16 @@ public class BeregningsgrunnlagDtoTjeneste {
         BeregningsgrunnlagPeriodeDto dto = new BeregningsgrunnlagPeriodeDto();
         dto.setBeregningsgrunnlagPeriodeFom(periode.getBeregningsgrunnlagPeriodeFom());
         dto.setBeregningsgrunnlagPeriodeTom(periode.getBeregningsgrunnlagPeriodeTom() == TIDENES_ENDE ? null : periode.getBeregningsgrunnlagPeriodeTom());
-        dto.setBeregnetPrAar(periode.getBeregnetPrÅr());
-        dto.setBruttoPrAar(periode.getBruttoPrÅr());
+        dto.setBeregnetPrAar(no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(periode.getBeregnetPrÅr()));
+        dto.setBruttoPrAar(no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(periode.getBruttoPrÅr()));
         BigDecimal bruttoInkludertBortfaltNaturalytelsePrAar = periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoInkludertNaturalYtelser)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal::add)
                 .orElse(null);
-        dto.setBruttoInkludertBortfaltNaturalytelsePrAar(bruttoInkludertBortfaltNaturalytelsePrAar);
-        dto.setAvkortetPrAar(periode.getAvkortetPrÅr() == null ? null : finnAvkortetUtenGraderingPrÅr(bruttoInkludertBortfaltNaturalytelsePrAar, input.getBeregningsgrunnlag().getGrunnbeløp()));
-        dto.setRedusertPrAar(periode.getRedusertPrÅr());
+        dto.setBruttoInkludertBortfaltNaturalytelsePrAar(no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(bruttoInkludertBortfaltNaturalytelsePrAar));
+        dto.setAvkortetPrAar(periode.getAvkortetPrÅr() == null ? null : no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(finnAvkortetUtenGraderingPrÅr(bruttoInkludertBortfaltNaturalytelsePrAar, input.getBeregningsgrunnlag().getGrunnbeløp())));
+        dto.setRedusertPrAar(no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(periode.getRedusertPrÅr()));
         dto.setDagsats(periode.getDagsats());
         dto.leggTilPeriodeAarsaker(periode.getPeriodeÅrsaker());
         dto.setAndeler(

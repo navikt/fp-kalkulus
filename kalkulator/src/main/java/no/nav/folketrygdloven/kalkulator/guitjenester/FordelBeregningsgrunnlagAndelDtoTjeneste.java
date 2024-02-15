@@ -22,6 +22,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.FordelTilkommetArbeidsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagAndelDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class FordelBeregningsgrunnlagAndelDtoTjeneste {
 
@@ -54,8 +55,8 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
                 periode
         ));
         settFordelingForrigeBehandling(input, andel, endringAndel);
-        endringAndel.setFordeltPrAar(andel.getManueltFordeltPrÅr() == null ? andel.getFordeltPrÅr() : andel.getManueltFordeltPrÅr());
-        inntektsmelding.ifPresent(im -> endringAndel.setBelopFraInntektsmelding(im.getInntektBeløp().getVerdi()));
+        endringAndel.setFordeltPrAar(andel.getManueltFordeltPrÅr() == null ? Beløp.fra(andel.getFordeltPrÅr()) : Beløp.fra(andel.getManueltFordeltPrÅr()));
+        inntektsmelding.ifPresent(im -> endringAndel.setBelopFraInntektsmelding(Beløp.fra(im.getInntektBeløp().getVerdi())));
         return endringAndel;
     }
 
@@ -82,6 +83,6 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
-        endringAndel.setFordelingForrigeBehandling(fastsattForrigeBehandling.divide(BigDecimal.valueOf(MÅNEDER_I_1_ÅR), 0, RoundingMode.HALF_UP));
+        endringAndel.setFordelingForrigeBehandling(Beløp.fra(fastsattForrigeBehandling.divide(BigDecimal.valueOf(MÅNEDER_I_1_ÅR), 0, RoundingMode.HALF_UP)));
     }
 }

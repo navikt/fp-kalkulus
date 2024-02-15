@@ -4,21 +4,17 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 import java.math.BigDecimal;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Pattern;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -27,17 +23,11 @@ public class AndelForFaktaOmBeregningDto {
 
     @Valid
     @JsonProperty(value = "belopReadOnly")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal belopReadOnly;
+    private Beløp belopReadOnly;
 
     @Valid
     @JsonProperty(value = "fastsattBelop")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal fastsattBelop;
+    private Beløp fastsattBelop;
 
     @Valid
     @JsonProperty(value = "inntektskategori")
@@ -49,10 +39,7 @@ public class AndelForFaktaOmBeregningDto {
 
     @Valid
     @JsonProperty(value = "refusjonskrav")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal refusjonskrav;
+    private Beløp refusjonskrav;
 
     @Valid
     @JsonProperty(value = "arbeidsforhold")
@@ -96,11 +83,11 @@ public class AndelForFaktaOmBeregningDto {
         this.andelsnr = andelsnr;
     }
 
-    public BigDecimal getRefusjonskrav() {
+    public Beløp getRefusjonskrav() {
         return refusjonskrav;
     }
 
-    public void setRefusjonskrav(BigDecimal refusjonskrav) {
+    public void setRefusjonskrav(Beløp refusjonskrav) {
         this.refusjonskrav = refusjonskrav;
     }
 
@@ -112,19 +99,19 @@ public class AndelForFaktaOmBeregningDto {
         this.inntektskategori = inntektskategori;
     }
 
-    public BigDecimal getBelopReadOnly() {
+    public Beløp getBelopReadOnly() {
         return belopReadOnly;
     }
 
-    public void setBelopReadOnly(BigDecimal belopReadOnly) {
+    public void setBelopReadOnly(Beløp belopReadOnly) {
         this.belopReadOnly = belopReadOnly;
     }
 
-    public BigDecimal getFastsattBelop() {
+    public Beløp getFastsattBelop() {
         return fastsattBelop;
     }
 
-    public void setFastsattBelop(BigDecimal fastsattBelop) {
+    public void setFastsattBelop(Beløp fastsattBelop) {
         this.fastsattBelop = fastsattBelop;
     }
 

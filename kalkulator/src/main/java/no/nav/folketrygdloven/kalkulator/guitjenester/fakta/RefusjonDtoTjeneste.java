@@ -69,14 +69,16 @@ public class RefusjonDtoTjeneste {
     public static void settRefusjonskrav(BeregningsgrunnlagPrStatusOgAndelDto andel,
                                          FordelBeregningsgrunnlagAndelDto endringAndel) {
         if (andel.erLagtTilAvSaksbehandler()) {
-            endringAndel.setRefusjonskravFraInntektsmeldingPrÅr(BigDecimal.ZERO);
+            endringAndel.setRefusjonskravFraInntektsmeldingPrÅr(no.nav.folketrygdloven.kalkulus.typer.Beløp.ZERO);
         } else {
             andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr)
+                    .map(no.nav.folketrygdloven.kalkulus.typer.Beløp::fra)
                     .ifPresent(endringAndel::setRefusjonskravFraInntektsmeldingPrÅr);
         }
         endringAndel.setRefusjonskravPrAar(andel.getBgAndelArbeidsforhold()
             .map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr)
-            .orElse(BigDecimal.ZERO));
+                .map(no.nav.folketrygdloven.kalkulus.typer.Beløp::fra)
+            .orElse(no.nav.folketrygdloven.kalkulus.typer.Beløp.ZERO));
     }
 
 
@@ -91,7 +93,7 @@ public class RefusjonDtoTjeneste {
             if (harArbeidsforholdOgErIkkjeLagtTilAvSaksbehandler(andel)) {
                 BeregningsgrunnlagArbeidsforholdDto arbeidsforhold = andel.getArbeidsforhold();
                 BigDecimal totalRefusjonForArbeidsforhold = totalRefusjonMap.get(arbeidsforhold);
-                andel.setRefusjonskravPrAar(totalRefusjonForArbeidsforhold != null ? totalRefusjonForArbeidsforhold : andel.getRefusjonskravPrAar());
+                andel.setRefusjonskravPrAar(totalRefusjonForArbeidsforhold != null ? no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(totalRefusjonForArbeidsforhold) : andel.getRefusjonskravPrAar());
             } else if (harArbeidsforholdOgErLagtTilManuelt(andel)) {
                 BeregningsgrunnlagArbeidsforholdDto arbeidsforhold = andel.getArbeidsforhold();
                 BigDecimal totalRefusjonForArbeidsforhold = totalRefusjonMap.get(arbeidsforhold);
@@ -106,7 +108,7 @@ public class RefusjonDtoTjeneste {
             if (andel.getArbeidsforhold() != null) {
                 BeregningsgrunnlagArbeidsforholdDto arbeidsforhold = andel.getArbeidsforhold();
                 BigDecimal refusjonskrav = andel.getRefusjonskravPrAar() == null ?
-                    BigDecimal.ZERO : andel.getRefusjonskravPrAar();
+                    BigDecimal.ZERO : no.nav.folketrygdloven.kalkulus.typer.Beløp.safeVerdi(andel.getRefusjonskravPrAar());
                 if (arbeidsforholdRefusjonMap.containsKey(arbeidsforhold)) {
                     BigDecimal totalRefusjon = arbeidsforholdRefusjonMap.get(arbeidsforhold).add(refusjonskrav);
                     arbeidsforholdRefusjonMap.put(arbeidsforhold, totalRefusjon);

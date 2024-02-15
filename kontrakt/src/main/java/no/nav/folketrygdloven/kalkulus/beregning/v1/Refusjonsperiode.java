@@ -1,15 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.beregning.v1;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
 import java.util.Objects;
-
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -18,7 +10,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE, creatorVisibility = Visibility.NONE)
@@ -33,16 +28,13 @@ public class Refusjonsperiode {
     @JsonProperty(value = "beløp", required = true)
     @Valid
     @NotNull
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal beløp;
+    private Beløp beløp;
 
 
     public Refusjonsperiode() {
     }
 
-    public Refusjonsperiode(Periode periode, BigDecimal beløp) {
+    public Refusjonsperiode(Periode periode, Beløp beløp) {
         this.periode = periode;
         this.beløp = beløp;
     }
@@ -51,7 +43,7 @@ public class Refusjonsperiode {
         return periode;
     }
 
-    public BigDecimal getBeløp() {
+    public Beløp getBeløp() {
         return beløp;
     }
 

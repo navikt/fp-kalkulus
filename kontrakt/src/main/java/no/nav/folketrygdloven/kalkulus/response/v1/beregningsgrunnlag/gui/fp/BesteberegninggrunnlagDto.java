@@ -17,6 +17,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
@@ -29,12 +31,9 @@ public class BesteberegninggrunnlagDto {
 
     @Valid
     @JsonProperty("avvik")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal avvik;
+    private Beløp avvik;
 
-    public BesteberegninggrunnlagDto(List<BesteberegningMånedGrunnlagDto> besteMåneder, BigDecimal avvik) {
+    public BesteberegninggrunnlagDto(List<BesteberegningMånedGrunnlagDto> besteMåneder, Beløp avvik) {
         this.besteMåneder = besteMåneder;
         this.avvik = avvik;
     }
@@ -43,7 +42,7 @@ public class BesteberegninggrunnlagDto {
         return besteMåneder;
     }
 
-    public BigDecimal getAvvik() {
+    public Beløp getAvvik() {
         return avvik;
     }
 }

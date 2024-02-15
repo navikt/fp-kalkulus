@@ -21,6 +21,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
@@ -44,17 +45,11 @@ public class BeregningsgrunnlagPeriodeDto {
 
     @JsonProperty(value = "bruttoPrÅr")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal bruttoPrÅr;
+    private Beløp bruttoPrÅr;
 
     @JsonProperty(value = "avkortetPrÅr")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal avkortetPrÅr;
+    private Beløp avkortetPrÅr;
 
     @JsonProperty(value = "dagsats")
     @Valid
@@ -127,8 +122,8 @@ public class BeregningsgrunnlagPeriodeDto {
 
     public BeregningsgrunnlagPeriodeDto(@NotNull @Valid List<BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList,
                                         List<TilkommetInntektsforholdDto> tilkommetInntektsforholdList, @NotNull @Valid Periode periode,
-                                        @Valid BigDecimal bruttoPrÅr,
-                                        @Valid BigDecimal avkortetPrÅr,
+                                        @Valid Beløp bruttoPrÅr,
+                                        @Valid Beløp avkortetPrÅr,
                                         @Valid Long dagsats,
                                         BigDecimal inntektGraderingsprosent,
                                         BigDecimal totalUtbetalingsgradFraUttak,
@@ -156,11 +151,11 @@ public class BeregningsgrunnlagPeriodeDto {
         return periode.getTom();
     }
 
-    public BigDecimal getBruttoPrÅr() {
+    public Beløp getBruttoPrÅr() {
         return bruttoPrÅr;
     }
 
-    public BigDecimal getAvkortetPrÅr() {
+    public Beløp getAvkortetPrÅr() {
         return avkortetPrÅr;
     }
 

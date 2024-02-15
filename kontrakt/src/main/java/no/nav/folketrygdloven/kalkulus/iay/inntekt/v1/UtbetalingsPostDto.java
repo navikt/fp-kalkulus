@@ -11,15 +11,13 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.LønnsinntektBeskrivelse;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SkatteOgAvgiftsregelType;
+import no.nav.folketrygdloven.kalkulus.typer.DiffBeløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
@@ -49,10 +47,7 @@ public class UtbetalingsPostDto {
      */
     @JsonProperty("beløp")
     @Valid
-    @DecimalMin(value = "-1000000000.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal beløp;
+    private DiffBeløp beløp;
 
     /**
      * Satt dersom dette gjelder en ytelse, ellers ikke (henger sammen med {@link UtbetalingDto#getKilde()})
@@ -64,7 +59,7 @@ public class UtbetalingsPostDto {
     protected UtbetalingsPostDto() {
     }
 
-    public UtbetalingsPostDto(Periode periode, InntektspostType inntektspostType, BigDecimal beløp) {
+    public UtbetalingsPostDto(Periode periode, InntektspostType inntektspostType, DiffBeløp beløp) {
         Objects.requireNonNull(periode, "periode");
         Objects.requireNonNull(inntektspostType, "inntektspostType");
         this.beløp = beløp;
@@ -101,12 +96,21 @@ public class UtbetalingsPostDto {
         return periode;
     }
 
-    public BigDecimal getBeløp() {
+    public DiffBeløp getBeløp() {
         return beløp;
     }
 
+    public void setBeløp(DiffBeløp beløp) {
+        this.beløp = beløp;
+    }
+
     public void setBeløp(BigDecimal beløp) {
-        this.beløp = beløp == null ? null : beløp.setScale(2, RoundingMode.HALF_UP);
+        this.beløp = beløp == null ? null : DiffBeløp.fra(beløp.setScale(2, RoundingMode.HALF_UP));
+    }
+
+    public UtbetalingsPostDto medBeløp(DiffBeløp beløp) {
+        setBeløp(beløp);
+        return this;
     }
 
     public UtbetalingsPostDto medBeløp(BigDecimal beløp) {

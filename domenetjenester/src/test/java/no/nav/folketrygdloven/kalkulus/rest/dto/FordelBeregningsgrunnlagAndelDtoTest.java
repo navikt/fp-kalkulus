@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import java.util.Collections;
 
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
+
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
@@ -24,8 +26,8 @@ public class FordelBeregningsgrunnlagAndelDtoTest {
                 Inntektskategori.ARBEIDSTAKER, AktivitetStatus.ARBEIDSTAKER,
                 false, false, Collections.emptyList(), AndelKilde.PROSESS_START);
         FordelBeregningsgrunnlagAndelDto andel = new FordelBeregningsgrunnlagAndelDto(superDto);
-        andel.setRefusjonskravPrAar(BigDecimal.valueOf(122_000.61));
+        andel.setRefusjonskravPrAar(Beløp.fra(BigDecimal.valueOf(122_000.61)));
 
-        assertThat(andel.getRefusjonskravPrAar()).isEqualByComparingTo(BigDecimal.valueOf(122_001));
+        assertThat(andel.getRefusjonskravPrAar()).isEqualByComparingTo(Beløp.fra(122_001));
     }
 }

@@ -68,7 +68,7 @@ public class MapBeregningsgrunnlagFRISINN {
                 mapFraBeløp(beregningsgrunnlagPeriode.getBruttoPrÅr()),
                 mapFraBeløp(beregningsgrunnlagPeriode.getAvkortetPrÅr()),
                 mapFraBeløp(beregningsgrunnlagPeriode.getRedusertPrÅr()),
-                inntektstak,
+                no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(inntektstak),
                 beregningsgrunnlagPeriode.getDagsats(),
                 beregningsgrunnlagPeriode.getPeriodeÅrsaker());
     }
@@ -93,8 +93,8 @@ public class MapBeregningsgrunnlagFRISINN {
                 mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr()),
                 mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getRedusertPrÅr()),
                 mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getAvkortetPrÅr()),
-                finnLøpendeInntekt(beregningsgrunnlagPrStatusOgAndel, oppgittOpptjening),
-                inntektstak,
+                no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(finnLøpendeInntekt(beregningsgrunnlagPrStatusOgAndel, oppgittOpptjening)),
+                no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(inntektstak),
                 beregningsgrunnlagPrStatusOgAndel.getDagsats(),
                 beregningsgrunnlagPrStatusOgAndel.getInntektskategori(),
                 avslagsårsak.orElse(null));
@@ -143,8 +143,8 @@ public class MapBeregningsgrunnlagFRISINN {
                 .collect(Collectors.toList());
     }
 
-    private static BigDecimal mapFraBeløp(Beløp beløp) {
-        return beløp == null ? null : beløp.getVerdi();
+    private static no.nav.folketrygdloven.kalkulus.typer.Beløp mapFraBeløp(Beløp beløp) {
+        return beløp != null ? no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(beløp.getVerdi()) : null;
     }
 
 

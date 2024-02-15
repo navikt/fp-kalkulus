@@ -18,6 +18,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
 
@@ -56,14 +57,14 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         dto.setAktivitetStatus(andel.getAktivitetStatus());
         dto.setBeregningsperiodeFom(andel.getBeregningsperiodeFom());
         dto.setBeregningsperiodeTom(andel.getBeregningsperiodeTom());
-        dto.setBruttoPrAar(andel.getBruttoPrÅr());
-        dto.setFordeltPrAar(andel.getFordeltPrÅr());
-        dto.setAvkortetPrAar(andel.getAvkortetPrÅr());
-        dto.setRedusertPrAar(andel.getRedusertPrÅr());
-        dto.setOverstyrtPrAar(andel.getOverstyrtPrÅr());
-        dto.setBeregnetPrAar(andel.getBeregnetPrÅr());
+        dto.setBruttoPrAar(Beløp.fra(andel.getBruttoPrÅr()));
+        dto.setFordeltPrAar(Beløp.fra(andel.getFordeltPrÅr()));
+        dto.setAvkortetPrAar(Beløp.fra(andel.getAvkortetPrÅr()));
+        dto.setRedusertPrAar(Beløp.fra(andel.getRedusertPrÅr()));
+        dto.setOverstyrtPrAar(Beløp.fra(andel.getOverstyrtPrÅr()));
+        dto.setBeregnetPrAar(Beløp.fra(andel.getBeregnetPrÅr()));
         dto.setInntektskategori(andel.getGjeldendeInntektskategori());
-        dto.setBesteberegningPrAar(andel.getBesteberegningPrÅr());
+        dto.setBesteberegningPrAar(Beløp.fra(andel.getBesteberegningPrÅr()));
         dto.setFastsattAvSaksbehandler(andel.getFastsattAvSaksbehandler());
         faktaAggregat.flatMap(fa -> fa.getFaktaArbeidsforhold(andel))
                 .map(FaktaArbeidsforholdDto::getErTidsbegrensetVurdering).ifPresent(dto::setErTidsbegrensetArbeidsforhold);

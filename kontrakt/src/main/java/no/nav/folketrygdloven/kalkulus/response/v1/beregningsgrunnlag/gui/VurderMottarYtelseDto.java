@@ -6,16 +6,14 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -32,10 +30,7 @@ public class VurderMottarYtelseDto {
 
     @Valid
     @JsonProperty(value = "frilansInntektPrMnd")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal frilansInntektPrMnd;
+    private Beløp frilansInntektPrMnd;
 
     @Valid
     @JsonProperty(value = "arbeidstakerAndelerUtenIM")
@@ -54,11 +49,11 @@ public class VurderMottarYtelseDto {
         return frilansMottarYtelse;
     }
 
-    public BigDecimal getFrilansInntektPrMnd() {
+    public Beløp getFrilansInntektPrMnd() {
         return frilansInntektPrMnd;
     }
 
-    public void setFrilansInntektPrMnd(BigDecimal frilansInntektPrMnd) {
+    public void setFrilansInntektPrMnd(Beløp frilansInntektPrMnd) {
         this.frilansInntektPrMnd = frilansInntektPrMnd;
     }
 

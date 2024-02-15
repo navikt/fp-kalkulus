@@ -3,19 +3,16 @@ package no.nav.folketrygdloven.kalkulus.iay.ytelse.v1;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektPeriodeType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 /** Angir hyppighet og størrelse for ytelse. */
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -26,10 +23,7 @@ public class YtelseFordelingDto {
     @JsonProperty(value = "beløp", required = true)
     @Valid
     @NotNull
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal beløp;
+    private Beløp beløp;
 
     /** Angir hvilken periode beløp gjelder for. */
     @JsonProperty(value = "inntektPeriodeType", required = true)
@@ -54,9 +48,13 @@ public class YtelseFordelingDto {
     }
 
     public YtelseFordelingDto(Aktør arbeidsgiver, InntektPeriodeType inntektPeriodeType, BigDecimal beløp, Boolean erRefusjon) {
+        this(arbeidsgiver, inntektPeriodeType, beløp == null ? null : Beløp.fra(beløp.setScale(2, RoundingMode.HALF_UP)), erRefusjon);
+    }
+
+    public YtelseFordelingDto(Aktør arbeidsgiver, InntektPeriodeType inntektPeriodeType, Beløp beløp, Boolean erRefusjon) {
         this.arbeidsgiver = arbeidsgiver;
         this.inntektPeriodeType = inntektPeriodeType;
-        this.beløp = beløp == null ? null : beløp.setScale(2, RoundingMode.HALF_UP);
+        this.beløp = beløp;
         this.erRefusjon = erRefusjon;
     }
 
@@ -64,7 +62,7 @@ public class YtelseFordelingDto {
         return arbeidsgiver;
     }
 
-    public BigDecimal getBeløp() {
+    public Beløp getBeløp() {
         return beløp;
     }
 

@@ -207,7 +207,7 @@ public class RefusjonDtoTjenesteImplTest {
         RefusjonDtoTjeneste.slåSammenRefusjonForAndelerISammeArbeidsforhold(andeler);
 
         FordelBeregningsgrunnlagAndelDto andelSomIkkjeErLagtTilManuelt = andeler.stream().filter(a -> !a.getLagtTilAvSaksbehandler()).findFirst().get();
-        assertThat(andelSomIkkjeErLagtTilManuelt.getRefusjonskravPrAar()).isEqualByComparingTo(BigDecimal.valueOf(refusjonskrav1+refusjonskrav2+refusjonskrav3));
+        assertThat(andelSomIkkjeErLagtTilManuelt.getRefusjonskravPrAar()).isEqualByComparingTo(no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(refusjonskrav1+refusjonskrav2+refusjonskrav3));
         FordelBeregningsgrunnlagAndelDto andelSomErLagtTilManuelt = andeler.stream().filter(FaktaOmBeregningAndelDto::getLagtTilAvSaksbehandler).findFirst().get();
         assertThat(andelSomErLagtTilManuelt.getRefusjonskravPrAar()).isNull();
     }
@@ -219,9 +219,9 @@ public class RefusjonDtoTjenesteImplTest {
             FordelBeregningsgrunnlagAndelDto andel = new FordelBeregningsgrunnlagAndelDto(new FaktaOmBeregningAndelDto());
             andel.setArbeidsforhold(arbeidsforholdDto);
             andel.setLagtTilAvSaksbehandler(tuple.getElement1());
-            andel.setRefusjonskravPrAar(BigDecimal.valueOf(tuple.getElement2()));
+            andel.setRefusjonskravPrAar(no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(tuple.getElement2()));
             if (tuple.getElement1()) {
-                andel.setRefusjonskravFraInntektsmeldingPrÅr(BigDecimal.valueOf(refusjonFraInntektsmelding));
+                andel.setRefusjonskravFraInntektsmeldingPrÅr(no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(refusjonFraInntektsmelding));
             }
             return andel;
         }).collect(Collectors.toList());

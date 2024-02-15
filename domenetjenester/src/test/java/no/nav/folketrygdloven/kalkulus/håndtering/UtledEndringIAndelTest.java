@@ -37,7 +37,7 @@ public class UtledEndringIAndelTest {
         assertThat(endring.get().getArbeidsgiver().getIdent()).isEqualTo(ARBEIDSGIVER_ORGNR);
         assertThat(endring.get().getArbeidsforholdRef()).isEqualTo(ARBEIDSFORHOLD_REF.getReferanse());
         assertThat(endring.get().getInntektEndring().getFraInntekt()).isNull();
-        assertThat(endring.get().getInntektEndring().getTilInntekt()).isEqualTo(inntekt);
+        assertThat(endring.get().getInntektEndring().getTilInntekt().verdi()).isEqualTo(inntekt);
         assertThat(endring.get().getInntektskategoriEndring().getFraVerdi()).isNull();
         assertThat(endring.get().getInntektskategoriEndring().getTilVerdi()).isEqualTo(inntektskategori);
     }
@@ -60,8 +60,8 @@ public class UtledEndringIAndelTest {
         assertThat(endring.get().getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER);
         assertThat(endring.get().getArbeidsgiver().getIdent()).isEqualTo(ARBEIDSGIVER_ORGNR);
         assertThat(endring.get().getArbeidsforholdRef()).isEqualTo(ARBEIDSFORHOLD_REF.getReferanse());
-        assertThat(endring.get().getInntektEndring().getFraInntekt()).isEqualTo(forrigeInntekt);
-        assertThat(endring.get().getInntektEndring().getTilInntekt()).isEqualTo(inntekt);
+        assertThat(endring.get().getInntektEndring().getFraInntekt().verdi()).isEqualTo(forrigeInntekt);
+        assertThat(endring.get().getInntektEndring().getTilInntekt().verdi()).isEqualTo(inntekt);
         assertThat(endring.get().getInntektskategoriEndring().getFraVerdi()).isEqualTo(forrigeInntektskategori);
         assertThat(endring.get().getInntektskategoriEndring().getTilVerdi()).isEqualTo(inntektskategori);
     }
@@ -84,8 +84,8 @@ public class UtledEndringIAndelTest {
         assertThat(endring.get().getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.FRILANSER);
         assertThat(endring.get().getArbeidsgiver()).isNull();
         assertThat(endring.get().getArbeidsforholdRef()).isNull();
-        assertThat(endring.get().getInntektEndring().getFraInntekt()).isEqualTo(forrigeInntekt);
-        assertThat(endring.get().getInntektEndring().getTilInntekt()).isEqualTo(inntekt);
+        assertThat(endring.get().getInntektEndring().getFraInntekt().verdi()).isEqualTo(forrigeInntekt);
+        assertThat(endring.get().getInntektEndring().getTilInntekt().verdi()).isEqualTo(inntekt);
         assertThat(endring.get().getInntektskategoriEndring().getFraVerdi()).isEqualTo(forrigeInntektskategori);
         assertThat(endring.get().getInntektskategoriEndring().getTilVerdi()).isEqualTo(inntektskategori);
     }

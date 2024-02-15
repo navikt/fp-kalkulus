@@ -4,18 +4,18 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 import java.math.BigDecimal;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotNull;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektAktivitetType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -29,21 +29,18 @@ public class InntektsgrunnlagInntektDto {
 
     @Valid
     @JsonProperty("beløp")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal beløp;
+    private Beløp beløp;
 
     public InntektsgrunnlagInntektDto() {
     }
 
     public InntektsgrunnlagInntektDto(@Valid @NotNull InntektAktivitetType inntektAktivitetType,
-                                      @Valid @Digits(integer = 8, fraction = 2) @DecimalMin("0.00") @DecimalMax("10000000.00") BigDecimal beløp) {
+                                      @Valid Beløp beløp) {
         this.inntektAktivitetType = inntektAktivitetType;
         this.beløp = beløp;
     }
 
-    public BigDecimal getBeløp() {
+    public Beløp getBeløp() {
         return beløp;
     }
 

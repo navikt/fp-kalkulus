@@ -25,6 +25,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.InntektsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusjon.RefusjonTilVurderingDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -70,17 +71,11 @@ public class BeregningsgrunnlagDto {
 
     @JsonProperty(value = "halvG")
     @Valid
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private Double halvG;
+    private Beløp halvG;
 
     @JsonProperty(value = "grunnbeløp")
     @Valid
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal grunnbeløp;
+    private Beløp grunnbeløp;
 
     @JsonProperty(value = "faktaOmBeregning")
     @Valid
@@ -174,7 +169,7 @@ public class BeregningsgrunnlagDto {
         return sammenligningsgrunnlag;
     }
 
-    public Double getHalvG() {
+    public Beløp getHalvG() {
         return halvG;
     }
 
@@ -211,7 +206,7 @@ public class BeregningsgrunnlagDto {
     }
 
 
-    public void setHalvG(Double halvG) {
+    public void setHalvG(Beløp halvG) {
         this.halvG = halvG;
     }
 
@@ -251,11 +246,11 @@ public class BeregningsgrunnlagDto {
         this.skjæringstidspunkt = skjæringstidspunkt;
     }
 
-    public BigDecimal getGrunnbeløp() {
+    public Beløp getGrunnbeløp() {
         return grunnbeløp;
     }
 
-    public void setGrunnbeløp(BigDecimal grunnbeløp) {
+    public void setGrunnbeløp(Beløp grunnbeløp) {
         this.grunnbeløp = grunnbeløp;
     }
 

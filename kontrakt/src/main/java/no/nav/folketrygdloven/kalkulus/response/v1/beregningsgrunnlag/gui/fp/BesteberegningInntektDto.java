@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
@@ -46,18 +47,15 @@ public class BesteberegningInntektDto {
 
     @Valid
     @JsonProperty(value = "inntekt")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
     @NotNull
-    private final BigDecimal inntekt;
+    private final Beløp inntekt;
 
-    public BesteberegningInntektDto(OpptjeningAktivitetType opptjeningAktivitetType, BigDecimal inntekt) {
+    public BesteberegningInntektDto(OpptjeningAktivitetType opptjeningAktivitetType, Beløp inntekt) {
         this.opptjeningAktivitetType = opptjeningAktivitetType;
         this.inntekt = inntekt;
     }
 
-    public BesteberegningInntektDto(String arbeidsgiverId, String arbeidsgiverIdent, String arbeidsforholdId, BigDecimal inntekt) {
+    public BesteberegningInntektDto(String arbeidsgiverId, String arbeidsgiverIdent, String arbeidsforholdId, Beløp inntekt) {
         this.arbeidsgiverId = arbeidsgiverId;
         this.arbeidsforholdId = arbeidsforholdId;
         this.inntekt = inntekt;
@@ -76,7 +74,7 @@ public class BesteberegningInntektDto {
         return opptjeningAktivitetType;
     }
 
-    public BigDecimal getInntekt() {
+    public Beløp getInntekt() {
         return inntekt;
     }
 

@@ -15,6 +15,7 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Size;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -23,10 +24,7 @@ public class BeregningsgrunnlagPrStatusOgAndelSNDto extends BeregningsgrunnlagPr
 
     @Valid
     @JsonProperty("pgiSnitt")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal pgiSnitt;
+    private Beløp pgiSnitt;
 
     @Valid
     @JsonProperty("pgiVerdier")
@@ -42,11 +40,11 @@ public class BeregningsgrunnlagPrStatusOgAndelSNDto extends BeregningsgrunnlagPr
         super();
     }
 
-    public BigDecimal getPgiSnitt() {
+    public Beløp getPgiSnitt() {
         return pgiSnitt;
     }
 
-    public void setPgiSnitt(BigDecimal pgiSnitt) {
+    public void setPgiSnitt(Beløp pgiSnitt) {
         this.pgiSnitt = pgiSnitt;
     }
 

@@ -22,6 +22,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.brev.Bereg
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.brev.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.brev.TilkommetInntektsforholdDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.SammenligningsgrunnlagPrStatusDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class MapBrevBeregningsgrunnlag {
 
@@ -41,7 +42,7 @@ public class MapBrevBeregningsgrunnlag {
                 mapAktivitetstatuser(beregningsgrunnlagEntitet),
                 mapBeregningsgrunnlagPerioder(beregningsgrunnlagEntitet, ytelsespesifiktGrunnlag),
                 mapSammenligningsgrunnlagPrStatusListe(beregningsgrunnlagEntitet),
-                beregningsgrunnlagEntitet.getGrunnbeløp() == null ? null : beregningsgrunnlagEntitet.getGrunnbeløp().getVerdi());
+                beregningsgrunnlagEntitet.getGrunnbeløp() == null ? null : Beløp.fra(beregningsgrunnlagEntitet.getGrunnbeløp().getVerdi()));
     }
 
     private static List<SammenligningsgrunnlagPrStatusDto> mapSammenligningsgrunnlagPrStatusListe(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlagEntitet) {
@@ -53,7 +54,7 @@ public class MapBrevBeregningsgrunnlag {
         return new SammenligningsgrunnlagPrStatusDto(
                 new Periode(sammenligningsgrunnlagPrStatus.getSammenligningsperiodeFom(), sammenligningsgrunnlagPrStatus.getSammenligningsperiodeTom()),
                 sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType(),
-                sammenligningsgrunnlagPrStatus.getRapportertPrÅr(),
+                Beløp.fra(sammenligningsgrunnlagPrStatus.getRapportertPrÅr()),
                 sammenligningsgrunnlagPrStatus.getAvvikPromilleNy());
     }
 
@@ -67,8 +68,8 @@ public class MapBrevBeregningsgrunnlag {
                 mapAndeler(beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList(), beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag, grunnbeløp),
                 mapTilkomneInntektsforhold(beregningsgrunnlagPeriode.getTilkomneInntekter()),
                 new Periode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom()),
-                beregningsgrunnlagPeriode.getBruttoPrÅr(),
-                beregningsgrunnlagPeriode.getAvkortetPrÅr(),
+                Beløp.fra(beregningsgrunnlagPeriode.getBruttoPrÅr()),
+                Beløp.fra(beregningsgrunnlagPeriode.getAvkortetPrÅr()),
                 beregningsgrunnlagPeriode.getDagsats(),
                 beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto(),
                 beregningsgrunnlagPeriode.getTotalUtbetalingsgradFraUttak(),
@@ -99,18 +100,18 @@ public class MapBrevBeregningsgrunnlag {
                 andel.getAktivitetStatus(),
                 andel.getArbeidsforholdType(),
                 andel.getBeregningsperiodeFom() == null ? null : new Periode(andel.getBeregningsperiodeFom(), andel.getBeregningsperiodeTom()),
-                andel.getBruttoPrÅr(),
+                Beløp.fra(andel.getBruttoPrÅr()),
                 andel.getDagsatsBruker(),
                 andel.getDagsatsArbeidsgiver(),
                 finnUgradertDagsatsBruker(andel, periode, ytelsespesifiktGrunnlag, grunnbeløp),
                 finnUgradertDagsatsArbeidsgiver(andel, periode, ytelsespesifiktGrunnlag, grunnbeløp),
                 andel.getFastsattInntektskategori().getInntektskategori(),
                 mapBgAndelArbeidsforhold(andel),
-                andel.getAvkortetFørGraderingPrÅr(),
-                andel.getAvkortetPrÅr(),
-                andel.getOverstyrtPrÅr(),
-                andel.getRedusertPrÅr(),
-                andel.getBeregnetPrÅr(),
+                Beløp.fra(andel.getAvkortetFørGraderingPrÅr()),
+                Beløp.fra(andel.getAvkortetPrÅr()),
+                Beløp.fra(andel.getOverstyrtPrÅr()),
+                Beløp.fra(andel.getRedusertPrÅr()),
+                Beløp.fra(andel.getBeregnetPrÅr()),
                 andel.getFastsattAvSaksbehandler());
     }
 

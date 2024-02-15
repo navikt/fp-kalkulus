@@ -4,6 +4,12 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -11,15 +17,9 @@ import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -35,42 +35,27 @@ public class BeregningsgrunnlagPrStatusOgAndelFRISINNDto {
     @JsonProperty(value = "bruttoPrÅr")
     @NotNull
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal bruttoPrÅr;
+    private Beløp bruttoPrÅr;
 
     @JsonProperty(value = "redusertPrÅr")
     @NotNull
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal redusertPrÅr;
+    private Beløp redusertPrÅr;
 
     @JsonProperty(value = "avkortetPrÅr")
     @NotNull
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal avkortetPrÅr;
+    private Beløp avkortetPrÅr;
 
     @JsonProperty(value = "løpendeInntektPrÅr")
     @NotNull
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal løpendeInntektPrÅr;
+    private Beløp løpendeInntektPrÅr;
 
     @JsonProperty(value = "bgFratrukketInntektstak")
     @NotNull
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal bgFratrukketInntektstak;
+    private Beløp bgFratrukketInntektstak;
 
     @JsonProperty(value = "dagsats")
     @NotNull
@@ -89,11 +74,11 @@ public class BeregningsgrunnlagPrStatusOgAndelFRISINNDto {
     private Avslagsårsak avslagsårsak;
 
     public BeregningsgrunnlagPrStatusOgAndelFRISINNDto(@NotNull @Valid AktivitetStatus aktivitetStatus,
-                                                       @NotNull @Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 10, fraction = 2) BigDecimal bruttoPrÅr,
-                                                       @NotNull @Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 10, fraction = 2) BigDecimal redusertPrÅr,
-                                                       @NotNull @Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 10, fraction = 2) BigDecimal avkortetPrÅr,
-                                                       @NotNull @Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 10, fraction = 2) BigDecimal løpendeInntektPrÅr,
-                                                       @NotNull @Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 10, fraction = 2) BigDecimal bgFratrukketInntektstak,
+                                                       @NotNull @Valid Beløp bruttoPrÅr,
+                                                       @NotNull @Valid Beløp redusertPrÅr,
+                                                       @NotNull @Valid Beløp avkortetPrÅr,
+                                                       @NotNull @Valid Beløp løpendeInntektPrÅr,
+                                                       @NotNull @Valid Beløp bgFratrukketInntektstak,
                                                        @NotNull @Valid @Min(0) @Max(178956970) Long dagsats,
                                                        @NotNull @Valid Inntektskategori inntektskategori, Avslagsårsak avslagsårsak) {
         this.aktivitetStatus = aktivitetStatus;
@@ -114,19 +99,19 @@ public class BeregningsgrunnlagPrStatusOgAndelFRISINNDto {
         return aktivitetStatus;
     }
 
-    public BigDecimal getBruttoPrÅr() {
+    public Beløp getBruttoPrÅr() {
         return bruttoPrÅr;
     }
 
-    public BigDecimal getRedusertPrÅr() {
+    public Beløp getRedusertPrÅr() {
         return redusertPrÅr;
     }
 
-    public BigDecimal getAvkortetPrÅr() {
+    public Beløp getAvkortetPrÅr() {
         return avkortetPrÅr;
     }
 
-    public BigDecimal getLøpendeInntektPrÅr() {
+    public Beløp getLøpendeInntektPrÅr() {
         return løpendeInntektPrÅr;
     }
 
@@ -142,7 +127,7 @@ public class BeregningsgrunnlagPrStatusOgAndelFRISINNDto {
         return avslagsårsak;
     }
 
-    public BigDecimal getBgFratrukketInntektstak() {
+    public Beløp getBgFratrukketInntektstak() {
         return bgFratrukketInntektstak;
     }
 }

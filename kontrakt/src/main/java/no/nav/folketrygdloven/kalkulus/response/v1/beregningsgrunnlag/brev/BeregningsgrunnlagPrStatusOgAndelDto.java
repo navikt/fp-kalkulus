@@ -4,6 +4,12 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -11,18 +17,12 @@ import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
@@ -53,11 +53,8 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
     @JsonProperty(value = "bruttoPrÅr")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
     @NotNull
-    private BigDecimal bruttoPrÅr;
+    private Beløp bruttoPrÅr;
 
 
     @JsonProperty(value = "dagsatsBruker")
@@ -101,40 +98,25 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
     @JsonProperty(value = "avkortetPrÅr")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
     @NotNull
-    private BigDecimal avkortetPrÅr;
+    private Beløp avkortetPrÅr;
 
     @JsonProperty(value = "overstyrtPrÅr")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal overstyrtPrÅr;
+    private Beløp overstyrtPrÅr;
 
     @JsonProperty(value = "redusertPrÅr")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal redusertPrÅr;
+    private Beløp redusertPrÅr;
 
     @JsonProperty(value = "beregnetPrÅr")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal beregnetPrÅr;
+    private Beløp beregnetPrÅr;
 
     @JsonProperty(value = "avkortetFørGraderingPrÅr")
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
     @NotNull
     @Valid
-    private BigDecimal avkortetFørGraderingPrÅr;
+    private Beløp avkortetFørGraderingPrÅr;
 
     @JsonProperty(value = "fastsattAvSaksbehandler")
     @NotNull
@@ -146,16 +128,16 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
     public BeregningsgrunnlagPrStatusOgAndelDto(Long andelsnr,
                                                 AktivitetStatus aktivitetStatus,
-                                                OpptjeningAktivitetType arbeidsforholdType, Periode beregningsperiode, BigDecimal bruttoPrÅr,
+                                                OpptjeningAktivitetType arbeidsforholdType, Periode beregningsperiode, Beløp bruttoPrÅr,
                                                 Long dagsatsBruker,
                                                 Long dagsatsArbeidsgiver,
                                                 Long ugradertDagsatsBruker, Long ugradertDagsatsArbeidsgiver, Inntektskategori inntektskategori,
                                                 BGAndelArbeidsforhold bgAndelArbeidsforhold,
-                                                BigDecimal avkortetFørGraderingPrÅr,
-                                                BigDecimal avkortetPrÅr,
-                                                BigDecimal overstyrtPrÅr,
-                                                BigDecimal redusertPrÅr,
-                                                BigDecimal beregnetPrÅr,
+                                                Beløp avkortetFørGraderingPrÅr,
+                                                Beløp avkortetPrÅr,
+                                                Beløp overstyrtPrÅr,
+                                                Beløp redusertPrÅr,
+                                                Beløp beregnetPrÅr,
                                                 Boolean fastsattAvSaksbehandler) {
         this.andelsnr = andelsnr;
         this.aktivitetStatus = aktivitetStatus;
@@ -184,7 +166,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         return aktivitetStatus;
     }
 
-    public BigDecimal getBruttoPrÅr() {
+    public Beløp getBruttoPrÅr() {
         return bruttoPrÅr;
     }
 
@@ -228,23 +210,23 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         return beregningArbeidsforhold == null ? null : beregningArbeidsforhold.getArbeidsgiver();
     }
 
-    public BigDecimal getAvkortetPrÅr() {
+    public Beløp getAvkortetPrÅr() {
         return avkortetPrÅr;
     }
 
-    public BigDecimal getAvkortetFørGraderingPrÅr() {
+    public Beløp getAvkortetFørGraderingPrÅr() {
         return avkortetFørGraderingPrÅr;
     }
 
-    public BigDecimal getOverstyrtPrÅr() {
+    public Beløp getOverstyrtPrÅr() {
         return overstyrtPrÅr;
     }
 
-    public BigDecimal getRedusertPrÅr() {
+    public Beløp getRedusertPrÅr() {
         return redusertPrÅr;
     }
 
-    public BigDecimal getBeregnetPrÅr() {
+    public Beløp getBeregnetPrÅr() {
         return beregnetPrÅr;
     }
 

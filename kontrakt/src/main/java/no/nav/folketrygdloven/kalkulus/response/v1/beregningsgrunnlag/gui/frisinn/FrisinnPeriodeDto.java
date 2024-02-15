@@ -6,17 +6,16 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
@@ -35,10 +34,7 @@ public class FrisinnPeriodeDto {
 
     @Valid
     @JsonProperty("oppgittArbeidsinntekt")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal oppgittArbeidsinntekt;
+    private Beløp oppgittArbeidsinntekt;
 
     @Valid
     @JsonProperty("frisinnAndeler")
@@ -62,11 +58,11 @@ public class FrisinnPeriodeDto {
         this.tom = tom;
     }
 
-    public BigDecimal getOppgittArbeidsinntekt() {
+    public Beløp getOppgittArbeidsinntekt() {
         return oppgittArbeidsinntekt;
     }
 
-    public void setOppgittArbeidsinntekt(BigDecimal oppgittArbeidsinntekt) {
+    public void setOppgittArbeidsinntekt(Beløp oppgittArbeidsinntekt) {
         this.oppgittArbeidsinntekt = oppgittArbeidsinntekt;
     }
 

@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
@@ -36,12 +37,9 @@ public class SammenligningsgrunnlagPrStatusDto {
     private SammenligningsgrunnlagType sammenligningsgrunnlagType;
 
     @JsonProperty(value = "rapportertPrÅr")
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
     @NotNull
     @Valid
-    private BigDecimal rapportertPrÅr;
+    private Beløp rapportertPrÅr;
 
     @JsonProperty(value = "avvikPromilleNy")
     @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
@@ -54,7 +52,7 @@ public class SammenligningsgrunnlagPrStatusDto {
     public SammenligningsgrunnlagPrStatusDto() {
     }
 
-    public SammenligningsgrunnlagPrStatusDto(@NotNull @Valid Periode sammenligningsperiode, @NotNull @Valid SammenligningsgrunnlagType sammenligningsgrunnlagType, @NotNull @Valid BigDecimal rapportertPrÅr, @NotNull @Valid BigDecimal avvikPromilleNy) {
+    public SammenligningsgrunnlagPrStatusDto(@NotNull @Valid Periode sammenligningsperiode, @NotNull @Valid SammenligningsgrunnlagType sammenligningsgrunnlagType, @NotNull @Valid Beløp rapportertPrÅr, @NotNull @Valid BigDecimal avvikPromilleNy) {
         this.sammenligningsperiode = sammenligningsperiode;
         this.sammenligningsgrunnlagType = sammenligningsgrunnlagType;
         this.rapportertPrÅr = rapportertPrÅr;
@@ -69,7 +67,7 @@ public class SammenligningsgrunnlagPrStatusDto {
         return sammenligningsperiode.getTom();
     }
 
-    public BigDecimal getRapportertPrÅr() {
+    public Beløp getRapportertPrÅr() {
         return rapportertPrÅr;
     }
 

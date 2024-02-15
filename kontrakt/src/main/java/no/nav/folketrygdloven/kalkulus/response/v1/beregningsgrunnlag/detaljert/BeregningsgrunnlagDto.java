@@ -9,21 +9,18 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
@@ -62,10 +59,7 @@ public class BeregningsgrunnlagDto {
 
     @JsonProperty(value = "grunnbeløp")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal grunnbeløp;
+    private Beløp grunnbeløp;
 
     public BeregningsgrunnlagDto() {
     }
@@ -76,7 +70,7 @@ public class BeregningsgrunnlagDto {
                                  @Size(max = 10) @Valid List<SammenligningsgrunnlagPrStatusDto> sammenligningsgrunnlagPrStatusListe,
                                  @Size(max = 50) @Valid List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller,
                                  boolean overstyrt,
-                                 @Valid BigDecimal grunnbeløp) {
+                                 @Valid Beløp grunnbeløp) {
         this.skjæringstidspunkt = skjæringstidspunkt;
         this.aktivitetStatuser = aktivitetStatuser;
         this.beregningsgrunnlagPerioder = beregningsgrunnlagPerioder;
@@ -113,7 +107,7 @@ public class BeregningsgrunnlagDto {
         return overstyrt;
     }
 
-    public BigDecimal getGrunnbeløp() {
+    public Beløp getGrunnbeløp() {
         return grunnbeløp;
     }
 }

@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -24,10 +25,7 @@ public class Grunnbeløp {
 
     @Valid
     @JsonProperty(value = "verdi")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal verdi;
+    private Beløp verdi;
 
     @JsonProperty(value = "periode")
     @NotNull
@@ -37,14 +35,14 @@ public class Grunnbeløp {
     public Grunnbeløp() {
     }
 
-    public Grunnbeløp(@Valid @Digits(integer = 8, fraction = 2) @DecimalMin("0.00") @DecimalMax("10000000.00") BigDecimal verdi,
+    public Grunnbeløp(@Valid Beløp verdi,
                       @NotNull @Valid Periode periode) {
         this.verdi = verdi;
         this.periode = periode;
     }
 
 
-    public BigDecimal getVerdi() {
+    public Beløp getVerdi() {
         return verdi;
     }
 

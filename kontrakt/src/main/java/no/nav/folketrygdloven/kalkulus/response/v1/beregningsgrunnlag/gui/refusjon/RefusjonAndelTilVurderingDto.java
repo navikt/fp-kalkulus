@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -70,17 +71,11 @@ public class RefusjonAndelTilVurderingDto {
 
     @Valid
     @JsonProperty("fastsattDelvisRefusjonPrMnd")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal fastsattDelvisRefusjonPrMnd;
+    private Beløp fastsattDelvisRefusjonPrMnd;
 
     @Valid
     @JsonProperty("maksTillattDelvisRefusjonPrMnd")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal maksTillattDelvisRefusjonPrMnd;
+    private Beløp maksTillattDelvisRefusjonPrMnd;
 
     public RefusjonAndelTilVurderingDto() {
     }
@@ -149,19 +144,19 @@ public class RefusjonAndelTilVurderingDto {
         this.skalKunneFastsetteDelvisRefusjon = skalKunneFastsetteDelvisRefusjon;
     }
 
-    public BigDecimal getFastsattDelvisRefusjonPrMnd() {
+    public Beløp getFastsattDelvisRefusjonPrMnd() {
         return fastsattDelvisRefusjonPrMnd;
     }
 
-    public void setFastsattDelvisRefusjonPrMnd(BigDecimal fastsattDelvisRefusjonPrMnd) {
+    public void setFastsattDelvisRefusjonPrMnd(Beløp fastsattDelvisRefusjonPrMnd) {
         this.fastsattDelvisRefusjonPrMnd = fastsattDelvisRefusjonPrMnd;
     }
 
-    public BigDecimal getMaksTillattDelvisRefusjonPrMnd() {
+    public Beløp getMaksTillattDelvisRefusjonPrMnd() {
         return maksTillattDelvisRefusjonPrMnd;
     }
 
-    public void setMaksTillattDelvisRefusjonPrMnd(BigDecimal maksTillattDelvisRefusjonPrMnd) {
+    public void setMaksTillattDelvisRefusjonPrMnd(Beløp maksTillattDelvisRefusjonPrMnd) {
         this.maksTillattDelvisRefusjonPrMnd = maksTillattDelvisRefusjonPrMnd;
     }
 

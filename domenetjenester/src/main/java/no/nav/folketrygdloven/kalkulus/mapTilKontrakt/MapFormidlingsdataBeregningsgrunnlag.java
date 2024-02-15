@@ -18,6 +18,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class MapFormidlingsdataBeregningsgrunnlag {
 
@@ -27,7 +28,7 @@ public class MapFormidlingsdataBeregningsgrunnlag {
         }
         BigDecimal grenseverdi = dto.getBeregningsgrunnlag().getGrunnbeløp() == null
                 ? BigDecimal.ZERO
-                : dto.getBeregningsgrunnlag().getGrunnbeløp().multiply(BigDecimal.valueOf(6));
+                : Beløp.safeVerdi(dto.getBeregningsgrunnlag().getGrunnbeløp()).multiply(BigDecimal.valueOf(6));
 
         UtbetalingsgradGrunnlag yg = input.getYtelsespesifiktGrunnlag();
 
@@ -45,7 +46,7 @@ public class MapFormidlingsdataBeregningsgrunnlag {
                 .stream().filter(a -> a.getBruttoPrÅr() != null)
                 .forEach(andel -> {
                     andel.setAvkortetFørGraderingPrÅr(andel.getAvkortetFørGraderingPrÅr());
-                    andel.setAvkortetMotInntektstak(finnInntektstakForAndel(andel, bgPeriode, yg, grenseverdi));
+                    andel.setAvkortetMotInntektstak(Beløp.fra(finnInntektstakForAndel(andel, bgPeriode, yg, grenseverdi)));
                 });
     }
 
@@ -83,7 +84,7 @@ public class MapFormidlingsdataBeregningsgrunnlag {
         BigDecimal grenseverdiTruketFraIkkeTilgjengeligInntekt = grenseverdi.subtract(inntektIkkeTilgjengeligForSN);
         return grenseverdiTruketFraIkkeTilgjengeligInntekt.compareTo(BigDecimal.ZERO) <= 0
                 ? BigDecimal.ZERO
-                : grenseverdiTruketFraIkkeTilgjengeligInntekt.min(andel.getBruttoPrÅr());
+                : grenseverdiTruketFraIkkeTilgjengeligInntekt.min(Beløp.safeVerdi(andel.getBruttoPrÅr()));
     }
 
     private static BigDecimal finnInntektstakForNæring(BeregningsgrunnlagPrStatusOgAndelDto andel,
@@ -100,7 +101,7 @@ public class MapFormidlingsdataBeregningsgrunnlag {
         BigDecimal grenseverdiTruketFraIkkeTilgjengeligInntekt = grenseverdi.subtract(inntektIkkeTilgjengeligForSN);
         return grenseverdiTruketFraIkkeTilgjengeligInntekt.compareTo(BigDecimal.ZERO) <= 0
                 ? BigDecimal.ZERO
-                : grenseverdiTruketFraIkkeTilgjengeligInntekt.min(andel.getBruttoPrÅr());
+                : grenseverdiTruketFraIkkeTilgjengeligInntekt.min(Beløp.safeVerdi(andel.getBruttoPrÅr()));
     }
 
     private static BigDecimal finnInntektstakForFrilans(BeregningsgrunnlagPrStatusOgAndelDto andel,
@@ -117,7 +118,7 @@ public class MapFormidlingsdataBeregningsgrunnlag {
         BigDecimal grenseverdiTruketFraIkkeTilgjengeligInntekt = grenseverdi.subtract(inntektIkkeTilgjengeligForFL);
         return grenseverdiTruketFraIkkeTilgjengeligInntekt.compareTo(BigDecimal.ZERO) <= 0
                 ? BigDecimal.ZERO
-                : grenseverdiTruketFraIkkeTilgjengeligInntekt.min(andel.getBruttoPrÅr());
+                : grenseverdiTruketFraIkkeTilgjengeligInntekt.min(Beløp.safeVerdi(andel.getBruttoPrÅr()));
     }
 
     private static BigDecimal finnInntektSøktOm(BeregningsgrunnlagPeriodeDto inneværendeBGPeriode, UtbetalingsgradGrunnlag yg, AktivitetStatus status) {
@@ -141,7 +142,7 @@ public class MapFormidlingsdataBeregningsgrunnlag {
         BigDecimal grenseMinusAnnenInntekt = grenseverdi.subtract(inntektIkkeSøktOm);
         return grenseMinusAnnenInntekt.compareTo(BigDecimal.ZERO) <= 0
                 ? BigDecimal.ZERO
-                : grenseMinusAnnenInntekt.min(andelÅVurdere.getBruttoPrÅr());
+                : grenseMinusAnnenInntekt.min(Beløp.safeVerdi(andelÅVurdere.getBruttoPrÅr()));
     }
 
     private static BigDecimal finnInntektIkkeSøktOm(BeregningsgrunnlagPeriodeDto inneværendeBGPeriode,
@@ -156,6 +157,8 @@ public class MapFormidlingsdataBeregningsgrunnlag {
         return andeler.stream()
                 .filter(Objects::nonNull)
                 .map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoPrÅr)
+                .filter(Objects::nonNull)
+                .map(Beløp::verdi)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);

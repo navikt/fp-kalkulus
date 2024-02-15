@@ -15,6 +15,7 @@ import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnPeriode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisinn.FrisinnAndelDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisinn.FrisinnPeriodeDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public final class MapTilPerioderFRISINN {
 
@@ -29,7 +30,7 @@ public final class MapTilPerioderFRISINN {
             periodeDto.setFom(periode.getPeriode().getFomDato());
             periodeDto.setTom(periode.getPeriode().getTomDato());
             List<FrisinnAndelDto> andeler = new ArrayList<>();
-            finnOppgittArbeidsinntekt(periode.getPeriode(), oppgittOpptjening).ifPresent(periodeDto::setOppgittArbeidsinntekt);
+            finnOppgittArbeidsinntekt(periode.getPeriode(), oppgittOpptjening).map(Beløp::fra).ifPresent(periodeDto::setOppgittArbeidsinntekt);
             if (periode.getSøkerFrilans()) {
                 finnOppgittFrilansInntekt(periode.getPeriode(), oppgittOpptjening).ifPresent(andeler::add);
             }
@@ -63,7 +64,7 @@ public final class MapTilPerioderFRISINN {
                 .map(OppgittEgenNæringDto::getInntekt)
                 .reduce(BigDecimal::add);
 
-        return oppgittNæringsinntektIPerioden.map(inntekt -> new FrisinnAndelDto(inntekt, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE));
+        return oppgittNæringsinntektIPerioden.map(inntekt -> new FrisinnAndelDto(Beløp.fra(inntekt), AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE));
     }
 
     private static Optional<FrisinnAndelDto> finnOppgittFrilansInntekt(Intervall periode, OppgittOpptjeningDto oppgittOpptjening) {
@@ -78,7 +79,7 @@ public final class MapTilPerioderFRISINN {
                 .map(OppgittFrilansInntektDto::getInntekt)
                 .reduce(BigDecimal::add);
 
-        return oppgittFrilansinntektIPeriode.map(inntekt -> new FrisinnAndelDto(inntekt, AktivitetStatus.FRILANSER));
+        return oppgittFrilansinntektIPeriode.map(inntekt -> new FrisinnAndelDto(Beløp.fra(inntekt), AktivitetStatus.FRILANSER));
 
     }
 }

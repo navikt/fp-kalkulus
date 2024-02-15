@@ -11,9 +11,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -22,20 +20,17 @@ import jakarta.validation.constraints.Digits;
 public class BeregningsgrunnlagPrStatusOgAndelATDto extends BeregningsgrunnlagPrStatusOgAndelDto {
     @Valid
     @JsonProperty("bortfaltNaturalytelse")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal bortfaltNaturalytelse;
+    private Beløp bortfaltNaturalytelse;
 
     public BeregningsgrunnlagPrStatusOgAndelATDto() {
         super();
     }
 
-    public BigDecimal getBortfaltNaturalytelse() {
+    public Beløp getBortfaltNaturalytelse() {
         return bortfaltNaturalytelse;
     }
 
-    public void setBortfaltNaturalytelse(BigDecimal bortfaltNaturalytelse) {
+    public void setBortfaltNaturalytelse(Beløp bortfaltNaturalytelse) {
         this.bortfaltNaturalytelse = bortfaltNaturalytelse;
     }
 }

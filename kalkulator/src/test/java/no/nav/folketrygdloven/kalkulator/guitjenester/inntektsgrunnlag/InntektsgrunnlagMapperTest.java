@@ -18,6 +18,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.PGIType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.PGIGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.PGIPrÅrDto;
 
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
+
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDtoBuilder;
@@ -94,21 +96,21 @@ class InntektsgrunnlagMapperTest {
         assertThat(dto.get().getMåneder().get(0).getInntekter()).hasSize(2);
         assertThat(dto.get().getMåneder().get(0).getInntekter().stream()
                 .anyMatch(innt -> innt.getInntektAktivitetType().equals(InntektAktivitetType.FRILANSINNTEKT)
-                        && innt.getBeløp().intValue() == 3000))
+                        && innt.getBeløp().verdi().intValue() == 3000))
                 .isTrue();
         assertThat(dto.get().getMåneder().get(0).getInntekter().stream()
                 .anyMatch(innt -> innt.getInntektAktivitetType().equals(InntektAktivitetType.ARBEIDSTAKERINNTEKT)
-                        && innt.getBeløp().intValue() == 5000))
+                        && innt.getBeløp().verdi().intValue() == 5000))
                 .isTrue();
 
         assertThat(dto.get().getMåneder().get(1).getInntekter()).hasSize(2);
         assertThat(dto.get().getMåneder().get(1).getInntekter().stream()
                 .anyMatch(innt -> innt.getInntektAktivitetType().equals(InntektAktivitetType.FRILANSINNTEKT)
-                        && innt.getBeløp().intValue() == 3000))
+                        && innt.getBeløp().verdi().intValue() == 3000))
                 .isTrue();
         assertThat(dto.get().getMåneder().get(1).getInntekter().stream()
                 .anyMatch(innt -> innt.getInntektAktivitetType().equals(InntektAktivitetType.ARBEIDSTAKERINNTEKT)
-                        && innt.getBeløp().intValue() == 5000))
+                        && innt.getBeløp().verdi().intValue() == 5000))
                 .isTrue();
     }
 
@@ -200,7 +202,7 @@ class InntektsgrunnlagMapperTest {
     private Optional<PGIGrunnlagDto> finnPGIGrunnlag(List<PGIGrunnlagDto> grunnlag, int inntekt, PGIType type) {
         return grunnlag
                 .stream()
-                .filter(i -> i.getBeløp().compareTo(BigDecimal.valueOf(inntekt)) == 0 && i.getPgiType().equals(type))
+                .filter(i -> i.getBeløp().compareTo(Beløp.fra(inntekt)) == 0 && i.getPgiType().equals(type))
                 .findFirst();
     }
 

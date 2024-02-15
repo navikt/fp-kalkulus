@@ -6,19 +6,19 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.Pattern;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Pattern;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Organisasjonstype;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -55,17 +55,11 @@ public class BeregningsgrunnlagArbeidsforholdDto {
 
     @Valid
     @JsonProperty(value = "refusjonPrAar")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal refusjonPrAar;
+    private Beløp refusjonPrAar;
 
     @Valid
     @JsonProperty(value = "belopFraInntektsmeldingPrMnd")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal belopFraInntektsmeldingPrMnd;
+    private Beløp belopFraInntektsmeldingPrMnd;
 
     @Valid
     @JsonProperty(value = "organisasjonstype")
@@ -73,17 +67,11 @@ public class BeregningsgrunnlagArbeidsforholdDto {
 
     @Valid
     @JsonProperty(value = "naturalytelseBortfaltPrÅr")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal naturalytelseBortfaltPrÅr;
+    private Beløp naturalytelseBortfaltPrÅr;
 
     @Valid
     @JsonProperty(value = "naturalytelseTilkommetPrÅr")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal naturalytelseTilkommetPrÅr;
+    private Beløp naturalytelseTilkommetPrÅr;
 
     public BeregningsgrunnlagArbeidsforholdDto() {
         // Hibernate
@@ -129,11 +117,11 @@ public class BeregningsgrunnlagArbeidsforholdDto {
         this.arbeidsgiverIdent = arbeidsgiverIdent;
     }
 
-    public BigDecimal getRefusjonPrAar() {
+    public Beløp getRefusjonPrAar() {
         return refusjonPrAar;
     }
 
-    public void setRefusjonPrAar(BigDecimal refusjonPrAar) {
+    public void setRefusjonPrAar(Beløp refusjonPrAar) {
         this.refusjonPrAar = refusjonPrAar;
     }
 
@@ -145,19 +133,19 @@ public class BeregningsgrunnlagArbeidsforholdDto {
         this.organisasjonstype = organisasjonstype;
     }
 
-    public BigDecimal getNaturalytelseBortfaltPrÅr() {
+    public Beløp getNaturalytelseBortfaltPrÅr() {
         return naturalytelseBortfaltPrÅr;
     }
 
-    public void setNaturalytelseBortfaltPrÅr(BigDecimal naturalytelseBortfaltPrÅr) {
+    public void setNaturalytelseBortfaltPrÅr(Beløp naturalytelseBortfaltPrÅr) {
         this.naturalytelseBortfaltPrÅr = naturalytelseBortfaltPrÅr;
     }
 
-    public BigDecimal getNaturalytelseTilkommetPrÅr() {
+    public Beløp getNaturalytelseTilkommetPrÅr() {
         return naturalytelseTilkommetPrÅr;
     }
 
-    public void setNaturalytelseTilkommetPrÅr(BigDecimal naturalytelseTilkommetPrÅr) {
+    public void setNaturalytelseTilkommetPrÅr(Beløp naturalytelseTilkommetPrÅr) {
         this.naturalytelseTilkommetPrÅr = naturalytelseTilkommetPrÅr;
     }
 
@@ -183,11 +171,11 @@ public class BeregningsgrunnlagArbeidsforholdDto {
         return Objects.hash(arbeidsgiverIdent, startdato, opphoersdato, arbeidsforholdId, eksternArbeidsforholdId, arbeidsforholdType);
     }
 
-    public BigDecimal getBelopFraInntektsmeldingPrMnd() {
+    public Beløp getBelopFraInntektsmeldingPrMnd() {
         return belopFraInntektsmeldingPrMnd;
     }
 
-    public void setBelopFraInntektsmeldingPrMnd(BigDecimal belopFraInntektsmeldingPrMnd) {
+    public void setBelopFraInntektsmeldingPrMnd(Beløp belopFraInntektsmeldingPrMnd) {
         this.belopFraInntektsmeldingPrMnd = belopFraInntektsmeldingPrMnd;
     }
 }

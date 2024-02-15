@@ -34,7 +34,7 @@ public class EgenNæringMapperTest {
         assertThat(dto.getBegrunnelse()).isEqualTo(egenNæring.getBegrunnelse());
         assertThat(dto.getEndringsdato()).isEqualTo(egenNæring.getEndringDato());
         assertThat(dto.getVirksomhetType()).isEqualTo(no.nav.folketrygdloven.kalkulus.kodeverk.VirksomhetType.FISKE);
-        assertThat(dto.getOppgittInntekt()).isEqualTo(egenNæring.getBruttoInntekt());
+        assertThat(dto.getOppgittInntekt().verdi()).isEqualTo(egenNæring.getBruttoInntekt());
         assertThat(dto.getOrgnr()).isEqualTo(egenNæring.getOrgnr());
         assertThat(dto.isErVarigEndret()).isEqualTo(egenNæring.getVarigEndring());
         assertThat(dto.isErNyoppstartet()).isEqualTo(egenNæring.getNyoppstartet());

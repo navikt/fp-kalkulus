@@ -8,20 +8,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -39,38 +37,23 @@ public class BeregningsgrunnlagPeriodeDto {
 
     @Valid
     @JsonProperty("beregnetPrAar")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal beregnetPrAar;
+    private Beløp beregnetPrAar;
 
     @Valid
     @JsonProperty("bruttoPrAar")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal bruttoPrAar;
+    private Beløp bruttoPrAar;
 
     @Valid
     @JsonProperty("bruttoInkludertBortfaltNaturalytelsePrAar")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal bruttoInkludertBortfaltNaturalytelsePrAar;
+    private Beløp bruttoInkludertBortfaltNaturalytelsePrAar;
 
     @Valid
     @JsonProperty("avkortetPrAar")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal avkortetPrAar;
+    private Beløp avkortetPrAar;
 
     @Valid
     @JsonProperty("redusertPrAar")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal redusertPrAar;
+    private Beløp redusertPrAar;
 
     @Valid
     @Size()
@@ -101,23 +84,23 @@ public class BeregningsgrunnlagPeriodeDto {
         return beregningsgrunnlagPeriodeTom;
     }
 
-    public BigDecimal getBeregnetPrAar() {
+    public Beløp getBeregnetPrAar() {
         return beregnetPrAar;
     }
 
-    public BigDecimal getBruttoPrAar() {
+    public Beløp getBruttoPrAar() {
         return bruttoPrAar;
     }
 
-    public BigDecimal getBruttoInkludertBortfaltNaturalytelsePrAar() {
+    public Beløp getBruttoInkludertBortfaltNaturalytelsePrAar() {
         return bruttoInkludertBortfaltNaturalytelsePrAar;
     }
 
-    public BigDecimal getAvkortetPrAar() {
+    public Beløp getAvkortetPrAar() {
         return avkortetPrAar;
     }
 
-    public BigDecimal getRedusertPrAar() {
+    public Beløp getRedusertPrAar() {
         return redusertPrAar;
     }
 
@@ -137,23 +120,23 @@ public class BeregningsgrunnlagPeriodeDto {
         this.beregningsgrunnlagPeriodeTom = beregningsgrunnlagPeriodeTom;
     }
 
-    public void setBeregnetPrAar(BigDecimal beregnetPrAar) {
+    public void setBeregnetPrAar(Beløp beregnetPrAar) {
         this.beregnetPrAar = beregnetPrAar;
     }
 
-    public void setBruttoPrAar(BigDecimal bruttoPrAar) {
+    public void setBruttoPrAar(Beløp bruttoPrAar) {
         this.bruttoPrAar = bruttoPrAar;
     }
 
-    public void setBruttoInkludertBortfaltNaturalytelsePrAar(BigDecimal bruttoInkludertBortfaltNaturalytelsePrAar) {
+    public void setBruttoInkludertBortfaltNaturalytelsePrAar(Beløp bruttoInkludertBortfaltNaturalytelsePrAar) {
         this.bruttoInkludertBortfaltNaturalytelsePrAar = bruttoInkludertBortfaltNaturalytelsePrAar;
     }
 
-    public void setAvkortetPrAar(BigDecimal avkortetPrAar) {
+    public void setAvkortetPrAar(Beløp avkortetPrAar) {
         this.avkortetPrAar = avkortetPrAar;
     }
 
-    public void setRedusertPrAar(BigDecimal redusertPrAar) {
+    public void setRedusertPrAar(Beløp redusertPrAar) {
         this.redusertPrAar = redusertPrAar;
     }
 

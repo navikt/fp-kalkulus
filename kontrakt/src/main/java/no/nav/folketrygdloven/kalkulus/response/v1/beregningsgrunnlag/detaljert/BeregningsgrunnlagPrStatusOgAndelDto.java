@@ -12,9 +12,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -23,6 +20,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
@@ -52,24 +50,15 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
     @JsonProperty(value = "bruttoPrÅr")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal bruttoPrÅr;
+    private Beløp bruttoPrÅr;
 
     @JsonProperty(value = "redusertRefusjonPrÅr")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal redusertRefusjonPrÅr;
+    private Beløp redusertRefusjonPrÅr;
 
     @JsonProperty(value = "redusertBrukersAndelPrÅr")
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
     @Valid
-    private BigDecimal redusertBrukersAndelPrÅr;
+    private Beløp redusertBrukersAndelPrÅr;
 
     @JsonProperty(value = "dagsatsBruker")
     @Valid
@@ -94,108 +83,63 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
     @JsonProperty(value = "overstyrtPrÅr")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal overstyrtPrÅr;
+    private Beløp overstyrtPrÅr;
 
     @JsonProperty(value = "avkortetPrÅr")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal avkortetPrÅr;
+    private Beløp avkortetPrÅr;
 
     @JsonProperty(value = "redusertPrÅr")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal redusertPrÅr;
+    private Beløp redusertPrÅr;
 
     @JsonProperty(value = "beregnetPrÅr")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal beregnetPrÅr;
+    private Beløp beregnetPrÅr;
 
     @JsonProperty(value = "besteberegningPrÅr")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal besteberegningPrÅr;
+    private Beløp besteberegningPrÅr;
 
     @JsonProperty(value = "fordeltPrÅr")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal fordeltPrÅr;
+    private Beløp fordeltPrÅr;
 
     @JsonProperty(value = "manueltFordeltPrÅr")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal manueltFordeltPrÅr;
+    private Beløp manueltFordeltPrÅr;
 
     @JsonProperty(value = "maksimalRefusjonPrÅr")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal maksimalRefusjonPrÅr;
+    private Beløp maksimalRefusjonPrÅr;
 
     @JsonProperty(value = "avkortetRefusjonPrÅr")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal avkortetRefusjonPrÅr;
+    private Beløp avkortetRefusjonPrÅr;
 
     @JsonProperty(value = "avkortetBrukersAndelPrÅr")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal avkortetBrukersAndelPrÅr;
+    private Beløp avkortetBrukersAndelPrÅr;
 
     @JsonProperty(value = "pgiSnitt")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal pgiSnitt;
+    private Beløp pgiSnitt;
 
     @JsonProperty(value = "pgi1")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal pgi1;
+    private Beløp pgi1;
 
     @JsonProperty(value = "pgi2")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal pgi2;
+    private Beløp pgi2;
 
     @JsonProperty(value = "pgi3")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal pgi3;
+    private Beløp pgi3;
 
     @JsonProperty(value = "årsbeløpFraTilstøtendeYtelse")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal årsbeløpFraTilstøtendeYtelse;
+    private Beløp årsbeløpFraTilstøtendeYtelse;
 
     @JsonProperty(value = "fastsattAvSaksbehandler")
     @Valid
@@ -213,19 +157,13 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
     // TODO Fjern dette feltet når det er laget en egen brevtjeneste
     @JsonProperty(value = "avkortetMotInntektstak")
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
     @Valid
-    private BigDecimal avkortetMotInntektstak;
+    private Beløp avkortetMotInntektstak;
 
     // TODO Fjern dette feltet når det er laget en egen brevtjeneste
     @JsonProperty(value = "avkortetFørGraderingPrÅr")
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
     @Valid
-    private BigDecimal avkortetFørGraderingPrÅr;
+    private Beløp avkortetFørGraderingPrÅr;
 
 
     public static class Builder {
@@ -251,17 +189,17 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
             return this;
         }
 
-        public Builder medBruttoPrÅr(BigDecimal bruttoPrÅr) {
+        public Builder medBruttoPrÅr(Beløp bruttoPrÅr) {
             kladd.bruttoPrÅr = bruttoPrÅr;
             return this;
         }
 
-        public Builder medRedusertRefusjonPrÅr(BigDecimal redusertRefusjonPrÅr) {
+        public Builder medRedusertRefusjonPrÅr(Beløp redusertRefusjonPrÅr) {
             kladd.redusertRefusjonPrÅr = redusertRefusjonPrÅr;
             return this;
         }
 
-        public Builder medRedusertBrukersAndelPrÅr(BigDecimal redusertBrukersAndelPrÅr) {
+        public Builder medRedusertBrukersAndelPrÅr(Beløp redusertBrukersAndelPrÅr) {
             kladd.redusertBrukersAndelPrÅr = redusertBrukersAndelPrÅr;
             return this;
         }
@@ -286,77 +224,77 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
             return this;
         }
 
-        public Builder medOverstyrtPrÅr(BigDecimal overstyrtPrÅr) {
+        public Builder medOverstyrtPrÅr(Beløp overstyrtPrÅr) {
             kladd.overstyrtPrÅr = overstyrtPrÅr;
             return this;
         }
 
-        public Builder medAvkortetPrÅr(BigDecimal avkortetPrÅr) {
+        public Builder medAvkortetPrÅr(Beløp avkortetPrÅr) {
             kladd.avkortetPrÅr = avkortetPrÅr;
             return this;
         }
 
-        public Builder medRedusertPrÅr(BigDecimal redusertPrÅr) {
+        public Builder medRedusertPrÅr(Beløp redusertPrÅr) {
             kladd.redusertPrÅr = redusertPrÅr;
             return this;
         }
 
-        public Builder medBeregnetPrÅr(BigDecimal beregnetPrÅr) {
+        public Builder medBeregnetPrÅr(Beløp beregnetPrÅr) {
             kladd.beregnetPrÅr = beregnetPrÅr;
             return this;
         }
 
-        public Builder medBesteberegningPrÅr(BigDecimal besteberegningPrÅr) {
+        public Builder medBesteberegningPrÅr(Beløp besteberegningPrÅr) {
             kladd.besteberegningPrÅr = besteberegningPrÅr;
             return this;
         }
 
-        public Builder medFordeltPrÅr(BigDecimal fordeltPrÅr) {
+        public Builder medFordeltPrÅr(Beløp fordeltPrÅr) {
             kladd.fordeltPrÅr = fordeltPrÅr;
             return this;
         }
 
-        public Builder medManueltFordeltPrÅr(BigDecimal manueltFordeltPrÅr) {
+        public Builder medManueltFordeltPrÅr(Beløp manueltFordeltPrÅr) {
             kladd.manueltFordeltPrÅr = manueltFordeltPrÅr;
             return this;
         }
 
-        public Builder medMaksimalRefusjonPrÅr(BigDecimal maksimalRefusjonPrÅr) {
+        public Builder medMaksimalRefusjonPrÅr(Beløp maksimalRefusjonPrÅr) {
             kladd.maksimalRefusjonPrÅr = maksimalRefusjonPrÅr;
             return this;
         }
 
-        public Builder medAvkortetRefusjonPrÅr(BigDecimal avkortetRefusjonPrÅr) {
+        public Builder medAvkortetRefusjonPrÅr(Beløp avkortetRefusjonPrÅr) {
             kladd.avkortetRefusjonPrÅr = avkortetRefusjonPrÅr;
             return this;
         }
 
-        public Builder medAvkortetBrukersAndelPrÅr(BigDecimal avkortetBrukersAndelPrÅr) {
+        public Builder medAvkortetBrukersAndelPrÅr(Beløp avkortetBrukersAndelPrÅr) {
             kladd.avkortetBrukersAndelPrÅr = avkortetBrukersAndelPrÅr;
             return this;
         }
 
-        public Builder medPgiSnitt(BigDecimal pgiSnitt) {
+        public Builder medPgiSnitt(Beløp pgiSnitt) {
             kladd.pgiSnitt = pgiSnitt;
             return this;
         }
 
-        public Builder medPgi1(BigDecimal pgi1) {
+        public Builder medPgi1(Beløp pgi1) {
             kladd.pgi1 = pgi1;
             return this;
         }
 
-        public Builder medPgi2(BigDecimal pgi2) {
+        public Builder medPgi2(Beløp pgi2) {
             kladd.pgi2 = pgi2;
             return this;
         }
 
-        public Builder medPgi3(BigDecimal pgi3) {
+        public Builder medPgi3(Beløp pgi3) {
             kladd.pgi3 = pgi3;
             return this;
         }
 
-        public Builder medÅrsbeløpFraTilstøtendeYtelse(BigDecimal årsbeløpFraTilstøtendeYtelse) {
+        public Builder medÅrsbeløpFraTilstøtendeYtelse(Beløp årsbeløpFraTilstøtendeYtelse) {
             kladd.årsbeløpFraTilstøtendeYtelse = årsbeløpFraTilstøtendeYtelse;
             return this;
         }
@@ -376,12 +314,12 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
             return this;
         }
 
-        public Builder medAvkortetMotInntektstak(BigDecimal avkortetMotInntektstak) {
+        public Builder medAvkortetMotInntektstak(Beløp avkortetMotInntektstak) {
             kladd.avkortetMotInntektstak = avkortetMotInntektstak;
             return this;
         }
 
-        public Builder medAvkortetFørGraderingPrÅr(BigDecimal avkortetFørGraderingPrÅr) {
+        public Builder medAvkortetFørGraderingPrÅr(Beløp avkortetFørGraderingPrÅr) {
             kladd.avkortetFørGraderingPrÅr = avkortetFørGraderingPrÅr;
             return this;
         }
@@ -408,7 +346,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         return arbeidsforholdType;
     }
 
-    public BigDecimal getBruttoPrÅr() {
+    public Beløp getBruttoPrÅr() {
         return bruttoPrÅr;
     }
 
@@ -444,67 +382,67 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         return beregningArbeidsforhold == null ? null : beregningArbeidsforhold.getArbeidsgiver();
     }
 
-    public BigDecimal getRedusertBrukersAndelPrÅr() {
+    public Beløp getRedusertBrukersAndelPrÅr() {
         return redusertBrukersAndelPrÅr;
     }
 
-    public BigDecimal getRedusertRefusjonPrÅr() {
+    public Beløp getRedusertRefusjonPrÅr() {
         return redusertRefusjonPrÅr;
     }
 
-    public BigDecimal getOverstyrtPrÅr() {
+    public Beløp getOverstyrtPrÅr() {
         return overstyrtPrÅr;
     }
 
-    public BigDecimal getAvkortetPrÅr() {
+    public Beløp getAvkortetPrÅr() {
         return avkortetPrÅr;
     }
 
-    public BigDecimal getRedusertPrÅr() {
+    public Beløp getRedusertPrÅr() {
         return redusertPrÅr;
     }
 
-    public BigDecimal getBeregnetPrÅr() {
+    public Beløp getBeregnetPrÅr() {
         return beregnetPrÅr;
     }
 
-    public BigDecimal getFordeltPrÅr() {
+    public Beløp getFordeltPrÅr() {
         return fordeltPrÅr;
     }
 
-    public BigDecimal getManueltFordeltPrÅr() {
+    public Beløp getManueltFordeltPrÅr() {
         return manueltFordeltPrÅr;
     }
 
-    public BigDecimal getMaksimalRefusjonPrÅr() {
+    public Beløp getMaksimalRefusjonPrÅr() {
         return maksimalRefusjonPrÅr;
     }
 
-    public BigDecimal getAvkortetRefusjonPrÅr() {
+    public Beløp getAvkortetRefusjonPrÅr() {
         return avkortetRefusjonPrÅr;
     }
 
-    public BigDecimal getAvkortetBrukersAndelPrÅr() {
+    public Beløp getAvkortetBrukersAndelPrÅr() {
         return avkortetBrukersAndelPrÅr;
     }
 
-    public BigDecimal getPgiSnitt() {
+    public Beløp getPgiSnitt() {
         return pgiSnitt;
     }
 
-    public BigDecimal getPgi1() {
+    public Beløp getPgi1() {
         return pgi1;
     }
 
-    public BigDecimal getPgi2() {
+    public Beløp getPgi2() {
         return pgi2;
     }
 
-    public BigDecimal getPgi3() {
+    public Beløp getPgi3() {
         return pgi3;
     }
 
-    public BigDecimal getÅrsbeløpFraTilstøtendeYtelse() {
+    public Beløp getÅrsbeløpFraTilstøtendeYtelse() {
         return årsbeløpFraTilstøtendeYtelse;
     }
 
@@ -524,23 +462,23 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         return andelsnr;
     }
 
-    public BigDecimal getBesteberegningPrÅr() {
+    public Beløp getBesteberegningPrÅr() {
         return besteberegningPrÅr;
     }
 
-    public void setAvkortetMotInntektstak(BigDecimal avkortetMotInntektstak) {
+    public void setAvkortetMotInntektstak(Beløp avkortetMotInntektstak) {
         this.avkortetMotInntektstak = avkortetMotInntektstak;
     }
 
-    public BigDecimal getAvkortetMotInntektstak() {
+    public Beløp getAvkortetMotInntektstak() {
         return avkortetMotInntektstak;
     }
 
-    public BigDecimal getAvkortetFørGraderingPrÅr() {
+    public Beløp getAvkortetFørGraderingPrÅr() {
         return avkortetFørGraderingPrÅr;
     }
 
-    public void setAvkortetFørGraderingPrÅr(BigDecimal avkortetFørGraderingPrÅr) {
+    public void setAvkortetFørGraderingPrÅr(Beløp avkortetFørGraderingPrÅr) {
         this.avkortetFørGraderingPrÅr = avkortetFørGraderingPrÅr;
     }
 }

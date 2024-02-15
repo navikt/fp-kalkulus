@@ -101,13 +101,13 @@ public class VurderMottarYtelseDtoTjenesteTest {
         VurderMottarYtelseDto mottarYtelseDto = dto.getVurderMottarYtelse();
         assertThat(mottarYtelseDto.getErFrilans()).isTrue();
         assertThat(mottarYtelseDto.getFrilansMottarYtelse()).isNull();
-        assertThat(mottarYtelseDto.getFrilansInntektPrMnd()).isEqualByComparingTo(INNTEKT_SNITT);
+        assertThat(mottarYtelseDto.getFrilansInntektPrMnd().verdi()).isEqualByComparingTo(INNTEKT_SNITT);
         assertThat(mottarYtelseDto.getArbeidstakerAndelerUtenIM()).hasSize(1);
         ArbeidstakerUtenInntektsmeldingAndelDto andelUtenIM = mottarYtelseDto.getArbeidstakerAndelerUtenIM().get(0);
         assertThat(andelUtenIM.getMottarYtelse()).isNull();
         assertThat(andelUtenIM.getArbeidsforhold().getArbeidsgiverIdent()).isEqualTo(ORGNR);
         assertThat(andelUtenIM.getAndelsnr()).isEqualTo(arbeidsforholdAndel.getAndelsnr());
-        assertThat(andelUtenIM.getInntektPrMnd()).isEqualByComparingTo(INNTEKT_SNITT);
+        assertThat(andelUtenIM.getInntektPrMnd().verdi()).isEqualByComparingTo(INNTEKT_SNITT);
     }
 
     @Test
@@ -133,13 +133,13 @@ public class VurderMottarYtelseDtoTjenesteTest {
         VurderMottarYtelseDto mottarYtelseDto = dto.getVurderMottarYtelse();
         assertThat(mottarYtelseDto.getErFrilans()).isTrue();
         assertThat(mottarYtelseDto.getFrilansMottarYtelse()).isFalse();
-        assertThat(mottarYtelseDto.getFrilansInntektPrMnd()).isEqualByComparingTo(INNTEKT_SNITT);
+        assertThat(mottarYtelseDto.getFrilansInntektPrMnd().verdi()).isEqualByComparingTo(INNTEKT_SNITT);
         assertThat(mottarYtelseDto.getArbeidstakerAndelerUtenIM()).hasSize(1);
         ArbeidstakerUtenInntektsmeldingAndelDto andelUtenIM = mottarYtelseDto.getArbeidstakerAndelerUtenIM().get(0);
         assertThat(andelUtenIM.getMottarYtelse()).isTrue();
         assertThat(andelUtenIM.getArbeidsforhold().getArbeidsgiverIdent()).isEqualTo(ORGNR);
         assertThat(andelUtenIM.getAndelsnr()).isEqualTo(arbeidsforholdAndel.getAndelsnr());
-        assertThat(andelUtenIM.getInntektPrMnd()).isEqualByComparingTo(INNTEKT_SNITT);
+        assertThat(andelUtenIM.getInntektPrMnd().verdi()).isEqualByComparingTo(INNTEKT_SNITT);
     }
 
     private void byggFrilansAndel() {

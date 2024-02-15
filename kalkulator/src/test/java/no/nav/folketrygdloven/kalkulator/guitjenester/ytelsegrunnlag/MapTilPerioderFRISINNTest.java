@@ -10,6 +10,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
+
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
@@ -328,17 +330,17 @@ class MapTilPerioderFRISINNTest {
         dto.setFom(periode.getFomDato());
         dto.setFrisinnAndeler(Arrays.asList(andeler));
         if (atInntekt != null) {
-            dto.setOppgittArbeidsinntekt(BigDecimal.valueOf(atInntekt));
+            dto.setOppgittArbeidsinntekt(Beløp.fra(atInntekt));
         }
         return dto;
     }
 
     private FrisinnAndelDto flAndel(int sum) {
-        return new FrisinnAndelDto(BigDecimal.valueOf(sum), AktivitetStatus.FRILANSER);
+        return new FrisinnAndelDto(Beløp.fra(sum), AktivitetStatus.FRILANSER);
     }
 
     private FrisinnAndelDto snAndel(int sum) {
-        return new FrisinnAndelDto(BigDecimal.valueOf(sum), AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+        return new FrisinnAndelDto(Beløp.fra(sum), AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
     }
 
     private OppgittOpptjeningDtoBuilder.OppgittArbeidsforholdBuilder lagOppgittArbeidsinntekt(Intervall periode, BigDecimal beløp) {

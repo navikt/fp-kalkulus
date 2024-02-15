@@ -4,15 +4,13 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 import java.math.BigDecimal;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.validation.Valid;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -21,17 +19,11 @@ public class SøknadsopplysningerDto {
 
     @Valid
     @JsonProperty("oppgittÅrsinntekt")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal oppgittÅrsinntekt;
+    private Beløp oppgittÅrsinntekt;
 
     @Valid
     @JsonProperty("oppgittInntekt")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal oppgittInntekt;
+    private Beløp oppgittInntekt;
 
     @Valid
     @JsonProperty("erNyoppstartet")
@@ -41,19 +33,19 @@ public class SøknadsopplysningerDto {
         // Jackson
     }
 
-    public BigDecimal getOppgittÅrsinntekt() {
+    public Beløp getOppgittÅrsinntekt() {
         return oppgittÅrsinntekt;
     }
 
-    public void setOppgittÅrsinntekt(BigDecimal oppgittÅrsinntekt) {
+    public void setOppgittÅrsinntekt(Beløp oppgittÅrsinntekt) {
         this.oppgittÅrsinntekt = oppgittÅrsinntekt;
     }
 
-    public BigDecimal getOppgittInntekt() {
+    public Beløp getOppgittInntekt() {
         return oppgittInntekt;
     }
 
-    public void setOppgittInntekt(BigDecimal oppgittInntekt) {
+    public void setOppgittInntekt(Beløp oppgittInntekt) {
         this.oppgittInntekt = oppgittInntekt;
     }
 

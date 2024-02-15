@@ -22,6 +22,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisin
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisinn.FrisinnGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisinn.OpplystPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisinn.SøknadsopplysningerDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class YtelsespesifiktGrunnlagTjenesteFRISINN implements YtelsespesifiktGrunnlagTjeneste {
 
@@ -145,8 +146,8 @@ public class YtelsespesifiktGrunnlagTjenesteFRISINN implements YtelsespesifiktGr
 
         SøknadsopplysningerDto dto = new SøknadsopplysningerDto();
         dto.setErNyoppstartet(erNyoppstartetNæringsdrivende);
-        dto.setOppgittÅrsinntekt(oppgittLøpendeÅrsinntekt);
-        dto.setOppgittInntekt(oppgittLøpendeInntekt);
+        dto.setOppgittÅrsinntekt(Beløp.fra(oppgittLøpendeÅrsinntekt));
+        dto.setOppgittInntekt(Beløp.fra(oppgittLøpendeInntekt));
         return dto;
     }
 
@@ -173,8 +174,8 @@ public class YtelsespesifiktGrunnlagTjenesteFRISINN implements YtelsespesifiktGr
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
         SøknadsopplysningerDto dto = new SøknadsopplysningerDto();
-        dto.setOppgittInntekt(oppgittLøpendeInntekt);
-        dto.setOppgittÅrsinntekt(oppgittLøpendeÅrsinntekt);
+        dto.setOppgittInntekt(Beløp.fra(oppgittLøpendeInntekt));
+        dto.setOppgittÅrsinntekt(Beløp.fra(oppgittLøpendeÅrsinntekt));
         dto.setErNyoppstartet(erNyoppstartetFrilans);
         return dto;
     }

@@ -51,6 +51,7 @@ import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittEgenNæringDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittFrilansInntekt;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittOpptjeningDto;
+import no.nav.folketrygdloven.kalkulus.typer.DiffBeløp;
 
 public class MapIAYTilKalulator {
 
@@ -137,12 +138,12 @@ public class MapIAYTilKalulator {
     private static OppgittOpptjeningDtoBuilder.OppgittArbeidsforholdBuilder mapArbeidsforhold(OppgittArbeidsforholdDto arb) {
         return OppgittOpptjeningDtoBuilder.OppgittArbeidsforholdBuilder.ny()
                 .medPeriode(Intervall.fraOgMedTilOgMed(arb.getPeriode().getFom(), arb.getPeriode().getTom()))
-                .medInntekt(arb.getInntekt());
+                .medInntekt(no.nav.folketrygdloven.kalkulus.typer.Beløp.safeVerdi(arb.getInntekt()));
     }
 
     private static OppgittFrilansInntektDto mapFrilansInntekt(OppgittFrilansInntekt oppgittFrilansInntekt) {
         Periode periode = oppgittFrilansInntekt.getPeriode();
-        return new OppgittFrilansInntektDto(Intervall.fraOgMedTilOgMed(periode.getFom(), periode.getTom()), oppgittFrilansInntekt.getInntekt());
+        return new OppgittFrilansInntektDto(Intervall.fraOgMedTilOgMed(periode.getFom(), periode.getTom()), no.nav.folketrygdloven.kalkulus.typer.Beløp.safeVerdi(oppgittFrilansInntekt.getInntekt()));
     }
 
     private static Intervall mapDatoIntervall(Periode periode) {
@@ -152,7 +153,7 @@ public class MapIAYTilKalulator {
     private static OppgittOpptjeningDtoBuilder.EgenNæringBuilder mapEgenNæring(OppgittEgenNæringDto oppgittEgenNæring) {
         OppgittOpptjeningDtoBuilder.EgenNæringBuilder egenNæringBuilder = OppgittOpptjeningDtoBuilder.EgenNæringBuilder.ny()
                 .medPeriode(mapDatoIntervall(oppgittEgenNæring.getPeriode()))
-                .medBruttoInntekt(oppgittEgenNæring.getBruttoInntekt())
+                .medBruttoInntekt(no.nav.folketrygdloven.kalkulus.typer.Beløp.safeVerdi(oppgittEgenNæring.getBruttoInntekt()))
                 .medNyIArbeidslivet(oppgittEgenNæring.getNyIArbeidslivet())
                 .medEndringDato(oppgittEgenNæring.getEndringDato())
                 .medVirksomhetType(oppgittEgenNæring.getVirksomhetType())
@@ -247,7 +248,7 @@ public class MapIAYTilKalulator {
 
     private static InntektspostDtoBuilder mapInntektspost(UtbetalingsPostDto inntektspost) {
         InntektspostDtoBuilder builder = InntektspostDtoBuilder.ny();
-        builder.medBeløp(inntektspost.getBeløp());
+        builder.medBeløp(DiffBeløp.safeVerdi(inntektspost.getBeløp()));
         builder.medInntektspostType(inntektspost.getInntektspostType());
         builder.medPeriode(inntektspost.getPeriode().getFom(), inntektspost.getPeriode().getTom());
         if (inntektspost.getSkattAvgiftType() != null) {
@@ -319,7 +320,7 @@ public class MapIAYTilKalulator {
         return new no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFordelingDto(
                 MapFraKalkulator.mapArbeidsgiver(f.getArbeidsgiver()),
                 f.getHyppighet(),
-                f.getBeløp(),
+                no.nav.folketrygdloven.kalkulus.typer.Beløp.safeVerdi(f.getBeløp()),
                 f.getErRefusjon());
     }
 

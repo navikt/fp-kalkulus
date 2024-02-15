@@ -17,6 +17,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.AndelMedBeløpDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.KunYtelseDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class KunYtelseDtoTjeneste {
 
@@ -58,7 +59,7 @@ public class KunYtelseDtoTjeneste {
                 .filter(andel -> andel.getKilde().equals(AndelKilde.PROSESS_START) || andel.getKilde().equals(AndelKilde.SAKSBEHANDLER_KOFAKBER))
                 .forEach(andel -> {
                     AndelMedBeløpDto brukersAndel = initialiserStandardAndelProperties(andel, inntektArbeidYtelseGrunnlag);
-                    brukersAndel.setFastsattBelopPrMnd(finnFastsattMånedsbeløp(andel));
+                    brukersAndel.setFastsattBelopPrMnd(Beløp.fra(finnFastsattMånedsbeløp(andel)));
                     dto.leggTilAndel(brukersAndel);
                 });
     }

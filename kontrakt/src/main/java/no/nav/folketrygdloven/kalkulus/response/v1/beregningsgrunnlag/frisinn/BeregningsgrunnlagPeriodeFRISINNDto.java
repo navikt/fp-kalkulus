@@ -6,23 +6,20 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
@@ -41,32 +38,20 @@ public class BeregningsgrunnlagPeriodeFRISINNDto {
 
     @JsonProperty(value = "bruttoPrÅr")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal bruttoPrÅr;
+    private Beløp bruttoPrÅr;
 
     @JsonProperty(value = "avkortetPrÅr")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal avkortetPrÅr;
+    private Beløp avkortetPrÅr;
 
     @JsonProperty(value = "redusertPrÅr")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal redusertPrÅr;
+    private Beløp redusertPrÅr;
 
     @JsonProperty(value = "bgFratrukketInntektstak")
     @NotNull
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal bgFratrukketInntektstak;
+    private Beløp bgFratrukketInntektstak;
 
     @JsonProperty(value = "dagsats")
     @Valid
@@ -84,10 +69,10 @@ public class BeregningsgrunnlagPeriodeFRISINNDto {
 
     public BeregningsgrunnlagPeriodeFRISINNDto(@JsonProperty(value = "beregningsgrunnlagPrStatusOgAndelList") @NotNull @Valid List<BeregningsgrunnlagPrStatusOgAndelFRISINNDto> beregningsgrunnlagPrStatusOgAndelList,
                                                @JsonProperty(value = "periode") @NotNull @Valid Periode periode,
-                                               @JsonProperty(value = "bruttoPrÅr") @Valid BigDecimal bruttoPrÅr,
-                                               @JsonProperty(value = "avkortetPrÅr") @Valid BigDecimal avkortetPrÅr,
-                                               @JsonProperty(value = "redusertPrÅr") @Valid BigDecimal redusertPrÅr,
-                                               @JsonProperty(value = "bgFratrukketInntektstak") @Valid BigDecimal bgFratrukketInntektstak,
+                                               @JsonProperty(value = "bruttoPrÅr") @Valid Beløp bruttoPrÅr,
+                                               @JsonProperty(value = "avkortetPrÅr") @Valid Beløp avkortetPrÅr,
+                                               @JsonProperty(value = "redusertPrÅr") @Valid Beløp redusertPrÅr,
+                                               @JsonProperty(value = "bgFratrukketInntektstak") @Valid Beløp bgFratrukketInntektstak,
                                                @JsonProperty(value = "dagsats") @Valid Long dagsats,
                                                @JsonProperty(value = "periodeÅrsaker") @NotNull @Valid List<PeriodeÅrsak> periodeÅrsaker) {
 
@@ -109,19 +94,19 @@ public class BeregningsgrunnlagPeriodeFRISINNDto {
         return periode.getTom();
     }
 
-    public BigDecimal getBruttoPrÅr() {
+    public Beløp getBruttoPrÅr() {
         return bruttoPrÅr;
     }
 
-    public BigDecimal getAvkortetPrÅr() {
+    public Beløp getAvkortetPrÅr() {
         return avkortetPrÅr;
     }
 
-    public BigDecimal getRedusertPrÅr() {
+    public Beløp getRedusertPrÅr() {
         return redusertPrÅr;
     }
 
-    public BigDecimal getBgFratrukketInntektstak() {
+    public Beløp getBgFratrukketInntektstak() {
         return bgFratrukketInntektstak;
     }
 

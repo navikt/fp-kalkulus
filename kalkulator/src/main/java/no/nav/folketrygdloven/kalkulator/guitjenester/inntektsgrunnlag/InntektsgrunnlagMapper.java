@@ -24,6 +24,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntek
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.InntektsgrunnlagMånedDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.PGIGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.PGIPrÅrDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class InntektsgrunnlagMapper {
     private final Optional<Intervall> sammenligningsperiode;
@@ -68,7 +69,7 @@ public class InntektsgrunnlagMapper {
                         it -> finnPGIType(it.getInntektspostType()),
                         it -> it.getBeløp().getVerdi(),
                         BigDecimal::add));
-        var grunnlagPrType = beløpPrType.entrySet().stream().map(e -> new PGIGrunnlagDto(e.getKey(), e.getValue())).toList();
+        var grunnlagPrType = beløpPrType.entrySet().stream().map(e -> new PGIGrunnlagDto(e.getKey(), Beløp.fra(e.getValue()))).toList();
         return new PGIPrÅrDto(år, grunnlagPrType);
     }
 
@@ -94,7 +95,7 @@ public class InntektsgrunnlagMapper {
         List<InntektsgrunnlagMånedDto> måneder = new ArrayList<>();
         dateMap.forEach((månedFom, poster) -> {
             List<InntektsgrunnlagInntektDto> inntekDtoer = poster.stream()
-                    .map(post -> new InntektsgrunnlagInntektDto(post.inntektAktivitetType, post.beløp))
+                    .map(post -> new InntektsgrunnlagInntektDto(post.inntektAktivitetType, Beløp.fra(post.beløp)))
                     .toList();
             LocalDate tom = månedFom.with(TemporalAdjusters.lastDayOfMonth());
             måneder.add(new InntektsgrunnlagMånedDto(månedFom, tom, inntekDtoer));

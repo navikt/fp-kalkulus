@@ -34,6 +34,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusjon.RefusjonAndelTilVurderingDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusjon.RefusjonTilVurderingDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusjon.TidligereUtbetalingDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 
 public final class LagVurderRefusjonDto {
@@ -102,10 +103,10 @@ public final class LagVurderRefusjonDto {
         // Valideringsfelter
         getTidligsteMuligeRefusjonsdato(andel, gjeldendeOvertyringer)
                 .ifPresentOrElse(dto::setTidligsteMuligeRefusjonsdato, () -> dto.setTidligsteMuligeRefusjonsdato(gjeldendeBeregningsgrunnlag.getSkjæringstidspunkt()));
-        dto.setMaksTillattDelvisRefusjonPrMnd(månedsbeløp(tidligereRefusjonForAndelIPeriode.orElse(andel.getRefusjon())));
+        dto.setMaksTillattDelvisRefusjonPrMnd(Beløp.fra(månedsbeløp(tidligereRefusjonForAndelIPeriode.orElse(andel.getRefusjon()))));
 
         // Tidligere fastsatte verdier som brukes til preutfylling av gui
-        finnFastsattDelvisRefusjon(gjeldendeBeregningsgrunnlag, andel, periode).ifPresent(dto::setFastsattDelvisRefusjonPrMnd);
+        finnFastsattDelvisRefusjon(gjeldendeBeregningsgrunnlag, andel, periode).map(Beløp::fra).ifPresent(dto::setFastsattDelvisRefusjonPrMnd);
         getFastsattRefusjonStartdato(gjeldendeOvertyringer, andel).ifPresent(dto::setFastsattNyttRefusjonskravFom);
 
         return dto;

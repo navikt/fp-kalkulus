@@ -15,14 +15,11 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.Sammenligningsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.SammenligningsgrunnlagPrStatusDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
@@ -53,10 +50,7 @@ public class BeregningsgrunnlagDto {
 
     @JsonProperty(value = "grunnbeløp")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal grunnbeløp;
+    private Beløp grunnbeløp;
 
     public BeregningsgrunnlagDto() {
     }
@@ -65,7 +59,7 @@ public class BeregningsgrunnlagDto {
                                  List<AktivitetStatus> aktivitetStatuser,
                                  List<BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPerioder,
                                  List<SammenligningsgrunnlagPrStatusDto> sammenligningsgrunnlagPrStatusListe,
-                                 BigDecimal grunnbeløp) {
+                                 Beløp grunnbeløp) {
         this.skjæringstidspunkt = skjæringstidspunkt;
         this.aktivitetStatuser = aktivitetStatuser;
         this.beregningsgrunnlagPerioder = beregningsgrunnlagPerioder;
@@ -87,7 +81,7 @@ public class BeregningsgrunnlagDto {
                 .sorted(Comparator.comparing(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPeriodeFom)).toList();
     }
 
-    public BigDecimal getGrunnbeløp() {
+    public Beløp getGrunnbeløp() {
         return grunnbeløp;
     }
 

@@ -16,6 +16,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
+import no.nav.folketrygdloven.kalkulus.typer.DiffBeløp;
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -33,10 +35,7 @@ public class SammenligningsgrunnlagDto {
 
     @Valid
     @JsonProperty(value = "rapportertPrAar")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal rapportertPrAar;
+    private Beløp rapportertPrAar;
 
     @Valid
     @JsonProperty(value = "avvikPromille")
@@ -58,10 +57,7 @@ public class SammenligningsgrunnlagDto {
 
     @Valid
     @JsonProperty(value = "differanseBeregnet")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal differanseBeregnet;
+    private DiffBeløp differanseBeregnet;
 
     public SammenligningsgrunnlagDto() {
         // trengs for deserialisering av JSON
@@ -75,7 +71,7 @@ public class SammenligningsgrunnlagDto {
         return sammenligningsgrunnlagTom;
     }
 
-    public BigDecimal getRapportertPrAar() {
+    public Beløp getRapportertPrAar() {
         return rapportertPrAar;
     }
 
@@ -87,7 +83,7 @@ public class SammenligningsgrunnlagDto {
         return sammenligningsgrunnlagType;
     }
 
-    public BigDecimal getDifferanseBeregnet() {
+    public DiffBeløp getDifferanseBeregnet() {
         return differanseBeregnet;
     }
 
@@ -99,7 +95,7 @@ public class SammenligningsgrunnlagDto {
         this.sammenligningsgrunnlagTom = sammenligningsgrunnlagTom;
     }
 
-    public void setRapportertPrAar(BigDecimal rapportertPrAar) {
+    public void setRapportertPrAar(Beløp rapportertPrAar) {
         this.rapportertPrAar = rapportertPrAar;
     }
 
@@ -119,7 +115,7 @@ public class SammenligningsgrunnlagDto {
         this.sammenligningsgrunnlagType = sammenligningsgrunnlagType;
     }
 
-    public void setDifferanseBeregnet(BigDecimal differanseBeregnet) {
+    public void setDifferanseBeregnet(DiffBeløp differanseBeregnet) {
         this.differanseBeregnet = differanseBeregnet;
     }
 }

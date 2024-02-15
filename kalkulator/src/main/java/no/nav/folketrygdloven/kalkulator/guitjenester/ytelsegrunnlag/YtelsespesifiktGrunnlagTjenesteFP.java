@@ -15,6 +15,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.fp.Bes
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.fp.BesteberegningMånedGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.fp.BesteberegninggrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.fp.ForeldrepengerGrunnlagDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class YtelsespesifiktGrunnlagTjenesteFP implements YtelsespesifiktGrunnlagTjeneste {
 
@@ -33,7 +34,7 @@ public class YtelsespesifiktGrunnlagTjenesteFP implements YtelsespesifiktGrunnla
         List<BesteberegningMånedGrunnlagDto> besteMåneder = besteberegningVurderingGrunnlag.getSeksBesteMåneder().stream()
                 .map(YtelsespesifiktGrunnlagTjenesteFP::mapMånedsgrunnlag)
                 .collect(Collectors.toList());
-        return new BesteberegninggrunnlagDto(besteMåneder, besteberegningVurderingGrunnlag.getAvvikFraFørsteLedd());
+        return new BesteberegninggrunnlagDto(besteMåneder, Beløp.fra(besteberegningVurderingGrunnlag.getAvvikFraFørsteLedd()));
     }
 
     private static BesteberegningMånedGrunnlagDto mapMånedsgrunnlag(BesteberegningMånedGrunnlag besteberegningMånedGrunnlag) {
@@ -44,8 +45,8 @@ public class YtelsespesifiktGrunnlagTjenesteFP implements YtelsespesifiktGrunnla
 
     private static BesteberegningInntektDto mapBesteberegningInntekt(Inntekt inntekt) {
         if (inntekt.getArbeidsgiver() != null) {
-            return new BesteberegningInntektDto(inntekt.getArbeidsgiver().getIdentifikator(), inntekt.getArbeidsgiver().getIdentifikator(), inntekt.getArbeidsforholdRef().getReferanse(), inntekt.getInntekt());
+            return new BesteberegningInntektDto(inntekt.getArbeidsgiver().getIdentifikator(), inntekt.getArbeidsgiver().getIdentifikator(), inntekt.getArbeidsforholdRef().getReferanse(), Beløp.fra(inntekt.getInntekt()));
         }
-        return new BesteberegningInntektDto(inntekt.getOpptjeningAktivitetType(), inntekt.getInntekt());
+        return new BesteberegningInntektDto(inntekt.getOpptjeningAktivitetType(), Beløp.fra(inntekt.getInntekt()));
     }
 }

@@ -26,6 +26,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.Beregn
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPrStatusOgAndelYtelseDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.EgenNæringDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.PgiDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class LagTilpassetDtoTjeneste {
 
@@ -65,7 +66,7 @@ class LagTilpassetDtoTjeneste {
                 .map(OppgittOpptjeningDto::getEgenNæring)
                 .orElse(Collections.emptyList());
 
-        dtoSN.setPgiSnitt(andel.getPgiSnitt());
+        dtoSN.setPgiSnitt(Beløp.fra(andel.getPgiSnitt()));
 
 
         // Næringer som startet etter skjæringstidspunktet for beregning er ikke relevante
@@ -88,15 +89,15 @@ class LagTilpassetDtoTjeneste {
             return Collections.emptyList();
         }
         List<PgiDto> liste = new ArrayList<>();
-        liste.add(new PgiDto(andel.getPgi1(), beregningsperiodeTom.getYear()));
-        liste.add(new PgiDto(andel.getPgi2(), beregningsperiodeTom.minusYears(1).getYear()));
-        liste.add(new PgiDto(andel.getPgi3(), beregningsperiodeTom.minusYears(2).getYear()));
+        liste.add(new PgiDto(Beløp.fra(andel.getPgi1()), beregningsperiodeTom.getYear()));
+        liste.add(new PgiDto(Beløp.fra(andel.getPgi2()), beregningsperiodeTom.minusYears(1).getYear()));
+        liste.add(new PgiDto(Beløp.fra(andel.getPgi3()), beregningsperiodeTom.minusYears(2).getYear()));
         return liste;
     }
 
     private static BeregningsgrunnlagPrStatusOgAndelDto opprettATDto(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
         BeregningsgrunnlagPrStatusOgAndelATDto dtoAT = new BeregningsgrunnlagPrStatusOgAndelATDto();
-        dtoAT.setBortfaltNaturalytelse(andel.getBgAndelArbeidsforhold().orElseThrow().getNaturalytelseBortfaltPrÅr().orElseThrow());
+        dtoAT.setBortfaltNaturalytelse(Beløp.fra(andel.getBgAndelArbeidsforhold().orElseThrow().getNaturalytelseBortfaltPrÅr().orElseThrow()));
         return dtoAT;
     }
 
@@ -116,10 +117,10 @@ class LagTilpassetDtoTjeneste {
         if (!årsbeløpFraMeldekort.isPresent()) {
             return dtoYtelse;
         }
-        dtoYtelse.setBelopFraMeldekortPrAar(årsbeløpFraMeldekort.get());
-        dtoYtelse.setBelopFraMeldekortPrMnd(årsbeløpFraMeldekort.get().divide(MND_I_1_ÅR, 10, RoundingMode.HALF_UP));
+        dtoYtelse.setBelopFraMeldekortPrAar(Beløp.fra(årsbeløpFraMeldekort.get()));
+        dtoYtelse.setBelopFraMeldekortPrMnd(Beløp.fra(årsbeløpFraMeldekort.get().divide(MND_I_1_ÅR, 10, RoundingMode.HALF_UP)));
         if (andel.getBruttoPrÅr() != null) {
-            dtoYtelse.setOppjustertGrunnlag(finnVisningstallForOppjustertGrunnlag(andel.getAktivitetStatus(), andel.getBruttoPrÅr()));
+            dtoYtelse.setOppjustertGrunnlag(Beløp.fra(finnVisningstallForOppjustertGrunnlag(andel.getAktivitetStatus(), andel.getBruttoPrÅr())));
         }
         return dtoYtelse;
     }

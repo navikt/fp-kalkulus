@@ -4,17 +4,15 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 import java.math.BigDecimal;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -23,10 +21,7 @@ public class PgiDto {
 
     @Valid
     @JsonProperty(value = "beløp")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal beløp;
+    private Beløp beløp;
 
     @Valid
     @JsonProperty(value = "årstall")
@@ -38,12 +33,12 @@ public class PgiDto {
         // Jackson
     }
 
-    public PgiDto(BigDecimal beløp, Integer årstall) {
+    public PgiDto(Beløp beløp, Integer årstall) {
         this.beløp = beløp;
         this.årstall = årstall;
     }
 
-    public BigDecimal getBeløp() {
+    public Beløp getBeløp() {
         return beløp;
     }
 

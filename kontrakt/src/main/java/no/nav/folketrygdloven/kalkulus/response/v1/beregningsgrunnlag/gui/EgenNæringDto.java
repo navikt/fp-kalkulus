@@ -5,18 +5,15 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.Pattern;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import no.nav.folketrygdloven.kalkulus.kodeverk.VirksomhetType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -82,10 +79,7 @@ public class EgenNæringDto {
 
     @Valid
     @JsonProperty("oppgittInntekt")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal oppgittInntekt;
+    private Beløp oppgittInntekt;
 
     public EgenNæringDto() {
         // Jackson
@@ -187,11 +181,11 @@ public class EgenNæringDto {
         this.erNyIArbeidslivet = erNyIArbeidslivet;
     }
 
-    public BigDecimal getOppgittInntekt() {
+    public Beløp getOppgittInntekt() {
         return oppgittInntekt;
     }
 
-    public void setOppgittInntekt(BigDecimal oppgittInntekt) {
+    public void setOppgittInntekt(Beløp oppgittInntekt) {
         this.oppgittInntekt = oppgittInntekt;
     }
 }

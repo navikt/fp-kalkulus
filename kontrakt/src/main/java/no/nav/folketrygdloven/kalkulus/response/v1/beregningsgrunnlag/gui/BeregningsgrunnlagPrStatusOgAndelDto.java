@@ -17,7 +17,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
-import no.nav.folketrygdloven.kalkulus.kodeverk.KodeKonstanter;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
@@ -48,38 +48,23 @@ public abstract class BeregningsgrunnlagPrStatusOgAndelDto {
 
     @Valid
     @JsonProperty("beregnetPrAar")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal beregnetPrAar;
+    private Beløp beregnetPrAar;
 
     @Valid
     @JsonProperty("overstyrtPrAar")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal overstyrtPrAar;
+    private Beløp overstyrtPrAar;
 
     @Valid
     @JsonProperty("bruttoPrAar")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal bruttoPrAar;
+    private Beløp bruttoPrAar;
 
     @Valid
     @JsonProperty("avkortetPrAar")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal avkortetPrAar;
+    private Beløp avkortetPrAar;
 
     @Valid
     @JsonProperty("redusertPrAar")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal redusertPrAar;
+    private Beløp redusertPrAar;
 
     @Valid
     @JsonProperty("erTidsbegrensetArbeidsforhold")
@@ -101,10 +86,7 @@ public abstract class BeregningsgrunnlagPrStatusOgAndelDto {
 
     @Valid
     @JsonProperty("besteberegningPrAar")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal besteberegningPrAar;
+    private Beløp besteberegningPrAar;
 
     @Valid
     @JsonProperty("inntektskategori")
@@ -124,17 +106,11 @@ public abstract class BeregningsgrunnlagPrStatusOgAndelDto {
 
     @Valid
     @JsonProperty("belopPrMndEtterAOrdningen")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal belopPrMndEtterAOrdningen;
+    private Beløp belopPrMndEtterAOrdningen;
 
     @Valid
     @JsonProperty("belopPrAarEtterAOrdningen")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal belopPrAarEtterAOrdningen;
+    private Beløp belopPrAarEtterAOrdningen;
 
     @Valid
     @JsonProperty("dagsats")
@@ -150,10 +126,7 @@ public abstract class BeregningsgrunnlagPrStatusOgAndelDto {
 
     @Valid
     @JsonProperty("fordeltPrAar")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal fordeltPrAar;
+    private Beløp fordeltPrAar;
 
     @Valid
     @JsonProperty("erTilkommetAndel")
@@ -167,15 +140,15 @@ public abstract class BeregningsgrunnlagPrStatusOgAndelDto {
         // trengs for deserialisering av JSON
     }
 
-    public BigDecimal getBeregnetPrAar() {
+    public Beløp getBeregnetPrAar() {
         return beregnetPrAar;
     }
 
-    public BigDecimal getOverstyrtPrAar() {
+    public Beløp getOverstyrtPrAar() {
         return overstyrtPrAar;
     }
 
-    public BigDecimal getBruttoPrAar() {
+    public Beløp getBruttoPrAar() {
         return bruttoPrAar;
     }
 
@@ -183,11 +156,11 @@ public abstract class BeregningsgrunnlagPrStatusOgAndelDto {
         return aktivitetStatus;
     }
 
-    public BigDecimal getAvkortetPrAar() {
+    public Beløp getAvkortetPrAar() {
         return avkortetPrAar;
     }
 
-    public BigDecimal getRedusertPrAar() {
+    public Beløp getRedusertPrAar() {
         return redusertPrAar;
     }
 
@@ -207,7 +180,7 @@ public abstract class BeregningsgrunnlagPrStatusOgAndelDto {
         return lonnsendringIBeregningsperioden;
     }
 
-    public BigDecimal getBesteberegningPrAar() {
+    public Beløp getBesteberegningPrAar() {
         return besteberegningPrAar;
     }
 
@@ -215,7 +188,7 @@ public abstract class BeregningsgrunnlagPrStatusOgAndelDto {
         return arbeidsforhold;
     }
 
-    public BigDecimal getFordeltPrAar() {
+    public Beløp getFordeltPrAar() {
         return fordeltPrAar;
     }
 
@@ -231,7 +204,7 @@ public abstract class BeregningsgrunnlagPrStatusOgAndelDto {
         return beregningsperiodeTom;
     }
 
-    public void setFordeltPrAar(BigDecimal fordeltPrAar) {
+    public void setFordeltPrAar(Beløp fordeltPrAar) {
         this.fordeltPrAar = fordeltPrAar;
     }
 
@@ -239,7 +212,7 @@ public abstract class BeregningsgrunnlagPrStatusOgAndelDto {
         this.arbeidsforhold = arbeidsforhold;
     }
 
-    public void setBesteberegningPrAar(BigDecimal besteberegningPrAar) {
+    public void setBesteberegningPrAar(Beløp besteberegningPrAar) {
         this.besteberegningPrAar = besteberegningPrAar;
     }
 
@@ -255,15 +228,15 @@ public abstract class BeregningsgrunnlagPrStatusOgAndelDto {
         this.beregningsperiodeTom = beregningsperiodeTom;
     }
 
-    public void setBeregnetPrAar(BigDecimal beregnetPrAar) {
+    public void setBeregnetPrAar(Beløp beregnetPrAar) {
         this.beregnetPrAar = beregnetPrAar;
     }
 
-    public void setOverstyrtPrAar(BigDecimal overstyrtPrAar) {
+    public void setOverstyrtPrAar(Beløp overstyrtPrAar) {
         this.overstyrtPrAar = overstyrtPrAar;
     }
 
-    public void setBruttoPrAar(BigDecimal bruttoPrAar) {
+    public void setBruttoPrAar(Beløp bruttoPrAar) {
         this.bruttoPrAar = bruttoPrAar;
     }
 
@@ -271,11 +244,11 @@ public abstract class BeregningsgrunnlagPrStatusOgAndelDto {
         this.aktivitetStatus = aktivitetStatus;
     }
 
-    public void setAvkortetPrAar(BigDecimal avkortetPrAar) {
+    public void setAvkortetPrAar(Beløp avkortetPrAar) {
         this.avkortetPrAar = avkortetPrAar;
     }
 
-    public void setRedusertPrAar(BigDecimal redusertPrAar) {
+    public void setRedusertPrAar(Beløp redusertPrAar) {
         this.redusertPrAar = redusertPrAar;
     }
 
