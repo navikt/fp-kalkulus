@@ -96,7 +96,7 @@ public class BeregningsgrunnlagDtoUtil {
             arbeidsforhold.setRefusjonPrAar(Beløp.fra(bga.getGjeldendeRefusjonPrÅr()));
             arbeidsforhold.setNaturalytelseBortfaltPrÅr(Beløp.fra(bga.getNaturalytelseBortfaltPrÅr().orElse(null)));
             arbeidsforhold.setNaturalytelseTilkommetPrÅr(Beløp.fra(bga.getNaturalytelseTilkommetPrÅr().orElse(null)));
-            inntektsmelding.ifPresent(im -> arbeidsforhold.setBelopFraInntektsmeldingPrMnd(Beløp.fra(im.getInntektBeløp().getVerdi())));
+            inntektsmelding.ifPresent(im -> arbeidsforhold.setBelopFraInntektsmeldingPrMnd(im.getInntektBeløp()));
             mapArbeidsgiver(arbeidsforhold, arbeidsgiver);
             finnEksternArbeidsforholdId(andel, inntektArbeidYtelseGrunnlag).ifPresent(ref -> arbeidsforhold.setEksternArbeidsforholdId(ref.getReferanse()));
         });

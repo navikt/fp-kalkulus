@@ -19,9 +19,9 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class InntektForAndelTjeneste {
 
@@ -95,7 +95,7 @@ class InntektForAndelTjeneste {
         for (int måned = 0; måned < beregningsperiodeLengdeIMnd; måned++) {
             LocalDate dato = tilDato.minusMonths(måned);
             Beløp beløp = finnMånedsinntekt(inntektsposter, dato);
-            totalBeløp = totalBeløp.add(beløp.getVerdi());
+            totalBeløp = totalBeløp.add(beløp.verdi());
         }
         return totalBeløp;
     }

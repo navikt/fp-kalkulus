@@ -38,7 +38,7 @@ public class MapNaturalytelserFraVLTilRegel {
         var naturalytelsePrArbeidsforhold = mapInntektsmeldinger(new Input(andeler, input.getInntektsmeldinger()));
         return PeriodeModellNaturalytelse.builder()
                 .medSkjæringstidspunkt(skjæringstidspunkt)
-                .medGrunnbeløp(beregningsgrunnlag.getGrunnbeløp().getVerdi())
+                .medGrunnbeløp(beregningsgrunnlag.getGrunnbeløp().verdi())
                 .medInntektsmeldinger(naturalytelsePrArbeidsforhold)
                 .medEksisterendePerioder(eksisterendePerioder)
                 .build();

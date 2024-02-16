@@ -42,11 +42,11 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class MapInntektsgrunnlagVLTilRegelFelles implements MapInntektsgrunnlagVLTilRegel {
     private static final String INNTEKT_RAPPORTERING_FRIST_DATO = "inntekt.rapportering.frist.dato";
@@ -78,7 +78,7 @@ public class MapInntektsgrunnlagVLTilRegelFelles implements MapInntektsgrunnlagV
                 throw new IllegalStateException("Arbeidsgiver må være satt.");
             } else if (Objects.isNull(inntektspost.getPeriode().getFomDato())) {
                 throw new IllegalStateException("Inntektsperiode må være satt.");
-            } else if (Objects.isNull(inntektspost.getBeløp().getVerdi())) {
+            } else if (Objects.isNull(inntektspost.getBeløp().verdi())) {
                 throw new IllegalStateException("Inntektsbeløp må være satt.");
             }
 
@@ -86,7 +86,7 @@ public class MapInntektsgrunnlagVLTilRegelFelles implements MapInntektsgrunnlagV
                     .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSKOMPONENTEN_BEREGNING)
                     .medArbeidsgiver(arbeidsgiver)
                     .medMåned(inntektspost.getPeriode().getFomDato())
-                    .medInntekt(inntektspost.getBeløp().getVerdi())
+                    .medInntekt(inntektspost.getBeløp().verdi())
                     .build());
         });
     }
@@ -148,9 +148,9 @@ public class MapInntektsgrunnlagVLTilRegelFelles implements MapInntektsgrunnlagV
         try {
             Arbeidsforhold arbeidsforhold = MapArbeidsforholdFraVLTilRegel.mapForInntektsmelding(im);
             settAnsettelsesperiode(im.getArbeidsgiver(), yrkesaktiviteter, arbeidsforhold);
-            BigDecimal inntekt = im.getInntektBeløp().getVerdi();
+            BigDecimal inntekt = Beløp.safeVerdi(im.getInntektBeløp());
             List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.NaturalYtelse> naturalytelser = im.getNaturalYtelser().stream()
-                    .map(ny -> new no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.NaturalYtelse(ny.getBeloepPerMnd().getVerdi(),
+                    .map(ny -> new no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.NaturalYtelse(ny.getBeloepPerMnd().verdi(),
                             ny.getPeriode().getFomDato(), ny.getPeriode().getTomDato()))
                     .collect(Collectors.toList());
             Periodeinntekt.Builder naturalYtelserBuilder = Periodeinntekt.builder()
@@ -200,8 +200,8 @@ public class MapInntektsgrunnlagVLTilRegelFelles implements MapInntektsgrunnlagV
                 .map(Stillingsprosent::getVerdi)
                 .map(v -> v.divide(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG, 10, RoundingMode.HALF_UP))
                 .orElse(BigDecimal.ONE);
-        dagsats = nyesteVedtakForDagsats.getVedtaksDagsats().map(Beløp::getVerdi)
-                .orElse(sisteUtbetalingFørStp.flatMap(YtelseAnvistDto::getBeløp).map(Beløp::getVerdi).orElse(BigDecimal.ZERO));
+        dagsats = nyesteVedtakForDagsats.getVedtaksDagsats().map(Beløp::verdi)
+                .orElse(sisteUtbetalingFørStp.flatMap(YtelseAnvistDto::getBeløp).map(Beløp::verdi).orElse(BigDecimal.ZERO));
         return Periodeinntekt.builder()
                 .medInntektskildeOgPeriodeType(Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP)
                 .medInntekt(dagsats)
@@ -251,7 +251,7 @@ public class MapInntektsgrunnlagVLTilRegelFelles implements MapInntektsgrunnlagV
     private void lagInntektSammenligning(Inntektsgrunnlag inntektsgrunnlag, InntektFilterDto filter) {
         Map<LocalDate, BigDecimal> månedsinntekter = filter.filterSammenligningsgrunnlag().getFiltrertInntektsposter().stream()
                 .collect(Collectors.groupingBy(ip -> ip.getPeriode().getFomDato(), Collectors.reducing(BigDecimal.ZERO,
-                        ip -> ip.getBeløp().getVerdi(), BigDecimal::add)));
+                        ip -> ip.getBeløp().verdi(), BigDecimal::add)));
 
         månedsinntekter.forEach((måned, inntekt) -> inntektsgrunnlag.leggTilPeriodeinntekt(Periodeinntekt.builder()
                 .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSKOMPONENTEN_SAMMENLIGNING)
@@ -264,7 +264,7 @@ public class MapInntektsgrunnlagVLTilRegelFelles implements MapInntektsgrunnlagV
         filter.filterBeregnetSkatt().getFiltrertInntektsposter()
                 .forEach(inntektspost -> inntektsgrunnlag.leggTilPeriodeinntekt(Periodeinntekt.builder()
                         .medInntektskildeOgPeriodeType(Inntektskilde.SIGRUN)
-                        .medInntekt(inntektspost.getBeløp().getVerdi())
+                        .medInntekt(inntektspost.getBeløp().verdi())
                         .medPeriode(Periode.of(inntektspost.getPeriode().getFomDato(), inntektspost.getPeriode().getTomDato()))
                         .build()));
     }

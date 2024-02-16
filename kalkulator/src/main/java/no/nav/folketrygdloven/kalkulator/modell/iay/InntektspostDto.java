@@ -3,12 +3,12 @@ package no.nav.folketrygdloven.kalkulator.modell.iay;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.LønnsinntektBeskrivelse;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SkatteOgAvgiftsregelType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class InntektspostDto {
 

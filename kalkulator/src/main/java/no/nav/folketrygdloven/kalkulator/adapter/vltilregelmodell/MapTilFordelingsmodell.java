@@ -109,7 +109,7 @@ public class MapTilFordelingsmodell {
         return input.getInntektsmeldinger().stream()
                 .filter(im -> bgAndel.gjelderInntektsmeldingFor(im.getArbeidsgiver(), im.getArbeidsforholdRef()))
                 .findFirst().map(InntektsmeldingDto::getInntektBeløp)
-                .orElseThrow().getVerdi();
+                .orElseThrow().verdi();
     }
 
     private static boolean erSøktYtelseFor(BeregningsgrunnlagPrStatusOgAndelDto bgAndel, BeregningsgrunnlagInput input) {

@@ -63,7 +63,7 @@ public class KalkulatorTilEntitetMapper {
         BeregningsgrunnlagEntitet.Builder builder = BeregningsgrunnlagEntitet.builder();
 
         //med
-        builder.medGrunnbeløp(new Beløp(beregningsgrunnlagFraKalkulus.getGrunnbeløp().getVerdi()));
+        builder.medGrunnbeløp(Beløp.fra(beregningsgrunnlagFraKalkulus.getGrunnbeløp()));
         builder.medOverstyring(beregningsgrunnlagFraKalkulus.isOverstyrt());
         builder.medSkjæringstidspunkt(beregningsgrunnlagFraKalkulus.getSkjæringstidspunkt());
 

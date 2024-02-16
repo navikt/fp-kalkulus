@@ -18,10 +18,10 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 class FinnInntektFraYtelse {
@@ -101,8 +101,8 @@ class FinnInntektFraYtelse {
     }
 
     private static BigDecimal finnÅrsbeløp(YtelseDto ytelse, Optional<YtelseAnvistDto> ytelseAnvist) {
-        BigDecimal dagsats = ytelse.getVedtaksDagsats().map(Beløp::getVerdi)
-                .orElse(ytelseAnvist.flatMap(YtelseAnvistDto::getDagsats).map(Beløp::getVerdi).orElse(BigDecimal.ZERO));
+        BigDecimal dagsats = ytelse.getVedtaksDagsats().map(Beløp::verdi)
+                .orElse(ytelseAnvist.flatMap(YtelseAnvistDto::getDagsats).map(Beløp::verdi).orElse(BigDecimal.ZERO));
         return dagsats
                 .multiply(VIRKEDAGER_I_1_ÅR);
     }

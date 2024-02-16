@@ -31,7 +31,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
@@ -39,13 +38,14 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidsforholdHandlingType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class VurderLønnsendringOppdatererTest {
     private static final Long ANDELSNR_ARBEIDSTAKER = 2L;
     private static final List<FaktaOmBeregningTilfelle> FAKTA_OM_BEREGNING_TILFELLER = Collections.singletonList(FaktaOmBeregningTilfelle.VURDER_LØNNSENDRING);
     public static final String ORGNR = "8934232423";
     private final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
-    private final Beløp GRUNNBELØP = new Beløp(600000);
+    private final Beløp GRUNNBELØP = Beløp.fra(600000);
 
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private BeregningsgrunnlagPrStatusOgAndelDto frilansAndel;

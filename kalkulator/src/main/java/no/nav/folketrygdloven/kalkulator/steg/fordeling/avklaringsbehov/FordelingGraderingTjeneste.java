@@ -12,9 +12,9 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public final class FordelingGraderingTjeneste {
     private static final List<AktivitetStatus> STATUSER_PRIORITERT_OVER_SN = Arrays.asList(AktivitetStatus.ARBEIDSTAKER,
@@ -66,12 +66,12 @@ public final class FordelingGraderingTjeneste {
     public static boolean gradertAndelVilleBlittAvkortet(BeregningsgrunnlagPrStatusOgAndelDto andel, Beløp grunnbeløp, BeregningsgrunnlagPeriodeDto periode) {
         if (andel.getAktivitetStatus().erSelvstendigNæringsdrivende()) {
             BigDecimal totaltBgFraStatuserPrioritertOverSN = inntektFraAndelerMedStatus(periode, STATUSER_PRIORITERT_OVER_SN);
-            BigDecimal seksG = grunnbeløp.getVerdi().multiply(BigDecimal.valueOf(6));
+            BigDecimal seksG = grunnbeløp.verdi().multiply(BigDecimal.valueOf(6));
             return totaltBgFraStatuserPrioritertOverSN.compareTo(seksG) >= 0;
         }
         if (andel.getAktivitetStatus().erFrilanser()) {
             BigDecimal totaltBgFraArbeidstaker = inntektFraAndelerMedStatus(periode, Collections.singletonList(AktivitetStatus.ARBEIDSTAKER));
-            BigDecimal seksG = grunnbeløp.getVerdi().multiply(BigDecimal.valueOf(6));
+            BigDecimal seksG = grunnbeløp.verdi().multiply(BigDecimal.valueOf(6));
             return totaltBgFraArbeidstaker.compareTo(seksG) >= 0;
         }
         return false;

@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.NaturalYtelseType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 public class NaturalYtelseDto {
@@ -20,13 +20,13 @@ public class NaturalYtelseDto {
     }
 
     public NaturalYtelseDto(LocalDate fom, LocalDate tom, BigDecimal beloepPerMnd, NaturalYtelseType type) {
-        this.beloepPerMnd = new Beløp(beloepPerMnd);
+        this.beloepPerMnd = Beløp.fra(beloepPerMnd);
         this.type = type;
         this.periode = Intervall.fraOgMedTilOgMed(fom, tom);
     }
 
     public NaturalYtelseDto(Intervall datoIntervall, BigDecimal beloepPerMnd, NaturalYtelseType type) {
-        this.beloepPerMnd = new Beløp(beloepPerMnd);
+        this.beloepPerMnd = Beløp.fra(beloepPerMnd);
         this.type = type;
         this.periode = datoIntervall;
     }

@@ -27,9 +27,9 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefu
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 import no.nav.fpsak.tidsserie.StandardCombinators;
@@ -201,7 +201,7 @@ public class MapRefusjonskravFraVLTilRegel {
             Map.Entry<LocalDate, Beløp> entry = listIterator.next();
             LocalDate fom = entry.getKey();
             LocalDate tom = utledTom(entryList, listIterator);
-            BigDecimal refusjonPrMåned = entry.getValue().getVerdi();
+            BigDecimal refusjonPrMåned = entry.getValue().verdi();
             // Mapper kun refusjonskrav som fører til utbetaling
             if (refusjonPrMåned.compareTo(MINSTE_UTBETALTE_REFUSJONSKRAV_PR_MÅNED) > 0) {
                 refusjonskravListe.add(new Refusjonskrav(refusjonPrMåned, fom, tom));

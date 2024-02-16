@@ -21,18 +21,18 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class VurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdatererTest {
 
     private static final List<FaktaOmBeregningTilfelle> FAKTA_OM_BEREGNING_TILFELLER = Collections
         .singletonList(FaktaOmBeregningTilfelle.VURDER_SN_NY_I_ARBEIDSLIVET);
     private final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
-    private final Beløp GRUNNBELØP = new Beløp(600000);
+    private final Beløp GRUNNBELØP = Beløp.fra(600000);
 
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);

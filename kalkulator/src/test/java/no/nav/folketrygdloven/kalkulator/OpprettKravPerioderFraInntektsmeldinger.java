@@ -57,13 +57,13 @@ public class OpprettKravPerioderFraInntektsmeldinger {
 
     private static List<RefusjonsperiodeDto> lagPerioder(InntektsmeldingDto im, LocalDate skjæringstidspunktBeregning) {
         ArrayList<LocalDateSegment<BigDecimal>> alleSegmenter = new ArrayList<>();
-        if (!(im.getRefusjonBeløpPerMnd() == null || im.getRefusjonBeløpPerMnd().erNullEllerNulltall())) {
+        if (!(im.getRefusjonBeløpPerMnd() == null || im.getRefusjonBeløpPerMnd().erNullEller0())) {
             alleSegmenter.add(new LocalDateSegment<>(skjæringstidspunktBeregning,
-                    TIDENES_ENDE, im.getRefusjonBeløpPerMnd().getVerdi()));
+                    TIDENES_ENDE, im.getRefusjonBeløpPerMnd().verdi()));
         }
 
         alleSegmenter.addAll(im.getEndringerRefusjon().stream().map(e ->
-                new LocalDateSegment<>(e.getFom(), TIDENES_ENDE, e.getRefusjonsbeløp().getVerdi())
+                new LocalDateSegment<>(e.getFom(), TIDENES_ENDE, e.getRefusjonsbeløp().verdi())
         ).collect(Collectors.toList()));
 
         var refusjonTidslinje = new LocalDateTimeline<>(alleSegmenter, (interval, lhs, rhs) -> {

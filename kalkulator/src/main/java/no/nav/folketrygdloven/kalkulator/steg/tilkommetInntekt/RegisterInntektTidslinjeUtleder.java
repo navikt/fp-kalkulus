@@ -15,7 +15,6 @@ import no.nav.folketrygdloven.kalkulator.felles.inntektgradering.DagsatsPrKatego
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Virkedager;
-import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
@@ -64,7 +63,7 @@ class RegisterInntektTidslinjeUtleder {
         if (antallVirkedager == 0) {
             antallVirkedager = p.getPeriode().getFomDato().until(p.getPeriode().getTomDato().plusDays(1)).getDays();
         }
-        return p.getBeløp().getVerdi().divide(BigDecimal.valueOf(antallVirkedager), 2, RoundingMode.HALF_UP);
+        return p.getBeløp().verdi().divide(BigDecimal.valueOf(antallVirkedager), 2, RoundingMode.HALF_UP);
     }
 
 

@@ -67,7 +67,7 @@ public class InntektsgrunnlagMapper {
                 .filter(ipost -> ipost.getPeriode().getFomDato().getYear() == år)
                 .collect(Collectors.toMap(
                         it -> finnPGIType(it.getInntektspostType()),
-                        it -> it.getBeløp().getVerdi(),
+                        it -> it.getBeløp().verdi(),
                         BigDecimal::add));
         var grunnlagPrType = beløpPrType.entrySet().stream().map(e -> new PGIGrunnlagDto(e.getKey(), Beløp.fra(e.getValue()))).toList();
         return new PGIPrÅrDto(år, grunnlagPrType);
@@ -110,7 +110,7 @@ public class InntektsgrunnlagMapper {
         return inn.getAlleInntektsposter().stream()
                 .filter(intp -> sammenligningsperiode.get().inkluderer(intp.getPeriode().getFomDato().withDayOfMonth(1)))
                 .map(intp -> new InntektDtoMedMåned(finnInntektType(inn.getArbeidsgiver(), intp.getInntektspostType()),
-                        intp.getBeløp() != null ? intp.getBeløp().getVerdi() : BigDecimal.ZERO,
+                        intp.getBeløp() != null ? intp.getBeløp().verdi() : BigDecimal.ZERO,
                         intp.getPeriode().getFomDato().withDayOfMonth(1)))
                 .collect(Collectors.toList());
 

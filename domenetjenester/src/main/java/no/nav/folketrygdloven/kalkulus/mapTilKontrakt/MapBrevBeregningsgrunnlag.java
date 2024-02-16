@@ -42,7 +42,7 @@ public class MapBrevBeregningsgrunnlag {
                 mapAktivitetstatuser(beregningsgrunnlagEntitet),
                 mapBeregningsgrunnlagPerioder(beregningsgrunnlagEntitet, ytelsespesifiktGrunnlag),
                 mapSammenligningsgrunnlagPrStatusListe(beregningsgrunnlagEntitet),
-                beregningsgrunnlagEntitet.getGrunnbeløp() == null ? null : Beløp.fra(beregningsgrunnlagEntitet.getGrunnbeløp().getVerdi()));
+                beregningsgrunnlagEntitet.getGrunnbeløp() == null ? null : beregningsgrunnlagEntitet.getGrunnbeløp());
     }
 
     private static List<SammenligningsgrunnlagPrStatusDto> mapSammenligningsgrunnlagPrStatusListe(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlagEntitet) {
@@ -59,7 +59,7 @@ public class MapBrevBeregningsgrunnlag {
     }
 
     private static List<BeregningsgrunnlagPeriodeDto> mapBeregningsgrunnlagPerioder(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto bg, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        return bg.getBeregningsgrunnlagPerioder().stream().map(p -> MapBrevBeregningsgrunnlag.mapPeriode(p, ytelsespesifiktGrunnlag, bg.getGrunnbeløp().getVerdi())).collect(Collectors.toList());
+        return bg.getBeregningsgrunnlagPerioder().stream().map(p -> MapBrevBeregningsgrunnlag.mapPeriode(p, ytelsespesifiktGrunnlag, bg.getGrunnbeløp().verdi())).collect(Collectors.toList());
     }
 
     private static BeregningsgrunnlagPeriodeDto mapPeriode(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode,
@@ -172,7 +172,7 @@ public class MapBrevBeregningsgrunnlag {
         return new BGAndelArbeidsforhold(
                 mapArbeidsgiver(bgAndelArbeidsforhold.getArbeidsgiver()),
                 bgAndelArbeidsforhold.getArbeidsforholdRef().getReferanse(),
-                bgAndelArbeidsforhold.getGjeldendeRefusjonPrÅr());
+                Beløp.fra(bgAndelArbeidsforhold.getGjeldendeRefusjonPrÅr()));
     }
 
     private static List<AktivitetStatus> mapAktivitetstatuser(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlagEntitet) {

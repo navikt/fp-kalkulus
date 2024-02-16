@@ -11,12 +11,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class BeregningsgrunnlagDto {
 
@@ -203,7 +203,7 @@ public class BeregningsgrunnlagDto {
 
         public Builder medGrunnbeløp(BigDecimal grunnbeløp) {
             verifiserKanModifisere();
-            kladd.grunnbeløp = new Beløp(grunnbeløp);
+            kladd.grunnbeløp = Beløp.fra(grunnbeløp);
             return this;
         }
 

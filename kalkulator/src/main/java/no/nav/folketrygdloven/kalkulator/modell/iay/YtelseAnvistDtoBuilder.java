@@ -3,9 +3,9 @@ package no.nav.folketrygdloven.kalkulator.modell.iay;
 import java.math.BigDecimal;
 import java.util.List;
 
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class YtelseAnvistDtoBuilder {
     private final YtelseAnvistDto ytelseAnvist;
@@ -20,14 +20,14 @@ public class YtelseAnvistDtoBuilder {
 
     public YtelseAnvistDtoBuilder medBeløp(BigDecimal beløp) {
         if (beløp != null) {
-            this.ytelseAnvist.setBeløp(new Beløp(beløp));
+            this.ytelseAnvist.setBeløp(Beløp.fra(beløp));
         }
         return this;
     }
 
     public YtelseAnvistDtoBuilder medDagsats(BigDecimal dagsats) {
         if (dagsats != null) {
-            this.ytelseAnvist.setDagsats(new Beløp(dagsats));
+            this.ytelseAnvist.setDagsats(Beløp.fra(dagsats));
         }
         return this;
     }

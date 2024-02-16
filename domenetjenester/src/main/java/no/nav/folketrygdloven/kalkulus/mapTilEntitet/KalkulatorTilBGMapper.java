@@ -81,7 +81,7 @@ public class KalkulatorTilBGMapper {
                 .medRedusertBrukersAndelPrÅr(mapTilBeløp(fraKalkulus.getRedusertBrukersAndelPrÅr()))
                 .medMaksimalRefusjonPrÅr(mapTilBeløp(fraKalkulus.getMaksimalRefusjonPrÅr()))
                 .medRedusertRefusjonPrÅr(mapTilBeløp(fraKalkulus.getRedusertRefusjonPrÅr()))
-                .medÅrsbeløpFraTilstøtendeYtelse(mapTilBeløp(fraKalkulus.getÅrsbeløpFraTilstøtendeYtelse() == null ? null : fraKalkulus.getÅrsbeløpFraTilstøtendeYtelse().getVerdi()))
+                .medÅrsbeløpFraTilstøtendeYtelse(Beløp.fra(fraKalkulus.getÅrsbeløpFraTilstøtendeYtelse()))
                 .medFastsattInntektskategori(mapTilInntektskategori(fraKalkulus))
                 .medOrginalDagsatsFraTilstøtendeYtelse(fraKalkulus.getOrginalDagsatsFraTilstøtendeYtelse())
                 .medAvkortetFørGraderingPrÅr(mapTilBeløp(fraKalkulus.getAvkortetFørGraderingPrÅr()));

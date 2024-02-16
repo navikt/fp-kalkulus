@@ -9,8 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
-
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
@@ -30,15 +28,15 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregat
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now().minusDays(5);
@@ -256,7 +254,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlagMedAvvikOver25Prosent(SammenligningsgrunnlagType sammenligningsgrunnlagType) {
         return BeregningsgrunnlagDto.builder()
-                .medGrunnbeløp(new Beløp(BigDecimal.valueOf(99_858)))
+                .medGrunnbeløp(Beløp.fra(BigDecimal.valueOf(99_858)))
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
                 .leggTilSammenligningsgrunnlag(SammenligningsgrunnlagPrStatusDto.builder()
                         .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT)
@@ -278,7 +276,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         return BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
                 .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagDto)
-                .medGrunnbeløp(new Beløp(BigDecimal.valueOf(99_858)))
+                .medGrunnbeløp(Beløp.fra(BigDecimal.valueOf(99_858)))
                 .build();
     }
 
@@ -301,7 +299,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         return BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
                 .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagDto)
-                .medGrunnbeløp(new Beløp(BigDecimal.valueOf(99_858)))
+                .medGrunnbeløp(Beløp.fra(BigDecimal.valueOf(99_858)))
                 .build();
     }
 

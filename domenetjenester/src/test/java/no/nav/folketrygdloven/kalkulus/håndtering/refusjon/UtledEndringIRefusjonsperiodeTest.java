@@ -22,6 +22,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.DatoEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.RefusjonoverstyringEndring;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class UtledEndringIRefusjonsperiodeTest {
 
@@ -86,7 +87,7 @@ class UtledEndringIRefusjonsperiodeTest {
         var refusjonEndring = endringAggregat.getRefusjonperiodeEndringer().get(0).getFastsattDelvisRefusjonFørDatoEndring();
         assertThat(refusjonEndring).isNotNull();
         assertThat(refusjonEndring.getFraRefusjon()).isNull();
-        assertThat(refusjonEndring.getTilRefusjon()).isEqualTo(BigDecimal.TEN);
+        assertThat(refusjonEndring.getTilRefusjon()).isEqualTo(Beløp.fra(BigDecimal.TEN));
     }
 
     @Test
@@ -123,7 +124,7 @@ class UtledEndringIRefusjonsperiodeTest {
         var refusjonEndring = endringAggregat.getRefusjonperiodeEndringer().get(0).getFastsattDelvisRefusjonFørDatoEndring();
         assertThat(refusjonEndring).isNotNull();
         assertThat(refusjonEndring.getFraRefusjon()).isNull();
-        assertThat(refusjonEndring.getTilRefusjon()).isEqualTo(BigDecimal.TEN);
+        assertThat(refusjonEndring.getTilRefusjon()).isEqualTo(Beløp.fra(BigDecimal.TEN));
     }
 
     @Test
@@ -162,8 +163,8 @@ class UtledEndringIRefusjonsperiodeTest {
         assertThat(datoEndring.getTilVerdi()).isEqualTo(nyFom);
         var refusjonEndring = endringAggregat.getRefusjonperiodeEndringer().get(0).getFastsattDelvisRefusjonFørDatoEndring();
         assertThat(refusjonEndring).isNotNull();
-        assertThat(refusjonEndring.getFraRefusjon()).isEqualTo(BigDecimal.ONE);
-        assertThat(refusjonEndring.getTilRefusjon()).isEqualTo(BigDecimal.TEN);
+        assertThat(refusjonEndring.getFraRefusjon()).isEqualTo(Beløp.fra(BigDecimal.ONE));
+        assertThat(refusjonEndring.getTilRefusjon()).isEqualTo(Beløp.fra(BigDecimal.TEN));
     }
 
 

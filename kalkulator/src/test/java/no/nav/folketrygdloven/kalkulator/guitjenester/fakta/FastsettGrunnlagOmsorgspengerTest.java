@@ -31,9 +31,7 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
@@ -41,7 +39,9 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class FastsettGrunnlagOmsorgspengerTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now().minusDays(5);
@@ -268,7 +268,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
         return BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
                 .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagDto)
-                .medGrunnbeløp(new Beløp(BigDecimal.valueOf(99_858)))
+                .medGrunnbeløp(Beløp.fra(BigDecimal.valueOf(99_858)))
                 .build();
     }
 
@@ -283,7 +283,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
         return BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
                 .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagDto)
-                .medGrunnbeløp(new Beløp(BigDecimal.valueOf(99_858)))
+                .medGrunnbeløp(Beløp.fra(BigDecimal.valueOf(99_858)))
                 .build();
     }
 

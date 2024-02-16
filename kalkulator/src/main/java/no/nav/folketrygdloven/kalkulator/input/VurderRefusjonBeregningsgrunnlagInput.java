@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 /** Inputstruktur for beregningsgrunnlag tjenester. */
 public class VurderRefusjonBeregningsgrunnlagInput extends StegProsesseringInput {
@@ -42,7 +42,7 @@ public class VurderRefusjonBeregningsgrunnlagInput extends StegProsesseringInput
 
     public VurderRefusjonBeregningsgrunnlagInput medUregulertGrunnbeløp(BigDecimal uregulertGrunnbeløp) {
         var newInput = new VurderRefusjonBeregningsgrunnlagInput(this);
-        newInput.uregulertGrunnbeløp = new Beløp(uregulertGrunnbeløp);
+        newInput.uregulertGrunnbeløp = Beløp.fra(uregulertGrunnbeløp);
         return newInput;
     }
 

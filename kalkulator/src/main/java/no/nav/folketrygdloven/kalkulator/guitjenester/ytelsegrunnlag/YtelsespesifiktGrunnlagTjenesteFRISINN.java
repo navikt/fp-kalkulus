@@ -63,7 +63,7 @@ public class YtelsespesifiktGrunnlagTjenesteFRISINN implements YtelsespesifiktGr
                 .map(periode -> new AvslagsårsakPrPeriodeDto(periode.getBeregningsgrunnlagPeriodeFom(), periode.getBeregningsgrunnlagPeriodeTom(),
                         MapTilAvslagsårsakerFRISINN.finnForPeriode(periode, frisinnGrunnlag,
                                 oppgitOpptjening,
-                                input.getBeregningsgrunnlag().getGrunnbeløp().getVerdi(),
+                                input.getBeregningsgrunnlag().getGrunnbeløp().verdi(),
                                 input.getSkjæringstidspunktForBeregning()).orElse(null)))
                 .filter(a -> a.getAvslagsårsak() != null)
                 .collect(Collectors.toList());

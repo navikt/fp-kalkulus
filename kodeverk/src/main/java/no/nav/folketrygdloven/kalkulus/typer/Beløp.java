@@ -12,7 +12,8 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 
-public record Beløp(@JsonValue @Valid
+public record Beløp(@JsonValue
+                    @Valid
                     @DecimalMin(value = "0.00")
                     @DecimalMax(value = "1000000000.00")
                     @Digits(integer = 10, fraction = 2)
@@ -20,12 +21,21 @@ public record Beløp(@JsonValue @Valid
 
     public static final Beløp ZERO = Beløp.fra(BigDecimal.ZERO);
 
+    @JsonCreator
+    public static Beløp fra(BigDecimal beløp) {
+        return beløp != null ? new Beløp(beløp) : null;
+    }
+
     public boolean erNullEller0() {
         return verdi == null || this.compareTo(ZERO) == 0;
     }
 
     public Beløp multipliser(int operand) {
         return new Beløp(this.verdi.multiply(BigDecimal.valueOf(operand)));
+    }
+
+    public Beløp multipliser(BigDecimal operand) {
+        return new Beløp(this.verdi.multiply(operand));
     }
 
     public Beløp multipliser(Beløp operand) {
@@ -41,12 +51,7 @@ public record Beløp(@JsonValue @Valid
     }
 
     public static Beløp fra(Beløp beløp) {
-        return beløp == null || beløp.verdi() == null ? null : Beløp.fra(beløp.verdi());
-    }
-
-    @JsonCreator
-    public static Beløp fra(BigDecimal beløp) {
-        return beløp != null ? new Beløp(beløp) : null;
+        return Beløp.fra(safeVerdi(beløp));
     }
 
     public static Beløp fra(long beløp) {
@@ -56,6 +61,7 @@ public record Beløp(@JsonValue @Valid
     public static Beløp fra(int beløp) {
         return Beløp.fra(BigDecimal.valueOf(beløp));
     }
+
 
 
     @Override

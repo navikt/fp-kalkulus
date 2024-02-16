@@ -56,7 +56,7 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
         ));
         settFordelingForrigeBehandling(input, andel, endringAndel);
         endringAndel.setFordeltPrAar(andel.getManueltFordeltPrÅr() == null ? Beløp.fra(andel.getFordeltPrÅr()) : Beløp.fra(andel.getManueltFordeltPrÅr()));
-        inntektsmelding.ifPresent(im -> endringAndel.setBelopFraInntektsmelding(Beløp.fra(im.getInntektBeløp().getVerdi())));
+        inntektsmelding.ifPresent(im -> endringAndel.setBelopFraInntektsmelding(im.getInntektBeløp()));
         return endringAndel;
     }
 

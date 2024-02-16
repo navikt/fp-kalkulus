@@ -30,8 +30,8 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 
 
 public class MapPerioderForUtbetalingsgradFraVLTilRegel {
@@ -60,7 +60,7 @@ public class MapPerioderForUtbetalingsgradFraVLTilRegel {
                                                                  List<SplittetPeriode> eksisterendePerioder) {
         return PeriodeModellUtbetalingsgrad.builder()
                 .medSkjæringstidspunkt(skjæringstidspunkt)
-                .medGrunnbeløp(vlBeregningsgrunnlag.getGrunnbeløp().getVerdi())
+                .medGrunnbeløp(vlBeregningsgrunnlag.getGrunnbeløp().verdi())
                 .medEndringISøktYtelse(mapUtbetalingsgradPerioder(input, vlBeregningsgrunnlag, filter))
                 .medEksisterendePerioder(eksisterendePerioder)
                 .medPeriodisertBruttoBeregningsgrunnlag(MapPeriodisertBruttoBeregningsgrunnlag.map(vlBeregningsgrunnlag))

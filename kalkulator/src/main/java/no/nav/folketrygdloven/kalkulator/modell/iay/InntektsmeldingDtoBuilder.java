@@ -7,10 +7,10 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.JournalpostId;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class InntektsmeldingDtoBuilder {
     private final InntektsmeldingDto kladd;
@@ -89,13 +89,13 @@ public class InntektsmeldingDtoBuilder {
 
     public InntektsmeldingDtoBuilder medBeløp(BigDecimal verdi) {
         precondition();
-        kladd.setInntektBeløp(verdi == null ? null : new Beløp(verdi));
+        kladd.setInntektBeløp(Beløp.fra(verdi));
         return this;
     }
 
     public InntektsmeldingDtoBuilder medRefusjon(BigDecimal verdi) {
         precondition();
-        kladd.setRefusjonBeløpPerMnd(verdi == null ? null : new Beløp(verdi));
+        kladd.setRefusjonBeløpPerMnd(Beløp.fra(verdi));
         kladd.setRefusjonOpphører(TIDENES_ENDE);
         return this;
     }
@@ -115,7 +115,7 @@ public class InntektsmeldingDtoBuilder {
 
     public InntektsmeldingDtoBuilder medRefusjon(BigDecimal verdi, LocalDate opphører) {
         precondition();
-        kladd.setRefusjonBeløpPerMnd(verdi == null ? null : new Beløp(verdi));
+        kladd.setRefusjonBeløpPerMnd(Beløp.fra(verdi));
         kladd.setRefusjonOpphører(opphører);
         return this;
     }

@@ -7,7 +7,6 @@ import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-
 import no.nav.folketrygdloven.kalkulus.felles.diff.ChangeTracked;
 import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseValue;
@@ -30,6 +29,11 @@ public class Beløp implements Serializable, IndexKey, TraverseValue, Comparable
 
     public Beløp(BigDecimal verdi) {
         this.verdi = verdi;
+    }
+
+    public static Beløp fra(no.nav.folketrygdloven.kalkulus.typer.Beløp beløp) {
+        var verdi =  no.nav.folketrygdloven.kalkulus.typer.Beløp.safeVerdi(beløp);
+        return verdi != null ? new Beløp(verdi) : null;
     }
 
 

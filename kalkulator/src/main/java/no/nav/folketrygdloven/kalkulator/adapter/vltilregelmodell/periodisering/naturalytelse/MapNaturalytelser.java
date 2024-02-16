@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.NaturalYtelse;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class MapNaturalytelser {
     private MapNaturalytelser() {
@@ -13,7 +14,7 @@ class MapNaturalytelser {
 
     static List<NaturalYtelse> mapNaturalytelser(InntektsmeldingDto im) {
         return im.getNaturalYtelser().stream()
-            .map(ny -> new NaturalYtelse(ny.getBeloepPerMnd().getVerdi(), ny.getPeriode().getFomDato(), ny.getPeriode().getTomDato()))
+            .map(ny -> new NaturalYtelse(Beløp.safeVerdi(ny.getBeloepPerMnd()), ny.getPeriode().getFomDato(), ny.getPeriode().getTomDato()))
             .collect(Collectors.toList());
     }
 }

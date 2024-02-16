@@ -2,11 +2,7 @@ package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -14,7 +10,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
@@ -32,15 +31,15 @@ public class BGAndelArbeidsforhold {
 
     @JsonProperty(value = "refusjonskravPrÅr")
     @Valid
-    private BigDecimal refusjonskravPrÅr;
+    private Beløp refusjonskravPrÅr;
 
     @JsonProperty(value = "naturalytelseBortfaltPrÅr")
     @Valid
-    private BigDecimal naturalytelseBortfaltPrÅr;
+    private Beløp naturalytelseBortfaltPrÅr;
 
     @JsonProperty(value = "naturalytelseTilkommetPrÅr")
     @Valid
-    private BigDecimal naturalytelseTilkommetPrÅr;
+    private Beløp naturalytelseTilkommetPrÅr;
 
     @JsonProperty(value = "arbeidsperiodeFom")
     @NotNull
@@ -61,7 +60,7 @@ public class BGAndelArbeidsforhold {
         this.arbeidsforholdRef = arbeidsforholdRef;
     }
 
-    public BGAndelArbeidsforhold(@NotNull @Valid Arbeidsgiver arbeidsgiver, @Valid String arbeidsforholdRef, @Valid BigDecimal refusjonskravPrÅr, @Valid BigDecimal naturalytelseBortfaltPrÅr, @Valid BigDecimal naturalytelseTilkommetPrÅr, @NotNull @Valid LocalDate arbeidsperiodeFom, @NotNull @Valid LocalDate arbeidsperiodeTom) {
+    public BGAndelArbeidsforhold(@NotNull @Valid Arbeidsgiver arbeidsgiver, @Valid String arbeidsforholdRef, @Valid Beløp refusjonskravPrÅr, @Valid Beløp naturalytelseBortfaltPrÅr, @Valid Beløp naturalytelseTilkommetPrÅr, @NotNull @Valid LocalDate arbeidsperiodeFom, @NotNull @Valid LocalDate arbeidsperiodeTom) {
         this.arbeidsgiver = arbeidsgiver;
         this.arbeidsforholdRef = arbeidsforholdRef;
         this.refusjonskravPrÅr = refusjonskravPrÅr;
@@ -79,15 +78,15 @@ public class BGAndelArbeidsforhold {
         return arbeidsforholdRef;
     }
 
-    public BigDecimal getRefusjonskravPrÅr() {
+    public Beløp getRefusjonskravPrÅr() {
         return refusjonskravPrÅr;
     }
 
-    public BigDecimal getNaturalytelseBortfaltPrÅr() {
+    public Beløp getNaturalytelseBortfaltPrÅr() {
         return naturalytelseBortfaltPrÅr;
     }
 
-    public BigDecimal getNaturalytelseTilkommetPrÅr() {
+    public Beløp getNaturalytelseTilkommetPrÅr() {
         return naturalytelseTilkommetPrÅr;
     }
 

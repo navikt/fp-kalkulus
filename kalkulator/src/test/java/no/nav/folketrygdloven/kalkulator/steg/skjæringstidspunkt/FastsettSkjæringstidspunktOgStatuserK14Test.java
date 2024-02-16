@@ -396,7 +396,7 @@ class FastsettSkjæringstidspunktOgStatuserK14Test {
     }
 
     private void verifiserGrunnbeløp(BeregningsgrunnlagRegelResultat resultat) {
-        assertThat(resultat.getBeregningsgrunnlag().getGrunnbeløp().getVerdi().longValue()).isEqualTo(G_VERDIER.get(0).getGVerdi());
+        assertThat(resultat.getBeregningsgrunnlag().getGrunnbeløp().verdi().longValue()).isEqualTo(G_VERDIER.getFirst().getGVerdi());
     }
 
     private void assertStp(BeregningsgrunnlagRegelResultat resultat, LocalDate stp) {

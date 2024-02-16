@@ -13,7 +13,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Pe
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 /**
  * For arenaytelser mapper vi alle meldekort om til inntektsperioder og bryr oss ikke om vedtakene
@@ -37,7 +37,7 @@ public class MapArenaVedtakTilBesteberegningRegelmodell {
     private static Periodeinntekt mapMeldekortTilInntekt(YtelseAnvistDto mk, LocalDate vedtakFom) {
         return Periodeinntekt.builder()
                 .medInntektskildeOgPeriodeType(Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP) // OBS: Utbetaling er eit eingangsbeløp og skjer ikkje daglig
-                .medInntekt(mk.getBeløp().map(Beløp::getVerdi).orElse(BigDecimal.ZERO))
+                .medInntekt(mk.getBeløp().map(Beløp::verdi).orElse(BigDecimal.ZERO))
                 .medPeriode(Periode.of(finnStartdato(mk.getAnvistFOM(), vedtakFom), mk.getAnvistTOM()))
                 .build();
     }

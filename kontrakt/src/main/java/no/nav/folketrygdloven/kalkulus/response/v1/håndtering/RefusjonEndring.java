@@ -2,15 +2,14 @@ package no.nav.folketrygdloven.kalkulus.response.v1.håndtering;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
-import java.math.BigDecimal;
-
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -19,27 +18,27 @@ public class RefusjonEndring {
 
     @JsonProperty(value = "fraRefusjon")
     @Valid
-    private BigDecimal fraRefusjon;
+    private Beløp fraRefusjon;
 
     @JsonProperty(value = "tilRefusjon")
     @NotNull
     @Valid
-    private BigDecimal tilRefusjon;
+    private Beløp tilRefusjon;
 
     public RefusjonEndring() {
         // For Json deserialisering
     }
 
-    public RefusjonEndring(@Valid BigDecimal fraRefusjon, @Valid @NotNull BigDecimal tilRefusjon) {
+    public RefusjonEndring(@Valid Beløp fraRefusjon, @Valid @NotNull Beløp tilRefusjon) {
         this.fraRefusjon = fraRefusjon;
         this.tilRefusjon = tilRefusjon;
     }
 
-    public BigDecimal getFraRefusjon() {
+    public Beløp getFraRefusjon() {
         return fraRefusjon;
     }
 
-    public BigDecimal getTilRefusjon() {
+    public Beløp getTilRefusjon() {
         return tilRefusjon;
     }
 }

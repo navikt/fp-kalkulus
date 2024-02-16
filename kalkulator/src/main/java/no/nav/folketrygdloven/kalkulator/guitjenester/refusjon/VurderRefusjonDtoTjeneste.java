@@ -34,7 +34,7 @@ public final class VurderRefusjonDtoTjeneste {
         if (originaleGrunnlag.isEmpty() || beregningsgrunnlag.isEmpty()) {
             return Optional.empty();
         }
-        BigDecimal grenseverdi = KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi().multiply(beregningsgrunnlag.get().getGrunnbeløp().getVerdi());
+        BigDecimal grenseverdi = KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi().multiply(beregningsgrunnlag.get().getGrunnbeløp().verdi());
 
         Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjon = originaleGrunnlag.stream()
                 .flatMap(originaltBg -> AndelerMedØktRefusjonTjeneste.finnAndelerMedØktRefusjon(beregningsgrunnlag.get(), originaltBg, grenseverdi, input.getYtelsespesifiktGrunnlag()).entrySet().stream())

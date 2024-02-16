@@ -50,9 +50,9 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class MapBeregningsgrunnlagFraVLTilRegel {
 
@@ -80,7 +80,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medSkjæringstidspunkt(skjæringstidspunkt)
                 .medAktivitetStatuser(aktivitetStatuser)
                 .medBeregningsgrunnlagPerioder(perioder)
-                .medGrunnbeløp(beregningsgrunnlag.getGrunnbeløp().getVerdi())
+                .medGrunnbeløp(beregningsgrunnlag.getGrunnbeløp().verdi())
                 .medYtelsesdagerIEtÅr(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getYtelsesdagerIÅr())
                 .medAvviksgrenseProsent(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAvviksgrenseProsent())
                 .medYtelsesSpesifiktGrunnlag(mapYtelsesSpesifiktGrunnlag(input, beregningsgrunnlag))
@@ -123,16 +123,16 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
 
     private BigDecimal mapUregulertGrunnbeløp(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
         if (input instanceof VurderBeregningsgrunnlagvilkårInput vurderBeregningsgrunnlagvilkårInput) {
-            return vurderBeregningsgrunnlagvilkårInput.getUregulertGrunnbeløp().map(Beløp::getVerdi).orElse(beregningsgrunnlag.getGrunnbeløp().getVerdi());
+            return vurderBeregningsgrunnlagvilkårInput.getUregulertGrunnbeløp().map(Beløp::verdi).orElse(beregningsgrunnlag.getGrunnbeløp().verdi());
         }
         if (input instanceof VurderRefusjonBeregningsgrunnlagInput vurderRefusjonBeregningsgrunnlagInput) {
-            return vurderRefusjonBeregningsgrunnlagInput.getUregulertGrunnbeløp().map(Beløp::getVerdi).orElse(beregningsgrunnlag.getGrunnbeløp().getVerdi());
+            return vurderRefusjonBeregningsgrunnlagInput.getUregulertGrunnbeløp().map(Beløp::verdi).orElse(beregningsgrunnlag.getGrunnbeløp().verdi());
         }
         if (input instanceof FordelBeregningsgrunnlagInput fordelBeregningsgrunnlagInput) {
-            return fordelBeregningsgrunnlagInput.getUregulertGrunnbeløp().map(Beløp::getVerdi).orElse(beregningsgrunnlag.getGrunnbeløp().getVerdi());
+            return fordelBeregningsgrunnlagInput.getUregulertGrunnbeløp().map(Beløp::verdi).orElse(beregningsgrunnlag.getGrunnbeløp().verdi());
         }
         if (input instanceof FullføreBeregningsgrunnlagInput fullføreBeregningsgrunnlagInput) {
-            return fullføreBeregningsgrunnlagInput.getUregulertGrunnbeløp().map(Beløp::getVerdi).orElse(beregningsgrunnlag.getGrunnbeløp().getVerdi());
+            return fullføreBeregningsgrunnlagInput.getUregulertGrunnbeløp().map(Beløp::verdi).orElse(beregningsgrunnlag.getGrunnbeløp().verdi());
         }
         return null;
     }

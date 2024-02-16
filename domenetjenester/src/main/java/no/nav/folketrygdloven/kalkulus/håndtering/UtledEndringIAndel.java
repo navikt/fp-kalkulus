@@ -15,6 +15,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.Beregningsgrunnla
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.InntektEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.InntektskategoriEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.RefusjonEndring;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class UtledEndringIAndel {
 
@@ -88,8 +89,8 @@ public class UtledEndringIAndel {
         return new RefusjonEndring(finnRefusjon(forrigeAndel), initRefusjon(andel));
     }
 
-    private static BigDecimal initRefusjon(BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        return andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(BigDecimal.ZERO);
+    private static Beløp initRefusjon(BeregningsgrunnlagPrStatusOgAndelDto andel) {
+        return andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).map(Beløp::fra).orElse(Beløp.ZERO);
     }
 
     private static boolean harEndringIRefusjon(BeregningsgrunnlagPrStatusOgAndelDto andel, Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
@@ -104,10 +105,11 @@ public class UtledEndringIAndel {
         return forrigeRefusjonskrav.get().compareTo(nyttRefusjonskrav.get()) != 0;
     }
 
-    private static BigDecimal finnRefusjon(Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
+    private static Beløp finnRefusjon(Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
         return forrigeAndel
                 .flatMap(BeregningsgrunnlagPrStatusOgAndelDto::getBgAndelArbeidsforhold)
                 .map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr)
+                .map(Beløp::fra)
                 .orElse(null);
     }
 

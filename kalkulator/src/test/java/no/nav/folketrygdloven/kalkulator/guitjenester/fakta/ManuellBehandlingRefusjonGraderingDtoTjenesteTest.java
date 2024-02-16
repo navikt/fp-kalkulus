@@ -26,13 +26,13 @@ import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
 
@@ -95,7 +95,7 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
         AndelGradering graderingNæring = lagGraderingForNæringFraSTP(graderingTom);
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
-                .medGrunnbeløp(new Beløp(GRUNNBELØP))
+                .medGrunnbeløp(Beløp.fra(GRUNNBELØP))
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE))
                 .build();
@@ -144,7 +144,7 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
         boolean kreverManuellBehandlingAvRefusjon = ManuellBehandlingRefusjonGraderingDtoTjeneste.skalSaksbehandlerRedigereRefusjon(
                 grunnlag,
             new AktivitetGradering(graderinger),
-            bgFørFordeling.getBeregningsgrunnlagPerioder().get(0), inntektsmeldinger, new Beløp(GRUNNBELØP), Collections.emptyList());
+            bgFørFordeling.getBeregningsgrunnlagPerioder().get(0), inntektsmeldinger, Beløp.fra(GRUNNBELØP), Collections.emptyList());
 
         // Assert
         assertThat(kreverManuellBehandlingAvRefusjon).isTrue();
@@ -194,7 +194,7 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
     private BeregningsgrunnlagDto lagBeregningsgrunnlagFørFordeling() {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
-                .medGrunnbeløp(new Beløp(GRUNNBELØP))
+                .medGrunnbeløp(Beløp.fra(GRUNNBELØP))
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
                 .build();
         BeregningsgrunnlagPeriodeDto periode = lagPeriode(bg, SKJÆRINGSTIDSPUNKT_OPPTJENING, null);

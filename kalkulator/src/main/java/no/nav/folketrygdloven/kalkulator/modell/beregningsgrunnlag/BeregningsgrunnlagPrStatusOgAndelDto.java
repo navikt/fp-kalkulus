@@ -9,11 +9,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
 import no.nav.folketrygdloven.kalkulator.modell.diff.DiffIgnore;
 import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
+import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.FastsattInntektskategori;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Årsgrunnlag;
@@ -22,6 +21,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class BeregningsgrunnlagPrStatusOgAndelDto implements IndexKey {
 
@@ -296,7 +296,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto implements IndexKey {
 
     public BigDecimal getÅrsbeløpFraTilstøtendeYtelseVerdi() {
         return Optional.ofNullable(getÅrsbeløpFraTilstøtendeYtelse())
-                .map(Beløp::getVerdi).orElse(BigDecimal.ZERO);
+                .map(Beløp::verdi).orElse(BigDecimal.ZERO);
     }
 
     public BigDecimal getAvkortetFørGraderingPrÅr() {
@@ -571,7 +571,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto implements IndexKey {
 
         public Builder medÅrsbeløpFraTilstøtendeYtelse(BigDecimal årsbeløpFraTilstøtendeYtelse) {
             verifiserKanModifisere();
-            kladd.årsbeløpFraTilstøtendeYtelse = årsbeløpFraTilstøtendeYtelse == null ? null : new Beløp(årsbeløpFraTilstøtendeYtelse);
+            kladd.årsbeløpFraTilstøtendeYtelse = Beløp.fra(årsbeløpFraTilstøtendeYtelse);
             return this;
         }
 

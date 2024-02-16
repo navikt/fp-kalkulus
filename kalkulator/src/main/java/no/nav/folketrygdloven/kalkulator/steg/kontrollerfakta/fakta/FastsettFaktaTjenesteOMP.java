@@ -41,12 +41,12 @@ public class FastsettFaktaTjenesteOMP {
     }
 
     private boolean harEndringIRefusjonFraSkjæringstidspunktet(InntektsmeldingDto im, LocalDate skjæringstidspunktForBeregning) {
-        return im.getEndringerRefusjon().stream().anyMatch(er -> er.getFom().equals(skjæringstidspunktForBeregning) && !er.getRefusjonsbeløp().erNullEllerNulltall());
+        return im.getEndringerRefusjon().stream().anyMatch(er -> er.getFom().equals(skjæringstidspunktForBeregning) && !er.getRefusjonsbeløp().erNullEller0());
     }
 
     private boolean harInntektsmeldingRefusjonFraStart(InntektsmeldingDto im) {
         return im.getRefusjonBeløpPerMnd() != null
-                && !im.getRefusjonBeløpPerMnd().erNullEllerNulltall();
+                && !im.getRefusjonBeløpPerMnd().erNullEller0();
     }
 
 }

@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class RefusjonDto {
 
@@ -15,7 +15,7 @@ public class RefusjonDto {
     }
 
     public RefusjonDto(BigDecimal refusjonsbeløpMnd, LocalDate fom) {
-        this.refusjonsbeløpMnd = refusjonsbeløpMnd == null ? null : new Beløp(refusjonsbeløpMnd);
+        this.refusjonsbeløpMnd = Beløp.fra(refusjonsbeløpMnd);
         this.fom = fom;
     }
 

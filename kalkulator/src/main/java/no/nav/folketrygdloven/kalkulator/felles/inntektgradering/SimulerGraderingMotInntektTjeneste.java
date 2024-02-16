@@ -43,6 +43,7 @@ import no.nav.folketrygdloven.kalkulator.tid.Virkedager;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 
@@ -283,7 +284,7 @@ public class SimulerGraderingMotInntektTjeneste {
                 .findFirst();
 
         if (im.isPresent()) {
-            return im.get().getInntektBeløp().multipliser(12).getVerdi();
+            return im.get().getInntektBeløp().multipliser(12).verdi();
         }
         var inntektFilterDto = new InntektFilterDto(iay.getAktørInntektFraRegister());
         var inntektsposter = inntektFilterDto.filterBeregningsgrunnlag()
@@ -349,7 +350,7 @@ public class SimulerGraderingMotInntektTjeneste {
             LOG.info("Fant inntektspost uten virkedager for arbeidsgiver {} i periode {}", arbeidsgiver, post.getPeriode());
             return BigDecimal.ZERO;
         }
-        var bruttoInntekt = utledBruttoInntektFraTilkommetForArbeidstaker(post.getBeløp().getVerdi(), arbeidsgiver, arbeidsforholdRef, postPeriode, ytelsespesifiktGrunnlag);
+        var bruttoInntekt = utledBruttoInntektFraTilkommetForArbeidstaker(Beløp.safeVerdi(post.getBeløp()), arbeidsgiver, arbeidsforholdRef, postPeriode, ytelsespesifiktGrunnlag);
         return bruttoInntekt.divide(BigDecimal.valueOf(virkedagerIPeriode), 10, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(260));
     }
 
@@ -359,7 +360,7 @@ public class SimulerGraderingMotInntektTjeneste {
         if (virkedagerIPeriode == 0) {
             return BigDecimal.ZERO;
         }
-        var bruttoInntekt = utledBruttoInntektFraTilkommetForFrilans(post.getBeløp().getVerdi(), postPeriode, ytelsespesifiktGrunnlag);
+        var bruttoInntekt = utledBruttoInntektFraTilkommetForFrilans(Beløp.safeVerdi(post.getBeløp()), postPeriode, ytelsespesifiktGrunnlag);
         return bruttoInntekt.divide(BigDecimal.valueOf(virkedagerIPeriode), 10, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(260));
     }
 

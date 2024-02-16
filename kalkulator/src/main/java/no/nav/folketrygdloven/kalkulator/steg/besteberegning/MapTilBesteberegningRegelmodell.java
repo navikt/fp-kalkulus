@@ -39,9 +39,9 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class MapTilBesteberegningRegelmodell {
 
@@ -156,7 +156,7 @@ public class MapTilBesteberegningRegelmodell {
 
     private static BigDecimal finnGrunnbeløp(ForeslåBesteberegningInput input) {
         return input.getBeregningsgrunnlagGrunnlag()
-                .getBeregningsgrunnlag().map(BeregningsgrunnlagDto::getGrunnbeløp).map(Beløp::getVerdi).orElseThrow(() -> new IllegalStateException("Forventer grunnbeløp"));
+                .getBeregningsgrunnlag().map(BeregningsgrunnlagDto::getGrunnbeløp).map(Beløp::verdi).orElseThrow(() -> new IllegalStateException("Forventer grunnbeløp"));
     }
 
     private static List<Periodeinntekt> mapInntekterForBesteberegning(BeregningsgrunnlagInput input) {
@@ -194,7 +194,7 @@ public class MapTilBesteberegningRegelmodell {
                         .medAktivitetStatus(AktivitetStatus.KUN_YTELSE)
                         .medYtelse(mapTilRegelytelse(e))
                         .medMåned(e.getPeriode().getFomDato())
-                        .medInntekt(e.getBeløp().getVerdi())
+                        .medInntekt(e.getBeløp().verdi())
                         .build()).collect(Collectors.toList());
     }
 
@@ -244,14 +244,14 @@ public class MapTilBesteberegningRegelmodell {
                 throw new IllegalStateException("Arbeidsgiver må være satt.");
             } else if (Objects.isNull(inntektspost.getPeriode()) || Objects.isNull(inntektspost.getPeriode().getFomDato())) {
                 throw new IllegalStateException("Inntektsperiode må være satt.");
-            } else if (Objects.isNull(inntektspost.getBeløp().getVerdi())) {
+            } else if (Objects.isNull(inntektspost.getBeløp().verdi())) {
                 throw new IllegalStateException("Inntektsbeløp må være satt.");
             }
             return Periodeinntekt.builder()
                     .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSKOMPONENTEN_BEREGNING)
                     .medArbeidsgiver(arbeidsgiver)
                     .medMåned(inntektspost.getPeriode().getFomDato())
-                    .medInntekt(inntektspost.getBeløp().getVerdi())
+                    .medInntekt(inntektspost.getBeløp().verdi())
                     .build();
         }).collect(Collectors.toList());
     }
@@ -291,7 +291,7 @@ public class MapTilBesteberegningRegelmodell {
                 .map(inntektspost -> Periodeinntekt.builder()
                         .medInntektskildeOgPeriodeType(Inntektskilde.SIGRUN)
                         .medAktivitetStatus(AktivitetStatus.SN)
-                        .medInntekt(inntektspost.getBeløp().getVerdi())
+                        .medInntekt(inntektspost.getBeløp().verdi())
                         .medPeriode(Periode.of(inntektspost.getPeriode().getFomDato(), inntektspost.getPeriode().getTomDato()))
                         .build()).collect(Collectors.toList());
     }

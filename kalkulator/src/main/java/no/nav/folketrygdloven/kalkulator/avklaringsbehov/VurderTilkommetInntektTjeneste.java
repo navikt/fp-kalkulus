@@ -107,7 +107,7 @@ public class VurderTilkommetInntektTjeneste {
     }
 
     private static BigDecimal mapTilÅrsinntekt(InntektsmeldingDto inntektsmeldingDto) {
-        return inntektsmeldingDto.getInntektBeløp().getVerdi().multiply(BigDecimal.valueOf(12));
+        return inntektsmeldingDto.getInntektBeløp().verdi().multiply(BigDecimal.valueOf(12));
     }
 
     private static Arbeidsgiver mapArbeidsgiver(NyttInntektsforholdDto i) {

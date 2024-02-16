@@ -35,12 +35,12 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class MapInntektsgrunnlagVLTilRegelFRISINN implements MapInntektsgrunnlagVLTilRegel {
 
@@ -81,14 +81,14 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN implements MapInntektsgrunnlag
                 throw new IllegalStateException("Arbeidsgiver må være satt.");
             } else if (Objects.isNull(inntektspost.getPeriode().getFomDato())) {
                 throw new IllegalStateException("Inntektsperiode må være satt.");
-            } else if (Objects.isNull(inntektspost.getBeløp().getVerdi())) {
+            } else if (Objects.isNull(inntektspost.getBeløp().verdi())) {
                 throw new IllegalStateException("Inntektsbeløp må være satt.");
             }
             return Periodeinntekt.builder()
                     .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSKOMPONENTEN_BEREGNING)
                     .medArbeidsgiver(arbeidsgiver)
                     .medMåned(inntektspost.getPeriode().getFomDato())
-                    .medInntekt(inntektspost.getBeløp().getVerdi())
+                    .medInntekt(inntektspost.getBeløp().verdi())
                     .build();
         }).collect(Collectors.toList());
     }
@@ -154,9 +154,9 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN implements MapInntektsgrunnlag
     }
 
     private BigDecimal finnBeløp(YtelseAnvistDto anvist, Optional<Beløp> vedtaksDagsats) {
-        BigDecimal beløpFraYtelseAnvist = anvist.getBeløp().map(Beløp::getVerdi)
-                .orElse(anvist.getDagsats().map(Beløp::getVerdi).orElse(BigDecimal.ZERO));
-        return vedtaksDagsats.map(Beløp::getVerdi).orElse(beløpFraYtelseAnvist);
+        BigDecimal beløpFraYtelseAnvist = anvist.getBeløp().map(Beløp::verdi)
+                .orElse(anvist.getDagsats().map(Beløp::verdi).orElse(BigDecimal.ZERO));
+        return vedtaksDagsats.map(Beløp::verdi).orElse(beløpFraYtelseAnvist);
     }
 
     private List<Periodeinntekt> lagInntekterSN(InntektFilterDto filter) {
@@ -165,7 +165,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN implements MapInntektsgrunnlag
                 .map(inntektspost -> Periodeinntekt.builder()
                         .medInntektskildeOgPeriodeType(Inntektskilde.SIGRUN)
                         .medAktivitetStatus(AktivitetStatus.SN)
-                        .medInntekt(inntektspost.getBeløp().getVerdi())
+                        .medInntekt(inntektspost.getBeløp().verdi())
                         .medPeriode(Periode.of(inntektspost.getPeriode().getFomDato(), inntektspost.getPeriode().getTomDato()))
                         .build()).collect(Collectors.toList());
     }

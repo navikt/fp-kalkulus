@@ -50,7 +50,7 @@ public class MapPerioderForGraderingFraVLTilRegel {
 
         return PeriodeModellGradering.builder()
                 .medSkjæringstidspunkt(skjæringstidspunkt)
-                .medGrunnbeløp(vlBeregningsgrunnlag.getGrunnbeløp().getVerdi())
+                .medGrunnbeløp(vlBeregningsgrunnlag.getGrunnbeløp().verdi())
                 .medAndelGraderinger(regelAndelGraderinger)
                 .medEksisterendePerioder(eksisterendePerioder)
                 .medPeriodisertBruttoBeregningsgrunnlag(periodiseringBruttoBg)

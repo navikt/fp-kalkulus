@@ -23,6 +23,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.DatoEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.RefusjonEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.RefusjonoverstyringEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.RefusjonoverstyringPeriodeEndring;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public final class UtledEndringIRefusjonsperiode {
 
@@ -67,7 +68,7 @@ public final class UtledEndringIRefusjonsperiode {
             var forrigeSaksbehandletRefusjon = forrigeBeregningsgrunnlag.flatMap(bg -> matchetArbeidsforhold.flatMap(p -> finnSaksbehandletRefusjonFørDato(arbeidsgiver, bg, p)));
 
             DatoEndring datoEndring = new DatoEndring(matchetArbeidsforhold.map(BeregningRefusjonPeriodeDto::getStartdatoRefusjon).orElse(null), periode.getStartdatoRefusjon());
-            var refusjonEndring = saksbehandletRefusjon.map(ref -> new RefusjonEndring(forrigeSaksbehandletRefusjon.orElse(null), ref));
+            var refusjonEndring = saksbehandletRefusjon.map(Beløp::fra).map(ref -> new RefusjonEndring(forrigeSaksbehandletRefusjon.map(Beløp::fra).orElse(null), ref));
             if (arbeidsgiver.getErVirksomhet()) {
                 endringer.add(new RefusjonoverstyringPeriodeEndring(new Organisasjon(arbeidsgiver.getIdentifikator()), periode.getArbeidsforholdRef().getReferanse(), datoEndring, refusjonEndring.orElse(null)));
             } else {

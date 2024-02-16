@@ -18,13 +18,13 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningAndelDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagAndelDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.folketrygdloven.utils.Tuple;
 
 public class RefusjonDtoTjenesteImplTest {
@@ -61,7 +61,7 @@ public class RefusjonDtoTjenesteImplTest {
         .build(periode);
 
         // Act
-        boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel, periode, AktivitetGradering.INGEN_GRADERING, new Beløp(GRUNNBELØP));
+        boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel, periode, AktivitetGradering.INGEN_GRADERING, Beløp.fra(GRUNNBELØP));
 
         // Assert
         assertThat(skalKunneEndreRefusjon).isFalse();
@@ -89,7 +89,7 @@ public class RefusjonDtoTjenesteImplTest {
                 .medRefusjonskravPrÅr(SEKS_G.add(BigDecimal.valueOf(100)), Utfall.GODKJENT))
             .build(periode);
         // Act
-        boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel, periode, AktivitetGradering.INGEN_GRADERING, new Beløp(GRUNNBELØP));
+        boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel, periode, AktivitetGradering.INGEN_GRADERING, Beløp.fra(GRUNNBELØP));
 
         // Assert
         assertThat(skalKunneEndreRefusjon).isFalse();
@@ -117,7 +117,7 @@ public class RefusjonDtoTjenesteImplTest {
             .build(periode);
 
         // Act
-        boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel, periode, AktivitetGradering.INGEN_GRADERING, new Beløp(GRUNNBELØP));
+        boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel, periode, AktivitetGradering.INGEN_GRADERING, Beløp.fra(GRUNNBELØP));
 
         // Assert
         assertThat(skalKunneEndreRefusjon).isFalse();
@@ -154,7 +154,7 @@ public class RefusjonDtoTjenesteImplTest {
 
         // Act
         boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel,
-                periode, new AktivitetGradering(andelGradering), new Beløp(GRUNNBELØP));
+                periode, new AktivitetGradering(andelGradering), Beløp.fra(GRUNNBELØP));
 
         // Assert
         assertThat(skalKunneEndreRefusjon).isTrue();
@@ -191,7 +191,7 @@ public class RefusjonDtoTjenesteImplTest {
 
         // Act
         boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel,
-                periode, new AktivitetGradering(andelGradering), new Beløp(GRUNNBELØP));
+                periode, new AktivitetGradering(andelGradering), Beløp.fra(GRUNNBELØP));
 
         // Assert
         assertThat(skalKunneEndreRefusjon).isTrue();

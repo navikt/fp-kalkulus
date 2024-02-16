@@ -25,7 +25,6 @@ import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovStatus;
@@ -34,6 +33,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.Avklar
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.SammenligningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class BeregningsgrunnlagDtoTjeneste {
     private static final int SEKS = 6;
@@ -149,9 +149,9 @@ public class BeregningsgrunnlagDtoTjeneste {
     private void mapBeløp(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
         var beregningsgrunnlag = input.getBeregningsgrunnlag();
         Beløp grunnbeløp = Optional.ofNullable(beregningsgrunnlag.getGrunnbeløp()).orElse(Beløp.ZERO);
-        var halvG = grunnbeløp.getVerdi().divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP);
+        var halvG = grunnbeløp.verdi().divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP);
         dto.setHalvG(no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(halvG));
-        dto.setGrunnbeløp(no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(grunnbeløp.getVerdi()));
+        dto.setGrunnbeløp(grunnbeløp);
         dto.setHjemmel(beregningsgrunnlag.getHjemmel());
     }
 
@@ -265,7 +265,7 @@ public class BeregningsgrunnlagDtoTjeneste {
         if (bruttoInkludertBortfaltNaturalytelsePrAar == null) {
             return null;
         }
-        BigDecimal seksG = grunnbeløp.multipliser(SEKS).getVerdi();
+        BigDecimal seksG = grunnbeløp.multipliser(SEKS).verdi();
         return bruttoInkludertBortfaltNaturalytelsePrAar.compareTo(seksG) > 0 ? seksG : bruttoInkludertBortfaltNaturalytelsePrAar;
     }
 

@@ -255,7 +255,7 @@ public abstract class MapRefusjonPerioderFraVLTilRegel {
 
 
     private boolean harRefusjon(InntektsmeldingDto im) {
-        return (im.getRefusjonBeløpPerMnd() != null && !im.getRefusjonBeløpPerMnd().erNullEllerNulltall()) || !im.getEndringerRefusjon().isEmpty();
+        return (im.getRefusjonBeløpPerMnd() != null && !im.getRefusjonBeløpPerMnd().erNullEller0()) || !im.getEndringerRefusjon().isEmpty();
     }
 
 

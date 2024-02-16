@@ -30,7 +30,7 @@ public final class AvklaringsbehovutlederVurderRefusjon {
             return false;
         }
         var perioderTilVurderingTjeneste = new PerioderTilVurderingTjeneste(input.getForlengelseperioder(), periodisertMedRefusjonOgGradering);
-        BigDecimal grenseverdi = KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi().multiply(periodisertMedRefusjonOgGradering.getGrunnbeløp().getVerdi());
+        BigDecimal grenseverdi = KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi().multiply(periodisertMedRefusjonOgGradering.getGrunnbeløp().verdi());
         var orginaleBG = orginaltBGGrunnlag.stream().flatMap(gr -> gr.getBeregningsgrunnlag().stream())
                 .collect(Collectors.toList());
         Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjonIUtbetaltPeriode = orginaleBG.stream()

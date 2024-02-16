@@ -8,9 +8,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class YtelseDto {
 
@@ -30,7 +30,7 @@ public class YtelseDto {
         this.periode = ytelse.getPeriode();
         this.ytelseGrunnlag = ytelse.getYtelseGrunnlag().orElse(null);
         this.ytelseAnvist = ytelse.getYtelseAnvist().stream().map(YtelseAnvistDto::new).collect(Collectors.toCollection(LinkedHashSet::new));
-        ytelse.getVedtaksDagsats().ifPresent(dagsats -> this.vedtaksDagsats = new Beløp(dagsats.getVerdi()));
+        ytelse.getVedtaksDagsats().ifPresent(dagsats -> this.vedtaksDagsats = dagsats);
     }
 
     public Optional<Beløp> getVedtaksDagsats() {

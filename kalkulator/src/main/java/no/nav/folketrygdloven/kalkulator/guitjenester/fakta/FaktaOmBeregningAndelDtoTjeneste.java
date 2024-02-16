@@ -28,7 +28,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaVurderingKilde;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.ATogFLISammeOrganisasjonDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningAndelDto;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 // TODO (Safir) Denne bør splittes opp til tre klasser: ei klasse for ATFL i samme org, ei for frilanser og ei for AT med lønnsendring (uten inntektsmelding)
 public class FaktaOmBeregningAndelDtoTjeneste {
@@ -109,7 +108,7 @@ public class FaktaOmBeregningAndelDtoTjeneste {
                             inntektsmeldingMap,
                             arbeidsgiver.getOrgnr(),
                             andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsforholdRef)));
-            inntektsmelding.ifPresent(im -> dto.setInntektPrMnd(Beløp.fra(im.getInntektBeløp().getVerdi())));
+            inntektsmelding.ifPresent(im -> dto.setInntektPrMnd(im.getInntektBeløp()));
         }
         return dto;
     }

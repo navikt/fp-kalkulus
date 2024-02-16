@@ -57,7 +57,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         return builder
                 .medAktivitetStatuser(aktivitetStatuser)
                 .medBeregningsgrunnlagPerioder(perioder)
-                .medGrunnbeløp(beregningsgrunnlag.getGrunnbeløp().getVerdi())
+                .medGrunnbeløp(beregningsgrunnlag.getGrunnbeløp().verdi())
                 .medYtelsesdagerIEtÅr(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getYtelsesdagerIÅr())
                 .medYtelsesSpesifiktGrunnlag(mapYtelsesSpesifiktGrunnlag(input))
                 .medAntallGØvreGrenseverdi(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi())

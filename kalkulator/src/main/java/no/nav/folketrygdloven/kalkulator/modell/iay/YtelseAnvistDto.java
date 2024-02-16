@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class YtelseAnvistDto {
 

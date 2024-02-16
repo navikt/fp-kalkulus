@@ -12,10 +12,10 @@ import no.nav.folketrygdloven.kalkulator.modell.diff.DiffForKopieringResult;
 import no.nav.folketrygdloven.kalkulator.modell.diff.TraverseGraph;
 import no.nav.folketrygdloven.kalkulator.modell.diff.TraverseGraphConfig;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 

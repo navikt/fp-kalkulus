@@ -144,7 +144,7 @@ public class MapDetaljertBeregningsgrunnlag {
                 mapSammenligningsgrunnlagPrStatusListe(beregningsgrunnlagEntitet),
                 beregningsgrunnlagEntitet.getFaktaOmBeregningTilfeller(),
                 beregningsgrunnlagEntitet.isOverstyrt(),
-                beregningsgrunnlagEntitet.getGrunnbeløp() == null ? null : Beløp.fra(beregningsgrunnlagEntitet.getGrunnbeløp().getVerdi()));
+                beregningsgrunnlagEntitet.getGrunnbeløp() == null ? null : beregningsgrunnlagEntitet.getGrunnbeløp());
     }
 
     private static List<SammenligningsgrunnlagPrStatusDto> mapSammenligningsgrunnlagPrStatusListe(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlagEntitet) {
@@ -234,9 +234,9 @@ public class MapDetaljertBeregningsgrunnlag {
         return new BGAndelArbeidsforhold(
                 mapArbeidsgiver(bgAndelArbeidsforhold.getArbeidsgiver()),
                 bgAndelArbeidsforhold.getArbeidsforholdRef().getReferanse(),
-                bgAndelArbeidsforhold.getGjeldendeRefusjonPrÅr(),
-                bgAndelArbeidsforhold.getNaturalytelseBortfaltPrÅr().orElse(null),
-                bgAndelArbeidsforhold.getNaturalytelseTilkommetPrÅr().orElse(null),
+                Beløp.fra(bgAndelArbeidsforhold.getGjeldendeRefusjonPrÅr()),
+                bgAndelArbeidsforhold.getNaturalytelseBortfaltPrÅr().map(Beløp::fra).orElse(null),
+                bgAndelArbeidsforhold.getNaturalytelseTilkommetPrÅr().map(Beløp::fra).orElse(null),
                 bgAndelArbeidsforhold.getArbeidsperiodeFom(),
                 bgAndelArbeidsforhold.getArbeidsperiodeTom().orElse(null));
     }

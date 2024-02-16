@@ -12,9 +12,9 @@ import no.nav.folketrygdloven.kalkulator.avklaringsbehov.PerioderTilVurderingTje
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 /**
  * Tjeneste som utleder FordelingTilfelle for å manuelt fordele beregningsgrunnlaget
@@ -64,7 +64,7 @@ public final class FordelBeregningsgrunnlagTilfelleTjeneste {
             if (FordelingGraderingTjeneste.gradertAndelVilleBlittAvkortet(andel, grunnbeløp, periode)) {
                 return Optional.of(FordelingTilfelle.GRADERT_ANDEL_SOM_VILLE_HA_BLITT_AVKORTET_TIL_0);
             }
-            boolean refusjonForPeriodeOverstiger6G = grunnbeløp.multipliser(6).getVerdi().compareTo(finnTotalRefusjonPrÅr(periode)) <= 0;
+            boolean refusjonForPeriodeOverstiger6G = grunnbeløp.multipliser(6).verdi().compareTo(finnTotalRefusjonPrÅr(periode)) <= 0;
             if (refusjonForPeriodeOverstiger6G) {
                 return Optional.of(FordelingTilfelle.TOTALT_REFUSJONSKRAV_STØRRE_ENN_6G);
             }

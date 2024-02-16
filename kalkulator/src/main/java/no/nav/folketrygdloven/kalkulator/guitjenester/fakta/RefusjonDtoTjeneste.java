@@ -11,11 +11,11 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering.Gradering;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.FordelingGraderingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagAndelDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 /**
  * Tjeneste som henter ut informasjon relatert til refusjon fra beregnigsgrunnlag og setter det på dto-objekt
@@ -39,7 +39,7 @@ public class RefusjonDtoTjeneste {
                                           BeregningsgrunnlagPeriodeDto periode, AktivitetGradering aktivitetGradering,
                                           Beløp grunnbeløp) {
         if (harGraderingOgIkkeRefusjon(andelFraOppdatert, periode, aktivitetGradering)) {
-            return grunnbeløp.multipliser(6).getVerdi().compareTo(finnTotalRefusjonPrÅr(periode)) <= 0;
+            return grunnbeløp.multipliser(6).verdi().compareTo(finnTotalRefusjonPrÅr(periode)) <= 0;
         }
         return false;
     }

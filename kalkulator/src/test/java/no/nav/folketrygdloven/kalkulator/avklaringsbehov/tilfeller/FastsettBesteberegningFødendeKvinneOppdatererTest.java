@@ -24,11 +24,11 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class FastsettBesteberegningFødendeKvinneOppdatererTest {
 
@@ -36,7 +36,7 @@ public class FastsettBesteberegningFødendeKvinneOppdatererTest {
     private static final Long ANDELSNR_ARBEIDSTAKER = 2L;
     private static final List<FaktaOmBeregningTilfelle> FAKTA_OM_BEREGNING_TILFELLER = Collections.singletonList(FaktaOmBeregningTilfelle.FASTSETT_BESTEBEREGNING_FØDENDE_KVINNE);
     private final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
-    private final Beløp GRUNNBELØP = new Beløp(600000);
+    private final Beløp GRUNNBELØP = Beløp.fra(600000);
 
     private FastsettBesteberegningFødendeKvinneOppdaterer fastsettBesteberegningFødendeKvinneOppdaterer;
     private BeregningsgrunnlagDto beregningsgrunnlag;
