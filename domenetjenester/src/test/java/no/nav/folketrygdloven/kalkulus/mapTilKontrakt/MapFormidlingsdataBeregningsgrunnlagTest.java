@@ -331,7 +331,7 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
 
     private void lagBGPeriode(LocalDate fom, LocalDate tom, BeregningsgrunnlagPrStatusOgAndelDto... andeler) {
         bgPerioder.add(new BeregningsgrunnlagPeriodeDto(Arrays.asList(andeler), new Periode(fom, tom),
-                null, null, null, null, null, null, null, null, null, null, null));
+                null, null, null, null, null, null, null, null));
     }
 
     private BeregningsgrunnlagPrStatusOgAndelDto lagBGAndel(AktivitetStatus status, String orgnr, String ref, int brutto) {

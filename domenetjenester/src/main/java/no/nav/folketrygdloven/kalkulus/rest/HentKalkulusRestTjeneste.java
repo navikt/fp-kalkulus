@@ -121,7 +121,7 @@ public class HentKalkulusRestTjeneste {
         if (FagsakYtelseType.OMSORGSPENGER.equals(ytelseType) || FagsakYtelseType.PLEIEPENGER_SYKT_BARN.equals(ytelseType)) {
             dtoer = input.values().stream().map(v -> MapDetaljertBeregningsgrunnlag.mapMedBrevfelt(v.getBeregningsgrunnlagGrunnlag(), v)).toList();
         } else {
-            dtoer = input.values().stream().map(v -> MapDetaljertBeregningsgrunnlag.mapGrunnlag(v.getBeregningsgrunnlagGrunnlag(), v.getYtelsespesifiktGrunnlag())).toList();
+            dtoer = input.values().stream().map(v -> MapDetaljertBeregningsgrunnlag.mapGrunnlag(v.getBeregningsgrunnlagGrunnlag())).toList();
         }
         return dtoer.isEmpty() ? Response.noContent().build() : Response.ok(dtoer).build();
     }

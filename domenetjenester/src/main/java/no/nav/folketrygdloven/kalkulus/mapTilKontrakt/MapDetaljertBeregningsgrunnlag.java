@@ -1,13 +1,9 @@
 package no.nav.folketrygdloven.kalkulus.mapTilKontrakt;
 
-import static no.nav.folketrygdloven.kalkulus.mapTilKontrakt.UtledGraderingsdata.utledGraderingsfaktorInntekt;
-import static no.nav.folketrygdloven.kalkulus.mapTilKontrakt.UtledGraderingsdata.utledGraderingsfaktorTid;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
-import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
@@ -35,14 +31,14 @@ import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 public class MapDetaljertBeregningsgrunnlag {
 
     public static BeregningsgrunnlagGrunnlagDto mapMedBrevfelt(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto grunnlag, BeregningsgrunnlagGUIInput input) {
-        BeregningsgrunnlagGrunnlagDto dto = mapGrunnlag(grunnlag, input.getYtelsespesifiktGrunnlag());
+        BeregningsgrunnlagGrunnlagDto dto = mapGrunnlag(grunnlag);
         BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto = MapFormidlingsdataBeregningsgrunnlag.mapMedBrevfelt(dto, input);
         return beregningsgrunnlagGrunnlagDto;
     }
 
-    public static BeregningsgrunnlagGrunnlagDto mapGrunnlag(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagEntitet, YtelsespesifiktGrunnlag ytelsesspesifiktGrunnlag) {
+    public static BeregningsgrunnlagGrunnlagDto mapGrunnlag(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagEntitet) {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlagEntitet.getBeregningsgrunnlag()
-                .map(beregningsgrunnlagEntitet -> map(beregningsgrunnlagEntitet, ytelsesspesifiktGrunnlag)).orElse(null);
+                .map(MapDetaljertBeregningsgrunnlag::map).orElse(null);
 
         return new BeregningsgrunnlagGrunnlagDto(
                 beregningsgrunnlag,
@@ -136,11 +132,11 @@ public class MapDetaljertBeregningsgrunnlag {
                 beregningAktivitetEntitet.getOpptjeningAktivitetType());
     }
 
-    public static BeregningsgrunnlagDto map(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlagEntitet, YtelsespesifiktGrunnlag ytelsesspesifiktGrunnlag) {
+    public static BeregningsgrunnlagDto map(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlagEntitet) {
         return new BeregningsgrunnlagDto(
                 beregningsgrunnlagEntitet.getSkjæringstidspunkt(),
                 mapAktivitetstatuser(beregningsgrunnlagEntitet),
-                mapBeregningsgrunnlagPerioder(beregningsgrunnlagEntitet, ytelsesspesifiktGrunnlag),
+                mapBeregningsgrunnlagPerioder(beregningsgrunnlagEntitet),
                 mapSammenligningsgrunnlagPrStatusListe(beregningsgrunnlagEntitet),
                 beregningsgrunnlagEntitet.getFaktaOmBeregningTilfeller(),
                 beregningsgrunnlagEntitet.isOverstyrt(),
@@ -161,12 +157,11 @@ public class MapDetaljertBeregningsgrunnlag {
     }
 
 
-    private static List<BeregningsgrunnlagPeriodeDto> mapBeregningsgrunnlagPerioder(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlagEntitet, YtelsespesifiktGrunnlag ytelsesspesifiktGrunnlag) {
-        return beregningsgrunnlagEntitet.getBeregningsgrunnlagPerioder().stream().map(beregningsgrunnlagPeriode -> mapPeriode(beregningsgrunnlagPeriode, ytelsesspesifiktGrunnlag)).collect(Collectors.toList());
+    private static List<BeregningsgrunnlagPeriodeDto> mapBeregningsgrunnlagPerioder(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlagEntitet) {
+        return beregningsgrunnlagEntitet.getBeregningsgrunnlagPerioder().stream().map(MapDetaljertBeregningsgrunnlag::mapPeriode).collect(Collectors.toList());
     }
 
-    private static BeregningsgrunnlagPeriodeDto mapPeriode(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode,
-                                                           YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+    private static BeregningsgrunnlagPeriodeDto mapPeriode(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
         return new BeregningsgrunnlagPeriodeDto(
                 mapAndeler(beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList()),
                 new Periode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom()),
@@ -175,12 +170,9 @@ public class MapDetaljertBeregningsgrunnlag {
                 Beløp.fra(beregningsgrunnlagPeriode.getRedusertPrÅr()),
                 beregningsgrunnlagPeriode.getDagsats(),
                 beregningsgrunnlagPeriode.getPeriodeÅrsaker(),
-                beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto() != null ? beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto() : null,
                 beregningsgrunnlagPeriode.getTotalUtbetalingsgradFraUttak(),
                 beregningsgrunnlagPeriode.getTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt(),
-                beregningsgrunnlagPeriode.getReduksjonsfaktorInaktivTypeA(),
-                utledGraderingsfaktorInntekt(beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag),
-                utledGraderingsfaktorTid(beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag));
+                beregningsgrunnlagPeriode.getReduksjonsfaktorInaktivTypeA());
     }
 
     private static List<BeregningsgrunnlagPrStatusOgAndelDto> mapAndeler(List<no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList) {

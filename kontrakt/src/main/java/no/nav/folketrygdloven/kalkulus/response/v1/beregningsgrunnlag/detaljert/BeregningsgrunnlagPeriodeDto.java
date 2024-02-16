@@ -63,18 +63,6 @@ public class BeregningsgrunnlagPeriodeDto {
     private List<PeriodeÅrsak> periodeÅrsaker;
 
 
-    @Deprecated(since = "2.5.0", forRemoval = true)// du vil sannsynligvis bruke noe av totalUtbetalingsgradFraUttak/totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt
-    /**
-     * Gradering av beregningsgrunnlaget ved tilkommet inntekt (gradering mot inntekt)
-     * Angir total bortfalt inntekt av totalt beregningsgrunnlag.
-     */
-    @JsonProperty(value = "inntektGraderingsprosent")
-    @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "100.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal inntektGraderingsprosent;
-
     /**
      * utbetalingsgrad dersom det kun skulle vært gradert mot uttak
      */
@@ -105,30 +93,6 @@ public class BeregningsgrunnlagPeriodeDto {
     @Digits(integer = 10, fraction = 4)
     private BigDecimal reduksjonsfaktorInaktivTypeA;
 
-    @Deprecated(since = "2.5.0", forRemoval = true)// du vil sannsynligvis bruke noe av totalUtbetalingsgradFraUttak/totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt
-    /**
-     * Gradering av beregningsgrunnlaget ved tilkommet inntekt (gradering mot inntekt)
-     * Angir reduksjon pga gradering mot inntekt sammenlignet med å kun gradere mot uttaksgraden (eksisterer som faktor i inntektGraderingsprosent)
-     */
-    @JsonProperty(value = "graderingsfaktorInntekt")
-    @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "100.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal graderingsfaktorInntekt;
-
-    @Deprecated(since = "2.5.0", forRemoval = true)// du vil sannsynligvis bruke noe av totalUtbetalingsgradFraUttak/totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt
-    /**
-     * Gradering av beregningsgrunnlaget ved tilkommet inntekt (gradering mot inntekt)
-     * Angir reduksjon pga gradering mot arbeidstid (uttaksgrad)
-     */
-    @JsonProperty(value = "graderingsfaktorTid")
-    @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "100.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal graderingsfaktorTid;
-
 
     public BeregningsgrunnlagPeriodeDto() {
     }
@@ -140,12 +104,9 @@ public class BeregningsgrunnlagPeriodeDto {
                                         @Valid Beløp redusertPrÅr,
                                         @Valid Long dagsats,
                                         @NotNull @Valid List<PeriodeÅrsak> periodeÅrsaker,
-                                        BigDecimal inntektGraderingsprosent,
                                         BigDecimal totalUtbetalingsgradFraUttak,
                                         BigDecimal totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt,
-                                        BigDecimal reduksjonsfaktorInaktivTypeA,
-                                        BigDecimal graderingsfaktorInntekt,
-                                        BigDecimal graderingsfaktorTid) {
+                                        BigDecimal reduksjonsfaktorInaktivTypeA) {
         this.beregningsgrunnlagPrStatusOgAndelList = beregningsgrunnlagPrStatusOgAndelList;
         this.periode = periode;
         this.bruttoPrÅr = bruttoPrÅr;
@@ -153,12 +114,9 @@ public class BeregningsgrunnlagPeriodeDto {
         this.redusertPrÅr = redusertPrÅr;
         this.dagsats = dagsats;
         this.periodeÅrsaker = periodeÅrsaker;
-        this.inntektGraderingsprosent = inntektGraderingsprosent;
         this.totalUtbetalingsgradFraUttak = totalUtbetalingsgradFraUttak;
         this.totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt = totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt;
         this.reduksjonsfaktorInaktivTypeA = reduksjonsfaktorInaktivTypeA;
-        this.graderingsfaktorInntekt = graderingsfaktorInntekt;
-        this.graderingsfaktorTid = graderingsfaktorTid;
     }
 
     public LocalDate getBeregningsgrunnlagPeriodeFom() {
@@ -197,18 +155,6 @@ public class BeregningsgrunnlagPeriodeDto {
         return periode;
     }
 
-    public BigDecimal getInntektGraderingsprosent() {
-        return inntektGraderingsprosent;
-    }
-
-
-    public BigDecimal getGraderingsfaktorInntekt() {
-        return graderingsfaktorInntekt;
-    }
-
-    public BigDecimal getGraderingsfaktorTid() {
-        return graderingsfaktorTid;
-    }
 
     public BigDecimal getTotalUtbetalingsgradFraUttak() {
         return totalUtbetalingsgradFraUttak;

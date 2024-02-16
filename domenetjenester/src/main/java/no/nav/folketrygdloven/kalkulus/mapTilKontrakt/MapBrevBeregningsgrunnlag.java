@@ -71,11 +71,8 @@ public class MapBrevBeregningsgrunnlag {
                 Beløp.fra(beregningsgrunnlagPeriode.getBruttoPrÅr()),
                 Beløp.fra(beregningsgrunnlagPeriode.getAvkortetPrÅr()),
                 beregningsgrunnlagPeriode.getDagsats(),
-                beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto(),
                 beregningsgrunnlagPeriode.getTotalUtbetalingsgradFraUttak(),
-                beregningsgrunnlagPeriode.getTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt(),
-                UtledGraderingsdata.utledGraderingsfaktorInntekt(beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag),
-                UtledGraderingsdata.utledGraderingsfaktorTid(beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag));
+                beregningsgrunnlagPeriode.getTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt());
     }
 
     private static List<TilkommetInntektsforholdDto> mapTilkomneInntektsforhold(List<TilkommetInntektDto> tilkomneInntekter) {
