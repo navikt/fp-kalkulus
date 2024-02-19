@@ -1,11 +1,10 @@
 package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.felles.MatchBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FastsatteVerdierDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.RedigerbarAndelFaktaOmBeregningDto;
+import no.nav.folketrygdloven.kalkulator.felles.MatchBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
@@ -93,7 +92,7 @@ public class FastsettFaktaOmBeregningVerdierTjeneste {
     private static void fastsettBeløpForNyAndelMedAktivitetstatus(BeregningsgrunnlagPeriodeDto periode,
                                                                   AktivitetStatus aktivitetStatus,
                                                                   FastsatteVerdierDto fastsatteVerdier) {
-        BigDecimal fastsatt = fastsatteVerdier.finnEllerUtregnFastsattBeløpPrÅr();// NOSONAR
+        var fastsatt = fastsatteVerdier.finnEllerUtregnFastsattBeløpPrÅr();// NOSONAR
         Inntektskategori nyInntektskategori = fastsatteVerdier.getInntektskategori();
         if (nyInntektskategori == null) {
             throw new IllegalStateException("Kan ikke sette inntektskategori lik null på ny andel.");

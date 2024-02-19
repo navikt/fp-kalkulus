@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -16,6 +17,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Virkedager;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
@@ -49,27 +51,30 @@ class RegisterInntektTidslinjeUtleder {
                 .collect(Collectors.toMap(Function.identity(), it -> posterPrArbeidsgiver.getOrDefault(it, List.of())));
     }
 
-    private static LocalDateTimeline<BigDecimal> lagInntektTidslinje(LocalDate fomDato, List<InntektspostDto> inntektposter) {
-        List<LocalDateSegment<BigDecimal>> segmenter = inntektposter.stream().map(p -> new LocalDateSegment<>(
+    private static LocalDateTimeline<Beløp> lagInntektTidslinje(LocalDate fomDato, List<InntektspostDto> inntektposter) {
+        List<LocalDateSegment<Beløp>> segmenter = inntektposter.stream().map(p -> new LocalDateSegment<>(
                 p.getPeriode().getFomDato(),
                 p.getPeriode().getTomDato(),
                 regnOmTilDagsats(p))).toList();
-        var inntektPerioderTidslinje = new LocalDateTimeline<>(segmenter, (di, lhs, rhs) -> StandardCombinators.sum(di, lhs, rhs));
+        var inntektPerioderTidslinje = new LocalDateTimeline<>(segmenter, RegisterInntektTidslinjeUtleder::summer);
         return fyllMellomromFraDato(fomDato, inntektPerioderTidslinje);
     }
 
-    private static BigDecimal regnOmTilDagsats(InntektspostDto p) {
-        var antallVirkedager = Virkedager.beregnVirkedager(p.getPeriode().getFomDato(), p.getPeriode().getTomDato());
-        if (antallVirkedager == 0) {
-            antallVirkedager = p.getPeriode().getFomDato().until(p.getPeriode().getTomDato().plusDays(1)).getDays();
-        }
-        return p.getBeløp().verdi().divide(BigDecimal.valueOf(antallVirkedager), 2, RoundingMode.HALF_UP);
+    private static Beløp regnOmTilDagsats(InntektspostDto p) {
+        final var antallVirkedager = Optional.of(Virkedager.beregnVirkedager(p.getPeriode().getFomDato(), p.getPeriode().getTomDato()))
+                .filter(d -> d != 0)
+                .orElseGet(() -> p.getPeriode().getFomDato().until(p.getPeriode().getTomDato().plusDays(1)).getDays());
+        return p.getBeløp().map(v -> v.divide(BigDecimal.valueOf(antallVirkedager), 2, RoundingMode.HALF_UP));
     }
 
 
-    private static LocalDateTimeline<BigDecimal> fyllMellomromFraDato(LocalDate fomDato, LocalDateTimeline<BigDecimal> inntektPerioderTidslinje) {
-        var mellomrom = new LocalDateTimeline<>(new LocalDateInterval(fomDato, LocalDateInterval.TIDENES_ENDE), BigDecimal.ZERO);
-        return inntektPerioderTidslinje.combine(mellomrom, StandardCombinators::sum, LocalDateTimeline.JoinStyle.CROSS_JOIN);
+    private static LocalDateTimeline<Beløp> fyllMellomromFraDato(LocalDate fomDato, LocalDateTimeline<Beløp> inntektPerioderTidslinje) {
+        var mellomrom = new LocalDateTimeline<>(new LocalDateInterval(fomDato, LocalDateInterval.TIDENES_ENDE), Beløp.ZERO);
+        return inntektPerioderTidslinje.combine(mellomrom, RegisterInntektTidslinjeUtleder::summer, LocalDateTimeline.JoinStyle.CROSS_JOIN);
+    }
+
+    public static LocalDateSegment<Beløp> summer(LocalDateInterval dateInterval, LocalDateSegment<Beløp> lhs, LocalDateSegment<Beløp> rhs) {
+        return new LocalDateSegment<>(dateInterval, Beløp.safeSum(lhs == null ? null : lhs.getValue(), rhs == null ? null : rhs.getValue()));
     }
 
     private static LocalDateTimeline<Set<DagsatsPrKategoriOgArbeidsgiver>> unionAvTidslinjer(List<LocalDateTimeline<DagsatsPrKategoriOgArbeidsgiver>> godkjenteTidslinjerPrArbeidsgiver) {

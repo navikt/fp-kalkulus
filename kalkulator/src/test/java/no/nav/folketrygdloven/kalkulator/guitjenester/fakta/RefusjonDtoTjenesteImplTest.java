@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -36,8 +37,8 @@ public class RefusjonDtoTjenesteImplTest {
     private final static Arbeidsgiver ARBEIDSGIVER = Arbeidsgiver.virksomhet(ORGNR);
     private final static String ORGNR_2 = "3242521";
     private final static Arbeidsgiver ARBEIDSGIVER2 = Arbeidsgiver.virksomhet(ORGNR_2);
-    private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(100_000);
-    private static final BigDecimal SEKS_G = GRUNNBELØP.multiply(BigDecimal.valueOf(6));
+    private static final Beløp GRUNNBELØP = Beløp.fra(100_000);
+    private static final Beløp SEKS_G = GRUNNBELØP.multipliser(KonfigTjeneste.getAntallGØvreGrenseverdi());
 
 
     @Test
@@ -57,11 +58,11 @@ public class RefusjonDtoTjenesteImplTest {
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER2)
-            .medRefusjonskravPrÅr(SEKS_G.add(BigDecimal.valueOf(100)), Utfall.GODKJENT))
+            .medRefusjonskravPrÅr(SEKS_G.adder(Beløp.fra(100)), Utfall.GODKJENT))
         .build(periode);
 
         // Act
-        boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel, periode, AktivitetGradering.INGEN_GRADERING, Beløp.fra(GRUNNBELØP));
+        boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel, periode, AktivitetGradering.INGEN_GRADERING, GRUNNBELØP);
 
         // Assert
         assertThat(skalKunneEndreRefusjon).isFalse();
@@ -77,19 +78,19 @@ public class RefusjonDtoTjenesteImplTest {
         BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
             .build(bg);
-        BigDecimal refPrMnd = BigDecimal.valueOf(100);
+        var refPrMnd = Beløp.fra(100);
         BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER)
-                .medRefusjonskravPrÅr(refPrMnd.multiply(BigDecimal.valueOf(12)), Utfall.GODKJENT))
+                .medRefusjonskravPrÅr(refPrMnd.multipliser(KonfigTjeneste.getMånederIÅr()), Utfall.GODKJENT))
             .build(periode);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER2)
-                .medRefusjonskravPrÅr(SEKS_G.add(BigDecimal.valueOf(100)), Utfall.GODKJENT))
+                .medRefusjonskravPrÅr(SEKS_G.adder(Beløp.fra(100)), Utfall.GODKJENT))
             .build(periode);
         // Act
-        boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel, periode, AktivitetGradering.INGEN_GRADERING, Beløp.fra(GRUNNBELØP));
+        boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel, periode, AktivitetGradering.INGEN_GRADERING, GRUNNBELØP);
 
         // Assert
         assertThat(skalKunneEndreRefusjon).isFalse();
@@ -108,16 +109,16 @@ public class RefusjonDtoTjenesteImplTest {
         BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER)
-                .medRefusjonskravPrÅr(BigDecimal.ZERO, Utfall.GODKJENT))
+                .medRefusjonskravPrÅr(Beløp.ZERO, Utfall.GODKJENT))
             .build(periode);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER2)
-                .medRefusjonskravPrÅr(SEKS_G.subtract(BigDecimal.valueOf(100)), Utfall.GODKJENT))
+                .medRefusjonskravPrÅr(SEKS_G.subtraher(Beløp.fra(100)), Utfall.GODKJENT))
             .build(periode);
 
         // Act
-        boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel, periode, AktivitetGradering.INGEN_GRADERING, Beløp.fra(GRUNNBELØP));
+        boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel, periode, AktivitetGradering.INGEN_GRADERING, GRUNNBELØP);
 
         // Assert
         assertThat(skalKunneEndreRefusjon).isFalse();
@@ -136,7 +137,7 @@ public class RefusjonDtoTjenesteImplTest {
         BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER)
-                .medRefusjonskravPrÅr(BigDecimal.ZERO, Utfall.GODKJENT))
+                .medRefusjonskravPrÅr(Beløp.ZERO, Utfall.GODKJENT))
             .build(periode);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
@@ -154,7 +155,7 @@ public class RefusjonDtoTjenesteImplTest {
 
         // Act
         boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel,
-                periode, new AktivitetGradering(andelGradering), Beløp.fra(GRUNNBELØP));
+                periode, new AktivitetGradering(andelGradering), GRUNNBELØP);
 
         // Assert
         assertThat(skalKunneEndreRefusjon).isTrue();
@@ -173,12 +174,12 @@ public class RefusjonDtoTjenesteImplTest {
         BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER)
-                .medRefusjonskravPrÅr(BigDecimal.ZERO, Utfall.GODKJENT))
+                .medRefusjonskravPrÅr(Beløp.ZERO, Utfall.GODKJENT))
             .build(periode);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER2)
-                .medRefusjonskravPrÅr(SEKS_G.add(BigDecimal.valueOf(100)), Utfall.GODKJENT))
+                .medRefusjonskravPrÅr(SEKS_G.adder(Beløp.fra(100)), Utfall.GODKJENT))
             .build(periode);
 
         AndelGradering andelGradering = AndelGradering.builder()
@@ -191,7 +192,7 @@ public class RefusjonDtoTjenesteImplTest {
 
         // Act
         boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel,
-                periode, new AktivitetGradering(andelGradering), Beløp.fra(GRUNNBELØP));
+                periode, new AktivitetGradering(andelGradering), GRUNNBELØP);
 
         // Assert
         assertThat(skalKunneEndreRefusjon).isTrue();

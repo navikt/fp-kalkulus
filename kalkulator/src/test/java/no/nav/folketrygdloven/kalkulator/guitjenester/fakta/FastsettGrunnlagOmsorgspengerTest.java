@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.input.OmsorgspengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -47,14 +48,14 @@ public class FastsettGrunnlagOmsorgspengerTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now().minusDays(5);
 
     private static final Inntektskategori INNTEKTSKATEGORI = Inntektskategori.ARBEIDSTAKER;
-    private static final BigDecimal AVKORTET_PR_AAR = BigDecimal.valueOf(150000);
-    private static final BigDecimal BRUTTO_PR_AAR = BigDecimal.valueOf(300000);
-    private static final BigDecimal REDUSERT_PR_AAR = BigDecimal.valueOf(500000);
+    private static final Beløp AVKORTET_PR_AAR = Beløp.fra(150000);
+    private static final Beløp BRUTTO_PR_AAR = Beløp.fra(300000);
+    private static final Beløp REDUSERT_PR_AAR = Beløp.fra(500000);
     private static final LocalDate ANDEL_FOM = LocalDate.now().minusDays(100);
     private static final LocalDate ANDEL_TOM = LocalDate.now();
     private static final String ORGNR = "973093681";
 
-    private static final BigDecimal RAPPORTERT_PR_AAR = BigDecimal.valueOf(300000);
+    private static final Beløp RAPPORTERT_PR_AAR = Beløp.fra(300000);
     private static final BigDecimal AVVIK_OVER_25_PROSENT = BigDecimal.valueOf(500L);
     private static final BigDecimal AVVIK_UNDER_25_PROSENT = BigDecimal.valueOf(30L);
     private static final LocalDate SAMMENLIGNING_FOM = LocalDate.now().minusDays(100);
@@ -78,8 +79,8 @@ public class FastsettGrunnlagOmsorgspengerTest {
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
         OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), List.of());
         InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
-                .medRefusjon(BRUTTO_PR_AAR.divide(BigDecimal.valueOf(12)))
-                .medBeløp(BRUTTO_PR_AAR.divide(BigDecimal.valueOf(12)))
+                .medRefusjon(Beløp.fra(BRUTTO_PR_AAR.verdi().divide(KonfigTjeneste.getMånederIÅr())))
+                .medBeløp(Beløp.fra(BRUTTO_PR_AAR.verdi().divide(KonfigTjeneste.getMånederIÅr())))
                 .medArbeidsgiver(arbeidsgiver)
                 .build();
         Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
@@ -113,7 +114,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
                 .medAndelsnr(1L)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medBeregningsperiode(ANDEL_FOM, ANDEL_TOM)
-                .medBeregnetPrÅr(BigDecimal.valueOf(1_200_000))
+                .medBeregnetPrÅr(Beløp.fra(1_200_000))
                 .build(bgPeriode);
         lagBehandling(Beregningsgrunnlag, arbeidsgiver);
         LocalDate PeriodeFom =SKJÆRINGSTIDSPUNKT;
@@ -124,8 +125,8 @@ public class FastsettGrunnlagOmsorgspengerTest {
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
         OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), List.of());
         InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
-                .medRefusjon(BigDecimal.valueOf(60_000))
-                .medBeløp(BigDecimal.valueOf(1_200_000).divide(BigDecimal.valueOf(12)))
+                .medRefusjon(Beløp.fra(60_000))
+                .medBeløp(Beløp.fra(1_200_000).map(v -> v.divide(KonfigTjeneste.getMånederIÅr())))
                 .medArbeidsgiver(arbeidsgiver)
                 .build();
         Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
@@ -157,7 +158,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
         OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), List.of());
         InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
-                .medBeløp(BRUTTO_PR_AAR.divide(BigDecimal.valueOf(12)))
+                .medBeløp(Beløp.fra(BRUTTO_PR_AAR.verdi().divide(KonfigTjeneste.getMånederIÅr())))
                 .medArbeidsgiver(arbeidsgiver)
                 .build();
         Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
@@ -189,8 +190,8 @@ public class FastsettGrunnlagOmsorgspengerTest {
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
         OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), List.of());
         InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
-                .medRefusjon(BRUTTO_PR_AAR.divide(BigDecimal.valueOf(30), RoundingMode.HALF_EVEN))
-                .medBeløp(BRUTTO_PR_AAR.divide(BigDecimal.valueOf(12), RoundingMode.HALF_EVEN))
+                .medRefusjon(Beløp.fra(BRUTTO_PR_AAR.verdi().divide(BigDecimal.valueOf(30), RoundingMode.HALF_EVEN)))
+                .medBeløp(Beløp.fra(BRUTTO_PR_AAR.verdi().divide(KonfigTjeneste.getMånederIÅr(), RoundingMode.HALF_EVEN)))
                 .medArbeidsgiver(arbeidsgiver)
                 .build();
         Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(ANDEL_FOM)
@@ -240,8 +241,8 @@ public class FastsettGrunnlagOmsorgspengerTest {
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
         OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), List.of());
         InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
-                .medRefusjon(BigDecimal.valueOf(10_000))
-                .medBeløp(BigDecimal.valueOf(20_000))
+                .medRefusjon(Beløp.fra(10_000))
+                .medBeløp(Beløp.fra(20_000))
                 .medArbeidsgiver(arbeidsgiver)
                 .build();
         Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
@@ -268,7 +269,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
         return BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
                 .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagDto)
-                .medGrunnbeløp(Beløp.fra(BigDecimal.valueOf(99_858)))
+                .medGrunnbeløp(Beløp.fra(99_858))
                 .build();
     }
 
@@ -283,7 +284,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
         return BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
                 .leggTilSammenligningsgrunnlag(sammenligningsgrunnlagDto)
-                .medGrunnbeløp(Beløp.fra(BigDecimal.valueOf(99_858)))
+                .medGrunnbeløp(Beløp.fra(99_858))
                 .build();
     }
 

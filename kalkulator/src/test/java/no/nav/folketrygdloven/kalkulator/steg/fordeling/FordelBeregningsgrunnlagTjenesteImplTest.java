@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -46,9 +44,11 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class FordelBeregningsgrunnlagTjenesteImplTest {
 
@@ -90,14 +90,14 @@ public class FordelBeregningsgrunnlagTjenesteImplTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(orgnrsBeregnetMap, beregningAktivitetAggregat);
 
         // Inntektsmelding
-        BigDecimal inntektPrMnd1 = BigDecimal.valueOf(10_000);
-        BigDecimal refusjonPrMnd1 = BigDecimal.valueOf(20_000);
+        var inntektPrMnd1 = Beløp.fra(10_000);
+        var refusjonPrMnd1 = Beløp.fra(20_000);
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR1, SKJÆRINGSTIDSPUNKT, refusjonPrMnd1, inntektPrMnd1);
-        BigDecimal inntektPrMnd2 = BigDecimal.valueOf(15_000);
-        BigDecimal refusjonPrMnd2 = BigDecimal.valueOf(15_000);
+        var inntektPrMnd2 = Beløp.fra(15_000);
+        var refusjonPrMnd2 = Beløp.fra(15_000);
         var im2 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR2, SKJÆRINGSTIDSPUNKT, refusjonPrMnd2, inntektPrMnd2);
-        BigDecimal inntektPrMnd3 = BigDecimal.valueOf(20_000);
-        BigDecimal refusjonPrMnd3 = BigDecimal.ZERO;
+        var inntektPrMnd3 = Beløp.fra(20_000);
+        var refusjonPrMnd3 = Beløp.ZERO;
         var im3 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR3, SKJÆRINGSTIDSPUNKT, refusjonPrMnd3, inntektPrMnd3);
         var inntektsmeldinger = List.of(im1, im2, im3);
 
@@ -122,12 +122,12 @@ public class FordelBeregningsgrunnlagTjenesteImplTest {
         BeregningsgrunnlagPrStatusOgAndelDto andel3 = andeler.stream().filter(a -> a.getBgAndelArbeidsforhold().get().getArbeidsgiver().getIdentifikator().equals(ORGNR3)).findFirst().get();
 
         // Forventer at ORGNR1 har fått økt sitt brutto bg
-        BigDecimal forventetNyBruttoForArbeid1 = BigDecimal.valueOf(240_000);
+        var forventetNyBruttoForArbeid1 = Beløp.fra(240_000);
         assertThat(andel1.getFordeltPrÅr()).isEqualByComparingTo(forventetNyBruttoForArbeid1);
         // Forventer at brutto for arbeid for ORGNR2 er uendret ettersom den ikkje har disponibelt grunnlag å fordele (søker full refusjon)
         assertThat(andel2.getFordeltPrÅr()).isNull();
         // Forventer at ORGNR2 har fått redusert sitt brutto bg
-        BigDecimal forventetNyBruttoForArbeid3 = BigDecimal.valueOf(120_000);
+        var forventetNyBruttoForArbeid3 = Beløp.fra(120_000);
         assertThat(andel3.getFordeltPrÅr()).isEqualByComparingTo(forventetNyBruttoForArbeid3);
     }
 
@@ -157,7 +157,7 @@ public class FordelBeregningsgrunnlagTjenesteImplTest {
             BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
                     .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                     .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
-                    .medBeregnetPrÅr(orgnrs.get(orgnr))
+                    .medBeregnetPrÅr(Beløp.fra(orgnrs.get(orgnr)))
                     .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
                             .medArbeidsgiver(arbeidsgiver)
                             .medArbeidsperiodeFom(SKJÆRINGSTIDSPUNKT.minusYears(1)));

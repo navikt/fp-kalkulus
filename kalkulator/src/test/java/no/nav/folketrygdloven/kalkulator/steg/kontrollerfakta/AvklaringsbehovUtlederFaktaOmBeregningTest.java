@@ -46,6 +46,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class AvklaringsbehovUtlederFaktaOmBeregningTest {
 
@@ -97,7 +98,7 @@ public class AvklaringsbehovUtlederFaktaOmBeregningTest {
 
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
-                .medGrunnbeløp(BigDecimal.valueOf(GrunnbeløpTestKonstanter.GRUNNBELØP_2018))
+                .medGrunnbeløp(Beløp.fra(GrunnbeløpTestKonstanter.GRUNNBELØP_2018))
                 .build();
         BeregningsgrunnlagAktivitetStatusDto.builder()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
@@ -210,7 +211,7 @@ public class AvklaringsbehovUtlederFaktaOmBeregningTest {
                 SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(1), arbId2, Arbeidsgiver.virksomhet(orgnr2), iayGrunnlag);
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
-                .medGrunnbeløp(BigDecimal.valueOf(GrunnbeløpTestKonstanter.GRUNNBELØP_2018))
+                .medGrunnbeløp(Beløp.fra(GrunnbeløpTestKonstanter.GRUNNBELØP_2018))
                 .build();
         BeregningsgrunnlagAktivitetStatusDto.builder()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
@@ -258,7 +259,7 @@ public class AvklaringsbehovUtlederFaktaOmBeregningTest {
         if (orgnr != null) {
             BGAndelArbeidsforholdDto.Builder bgAndelArbeidsforholdBuilder = BGAndelArbeidsforholdDto.builder()
                     .medArbeidsgiver(Arbeidsgiver.virksomhet(orgnr))
-                    .medRefusjonskravPrÅr(BigDecimal.valueOf(refusjonskravPrÅr), Utfall.GODKJENT);
+                    .medRefusjonskravPrÅr(Beløp.fra(refusjonskravPrÅr), Utfall.GODKJENT);
             andelBuilder
                     .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(4).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.withDayOfMonth(1).minusDays(1))
                     .medBGAndelArbeidsforhold(bgAndelArbeidsforholdBuilder);

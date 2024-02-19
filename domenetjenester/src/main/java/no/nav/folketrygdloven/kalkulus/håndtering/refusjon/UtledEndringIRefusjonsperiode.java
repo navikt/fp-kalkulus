@@ -90,7 +90,8 @@ public final class UtledEndringIRefusjonsperiode {
         return matchendeAndel
                 .flatMap(BeregningsgrunnlagPrStatusOgAndelDto::getBgAndelArbeidsforhold)
                 .flatMap(BGAndelArbeidsforholdDto::getRefusjon)
-                .map(Refusjon::getSaksbehandletRefusjonPrÅr);
+                .map(Refusjon::getSaksbehandletRefusjonPrÅr)
+                .map(Beløp::safeVerdi);
     }
 
     private static boolean matcherReferanse(BeregningRefusjonPeriodeDto periode, BeregningRefusjonPeriodeDto p) {

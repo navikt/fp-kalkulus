@@ -36,6 +36,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.TilkommetInntektDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class MapBeregningsgrunnlagFraVLTilRegel {
 
@@ -58,9 +59,9 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medAktivitetStatuser(aktivitetStatuser)
                 .medBeregningsgrunnlagPerioder(perioder)
                 .medGrunnbeløp(beregningsgrunnlag.getGrunnbeløp().verdi())
-                .medYtelsesdagerIEtÅr(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getYtelsesdagerIÅr())
+                .medYtelsesdagerIEtÅr(KonfigTjeneste.getYtelsesdagerIÅr())
                 .medYtelsesSpesifiktGrunnlag(mapYtelsesSpesifiktGrunnlag(input))
-                .medAntallGØvreGrenseverdi(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi())
+                .medAntallGØvreGrenseverdi(KonfigTjeneste.getAntallGØvreGrenseverdi())
                 .medMidlertidigInaktivType(mapMidlertidigInaktivType(input))
                 .leggTilToggle("GRADERING_MOT_INNTEKT", KonfigurasjonVerdi.instance().get("GRADERING_MOT_INNTEKT", false))
                 .build();
@@ -141,7 +142,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
     private static TilkommetInntekt mapTilkommetInntekt(TilkommetInntektDto ti) {
         return new TilkommetInntekt(AktivitetStatus.valueOf(ti.getAktivitetStatus().getKode()),
                 MapArbeidsforholdFraVLTilRegel.arbeidsforholdFor(ti.getAktivitetStatus(), ti.getArbeidsgiver(), OpptjeningAktivitetType.UDEFINERT, ti.getArbeidsforholdRef().getReferanse()),
-                ti.getTilkommetInntektPrÅr());
+                Beløp.safeVerdi(ti.getTilkommetInntektPrÅr()));
     }
 
     private static List<BeregningsgrunnlagPrStatus> mapVLBGPrStatus(BeregningsgrunnlagPeriodeDto vlBGPeriode, BeregningsgrunnlagInput input) {
@@ -169,8 +170,8 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         var aktivitetsgrad = finnAktivitetsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);
         var builder = BeregningsgrunnlagPrStatus.builder()
                 .medAktivitetStatus(regelAktivitetStatus)
-                .medBruttoPrÅr(vlBGPStatus.getBruttoPrÅr())
-                .medInntektsgrunnlagPrÅr(vlBGPStatus.getGrunnlagPrÅr().getBruttoUtenFordelt() != null ? vlBGPStatus.getGrunnlagPrÅr().getBruttoUtenFordelt() : BigDecimal.ZERO)
+                .medBruttoPrÅr(Beløp.safeVerdi(vlBGPStatus.getBruttoPrÅr()))
+                .medInntektsgrunnlagPrÅr(Beløp.safeVerdi(vlBGPStatus.getGrunnlagPrÅr().getBruttoUtenFordelt()) != null ? vlBGPStatus.getGrunnlagPrÅr().getBruttoUtenFordelt().verdi() : BigDecimal.ZERO)
                 .medAndelNr(vlBGPStatus.getAndelsnr())
                 .medUtbetalingsprosent(BigDecimal.valueOf(100));
         aktivitetsgrad.ifPresent(builder::medAktivitetsgrad);
@@ -196,17 +197,17 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         BeregningsgrunnlagPrArbeidsforhold.Builder builder = BeregningsgrunnlagPrArbeidsforhold.builder();
         var aktivitetsgrad = finnAktivitetsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);
         builder
-                .medBruttoPrÅr(vlBGPStatus.getBruttoPrÅr())
-                .medInntektsgrunnlagPrÅr(vlBGPStatus.getGrunnlagPrÅr().getBruttoUtenFordelt() != null ? vlBGPStatus.getGrunnlagPrÅr().getBruttoUtenFordelt() : BigDecimal.ZERO)
+                .medBruttoPrÅr(Beløp.safeVerdi(vlBGPStatus.getBruttoPrÅr()))
+                .medInntektsgrunnlagPrÅr(Beløp.safeVerdi(vlBGPStatus.getGrunnlagPrÅr().getBruttoUtenFordelt()) != null ? vlBGPStatus.getGrunnlagPrÅr().getBruttoUtenFordelt().verdi() : BigDecimal.ZERO)
                 .medAndelNr(vlBGPStatus.getAndelsnr())
                 .medArbeidsforhold(MapArbeidsforholdFraVLTilRegel.arbeidsforholdFor(vlBGPStatus))
                 .medUtbetalingsprosent(BigDecimal.valueOf(100));
         aktivitetsgrad.ifPresentOrElse(builder::medAktivitetsgrad, () -> builder.medAktivitetsgrad(BigDecimal.ZERO));
         vlBGPStatus.getBgAndelArbeidsforhold().ifPresent(bga ->
                 builder
-                        .medNaturalytelseBortfaltPrÅr(bga.getNaturalytelseBortfaltPrÅr().orElse(null))
-                        .medNaturalytelseTilkommetPrÅr(bga.getNaturalytelseTilkommetPrÅr().orElse(null))
-                        .medRefusjonPrÅr(bga.getGjeldendeRefusjonPrÅr()));
+                        .medNaturalytelseBortfaltPrÅr(bga.getNaturalytelseBortfaltPrÅr().map(Beløp::verdi).orElse(null))
+                        .medNaturalytelseTilkommetPrÅr(bga.getNaturalytelseTilkommetPrÅr().map(Beløp::verdi).orElse(null))
+                        .medRefusjonPrÅr(Beløp.safeVerdi(bga.getGjeldendeRefusjonPrÅr())));
 
         return builder.build();
     }

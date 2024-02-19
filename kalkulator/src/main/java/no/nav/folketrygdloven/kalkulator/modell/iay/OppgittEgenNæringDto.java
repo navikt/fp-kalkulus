@@ -1,11 +1,11 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.VirksomhetType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
 
 public class OppgittEgenNæringDto implements OppgittPeriodeInntekt {
@@ -17,7 +17,7 @@ public class OppgittEgenNæringDto implements OppgittPeriodeInntekt {
     private String regnskapsførerTlf;
     private LocalDate endringDato;
     private String begrunnelse;
-    private BigDecimal bruttoInntekt;
+    private Beløp bruttoInntekt;
 
     private boolean nyoppstartet;
     private boolean varigEndring;
@@ -40,7 +40,7 @@ public class OppgittEgenNæringDto implements OppgittPeriodeInntekt {
     }
 
     @Override
-    public BigDecimal getInntekt() {
+    public Beløp getInntekt() {
         return bruttoInntekt;
     }
 
@@ -89,11 +89,11 @@ public class OppgittEgenNæringDto implements OppgittPeriodeInntekt {
         this.endringDato = endringDato;
     }
 
-    public BigDecimal getBruttoInntekt() {
+    public Beløp getBruttoInntekt() {
         return bruttoInntekt;
     }
 
-    void setBruttoInntekt(BigDecimal bruttoInntekt) {
+    void setBruttoInntekt(Beløp bruttoInntekt) {
         this.bruttoInntekt = bruttoInntekt;
     }
 

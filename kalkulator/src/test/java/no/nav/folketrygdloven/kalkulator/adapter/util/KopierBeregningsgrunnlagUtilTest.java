@@ -17,6 +17,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregnings
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrStatus;
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 
 public class KopierBeregningsgrunnlagUtilTest {
 
@@ -30,8 +31,8 @@ public class KopierBeregningsgrunnlagUtilTest {
             .medPeriode(Periode.of(periode.getTom().plusDays(1), null))
             .leggTilPeriodeÅrsak(PeriodeÅrsak.ARBEIDSFORHOLD_AVSLUTTET)
             .build();
-        Beregningsgrunnlag.builder().medBeregningsgrunnlagPeriode(orginal).medYtelsesdagerIEtÅr(BigDecimal.valueOf(260));
-        Beregningsgrunnlag.builder().medBeregningsgrunnlagPeriode(kopi).medYtelsesdagerIEtÅr(BigDecimal.valueOf(260));
+        Beregningsgrunnlag.builder().medBeregningsgrunnlagPeriode(orginal).medYtelsesdagerIEtÅr(KonfigTjeneste.getYtelsesdagerIÅr());
+        Beregningsgrunnlag.builder().medBeregningsgrunnlagPeriode(kopi).medYtelsesdagerIEtÅr(KonfigTjeneste.getYtelsesdagerIÅr());
 
         // Act
         KopierBeregningsgrunnlagUtil.kopierBeregningsgrunnlagPeriode(orginal, kopi);
@@ -65,8 +66,8 @@ public class KopierBeregningsgrunnlagUtilTest {
         assertThat(af.getArbeidsforhold()).isEqualTo(Arbeidsforhold.nyttArbeidsforholdHosVirksomhet("12345"));
         assertThat(af.getAndelNr()).isEqualTo(1L);
         assertThat(af.getBeregnetPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(1));
-        assertThat(af.getNaturalytelseBortfaltPrÅr().get()).isEqualByComparingTo(BigDecimal.valueOf(0));
-        assertThat(af.getNaturalytelseTilkommetPrÅr().get()).isEqualByComparingTo(BigDecimal.valueOf(10));
+        assertThat(af.getNaturalytelseBortfaltPrÅr().get()).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(af.getNaturalytelseTilkommetPrÅr().get()).isEqualByComparingTo(BigDecimal.TEN);
         assertThat(af.getMaksimalRefusjonPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(2));
         assertThat(af.getAvkortetRefusjonPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(3));
         assertThat(af.getRedusertRefusjonPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(4));
@@ -103,9 +104,9 @@ public class KopierBeregningsgrunnlagUtilTest {
             .medFordeltRefusjonPrÅr(BigDecimal.valueOf(7))
             .medMaksimalRefusjonPrÅr(BigDecimal.valueOf(2))
             .medAvkortetRefusjonPrÅr(BigDecimal.valueOf(3))
-            .medRedusertRefusjonPrÅr(BigDecimal.valueOf(4), BigDecimal.valueOf(260))
+            .medRedusertRefusjonPrÅr(BigDecimal.valueOf(4), KonfigTjeneste.getYtelsesdagerIÅr())
             .medAvkortetBrukersAndelPrÅr(BigDecimal.valueOf(5))
-            .medRedusertBrukersAndelPrÅr(BigDecimal.valueOf(6), BigDecimal.valueOf(260))
+            .medRedusertBrukersAndelPrÅr(BigDecimal.valueOf(6), KonfigTjeneste.getYtelsesdagerIÅr())
             .medErTidsbegrensetArbeidsforhold(true)
             .medFastsattAvSaksbehandler(true)
             .build();

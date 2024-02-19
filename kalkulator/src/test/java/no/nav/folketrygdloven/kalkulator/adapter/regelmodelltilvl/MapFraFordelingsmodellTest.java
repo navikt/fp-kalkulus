@@ -23,6 +23,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class MapFraFordelingsmodellTest {
     private static final LocalDate STP = LocalDate.of(2021,10,1);
@@ -153,11 +154,11 @@ class MapFraFordelingsmodellTest {
     private void assertAndel(List<BeregningsgrunnlagPrStatusOgAndelDto> andeler, long andelsnr, Integer fordeltPrÅr, Integer fordeltRefPrÅr, Inntektskategori ik) {
         var matchendeAndel = andeler.stream().filter(a -> a.getAndelsnr().equals(andelsnr)).findFirst().orElseThrow();
         if (fordeltRefPrÅr != null) {
-            assertThat(matchendeAndel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getFordeltRefusjonPrÅr).orElse(BigDecimal.ZERO))
-                    .isEqualByComparingTo(BigDecimal.valueOf(fordeltRefPrÅr));
+            assertThat(matchendeAndel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getFordeltRefusjonPrÅr).orElse(Beløp.ZERO))
+                    .isEqualByComparingTo(Beløp.fra(fordeltRefPrÅr));
         }
         assertThat(matchendeAndel.getGjeldendeInntektskategori()).isEqualTo(ik);
-        assertThat(matchendeAndel.getFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fordeltPrÅr));
+        assertThat(matchendeAndel.getFordeltPrÅr()).isEqualByComparingTo(Beløp.fra(fordeltPrÅr));
     }
 
     private BeregningsgrunnlagDto map(FordelPeriodeModell... regelPeriode) {

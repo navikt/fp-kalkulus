@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
 
-import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +15,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 public class FastsettBGTidsbegrensetArbeidsforholdHåndterer {
@@ -35,7 +35,7 @@ public class FastsettBGTidsbegrensetArbeidsforholdHåndterer {
             for (BeregningsgrunnlagPeriodeDto periode : perioder) {
                 BeregningsgrunnlagPrStatusOgAndelDto frilansAndel = finnFrilansAndel(periode)
                     .orElseThrow(() -> new IllegalStateException("Mangler frilansandel for behandling " + input.getKoblingReferanse().getKoblingId()));
-                BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(frilansAndel).medOverstyrtPrÅr(BigDecimal.valueOf(dto.getFrilansInntekt()));
+                BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(frilansAndel).medOverstyrtPrÅr(Beløp.fra(dto.getFrilansInntekt()));
             }
         }
         for (FastsattePerioderTidsbegrensetDto periode: fastsattePerioder) {
@@ -61,7 +61,7 @@ public class FastsettBGTidsbegrensetArbeidsforholdHåndterer {
         bgPerioderSomSkalFastsettesAvDennePerioden.forEach(p -> {
             Optional<BeregningsgrunnlagPrStatusOgAndelDto> korrektAndel = p.getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(a -> a.getAndelsnr().equals(andel.getAndelsnr())).findFirst();
             korrektAndel.ifPresent(beregningsgrunnlagPrStatusOgAndel -> BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(beregningsgrunnlagPrStatusOgAndel)
-                .medOverstyrtPrÅr(BigDecimal.valueOf(andel.getBruttoFastsattInntekt())));
+                .medOverstyrtPrÅr(Beløp.fra(andel.getBruttoFastsattInntekt())));
         });
     }
 

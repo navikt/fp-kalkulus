@@ -17,11 +17,13 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste;
 import no.nav.folketrygdloven.kalkulator.felles.inntektgradering.DagsatsPrKategoriOgArbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
@@ -84,7 +86,7 @@ class UtvidetInntektsperiodeUtleder {
                 .toList();
     }
 
-    private static LocalDateTimeline<BigDecimal> finnTidslinjeForArbeidsgiver(LocalDateTimeline<Set<DagsatsPrKategoriOgArbeidsgiver>> registerInntektTidslinje, Arbeidsgiver arbeidsgiver) {
+    private static LocalDateTimeline<Beløp> finnTidslinjeForArbeidsgiver(LocalDateTimeline<Set<DagsatsPrKategoriOgArbeidsgiver>> registerInntektTidslinje, Arbeidsgiver arbeidsgiver) {
         return registerInntektTidslinje.mapValue(v -> v.stream().filter(i -> Objects.equals(i.arbeidsgiver(), arbeidsgiver)).findFirst()
                         .map(DagsatsPrKategoriOgArbeidsgiver::dagsats).orElse(null))
                 .filterValue(Objects::nonNull);
@@ -94,7 +96,7 @@ class UtvidetInntektsperiodeUtleder {
         return UtbetalingsgradTjeneste.finnPerioderForArbeid(utbetalingsgradGrunnlag, arbeidsgiver, InternArbeidsforholdRefDto.nullRef(), false);
     }
 
-    private static LocalDateTimeline<Boolean> lagGodkjentePerioderUtenInntekt(List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitetDto, int inntektRapporteringsfristDag, LocalDateTimeline<BigDecimal> inntektTidslinje) {
+    private static LocalDateTimeline<Boolean> lagGodkjentePerioderUtenInntekt(List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitetDto, int inntektRapporteringsfristDag, LocalDateTimeline<Beløp> inntektTidslinje) {
         var godkjenteSegmenter = new ArrayList<>(godkjennGrunnetFulltFravær(utbetalingsgradPrAktivitetDto));
         if (!inntektTidslinje.isEmpty()) {
             godkjenteSegmenter.addAll(godkjennGrunnetKortereOppholdAvInntekt(inntektTidslinje));
@@ -103,29 +105,32 @@ class UtvidetInntektsperiodeUtleder {
         return new LocalDateTimeline<>(godkjenteSegmenter, (di, lhs, rhs) -> new LocalDateSegment<>(di, lhs.getValue() || rhs.getValue()));
     }
 
-    private static List<LocalDateSegment<Boolean>> godkjennGrunnetKortereOppholdAvInntekt(LocalDateTimeline<BigDecimal> inntektTidslinje) {
+    private static List<LocalDateSegment<Boolean>> godkjennGrunnetKortereOppholdAvInntekt(LocalDateTimeline<Beløp> inntektTidslinje) {
         return fyllMellomromFraDato(inntektTidslinje.getMinLocalDate(), inntektTidslinje).compress((e1, e2) -> e1.compareTo(e2) == 0, StandardCombinators::leftOnly).toSegments().stream()
                 .map(UtvidetInntektsperiodeUtleder::godkjennInntektEllerHullPåMindreEnnTreMåneder)
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    private static LocalDateTimeline<BigDecimal> fyllMellomromFraDato(LocalDate fomDato, LocalDateTimeline<BigDecimal> inntektPerioderTidslinje) {
-        var mellomrom = new LocalDateTimeline<>(new LocalDateInterval(fomDato, LocalDateInterval.TIDENES_ENDE), BigDecimal.ZERO);
-        return inntektPerioderTidslinje.combine(mellomrom, StandardCombinators::sum, LocalDateTimeline.JoinStyle.CROSS_JOIN).compress();
+    private static LocalDateTimeline<Beløp> fyllMellomromFraDato(LocalDate fomDato, LocalDateTimeline<Beløp> inntektPerioderTidslinje) {
+        var mellomrom = new LocalDateTimeline<>(new LocalDateInterval(fomDato, LocalDateInterval.TIDENES_ENDE), Beløp.ZERO);
+        return inntektPerioderTidslinje.combine(mellomrom, UtvidetInntektsperiodeUtleder::summer, LocalDateTimeline.JoinStyle.CROSS_JOIN).compress();
     }
 
+    public static LocalDateSegment<Beløp> summer(LocalDateInterval dateInterval, LocalDateSegment<Beløp> lhs, LocalDateSegment<Beløp> rhs) {
+        return new LocalDateSegment<>(dateInterval, Beløp.safeSum(lhs == null ? null : lhs.getValue(), rhs == null ? null : rhs.getValue()));
+    }
 
     private static List<LocalDateSegment<Boolean>> godkjennGrunnetFulltFravær(List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitetDto) {
         return utbetalingsgradPrAktivitetDto.stream()
                 .flatMap(it -> it.getPeriodeMedUtbetalingsgrad().stream())
-                .filter(p -> p.getAktivitetsgrad().map(ag -> ag.compareTo(BigDecimal.valueOf(0)) == 0).orElse(false))
+                .filter(p -> p.getAktivitetsgrad().map(ag -> ag.compareTo(BigDecimal.ZERO) == 0).orElse(false))
                 .map(PeriodeMedUtbetalingsgradDto::getPeriode)
                 .map(it -> new LocalDateSegment<>(it.getFomDato(), it.getTomDato(), TRUE))
                 .toList();
     }
 
-    private static LocalDateSegment<Boolean> godkjennInntektEllerHullPåMindreEnnTreMåneder(LocalDateSegment<BigDecimal> s) {
-        if (s.getValue().compareTo(BigDecimal.ZERO) > 0) {
+    private static LocalDateSegment<Boolean> godkjennInntektEllerHullPåMindreEnnTreMåneder(LocalDateSegment<Beløp> s) {
+        if (s.getValue().compareTo(Beløp.ZERO) > 0) {
             return new LocalDateSegment<>(s.getFom(), s.getTom(), TRUE);
         } else {
             var skalHulletGodkjennes = skalAnsesSomAktivIPeriodeUtenUtbetaling(s.getFom(), s.getTom());
@@ -140,7 +145,7 @@ class UtvidetInntektsperiodeUtleder {
             return true;
         }
         var period = fomJustert.until(tomJustert.plusDays(1));
-        var antallMåneder = period.getMonths() + period.getYears() * 12;
+        var antallMåneder = period.getMonths() + period.getYears() * KonfigTjeneste.getMånederIÅr().intValue();
         return antallMåneder <= MAKS_ANTALL_MÅNEDER_UTEN_INNTEKT;
     }
 
@@ -158,7 +163,7 @@ class UtvidetInntektsperiodeUtleder {
         return dato.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
     }
 
-    private static LocalDateSegment<Boolean> godkjennGrunnetIkkePassertFrist(LocalDateTimeline<BigDecimal> inntektTidslinje, int inntektRapporteringsfristDag) {
+    private static LocalDateSegment<Boolean> godkjennGrunnetIkkePassertFrist(LocalDateTimeline<Beløp> inntektTidslinje, int inntektRapporteringsfristDag) {
         var førsteMånedUtenPassertFrist = finnFørsteMånedUtenPassertRapporteringsfrist(inntektRapporteringsfristDag);
         var overlappendeInntektSegment = fyllMellomromFraDato(inntektTidslinje.getMinLocalDate(), inntektTidslinje).toSegments()
                 .stream().filter(s -> s.getLocalDateInterval().contains(førsteMånedUtenPassertFrist))

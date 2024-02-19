@@ -34,6 +34,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SkatteOgAvgiftsregelType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 public class BesteberegningInntektDtoForAndelTjenesteTest {
@@ -75,16 +76,16 @@ public class BesteberegningInntektDtoForAndelTjenesteTest {
     public void skal_finne_snitt_inntekt_for_arbeidstaker_med_lik_inntekt_pr_mnd() {
         var aktørInntekt = lagAktørInntekt(singletonList(lagLikInntektSiste3Mnd(arbeidsgiver)));
         var filter = new InntektFilterDto(aktørInntekt.build());
-        BigDecimal snittIBeregningsperioden = InntektForAndelTjeneste.finnSnittinntektForArbeidstakerIBeregningsperioden(filter, arbeidstakerAndel).get();
-        assertThat(snittIBeregningsperioden).isEqualByComparingTo(INNTEKT1);
+        var snittIBeregningsperioden = InntektForAndelTjeneste.finnSnittinntektForArbeidstakerIBeregningsperioden(filter, arbeidstakerAndel).get();
+        assertThat(snittIBeregningsperioden).isEqualByComparingTo(Beløp.fra(INNTEKT1));
     }
 
     @Test
     public void skal_finne_snitt_inntekt_for_arbeidstaker_med_ulik_inntekt_pr_mnd() {
         var aktørInntekt = lagAktørInntekt(singletonList(lagUlikInntektSiste3Mnd(arbeidsgiver)));
         var filter = new InntektFilterDto(aktørInntekt.build());
-        BigDecimal snittIBeregningsperioden = InntektForAndelTjeneste.finnSnittinntektForArbeidstakerIBeregningsperioden(filter, arbeidstakerAndel).get();
-        assertThat(snittIBeregningsperioden).isEqualByComparingTo(SNITT_AV_ULIKE_INNTEKTER);
+        var snittIBeregningsperioden = InntektForAndelTjeneste.finnSnittinntektForArbeidstakerIBeregningsperioden(filter, arbeidstakerAndel).get();
+        assertThat(snittIBeregningsperioden).isEqualByComparingTo(Beløp.fra(SNITT_AV_ULIKE_INNTEKTER));
     }
 
     @Test
@@ -92,8 +93,8 @@ public class BesteberegningInntektDtoForAndelTjenesteTest {
         List<InntektDtoBuilder> inntekter = List.of(lagLikInntektSiste3Mnd(arbeidsgiver), lagLikInntektSiste3Mnd(frilansArbeidsgiver));
         List<YrkesaktivitetDto> aktiviteter = List.of(arbeidstakerYrkesaktivitet, frilans, frilansOppdrag);
         var grunnlagEntitet = lagIAYGrunnlagEntitet(inntekter, aktiviteter);
-        Optional<BigDecimal> snittIBeregningsperioden = InntektForAndelTjeneste.finnSnittAvFrilansinntektIBeregningsperioden(grunnlagEntitet, frilansAndel, SKJÆRINGSTIDSPUNKT_OPPTJENING);
-        assertThat(snittIBeregningsperioden).hasValueSatisfying(a -> assertThat(a).isEqualByComparingTo(INNTEKT1));
+        var snittIBeregningsperioden = InntektForAndelTjeneste.finnSnittAvFrilansinntektIBeregningsperioden(grunnlagEntitet, frilansAndel, SKJÆRINGSTIDSPUNKT_OPPTJENING);
+        assertThat(snittIBeregningsperioden).hasValueSatisfying(a -> assertThat(a.verdi()).isEqualByComparingTo(INNTEKT1));
     }
 
     @Test
@@ -101,8 +102,8 @@ public class BesteberegningInntektDtoForAndelTjenesteTest {
         List<InntektDtoBuilder> inntekter = List.of(lagLikInntektSiste3Mnd(arbeidsgiver), lagUlikInntektSiste3Mnd(frilansArbeidsgiver));
         List<YrkesaktivitetDto> aktiviteter = List.of(arbeidstakerYrkesaktivitet, frilans, frilansOppdrag);
         var grunnlagEntitet = lagIAYGrunnlagEntitet(inntekter, aktiviteter);
-        Optional<BigDecimal> snittIBeregningsperioden = InntektForAndelTjeneste.finnSnittAvFrilansinntektIBeregningsperioden(grunnlagEntitet, frilansAndel, SKJÆRINGSTIDSPUNKT_OPPTJENING);
-        assertThat(snittIBeregningsperioden).hasValueSatisfying(a -> assertThat(a).isEqualByComparingTo(SNITT_AV_ULIKE_INNTEKTER));
+        var snittIBeregningsperioden = InntektForAndelTjeneste.finnSnittAvFrilansinntektIBeregningsperioden(grunnlagEntitet, frilansAndel, SKJÆRINGSTIDSPUNKT_OPPTJENING);
+        assertThat(snittIBeregningsperioden).hasValueSatisfying(a -> assertThat(a.verdi()).isEqualByComparingTo(SNITT_AV_ULIKE_INNTEKTER));
     }
 
     @Test
@@ -110,8 +111,8 @@ public class BesteberegningInntektDtoForAndelTjenesteTest {
         List<InntektDtoBuilder> inntekter = List.of(lagLikInntektSiste3Mnd(arbeidsgiver), lagUlikInntektSiste3Mnd(frilansArbeidsgiver), lagUlikInntektSiste3Mnd(frilansArbeidsgiver2));
         List<YrkesaktivitetDto> aktiviteter = List.of(arbeidstakerYrkesaktivitet, frilans, frilansOppdrag, frilansOppdrag2);
         var grunnlagEntitet = lagIAYGrunnlagEntitet(inntekter, aktiviteter);
-        Optional<BigDecimal> snittIBeregningsperioden = InntektForAndelTjeneste.finnSnittAvFrilansinntektIBeregningsperioden(grunnlagEntitet, frilansAndel, SKJÆRINGSTIDSPUNKT_OPPTJENING);
-        assertThat(snittIBeregningsperioden).hasValueSatisfying(a -> assertThat(a).isEqualByComparingTo(SNITT_AV_ULIKE_INNTEKTER.multiply(BigDecimal.valueOf(2))));
+        var snittIBeregningsperioden = InntektForAndelTjeneste.finnSnittAvFrilansinntektIBeregningsperioden(grunnlagEntitet, frilansAndel, SKJÆRINGSTIDSPUNKT_OPPTJENING);
+        assertThat(snittIBeregningsperioden).hasValueSatisfying(a -> assertThat(a.verdi()).isEqualByComparingTo(SNITT_AV_ULIKE_INNTEKTER.multiply(BigDecimal.valueOf(2))));
     }
 
     private InntektArbeidYtelseGrunnlagDto lagIAYGrunnlagEntitet(List<InntektDtoBuilder> inntekter, List<YrkesaktivitetDto> aktiviteter) {
@@ -166,7 +167,7 @@ public class BesteberegningInntektDtoForAndelTjenesteTest {
 
 
     private InntektspostDtoBuilder lagInntektspost(BigDecimal inntekt, int mndFørSkjæringstidspunkt) {
-        return InntektspostDtoBuilder.ny().medBeløp(inntekt)
+        return InntektspostDtoBuilder.ny().medBeløp(Beløp.fra(inntekt))
                 .medInntektspostType(InntektspostType.LØNN)
                 .medPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(mndFørSkjæringstidspunkt).withDayOfMonth(1),
                         SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(mndFørSkjæringstidspunkt - 1).withDayOfMonth(1).minusDays(1))

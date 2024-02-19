@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
@@ -11,6 +10,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 public class FastsettBruttoBeregningsgrunnlagSNHåndterer {
@@ -31,7 +31,7 @@ public class FastsettBruttoBeregningsgrunnlagSNHåndterer {
                     .orElseThrow(() -> new IllegalStateException("Mangler BeregningsgrunnlagPrStatusOgAndel[SELVSTENDIG_NÆRINGSDRIVENDE] for behandling " + input.getKoblingReferanse().getKoblingId()));
 
                 BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(bgAndel)
-                    .medOverstyrtPrÅr(BigDecimal.valueOf(bruttoBeregningsgrunnlag))
+                    .medOverstyrtPrÅr(Beløp.fra(bruttoBeregningsgrunnlag))
                     .build(bgPeriode);
             }
         }

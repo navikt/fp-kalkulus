@@ -31,14 +31,14 @@ import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLTest {
 
     public static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019, 1, 1);
-    private static final BigDecimal RAPPORTERT_PR_ÅR = BigDecimal.valueOf(100000);
-    public static final Beløp GRUNNBELØP = Beløp.fra(BigDecimal.valueOf(GrunnbeløpMock.finnGrunnbeløp(SKJÆRINGSTIDSPUNKT)));
+    private static final Beløp RAPPORTERT_PR_ÅR = Beløp.fra(100000);
+    public static final Beløp GRUNNBELØP = Beløp.fra(GrunnbeløpMock.finnGrunnbeløp(SKJÆRINGSTIDSPUNKT));
     private static final BigDecimal AVVIK_PROMILLE = BigDecimal.valueOf(20L);
     private static final List<FaktaOmBeregningTilfelle> FAKTA_OM_BEREGNING_TILFELLER = List.of(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE);
-    private static final BigDecimal BRUTTO_PR_ÅR = BigDecimal.valueOf(10000);
+    private static final Beløp BRUTTO_PR_ÅR = Beløp.fra(10000);
     private static final Arbeidsgiver ARBEIDSGIVER = Arbeidsgiver.fra(AktørId.dummy());
-    private static final BigDecimal NATURALYTELSE_TILKOMMET_PR_ÅR = BigDecimal.valueOf(2000);
-    private static final BigDecimal BEREGNET_PR_ÅR = BigDecimal.valueOf(1000);
+    private static final Beløp NATURALYTELSE_TILKOMMET_PR_ÅR = Beløp.fra(2000);
+    private static final Beløp BEREGNET_PR_ÅR = Beløp.fra(1000);
     private MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL mapTilVlNaturalytelse = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse();
     private MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL mapTilVlRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLGraderingOgUtbetalingsgrad();
 

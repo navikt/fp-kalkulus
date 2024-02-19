@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.felles.frist;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.List;
@@ -24,6 +23,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
@@ -31,6 +31,8 @@ class KravTjenesteTest {
 
     public static final LocalDate SKJÆRINGSTIDSPUNKT_BEREGNING = LocalDate.now();
     public static final Arbeidsgiver ARBEIDSGIVER1 = Arbeidsgiver.virksomhet("37432232");
+
+    private static final Beløp BELØP_TEN = Beløp.fra(10);
 
     @Test
     void skal_lage_tom_tidslinje_uten_kravperioder() {
@@ -52,9 +54,8 @@ class KravTjenesteTest {
     @Test
     void skal_lage_tidslinje_med_krav_fra_skjæringstidspunkt_innsendt_i_tide() {
         LocalDate startRefusjon = SKJÆRINGSTIDSPUNKT_BEREGNING;
-        BigDecimal refusjonskrav = BigDecimal.TEN;
         List<PerioderForKravDto> kravperioder = List.of(new PerioderForKravDto(startRefusjon.plusMonths(2),
-                List.of(new RefusjonsperiodeDto(Intervall.fraOgMed(startRefusjon), refusjonskrav))));
+                List.of(new RefusjonsperiodeDto(Intervall.fraOgMed(startRefusjon), BELØP_TEN))));
         Intervall ansattPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(12), SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(12));
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagGjeldendeAktiviteter(ansattPeriode);
         YrkesaktivitetDto yrkesaktivitet = lagYrkesaktivitet(ansattPeriode);
@@ -69,17 +70,16 @@ class KravTjenesteTest {
         assertThat(kravTidslinje.size()).isEqualTo(1);
         LocalDateSegment<KravOgUtfall> kravSegment = kravTidslinje.iterator().next();
         assertThat(kravSegment.getValue().utfall()).isEqualTo(Utfall.GODKJENT);
-        assertThat(kravSegment.getValue().refusjonskrav()).isEqualTo(refusjonskrav);
+        assertThat(kravSegment.getValue().refusjonskrav()).isEqualTo(BELØP_TEN);
         assertThat(kravSegment.getFom()).isEqualTo(startRefusjon);
     }
 
     @Test
     void skal_lage_tidslinje_med_krav_fra_skjæringstidspunkt_innsendt_i_for_sent() {
         LocalDate startRefusjon = SKJÆRINGSTIDSPUNKT_BEREGNING;
-        BigDecimal refusjonskrav = BigDecimal.TEN;
         LocalDate innsendingsdato = startRefusjon.plusMonths(4);
         List<PerioderForKravDto> kravperioder = List.of(
-                new PerioderForKravDto(innsendingsdato, List.of(new RefusjonsperiodeDto(Intervall.fraOgMed(startRefusjon), refusjonskrav))));
+                new PerioderForKravDto(innsendingsdato, List.of(new RefusjonsperiodeDto(Intervall.fraOgMed(startRefusjon), BELØP_TEN))));
         Intervall ansattPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(12), SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(12));
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagGjeldendeAktiviteter(ansattPeriode);
         YrkesaktivitetDto yrkesaktivitet = lagYrkesaktivitet(ansattPeriode);
@@ -95,21 +95,21 @@ class KravTjenesteTest {
         Iterator<LocalDateSegment<KravOgUtfall>> iterator = kravTidslinje.iterator();
         LocalDateSegment<KravOgUtfall> kravSegment1 = iterator.next();
         assertThat(kravSegment1.getValue().utfall()).isEqualTo(Utfall.UNDERKJENT);
-        assertThat(kravSegment1.getValue().refusjonskrav()).isEqualTo(refusjonskrav);
+        assertThat(kravSegment1.getValue().refusjonskrav()).isEqualTo(BELØP_TEN);
         assertThat(kravSegment1.getFom()).isEqualTo(startRefusjon);
 
         LocalDateSegment<KravOgUtfall> kravSegment2 = iterator.next();
         assertThat(kravSegment2.getValue().utfall()).isEqualTo(Utfall.GODKJENT);
-        assertThat(kravSegment2.getValue().refusjonskrav()).isEqualTo(refusjonskrav);
+        assertThat(kravSegment2.getValue().refusjonskrav()).isEqualTo(BELØP_TEN);
         assertThat(kravSegment2.getFom()).isEqualTo(innsendingsdato.minusMonths(3).withDayOfMonth(1));
     }
 
     @Test
     void skal_lage_tidslinje_med_krav_flere_overlappende_krav_alle_innsendt_i_tide() {
         LocalDate startRefusjon = SKJÆRINGSTIDSPUNKT_BEREGNING;
-        BigDecimal refusjonskrav1 = BigDecimal.TEN;
-        BigDecimal refusjonskrav2 = BigDecimal.valueOf(10_000);
-        BigDecimal refusjonskrav3 = BigDecimal.valueOf(20_000);
+        var refusjonskrav1 = BELØP_TEN;
+        var refusjonskrav2 = Beløp.fra(10_000);
+        var refusjonskrav3 = Beløp.fra(20_000);
         List<PerioderForKravDto> kravperioder = List.of(
                 new PerioderForKravDto(startRefusjon.plusMonths(1), List.of(new RefusjonsperiodeDto(Intervall.fraOgMed(startRefusjon), refusjonskrav1))),
                 new PerioderForKravDto(startRefusjon.plusMonths(2), List.of(new RefusjonsperiodeDto(Intervall.fraOgMed(startRefusjon), refusjonskrav2))),
@@ -136,8 +136,8 @@ class KravTjenesteTest {
     @Test
     void skal_lage_tidslinje_med_krav_flere_overlappende_krav_første_tidsnok_andre_for_sent_gir_godkjent() {
         LocalDate startRefusjon = SKJÆRINGSTIDSPUNKT_BEREGNING;
-        BigDecimal refusjonskrav1 = BigDecimal.TEN;
-        BigDecimal refusjonskrav2 = BigDecimal.valueOf(10_000);
+        var refusjonskrav1 = BELØP_TEN;
+        var refusjonskrav2 = Beløp.fra(10_000);
         List<PerioderForKravDto> kravperioder = List.of(
                 new PerioderForKravDto(startRefusjon.plusMonths(1), List.of(new RefusjonsperiodeDto(Intervall.fraOgMed(startRefusjon), refusjonskrav1))),
                 new PerioderForKravDto(startRefusjon.plusMonths(5), List.of(new RefusjonsperiodeDto(Intervall.fraOgMed(startRefusjon), refusjonskrav2))));
@@ -163,8 +163,8 @@ class KravTjenesteTest {
     @Test
     void skal_lage_tidslinje_med_for_sent_krav_sendt_inn_deler_av_kravet_i_tide() {
         LocalDate startRefusjon = SKJÆRINGSTIDSPUNKT_BEREGNING;
-        BigDecimal refusjonskrav1 = BigDecimal.TEN;
-        BigDecimal refusjonskrav2 = BigDecimal.valueOf(10_000);
+        var refusjonskrav1 = BELØP_TEN;
+        var refusjonskrav2 = Beløp.fra(10_000);
         LocalDate innsendingsdato2 = startRefusjon.plusMonths(7);
         LocalDate innsendingsdato1 = startRefusjon.minusMonths(2);
         LocalDate startRefusjon1 = startRefusjon.plusMonths(2);
@@ -199,8 +199,8 @@ class KravTjenesteTest {
     @Test
     void skal_lage_tidslinje_med_for_sent_krav_sendt_inn_deler_av_kravet_i_tide_med_nullbeløp() {
         LocalDate startRefusjon = SKJÆRINGSTIDSPUNKT_BEREGNING;
-        BigDecimal refusjonskrav1 = BigDecimal.ZERO;
-        BigDecimal refusjonskrav2 = BigDecimal.valueOf(10_000);
+        var refusjonskrav1 = Beløp.ZERO;
+        var refusjonskrav2 = Beløp.fra(10_000);
         LocalDate innsendingsdato2 = startRefusjon.plusMonths(7);
         LocalDate innsendingsdato1 = startRefusjon.minusMonths(2);
         LocalDate startRefusjon1 = startRefusjon.plusMonths(2);
@@ -234,7 +234,7 @@ class KravTjenesteTest {
     @Test
     void skal_lage_tidslinje_med_krav_fra_skjæringstidspunkt_innsendt_i_for_sent_med_overstyrt_gyldighet() {
         LocalDate startRefusjon = SKJÆRINGSTIDSPUNKT_BEREGNING;
-        BigDecimal refusjonskrav = BigDecimal.TEN;
+        var refusjonskrav = BELØP_TEN;
         LocalDate innsendingsdato = startRefusjon.plusMonths(4);
         Optional<LocalDate> overstyrtFom = Optional.of(startRefusjon);
         List<PerioderForKravDto> kravperioder = List.of(

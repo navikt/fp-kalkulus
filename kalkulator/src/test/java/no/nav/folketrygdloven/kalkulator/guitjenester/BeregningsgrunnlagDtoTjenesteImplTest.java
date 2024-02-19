@@ -8,16 +8,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
-
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.BeregningsgrunnlagPrStatusOgAndelDtoTjeneste;
-import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
@@ -32,11 +25,11 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
@@ -44,22 +37,23 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.SammenligningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 public class BeregningsgrunnlagDtoTjenesteImplTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now().minusDays(5);
     private static final Inntektskategori INNTEKTSKATEGORI = Inntektskategori.ARBEIDSTAKER;
-    private static final BigDecimal AVKORTET_PR_AAR = BigDecimal.valueOf(150000);
-    private static final BigDecimal BRUTTO_PR_AAR = BigDecimal.valueOf(300000);
-    private static final BigDecimal REDUSERT_PR_AAR = BigDecimal.valueOf(500000);
-    private static final BigDecimal OVERSTYRT_PR_AAR = BigDecimal.valueOf(500);
-    private static final BigDecimal PGI_SNITT = BigDecimal.valueOf(400000);
+    private static final Beløp AVKORTET_PR_AAR = Beløp.fra(150000);
+    private static final Beløp BRUTTO_PR_AAR = Beløp.fra(300000);
+    private static final Beløp REDUSERT_PR_AAR = Beløp.fra(500000);
+    private static final Beløp OVERSTYRT_PR_AAR = Beløp.fra(500);
+    private static final Beløp PGI_SNITT = Beløp.fra(400000);
     private static final LocalDate ANDEL_FOM = LocalDate.now().minusDays(100);
     private static final LocalDate ANDEL_TOM = LocalDate.now();
     private static final String ORGNR = "973093681";
     private static final Long ANDELSNR = 1L;
-    private static final BigDecimal RAPPORTERT_PR_AAR = BigDecimal.valueOf(300000);
+    private static final Beløp RAPPORTERT_PR_AAR = Beløp.fra(300000);
     private static final BigDecimal AVVIK_OVER_25_PROSENT = BigDecimal.valueOf(500L);
     private static final BigDecimal AVVIK_UNDER_25_PROSENT = BigDecimal.valueOf(30L);
     private static final LocalDate SAMMENLIGNING_FOM = LocalDate.now().minusDays(100);
@@ -96,11 +90,11 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         SammenligningsgrunnlagDto sammenligningsgrunnlagPrStatus = beregningsgrunnlagDto.getSammenligningsgrunnlagPrStatus().get(0);
         assertThat(sammenligningsgrunnlagPrStatus).isNotNull();
         assertThat(sammenligningsgrunnlagPrStatus.getAvvikPromille()).isEqualTo(AVVIK_OVER_25_PROSENT);
-        assertThat(sammenligningsgrunnlagPrStatus.getRapportertPrAar().verdi()).isEqualTo(RAPPORTERT_PR_AAR);
+        assertThat(sammenligningsgrunnlagPrStatus.getRapportertPrAar()).isEqualTo(RAPPORTERT_PR_AAR);
         assertThat(sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagFom()).isEqualTo(SAMMENLIGNING_FOM);
         assertThat(sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagTom()).isEqualTo(SAMMENLIGNING_TOM);
         assertThat(sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType()).isEqualTo(SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN);
-        assertThat(sammenligningsgrunnlagPrStatus.getDifferanseBeregnet().verdi()).isEqualTo(BRUTTO_PR_AAR.subtract(RAPPORTERT_PR_AAR));
+        assertThat(sammenligningsgrunnlagPrStatus.getDifferanseBeregnet()).isEqualTo(Beløp.fra(BRUTTO_PR_AAR.subtraher(RAPPORTERT_PR_AAR).verdi()));
     }
 
     @Test
@@ -115,7 +109,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         // Assert
         assertThat(grunnlagDto).isNotNull();
         assertThat(grunnlagDto.getSkjaeringstidspunktBeregning()).isEqualTo(SKJÆRINGSTIDSPUNKT);
-        assertThat(grunnlagDto.getHalvG().verdi().intValue()).isEqualTo(GRUNNBELØP.divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP).intValue());
+        assertThat(grunnlagDto.getHalvG().intValue()).isEqualTo(GRUNNBELØP.divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP).intValue());
     }
 
     @Test
@@ -125,7 +119,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto faktaOmBeregningBg = lagBehandlingMedBgOgOpprettFagsakRelasjon(arbeidsgiver);
 
         BeregningsgrunnlagPrStatusOgAndelDto andel = faktaOmBeregningBg.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0);
-        BigDecimal beregnetEtterFastsattSteg = BigDecimal.valueOf(10000);
+        var beregnetEtterFastsattSteg = Beløp.fra(10000);
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(andel).medBeregnetPrÅr(beregnetEtterFastsattSteg);
 
         InntektArbeidYtelseGrunnlagDtoBuilder builder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
@@ -153,10 +147,10 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         var andelDto = andelList.getFirst();
         assertThat(andelDto.getInntektskategori()).isEqualTo(INNTEKTSKATEGORI);
         assertThat(andelDto.getAndelsnr()).isEqualTo(ANDELSNR);
-        assertThat(andelDto.getAvkortetPrAar().verdi()).isEqualTo(AVKORTET_PR_AAR);
-        assertThat(andelDto.getRedusertPrAar().verdi()).isEqualTo(REDUSERT_PR_AAR);
-        assertThat(andelDto.getBruttoPrAar().verdi()).isEqualTo(OVERSTYRT_PR_AAR);
-        assertThat(andelDto.getBeregnetPrAar().verdi()).isEqualTo(BRUTTO_PR_AAR);
+        assertThat(andelDto.getAvkortetPrAar()).isEqualTo(AVKORTET_PR_AAR);
+        assertThat(andelDto.getRedusertPrAar()).isEqualTo(REDUSERT_PR_AAR);
+        assertThat(andelDto.getBruttoPrAar()).isEqualTo(OVERSTYRT_PR_AAR);
+        assertThat(andelDto.getBeregnetPrAar()).isEqualTo(BRUTTO_PR_AAR);
         assertThat(andelDto.getArbeidsforhold()).isNotNull();
         assertThat(andelDto.getArbeidsforhold().getArbeidsgiverIdent()).isEqualTo(ORGNR);
     }
@@ -180,10 +174,10 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         var andelDto = andelList.getFirst();
         assertThat(andelDto.getInntektskategori()).isEqualTo(INNTEKTSKATEGORI);
         assertThat(andelDto.getAndelsnr()).isEqualTo(ANDELSNR);
-        assertThat(andelDto.getAvkortetPrAar().verdi()).isEqualTo(AVKORTET_PR_AAR);
-        assertThat(andelDto.getRedusertPrAar().verdi()).isEqualTo(REDUSERT_PR_AAR);
-        assertThat(andelDto.getBruttoPrAar().verdi()).isEqualTo(OVERSTYRT_PR_AAR);
-        assertThat(andelDto.getBeregnetPrAar().verdi()).isEqualTo(BRUTTO_PR_AAR);
+        assertThat(andelDto.getAvkortetPrAar()).isEqualTo(AVKORTET_PR_AAR);
+        assertThat(andelDto.getRedusertPrAar()).isEqualTo(REDUSERT_PR_AAR);
+        assertThat(andelDto.getBruttoPrAar()).isEqualTo(OVERSTYRT_PR_AAR);
+        assertThat(andelDto.getBeregnetPrAar()).isEqualTo(BRUTTO_PR_AAR);
         assertThat(andelDto.getArbeidsforhold()).isNotNull();
         assertThat(andelDto.getArbeidsforhold().getArbeidsgiverIdent()).isEqualTo(aktørId.getAktørId());
     }
@@ -199,29 +193,29 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         SammenligningsgrunnlagDto sammenligningsgrunnlag = beregningsgrunnlagDto.getSammenligningsgrunnlagPrStatus().get(0);
         assertThat(sammenligningsgrunnlag).isNotNull();
         assertThat(sammenligningsgrunnlag.getAvvikPromille()).isEqualTo(AVVIK_OVER_25_PROSENT);
-        assertThat(sammenligningsgrunnlag.getRapportertPrAar().verdi()).isEqualTo(RAPPORTERT_PR_AAR);
+        assertThat(sammenligningsgrunnlag.getRapportertPrAar()).isEqualTo(RAPPORTERT_PR_AAR);
         assertThat(sammenligningsgrunnlag.getSammenligningsgrunnlagFom()).isEqualTo(SAMMENLIGNING_FOM);
         assertThat(sammenligningsgrunnlag.getSammenligningsgrunnlagTom()).isEqualTo(SAMMENLIGNING_TOM);
         assertThat(sammenligningsgrunnlag.getSammenligningsgrunnlagType()).isEqualTo(SammenligningsgrunnlagType.SAMMENLIGNING_AT);
-        assertThat(sammenligningsgrunnlag.getDifferanseBeregnet().verdi()).isEqualTo(BRUTTO_PR_AAR.subtract(RAPPORTERT_PR_AAR));
+        assertThat(sammenligningsgrunnlag.getDifferanseBeregnet()).isEqualTo(Beløp.fra(BRUTTO_PR_AAR.subtraher(RAPPORTERT_PR_AAR).verdi()));
 
         SammenligningsgrunnlagDto sammenligningsgrunnlag2 = beregningsgrunnlagDto.getSammenligningsgrunnlagPrStatus().get(1);
         assertThat(sammenligningsgrunnlag2).isNotNull();
         assertThat(sammenligningsgrunnlag2.getAvvikPromille()).isEqualTo(AVVIK_UNDER_25_PROSENT);
-        assertThat(sammenligningsgrunnlag2.getRapportertPrAar().verdi()).isEqualTo(RAPPORTERT_PR_AAR);
+        assertThat(sammenligningsgrunnlag2.getRapportertPrAar()).isEqualTo(RAPPORTERT_PR_AAR);
         assertThat(sammenligningsgrunnlag2.getSammenligningsgrunnlagFom()).isEqualTo(SAMMENLIGNING_FOM);
         assertThat(sammenligningsgrunnlag2.getSammenligningsgrunnlagTom()).isEqualTo(SAMMENLIGNING_TOM);
         assertThat(sammenligningsgrunnlag2.getSammenligningsgrunnlagType()).isEqualTo(SammenligningsgrunnlagType.SAMMENLIGNING_FL);
-        assertThat(sammenligningsgrunnlag2.getDifferanseBeregnet().verdi()).isEqualTo(BRUTTO_PR_AAR.subtract(RAPPORTERT_PR_AAR));
+        assertThat(sammenligningsgrunnlag2.getDifferanseBeregnet()).isEqualTo(Beløp.fra(BRUTTO_PR_AAR.subtraher(RAPPORTERT_PR_AAR).verdi()));
 
         SammenligningsgrunnlagDto sammenligningsgrunnlag3 = beregningsgrunnlagDto.getSammenligningsgrunnlagPrStatus().get(2);
         assertThat(sammenligningsgrunnlag3).isNotNull();
         assertThat(sammenligningsgrunnlag3.getAvvikPromille()).isEqualTo(AVVIK_OVER_25_PROSENT);
-        assertThat(sammenligningsgrunnlag3.getRapportertPrAar().verdi()).isEqualTo(RAPPORTERT_PR_AAR);
+        assertThat(sammenligningsgrunnlag3.getRapportertPrAar()).isEqualTo(RAPPORTERT_PR_AAR);
         assertThat(sammenligningsgrunnlag3.getSammenligningsgrunnlagFom()).isEqualTo(SAMMENLIGNING_FOM);
         assertThat(sammenligningsgrunnlag3.getSammenligningsgrunnlagTom()).isEqualTo(SAMMENLIGNING_TOM);
         assertThat(sammenligningsgrunnlag3.getSammenligningsgrunnlagType()).isEqualTo(SammenligningsgrunnlagType.SAMMENLIGNING_SN);
-        assertThat(sammenligningsgrunnlag3.getDifferanseBeregnet().verdi()).isEqualTo(PGI_SNITT.subtract(RAPPORTERT_PR_AAR));
+        assertThat(sammenligningsgrunnlag3.getDifferanseBeregnet()).isEqualTo(Beløp.fra(PGI_SNITT.subtraher(RAPPORTERT_PR_AAR).verdi()));
     }
 
     @Test
@@ -274,15 +268,15 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         return beregningsgrunnlagDtoTjeneste.lagBeregningsgrunnlagDto(input);
     }
 
-    private void assertBeregningsgrunnlag(BigDecimal beregnet, BeregningsgrunnlagDto grunnlagDto) {
+    private void assertBeregningsgrunnlag(Beløp beregnet, BeregningsgrunnlagDto grunnlagDto) {
         assertThat(grunnlagDto).isNotNull();
         assertThat(grunnlagDto.getSkjaeringstidspunktBeregning()).as("skjæringstidspunkt").isEqualTo(SKJÆRINGSTIDSPUNKT);
-        assertThat(grunnlagDto.getHalvG().verdi().intValue()).isEqualTo(GRUNNBELØP.divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP).intValue());
+        assertThat(grunnlagDto.getHalvG().intValue()).isEqualTo(GRUNNBELØP.divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP).intValue());
         var periodeDto = grunnlagDto.getBeregningsgrunnlagPeriode().get(0);
         assertThat(periodeDto.getBeregningsgrunnlagPeriodeFom()).as("BeregningsgrunnlagPeriodeFom").isEqualTo(ANDEL_FOM);
         assertThat(periodeDto.getBeregningsgrunnlagPeriodeTom()).as("BeregningsgrunnlagPeriodeTom").isNull();
         var andelDto = periodeDto.getBeregningsgrunnlagPrStatusOgAndel().get(0);
-        assertThat(andelDto.getBeregnetPrAar()).isEqualByComparingTo(Beløp.fra(beregnet));
+        assertThat(andelDto.getBeregnetPrAar()).isEqualByComparingTo(beregnet);
         assertThat(andelDto.getInntektskategori()).isEqualTo(Inntektskategori.ARBEIDSTAKER);
         assertThat(andelDto.getAktivitetStatus()).isEqualTo(AktivitetStatus.ARBEIDSTAKER);
     }

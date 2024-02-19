@@ -109,8 +109,8 @@ public class BGMapperTilKalkulus {
         builder.medFordeltRefusjonPrÅr(mapFraBeløp(fraFagsystem.getFordeltRefusjonPrÅr()));
 
         fraFagsystem.getArbeidsperiodeTom().ifPresent(builder::medArbeidsperiodeTom);
-        fraFagsystem.getNaturalytelseBortfaltPrÅr().map(Beløp::getVerdi).ifPresent(builder::medNaturalytelseBortfaltPrÅr);
-        fraFagsystem.getNaturalytelseTilkommetPrÅr().map(Beløp::getVerdi).ifPresent(builder::medNaturalytelseTilkommetPrÅr);
+        fraFagsystem.getNaturalytelseBortfaltPrÅr().map(Beløp::tilKalkulatorBeløp).ifPresent(builder::medNaturalytelseBortfaltPrÅr);
+        fraFagsystem.getNaturalytelseTilkommetPrÅr().map(Beløp::tilKalkulatorBeløp).ifPresent(builder::medNaturalytelseTilkommetPrÅr);
         return builder;
     }
 
@@ -152,8 +152,8 @@ public class BGMapperTilKalkulus {
                 it.skalRedusereUtbetaling());
     }
 
-    private static BigDecimal mapFraBeløp(Beløp beløp) {
-        return beløp == null ? null : beløp.getVerdi();
+    private static no.nav.folketrygdloven.kalkulus.typer.Beløp mapFraBeløp(Beløp beløp) {
+        return beløp == null ? null : no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(beløp.getVerdi());
     }
 
     private static BigDecimal mapFraPromille(Promille promille) {

@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.avklaringsbehov.tilfeller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -89,9 +88,9 @@ public class FastsettBesteberegningFødendeKvinneOppdatererTest {
         fastsettBesteberegningFødendeKvinneOppdaterer.oppdater(dto, Optional.empty(), builder);
 
         // Assert
-        assertThat(dagpengeAndel.getBesteberegningPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(dagpengerBeregnet*12));
+        assertThat(dagpengeAndel.getBesteberegningPrÅr()).isEqualByComparingTo(Beløp.fra(dagpengerBeregnet*12));
         assertThat(dagpengeAndel.getFastsattAvSaksbehandler()).isTrue();
-        assertThat(arbeidstakerAndel.getBeregnetPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(arbeidstakerBeregnet*12));
+        assertThat(arbeidstakerAndel.getBeregnetPrÅr()).isEqualByComparingTo(Beløp.fra(arbeidstakerBeregnet*12));
         assertThat(arbeidstakerAndel.getFastsattAvSaksbehandler()).isTrue();
 
     }
@@ -118,13 +117,13 @@ public class FastsettBesteberegningFødendeKvinneOppdatererTest {
         BeregningsgrunnlagPrStatusOgAndelDto dpAndel = bg.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
             .filter(andel -> andel.erLagtTilAvSaksbehandler())
             .findFirst().get();
-        assertThat(dpAndel.getBesteberegningPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(dagpengerBeregnet*12));
-        assertThat(dpAndel.getBeregnetPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(dagpengerBeregnet*12));
+        assertThat(dpAndel.getBesteberegningPrÅr()).isEqualByComparingTo(Beløp.fra(dagpengerBeregnet*12));
+        assertThat(dpAndel.getBeregnetPrÅr()).isEqualByComparingTo(Beløp.fra(dagpengerBeregnet*12));
         assertThat(dpAndel.getFastsattAvSaksbehandler()).isTrue();
         BeregningsgrunnlagPrStatusOgAndelDto atAndel = bg.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
             .filter(andel -> !andel.erLagtTilAvSaksbehandler())
             .findFirst().get();
-        assertThat(atAndel.getBeregnetPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(arbeidstakerBeregnet*12));
+        assertThat(atAndel.getBeregnetPrÅr()).isEqualByComparingTo(Beløp.fra(arbeidstakerBeregnet*12));
         assertThat(atAndel.getFastsattAvSaksbehandler()).isTrue();
 
     }
@@ -154,13 +153,13 @@ public class FastsettBesteberegningFødendeKvinneOppdatererTest {
         // Assert
         BeregningsgrunnlagPrStatusOgAndelDto dpAndel = nyttBg.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(andel -> andel.erLagtTilAvSaksbehandler())
             .findFirst().get();
-        assertThat(dpAndel.getBesteberegningPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(dagpengerBeregnet*12));
-        assertThat(dpAndel.getBeregnetPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(dagpengerBeregnet*12));
+        assertThat(dpAndel.getBesteberegningPrÅr()).isEqualByComparingTo(Beløp.fra(dagpengerBeregnet*12));
+        assertThat(dpAndel.getBeregnetPrÅr()).isEqualByComparingTo(Beløp.fra(dagpengerBeregnet*12));
         assertThat(dpAndel.getFastsattAvSaksbehandler()).isTrue();
         BeregningsgrunnlagPrStatusOgAndelDto atAndel = nyttBg.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
             .filter(andel -> !andel.erLagtTilAvSaksbehandler())
             .findFirst().get();
-        assertThat(atAndel.getBeregnetPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(arbeidstakerBeregnet*12));
+        assertThat(atAndel.getBeregnetPrÅr()).isEqualByComparingTo(Beløp.fra(arbeidstakerBeregnet*12));
         assertThat(atAndel.getFastsattAvSaksbehandler()).isTrue();
 
     }

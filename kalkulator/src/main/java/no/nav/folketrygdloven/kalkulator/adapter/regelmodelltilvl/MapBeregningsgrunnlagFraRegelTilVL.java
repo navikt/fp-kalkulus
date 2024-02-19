@@ -27,6 +27,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class MapBeregningsgrunnlagFraRegelTilVL {
 
@@ -57,7 +58,7 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
         return SammenligningsgrunnlagPrStatusDto.builder()
                 .medSammenligningsgrunnlagType(mapSammenligningstype(sgRegel.getSammenligningstype()))
                 .medSammenligningsperiode(sgRegel.getSammenligningsperiode().getFom(), sgRegel.getSammenligningsperiode().getTom())
-                .medRapportertPrÅr(sgRegel.getRapportertPrÅr())
+                .medRapportertPrÅr(Beløp.fra(sgRegel.getRapportertPrÅr()))
                 .medAvvikPromilleNy(sgRegel.getAvvikPromilleUtenAvrunding())
                 .build();
     }
@@ -115,18 +116,18 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
     }
 
     private static void fastsettAgreggerteVerdier(BeregningsgrunnlagPeriodeDto periode, BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
-        Optional<BigDecimal> bruttoPrÅr = periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
-                .filter(bgpsa -> bgpsa.getBruttoPrÅr() != null)
+        var bruttoPrÅr = periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoPrÅr)
-                .reduce(BigDecimal::add);
-        Optional<BigDecimal> avkortetPrÅr = periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
-                .filter(bgpsa -> bgpsa.getAvkortetPrÅr() != null)
+                .filter(Objects::nonNull)
+                .reduce(Beløp::adder);
+        var avkortetPrÅr = periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .map(BeregningsgrunnlagPrStatusOgAndelDto::getAvkortetPrÅr)
-                .reduce(BigDecimal::add);
-        Optional<BigDecimal> redusertPrÅr = periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
-                .filter(bgpsa -> bgpsa.getRedusertPrÅr() != null)
+                .filter(Objects::nonNull)
+                .reduce(Beløp::adder);
+        var redusertPrÅr = periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .map(BeregningsgrunnlagPrStatusOgAndelDto::getRedusertPrÅr)
-                .reduce(BigDecimal::add);
+                .filter(Objects::nonNull)
+                .reduce(Beløp::adder);
         BeregningsgrunnlagPeriodeDto.oppdater(periode)
                 .medBruttoPrÅr(bruttoPrÅr.orElse(null))
                 .medAvkortetPrÅr(avkortetPrÅr.orElse(null))
@@ -155,8 +156,8 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
     private BGAndelArbeidsforholdDto.Builder mapArbeidsforhold(BeregningsgrunnlagPrStatusOgAndelDto vlBGPAndel,
                                                                       BeregningsgrunnlagPrArbeidsforhold arbeidsforhold) {
         return BGAndelArbeidsforholdDto.Builder.oppdater(vlBGPAndel.getBgAndelArbeidsforhold())
-                .medNaturalytelseBortfaltPrÅr(arbeidsforhold.getNaturalytelseBortfaltPrÅr().orElse(null))
-                .medNaturalytelseTilkommetPrÅr(arbeidsforhold.getNaturalytelseTilkommetPrÅr().orElse(null));
+                .medNaturalytelseBortfaltPrÅr(Beløp.fra(arbeidsforhold.getNaturalytelseBortfaltPrÅr().orElse(null)))
+                .medNaturalytelseTilkommetPrÅr(Beløp.fra(arbeidsforhold.getNaturalytelseTilkommetPrÅr().orElse(null)));
     }
 
     private static BeregningsgrunnlagPrStatusOgAndelDto.Builder settFasteVerdier(BeregningsgrunnlagPrStatusOgAndelDto.Builder builder,
@@ -171,9 +172,9 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
                 .medFordeltPrÅr(verifisertBeløp(arbeidsforhold.getFordeltPrÅr()))
                 .medAvkortetPrÅr(verifisertBeløp(arbeidsforhold.getAvkortetPrÅr()))
                 .medRedusertPrÅr(verifisertBeløp(arbeidsforhold.getRedusertPrÅr()))
-                .medMaksimalRefusjonPrÅr(arbeidsforhold.getMaksimalRefusjonPrÅr())
-                .medAvkortetRefusjonPrÅr(arbeidsforhold.getAvkortetRefusjonPrÅr())
-                .medRedusertRefusjonPrÅr(arbeidsforhold.getRedusertRefusjonPrÅr())
+                .medMaksimalRefusjonPrÅr(Beløp.fra(arbeidsforhold.getMaksimalRefusjonPrÅr()))
+                .medAvkortetRefusjonPrÅr(Beløp.fra(arbeidsforhold.getAvkortetRefusjonPrÅr()))
+                .medRedusertRefusjonPrÅr(Beløp.fra(arbeidsforhold.getRedusertRefusjonPrÅr()))
                 .medAvkortetBrukersAndelPrÅr(verifisertBeløp(arbeidsforhold.getAvkortetBrukersAndelPrÅr()))
                 .medRedusertBrukersAndelPrÅr(verifisertBeløp(arbeidsforhold.getRedusertBrukersAndelPrÅr()))
                 .medFastsattAvSaksbehandler(arbeidsforhold.getFastsattAvSaksbehandler())
@@ -197,8 +198,8 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
                         || arbeidsforhold.getGjeldendeRefusjonPrÅr().isPresent());
     }
 
-    private static BigDecimal verifisertBeløp(BigDecimal beløp) {
-        return beløp == null ? null : beløp.max(BigDecimal.ZERO);
+    private static Beløp verifisertBeløp(BigDecimal beløp) {
+        return beløp == null ? null : Beløp.fra(beløp.max(BigDecimal.ZERO));
     }
 
     private static boolean gjelderSammeAndel(BeregningsgrunnlagPrStatusOgAndelDto vlBGPAndel, BeregningsgrunnlagPrArbeidsforhold arbeidsforhold) {
@@ -256,11 +257,11 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
                 .medFordeltPrÅr(verifisertBeløp(resultatBGPStatus.getFordeltPrÅr()))
                 .medAvkortetPrÅr(verifisertBeløp(resultatBGPStatus.getAvkortetPrÅr()))
                 .medRedusertPrÅr(verifisertBeløp(resultatBGPStatus.getRedusertPrÅr()))
-                .medPgi(resultatBGPStatus.getGjennomsnittligPGI(), resultatBGPStatus.getPgiListe())
-                .medÅrsbeløpFraTilstøtendeYtelse(resultatBGPStatus.getÅrsbeløpFraTilstøtendeYtelse())
+                .medPgi(Beløp.fra(resultatBGPStatus.getGjennomsnittligPGI()), resultatBGPStatus.getPgiListe().stream().map(Beløp::fra).collect(Collectors.toList()))
+                .medÅrsbeløpFraTilstøtendeYtelse(Beløp.fra(resultatBGPStatus.getÅrsbeløpFraTilstøtendeYtelse()))
                 .medInntektskategori(MapInntektskategoriRegelTilVL.map(resultatBGPStatus.getInntektskategori()))
                 .medFastsattAvSaksbehandler(resultatBGPStatus.erFastsattAvSaksbehandler())
-                .medBesteberegningPrÅr(resultatBGPStatus.getBesteberegningPrÅr())
+                .medBesteberegningPrÅr(Beløp.fra(resultatBGPStatus.getBesteberegningPrÅr()))
                 .medOrginalDagsatsFraTilstøtendeYtelse(resultatBGPStatus.getOrginalDagsatsFraTilstøtendeYtelse())
                 .build(vlBGPeriode);
     }

@@ -164,23 +164,23 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
 
     private void leggTilArbeidstakerOver6GOgNæring(BeregningsgrunnlagPeriodeDto periode) {
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER).medRefusjonskravPrÅr(BigDecimal.valueOf(GRUNNBELØP * 7), Utfall.GODKJENT))
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER).medRefusjonskravPrÅr(Beløp.fra(GRUNNBELØP * 7), Utfall.GODKJENT))
                 .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-                .medBeregnetPrÅr(BigDecimal.valueOf(3*GRUNNBELØP))
+                .medBeregnetPrÅr(Beløp.fra(3*GRUNNBELØP))
                 .build(periode);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAndelsnr(ANDELSNR2)
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER2))
                 .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-                .medBeregnetPrÅr(BigDecimal.valueOf(3*GRUNNBELØP))
+                .medBeregnetPrÅr(Beløp.fra(3*GRUNNBELØP))
                 .build(periode);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAndelsnr(3L)
                 .medInntektskategori(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE)
                 .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
-                .medBeregnetPrÅr(BigDecimal.TEN)
+                .medBeregnetPrÅr(Beløp.fra(10))
                 .build(periode);
     }
 
@@ -199,23 +199,23 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
                 .build();
         BeregningsgrunnlagPeriodeDto periode = lagPeriode(bg, SKJÆRINGSTIDSPUNKT_OPPTJENING, null);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER).medRefusjonskravPrÅr(BigDecimal.valueOf(GRUNNBELØP * 7), Utfall.GODKJENT))
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER).medRefusjonskravPrÅr(Beløp.fra(GRUNNBELØP * 7), Utfall.GODKJENT))
                 .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-                .medBeregnetPrÅr(BigDecimal.TEN)
+                .medBeregnetPrÅr(Beløp.fra(10))
                 .build(periode);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAndelsnr(ANDELSNR2)
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER2))
                 .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-                .medBeregnetPrÅr(BigDecimal.TEN)
+                .medBeregnetPrÅr(Beløp.fra(10))
                 .build(periode);
         return bg;
     }
 
     private List<InntektsmeldingDto> lagInntektsmeldingOver6GRefusjon() {
-        return List.of(InntektsmeldingDtoBuilder.builder().medArbeidsgiver(ARBEIDSGIVER).medRefusjon(BigDecimal.valueOf(GRUNNBELØP * 7)).build());
+        return List.of(InntektsmeldingDtoBuilder.builder().medArbeidsgiver(ARBEIDSGIVER).medRefusjon(Beløp.fra(GRUNNBELØP * 7)).build());
     }
 
 

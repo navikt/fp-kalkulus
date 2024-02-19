@@ -24,7 +24,6 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningVenteårsak;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
@@ -97,7 +96,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterFP implements Av
         if (nyligsteVedtak.isEmpty()) {
             return Optional.empty();
         }
-        Optional<YtelseAnvistDto> nyligsteMeldekort = MeldekortUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyligsteVedtak.get(), skjæringstidspunkt, Set.of(ytelseTypeForMeldekort), FagsakYtelseType.FORELDREPENGER);
+        Optional<YtelseAnvistDto> nyligsteMeldekort = MeldekortUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyligsteVedtak.get(), skjæringstidspunkt, Set.of(ytelseTypeForMeldekort));
         return Optional.of(nyligsteMeldekort.flatMap(YtelseAnvistDto::getUtbetalingsgradProsent).map(Stillingsprosent::getVerdi).orElse(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG));
     }
 

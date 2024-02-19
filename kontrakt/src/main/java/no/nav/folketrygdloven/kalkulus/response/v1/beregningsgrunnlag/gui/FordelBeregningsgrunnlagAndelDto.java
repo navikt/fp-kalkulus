@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -11,9 +10,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.typer.Beløp;
@@ -65,24 +61,24 @@ public class FordelBeregningsgrunnlagAndelDto extends FaktaOmBeregningAndelDto {
     }
 
     public void setBelopFraInntektsmelding(Beløp belopFraInntektsmelding) {
-        this.belopFraInntektsmeldingPrAar = belopFraInntektsmelding == null || belopFraInntektsmelding.verdi() == null ? null :
-                Beløp.fra(BigDecimal.valueOf(MÅNEDER_I_1_ÅR).multiply(belopFraInntektsmelding.verdi()).setScale(0, RoundingMode.HALF_UP));
+        this.belopFraInntektsmeldingPrAar = Beløp.safeVerdi(belopFraInntektsmelding) == null ? null :
+                belopFraInntektsmelding.multipliser(MÅNEDER_I_1_ÅR).map(v -> v.setScale(0, RoundingMode.HALF_UP));
     }
 
     public void setFordelingForrigeBehandling(Beløp fordelingForrigeBehandling) {
-        this.fordelingForrigeBehandlingPrAar = fordelingForrigeBehandling == null || fordelingForrigeBehandling.verdi() == null ? null :
-                Beløp.fra(BigDecimal.valueOf(MÅNEDER_I_1_ÅR).multiply(fordelingForrigeBehandling.verdi()).setScale(0, RoundingMode.HALF_UP));
+        this.fordelingForrigeBehandlingPrAar = Beløp.safeVerdi(fordelingForrigeBehandling) == null ? null :
+                fordelingForrigeBehandling.multipliser(MÅNEDER_I_1_ÅR).map(v -> v.setScale(0, RoundingMode.HALF_UP));
     }
 
     public void setRefusjonskravPrAar(Beløp refusjonskravPrAar) {
-        this.refusjonskravPrAar = refusjonskravPrAar == null || refusjonskravPrAar.verdi() == null ?
-                null : Beløp.fra(refusjonskravPrAar.verdi().setScale(0, RoundingMode.HALF_UP));
+        this.refusjonskravPrAar = Beløp.safeVerdi(refusjonskravPrAar) == null ? null :
+                refusjonskravPrAar.map(v -> v.setScale(0, RoundingMode.HALF_UP));
     }
 
 
     public void setRefusjonskravFraInntektsmeldingPrÅr(Beløp refusjonskravFraInntektsmelding) {
-        this.refusjonskravFraInntektsmeldingPrAar = refusjonskravFraInntektsmelding == null || refusjonskravFraInntektsmelding.verdi() == null?
-            null : Beløp.fra(refusjonskravFraInntektsmelding.verdi().setScale(0, RoundingMode.HALF_UP));
+        this.refusjonskravFraInntektsmeldingPrAar = Beløp.safeVerdi(refusjonskravFraInntektsmelding) == null ? null :
+                refusjonskravFraInntektsmelding.map(v -> v.setScale(0, RoundingMode.HALF_UP));
 
     }
 

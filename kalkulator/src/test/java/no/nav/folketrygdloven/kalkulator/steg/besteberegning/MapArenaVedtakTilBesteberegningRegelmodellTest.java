@@ -18,6 +18,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class MapArenaVedtakTilBesteberegningRegelmodellTest {
     private static final LocalDate STP = LocalDate.of(2021,5,1);
@@ -81,7 +82,7 @@ class MapArenaVedtakTilBesteberegningRegelmodellTest {
     private YtelseAnvistDto lagMeldekort(LocalDate fom, LocalDate tom, int beløp) {
         return YtelseAnvistDtoBuilder.ny()
                 .medAnvistPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
-                .medBeløp(BigDecimal.valueOf(beløp))
+                .medBeløp(Beløp.fra(beløp))
                 .build();
     }
 

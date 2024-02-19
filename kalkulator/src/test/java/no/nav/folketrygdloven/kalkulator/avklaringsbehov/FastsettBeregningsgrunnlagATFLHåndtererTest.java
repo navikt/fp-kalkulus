@@ -29,6 +29,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class FastsettBeregningsgrunnlagATFLHåndtererTest {
 
@@ -37,7 +38,7 @@ public class FastsettBeregningsgrunnlagATFLHåndtererTest {
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
     private BeregningsgrunnlagInput input;
     private final List<Arbeidsgiver> virksomheter = new ArrayList<>();
-    private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(90000);
+    private static final Beløp GRUNNBELØP = Beløp.fra(90000);
     private static final InternArbeidsforholdRefDto ARBEIDSFORHOLD_ID = InternArbeidsforholdRefDto.namedRef("TEST-REF");
     private static final int BRUTTO_PR_AR = 150000;
     private static final int OVERSTYRT_PR_AR = 200000;
@@ -90,10 +91,10 @@ public class FastsettBeregningsgrunnlagATFLHåndtererTest {
             List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList();
             Assertions.assertThat(andeler).hasSize(antallAndeler);
             BigDecimal nyBruttoBG1 = beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList().get(0)
-                .getBruttoPrÅr();
+                .getBruttoPrÅr().verdi();
             Assertions.assertThat(nyBruttoBG1.intValue()).as("nyBruttoBG").isEqualTo(overstyrt1);
             BigDecimal nyBruttoBG2 = beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList().get(1)
-                .getBruttoPrÅr();
+                .getBruttoPrÅr().verdi();
             Assertions.assertThat(nyBruttoBG2.intValue()).as("nyBruttoBG").isEqualTo(overstyrt2);
             assertThat(beregningsgrunnlagPeriode.getBruttoPrÅr().intValue()).as("nyBruttoBGPeriode").isEqualTo(overstyrt1 + overstyrt2);
         });
@@ -183,7 +184,7 @@ public class FastsettBeregningsgrunnlagATFLHåndtererTest {
         List<BeregningsgrunnlagPeriodeDto> beregningsgrunnlagperioder = beregningsgrunnlag.getBeregningsgrunnlagPerioder();
         Assertions.assertThat(beregningsgrunnlagperioder).hasSize(antallPerioder);
         beregningsgrunnlagperioder.forEach(periode -> {
-                BigDecimal nyBruttoBG = periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0)
+                var nyBruttoBG = periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0)
                     .getBruttoPrÅr();
                 Assertions.assertThat(nyBruttoBG.intValue()).as("nyBruttoBG").isEqualTo(frilanserInntekt);
             }
@@ -253,7 +254,7 @@ public class FastsettBeregningsgrunnlagATFLHåndtererTest {
             .medAndelsnr(andelsnr)
             .medInntektskategori(inntektskategori)
             .medAktivitetStatus(aktivitetStatus)
-            .medBeregnetPrÅr(BigDecimal.valueOf(BRUTTO_PR_AR));
+            .medBeregnetPrÅr(Beløp.fra(BRUTTO_PR_AR));
         if (arbeidsgiver != null) {
             BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto
                 .builder()

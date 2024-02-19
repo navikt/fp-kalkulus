@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +17,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class InntektsmeldingForAndelTest {
 
@@ -31,9 +31,9 @@ class InntektsmeldingForAndelTest {
             .medArbeidsforholdRef(ARBEIDSFORHOLD_REF1)
             .build();
     public static final InntektsmeldingDto INNTEKTSMELDING_UTEN_REFERANSE = InntektsmeldingDtoBuilder.builder()
-            .medArbeidsgiver(VIRKSOMHET).medBeløp(BigDecimal.TEN).build();
+            .medArbeidsgiver(VIRKSOMHET).medBeløp(Beløp.fra(10)).build();
     public static final InntektsmeldingDto INNTEKTSMELDING_MED_REFERANSE1 = InntektsmeldingDtoBuilder.builder()
-            .medArbeidsgiver(VIRKSOMHET).medBeløp(BigDecimal.TEN)
+            .medArbeidsgiver(VIRKSOMHET).medBeløp(Beløp.fra(10))
             .medArbeidsforholdId(ARBEIDSFORHOLD_REF1).build();
     public static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
 

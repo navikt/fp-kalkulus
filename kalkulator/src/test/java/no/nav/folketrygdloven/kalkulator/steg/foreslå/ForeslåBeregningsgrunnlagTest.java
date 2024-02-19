@@ -68,6 +68,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @ExtendWith(MockitoExtension.class)
 public class ForeslåBeregningsgrunnlagTest {
@@ -80,7 +81,7 @@ public class ForeslåBeregningsgrunnlagTest {
     private static final double NATURALYTELSE_I_PERIODE_3 = 400d;
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.APRIL, 10);
     private static final LocalDate SKJÆRINGSTIDSPUNKT_BEREGNING = SKJÆRINGSTIDSPUNKT_OPPTJENING;
-    private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(90000);
+    private static final Beløp GRUNNBELØP = Beløp.fra(90000);
     private static final String ARBEIDSFORHOLD_ORGNR1 = "654";
     private static final String ARBEIDSFORHOLD_ORGNR2 = "765";
     private static final LocalDate MINUS_YEARS_2 = SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(2);
@@ -640,10 +641,10 @@ public class ForeslåBeregningsgrunnlagTest {
                 Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_2.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
         var im1 = InntektsmeldingDtoBuilder.builder()
                 .medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1))
-                .medBeløp(inntektBeregnet)
-                .medRefusjon(refusjonskrav)
-                .leggTil(new RefusjonDto(inntektBeregnet, SKJÆRINGSTIDSPUNKT_BEREGNING.plusDays(4)))
-                .leggTil(new RefusjonDto(refusjonskrav, SKJÆRINGSTIDSPUNKT_BEREGNING.plusDays(8)))
+                .medBeløp(Beløp.fra(inntektBeregnet))
+                .medRefusjon(Beløp.fra(refusjonskrav))
+                .leggTil(new RefusjonDto(Beløp.fra(inntektBeregnet), SKJÆRINGSTIDSPUNKT_BEREGNING.plusDays(4)))
+                .leggTil(new RefusjonDto(Beløp.fra(refusjonskrav), SKJÆRINGSTIDSPUNKT_BEREGNING.plusDays(8)))
                 .build();
 
         var inntektsmeldinger = List.of(im1);
@@ -748,7 +749,7 @@ public class ForeslåBeregningsgrunnlagTest {
 
     private void verifiserSammenligningsgrunnlag(SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlag, double rapportertPrÅr, LocalDate fom,
                                                  LocalDate tom, BigDecimal avvikPromille, SammenligningsgrunnlagType forventetType) {
-        assertThat(sammenligningsgrunnlag.getRapportertPrÅr().doubleValue()).isEqualTo(rapportertPrÅr);
+        assertThat(sammenligningsgrunnlag.getRapportertPrÅr().verdi().doubleValue()).isEqualTo(rapportertPrÅr);
         assertThat(sammenligningsgrunnlag.getSammenligningsperiodeFom()).isEqualTo(fom);
         assertThat(sammenligningsgrunnlag.getSammenligningsperiodeTom()).isEqualTo(tom);
         assertThat(sammenligningsgrunnlag.getSammenligningsgrunnlagType()).isEqualTo(forventetType);
@@ -767,20 +768,20 @@ public class ForeslåBeregningsgrunnlagTest {
                 .as("gjelderSpesifiktArbeidsforhold").isFalse();
         assertThat(bgpsa.getArbeidsforholdType()).isEqualTo(OpptjeningAktivitetType.ARBEID);
         assertThat(bgpsa.getAvkortetPrÅr()).isNull();
-        assertThat(bgpsa.getBeregnetPrÅr().doubleValue()).isEqualTo(årsinntekt);
-        assertThat(bgpsa.getBruttoPrÅr().doubleValue()).isEqualTo(årsinntekt);
+        assertThat(bgpsa.getBeregnetPrÅr().verdi().doubleValue()).isEqualTo(årsinntekt);
+        assertThat(bgpsa.getBruttoPrÅr().verdi().doubleValue()).isEqualTo(årsinntekt);
         assertThat(bgpsa.getOverstyrtPrÅr()).isNull();
         if (naturalytelseBortfaltPrÅr == null) {
             assertThat(bgpsa.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseBortfaltPrÅr)).as("naturalytelseBortfalt").isEmpty();
         } else {
             assertThat(bgpsa.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseBortfaltPrÅr)).as("naturalytelseBortfalt")
-                    .hasValueSatisfying(naturalytelse -> assertThat(naturalytelse.doubleValue()).isEqualTo(naturalytelseBortfaltPrÅr));
+                    .hasValueSatisfying(naturalytelse -> assertThat(naturalytelse.verdi().doubleValue()).isEqualTo(naturalytelseBortfaltPrÅr));
         }
         if (naturalytelseTilkommerPrÅr == null) {
             assertThat(bgpsa.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseTilkommetPrÅr)).as("naturalytelseTilkommer").isEmpty();
         } else {
             assertThat(bgpsa.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseTilkommetPrÅr)).as("naturalytelseTilkommer")
-                    .hasValueSatisfying(naturalytelse -> assertThat(naturalytelse.doubleValue()).isEqualTo(naturalytelseTilkommerPrÅr));
+                    .hasValueSatisfying(naturalytelse -> assertThat(naturalytelse.verdi().doubleValue()).isEqualTo(naturalytelseTilkommerPrÅr));
         }
         assertThat(bgpsa.getRedusertPrÅr()).isNull();
     }
@@ -796,8 +797,8 @@ public class ForeslåBeregningsgrunnlagTest {
                 .as("gjelderSpesifiktArbeidsforhold").isFalse();
         assertThat(bgpsa.getArbeidsforholdType()).isEqualTo(OpptjeningAktivitetType.FRILANS);
         assertThat(bgpsa.getAvkortetPrÅr()).isNull();
-        assertThat(bgpsa.getBeregnetPrÅr().doubleValue()).isEqualTo(årsinntekt);
-        assertThat(bgpsa.getBruttoPrÅr().doubleValue()).as("BruttoPrÅr").isEqualTo(årsinntekt);
+        assertThat(bgpsa.getBeregnetPrÅr().verdi().doubleValue()).isEqualTo(årsinntekt);
+        assertThat(bgpsa.getBruttoPrÅr().verdi().doubleValue()).as("BruttoPrÅr").isEqualTo(årsinntekt);
         assertThat(bgpsa.getOverstyrtPrÅr()).as("OverstyrtPrÅr").isNull();
         assertThat(bgpsa.getRedusertPrÅr()).isNull();
     }

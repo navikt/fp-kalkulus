@@ -29,16 +29,17 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.OmsorgspengeGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.YtelsespesifiktGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class YtelsespesifiktGrunnlagTjenesteOMPTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now().minusDays(5);
@@ -72,7 +73,7 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
                 .medInntektskategori(no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori.ARBEIDSTAKER)
                 .medAndelsnr(ANDELSNR)
                 .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER)
-                .medBeregnetPrÅr(beregnetPrÅr)
+                .medBeregnetPrÅr(Beløp.fra(beregnetPrÅr))
                 .build(bgPeriode);
         this.grunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(beregningAktiviteter)
@@ -86,8 +87,8 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
         OmsorgspengerGrunnlag omsorgspengeGrunnlagDto = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), List.of());
         InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
-                .medRefusjon(refusjon)
-                .medBeløp(beregnet)
+                .medRefusjon(Beløp.fra(refusjon))
+                .medBeløp(Beløp.fra(beregnet))
                 .medArbeidsgiver(arbeidsgiver)
                 .build();
         Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(ANDEL_FOM)
@@ -126,7 +127,7 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
                 .medInntektskategori(no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori.ARBEIDSTAKER)
                 .medAndelsnr(ANDELSNR)
                 .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER)
-                .medBeregnetPrÅr(beregnetPrÅr)
+                .medBeregnetPrÅr(Beløp.fra(beregnetPrÅr))
                 .build(bgPeriode);
         this.grunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(beregningAktiviteter)
@@ -140,8 +141,8 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
         OmsorgspengerGrunnlag omsorgspengeGrunnlagDto = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), List.of());
         InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
-                .medRefusjon(refusjon)
-                .medBeløp(beregnet)
+                .medRefusjon(Beløp.fra(refusjon))
+                .medBeløp(Beløp.fra(beregnet))
                 .medArbeidsgiver(arbeidsgiver)
                 .build();
 

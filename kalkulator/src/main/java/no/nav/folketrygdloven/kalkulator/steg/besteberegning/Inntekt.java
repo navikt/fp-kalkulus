@@ -1,24 +1,23 @@
 package no.nav.folketrygdloven.kalkulator.steg.besteberegning;
 
-import java.math.BigDecimal;
-
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class Inntekt {
 
     private Arbeidsgiver arbeidsgiver;
     private InternArbeidsforholdRefDto arbeidsforholdRef;
     private OpptjeningAktivitetType opptjeningAktivitetType;
-    private final BigDecimal inntekt;
+    private final Beløp inntekt;
 
-    public Inntekt(OpptjeningAktivitetType opptjeningAktivitetType, BigDecimal inntekt) {
+    public Inntekt(OpptjeningAktivitetType opptjeningAktivitetType, Beløp inntekt) {
         this.opptjeningAktivitetType = opptjeningAktivitetType;
         this.inntekt = inntekt;
     }
 
-    public Inntekt(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRef, BigDecimal inntekt) {
+    public Inntekt(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRef, Beløp inntekt) {
         this.arbeidsgiver = arbeidsgiver;
         this.arbeidsforholdRef = arbeidsforholdRef;
         this.inntekt = inntekt;
@@ -36,7 +35,7 @@ public class Inntekt {
         return opptjeningAktivitetType;
     }
 
-    public BigDecimal getInntekt() {
+    public Beløp getInntekt() {
         return inntekt;
     }
 }

@@ -1,7 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
 
-import java.math.BigDecimal;
-
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -9,6 +7,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 public class FastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetHåndterer {
@@ -25,7 +24,7 @@ public class FastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetHåndterer {
                     .orElseThrow(() -> new IllegalStateException("Mangler andel for selvstendig næringsdrivende (eller kombinasjon med SN) for behandling "  + input.getKoblingReferanse().getKoblingId()));
 
                 BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(bgAndel)
-                    .medOverstyrtPrÅr(BigDecimal.valueOf(bruttoBeregningsgrunnlag))
+                    .medOverstyrtPrÅr(Beløp.fra(bruttoBeregningsgrunnlag))
                     .build(bgPeriode);
             });
         }

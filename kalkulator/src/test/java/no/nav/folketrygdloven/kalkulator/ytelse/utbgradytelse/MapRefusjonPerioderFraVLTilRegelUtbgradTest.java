@@ -44,13 +44,14 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PermisjonsbeskrivelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class MapRefusjonPerioderFraVLTilRegelUtbgradTest {
 
@@ -159,7 +160,7 @@ class MapRefusjonPerioderFraVLTilRegelUtbgradTest {
 
 
         InntektsmeldingDto im = InntektsmeldingDtoBuilder.builder()
-                .medBeløp(BigDecimal.valueOf(11)).medRefusjon(BigDecimal.valueOf(11))
+                .medBeløp(Beløp.fra(11)).medRefusjon(Beløp.fra(11))
                 .medArbeidsgiver(virksomhet)
                 .medStartDatoPermisjon(LocalDate.of(2019, 10, 22)).build();
 
@@ -238,8 +239,8 @@ class MapRefusjonPerioderFraVLTilRegelUtbgradTest {
         return InntektsmeldingDtoBuilder.builder()
                 .medArbeidsgiver(arbeidsgiver)
                 .medArbeidsforholdId(InternArbeidsforholdRefDto.nullRef())
-                .medRefusjon(BigDecimal.TEN, stp.plusDays(16))
-                .medBeløp(BigDecimal.TEN)
+                .medRefusjon(Beløp.fra(10), stp.plusDays(16))
+                .medBeløp(Beløp.fra(10))
                 .build();
     }
 

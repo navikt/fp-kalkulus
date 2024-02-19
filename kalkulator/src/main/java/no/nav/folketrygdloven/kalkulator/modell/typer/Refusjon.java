@@ -1,34 +1,34 @@
 package no.nav.folketrygdloven.kalkulator.modell.typer;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 /** Container for refusjon. */
 public class Refusjon implements Serializable, Comparable<Refusjon> {
 
 
     @SjekkVedKopiering
-    private BigDecimal refusjonskravPrÅr;
+    private Beløp refusjonskravPrÅr;
     @SjekkVedKopiering
-    private BigDecimal saksbehandletRefusjonPrÅr;
+    private Beløp saksbehandletRefusjonPrÅr;
     @SjekkVedKopiering
-    private BigDecimal fordeltRefusjonPrÅr;
+    private Beløp fordeltRefusjonPrÅr;
     @SjekkVedKopiering
-    private BigDecimal manueltFordeltRefusjonPrÅr;
+    private Beløp manueltFordeltRefusjonPrÅr;
     @SjekkVedKopiering
     private Hjemmel hjemmelForRefusjonskravfrist;
     @SjekkVedKopiering
     private final Utfall refusjonskravFristUtfall;
 
-    public Refusjon(BigDecimal refusjonskravPrÅr,
-                    BigDecimal saksbehandletRefusjonPrÅr,
-                    BigDecimal fordeltRefusjonPrÅr,
-                    BigDecimal manueltFordeltRefusjonPrÅr,
+    public Refusjon(Beløp refusjonskravPrÅr,
+                    Beløp saksbehandletRefusjonPrÅr,
+                    Beløp fordeltRefusjonPrÅr,
+                    Beløp manueltFordeltRefusjonPrÅr,
                     Hjemmel hjemmelForRefusjonskravfrist, Utfall refusjonskravFristUtfall) {
         if (refusjonskravPrÅr == null && saksbehandletRefusjonPrÅr == null && fordeltRefusjonPrÅr == null && hjemmelForRefusjonskravfrist == null && manueltFordeltRefusjonPrÅr == null) {
             throw new IllegalStateException("refusjonskrav må Være satt");
@@ -50,35 +50,35 @@ public class Refusjon implements Serializable, Comparable<Refusjon> {
         this.refusjonskravFristUtfall = refusjon.getRefusjonskravFristUtfall();
     }
 
-    public static Refusjon medRefusjonskravPrÅr(BigDecimal refusjonskravPrÅr, Hjemmel hjemmel, Utfall refusjonskravFristUtfall) {
+    public static Refusjon medRefusjonskravPrÅr(Beløp refusjonskravPrÅr, Hjemmel hjemmel, Utfall refusjonskravFristUtfall) {
         return new Refusjon(refusjonskravPrÅr, null, null, null, hjemmel, refusjonskravFristUtfall);
     }
 
-    public static Refusjon medSaksbehandletRefusjonPrÅr(BigDecimal saksbehandletRefusjonPrÅr) {
+    public static Refusjon medSaksbehandletRefusjonPrÅr(Beløp saksbehandletRefusjonPrÅr) {
         return new Refusjon(null, saksbehandletRefusjonPrÅr, null, null, null, null);
     }
 
-    public static Refusjon medFordeltRefusjonPrÅr(BigDecimal fordeltRefusjonPrÅr) {
+    public static Refusjon medFordeltRefusjonPrÅr(Beløp fordeltRefusjonPrÅr) {
         return new Refusjon(null, null, fordeltRefusjonPrÅr, null, null, null);
     }
 
-    public static Refusjon medManueltFordeltRefusjonPrÅr(BigDecimal manueltFordeltRefusjonPrÅr) {
+    public static Refusjon medManueltFordeltRefusjonPrÅr(Beløp manueltFordeltRefusjonPrÅr) {
         return new Refusjon(null, null, null, manueltFordeltRefusjonPrÅr, null, null);
     }
 
-    public BigDecimal getManueltFordeltRefusjonPrÅr() {
+    public Beløp getManueltFordeltRefusjonPrÅr() {
         return manueltFordeltRefusjonPrÅr;
     }
 
-    public BigDecimal getRefusjonskravPrÅr() {
+    public Beløp getRefusjonskravPrÅr() {
         return refusjonskravPrÅr;
     }
 
-    public BigDecimal getSaksbehandletRefusjonPrÅr() {
+    public Beløp getSaksbehandletRefusjonPrÅr() {
         return saksbehandletRefusjonPrÅr;
     }
 
-    public BigDecimal getFordeltRefusjonPrÅr() {
+    public Beløp getFordeltRefusjonPrÅr() {
         return fordeltRefusjonPrÅr;
     }
 
@@ -90,19 +90,19 @@ public class Refusjon implements Serializable, Comparable<Refusjon> {
         return refusjonskravFristUtfall;
     }
 
-    public void setRefusjonskravPrÅr(BigDecimal refusjonskravPrÅr) {
+    public void setRefusjonskravPrÅr(Beløp refusjonskravPrÅr) {
         this.refusjonskravPrÅr = refusjonskravPrÅr;
     }
 
-    public void setSaksbehandletRefusjonPrÅr(BigDecimal saksbehandletRefusjonPrÅr) {
+    public void setSaksbehandletRefusjonPrÅr(Beløp saksbehandletRefusjonPrÅr) {
         this.saksbehandletRefusjonPrÅr = saksbehandletRefusjonPrÅr;
     }
 
-    public void setFordeltRefusjonPrÅr(BigDecimal fordeltRefusjonPrÅr) {
+    public void setFordeltRefusjonPrÅr(Beløp fordeltRefusjonPrÅr) {
         this.fordeltRefusjonPrÅr = fordeltRefusjonPrÅr;
     }
 
-    public void setManueltFordeltRefusjonPrÅr(BigDecimal manueltFordeltRefusjonPrÅr) {
+    public void setManueltFordeltRefusjonPrÅr(Beløp manueltFordeltRefusjonPrÅr) {
         this.manueltFordeltRefusjonPrÅr = manueltFordeltRefusjonPrÅr;
     }
 
@@ -116,7 +116,7 @@ public class Refusjon implements Serializable, Comparable<Refusjon> {
      * Det er det sist avklarte beløpet som til en hver tid skal være gjeldende.
      * @return returnerer det refusjonskravet som skal være gjeldende
      */
-    public BigDecimal getGjeldendeRefusjonPrÅr() {
+    public Beløp getGjeldendeRefusjonPrÅr() {
         if (manueltFordeltRefusjonPrÅr != null) {
             return manueltFordeltRefusjonPrÅr;
         } if (fordeltRefusjonPrÅr != null) {
@@ -125,7 +125,7 @@ public class Refusjon implements Serializable, Comparable<Refusjon> {
             return saksbehandletRefusjonPrÅr;
         }
         if (refusjonskravFristUtfall != null && refusjonskravFristUtfall.equals(Utfall.UNDERKJENT)) {
-            return BigDecimal.ZERO;
+            return Beløp.ZERO;
         }
         return refusjonskravPrÅr;
     }
@@ -135,9 +135,9 @@ public class Refusjon implements Serializable, Comparable<Refusjon> {
      *
      * @return Innvilget refusjonskrav
      */
-    public BigDecimal getInnvilgetRefusjonskravPrÅr() {
+    public Beløp getInnvilgetRefusjonskravPrÅr() {
         if (refusjonskravFristUtfall != null && refusjonskravFristUtfall.equals(Utfall.UNDERKJENT)) {
-            return BigDecimal.ZERO;
+            return Beløp.ZERO;
         }
         return refusjonskravPrÅr;
     }

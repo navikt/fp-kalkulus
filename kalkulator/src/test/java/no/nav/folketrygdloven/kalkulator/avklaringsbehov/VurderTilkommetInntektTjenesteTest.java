@@ -32,7 +32,6 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.NyttInntektsforholdDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.VurderTilkommetInntektHåndteringDto;
@@ -42,6 +41,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
+import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class VurderTilkommetInntektTjenesteTest {
 
@@ -88,7 +89,7 @@ class VurderTilkommetInntektTjenesteTest {
         assertThat(tilkomneInntekter.size()).isEqualTo(1);
         assertThat(tilkomneInntekter.get(0).getArbeidsgiver().get()).isEqualTo(arbeidsgiver2);
         assertThat(tilkomneInntekter.get(0).getAktivitetStatus()).isEqualTo(AktivitetStatus.ARBEIDSTAKER);
-        assertThat(tilkomneInntekter.get(0).getBruttoInntektPrÅr().compareTo(BigDecimal.valueOf(100_000))).isEqualTo(0);
+        assertThat(tilkomneInntekter.get(0).getBruttoInntektPrÅr().compareTo(Beløp.fra(100_000))).isEqualTo(0);
 
 
     }
@@ -137,7 +138,7 @@ class VurderTilkommetInntektTjenesteTest {
         assertThat(tilkomneInntekter1.size()).isEqualTo(1);
         assertThat(tilkomneInntekter1.get(0).getArbeidsgiver().get()).isEqualTo(arbeidsgiver2);
         assertThat(tilkomneInntekter1.get(0).getAktivitetStatus()).isEqualTo(AktivitetStatus.ARBEIDSTAKER);
-        assertThat(tilkomneInntekter1.get(0).getBruttoInntektPrÅr().compareTo(BigDecimal.valueOf(100_000))).isEqualTo(0);
+        assertThat(tilkomneInntekter1.get(0).getBruttoInntektPrÅr().compareTo(Beløp.fra(100_000))).isEqualTo(0);
 
         var periodeLagtTil = nyttGr.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(1);
         var tilkomneInntekter2 = periodeLagtTil
@@ -194,7 +195,7 @@ class VurderTilkommetInntektTjenesteTest {
         assertThat(tilkomneInntekter1.size()).isEqualTo(1);
         assertThat(tilkomneInntekter1.get(0).getArbeidsgiver().get()).isEqualTo(arbeidsgiver2);
         assertThat(tilkomneInntekter1.get(0).getAktivitetStatus()).isEqualTo(AktivitetStatus.ARBEIDSTAKER);
-        assertThat(tilkomneInntekter1.get(0).getBruttoInntektPrÅr().compareTo(BigDecimal.valueOf(100_000))).isEqualTo(0);
+        assertThat(tilkomneInntekter1.get(0).getBruttoInntektPrÅr().compareTo(Beløp.fra(100_000))).isEqualTo(0);
 
         var periodeLagtTil = nyttGr.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(1);
         var tilkomneInntekter2 = periodeLagtTil
@@ -202,7 +203,7 @@ class VurderTilkommetInntektTjenesteTest {
         assertThat(tilkomneInntekter2.size()).isEqualTo(1);
         assertThat(tilkomneInntekter2.get(0).getArbeidsgiver().get()).isEqualTo(arbeidsgiver2);
         assertThat(tilkomneInntekter2.get(0).getAktivitetStatus()).isEqualTo(AktivitetStatus.ARBEIDSTAKER);
-        assertThat(tilkomneInntekter2.get(0).getBruttoInntektPrÅr().compareTo(BigDecimal.valueOf(100_000))).isEqualTo(0);
+        assertThat(tilkomneInntekter2.get(0).getBruttoInntektPrÅr().compareTo(Beløp.fra(100_000))).isEqualTo(0);
     }
 
 
@@ -245,7 +246,7 @@ class VurderTilkommetInntektTjenesteTest {
         assertThat(tilkomneInntekter.size()).isEqualTo(1);
         assertThat(tilkomneInntekter.get(0).getArbeidsgiver()).isEmpty();
         assertThat(tilkomneInntekter.get(0).getAktivitetStatus()).isEqualTo(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
-        assertThat(tilkomneInntekter.get(0).getBruttoInntektPrÅr().compareTo(BigDecimal.valueOf(100_000))).isEqualTo(0);
+        assertThat(tilkomneInntekter.get(0).getBruttoInntektPrÅr().compareTo(Beløp.fra(100_000))).isEqualTo(0);
 
 
     }

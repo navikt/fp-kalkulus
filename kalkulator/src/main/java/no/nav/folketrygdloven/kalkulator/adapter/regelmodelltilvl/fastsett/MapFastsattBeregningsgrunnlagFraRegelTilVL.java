@@ -11,6 +11,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.fastsett.Beregnings
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class MapFastsattBeregningsgrunnlagFraRegelTilVL {
 
@@ -74,18 +75,18 @@ public class MapFastsattBeregningsgrunnlagFraRegelTilVL {
     }
 
     private static void fastsettAgreggerteVerdier(BeregningsgrunnlagPeriodeDto periode, BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
-        Optional<BigDecimal> bruttoPrÅr = periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
-                .filter(bgpsa -> bgpsa.getBruttoPrÅr() != null)
+        var bruttoPrÅr = periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoPrÅr)
-                .reduce(BigDecimal::add);
-        Optional<BigDecimal> avkortetPrÅr = periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
-                .filter(bgpsa -> bgpsa.getAvkortetPrÅr() != null)
+                .filter(Objects::nonNull)
+                .reduce(Beløp::adder);
+        var avkortetPrÅr = periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .map(BeregningsgrunnlagPrStatusOgAndelDto::getAvkortetPrÅr)
-                .reduce(BigDecimal::add);
-        Optional<BigDecimal> redusertPrÅr = periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
-                .filter(bgpsa -> bgpsa.getRedusertPrÅr() != null)
+                .filter(Objects::nonNull)
+                .reduce(Beløp::adder);
+        var redusertPrÅr = periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .map(BeregningsgrunnlagPrStatusOgAndelDto::getRedusertPrÅr)
-                .reduce(BigDecimal::add);
+                .filter(Objects::nonNull)
+                .reduce(Beløp::adder);
         BeregningsgrunnlagPeriodeDto.oppdater(periode)
                 .medBruttoPrÅr(bruttoPrÅr.orElse(null))
                 .medAvkortetPrÅr(avkortetPrÅr.orElse(null))
@@ -103,18 +104,14 @@ public class MapFastsattBeregningsgrunnlagFraRegelTilVL {
 
     protected static void settVerdierFraFastsettRegel(BeregningsgrunnlagPrStatusOgAndelDto.Builder builder, BeregningsgrunnlagPrArbeidsforhold regelResultat) {
 
-        builder.medAvkortetPrÅr(verifisertBeløp(regelResultat.getAvkortetPrÅr()))
-                .medRedusertPrÅr(verifisertBeløp(regelResultat.getRedusertPrÅr()))
-                .medMaksimalRefusjonPrÅr(regelResultat.getMaksimalRefusjonPrÅr())
-                .medAvkortetRefusjonPrÅr(regelResultat.getAvkortetRefusjonPrÅr())
-                .medRedusertRefusjonPrÅr(regelResultat.getRedusertRefusjonPrÅr())
-                .medAvkortetBrukersAndelPrÅr(verifisertBeløp(regelResultat.getAvkortetBrukersAndelPrÅr()))
-                .medRedusertBrukersAndelPrÅr(verifisertBeløp(regelResultat.getRedusertBrukersAndelPrÅr()))
-                .medAvkortetFørGraderingPrÅr(verifisertBeløp(regelResultat.getAndelsmessigFørGraderingPrAar() == null ? BigDecimal.ZERO : regelResultat.getAndelsmessigFørGraderingPrAar()));
-    }
-
-    private static BigDecimal verifisertBeløp(BigDecimal beløp) {
-        return beløp == null ? null : beløp.max(BigDecimal.ZERO);
+        builder.medAvkortetPrÅr(Beløp.fra(regelResultat.getAvkortetPrÅr()))
+                .medRedusertPrÅr(Beløp.fra(regelResultat.getRedusertPrÅr()))
+                .medMaksimalRefusjonPrÅr(Beløp.fra(regelResultat.getMaksimalRefusjonPrÅr()))
+                .medAvkortetRefusjonPrÅr(Beløp.fra(regelResultat.getAvkortetRefusjonPrÅr()))
+                .medRedusertRefusjonPrÅr(Beløp.fra(regelResultat.getRedusertRefusjonPrÅr()))
+                .medAvkortetBrukersAndelPrÅr(Beløp.fra(regelResultat.getAvkortetBrukersAndelPrÅr()))
+                .medRedusertBrukersAndelPrÅr(Beløp.fra(regelResultat.getRedusertBrukersAndelPrÅr()))
+                .medAvkortetFørGraderingPrÅr(Beløp.fra(regelResultat.getAndelsmessigFørGraderingPrAar() == null ? BigDecimal.ZERO : regelResultat.getAndelsmessigFørGraderingPrAar()));
     }
 
     private static void mapBeregningsgrunnlagPrStatus(BeregningsgrunnlagPeriodeDto vlBGPeriode,
@@ -127,14 +124,14 @@ public class MapFastsattBeregningsgrunnlagFraRegelTilVL {
 
     private static void settVerdierFraFastsettRegel(BeregningsgrunnlagPrStatusOgAndelDto.Builder builder, BeregningsgrunnlagPrStatus regelResultat) {
         builder
-                .medAvkortetPrÅr(verifisertBeløp(regelResultat.getAvkortetPrÅr()))
-                .medRedusertPrÅr(verifisertBeløp(regelResultat.getRedusertPrÅr()))
-                .medAvkortetBrukersAndelPrÅr(verifisertBeløp(regelResultat.getAvkortetPrÅr()))
-                .medRedusertBrukersAndelPrÅr(verifisertBeløp(regelResultat.getRedusertPrÅr()))
-                .medMaksimalRefusjonPrÅr(BigDecimal.ZERO)
-                .medAvkortetRefusjonPrÅr(BigDecimal.ZERO)
-                .medRedusertRefusjonPrÅr(BigDecimal.ZERO)
-                .medAvkortetFørGraderingPrÅr(verifisertBeløp(regelResultat.getAndelsmessigFørGraderingPrAar() == null ? BigDecimal.ZERO : regelResultat.getAndelsmessigFørGraderingPrAar()));
+                .medAvkortetPrÅr(Beløp.fra(regelResultat.getAvkortetPrÅr()))
+                .medRedusertPrÅr(Beløp.fra(regelResultat.getRedusertPrÅr()))
+                .medAvkortetBrukersAndelPrÅr(Beløp.fra(regelResultat.getAvkortetPrÅr()))
+                .medRedusertBrukersAndelPrÅr(Beløp.fra(regelResultat.getRedusertPrÅr()))
+                .medMaksimalRefusjonPrÅr(Beløp.ZERO)
+                .medAvkortetRefusjonPrÅr(Beløp.ZERO)
+                .medRedusertRefusjonPrÅr(Beløp.ZERO)
+                .medAvkortetFørGraderingPrÅr(Optional.ofNullable(regelResultat.getAndelsmessigFørGraderingPrAar()).map(Beløp::fra).orElse(Beløp.ZERO));
     }
 
 }

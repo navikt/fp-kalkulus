@@ -18,6 +18,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class BeregningsgrunnlagPrStatusOgAndelTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
@@ -135,8 +136,8 @@ public class BeregningsgrunnlagPrStatusOgAndelTest {
     @Test
     public void skal_runde_av_og_sette_dagsats_riktig() {
         prStatusOgAndel = BeregningsgrunnlagPrStatusOgAndelDto.kopier(prStatusOgAndel)
-            .medRedusertBrukersAndelPrÅr(BigDecimal.valueOf(377127.4))
-            .medRedusertRefusjonPrÅr(BigDecimal.valueOf(214892.574))
+            .medRedusertBrukersAndelPrÅr(Beløp.fra(BigDecimal.valueOf(377127.4)))
+            .medRedusertRefusjonPrÅr(Beløp.fra(BigDecimal.valueOf(214892.574)))
             .build(beregningsgrunnlagPeriode);
 
         assertThat(prStatusOgAndel.getDagsatsBruker()).isEqualTo(1450);
@@ -157,31 +158,31 @@ public class BeregningsgrunnlagPrStatusOgAndelTest {
     @Test
     public void oppdatering_av_beregnet_skal_ikkje_endre_brutto_om_fordelt_er_satt() {
         prStatusOgAndel = BeregningsgrunnlagPrStatusOgAndelDto.kopier(prStatusOgAndel)
-            .medFordeltPrÅr(BigDecimal.valueOf(377127.4))
-            .medBeregnetPrÅr(BigDecimal.valueOf(214892.574))
+            .medFordeltPrÅr(Beløp.fra(BigDecimal.valueOf(377127.4)))
+            .medBeregnetPrÅr(Beløp.fra(BigDecimal.valueOf(214892.574)))
             .build(beregningsgrunnlagPeriode);
 
-        assertThat(prStatusOgAndel.getBruttoPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(377127.4));
+        assertThat(prStatusOgAndel.getBruttoPrÅr().verdi()).isEqualByComparingTo(BigDecimal.valueOf(377127.4));
     }
 
     @Test
     public void oppdatering_av_beregnet_skal_ikkje_endre_brutto_om_overstyrt_er_satt() {
         prStatusOgAndel = BeregningsgrunnlagPrStatusOgAndelDto.kopier(prStatusOgAndel)
-            .medOverstyrtPrÅr(BigDecimal.valueOf(377127.4))
-            .medBeregnetPrÅr(BigDecimal.valueOf(214892.574))
+            .medOverstyrtPrÅr(Beløp.fra(BigDecimal.valueOf(377127.4)))
+            .medBeregnetPrÅr(Beløp.fra(BigDecimal.valueOf(214892.574)))
             .build(beregningsgrunnlagPeriode);
 
-        assertThat(prStatusOgAndel.getBruttoPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(377127.4));
+        assertThat(prStatusOgAndel.getBruttoPrÅr().verdi()).isEqualByComparingTo(BigDecimal.valueOf(377127.4));
     }
 
     @Test
     public void oppdatering_av_overstyrt_skal_ikkje_endre_brutto_om_fordelt_er_satt() {
         prStatusOgAndel = BeregningsgrunnlagPrStatusOgAndelDto.kopier(prStatusOgAndel)
-            .medFordeltPrÅr(BigDecimal.valueOf(377127.4))
-            .medOverstyrtPrÅr(BigDecimal.valueOf(214892.574))
+            .medFordeltPrÅr(Beløp.fra(BigDecimal.valueOf(377127.4)))
+            .medOverstyrtPrÅr(Beløp.fra(BigDecimal.valueOf(214892.574)))
             .build(beregningsgrunnlagPeriode);
 
-        assertThat(prStatusOgAndel.getBruttoPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(377127.4));
+        assertThat(prStatusOgAndel.getBruttoPrÅr().verdi()).isEqualByComparingTo(BigDecimal.valueOf(377127.4));
     }
 
 

@@ -25,6 +25,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public final class BeregningsgrunnlagVerifiserer {
 
@@ -145,7 +146,7 @@ public final class BeregningsgrunnlagVerifiserer {
     }
 
     private static boolean harRefusjon(BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        return andel.getBgAndelArbeidsforhold().isPresent() && andel.getBgAndelArbeidsforhold().get().getGjeldendeRefusjonPrÅr() != null && andel.getBgAndelArbeidsforhold().get().getGjeldendeRefusjonPrÅr().compareTo(BigDecimal.ZERO) > 0;
+        return andel.getBgAndelArbeidsforhold().isPresent() && andel.getBgAndelArbeidsforhold().get().getGjeldendeRefusjonPrÅr() != null && andel.getBgAndelArbeidsforhold().get().getGjeldendeRefusjonPrÅr().compareTo(Beløp.ZERO) > 0;
     }
 
     private static void verifiserAtAndelerSomGraderesHarGrunnlag(BeregningsgrunnlagDto beregningsgrunnlag, AktivitetGradering aktivitetGradering) {

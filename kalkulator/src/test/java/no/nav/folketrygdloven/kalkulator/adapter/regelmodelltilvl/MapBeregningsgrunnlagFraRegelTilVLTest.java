@@ -174,7 +174,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
     private void assertVLSammenligningsgrunnlagPrStatus(SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlag, SammenligningsgrunnlagType sammenligningsgrunnlagType) {
         assertThat(sammenligningsgrunnlag.getSammenligningsperiodeFom()).isEqualTo(MINUS_YEARS_1);
         assertThat(sammenligningsgrunnlag.getSammenligningsperiodeTom()).isEqualTo(MINUS_DAYS_20);
-        assertThat(sammenligningsgrunnlag.getRapportertPrÅr().doubleValue()).isEqualTo(42.0);
+        assertThat(sammenligningsgrunnlag.getRapportertPrÅr().verdi().doubleValue()).isEqualTo(42.0);
         assertThat(sammenligningsgrunnlag.getSammenligningsgrunnlagType()).isEqualTo(sammenligningsgrunnlagType);
     }
 
@@ -182,12 +182,12 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
         assertThat(vlBGPStatus.getAktivitetStatus())
                 .isEqualTo(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
         assertThat(vlBGPStatus.getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE);
-        assertThat(vlBGPStatus.getBeregnetPrÅr().doubleValue()).isEqualTo(400000.42, within(0.01));
-        assertThat(vlBGPStatus.getBruttoPrÅr().doubleValue()).isEqualTo(400000.42, within(0.01));
+        assertThat(vlBGPStatus.getBeregnetPrÅr().verdi().doubleValue()).isEqualTo(400000.42, within(0.01));
+        assertThat(vlBGPStatus.getBruttoPrÅr().verdi().doubleValue()).isEqualTo(400000.42, within(0.01));
         assertThat(vlBGPStatus.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr).orElse(null)).isNull();
         assertThat(vlBGPStatus.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseBortfaltPrÅr)).isEmpty();
-        assertThat(vlBGPStatus.getAvkortetPrÅr().doubleValue()).isEqualTo(789.789, within(0.01));
-        assertThat(vlBGPStatus.getRedusertPrÅr().doubleValue()).isEqualTo(901.901, within(0.01));
+        assertThat(vlBGPStatus.getAvkortetPrÅr().verdi().doubleValue()).isEqualTo(789.789, within(0.01));
+        assertThat(vlBGPStatus.getRedusertPrÅr().verdi().doubleValue()).isEqualTo(901.901, within(0.01));
         assertThat(vlBGPStatus.getDagsatsArbeidsgiver()).isEqualTo(0L);
     }
 
@@ -200,11 +200,11 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
                 .map(InternArbeidsforholdRefDto::gjelderForSpesifiktArbeidsforhold).orElse(false))
                 .as("gjelderSpesifiktArbeidsforhold").isFalse();
         assertThat(bgpsa.getArbeidsforholdType()).isEqualTo(OpptjeningAktivitetType.FRILANS);
-        assertThat(bgpsa.getBeregnetPrÅr().doubleValue()).isEqualTo(456.456, within(0.01));
-        assertThat(bgpsa.getBruttoPrÅr().doubleValue()).isEqualTo(456.456, within(0.01));
+        assertThat(bgpsa.getBeregnetPrÅr().verdi().doubleValue()).isEqualTo(456.456, within(0.01));
+        assertThat(bgpsa.getBruttoPrÅr().verdi().doubleValue()).isEqualTo(456.456, within(0.01));
         assertThat(bgpsa.getBgAndelArbeidsforhold()).isEmpty();
-        assertThat(bgpsa.getAvkortetPrÅr().doubleValue()).isEqualTo(34.34, within(0.01));
-        assertThat(bgpsa.getRedusertPrÅr().doubleValue()).isEqualTo(65.65, within(0.01));
+        assertThat(bgpsa.getAvkortetPrÅr().verdi().doubleValue()).isEqualTo(34.34, within(0.01));
+        assertThat(bgpsa.getRedusertPrÅr().verdi().doubleValue()).isEqualTo(65.65, within(0.01));
         assertThat(bgpsa.getDagsatsArbeidsgiver()).isEqualTo(5L);
     }
 
@@ -218,13 +218,13 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
                 .map(InternArbeidsforholdRefDto::gjelderForSpesifiktArbeidsforhold).orElse(false))
                 .as("gjelderSpesifiktArbeidsforhold").isFalse();
         assertThat(bgpsa.getArbeidsforholdType()).isEqualTo(OpptjeningAktivitetType.ARBEID);
-        assertThat(bgpsa.getBeregnetPrÅr().doubleValue()).isEqualTo(123.123, within(0.01));
-        assertThat(bgpsa.getBruttoPrÅr().doubleValue()).isEqualTo(123.123, within(0.01));
-        assertThat(bgpsa.getMaksimalRefusjonPrÅr().doubleValue()).isEqualTo(123.123, within(0.01));
-        assertThat(bgpsa.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseBortfaltPrÅr).get().doubleValue()).isEqualTo(87.87,
+        assertThat(bgpsa.getBeregnetPrÅr().verdi().doubleValue()).isEqualTo(123.123, within(0.01));
+        assertThat(bgpsa.getBruttoPrÅr().verdi().doubleValue()).isEqualTo(123.123, within(0.01));
+        assertThat(bgpsa.getMaksimalRefusjonPrÅr().verdi().doubleValue()).isEqualTo(123.123, within(0.01));
+        assertThat(bgpsa.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseBortfaltPrÅr).get().verdi().doubleValue()).isEqualTo(87.87,
                 within(0.01));
-        assertThat(bgpsa.getAvkortetPrÅr().doubleValue()).isEqualTo(57.57, within(0.01));
-        assertThat(bgpsa.getRedusertPrÅr().doubleValue()).isEqualTo(89.89, within(0.01));
+        assertThat(bgpsa.getAvkortetPrÅr().verdi().doubleValue()).isEqualTo(57.57, within(0.01));
+        assertThat(bgpsa.getRedusertPrÅr().verdi().doubleValue()).isEqualTo(89.89, within(0.01));
         assertThat(bgpsa.getDagsatsArbeidsgiver()).isEqualTo(10L);
     }
 

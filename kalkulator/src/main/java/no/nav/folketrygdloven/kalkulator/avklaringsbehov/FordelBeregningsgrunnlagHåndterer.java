@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -26,6 +25,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class FordelBeregningsgrunnlagHåndterer {
 
@@ -53,7 +53,7 @@ public class FordelBeregningsgrunnlagHåndterer {
                                                   List<BeregningsgrunnlagPeriodeDto> perioder,
                                                   FordelBeregningsgrunnlagPeriodeDto endretPeriode) {
         BeregningsgrunnlagPeriodeDto korrektPeriode = getKorrektPeriode(input, perioder, endretPeriode);
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> refusjonMap = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, korrektPeriode);
+        var refusjonMap = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, korrektPeriode);
         BeregningsgrunnlagPeriodeDto.Builder perioderBuilder = BeregningsgrunnlagPeriodeDto.oppdater(korrektPeriode);
         // Må sortere med eksisterende først for å sette andelsnr på disse først
         List<FordelBeregningsgrunnlagAndelDto> sorted = sorterMedNyesteSist(endretPeriode);
@@ -82,7 +82,7 @@ public class FordelBeregningsgrunnlagHåndterer {
         andelerSomSkalFjernes.forEach(a -> BeregningsgrunnlagPeriodeDto.oppdater(korrektPeriode).fjernBeregningsgrunnlagPrStatusOgAndel(a));
     }
 
-    private static BeregningsgrunnlagPrStatusOgAndelDto fordel(Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> refusjonMap,
+    private static BeregningsgrunnlagPrStatusOgAndelDto fordel(Map<FordelBeregningsgrunnlagAndelDto, Beløp> refusjonMap,
                                                                BeregningsgrunnlagPeriodeDto.Builder perioderBuilder,
                                                                FordelBeregningsgrunnlagAndelDto endretAndel,
                                                                BeregningsgrunnlagPrStatusOgAndelDto.Builder builderForAndel, boolean skalLeggeTilAndel) {
@@ -116,7 +116,7 @@ public class FordelBeregningsgrunnlagHåndterer {
     }
 
     private static void fastsettVerdierForAndel(BeregningsgrunnlagPrStatusOgAndelDto.Builder builderForAndel,
-                                                Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> refusjonMap,
+                                                Map<FordelBeregningsgrunnlagAndelDto, Beløp> refusjonMap,
                                                 FordelBeregningsgrunnlagAndelDto endretAndel) {
         FordelFastsatteVerdierDto fastsatteVerdier = endretAndel.getFastsatteVerdier();
         FordelFastsatteVerdierDto verdierMedJustertRefusjon = lagVerdierMedFordeltRefusjon(refusjonMap, endretAndel, fastsatteVerdier);
@@ -131,14 +131,14 @@ public class FordelBeregningsgrunnlagHåndterer {
         andelBuilder.oppdaterArbeidsforholdHvisFinnes()
                 .ifPresent(b -> b.medNaturalytelseBortfaltPrÅr(null) // Ved omfordeling må vi nulle ut naturalytelse og inkludere dette i det fordelt beløp
                         .medNaturalytelseTilkommetPrÅr(null)
-                        .medManueltFordeltRefusjonPrÅr(verdierMedJustertRefusjon.getRefusjonPrÅr() != null ? BigDecimal.valueOf(verdierMedJustertRefusjon.getRefusjonPrÅr()) : null));
+                        .medManueltFordeltRefusjonPrÅr(Beløp.fra(verdierMedJustertRefusjon.getRefusjonPrÅr())));
     }
 
-    private static FordelFastsatteVerdierDto lagVerdierMedFordeltRefusjon(Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> refusjonMap,
+    private static FordelFastsatteVerdierDto lagVerdierMedFordeltRefusjon(Map<FordelBeregningsgrunnlagAndelDto, Beløp> refusjonMap,
                                                                           FordelBeregningsgrunnlagAndelDto endretAndel,
                                                                           FordelFastsatteVerdierDto fastsatteVerdier) {
         return FordelFastsatteVerdierDto.Builder.oppdater(fastsatteVerdier)
-                .medRefusjonPrÅr(refusjonMap.get(endretAndel) != null ? refusjonMap.get(endretAndel).intValue() : null)
+                .medRefusjonPrÅr(Beløp.safeVerdi(refusjonMap.get(endretAndel)) != null ? refusjonMap.get(endretAndel).intValue() : null)
                 .build();
     }
 

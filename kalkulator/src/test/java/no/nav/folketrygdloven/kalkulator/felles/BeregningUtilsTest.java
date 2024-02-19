@@ -15,7 +15,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 public class BeregningUtilsTest {
@@ -73,7 +72,7 @@ public class BeregningUtilsTest {
         YtelseDto nyYtelse = aapYtelseNyBuilder.leggTilYtelseAnvist(nyttMeldekort).build();
 
         YtelseFilterDto filter = new YtelseFilterDto(Arrays.asList(gammelYtelse, nyYtelse));
-        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.sisteHeleMeldekortFørStp(filter, nyYtelse, SKJÆRINGSTIDSPUNKT, Set.of(YtelseType.ARBEIDSAVKLARINGSPENGER), FagsakYtelseType.FORELDREPENGER);
+        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.sisteHeleMeldekortFørStp(filter, nyYtelse, SKJÆRINGSTIDSPUNKT, Set.of(YtelseType.ARBEIDSAVKLARINGSPENGER));
 
         assertThat(ytelseAnvist).isPresent();
         assertThat(ytelseAnvist.get()).isEqualTo(nyttMeldekort);
@@ -91,7 +90,7 @@ public class BeregningUtilsTest {
         YtelseDto nyYtelse = aapYtelseNyBuilder.leggTilYtelseAnvist(gammeltMeldekort).build();
 
         YtelseFilterDto filter = new YtelseFilterDto(Arrays.asList(gammelYtelse, nyYtelse));
-        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.sisteHeleMeldekortFørStp(filter, nyYtelse, SKJÆRINGSTIDSPUNKT, Set.of(YtelseType.ARBEIDSAVKLARINGSPENGER), FagsakYtelseType.FORELDREPENGER);
+        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.sisteHeleMeldekortFørStp(filter, nyYtelse, SKJÆRINGSTIDSPUNKT, Set.of(YtelseType.ARBEIDSAVKLARINGSPENGER));
 
         assertThat(ytelseAnvist).isPresent();
         assertThat(ytelseAnvist.get()).isEqualTo(nyttMeldekort);
@@ -109,7 +108,7 @@ public class BeregningUtilsTest {
         YtelseDto nyYtelse = aapYtelseNyBuilder.leggTilYtelseAnvist(meldekortFemti).build();
 
         YtelseFilterDto filter = new YtelseFilterDto(Arrays.asList(gammelYtelse, nyYtelse));
-        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.sisteHeleMeldekortFørStp(filter, nyYtelse, SKJÆRINGSTIDSPUNKT, Set.of(YtelseType.ARBEIDSAVKLARINGSPENGER), FagsakYtelseType.FORELDREPENGER);
+        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.sisteHeleMeldekortFørStp(filter, nyYtelse, SKJÆRINGSTIDSPUNKT, Set.of(YtelseType.ARBEIDSAVKLARINGSPENGER));
 
         assertThat(ytelseAnvist).isPresent();
         assertThat(ytelseAnvist.get()).isEqualTo(meldekortFemti);
@@ -130,7 +129,7 @@ public class BeregningUtilsTest {
         YtelseDto ytelseEtterStp = aapYtelseEtterStpBuilder.leggTilYtelseAnvist(meldekortNyest).build();
 
         YtelseFilterDto filter = new YtelseFilterDto(Arrays.asList(gammelYtelse, nyYtelse, ytelseEtterStp));
-        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.sisteHeleMeldekortFørStp(filter, nyYtelse, SKJÆRINGSTIDSPUNKT, Set.of(YtelseType.ARBEIDSAVKLARINGSPENGER), FagsakYtelseType.FORELDREPENGER);
+        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.sisteHeleMeldekortFørStp(filter, nyYtelse, SKJÆRINGSTIDSPUNKT, Set.of(YtelseType.ARBEIDSAVKLARINGSPENGER));
 
         assertThat(ytelseAnvist).isPresent();
         assertThat(ytelseAnvist.get()).isEqualTo(meldekortNytt);

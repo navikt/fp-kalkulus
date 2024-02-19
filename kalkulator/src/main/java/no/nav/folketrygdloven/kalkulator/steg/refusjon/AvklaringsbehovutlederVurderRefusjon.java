@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.steg.refusjon;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,7 +29,7 @@ public final class AvklaringsbehovutlederVurderRefusjon {
             return false;
         }
         var perioderTilVurderingTjeneste = new PerioderTilVurderingTjeneste(input.getForlengelseperioder(), periodisertMedRefusjonOgGradering);
-        BigDecimal grenseverdi = KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi().multiply(periodisertMedRefusjonOgGradering.getGrunnbeløp().verdi());
+        var grenseverdi = periodisertMedRefusjonOgGradering.getGrunnbeløp().multipliser(KonfigTjeneste.getAntallGØvreGrenseverdi());
         var orginaleBG = orginaltBGGrunnlag.stream().flatMap(gr -> gr.getBeregningsgrunnlag().stream())
                 .collect(Collectors.toList());
         Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjonIUtbetaltPeriode = orginaleBG.stream()

@@ -24,6 +24,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.fastsette.RegelFullføreBeregni
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.input.SvangerskapspengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
@@ -56,6 +57,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.folketrygdloven.utils.Tuple;
 
 public class FullføreBeregningsgrunnlagUtbgradTest {
@@ -87,8 +89,8 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
     private BeregningsgrunnlagDto lagBeregningsgrunnlagAT() {
         var sg = SammenligningsgrunnlagPrStatusDto.builder()
                 .medSammenligningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING)
-                .medRapportertPrÅr(BigDecimal.ZERO)
-                .medAvvikPromilleNy(BigDecimal.valueOf(0L))
+                .medRapportertPrÅr(Beløp.ZERO)
+                .medAvvikPromilleNy(BigDecimal.ZERO)
                 .medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_AT_FL)
                 .build();
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
@@ -106,8 +108,8 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
     private BeregningsgrunnlagDto lagBeregningsgrunnlagATMedToPerioder() {
         var sg = SammenligningsgrunnlagPrStatusDto.builder()
                 .medSammenligningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING)
-                .medRapportertPrÅr(BigDecimal.ZERO)
-                .medAvvikPromilleNy(BigDecimal.valueOf(0L))
+                .medRapportertPrÅr(Beløp.ZERO)
+                .medAvvikPromilleNy(BigDecimal.ZERO)
                 .medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_AT_FL)
                 .build();
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
@@ -132,7 +134,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
                 .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(3).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1))
-                .medBeregnetPrÅr(BigDecimal.valueOf(inntekt))
+                .medBeregnetPrÅr(Beløp.fra(inntekt))
                 .build(periode);
     }
 
@@ -141,7 +143,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
                 .medAktivitetStatus(AktivitetStatus.FRILANSER)
                 .medInntektskategori(Inntektskategori.FRILANSER)
                 .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(3).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1))
-                .medBeregnetPrÅr(BigDecimal.valueOf(inntekt))
+                .medBeregnetPrÅr(Beløp.fra(inntekt))
                 .build(periode);
     }
 
@@ -150,7 +152,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
                 .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
                 .medInntektskategori(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE)
                 .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(3).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1))
-                .medBeregnetPrÅr(BigDecimal.valueOf(inntekt))
+                .medBeregnetPrÅr(Beløp.fra(inntekt))
                 .build(periode);
     }
 
@@ -160,7 +162,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
                 .medArbeidsperiodeTom(ARBEIDSPERIODE_TOM)
                 .medArbeidsforholdRef(arbRefId != null ? arbRefId.toString() : null)
                 .medArbeidsgiver(arbeidsgiver)
-                .medRefusjonskravPrÅr(BigDecimal.valueOf(refusjon), Utfall.GODKJENT);
+                .medRefusjonskravPrÅr(Beløp.fra(refusjon), Utfall.GODKJENT);
     }
 
     @Test
@@ -331,7 +333,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
         assertPeriode(resPeriode, 1_000_000, 540_000, 2077, 540_000);
         assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.valueOf(240_000), BigDecimal.valueOf(200_000), BigDecimal.valueOf(440_000));
-        assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.valueOf(0), BigDecimal.valueOf(100_000), BigDecimal.valueOf(100_000));
+        assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.ZERO, BigDecimal.valueOf(100_000), BigDecimal.valueOf(100_000));
 
         assertRegelsporing(resultat.getRegelsporinger());
     }
@@ -1014,19 +1016,19 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
     }
 
     private void assertAndel(BeregningsgrunnlagPrStatusOgAndelDto andel, BigDecimal bruker, BigDecimal refusjon, BigDecimal avkortet) {
-        Function<BigDecimal, Long> calcDagsats = a -> a.divide(BigDecimal.valueOf(260), 0, RoundingMode.HALF_UP).longValue();
+        Function<BigDecimal, Long> calcDagsats = a -> a.divide(KonfigTjeneste.getYtelsesdagerIÅr(), 0, RoundingMode.HALF_UP).longValue();
         BigDecimal total = bruker.add(refusjon);
-        assertThat(andel.getRedusertBrukersAndelPrÅr()).isEqualByComparingTo(bruker);
-        assertThat(andel.getRedusertRefusjonPrÅr()).isEqualByComparingTo(refusjon);
+        assertThat(andel.getRedusertBrukersAndelPrÅr()).isEqualByComparingTo(Beløp.fra(bruker));
+        assertThat(andel.getRedusertRefusjonPrÅr()).isEqualByComparingTo(Beløp.fra(refusjon));
         assertThat(andel.getDagsatsBruker()).isEqualTo(calcDagsats.apply(bruker));
         assertThat(andel.getDagsatsArbeidsgiver()).isEqualTo(calcDagsats.apply(refusjon));
         assertThat(BigDecimal.valueOf(andel.getDagsats())).isCloseTo(BigDecimal.valueOf(calcDagsats.apply(total)), Offset.offset(BigDecimal.ONE));
         if (avkortet == null) {
-            assertThat(andel.getAvkortetPrÅr()).isEqualByComparingTo(total);
+            assertThat(andel.getAvkortetPrÅr()).isEqualByComparingTo(Beløp.fra(total));
         } else {
-            assertThat(andel.getAvkortetPrÅr()).isEqualByComparingTo(avkortet);
+            assertThat(andel.getAvkortetPrÅr()).isEqualByComparingTo(Beløp.fra(avkortet));
         }
-        assertThat(andel.getRedusertPrÅr()).isEqualByComparingTo(total);
+        assertThat(andel.getRedusertPrÅr()).isEqualByComparingTo(Beløp.fra(total));
     }
 
     @Test
@@ -1063,10 +1065,10 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
 
 
     private void assertPeriode(BeregningsgrunnlagPeriodeDto resPeriode, int brutto, int avkortet, int dagsats, int redusert) {
-        assertThat(resPeriode.getBruttoPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(brutto));
-        assertThat(resPeriode.getAvkortetPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(avkortet));
+        assertThat(resPeriode.getBruttoPrÅr()).isEqualByComparingTo(Beløp.fra(brutto));
+        assertThat(resPeriode.getAvkortetPrÅr()).isEqualByComparingTo(Beløp.fra(avkortet));
         assertThat(resPeriode.getDagsats()).isEqualTo(dagsats);
-        assertThat(resPeriode.getRedusertPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(redusert));
+        assertThat(resPeriode.getRedusertPrÅr()).isEqualByComparingTo(Beløp.fra(redusert));
     }
 
 

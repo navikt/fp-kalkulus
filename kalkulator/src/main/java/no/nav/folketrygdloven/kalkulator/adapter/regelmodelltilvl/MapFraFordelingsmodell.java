@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -18,6 +17,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class MapFraFordelingsmodell {
 
@@ -44,10 +44,10 @@ public class MapFraFordelingsmodell {
     }
 
     private static void fastsettAgreggerteVerdier(BeregningsgrunnlagPeriodeDto periode, BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
-        Optional<BigDecimal> bruttoPrÅr = periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
+        var bruttoPrÅr = periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoPrÅr)
                 .filter(Objects::nonNull)
-                .reduce(BigDecimal::add);
+                .reduce(Beløp::adder);
         BeregningsgrunnlagPeriodeDto.oppdater(periode)
                 .medBruttoPrÅr(bruttoPrÅr.orElse(null))
                 .build(eksisterendeVLGrunnlag);
@@ -76,7 +76,7 @@ public class MapFraFordelingsmodell {
     private static void settFelterFraRegelPåBuilder(FordelAndelModell regelAndel,
                                                     BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder) {
         andelBuilder.medInntektskategoriAutomatiskFordeling(MapInntektskategoriRegelTilVL.map(regelAndel.getInntektskategori()));
-        regelAndel.getFordeltPrÅr().ifPresent(andelBuilder::medFordeltPrÅr);
+        regelAndel.getFordeltPrÅr().map(Beløp::fra).ifPresent(andelBuilder::medFordeltPrÅr);
         settFelterPåArbeidsforhold(regelAndel, andelBuilder).ifPresent(andelBuilder::medBGAndelArbeidsforhold);
     }
 
@@ -86,8 +86,8 @@ public class MapFraFordelingsmodell {
             return Optional.empty();
         }
         var arbforBuilder = andelBuilder.getBgAndelArbeidsforholdDtoBuilder();
-        regelAndel.getFordeltRefusjonPrÅr().ifPresent(fordeltRef -> arbforBuilder.medFordeltRefusjonPrÅr(verifiserIkkeNegativtBeløp(fordeltRef)));
-        regelAndel.getNaturalytelseBortfaltPrÅr().ifPresent(bortfaltNat -> arbforBuilder.medNaturalytelseBortfaltPrÅr(verifiserIkkeNegativtBeløp(bortfaltNat)));
+        regelAndel.getFordeltRefusjonPrÅr().map(Beløp::fra).ifPresent(fordeltRef -> arbforBuilder.medFordeltRefusjonPrÅr(verifiserIkkeNegativtBeløp(fordeltRef)));
+        regelAndel.getNaturalytelseBortfaltPrÅr().map(Beløp::fra).ifPresent(bortfaltNat -> arbforBuilder.medNaturalytelseBortfaltPrÅr(verifiserIkkeNegativtBeløp(bortfaltNat)));
         return Optional.of(arbforBuilder);
     }
 
@@ -143,8 +143,8 @@ public class MapFraFordelingsmodell {
                 gjelderSammeArbeidsforhold(regelAndel, bgpsa);
     }
 
-    private static BigDecimal verifiserIkkeNegativtBeløp(BigDecimal beløp) {
-        if (beløp.compareTo(BigDecimal.ZERO) < 0) {
+    private static Beløp verifiserIkkeNegativtBeløp(Beløp beløp) {
+        if (beløp.compareTo(Beløp.ZERO) < 0) {
             throw new IllegalStateException("Beløp er negativ, ugyldig tilstand. Beløp var:  " + beløp);
         }
         return beløp;

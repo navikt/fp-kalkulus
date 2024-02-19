@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -8,6 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
@@ -59,32 +59,32 @@ public final class FordelingGraderingTjeneste {
     }
 
     public static boolean skalGraderePåAndelUtenBeregningsgrunnlag(BeregningsgrunnlagPrStatusOgAndelDto andel, boolean harGraderingIBGPeriode) {
-        boolean harIkkjeBeregningsgrunnlag = andel.getBruttoUtenManueltFordelt() == null || andel.getBruttoUtenManueltFordelt().compareTo(BigDecimal.ZERO) == 0;
+        boolean harIkkjeBeregningsgrunnlag = andel.getBruttoUtenManueltFordelt() == null || andel.getBruttoUtenManueltFordelt().compareTo(Beløp.ZERO) == 0;
         return harGraderingIBGPeriode && harIkkjeBeregningsgrunnlag;
     }
 
     public static boolean gradertAndelVilleBlittAvkortet(BeregningsgrunnlagPrStatusOgAndelDto andel, Beløp grunnbeløp, BeregningsgrunnlagPeriodeDto periode) {
         if (andel.getAktivitetStatus().erSelvstendigNæringsdrivende()) {
-            BigDecimal totaltBgFraStatuserPrioritertOverSN = inntektFraAndelerMedStatus(periode, STATUSER_PRIORITERT_OVER_SN);
-            BigDecimal seksG = grunnbeløp.verdi().multiply(BigDecimal.valueOf(6));
+            var totaltBgFraStatuserPrioritertOverSN = inntektFraAndelerMedStatus(periode, STATUSER_PRIORITERT_OVER_SN);
+            var seksG = grunnbeløp.multipliser(KonfigTjeneste.getAntallGØvreGrenseverdi());
             return totaltBgFraStatuserPrioritertOverSN.compareTo(seksG) >= 0;
         }
         if (andel.getAktivitetStatus().erFrilanser()) {
-            BigDecimal totaltBgFraArbeidstaker = inntektFraAndelerMedStatus(periode, Collections.singletonList(AktivitetStatus.ARBEIDSTAKER));
-            BigDecimal seksG = grunnbeløp.verdi().multiply(BigDecimal.valueOf(6));
+            var totaltBgFraArbeidstaker = inntektFraAndelerMedStatus(periode, Collections.singletonList(AktivitetStatus.ARBEIDSTAKER));
+            var seksG = grunnbeløp.multipliser(KonfigTjeneste.getAntallGØvreGrenseverdi());
             return totaltBgFraArbeidstaker.compareTo(seksG) >= 0;
         }
         return false;
     }
 
-    private static BigDecimal inntektFraAndelerMedStatus(BeregningsgrunnlagPeriodeDto periode, List<AktivitetStatus> statuserSomSkalTelles) {
+    private static Beløp inntektFraAndelerMedStatus(BeregningsgrunnlagPeriodeDto periode, List<AktivitetStatus> statuserSomSkalTelles) {
         return periode.getBeregningsgrunnlagPrStatusOgAndelList()
                 .stream()
                 .filter(a -> statuserSomSkalTelles.contains(a.getAktivitetStatus()))
                 .map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoUtenManueltFordelt)
                 .filter(Objects::nonNull)
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
+                .reduce(Beløp::adder)
+                .orElse(Beløp.ZERO);
     }
 
 }

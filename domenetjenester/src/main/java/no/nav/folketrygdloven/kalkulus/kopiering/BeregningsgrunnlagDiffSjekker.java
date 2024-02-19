@@ -111,11 +111,9 @@ public class BeregningsgrunnlagDiffSjekker {
     }
 
     private static LocalDateTimeline<BeregningsgrunnlagPeriodeDto> lagPeriodeTidslinje(List<BeregningsgrunnlagPeriodeDto> aktivePerioder) {
-        var aktiveSegmenter = aktivePerioder.stream()
+        return aktivePerioder.stream()
                 .map(p -> new LocalDateSegment<>(p.getBeregningsgrunnlagPeriodeFom(), p.getBeregningsgrunnlagPeriodeTom(), p))
-                .toList();
-
-        return new LocalDateTimeline<>(aktiveSegmenter);
+                .collect(Collectors.collectingAndThen(Collectors.toList(), LocalDateTimeline::new));
     }
 
 }

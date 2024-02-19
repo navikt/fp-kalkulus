@@ -1,36 +1,36 @@
 package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
 
-import java.math.BigDecimal;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class RefusjonOgFastsattBeløp {
 
-    private BigDecimal totalRefusjonPrÅr;
-    private BigDecimal totalFastsattBeløpPrÅr = BigDecimal.ZERO;
+    private Beløp totalRefusjonPrÅr;
+    private Beløp totalFastsattBeløpPrÅr = Beløp.ZERO;
 
-    RefusjonOgFastsattBeløp(BigDecimal totalRefusjonPrÅr, BigDecimal totalFastsattBeløpPrÅr) {
+    RefusjonOgFastsattBeløp(Beløp totalRefusjonPrÅr, Beløp totalFastsattBeløpPrÅr) {
         this.totalRefusjonPrÅr = totalRefusjonPrÅr;
         this.totalFastsattBeløpPrÅr = totalFastsattBeløpPrÅr;
     }
 
-    RefusjonOgFastsattBeløp(BigDecimal totalRefusjonPrÅr) {
+    RefusjonOgFastsattBeløp(Beløp totalRefusjonPrÅr) {
         this.totalRefusjonPrÅr = totalRefusjonPrÅr;
     }
 
-    BigDecimal getTotalRefusjonPrÅr() {
+    Beløp getTotalRefusjonPrÅr() {
         return totalRefusjonPrÅr;
     }
 
-    BigDecimal getTotalFastsattBeløpPrÅr() {
+    Beløp getTotalFastsattBeløpPrÅr() {
         return totalFastsattBeløpPrÅr;
     }
 
-    RefusjonOgFastsattBeløp leggTilRefusjon(BigDecimal refusjon) {
-        BigDecimal nyTotalRefusjon = this.totalRefusjonPrÅr.add(refusjon);
+    RefusjonOgFastsattBeløp leggTilRefusjon(Beløp refusjon) {
+        var nyTotalRefusjon = this.totalRefusjonPrÅr.adder(refusjon);
         return new RefusjonOgFastsattBeløp(nyTotalRefusjon, this.totalFastsattBeløpPrÅr);
     }
 
-    RefusjonOgFastsattBeløp leggTilFastsattBeløp(BigDecimal fastsattBeløp) {
-        BigDecimal nyttTotalFastsattBeløp = this.totalFastsattBeløpPrÅr.add(fastsattBeløp);
+    RefusjonOgFastsattBeløp leggTilFastsattBeløp(Beløp fastsattBeløp) {
+        var nyttTotalFastsattBeløp = this.totalFastsattBeløpPrÅr.adder(fastsattBeløp);
         return new RefusjonOgFastsattBeløp(this.totalRefusjonPrÅr, nyttTotalFastsattBeløp);
     }
 }

@@ -1,10 +1,10 @@
 package no.nav.folketrygdloven.kalkulator.modell.typer;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 /**
  * Årsgrunnlag representerer inntektsgrunnlaget for en andel
@@ -12,17 +12,17 @@ import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
 public class Årsgrunnlag implements Serializable, Comparable<Årsgrunnlag> {
 
     @SjekkVedKopiering
-    private BigDecimal beregnetPrÅr;
+    private Beløp beregnetPrÅr;
     @SjekkVedKopiering
-    private BigDecimal fordeltPrÅr;
+    private Beløp fordeltPrÅr;
     @SjekkVedKopiering
-    private BigDecimal manueltFordeltPrÅr;
+    private Beløp manueltFordeltPrÅr;
     @SjekkVedKopiering
-    private BigDecimal overstyrtPrÅr;
+    private Beløp overstyrtPrÅr;
     @SjekkVedKopiering
-    private BigDecimal besteberegningPrÅr;
+    private Beløp besteberegningPrÅr;
     @SjekkVedKopiering
-    private BigDecimal bruttoPrÅr;
+    private Beløp bruttoPrÅr;
 
     public Årsgrunnlag() {
     }
@@ -36,27 +36,27 @@ public class Årsgrunnlag implements Serializable, Comparable<Årsgrunnlag> {
         this.beregnetPrÅr = årsgrunnlag.beregnetPrÅr;
     }
 
-    public BigDecimal getBeregnetPrÅr() {
+    public Beløp getBeregnetPrÅr() {
         return beregnetPrÅr;
     }
 
-    public BigDecimal getFordeltPrÅr() {
+    public Beløp getFordeltPrÅr() {
         return fordeltPrÅr;
     }
 
-    public BigDecimal getManueltFordeltPrÅr() {
+    public Beløp getManueltFordeltPrÅr() {
         return manueltFordeltPrÅr;
     }
 
-    public BigDecimal getOverstyrtPrÅr() {
+    public Beløp getOverstyrtPrÅr() {
         return overstyrtPrÅr;
     }
 
-    public BigDecimal getBruttoPrÅr() {
+    public Beløp getBruttoPrÅr() {
         return bruttoPrÅr;
     }
 
-    public BigDecimal getBruttoUtenManueltFordelt() {
+    public Beløp getBruttoUtenManueltFordelt() {
         if (fordeltPrÅr != null) {
             return fordeltPrÅr;
         }
@@ -69,7 +69,7 @@ public class Årsgrunnlag implements Serializable, Comparable<Årsgrunnlag> {
         return beregnetPrÅr;
     }
 
-    public BigDecimal getBruttoUtenFordelt() {
+    public Beløp getBruttoUtenFordelt() {
         if (besteberegningPrÅr != null) {
             return besteberegningPrÅr;
         }
@@ -79,39 +79,39 @@ public class Årsgrunnlag implements Serializable, Comparable<Årsgrunnlag> {
         return beregnetPrÅr;
     }
 
-    public BigDecimal getBesteberegningPrÅr() {
+    public Beløp getBesteberegningPrÅr() {
         return besteberegningPrÅr;
     }
 
-    public void setBeregnetPrÅr(BigDecimal beregnetPrÅr) {
+    public void setBeregnetPrÅr(Beløp beregnetPrÅr) {
         if (beregnetPrÅr != null && fordeltPrÅr == null && overstyrtPrÅr == null && besteberegningPrÅr == null && manueltFordeltPrÅr == null) {
             bruttoPrÅr = beregnetPrÅr;
         }
         this.beregnetPrÅr = beregnetPrÅr;
     }
 
-    public void setFordeltPrÅr(BigDecimal fordeltPrÅr) {
+    public void setFordeltPrÅr(Beløp fordeltPrÅr) {
         this.fordeltPrÅr = fordeltPrÅr;
         if (fordeltPrÅr != null && manueltFordeltPrÅr == null) {
             this.bruttoPrÅr = fordeltPrÅr;
         }
     }
 
-    public void setManueltFordeltPrÅr(BigDecimal manueltFordeltPrÅr) {
+    public void setManueltFordeltPrÅr(Beløp manueltFordeltPrÅr) {
         this.manueltFordeltPrÅr = manueltFordeltPrÅr;
         if (manueltFordeltPrÅr != null) {
             this.bruttoPrÅr = manueltFordeltPrÅr;
         }
     }
 
-    public void setOverstyrtPrÅr(BigDecimal overstyrtPrÅr) {
+    public void setOverstyrtPrÅr(Beløp overstyrtPrÅr) {
         this.overstyrtPrÅr = overstyrtPrÅr;
         if (overstyrtPrÅr != null && fordeltPrÅr == null && manueltFordeltPrÅr == null && besteberegningPrÅr == null) {
             bruttoPrÅr = overstyrtPrÅr;
         }
     }
 
-    public void setBesteberegningPrÅr(BigDecimal besteberegningPrÅr) {
+    public void setBesteberegningPrÅr(Beløp besteberegningPrÅr) {
         this.besteberegningPrÅr = besteberegningPrÅr;
         if (besteberegningPrÅr != null && fordeltPrÅr == null && manueltFordeltPrÅr == null) {
             bruttoPrÅr = besteberegningPrÅr;

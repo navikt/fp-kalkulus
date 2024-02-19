@@ -25,6 +25,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FrisinnBehandlingType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class VilkårTjenesteFRISINNTest {
 
@@ -66,11 +67,11 @@ class VilkårTjenesteFRISINNTest {
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
                 .medAndelsnr(1L)
                 .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
-                .medBeregnetPrÅr(BigDecimal.valueOf(100_000))
-                .medRedusertPrÅr(BigDecimal.ZERO)
-                .medRedusertBrukersAndelPrÅr(BigDecimal.ZERO)
-                .medRedusertRefusjonPrÅr(BigDecimal.ZERO)
-                .medAvkortetPrÅr(BigDecimal.ZERO)
+                .medBeregnetPrÅr(Beløp.fra(100_000))
+                .medRedusertPrÅr(Beløp.ZERO)
+                .medRedusertBrukersAndelPrÅr(Beløp.ZERO)
+                .medRedusertRefusjonPrÅr(Beløp.ZERO)
+                .medAvkortetPrÅr(Beløp.ZERO)
                 .build(periode);
         return bg;
     }
@@ -81,10 +82,10 @@ class VilkårTjenesteFRISINNTest {
                 .medOppgittOpptjening(OppgittOpptjeningDtoBuilder.ny()
                         .leggTilEgneNæring(OppgittOpptjeningDtoBuilder.EgenNæringBuilder.ny()
                                 .medPeriode(søknadsperiode)
-                                .medBruttoInntekt(BigDecimal.valueOf(100_000)))
+                                .medBruttoInntekt(Beløp.fra(100_000)))
                         .leggTilFrilansOpplysninger(
                                 new OppgittFrilansDto(false,
-                                        List.of(new OppgittFrilansInntektDto(søknadsperiode, BigDecimal.TEN)))))
+                                        List.of(new OppgittFrilansInntektDto(søknadsperiode, Beløp.fra(10))))))
                 .build();
     }
 }

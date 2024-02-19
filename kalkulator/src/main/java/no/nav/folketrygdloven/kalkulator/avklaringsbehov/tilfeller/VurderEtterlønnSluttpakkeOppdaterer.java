@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.avklaringsbehov.tilfeller;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,6 +11,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class VurderEtterlønnSluttpakkeOppdaterer {
 
@@ -24,7 +24,7 @@ public class VurderEtterlønnSluttpakkeOppdaterer {
         if (!vurderDto.erEtterlønnSluttpakke()) {
             etterlønnSluttpakkeAndel.forEach(andel -> BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(andel)
                     .medFastsattAvSaksbehandler(true)
-                    .medBeregnetPrÅr(BigDecimal.ZERO));
+                    .medBeregnetPrÅr(Beløp.ZERO));
         }
 
         // Setter fakta aggregat

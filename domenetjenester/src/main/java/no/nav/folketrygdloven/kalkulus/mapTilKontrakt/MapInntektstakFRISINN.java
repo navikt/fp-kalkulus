@@ -15,13 +15,12 @@ import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 public class MapInntektstakFRISINN {
     private final static BigDecimal ANTALL_G_GRENSEVERDI;
 
     static {
-        ANTALL_G_GRENSEVERDI = KonfigTjeneste.forYtelse(FagsakYtelseType.FRISINN).getAntallGØvreGrenseverdi();
+        ANTALL_G_GRENSEVERDI = KonfigTjeneste.getAntallGØvreGrenseverdi();
     }
 
     private MapInntektstakFRISINN() {

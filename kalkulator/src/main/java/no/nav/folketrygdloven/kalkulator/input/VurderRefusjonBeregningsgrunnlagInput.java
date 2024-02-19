@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.input;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,9 +39,9 @@ public class VurderRefusjonBeregningsgrunnlagInput extends StegProsesseringInput
     }
 
 
-    public VurderRefusjonBeregningsgrunnlagInput medUregulertGrunnbeløp(BigDecimal uregulertGrunnbeløp) {
+    public VurderRefusjonBeregningsgrunnlagInput medUregulertGrunnbeløp(Beløp uregulertGrunnbeløp) {
         var newInput = new VurderRefusjonBeregningsgrunnlagInput(this);
-        newInput.uregulertGrunnbeløp = Beløp.fra(uregulertGrunnbeløp);
+        newInput.uregulertGrunnbeløp = uregulertGrunnbeløp;
         return newInput;
     }
 

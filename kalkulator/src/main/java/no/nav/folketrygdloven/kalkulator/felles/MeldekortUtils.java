@@ -18,7 +18,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.tid.Virkedager;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
@@ -39,14 +38,13 @@ public class MeldekortUtils {
     public static Optional<YtelseAnvistDto> sisteHeleMeldekortFørStp(YtelseFilterDto ytelseFilter,
                                                                      YtelseDto sisteVedtak,
                                                                      LocalDate skjæringstidspunkt,
-                                                                     Set<YtelseType> ytelseTyper,
-                                                                     FagsakYtelseType ytelseType) {
+                                                                     Set<YtelseType> ytelseTyper) {
         final LocalDate sisteVedtakFom = sisteVedtak.getPeriode().getFomDato();
 
         List<YtelseAnvistDto> alleMeldekort = finnAlleMeldekort(ytelseFilter, ytelseTyper);
 
         Optional<YtelseAnvistDto> sisteMeldekort = alleMeldekort.stream()
-            .filter(ytelseAnvist -> sisteVedtakFom.minus(KonfigTjeneste.forYtelse(ytelseType).getMeldekortPeriode()).isBefore(ytelseAnvist.getAnvistTOM()))
+            .filter(ytelseAnvist -> sisteVedtakFom.minus(KonfigTjeneste.getMeldekortPeriode()).isBefore(ytelseAnvist.getAnvistTOM()))
             .filter(ytelseAnvist -> skjæringstidspunkt.isAfter(ytelseAnvist.getAnvistTOM()))
             .max(Comparator.comparing(YtelseAnvistDto::getAnvistFOM));
 

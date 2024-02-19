@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektYtelseType;
@@ -41,8 +40,8 @@ public class InntektspostDtoBuilder {
         return this;
     }
 
-    public InntektspostDtoBuilder medBeløp(BigDecimal verdi) {
-        this.inntektspost.setBeløp(Beløp.fra(verdi));
+    public InntektspostDtoBuilder medBeløp(Beløp verdi) {
+        this.inntektspost.setBeløp(verdi);
         return this;
     }
 

@@ -7,6 +7,7 @@ import java.util.Objects;
 import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 public class SammenligningsgrunnlagPrStatusDto {
@@ -16,7 +17,7 @@ public class SammenligningsgrunnlagPrStatusDto {
     @SjekkVedKopiering
     private SammenligningsgrunnlagType sammenligningsgrunnlagType;
     @SjekkVedKopiering
-    private BigDecimal rapportertPrÅr;
+    private Beløp rapportertPrÅr;
     @SjekkVedKopiering
     private BigDecimal avvikPromilleNy = BigDecimal.ZERO;
 
@@ -38,7 +39,7 @@ public class SammenligningsgrunnlagPrStatusDto {
         return sammenligningsperiode.getTomDato();
     }
 
-    public BigDecimal getRapportertPrÅr() {
+    public Beløp getRapportertPrÅr() {
         return rapportertPrÅr;
     }
 
@@ -109,7 +110,7 @@ public class SammenligningsgrunnlagPrStatusDto {
             return this;
         }
 
-        public Builder medRapportertPrÅr(BigDecimal rapportertPrÅr) {
+        public Builder medRapportertPrÅr(Beløp rapportertPrÅr) {
             sammenligningsgrunnlagMal.rapportertPrÅr = rapportertPrÅr;
             return this;
         }

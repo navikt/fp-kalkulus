@@ -2,15 +2,12 @@ package no.nav.folketrygdloven.kalkulator.steg.fordeling;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
-import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
 
 import org.junit.jupiter.api.Test;
 
@@ -36,8 +33,10 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 public class AvklaringsbehovUtlederFordelBeregningTest {
@@ -79,7 +78,7 @@ public class AvklaringsbehovUtlederFordelBeregningTest {
         List<FaktaOmBeregningTilfelle> listeMedTilfeller = Arrays.asList(tilfeller);
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
-                .medGrunnbeløp(BigDecimal.valueOf(GrunnbeløpTestKonstanter.GRUNNBELØP_2018))
+                .medGrunnbeløp(Beløp.fra(GrunnbeløpTestKonstanter.GRUNNBELØP_2018))
                 .leggTilFaktaOmBeregningTilfeller(listeMedTilfeller)
                 .build();
         BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
@@ -101,7 +100,7 @@ public class AvklaringsbehovUtlederFordelBeregningTest {
         List<FaktaOmBeregningTilfelle> listeMedTilfeller = Arrays.asList(tilfeller);
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
-                .medGrunnbeløp(BigDecimal.valueOf(GrunnbeløpTestKonstanter.GRUNNBELØP_2018))
+                .medGrunnbeløp(Beløp.fra(GrunnbeløpTestKonstanter.GRUNNBELØP_2018))
                 .leggTilFaktaOmBeregningTilfeller(listeMedTilfeller)
                 .build();
         BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()

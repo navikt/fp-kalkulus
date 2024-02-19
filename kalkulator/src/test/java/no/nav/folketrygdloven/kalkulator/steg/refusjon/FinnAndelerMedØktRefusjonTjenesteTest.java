@@ -13,6 +13,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class FinnAndelerMedØktRefusjonTjenesteTest {
     List<RefusjonAndel> originaleAndeler = new ArrayList<>();
@@ -139,7 +140,7 @@ class FinnAndelerMedØktRefusjonTjenesteTest {
     private RefusjonAndel lagRefusjonandel(List<RefusjonAndel> listeAndelenLeggesI, InternArbeidsforholdRefDto referanse, BigDecimal refusjon) {
         // Brutto har ikke noe å si for logikken denne klassen skal teste, setter til 0
         // Arbeidsgiver skal alltid være lik for alle andeler når denne koden kjøres, hardkoder den.
-        RefusjonAndel andel = new RefusjonAndel(AktivitetStatus.ARBEIDSTAKER, Arbeidsgiver.virksomhet("999999999"), referanse, BigDecimal.ZERO, refusjon);
+        RefusjonAndel andel = new RefusjonAndel(AktivitetStatus.ARBEIDSTAKER, Arbeidsgiver.virksomhet("999999999"), referanse, Beløp.ZERO, Beløp.fra(refusjon));
         listeAndelenLeggesI.add(andel);
         return andel;
     }

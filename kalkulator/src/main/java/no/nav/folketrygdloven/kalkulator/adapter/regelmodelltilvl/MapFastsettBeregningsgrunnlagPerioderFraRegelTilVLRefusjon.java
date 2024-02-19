@@ -16,6 +16,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjon extends MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL {
 
@@ -35,7 +36,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjon extends 
                 .medArbeidsforholdRef(iaRef)
                 .medArbeidsperiodeFom(nyAndel.getArbeidsperiodeFom())
                 .medArbeidsperiodeTom(nyAndel.getArbeidsperiodeTom())
-                .medRefusjonskravPrÅr(nyAndel.getRefusjonskravPrÅr(),
+                .medRefusjonskravPrÅr(Beløp.fra(nyAndel.getRefusjonskravPrÅr()),
                         MapHjemmelFraRegelTilVL.map(nyAndel.getAnvendtRefusjonskravfristHjemmel()),
                         mapUtfall(nyAndel.getRefusjonskravFristUtfall()));
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
@@ -61,7 +62,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjon extends 
         regelMatchOpt.ifPresent(regelAndel -> {
             BGAndelArbeidsforholdDto.Builder bgAndelArbeidsforholdDtoBuilder = andelBuilder.getBgAndelArbeidsforholdDtoBuilder();
             BGAndelArbeidsforholdDto.Builder andelArbeidsforholdBuilder = bgAndelArbeidsforholdDtoBuilder
-                    .medRefusjonskravPrÅr(regelAndel.getRefusjonskravPrÅr().orElse(null),
+                    .medRefusjonskravPrÅr(Beløp.fra(regelAndel.getRefusjonskravPrÅr().orElse(null)),
                             MapHjemmelFraRegelTilVL.map(regelAndel.getAnvendtRefusjonskravfristHjemmel()),
                             regelAndel.getRefusjonskravFristVurderingUtfall().map(this::mapUtfall).orElse(Utfall.UDEFINERT));
             andelBuilder.medBGAndelArbeidsforhold(andelArbeidsforholdBuilder);

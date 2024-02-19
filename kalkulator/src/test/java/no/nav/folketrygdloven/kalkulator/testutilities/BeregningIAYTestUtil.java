@@ -38,6 +38,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.VirksomhetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 public class BeregningIAYTestUtil {
@@ -80,7 +81,7 @@ public class BeregningIAYTestUtil {
         OppgittOpptjeningDtoBuilder oppgittOpptjeningBuilder = OppgittOpptjeningDtoBuilder.ny();
         List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> næringBuilders = new ArrayList<>();
         perioder.forEach(periode -> næringBuilders.add(OppgittOpptjeningDtoBuilder.EgenNæringBuilder.ny()
-            .medBruttoInntekt(BigDecimal.valueOf(10000))
+            .medBruttoInntekt(Beløp.fra(10000))
             .medNyIArbeidslivet(nyIArbeidslivet)
             .medPeriode(Intervall.fraOgMedTilOgMed(periode.getFom(), periode.getTom()))
             .medVirksomhetType(VirksomhetType.UDEFINERT)
@@ -128,8 +129,8 @@ public class BeregningIAYTestUtil {
         return ytelseBuilder.getAnvistBuilder()
             .medAnvistPeriode(Intervall.fraOgMedTilOgMed(periode.getFom(), periode.getTom()))
             .medUtbetalingsgradProsent(BigDecimal.valueOf(100))
-            .medDagsats(BigDecimal.valueOf(1000))
-            .medBeløp(BigDecimal.valueOf(10000))
+            .medDagsats(Beløp.fra(1000))
+            .medBeløp(Beløp.fra(10000))
             .build();
     }
 
@@ -337,7 +338,7 @@ public class BeregningIAYTestUtil {
 
     private static InntektspostDtoBuilder lagInntektspost(LocalDate fom, LocalDate tom, BigDecimal lønn) {
         return InntektspostDtoBuilder.ny()
-            .medBeløp(lønn)
+            .medBeløp(Beløp.fra(lønn))
             .medPeriode(fom, tom)
             .medInntektspostType(InntektspostType.LØNN);
     }

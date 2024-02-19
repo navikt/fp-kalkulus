@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import no.nav.folketrygdloven.kalkulus.typer.DiffBeløp;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -20,32 +20,32 @@ public class InntektEndring {
 
     @JsonProperty(value = "fraInntekt")
     @Valid
-    private DiffBeløp fraInntekt;
+    private Beløp fraInntekt;
 
     @JsonProperty(value = "tilInntekt")
     @NotNull
     @Valid
-    private DiffBeløp tilInntekt;
+    private Beløp tilInntekt;
 
     public InntektEndring() {
         // For Json deserialisering
     }
 
-    public InntektEndring(@Valid DiffBeløp fraInntekt, @Valid @NotNull DiffBeløp tilInntekt) {
+    public InntektEndring(@Valid Beløp fraInntekt, @Valid @NotNull Beløp tilInntekt) {
         this.fraInntekt = fraInntekt;
         this.tilInntekt = tilInntekt;
     }
 
     public InntektEndring(@Valid BigDecimal fraInntekt, @Valid @NotNull BigDecimal tilInntekt) {
-        this.fraInntekt = DiffBeløp.fra(fraInntekt);
-        this.tilInntekt = DiffBeløp.fra(tilInntekt);
+        this.fraInntekt = Beløp.fra(fraInntekt);
+        this.tilInntekt = Beløp.fra(tilInntekt);
     }
 
-    public DiffBeløp getFraInntekt() {
+    public Beløp getFraInntekt() {
         return fraInntekt;
     }
 
-    public DiffBeløp getTilInntekt() {
+    public Beløp getTilInntekt() {
         return tilInntekt;
     }
 }

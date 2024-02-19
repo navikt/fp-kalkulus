@@ -1,15 +1,14 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
-import java.math.BigDecimal;
-
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class OppgittFrilansInntektDto implements OppgittPeriodeInntekt {
 
     private Intervall periode;
-    private BigDecimal inntekt;
+    private Beløp inntekt;
 
-    public OppgittFrilansInntektDto(Intervall periode, BigDecimal inntekt) {
+    public OppgittFrilansInntektDto(Intervall periode, Beløp inntekt) {
         this.periode = periode;
         this.inntekt = inntekt;
     }
@@ -20,7 +19,7 @@ public class OppgittFrilansInntektDto implements OppgittPeriodeInntekt {
     }
 
     @Override
-    public BigDecimal getInntekt() {
+    public Beløp getInntekt() {
         return inntekt;
     }
 

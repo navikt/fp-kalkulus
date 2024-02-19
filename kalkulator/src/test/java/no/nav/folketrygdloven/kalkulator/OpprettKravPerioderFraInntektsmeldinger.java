@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator;
 
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +16,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.PerioderForKravDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonsperiodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
@@ -56,14 +56,14 @@ public class OpprettKravPerioderFraInntektsmeldinger {
     }
 
     private static List<RefusjonsperiodeDto> lagPerioder(InntektsmeldingDto im, LocalDate skjæringstidspunktBeregning) {
-        ArrayList<LocalDateSegment<BigDecimal>> alleSegmenter = new ArrayList<>();
+        ArrayList<LocalDateSegment<Beløp>> alleSegmenter = new ArrayList<>();
         if (!(im.getRefusjonBeløpPerMnd() == null || im.getRefusjonBeløpPerMnd().erNullEller0())) {
             alleSegmenter.add(new LocalDateSegment<>(skjæringstidspunktBeregning,
-                    TIDENES_ENDE, im.getRefusjonBeløpPerMnd().verdi()));
+                    TIDENES_ENDE, im.getRefusjonBeløpPerMnd()));
         }
 
         alleSegmenter.addAll(im.getEndringerRefusjon().stream().map(e ->
-                new LocalDateSegment<>(e.getFom(), TIDENES_ENDE, e.getRefusjonsbeløp().verdi())
+                new LocalDateSegment<>(e.getFom(), TIDENES_ENDE, e.getRefusjonsbeløp())
         ).collect(Collectors.toList()));
 
         var refusjonTidslinje = new LocalDateTimeline<>(alleSegmenter, (interval, lhs, rhs) -> {

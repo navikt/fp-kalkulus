@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.felles.MeldekortUtils;
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
@@ -26,13 +27,13 @@ import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class FinnInntektFraYtelse {
 
-    private static final BigDecimal VIRKEDAGER_I_1_ÅR = BigDecimal.valueOf(260);
+    private static final BigDecimal VIRKEDAGER_I_1_ÅR = KonfigTjeneste.getYtelsesdagerIÅr();
 
     private FinnInntektFraYtelse() {
         // Skjul konstruktør
     }
 
-    static Optional<BigDecimal> finnÅrbeløpFraMeldekortForAndel(KoblingReferanse ref,
+    static Optional<Beløp> finnÅrbeløpFraMeldekortForAndel(KoblingReferanse ref,
                                                                 BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                                 YtelseFilterDto ytelseFilter) {
         LocalDate skjæringstidspunkt = ref.getSkjæringstidspunktBeregning();
@@ -47,8 +48,8 @@ class FinnInntektFraYtelse {
 
         Optional<YtelseAnvistDto> nyesteMeldekort = MeldekortUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyesteVedtak.get(),
                 skjæringstidspunkt,
-                Set.of(mapTilYtelseType(andel.getAktivitetStatus())),
-                ref.getFagsakYtelseType());
+                Set.of(mapTilYtelseType(andel.getAktivitetStatus()))
+        );
 
         // Hvis søker kun har status DP / AAP tar ikke beregning hensyn til utbetalingsfaktor
         int antallUnikeStatuserIPeriode = andel.getBeregningsgrunnlagPeriode().getBeregningsgrunnlagPrStatusOgAndelList().stream()
@@ -64,18 +65,20 @@ class FinnInntektFraYtelse {
 
     }
 
-    static Optional<BigDecimal> finnÅrbeløpForDagpenger(KoblingReferanse ref, BeregningsgrunnlagPrStatusOgAndelDto andel,
+    static Optional<Beløp> finnÅrbeløpForDagpenger(KoblingReferanse ref, BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                         YtelseFilterDto ytelseFilter,
                                                         LocalDate skjæringstidspunkt) {
 
         Collection<YtelseDto> ytelser = ytelseFilter.getFiltrertYtelser();
         Boolean harSPAvDP = harYtelsePåGrunnlagAvDagpenger(ytelser, skjæringstidspunkt, YtelseType.SYKEPENGER);
         if (harSPAvDP && KonfigurasjonVerdi.instance().get("BEREGNE_DAGPENGER_FRA_SYKEPENGER", false)) {
-            return Optional.of(finnDagsatsFraYtelsevedtak(ytelser, skjæringstidspunkt, YtelseType.SYKEPENGER).multiply(VIRKEDAGER_I_1_ÅR));
+            return Optional.of(finnDagsatsFraYtelsevedtak(ytelser, skjæringstidspunkt, YtelseType.SYKEPENGER))
+                    .map(b -> b.multipliser(VIRKEDAGER_I_1_ÅR));
         }
         Boolean harPSBAvDP = harYtelsePåGrunnlagAvDagpenger(ytelser, skjæringstidspunkt, YtelseType.PLEIEPENGER_SYKT_BARN);
         if (harPSBAvDP && KonfigurasjonVerdi.instance().get("BEREGNE_DAGPENGER_FRA_PLEIEPENGER", false)) {
-            return Optional.of(finnDagsatsFraYtelsevedtak(ytelser, skjæringstidspunkt, YtelseType.PLEIEPENGER_SYKT_BARN).multiply(VIRKEDAGER_I_1_ÅR));
+            return Optional.of(finnDagsatsFraYtelsevedtak(ytelser, skjæringstidspunkt, YtelseType.PLEIEPENGER_SYKT_BARN))
+                    .map(b -> b.multipliser(VIRKEDAGER_I_1_ÅR));
         }
         return finnÅrbeløpFraMeldekortForAndel(ref, andel, ytelseFilter);
     }
@@ -91,20 +94,18 @@ class FinnInntektFraYtelse {
         return YtelseType.UDEFINERT;
     }
 
-    private static BigDecimal finnÅrsbeløpMedHensynTilUtbetalingsfaktor(YtelseDto ytelse, Optional<YtelseAnvistDto> ytelseAnvist) {
-        BigDecimal årsbeløpUtenHensynTilUtbetalingsfaktor = finnÅrsbeløp(ytelse, ytelseAnvist);
+    private static Beløp finnÅrsbeløpMedHensynTilUtbetalingsfaktor(YtelseDto ytelse, Optional<YtelseAnvistDto> ytelseAnvist) {
+        var årsbeløpUtenHensynTilUtbetalingsfaktor = finnÅrsbeløp(ytelse, ytelseAnvist);
         BigDecimal utbetalingsgrad = ytelseAnvist.flatMap(YtelseAnvistDto::getUtbetalingsgradProsent).map(Stillingsprosent::getVerdi)
                 .orElse(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG);
         BigDecimal utbetalingsFaktor = utbetalingsgrad.divide(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG, 10, RoundingMode.HALF_UP);
-        return årsbeløpUtenHensynTilUtbetalingsfaktor
-                .multiply(utbetalingsFaktor);
+        return årsbeløpUtenHensynTilUtbetalingsfaktor.multipliser(utbetalingsFaktor);
     }
 
-    private static BigDecimal finnÅrsbeløp(YtelseDto ytelse, Optional<YtelseAnvistDto> ytelseAnvist) {
-        BigDecimal dagsats = ytelse.getVedtaksDagsats().map(Beløp::verdi)
-                .orElse(ytelseAnvist.flatMap(YtelseAnvistDto::getDagsats).map(Beløp::verdi).orElse(BigDecimal.ZERO));
-        return dagsats
-                .multiply(VIRKEDAGER_I_1_ÅR);
+    private static Beløp finnÅrsbeløp(YtelseDto ytelse, Optional<YtelseAnvistDto> ytelseAnvist) {
+        var dagsats = ytelse.getVedtaksDagsats()
+                .orElse(ytelseAnvist.flatMap(YtelseAnvistDto::getDagsats).orElse(Beløp.ZERO));
+        return dagsats.multipliser(VIRKEDAGER_I_1_ÅR);
     }
 
 

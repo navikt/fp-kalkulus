@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.avklaringsbehov.tilfeller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +28,7 @@ import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class VurderEtterlønnSluttpakkeOppdatererTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019,1,1);
-    private static final Beløp GRUNNBELØP = Beløp.fra(BigDecimal.valueOf(85000));
+    private static final Beløp GRUNNBELØP = Beløp.fra(85000);
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private BeregningsgrunnlagInput input;
@@ -55,7 +54,7 @@ public class VurderEtterlønnSluttpakkeOppdatererTest {
         Assertions.assertThat(bgPerioder).hasSize(1);
         assertThat(bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(1);
         BeregningsgrunnlagPrStatusOgAndelDto andel = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0);
-        Assertions.assertThat(andel.getBeregnetPrÅr().compareTo(BigDecimal.ZERO) == 0).isTrue();
+        Assertions.assertThat(andel.getBeregnetPrÅr().compareTo(Beløp.ZERO) == 0).isTrue();
         assertThat(andel.getArbeidsforholdType()).isEqualTo(OpptjeningAktivitetType.ETTERLØNN_SLUTTPAKKE);
     }
 

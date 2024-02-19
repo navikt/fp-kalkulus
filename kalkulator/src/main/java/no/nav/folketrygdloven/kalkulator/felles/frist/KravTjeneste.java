@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.felles.frist;
 
 import static no.nav.folketrygdloven.kalkulator.felles.frist.StartRefusjonTjeneste.finnFørsteMuligeDagRefusjon;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -14,6 +13,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.PerioderForKravDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
@@ -67,19 +67,18 @@ public class KravTjeneste {
         };
     }
 
-    private static LocalDateTimeline<BigDecimal> finnKravTidslinje(PerioderForKravDto krav,
-                                                                   YrkesaktivitetDto yrkesaktivitet,
-                                                                   BeregningAktivitetAggregatDto gjeldendeAktiviteter,
-                                                                   LocalDate skjæringstidspunktBeregning) {
+    private static LocalDateTimeline<Beløp> finnKravTidslinje(PerioderForKravDto krav,
+                                                              YrkesaktivitetDto yrkesaktivitet,
+                                                              BeregningAktivitetAggregatDto gjeldendeAktiviteter,
+                                                              LocalDate skjæringstidspunktBeregning) {
         LocalDate førsteMuligeRefusjonsdato = finnFørsteMuligeDagRefusjon(gjeldendeAktiviteter, skjæringstidspunktBeregning, yrkesaktivitet);
-        List<LocalDateSegment<BigDecimal>> kravSegmenter = krav.getPerioder().stream()
+        return krav.getPerioder().stream()
                 .filter(p -> !p.periode().getTomDato().isBefore(førsteMuligeRefusjonsdato))
                 .map(p -> new LocalDateSegment<>(
                         p.periode().inkluderer(førsteMuligeRefusjonsdato) ? førsteMuligeRefusjonsdato : p.periode().getFomDato(),
                         p.periode().getTomDato(),
                         p.beløp()))
-                .collect(Collectors.toList());
-        return new LocalDateTimeline<>(kravSegmenter);
+                .collect(Collectors.collectingAndThen(Collectors.toList(), LocalDateTimeline::new));
     }
 
 }

@@ -31,6 +31,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class BeregningRefusjonTjenesteTest {
     private static final Arbeidsgiver AG1 = Arbeidsgiver.virksomhet("999999999");
@@ -49,7 +50,7 @@ class BeregningRefusjonTjenesteTest {
     public void setup() {
         originaltBG = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
-                .medGrunnbeløp(BigDecimal.valueOf(GrunnbeløpTestKonstanter.GRUNNBELØP_2018))
+                .medGrunnbeløp(Beløp.fra(GrunnbeløpTestKonstanter.GRUNNBELØP_2018))
                 .build();
         BeregningsgrunnlagAktivitetStatusDto.builder()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
@@ -62,7 +63,7 @@ class BeregningRefusjonTjenesteTest {
 
         revurderingBG = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
-                .medGrunnbeløp(BigDecimal.valueOf(GrunnbeløpTestKonstanter.GRUNNBELØP_2018))
+                .medGrunnbeløp(Beløp.fra(GrunnbeløpTestKonstanter.GRUNNBELØP_2018))
                 .build();
         BeregningsgrunnlagAktivitetStatusDto.builder()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
@@ -639,7 +640,7 @@ class BeregningRefusjonTjenesteTest {
 
 
     private Map<Intervall, List<RefusjonAndel>> kjørUtleder(LocalDate alleredeUtbetaltTOM) {
-        return BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG, alleredeUtbetaltTOM, BigDecimal.valueOf(600000), new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false));
+        return BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG, alleredeUtbetaltTOM, Beløp.fra(600000), new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false));
     }
 
     private void leggTilAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode,
@@ -648,14 +649,14 @@ class BeregningRefusjonTjenesteTest {
                               double bruttoPrÅr, double refusjonskravPrÅr) {
         BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(aktivitetStatus)
-                .medRedusertBrukersAndelPrÅr(BigDecimal.valueOf(bruttoPrÅr - refusjonskravPrÅr))
-                .medRedusertRefusjonPrÅr(BigDecimal.valueOf(refusjonskravPrÅr))
-                .medBeregnetPrÅr(BigDecimal.valueOf(bruttoPrÅr));
+                .medRedusertBrukersAndelPrÅr(Beløp.fra(BigDecimal.valueOf(bruttoPrÅr - refusjonskravPrÅr)))
+                .medRedusertRefusjonPrÅr(Beløp.fra(BigDecimal.valueOf(refusjonskravPrÅr)))
+                .medBeregnetPrÅr(Beløp.fra(BigDecimal.valueOf(bruttoPrÅr)));
         if (ag != null) {
             BGAndelArbeidsforholdDto.Builder bgAndelArbeidsforholdBuilder = BGAndelArbeidsforholdDto.builder()
                     .medArbeidsgiver(ag)
                     .medArbeidsforholdRef(ref)
-                    .medRefusjonskravPrÅr(BigDecimal.valueOf(refusjonskravPrÅr), Utfall.GODKJENT);
+                    .medRefusjonskravPrÅr(Beløp.fra(BigDecimal.valueOf(refusjonskravPrÅr)), Utfall.GODKJENT);
             andelBuilder.medBGAndelArbeidsforhold(bgAndelArbeidsforholdBuilder);
         }
         andelBuilder.build(beregningsgrunnlagPeriode);
@@ -680,7 +681,7 @@ class BeregningRefusjonTjenesteTest {
     }
 
     private RefusjonAndel lagForventetAndel(Arbeidsgiver ag, InternArbeidsforholdRefDto ref, double brutto, double refusjon) {
-        return new RefusjonAndel(ag == null ? AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE : AktivitetStatus.ARBEIDSTAKER, ag, ref, BigDecimal.valueOf(brutto), BigDecimal.valueOf(refusjon));
+        return new RefusjonAndel(ag == null ? AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE : AktivitetStatus.ARBEIDSTAKER, ag, ref, Beløp.fra(BigDecimal.valueOf(brutto)), Beløp.fra(BigDecimal.valueOf(refusjon)));
     }
 
 }

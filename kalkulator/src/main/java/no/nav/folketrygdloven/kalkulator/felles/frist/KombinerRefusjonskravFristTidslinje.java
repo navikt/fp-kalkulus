@@ -1,9 +1,9 @@
 package no.nav.folketrygdloven.kalkulator.felles.frist;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateSegmentCombinator;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
@@ -29,7 +29,7 @@ class KombinerRefusjonskravFristTidslinje {
         if (rhs.getValue().utfall().equals(Utfall.GODKJENT)) {
             return rhs.getValue();
         }
-        if (lhs.getValue().utfall().equals(Utfall.GODKJENT) && lhs.getValue().refusjonskrav().compareTo(BigDecimal.ZERO) > 0) {
+        if (lhs.getValue().utfall().equals(Utfall.GODKJENT) && lhs.getValue().refusjonskrav().compareTo(Beløp.ZERO) > 0) {
             return new KravOgUtfall(rhs.getValue().refusjonskrav(), Utfall.GODKJENT);
         }
         return rhs.getValue();

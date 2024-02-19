@@ -12,9 +12,10 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 /**
  * Fallback for å utlede avkortet før gradering.
@@ -57,7 +58,7 @@ class FinnInntektstak {
         var grenseverdiTruketFraIkkeTilgjengeligInntekt = grenseverdi.subtract(inntektIkkeTilgjengeligForSN);
         return grenseverdiTruketFraIkkeTilgjengeligInntekt.compareTo(BigDecimal.ZERO) <= 0
                 ? BigDecimal.ZERO
-                : grenseverdiTruketFraIkkeTilgjengeligInntekt.min(andel.getBruttoPrÅr());
+                : grenseverdiTruketFraIkkeTilgjengeligInntekt.min(andel.getBruttoPrÅr().verdi());
     }
 
     private static BigDecimal finnInntektstakForNæring(BeregningsgrunnlagPrStatusOgAndelDto andel,
@@ -74,7 +75,7 @@ class FinnInntektstak {
         var grenseverdiTruketFraIkkeTilgjengeligInntekt = grenseverdi.subtract(inntektIkkeTilgjengeligForSN);
         return grenseverdiTruketFraIkkeTilgjengeligInntekt.compareTo(BigDecimal.ZERO) <= 0
                 ? BigDecimal.ZERO
-                : grenseverdiTruketFraIkkeTilgjengeligInntekt.min(andel.getBruttoPrÅr());
+                : grenseverdiTruketFraIkkeTilgjengeligInntekt.min(andel.getBruttoPrÅr().verdi());
     }
 
     private static BigDecimal finnInntektstakForFrilans(BeregningsgrunnlagPrStatusOgAndelDto andel,
@@ -91,7 +92,7 @@ class FinnInntektstak {
         var grenseverdiTruketFraIkkeTilgjengeligInntekt = grenseverdi.subtract(inntektIkkeTilgjengeligForFL);
         return grenseverdiTruketFraIkkeTilgjengeligInntekt.compareTo(BigDecimal.ZERO) <= 0
                 ? BigDecimal.ZERO
-                : grenseverdiTruketFraIkkeTilgjengeligInntekt.min(andel.getBruttoPrÅr());
+                : grenseverdiTruketFraIkkeTilgjengeligInntekt.min(andel.getBruttoPrÅr().verdi());
     }
 
     private static BigDecimal finnInntektSøktOm(BeregningsgrunnlagPeriodeDto inneværendeBGPeriode, UtbetalingsgradGrunnlag yg, AktivitetStatus status) {
@@ -116,7 +117,7 @@ class FinnInntektstak {
         var grenseMinusAnnenInntekt = grenseverdi.subtract(inntektIkkeSøktOm);
         return grenseMinusAnnenInntekt.compareTo(BigDecimal.ZERO) <= 0
                 ? BigDecimal.ZERO
-                : grenseMinusAnnenInntekt.min(andelÅVurdere.getBruttoPrÅr());
+                : grenseMinusAnnenInntekt.min(andelÅVurdere.getBruttoPrÅr().verdi());
     }
 
     private static BigDecimal finnInntektIkkeSøktOm(BeregningsgrunnlagPeriodeDto inneværendeBGPeriode,
@@ -131,6 +132,7 @@ class FinnInntektstak {
         return andeler.stream()
                 .filter(Objects::nonNull)
                 .map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoPrÅr)
+                .map(Beløp::safeVerdi)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);

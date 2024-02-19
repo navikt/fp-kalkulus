@@ -12,8 +12,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
-
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
@@ -27,12 +25,12 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BGAndelArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagDto;
@@ -40,9 +38,10 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class MapFormidlingsdataBeregningsgrunnlagTest {
-    private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(100000);
+    private static final Beløp GRUNNBELØP = Beløp.fra(100000);
     private static final LocalDate STP_DATO = LocalDate.of(2021, 6, 1);
     private static final Skjæringstidspunkt STP = Skjæringstidspunkt.builder().medFørsteUttaksdato(STP_DATO)
             .medSkjæringstidspunktOpptjening(STP_DATO).build();
@@ -295,7 +294,7 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
                 Optional.empty(), STP), null, null, (YtelsespesifiktGrunnlag) grunnlag);
 
         BeregningsgrunnlagDto bg = new BeregningsgrunnlagDto(null, null, bgPerioder,
-                null, null, false, Beløp.fra(GRUNNBELØP));
+                null, null, false, GRUNNBELØP);
 
         BeregningsgrunnlagGrunnlagDto gr = new BeregningsgrunnlagGrunnlagDto(bg, null, null,
                 null, null, null, BeregningsgrunnlagTilstand.FASTSATT);

@@ -81,13 +81,13 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medAktivitetStatuser(aktivitetStatuser)
                 .medBeregningsgrunnlagPerioder(perioder)
                 .medGrunnbeløp(beregningsgrunnlag.getGrunnbeløp().verdi())
-                .medYtelsesdagerIEtÅr(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getYtelsesdagerIÅr())
-                .medAvviksgrenseProsent(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAvviksgrenseProsent())
+                .medYtelsesdagerIEtÅr(KonfigTjeneste.getYtelsesdagerIÅr())
+                .medAvviksgrenseProsent(KonfigTjeneste.getAvviksgrenseProsent())
                 .medYtelsesSpesifiktGrunnlag(mapYtelsesSpesifiktGrunnlag(input, beregningsgrunnlag))
                 // Verdier som kun brukes av FORESLÅ (skille ut i egen mapping?)
                 .medAntallGMilitærHarKravPå(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).antallGMilitærHarKravPå().intValue())
-                .medAntallGØvreGrenseverdi(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi())
-                .medUregulertGrunnbeløp(mapUregulertGrunnbeløp(input, beregningsgrunnlag))
+                .medAntallGØvreGrenseverdi(KonfigTjeneste.getAntallGØvreGrenseverdi())
+                .medUregulertGrunnbeløp(Beløp.safeVerdi(mapUregulertGrunnbeløp(input, beregningsgrunnlag)))
                 .medMidlertidigInaktivType(mapMidlertidigInaktivType(input))
                 .medGrunnbeløpSatser(grunnbeløpSatser(input))
                 .medFomDatoForIndividuellSammenligningATFLSN(LocalDate.of(2023,1,1))
@@ -121,18 +121,18 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 null;
     }
 
-    private BigDecimal mapUregulertGrunnbeløp(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
+    private Beløp mapUregulertGrunnbeløp(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
         if (input instanceof VurderBeregningsgrunnlagvilkårInput vurderBeregningsgrunnlagvilkårInput) {
-            return vurderBeregningsgrunnlagvilkårInput.getUregulertGrunnbeløp().map(Beløp::verdi).orElse(beregningsgrunnlag.getGrunnbeløp().verdi());
+            return vurderBeregningsgrunnlagvilkårInput.getUregulertGrunnbeløp().orElse(beregningsgrunnlag.getGrunnbeløp());
         }
         if (input instanceof VurderRefusjonBeregningsgrunnlagInput vurderRefusjonBeregningsgrunnlagInput) {
-            return vurderRefusjonBeregningsgrunnlagInput.getUregulertGrunnbeløp().map(Beløp::verdi).orElse(beregningsgrunnlag.getGrunnbeløp().verdi());
+            return vurderRefusjonBeregningsgrunnlagInput.getUregulertGrunnbeløp().orElse(beregningsgrunnlag.getGrunnbeløp());
         }
         if (input instanceof FordelBeregningsgrunnlagInput fordelBeregningsgrunnlagInput) {
-            return fordelBeregningsgrunnlagInput.getUregulertGrunnbeløp().map(Beløp::verdi).orElse(beregningsgrunnlag.getGrunnbeløp().verdi());
+            return fordelBeregningsgrunnlagInput.getUregulertGrunnbeløp().orElse(beregningsgrunnlag.getGrunnbeløp());
         }
         if (input instanceof FullføreBeregningsgrunnlagInput fullføreBeregningsgrunnlagInput) {
-            return fullføreBeregningsgrunnlagInput.getUregulertGrunnbeløp().map(Beløp::verdi).orElse(beregningsgrunnlag.getGrunnbeløp().verdi());
+            return fullføreBeregningsgrunnlagInput.getUregulertGrunnbeløp().orElse(beregningsgrunnlag.getGrunnbeløp());
         }
         return null;
     }
@@ -221,23 +221,23 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                                                                                BeregningsgrunnlagInput input) {
         final AktivitetStatus regelAktivitetStatus = mapVLAktivitetStatus(vlBGPStatus.getAktivitetStatus());
         List<BigDecimal> pgi = (vlBGPStatus.getPgiSnitt() == null ? new ArrayList<>() :
-                Arrays.asList(vlBGPStatus.getPgi1(), vlBGPStatus.getPgi2(), vlBGPStatus.getPgi3()));
+                Arrays.asList(Beløp.safeVerdi(vlBGPStatus.getPgi1()), Beløp.safeVerdi(vlBGPStatus.getPgi2()), Beløp.safeVerdi(vlBGPStatus.getPgi3())));
         Optional<FaktaAktørDto> faktaAktørDto = input.getBeregningsgrunnlagGrunnlag().getFaktaAggregat().flatMap(FaktaAggregatDto::getFaktaAktør);
         return BeregningsgrunnlagPrStatus.builder()
                 .medAktivitetStatus(regelAktivitetStatus)
                 .medBeregningsperiode(beregningsperiodeFor(vlBGPStatus))
-                .medBeregnetPrÅr(vlBGPStatus.getBeregnetPrÅr())
-                .medOverstyrtPrÅr(vlBGPStatus.getOverstyrtPrÅr())
-                .medFordeltPrÅr(vlBGPStatus.getManueltFordeltPrÅr() != null ? vlBGPStatus.getManueltFordeltPrÅr() : vlBGPStatus.getFordeltPrÅr()) // Midlertidig løsning til vi lager egen mapping for fastsett vl til regel
-                .medBesteberegningPrÅr(vlBGPStatus.getBesteberegningPrÅr())
-                .medGjennomsnittligPGI(vlBGPStatus.getPgiSnitt())
+                .medBeregnetPrÅr(Beløp.safeVerdi(vlBGPStatus.getBeregnetPrÅr()))
+                .medOverstyrtPrÅr(Beløp.safeVerdi(vlBGPStatus.getOverstyrtPrÅr()))
+                .medFordeltPrÅr(Optional.ofNullable(Beløp.safeVerdi(vlBGPStatus.getManueltFordeltPrÅr())).orElseGet(() -> Beløp.safeVerdi(vlBGPStatus.getFordeltPrÅr())) )// Midlertidig løsning til vi lager egen mapping for fastsett vl til regel
+                .medBesteberegningPrÅr(Beløp.safeVerdi(vlBGPStatus.getBesteberegningPrÅr()))
+                .medGjennomsnittligPGI(Beløp.safeVerdi(vlBGPStatus.getPgiSnitt()))
                 .medPGI(pgi)
-                .medÅrsbeløpFraTilstøtendeYtelse(vlBGPStatus.getÅrsbeløpFraTilstøtendeYtelseVerdi())
+                .medÅrsbeløpFraTilstøtendeYtelse(Beløp.safeVerdi(vlBGPStatus.getÅrsbeløpFraTilstøtendeYtelseVerdi()))
                 .medErNyIArbeidslivet(faktaAktørDto.map(FaktaAktørDto::getErNyIArbeidslivetSNVurdering).orElse(null))
                 .medAndelNr(vlBGPStatus.getAndelsnr())
                 .medInntektskategori(MapInntektskategoriFraVLTilRegel.map(vlBGPStatus.getGjeldendeInntektskategori()))
                 .medFastsattAvSaksbehandler(vlBGPStatus.getFastsattAvSaksbehandler())
-                .medBesteberegningPrÅr(vlBGPStatus.getBesteberegningPrÅr())
+                .medBesteberegningPrÅr(Beløp.safeVerdi(vlBGPStatus.getBesteberegningPrÅr()))
                 .medOrginalDagsatsFraTilstøtendeYtelse(vlBGPStatus.getOrginalDagsatsFraTilstøtendeYtelse())
                 .medUtbetalingsprosent(finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false))
                 .build();
@@ -271,24 +271,24 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         BeregningsgrunnlagPrArbeidsforhold.Builder builder = BeregningsgrunnlagPrArbeidsforhold.builder();
         builder
                 .medInntektskategori(MapInntektskategoriFraVLTilRegel.map(vlBGPStatus.getGjeldendeInntektskategori()))
-                .medBeregnetPrÅr(vlBGPStatus.getBeregnetPrÅr())
+                .medBeregnetPrÅr(Beløp.safeVerdi(vlBGPStatus.getBeregnetPrÅr()))
                 .medBeregningsperiode(beregningsperiodeFor(vlBGPStatus))
                 .medFastsattAvSaksbehandler(vlBGPStatus.getFastsattAvSaksbehandler())
                 .medLagtTilAvSaksbehandler(vlBGPStatus.erLagtTilAvSaksbehandler())
                 .medAndelNr(vlBGPStatus.getAndelsnr())
-                .medOverstyrtPrÅr(vlBGPStatus.getOverstyrtPrÅr())
-                .medFordeltPrÅr(vlBGPStatus.getManueltFordeltPrÅr() != null ? vlBGPStatus.getManueltFordeltPrÅr() : vlBGPStatus.getFordeltPrÅr()) // Midlertidig løsning til vi lager egen mapping for fastsettsteget vl til regel
-                .medBesteberegningPrÅr(vlBGPStatus.getBesteberegningPrÅr())
+                .medOverstyrtPrÅr(Beløp.safeVerdi(vlBGPStatus.getOverstyrtPrÅr()))
+                .medFordeltPrÅr(Optional.ofNullable(Beløp.safeVerdi(vlBGPStatus.getManueltFordeltPrÅr())).orElseGet(() -> Beløp.safeVerdi(vlBGPStatus.getFordeltPrÅr()))) // Midlertidig løsning til vi lager egen mapping for fastsettsteget vl til regel
+                .medBesteberegningPrÅr(Beløp.safeVerdi(vlBGPStatus.getBesteberegningPrÅr()))
                 .medArbeidsforhold(MapArbeidsforholdFraVLTilRegel.arbeidsforholdForMedStartdato(vlBGPStatus, input.getIayGrunnlag(), input.getSkjæringstidspunktForBeregning()))
                 .medUtbetalingsprosentSVP(finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false));
         Optional<Boolean> erTidsbegrenset = input.getBeregningsgrunnlagGrunnlag().getFaktaAggregat().flatMap(fa -> fa.getFaktaArbeidsforhold(vlBGPStatus))
                 .map(FaktaArbeidsforholdDto::getErTidsbegrensetVurdering);
         vlBGPStatus.getBgAndelArbeidsforhold().ifPresent(bga ->
                 builder
-                        .medNaturalytelseBortfaltPrÅr(bga.getNaturalytelseBortfaltPrÅr().orElse(null))
-                        .medNaturalytelseTilkommetPrÅr(bga.getNaturalytelseTilkommetPrÅr().orElse(null))
+                        .medNaturalytelseBortfaltPrÅr(bga.getNaturalytelseBortfaltPrÅr().map(Beløp::verdi).orElse(null))
+                        .medNaturalytelseTilkommetPrÅr(bga.getNaturalytelseTilkommetPrÅr().map(Beløp::verdi).orElse(null))
                         .medErTidsbegrensetArbeidsforhold(erTidsbegrenset.orElse(null))
-                        .medGjeldendeRefusjonPrÅr(bga.getGjeldendeRefusjonPrÅr()));
+                        .medGjeldendeRefusjonPrÅr(Beløp.safeVerdi(bga.getGjeldendeRefusjonPrÅr())));
 
         return builder.build();
     }

@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -14,8 +13,8 @@ public class RefusjonDto {
     public RefusjonDto() {
     }
 
-    public RefusjonDto(BigDecimal refusjonsbeløpMnd, LocalDate fom) {
-        this.refusjonsbeløpMnd = Beløp.fra(refusjonsbeløpMnd);
+    public RefusjonDto(Beløp refusjonsbeløpMnd, LocalDate fom) {
+        this.refusjonsbeløpMnd = refusjonsbeløpMnd;
         this.fom = fom;
     }
 

@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.håndtering;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -56,7 +55,7 @@ public class UtledEndringIAndel {
     }
 
     private static InntektEndring lagInntektEndring(BeregningsgrunnlagPrStatusOgAndelDto andel, Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
-        return andel.getBruttoPrÅr() != null ?
+        return Beløp.safeVerdi(andel.getBruttoPrÅr()) != null ?
                 new InntektEndring(forrigeAndel.map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoPrÅr).orElse(null), andel.getBruttoPrÅr()) : null;
     }
 
@@ -90,12 +89,12 @@ public class UtledEndringIAndel {
     }
 
     private static Beløp initRefusjon(BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        return andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).map(Beløp::fra).orElse(Beløp.ZERO);
+        return andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(Beløp.ZERO);
     }
 
     private static boolean harEndringIRefusjon(BeregningsgrunnlagPrStatusOgAndelDto andel, Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
-        Optional<BigDecimal> forrigeRefusjonskrav = forrigeAndel.flatMap(BeregningsgrunnlagPrStatusOgAndelDto::getBgAndelArbeidsforhold).map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr);
-        Optional<BigDecimal> nyttRefusjonskrav = andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr);
+        var forrigeRefusjonskrav = forrigeAndel.flatMap(BeregningsgrunnlagPrStatusOgAndelDto::getBgAndelArbeidsforhold).map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr);
+        var nyttRefusjonskrav = andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr);
 
         if (forrigeRefusjonskrav.isEmpty() || nyttRefusjonskrav.isEmpty()) {
             // Hvis en mangler må begge mangle, ellers er det endring i refusjon
@@ -109,7 +108,6 @@ public class UtledEndringIAndel {
         return forrigeAndel
                 .flatMap(BeregningsgrunnlagPrStatusOgAndelDto::getBgAndelArbeidsforhold)
                 .map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr)
-                .map(Beløp::fra)
                 .orElse(null);
     }
 

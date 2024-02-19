@@ -39,6 +39,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.folketrygdloven.utils.TestKonfigurasjonVerdiProvider;
 
 public class VurderMottarYtelseTjenesteTest {
@@ -295,8 +296,8 @@ public class VurderMottarYtelseTjenesteTest {
                 .leggTilYtelse(YtelseDtoBuilder.ny().medYtelseType(YtelseType.SYKEPENGER)
                         .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10), SKJÆRINGSTIDSPUNKT_OPPTJENING))
                         .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny()
-                                .medBeløp(BigDecimal.TEN)
-                                .medDagsats(BigDecimal.TEN)
+                                .medBeløp(Beløp.fra(10))
+                                .medDagsats(Beløp.fra(10))
                                 .medUtbetalingsgradProsent(BigDecimal.valueOf(100))
                                 .medAnvistPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10), SKJÆRINGSTIDSPUNKT_OPPTJENING))
                                 .medAnvisteAndeler(List.of(lagAnvistAndelFrilans()))
@@ -308,8 +309,8 @@ public class VurderMottarYtelseTjenesteTest {
                 .leggTilYtelse(YtelseDtoBuilder.ny().medYtelseType(YtelseType.SYKEPENGER)
                         .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10), SKJÆRINGSTIDSPUNKT_OPPTJENING))
                         .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny()
-                                .medBeløp(BigDecimal.TEN)
-                                .medDagsats(BigDecimal.TEN)
+                                .medBeløp(Beløp.fra(10))
+                                .medDagsats(Beløp.fra(10))
                                 .medAnvistPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10), SKJÆRINGSTIDSPUNKT_OPPTJENING))
                                 .medUtbetalingsgradProsent(BigDecimal.valueOf(100))
                                 .medAnvisteAndeler(List.of(lagAnvistAndelArbeid(arbeidsgiver, fullRefusjon)))
@@ -318,14 +319,14 @@ public class VurderMottarYtelseTjenesteTest {
 
     private AnvistAndel lagAnvistAndelArbeid(Arbeidsgiver arbeidsgiver, boolean fullRefusjon) {
         return new AnvistAndel(arbeidsgiver,
-                BigDecimal.TEN,
+                Beløp.fra(10),
                 fullRefusjon ? Stillingsprosent.HUNDRED : new Stillingsprosent(BigDecimal.TEN),
                 Inntektskategori.ARBEIDSTAKER);
     }
 
     private AnvistAndel lagAnvistAndelFrilans() {
         return new AnvistAndel(null,
-                BigDecimal.TEN,
+                Beløp.fra(10),
                 Stillingsprosent.ZERO,
                 Inntektskategori.FRILANSER);
     }
@@ -338,7 +339,7 @@ public class VurderMottarYtelseTjenesteTest {
                                 .medPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1).withDayOfMonth(1),
                                         SKJÆRINGSTIDSPUNKT_OPPTJENING.withDayOfMonth(1).minusDays(1))
                                 .medInntektspostType(InntektspostType.YTELSE)
-                                .medBeløp(BigDecimal.TEN)));
+                                .medBeløp(Beløp.fra(10))));
     }
 
 

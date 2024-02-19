@@ -31,9 +31,13 @@ public class Beløp implements Serializable, IndexKey, TraverseValue, Comparable
         this.verdi = verdi;
     }
 
-    public static Beløp fra(no.nav.folketrygdloven.kalkulus.typer.Beløp beløp) {
+    public static Beløp fraKalkulatorBeløp(no.nav.folketrygdloven.kalkulus.typer.Beløp beløp) {
         var verdi =  no.nav.folketrygdloven.kalkulus.typer.Beløp.safeVerdi(beløp);
         return verdi != null ? new Beløp(verdi) : null;
+    }
+
+    public static no.nav.folketrygdloven.kalkulus.typer.Beløp tilKalkulatorBeløp(Beløp beløp) {
+        return beløp != null ? no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(beløp.getVerdi()) : null;
     }
 
 

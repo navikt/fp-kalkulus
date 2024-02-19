@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.steg.refusjon;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +27,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class AvklaringsbehovutlederRefusjonEtterSluttdatoTest {
     private static final UUID REFERANSE = UUID.randomUUID();
@@ -140,7 +140,7 @@ class AvklaringsbehovutlederRefusjonEtterSluttdatoTest {
                 .medAktivitetStatus(ag == null ? AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE : AktivitetStatus.ARBEIDSTAKER);
         if (ag != null) {
             BGAndelArbeidsforholdDto.Builder arbforBuilder = BGAndelArbeidsforholdDto.builder()
-                    .medRefusjonskravPrÅr(BigDecimal.valueOf(refusjonPrÅr), Utfall.GODKJENT)
+                    .medRefusjonskravPrÅr(Beløp.fra(refusjonPrÅr), Utfall.GODKJENT)
                     .medArbeidsforholdRef(ref)
                     .medArbeidsgiver(ag);
             andelBuilder.medBGAndelArbeidsforhold(arbforBuilder);

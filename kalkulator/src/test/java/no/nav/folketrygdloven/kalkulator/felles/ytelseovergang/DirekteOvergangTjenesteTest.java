@@ -18,6 +18,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class DirekteOvergangTjenesteTest {
 
@@ -164,15 +165,15 @@ class DirekteOvergangTjenesteTest {
 
         var ytelse = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
                 .medYtelseType(YtelseType.FORELDREPENGER)
-                .medVedtaksDagsats(BigDecimal.valueOf(1000))
+                .medVedtaksDagsats(Beløp.fra(1000))
                 .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode1)
-                        .medBeløp(BigDecimal.valueOf(5000))
-                        .medDagsats(BigDecimal.valueOf(1000))
+                        .medBeløp(Beløp.fra(5000))
+                        .medDagsats(Beløp.fra(1000))
                         .medUtbetalingsgradProsent(BigDecimal.valueOf(100))
                         .medAnvisteAndeler(List.of(arbeidstakerAndel(arbeidsgiver1, new Stillingsprosent(0)), arbeidstakerAndel(arbeidsgiver2, new Stillingsprosent(0)))).build())
                 .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode2)
-                        .medBeløp(BigDecimal.valueOf(5000))
-                        .medDagsats(BigDecimal.valueOf(1000))
+                        .medBeløp(Beløp.fra(5000))
+                        .medDagsats(Beløp.fra(1000))
                         .medUtbetalingsgradProsent(BigDecimal.valueOf(100))
                         .medAnvisteAndeler(List.of(arbeidstakerAndel(arbeidsgiver1, new Stillingsprosent(0)))).build()).build();
 
@@ -206,20 +207,20 @@ class DirekteOvergangTjenesteTest {
     }
 
     private static AnvistAndel frilansAndel() {
-        return new AnvistAndel(null, InternArbeidsforholdRefDto.nullRef(), BigDecimal.valueOf(5000), BigDecimal.valueOf(1000), new Stillingsprosent(0), Inntektskategori.FRILANSER);
+        return new AnvistAndel(null, InternArbeidsforholdRefDto.nullRef(), Beløp.fra(5000), Beløp.fra(1000), new Stillingsprosent(0), Inntektskategori.FRILANSER);
     }
 
     private static AnvistAndel arbeidstakerAndel(Arbeidsgiver arbeidgiver, Stillingsprosent refusjonsgrad) {
-        return new AnvistAndel(arbeidgiver, InternArbeidsforholdRefDto.nullRef(), BigDecimal.valueOf(5000), BigDecimal.valueOf(1000), refusjonsgrad, Inntektskategori.ARBEIDSTAKER);
+        return new AnvistAndel(arbeidgiver, InternArbeidsforholdRefDto.nullRef(), Beløp.fra(5000), Beløp.fra(1000), refusjonsgrad, Inntektskategori.ARBEIDSTAKER);
     }
 
     private static YtelseDto lagYtelse(Intervall periode, List<AnvistAndel> andeler) {
         return YtelseDtoBuilder.ny().medPeriode(periode)
                 .medYtelseType(YtelseType.FORELDREPENGER)
-                .medVedtaksDagsats(BigDecimal.valueOf(1000))
+                .medVedtaksDagsats(Beløp.fra(1000))
                 .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode)
-                        .medBeløp(BigDecimal.valueOf(5000))
-                        .medDagsats(BigDecimal.valueOf(1000))
+                        .medBeløp(Beløp.fra(5000))
+                        .medDagsats(Beløp.fra(1000))
                         .medUtbetalingsgradProsent(BigDecimal.valueOf(100))
                         .medAnvisteAndeler(andeler).build()).build();
     }

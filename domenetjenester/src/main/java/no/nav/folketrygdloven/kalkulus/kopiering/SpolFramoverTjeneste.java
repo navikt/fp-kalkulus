@@ -169,10 +169,9 @@ public final class SpolFramoverTjeneste {
     }
 
     private static LocalDateTimeline<BeregningsgrunnlagPeriodeDto> lagTidslinjeFraPerioder(List<BeregningsgrunnlagPeriodeDto> eksisterendePerioder) {
-        var eksisterendeSegmenter = eksisterendePerioder.stream()
+        return eksisterendePerioder.stream()
                 .map(p -> new LocalDateSegment<>(p.getBeregningsgrunnlagPeriodeFom(), p.getBeregningsgrunnlagPeriodeTom(), p))
-                .toList();
-        return new LocalDateTimeline<>(eksisterendeSegmenter);
+                .collect(Collectors.collectingAndThen(Collectors.toList(), LocalDateTimeline::new));
     }
 
     private static void leggTilManglendePeriodeårsaker(List<PeriodeÅrsak> nyePeriodeÅrsaker, BeregningsgrunnlagPeriodeDto forrigePeriode, BeregningsgrunnlagPeriodeDto.Builder periodeBuilder, boolean tilstøterEndretIntervall) {

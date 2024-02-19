@@ -1,10 +1,11 @@
 package no.nav.folketrygdloven.kalkulator.steg.refusjon.modell;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class RefusjonPeriodeEndring {
     private List<RefusjonAndel> originaleAndeler;
@@ -33,36 +34,36 @@ public class RefusjonPeriodeEndring {
         return originaleAndeler.stream().collect(Collectors.groupingBy(RefusjonAndel::getNøkkel));
     }
 
-    public BigDecimal getOriginalBrutto() {
+    public Beløp getOriginalBrutto() {
         return getBrutto(originaleAndeler);
     }
 
-    public BigDecimal getRevurderingBrutto() {
+    public Beløp getRevurderingBrutto() {
         return getBrutto(revurderingAndeler);
     }
 
-    public BigDecimal getOriginalRefusjon() {
+    public Beløp getOriginalRefusjon() {
         return getRefusjon(originaleAndeler);
     }
 
-    public BigDecimal getRevurderingRefusjon() {
+    public Beløp getRevurderingRefusjon() {
         return getRefusjon(revurderingAndeler);
     }
 
-    private BigDecimal getRefusjon(List<RefusjonAndel> andeler) {
+    private Beløp getRefusjon(List<RefusjonAndel> andeler) {
         return andeler.stream()
-                .filter(andel -> andel.getRefusjon() != null)
                 .map(RefusjonAndel::getRefusjon)
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
+                .filter(Objects::nonNull)
+                .reduce(Beløp::adder)
+                .orElse(Beløp.ZERO);
     }
 
-    private BigDecimal getBrutto(List<RefusjonAndel> andeler) {
+    private Beløp getBrutto(List<RefusjonAndel> andeler) {
         return andeler.stream()
-                .filter(andel -> andel.getBrutto() != null)
                 .map(RefusjonAndel::getBrutto)
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
+                .filter(Objects::nonNull)
+                .reduce(Beløp::adder)
+                .orElse(Beløp.ZERO);
     }
 
     @Override

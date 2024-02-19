@@ -1,13 +1,14 @@
 package no.nav.folketrygdloven.kalkulator.steg.refusjon;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 /**
  * Tre mulige tilfeller avhengig av hvordan andelene i revurderingen ser ut:
@@ -116,7 +117,7 @@ public class FinnAndelerMedØktRefusjonTjeneste {
 
     private static List<RefusjonAndel> filtrerUtAndelerUtenRefusjon(List<RefusjonAndel> andeler) {
         return andeler.stream()
-                .filter(andel -> andel.getRefusjon().compareTo(BigDecimal.ZERO) > 0)
+                .filter(andel -> andel.getRefusjon().compareTo(Beløp.ZERO) > 0)
                 .collect(Collectors.toList());
     }
 
@@ -132,15 +133,16 @@ public class FinnAndelerMedØktRefusjonTjeneste {
     }
 
     private static boolean harAndelerØktRefusjon(List<RefusjonAndel> originaleAndeler, List<RefusjonAndel> revurderingAndeler) {
-        BigDecimal originalRefusjon = totalRefusjon(originaleAndeler);
-        BigDecimal revurderingRefusjon = totalRefusjon(revurderingAndeler);
+        var originalRefusjon = totalRefusjon(originaleAndeler);
+        var revurderingRefusjon = totalRefusjon(revurderingAndeler);
         return revurderingRefusjon.compareTo(originalRefusjon) > 0;
     }
 
-    private static BigDecimal totalRefusjon(List<RefusjonAndel> andeler) {
+    private static Beløp totalRefusjon(List<RefusjonAndel> andeler) {
         return andeler.stream()
                 .map(RefusjonAndel::getRefusjon)
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
+                .filter(Objects::nonNull)
+                .reduce(Beløp::adder)
+                .orElse(Beløp.ZERO);
     }
 }

@@ -16,6 +16,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeid
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public final class MapPeriodisertBruttoBeregningsgrunnlag {
 
@@ -53,8 +54,8 @@ public final class MapPeriodisertBruttoBeregningsgrunnlag {
         return BruttoBeregningsgrunnlag.builder()
                 .medAktivitetStatus(regelAktivitetStatus)
                 .medArbeidsforhold(arbeidsforhold.orElse(null))
-                .medBruttoPrÅr(a.getBruttoInkludertNaturalYtelser())
-                .medRefusjonPrÅr(a.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(BigDecimal.ZERO))
+                .medBruttoPrÅr(Beløp.safeVerdi(a.getBruttoInkludertNaturalYtelser()))
+                .medRefusjonPrÅr(a.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).map(Beløp::verdi).orElse(BigDecimal.ZERO))
                 .build();
     }
 }

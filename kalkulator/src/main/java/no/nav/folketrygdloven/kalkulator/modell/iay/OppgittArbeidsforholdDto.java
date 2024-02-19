@@ -1,10 +1,10 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 /**
  * Entitetsklasse for oppgitte arbeidsforhold.
@@ -19,7 +19,7 @@ public class OppgittArbeidsforholdDto implements OppgittPeriodeInntekt {
 
     private Intervall periode;
 
-    private BigDecimal inntekt;
+    private Beløp inntekt;
 
     public OppgittArbeidsforholdDto() {
         // hibernate
@@ -39,7 +39,7 @@ public class OppgittArbeidsforholdDto implements OppgittPeriodeInntekt {
     }
 
     @Override
-    public BigDecimal getInntekt() {
+    public Beløp getInntekt() {
         return inntekt;
     }
 
@@ -72,7 +72,7 @@ public class OppgittArbeidsforholdDto implements OppgittPeriodeInntekt {
         this.periode = periode;
     }
 
-    void setInntekt(BigDecimal inntekt) {
+    void setInntekt(Beløp inntekt) {
         this.inntekt = inntekt;
     }
 }

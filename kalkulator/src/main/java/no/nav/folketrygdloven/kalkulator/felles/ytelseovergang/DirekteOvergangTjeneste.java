@@ -22,6 +22,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 import no.nav.fpsak.tidsserie.StandardCombinators;
@@ -127,8 +128,8 @@ public class DirekteOvergangTjeneste {
                 Set.of());
     }
 
-    private static BigDecimal finnDirekteUtbetaltDagsats(AnvistAndel a) {
-        return a.getDagsats().multiply(BigDecimal.valueOf(100).subtract(a.getRefusjonsgrad().getVerdi()).divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP));
+    private static Beløp finnDirekteUtbetaltDagsats(AnvistAndel a) {
+        return a.getDagsats().multipliser(BigDecimal.valueOf(100).subtract(a.getRefusjonsgrad().getVerdi()).divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP));
     }
 
     private static boolean erDirekteUtbetalingUtenArbeidsgiver(AnvistAndel a) {

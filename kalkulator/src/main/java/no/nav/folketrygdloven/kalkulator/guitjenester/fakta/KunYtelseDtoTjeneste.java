@@ -1,12 +1,12 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -59,14 +59,15 @@ public class KunYtelseDtoTjeneste {
                 .filter(andel -> andel.getKilde().equals(AndelKilde.PROSESS_START) || andel.getKilde().equals(AndelKilde.SAKSBEHANDLER_KOFAKBER))
                 .forEach(andel -> {
                     AndelMedBeløpDto brukersAndel = initialiserStandardAndelProperties(andel, inntektArbeidYtelseGrunnlag);
-                    brukersAndel.setFastsattBelopPrMnd(Beløp.fra(finnFastsattMånedsbeløp(andel)));
+                    brukersAndel.setFastsattBelopPrMnd(finnFastsattMånedsbeløp(andel));
                     dto.leggTilAndel(brukersAndel);
                 });
     }
 
-    private BigDecimal finnFastsattMånedsbeløp(BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        return andel.getBeregnetPrÅr() != null ?
-            andel.getBeregnetPrÅr().divide(BigDecimal.valueOf(12), RoundingMode.HALF_UP) : null;
+    private Beløp finnFastsattMånedsbeløp(BeregningsgrunnlagPrStatusOgAndelDto andel) {
+        return Optional.ofNullable(andel.getBeregnetPrÅr())
+                .map(b -> b.map(v -> v.divide(KonfigTjeneste.getMånederIÅr(), RoundingMode.HALF_UP)))
+                .orElse(null);
     }
 
     private AndelMedBeløpDto initialiserStandardAndelProperties(BeregningsgrunnlagPrStatusOgAndelDto andel, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {

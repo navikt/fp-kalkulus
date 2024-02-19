@@ -20,13 +20,17 @@ public class NaturalYtelseDto {
     }
 
     public NaturalYtelseDto(LocalDate fom, LocalDate tom, BigDecimal beloepPerMnd, NaturalYtelseType type) {
-        this.beloepPerMnd = Beløp.fra(beloepPerMnd);
+        this(Intervall.fraOgMedTilOgMed(fom, tom), Beløp.fra(beloepPerMnd), type);
+    }
+
+    public NaturalYtelseDto(LocalDate fom, LocalDate tom, Beløp beloepPerMnd, NaturalYtelseType type) {
+        this(Intervall.fraOgMedTilOgMed(fom, tom), beloepPerMnd, type);
         this.type = type;
         this.periode = Intervall.fraOgMedTilOgMed(fom, tom);
     }
 
-    public NaturalYtelseDto(Intervall datoIntervall, BigDecimal beloepPerMnd, NaturalYtelseType type) {
-        this.beloepPerMnd = Beløp.fra(beloepPerMnd);
+    public NaturalYtelseDto(Intervall datoIntervall, Beløp beloepPerMnd, NaturalYtelseType type) {
+        this.beloepPerMnd = beloepPerMnd;
         this.type = type;
         this.periode = datoIntervall;
     }

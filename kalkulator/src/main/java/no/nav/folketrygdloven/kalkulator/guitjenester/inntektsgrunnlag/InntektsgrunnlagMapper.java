@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.inntektsgrunnlag;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -67,9 +66,9 @@ public class InntektsgrunnlagMapper {
                 .filter(ipost -> ipost.getPeriode().getFomDato().getYear() == år)
                 .collect(Collectors.toMap(
                         it -> finnPGIType(it.getInntektspostType()),
-                        it -> it.getBeløp().verdi(),
-                        BigDecimal::add));
-        var grunnlagPrType = beløpPrType.entrySet().stream().map(e -> new PGIGrunnlagDto(e.getKey(), Beløp.fra(e.getValue()))).toList();
+                        InntektspostDto::getBeløp,
+                        Beløp::adder));
+        var grunnlagPrType = beløpPrType.entrySet().stream().map(e -> new PGIGrunnlagDto(e.getKey(), e.getValue())).toList();
         return new PGIPrÅrDto(år, grunnlagPrType);
     }
 
@@ -95,7 +94,7 @@ public class InntektsgrunnlagMapper {
         List<InntektsgrunnlagMånedDto> måneder = new ArrayList<>();
         dateMap.forEach((månedFom, poster) -> {
             List<InntektsgrunnlagInntektDto> inntekDtoer = poster.stream()
-                    .map(post -> new InntektsgrunnlagInntektDto(post.inntektAktivitetType, Beløp.fra(post.beløp)))
+                    .map(post -> new InntektsgrunnlagInntektDto(post.inntektAktivitetType, post.beløp))
                     .toList();
             LocalDate tom = månedFom.with(TemporalAdjusters.lastDayOfMonth());
             måneder.add(new InntektsgrunnlagMånedDto(månedFom, tom, inntekDtoer));
@@ -110,7 +109,7 @@ public class InntektsgrunnlagMapper {
         return inn.getAlleInntektsposter().stream()
                 .filter(intp -> sammenligningsperiode.get().inkluderer(intp.getPeriode().getFomDato().withDayOfMonth(1)))
                 .map(intp -> new InntektDtoMedMåned(finnInntektType(inn.getArbeidsgiver(), intp.getInntektspostType()),
-                        intp.getBeløp() != null ? intp.getBeløp().verdi() : BigDecimal.ZERO,
+                        Beløp.safeVerdi(intp.getBeløp()) != null ? intp.getBeløp() : Beløp.ZERO,
                         intp.getPeriode().getFomDato().withDayOfMonth(1)))
                 .collect(Collectors.toList());
 
@@ -127,6 +126,6 @@ public class InntektsgrunnlagMapper {
     }
 
     record InntektDtoMedMåned(InntektAktivitetType inntektAktivitetType,
-                              BigDecimal beløp, LocalDate månedFom) {
+                              Beløp beløp, LocalDate månedFom) {
     }
 }

@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -33,6 +32,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class FastsettBeregningAktiviteterTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
@@ -104,7 +104,7 @@ class FastsettBeregningAktiviteterTest {
         aktørArbeidBuilder.leggTilYrkesaktivitet(lagYrkesaktivitet(ansettelsesDato, permisjoner));
         register.leggTilAktørArbeid(aktørArbeidBuilder);
 
-        InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder().medArbeidsgiver(ARBEIDSGIVER).medArbeidsforholdId(arbeidsforholdReferanse).medBeløp(BigDecimal.valueOf(300000)).build();
+        InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder().medArbeidsgiver(ARBEIDSGIVER).medArbeidsforholdId(arbeidsforholdReferanse).medBeløp(Beløp.fra(300000)).build();
         var iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of(inntektsmelding));
         iayGrunnlagBuilder.medData(register);
         return iayGrunnlagBuilder;

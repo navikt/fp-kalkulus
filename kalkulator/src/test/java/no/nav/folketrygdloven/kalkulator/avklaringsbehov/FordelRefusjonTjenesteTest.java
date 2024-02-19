@@ -6,19 +6,14 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
-import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.fordeling.FordelBeregningsgrunnlagAndelDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.fordeling.FordelBeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.fordeling.FordelFastsatteVerdierDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.fordeling.RedigerbarAndelDto;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -27,11 +22,10 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
-import no.nav.folketrygdloven.utils.Tuple;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class FordelRefusjonTjenesteTest {
 
@@ -62,7 +56,7 @@ public class FordelRefusjonTjenesteTest {
     private final FordelFastsatteVerdierDto REFUSJON_LIK_0_FASTSATT_STØRRE_ENN_0 = FordelFastsatteVerdierDto.Builder.ny().medRefusjonPrÅr(0).medFastsattBeløpPrMnd(FASTSATT).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
     private final FordelFastsatteVerdierDto REFUSJON_LIK_NULL_FASTSATT_LIK_0 = FordelFastsatteVerdierDto.Builder.ny().medFastsattBeløpPrMnd(0).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
 
-    private BGAndelArbeidsforholdDto.Builder afBuilder1 = BGAndelArbeidsforholdDto.builder().medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR)).medArbeidsforholdRef(ARB_ID1).medRefusjonskravPrÅr(BigDecimal.ZERO, Utfall.GODKJENT);
+    private BGAndelArbeidsforholdDto.Builder afBuilder1 = BGAndelArbeidsforholdDto.builder().medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR)).medArbeidsforholdRef(ARB_ID1).medRefusjonskravPrÅr(Beløp.ZERO, Utfall.GODKJENT);
 
     private BeregningsgrunnlagPeriodeDto periode;
     private FordelBeregningsgrunnlagPeriodeDto endretPeriode;
@@ -89,7 +83,7 @@ public class FordelRefusjonTjenesteTest {
         lagDPAndelLagtTilAvSaksbehandler();
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
+        var map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         assertThat(map.get(fordeltAndel)).isNull();
@@ -104,7 +98,7 @@ public class FordelRefusjonTjenesteTest {
         lagArbeidstakerAndel();
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
+        var map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         assertThat(map.get(fordeltAndel).intValue()).isEqualTo(0);
@@ -119,12 +113,12 @@ public class FordelRefusjonTjenesteTest {
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(AktivitetStatus.BRUKERS_ANDEL)
                 .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
-                .medBeregnetPrÅr(BigDecimal.valueOf(FORRIGE_ARBEIDSTINNTEKT))
+                .medBeregnetPrÅr(Beløp.fra(FORRIGE_ARBEIDSTINNTEKT))
                 .medAndelsnr(1L)
                 .build(periode);
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
+        var map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         assertThat(map.get(fordeltAndel)).isNull();
@@ -135,12 +129,12 @@ public class FordelRefusjonTjenesteTest {
         // Arrange
         FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI,
                 REFUSJONPRÅR - 12, FORRIGE_ARBEIDSTINNTEKT);
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf(REFUSJONPRÅR - 12), Utfall.GODKJENT);
+        afBuilder1.medRefusjonskravPrÅr(Beløp.fra(REFUSJONPRÅR - 12), Utfall.GODKJENT);
         andelListe.add(fordeltAndel);
         lagArbeidstakerAndel();
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
+        var map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         assertThat(map.get(fordeltAndel).intValue()).isEqualTo(REFUSJONPRÅR);
@@ -151,12 +145,12 @@ public class FordelRefusjonTjenesteTest {
         // Arrange
         FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_LIK_0,
                 Inntektskategori.ARBEIDSTAKER, REFUSJONPRÅR - 12, FORRIGE_ARBEIDSTINNTEKT);
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf(REFUSJONPRÅR - 12), Utfall.GODKJENT);
+        afBuilder1.medRefusjonskravPrÅr(Beløp.fra(REFUSJONPRÅR - 12), Utfall.GODKJENT);
         andelListe.add(fordeltAndel);
         lagArbeidstakerAndel();
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
+        var map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         assertThat(map.get(fordeltAndel).intValue()).isEqualTo(REFUSJONPRÅR);
@@ -166,12 +160,12 @@ public class FordelRefusjonTjenesteTest {
     public void skal_ikkje_endre_refusjon_for_en_andel_uten_refusjon_fastsatt_lik_0() {
         // Arrange
         FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_LIK_NULL_FASTSATT_LIK_0, FORRIGE_INNTEKTSKATEGORI, REFUSJONPRÅR - 12, FORRIGE_ARBEIDSTINNTEKT);
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf(REFUSJONPRÅR - 12), Utfall.GODKJENT);
+        afBuilder1.medRefusjonskravPrÅr(Beløp.fra(REFUSJONPRÅR - 12), Utfall.GODKJENT);
         andelListe.add(fordeltAndel);
         lagArbeidstakerAndel();
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
+        var map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         assertThat(map.get(fordeltAndel)).isNull();
@@ -181,7 +175,7 @@ public class FordelRefusjonTjenesteTest {
     public void skal_sette_refusjon_lik_0_en_andel_med_refusjon_og_fastsatt_lik_0() {
         // Arrange
         FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_LIK_0_FASTSATT_LIK_0, FORRIGE_INNTEKTSKATEGORI, REFUSJONPRÅR - 12, FORRIGE_ARBEIDSTINNTEKT);
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf(REFUSJONPRÅR - 12), Utfall.GODKJENT);
+        afBuilder1.medRefusjonskravPrÅr(Beløp.fra(REFUSJONPRÅR - 12), Utfall.GODKJENT);
         andelListe.add(fordeltAndel);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
@@ -189,7 +183,7 @@ public class FordelRefusjonTjenesteTest {
                 .build(periode);
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
+        var map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
 
         // Assert
@@ -204,15 +198,15 @@ public class FordelRefusjonTjenesteTest {
         andelListe.add(fordeltAndel);
         andelListe.add(fordeltAndel2);
 
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((REFUSJONPRÅR - 12)), Utfall.GODKJENT);
+        afBuilder1.medRefusjonskravPrÅr(Beløp.fra((REFUSJONPRÅR - 12)), Utfall.GODKJENT);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-                .medBeregnetPrÅr(BigDecimal.valueOf(FORRIGE_ARBEIDSTINNTEKT))
+                .medBeregnetPrÅr(Beløp.fra(FORRIGE_ARBEIDSTINNTEKT))
                 .medAndelsnr(1L)
                 .medBGAndelArbeidsforhold(afBuilder1)
                 .build(periode);
 
-        BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav(BigDecimal.valueOf((REFUSJONPRÅR - 12)));
+        BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav(Beløp.fra(REFUSJONPRÅR - 12));
         BeregningsgrunnlagDto forrigeBg = BeregningsgrunnlagDto.builder(oppdatertBg).build();
         BeregningsgrunnlagPeriodeDto periodeForrige = forrigeBg.getBeregningsgrunnlagPerioder().get(0);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
@@ -222,7 +216,7 @@ public class FordelRefusjonTjenesteTest {
                 .build(periodeForrige);
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
+        var map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         assertThat(map.get(fordeltAndel).intValue()).isEqualTo(REFUSJONPRÅR);
@@ -237,10 +231,10 @@ public class FordelRefusjonTjenesteTest {
         andelListe.add(fordeltAndel);
         andelListe.add(fordeltAndel2);
 
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((54654)), Utfall.GODKJENT);
+        afBuilder1.medRefusjonskravPrÅr(Beløp.fra((54654)), Utfall.GODKJENT);
         lagArbeidstakerAndel();
 
-        BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav(BigDecimal.valueOf((5465)));
+        BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav(Beløp.fra(5465));
         BeregningsgrunnlagDto forrigeBg = BeregningsgrunnlagDto.builder(oppdatertBg).build();
         BeregningsgrunnlagPeriodeDto periodeForrige = forrigeBg.getBeregningsgrunnlagPerioder().get(0);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
@@ -250,7 +244,7 @@ public class FordelRefusjonTjenesteTest {
                 .build(periodeForrige);
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
+        var map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         double totalRefusjon = 2 * REFUSJONPRÅR;
@@ -268,7 +262,7 @@ public class FordelRefusjonTjenesteTest {
         andelListe.add(fordeltAndel);
         andelListe.add(fordeltAndel2);
 
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((2 * REFUSJONPRÅR)), Utfall.GODKJENT);
+        afBuilder1.medRefusjonskravPrÅr(Beløp.fra(2 * REFUSJONPRÅR), Utfall.GODKJENT);
         lagArbeidstakerAndel();
 
         BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav();
@@ -284,7 +278,7 @@ public class FordelRefusjonTjenesteTest {
                 .build(periodeForrige);
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
+        var map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         double totalRefusjon = 2 * REFUSJONPRÅR;
@@ -304,10 +298,10 @@ public class FordelRefusjonTjenesteTest {
         andelListe.add(fordeltAndel2);
         andelListe.add(fordeltAndel3);
 
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((54654)), Utfall.GODKJENT);
+        afBuilder1.medRefusjonskravPrÅr(Beløp.fra(54654), Utfall.GODKJENT);
         lagArbeidstakerAndel();
 
-        BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav(BigDecimal.valueOf((5465)));
+        BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav(Beløp.fra((5465)));
         BeregningsgrunnlagDto forrigeBg = BeregningsgrunnlagDto.builder(oppdatertBg).build();
         BeregningsgrunnlagPeriodeDto periodeForrige = forrigeBg.getBeregningsgrunnlagPerioder().get(0);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
@@ -317,7 +311,7 @@ public class FordelRefusjonTjenesteTest {
                 .build(periodeForrige);
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
+        var map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         double totalRefusjon = 2 * REFUSJONPRÅR;
@@ -337,10 +331,10 @@ public class FordelRefusjonTjenesteTest {
         andelListe.add(fordeltAndel2);
         andelListe.add(fordeltAndel3);
 
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((54654)), Utfall.GODKJENT);
+        afBuilder1.medRefusjonskravPrÅr(Beløp.fra(54654), Utfall.GODKJENT);
         lagArbeidstakerAndel();
 
-        BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav(BigDecimal.valueOf((5465)));
+        BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav(Beløp.fra((5465)));
         BeregningsgrunnlagDto forrigeBg = BeregningsgrunnlagDto.builder(oppdatertBg).build();
         BeregningsgrunnlagPeriodeDto periodeForrige = forrigeBg.getBeregningsgrunnlagPerioder().get(0);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
@@ -350,7 +344,7 @@ public class FordelRefusjonTjenesteTest {
                 .build(periodeForrige);
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
+        var map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         double totalRefusjon = 2 * REFUSJONPRÅR;
@@ -372,7 +366,7 @@ public class FordelRefusjonTjenesteTest {
         andelListe.add(fordeltAndel2);
         andelListe.add(fordeltAndel3);
 
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((2 * REFUSJONPRÅR)), Utfall.GODKJENT);
+        afBuilder1.medRefusjonskravPrÅr(Beløp.fra(2 * REFUSJONPRÅR), Utfall.GODKJENT);
         lagArbeidstakerAndel();
 
         BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav();
@@ -388,7 +382,7 @@ public class FordelRefusjonTjenesteTest {
                 .build(periodeForrige);
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
+        var map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         double totalRefusjon = 2 * REFUSJONPRÅR;
@@ -410,7 +404,7 @@ public class FordelRefusjonTjenesteTest {
         andelListe.add(fordeltAndel2);
         andelListe.add(fordeltAndel3);
 
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((2 * REFUSJONPRÅR)), Utfall.GODKJENT);
+        afBuilder1.medRefusjonskravPrÅr(Beløp.fra(2 * REFUSJONPRÅR), Utfall.GODKJENT);
         lagArbeidstakerAndel();
 
         BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav();
@@ -426,7 +420,7 @@ public class FordelRefusjonTjenesteTest {
                 .build(periodeForrige);
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
+        var map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         double totalRefusjon = 2 * REFUSJONPRÅR;
@@ -440,10 +434,10 @@ public class FordelRefusjonTjenesteTest {
         return BGAndelArbeidsforholdDto.builder()
                 .medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR))
                 .medArbeidsforholdRef(ARB_ID1)
-                .medRefusjonskravPrÅr(BigDecimal.valueOf((REFUSJONPRÅR)), Utfall.GODKJENT);
+                .medRefusjonskravPrÅr(Beløp.fra(REFUSJONPRÅR), Utfall.GODKJENT);
     }
 
-    private BGAndelArbeidsforholdDto.Builder lagArbeidsforholdMedRefusjonskrav(BigDecimal refusjonskrav) {
+    private BGAndelArbeidsforholdDto.Builder lagArbeidsforholdMedRefusjonskrav(Beløp refusjonskrav) {
         return BGAndelArbeidsforholdDto.builder()
                 .medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR))
                 .medArbeidsforholdRef(ARB_ID1)
@@ -455,7 +449,7 @@ public class FordelRefusjonTjenesteTest {
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medInntektskategori(FORRIGE_INNTEKTSKATEGORI)
                 .medBGAndelArbeidsforhold(afBuilder1)
-                .medBeregnetPrÅr(BigDecimal.valueOf(FORRIGE_ARBEIDSTINNTEKT))
+                .medBeregnetPrÅr(Beløp.fra(FORRIGE_ARBEIDSTINNTEKT))
                 .medAndelsnr(1L)
                 .build(periode);
     }

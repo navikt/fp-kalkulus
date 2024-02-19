@@ -26,7 +26,6 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.FaktaAktørDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.FaktaArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.SammenligningsgrunnlagPrStatusDto;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class MapDetaljertBeregningsgrunnlag {
 
@@ -152,7 +151,7 @@ public class MapDetaljertBeregningsgrunnlag {
         return new SammenligningsgrunnlagPrStatusDto(
                 new Periode(sammenligningsgrunnlagPrStatus.getSammenligningsperiodeFom(), sammenligningsgrunnlagPrStatus.getSammenligningsperiodeTom()),
                 sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType(),
-                Beløp.fra(sammenligningsgrunnlagPrStatus.getRapportertPrÅr()),
+                sammenligningsgrunnlagPrStatus.getRapportertPrÅr(),
                 sammenligningsgrunnlagPrStatus.getAvvikPromilleNy());
     }
 
@@ -165,9 +164,9 @@ public class MapDetaljertBeregningsgrunnlag {
         return new BeregningsgrunnlagPeriodeDto(
                 mapAndeler(beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList()),
                 new Periode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom()),
-                Beløp.fra(beregningsgrunnlagPeriode.getBruttoPrÅr()),
-                Beløp.fra(beregningsgrunnlagPeriode.getAvkortetPrÅr()),
-                Beløp.fra(beregningsgrunnlagPeriode.getRedusertPrÅr()),
+                beregningsgrunnlagPeriode.getBruttoPrÅr(),
+                beregningsgrunnlagPeriode.getAvkortetPrÅr(),
+                beregningsgrunnlagPeriode.getRedusertPrÅr(),
                 beregningsgrunnlagPeriode.getDagsats(),
                 beregningsgrunnlagPeriode.getPeriodeÅrsaker(),
                 beregningsgrunnlagPeriode.getTotalUtbetalingsgradFraUttak(),
@@ -185,28 +184,28 @@ public class MapDetaljertBeregningsgrunnlag {
                 .medAktivitetStatus(beregningsgrunnlagPrStatusOgAndel.getAktivitetStatus())
                 .medBeregningsperiode(mapBeregningsperiode(beregningsgrunnlagPrStatusOgAndel))
                 .medArbeidsforholdType(beregningsgrunnlagPrStatusOgAndel.getArbeidsforholdType())
-                .medBruttoPrÅr(Beløp.fra(beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr()))
-                .medRedusertRefusjonPrÅr(Beløp.fra(beregningsgrunnlagPrStatusOgAndel.getRedusertRefusjonPrÅr()))
-                .medRedusertBrukersAndelPrÅr(Beløp.fra(beregningsgrunnlagPrStatusOgAndel.getRedusertBrukersAndelPrÅr()))
+                .medBruttoPrÅr(beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr())
+                .medRedusertRefusjonPrÅr(beregningsgrunnlagPrStatusOgAndel.getRedusertRefusjonPrÅr())
+                .medRedusertBrukersAndelPrÅr(beregningsgrunnlagPrStatusOgAndel.getRedusertBrukersAndelPrÅr())
                 .medDagsatsBruker(beregningsgrunnlagPrStatusOgAndel.getDagsatsBruker())
                 .medDagsatsArbeidsgiver(beregningsgrunnlagPrStatusOgAndel.getDagsatsArbeidsgiver())
                 .medInntektskategori(beregningsgrunnlagPrStatusOgAndel.getGjeldendeInntektskategori())
                 .medBgAndelArbeidsforhold(mapBgAndelArbeidsforhold(beregningsgrunnlagPrStatusOgAndel))
-                .medOverstyrtPrÅr(Beløp.fra(beregningsgrunnlagPrStatusOgAndel.getOverstyrtPrÅr()))
-                .medAvkortetPrÅr(Beløp.fra(beregningsgrunnlagPrStatusOgAndel.getAvkortetPrÅr()))
-                .medRedusertPrÅr(Beløp.fra(beregningsgrunnlagPrStatusOgAndel.getRedusertPrÅr()))
-                .medBeregnetPrÅr(Beløp.fra(beregningsgrunnlagPrStatusOgAndel.getBeregnetPrÅr()))
-                .medBesteberegningPrÅr(Beløp.fra(beregningsgrunnlagPrStatusOgAndel.getBesteberegningPrÅr()))
-                .medFordeltPrÅr(Beløp.fra(beregningsgrunnlagPrStatusOgAndel.getFordeltPrÅr()))
-                .medManueltFordeltPrÅr(Beløp.fra(beregningsgrunnlagPrStatusOgAndel.getManueltFordeltPrÅr()))
-                .medMaksimalRefusjonPrÅr(Beløp.fra(beregningsgrunnlagPrStatusOgAndel.getMaksimalRefusjonPrÅr()))
-                .medAvkortetRefusjonPrÅr(Beløp.fra(beregningsgrunnlagPrStatusOgAndel.getAvkortetRefusjonPrÅr()))
-                .medAvkortetBrukersAndelPrÅr(Beløp.fra(beregningsgrunnlagPrStatusOgAndel.getAvkortetBrukersAndelPrÅr()))
-                .medPgiSnitt(Beløp.fra(beregningsgrunnlagPrStatusOgAndel.getPgiSnitt()))
-                .medPgi1(Beløp.fra(beregningsgrunnlagPrStatusOgAndel.getPgi1()))
-                .medPgi2(Beløp.fra(beregningsgrunnlagPrStatusOgAndel.getPgi2()))
-                .medPgi3(Beløp.fra(beregningsgrunnlagPrStatusOgAndel.getPgi3()))
-                .medÅrsbeløpFraTilstøtendeYtelse(Beløp.fra(beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr()))
+                .medOverstyrtPrÅr(beregningsgrunnlagPrStatusOgAndel.getOverstyrtPrÅr())
+                .medAvkortetPrÅr(beregningsgrunnlagPrStatusOgAndel.getAvkortetPrÅr())
+                .medRedusertPrÅr(beregningsgrunnlagPrStatusOgAndel.getRedusertPrÅr())
+                .medBeregnetPrÅr(beregningsgrunnlagPrStatusOgAndel.getBeregnetPrÅr())
+                .medBesteberegningPrÅr(beregningsgrunnlagPrStatusOgAndel.getBesteberegningPrÅr())
+                .medFordeltPrÅr(beregningsgrunnlagPrStatusOgAndel.getFordeltPrÅr())
+                .medManueltFordeltPrÅr(beregningsgrunnlagPrStatusOgAndel.getManueltFordeltPrÅr())
+                .medMaksimalRefusjonPrÅr(beregningsgrunnlagPrStatusOgAndel.getMaksimalRefusjonPrÅr())
+                .medAvkortetRefusjonPrÅr(beregningsgrunnlagPrStatusOgAndel.getAvkortetRefusjonPrÅr())
+                .medAvkortetBrukersAndelPrÅr(beregningsgrunnlagPrStatusOgAndel.getAvkortetBrukersAndelPrÅr())
+                .medPgiSnitt(beregningsgrunnlagPrStatusOgAndel.getPgiSnitt())
+                .medPgi1(beregningsgrunnlagPrStatusOgAndel.getPgi1())
+                .medPgi2(beregningsgrunnlagPrStatusOgAndel.getPgi2())
+                .medPgi3(beregningsgrunnlagPrStatusOgAndel.getPgi3())
+                .medÅrsbeløpFraTilstøtendeYtelse(beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr())
                 .medFastsattAvSaksbehandler(beregningsgrunnlagPrStatusOgAndel.getFastsattAvSaksbehandler())
                 .medLagtTilAvSaksbehandler(beregningsgrunnlagPrStatusOgAndel.getKilde().equals(AndelKilde.SAKSBEHANDLER_KOFAKBER) || beregningsgrunnlagPrStatusOgAndel.getKilde().equals(AndelKilde.SAKSBEHANDLER_FORDELING))
                 .medOrginalDagsatsFraTilstøtendeYtelse(beregningsgrunnlagPrStatusOgAndel.getOrginalDagsatsFraTilstøtendeYtelse())
@@ -226,9 +225,9 @@ public class MapDetaljertBeregningsgrunnlag {
         return new BGAndelArbeidsforhold(
                 mapArbeidsgiver(bgAndelArbeidsforhold.getArbeidsgiver()),
                 bgAndelArbeidsforhold.getArbeidsforholdRef().getReferanse(),
-                Beløp.fra(bgAndelArbeidsforhold.getGjeldendeRefusjonPrÅr()),
-                bgAndelArbeidsforhold.getNaturalytelseBortfaltPrÅr().map(Beløp::fra).orElse(null),
-                bgAndelArbeidsforhold.getNaturalytelseTilkommetPrÅr().map(Beløp::fra).orElse(null),
+                bgAndelArbeidsforhold.getGjeldendeRefusjonPrÅr(),
+                bgAndelArbeidsforhold.getNaturalytelseBortfaltPrÅr().orElse(null),
+                bgAndelArbeidsforhold.getNaturalytelseTilkommetPrÅr().orElse(null),
                 bgAndelArbeidsforhold.getArbeidsperiodeFom(),
                 bgAndelArbeidsforhold.getArbeidsperiodeTom().orElse(null));
     }

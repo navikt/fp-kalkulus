@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.avklaringsbehov.tilfeller;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -109,7 +108,7 @@ public class VurderRefusjonTilfelleOppdatererTest {
         return new KravperioderPrArbeidsforholdDto(VIRKSOMHET, InternArbeidsforholdRefDto.nullRef(),
                 List.of(new PerioderForKravDto(førsteInnsendingAvRefusjonskrav, List.of(new RefusjonsperiodeDto(
                         Intervall.fraOgMedTilOgMed(førsteDagMedRefusjonskrav, TIDENES_ENDE),
-                        BigDecimal.TEN)))),
+                        Beløp.fra(10))))),
                 List.of(Intervall.fraOgMedTilOgMed(førsteDagMedRefusjonskrav, TIDENES_ENDE)));
     }
 

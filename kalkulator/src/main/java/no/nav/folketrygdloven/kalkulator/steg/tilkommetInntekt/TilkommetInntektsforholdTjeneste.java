@@ -92,12 +92,11 @@ public class TilkommetInntektsforholdTjeneste {
     }
 
     private static LocalDateTimeline<Boolean> finnTidslinjeMedFravær(UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
-        var utbetalingSegmenter = utbetalingsgradGrunnlag.getUtbetalingsgradPrAktivitet().stream()
+        return utbetalingsgradGrunnlag.getUtbetalingsgradPrAktivitet().stream()
                 .flatMap(a -> a.getPeriodeMedUtbetalingsgrad().stream())
                 .filter(p -> p.getAktivitetsgrad().map(v -> v.compareTo(BigDecimal.valueOf(100)) < 0).orElse(false))
                 .map(p -> new LocalDateSegment<>(p.getPeriode().getFomDato(), p.getPeriode().getTomDato(), Boolean.TRUE))
-                .toList();
-        return new LocalDateTimeline<>(utbetalingSegmenter, StandardCombinators::alwaysTrueForMatch);
+                .collect(Collectors.collectingAndThen(Collectors.toList(), s -> new LocalDateTimeline<>(s, StandardCombinators::alwaysTrueForMatch)));
     }
 
     private static List<LocalDateSegment<Set<StatusOgArbeidsgiver>>> mapTilkommetTidslinje(Collection<BeregningsgrunnlagPrStatusOgAndelDto> andeler,
@@ -136,7 +135,7 @@ public class TilkommetInntektsforholdTjeneste {
     }
 
     private static LocalDateTimeline<Set<Inntektsforhold>> finnInntektsforholdFraYrkesaktiviteter(LocalDate skjæringstidspunkt, Collection<YrkesaktivitetDto> yrkesaktiviteter) {
-        var yrkesaktivitetSegmenter = yrkesaktiviteter
+        return  yrkesaktiviteter
                 .stream()
                 .filter(ya -> !mapTilAktivitetStatus(ya).equals(AktivitetStatus.UDEFINERT))
                 .flatMap(ya -> {
@@ -152,9 +151,8 @@ public class TilkommetInntektsforholdTjeneste {
                                             Set.of(mapTilInntektsforhold(ya))));
                         }
                 )
-                .collect(Collectors.toList());
+                .collect(Collectors.collectingAndThen(Collectors.toList(), s -> new LocalDateTimeline<>(s, StandardCombinators::union)));
 
-        return new LocalDateTimeline<>(yrkesaktivitetSegmenter, StandardCombinators::union);
     }
 
     private static Inntektsforhold mapTilInntektsforhold(YrkesaktivitetDto ya) {
@@ -168,11 +166,10 @@ public class TilkommetInntektsforholdTjeneste {
 
     private static LocalDateTimeline<Set<Inntektsforhold>> finnInntektsforholdForStatusFraFravær(UtbetalingsgradGrunnlag utbetalinger, AktivitetStatus status) {
         var perioderMedStatus = finnPerioderMedStatus(utbetalinger, mapTilUttakArbeidType(status));
-        var segmenter = perioderMedStatus.stream()
+        return perioderMedStatus.stream()
                 .filter(TilkommetInntektsforholdTjeneste::harIkkeFulltFravær)
                 .map(p -> new LocalDateSegment<>(p.getPeriode().getFomDato(), p.getPeriode().getTomDato(), Set.of(new Inntektsforhold(status, null, null))))
-                .toList();
-        return new LocalDateTimeline<>(segmenter, StandardCombinators::union);
+                .collect(Collectors.collectingAndThen(Collectors.toList(), s -> new LocalDateTimeline<>(s, StandardCombinators::union)));
     }
 
     private static Boolean harIkkeFulltFravær(PeriodeMedUtbetalingsgradDto p) {

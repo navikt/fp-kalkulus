@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.steg.refusjon;
 
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_BEGYNNELSE;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
@@ -19,6 +18,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonPeriode;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
@@ -68,7 +68,7 @@ public final class AvklaringsbehovutlederRefusjonEtterSluttdato {
     }
 
     private static boolean erInnvilgetRefusjon(RefusjonAndel andel) {
-        return andel.getRefusjon().compareTo(BigDecimal.ZERO) > 0;
+        return andel.getRefusjon().compareTo(Beløp.ZERO) > 0;
     }
 
     private static LocalDateTimeline<RefusjonPeriode> finnPeriodeFremTilSisteUttak(LocalDate sisteUttaksdato) {

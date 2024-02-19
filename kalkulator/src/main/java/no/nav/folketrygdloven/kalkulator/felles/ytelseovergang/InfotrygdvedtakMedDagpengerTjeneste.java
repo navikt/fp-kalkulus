@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.felles.ytelseovergang;
 
 import static no.nav.folketrygdloven.kalkulator.felles.BeregningstidspunktTjeneste.finnBeregningstidspunkt;
 
-import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
@@ -18,18 +17,19 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Arbeidskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektPeriodeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class InfotrygdvedtakMedDagpengerTjeneste {
 
     public static Boolean harYtelsePåGrunnlagAvDagpenger(Collection<YtelseDto> ytelser, LocalDate skjæringstidspunkt, YtelseType ytelse) {
         LocalDate beregningstidspunkt = finnBeregningstidspunkt(skjæringstidspunkt);
         if (KonfigurasjonVerdi.instance().get("MAP_YTELSE_DAGPENGER_FRA_ANDELER", false)) {
-            return finnYtelseBasertPåDagpengerFraAnvisteAndeler(ytelser, beregningstidspunkt, ytelse).compareTo(BigDecimal.ZERO) > 0;
+            return finnYtelseBasertPåDagpengerFraAnvisteAndeler(ytelser, beregningstidspunkt, ytelse).compareTo(Beløp.ZERO) > 0;
         }
         return finnYtelseBasertPåDagpenger(ytelser, beregningstidspunkt, ytelse).isPresent();
     }
 
-    public static BigDecimal finnDagsatsFraYtelsevedtak(Collection<YtelseDto> ytelser, LocalDate skjæringstidspunkt, YtelseType ytelse) {
+    public static Beløp finnDagsatsFraYtelsevedtak(Collection<YtelseDto> ytelser, LocalDate skjæringstidspunkt, YtelseType ytelse) {
         LocalDate beregningstidspunkt = finnBeregningstidspunkt(skjæringstidspunkt);
 
         if (KonfigurasjonVerdi.instance().get("MAP_YTELSE_DAGPENGER_FRA_ANDELER", false)) {
@@ -41,7 +41,7 @@ public class InfotrygdvedtakMedDagpengerTjeneste {
         }
     }
 
-    private static BigDecimal finnYtelseBasertPåDagpengerFraYtelseGrunnlag(Collection<YtelseDto> ytelser, YtelseType ytelse, LocalDate beregningstidspunkt) {
+    private static Beløp finnYtelseBasertPåDagpengerFraYtelseGrunnlag(Collection<YtelseDto> ytelser, YtelseType ytelse, LocalDate beregningstidspunkt) {
         var ytelseGrunnlag = finnYtelseBasertPåDagpenger(ytelser, beregningstidspunkt, ytelse);
 
         var spAvDP = ytelseGrunnlag.stream()
@@ -56,16 +56,16 @@ public class InfotrygdvedtakMedDagpengerTjeneste {
                 return f.getBeløp();
             }
             throw new IllegalArgumentException("Hånterer foreløpig kun dagsats som periodetype for ytelse av dagpenger.");
-        }).orElse(BigDecimal.ZERO);
+        }).orElse(Beløp.ZERO);
     }
 
-    private static BigDecimal finnYtelseBasertPåDagpengerFraAnvisteAndeler(Collection<YtelseDto> ytelser, LocalDate beregningstidspunkt, YtelseType ytelse) {
+    private static Beløp finnYtelseBasertPåDagpengerFraAnvisteAndeler(Collection<YtelseDto> ytelser, LocalDate beregningstidspunkt, YtelseType ytelse) {
         var anvisning = finnAnvisning(ytelser, beregningstidspunkt, ytelse);
         return anvisning.stream().flatMap(y -> y.getAnvisteAndeler().stream())
                 .filter(a  -> a.getInntektskategori().equals(Inntektskategori.DAGPENGER))
                 .findFirst()
                 .map(AnvistAndel::getDagsats)
-                .orElse(BigDecimal.ZERO);
+                .orElse(Beløp.ZERO);
     }
 
     private static Optional<YtelseAnvistDto> finnAnvisning(Collection<YtelseDto> ytelser, LocalDate beregningstidspunkt, YtelseType ytelse) {

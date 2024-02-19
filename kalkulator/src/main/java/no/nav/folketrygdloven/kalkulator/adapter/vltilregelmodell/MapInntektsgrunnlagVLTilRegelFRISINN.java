@@ -47,7 +47,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN implements MapInntektsgrunnlag
     public static final int MÅNEDER_FØR_STP = 36;
 
     private static Periodeinntekt mapTilRegel(OppgittEgenNæringDto oppgittEgenNæringDto) {
-        BigDecimal inntekt = oppgittEgenNæringDto.getInntekt();
+        BigDecimal inntekt = Beløp.safeVerdi(oppgittEgenNæringDto.getInntekt());
         Intervall periode = oppgittEgenNæringDto.getPeriode();
         return Periodeinntekt.builder()
                 .medInntektskildeOgPeriodeType(Inntektskilde.SØKNAD)
@@ -142,7 +142,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN implements MapInntektsgrunnlag
     private Periodeinntekt byggPeriodeinntektForYtelse(YtelseAnvistDto anvist, Optional<Beløp> vedtaksDagsats, YtelseType ytelsetype) {
         return Periodeinntekt.builder()
                 .medInntektskildeOgPeriodeType(erAAPEllerDP(ytelsetype) ? Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP : Inntektskilde.ANNEN_YTELSE)
-                .medInntekt(finnBeløp(anvist, vedtaksDagsats))
+                .medInntekt(Beløp.safeVerdi(finnBeløp(anvist, vedtaksDagsats)))
                 .medUtbetalingsfaktor(erAAPEllerDP(ytelsetype) ? anvist.getUtbetalingsgradProsent().map(Stillingsprosent::getVerdi)
                         .map(s -> s.divide(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG, 10, RoundingMode.HALF_UP)).orElseThrow() : BigDecimal.ONE)
                 .medPeriode(Periode.of(anvist.getAnvistFOM(), anvist.getAnvistTOM()))
@@ -153,10 +153,10 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN implements MapInntektsgrunnlag
         return ytelsetype.equals(YtelseType.ARBEIDSAVKLARINGSPENGER) || ytelsetype.equals(YtelseType.DAGPENGER);
     }
 
-    private BigDecimal finnBeløp(YtelseAnvistDto anvist, Optional<Beløp> vedtaksDagsats) {
-        BigDecimal beløpFraYtelseAnvist = anvist.getBeløp().map(Beløp::verdi)
-                .orElse(anvist.getDagsats().map(Beløp::verdi).orElse(BigDecimal.ZERO));
-        return vedtaksDagsats.map(Beløp::verdi).orElse(beløpFraYtelseAnvist);
+    private Beløp finnBeløp(YtelseAnvistDto anvist, Optional<Beløp> vedtaksDagsats) {
+        var beløpFraYtelseAnvist = anvist.getBeløp()
+                .orElse(anvist.getDagsats().orElse(Beløp.ZERO));
+        return vedtaksDagsats.orElse(beløpFraYtelseAnvist);
     }
 
     private List<Periodeinntekt> lagInntekterSN(InntektFilterDto filter) {
@@ -240,7 +240,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN implements MapInntektsgrunnlag
         return Periodeinntekt.builder()
                 .medInntektskildeOgPeriodeType(Inntektskilde.SØKNAD)
                 .medPeriode(Periode.of(periodeInntekt.getPeriode().getFomDato(), periodeInntekt.getPeriode().getTomDato()))
-                .medInntekt(periodeInntekt.getInntekt())
+                .medInntekt(Beløp.safeVerdi(periodeInntekt.getInntekt()))
                 .medAktivitetStatus(aktivitetStatus)
                 .build();
     }

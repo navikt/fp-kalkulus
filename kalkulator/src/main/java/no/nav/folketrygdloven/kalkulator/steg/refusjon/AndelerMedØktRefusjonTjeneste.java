@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.steg.refusjon;
 
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +9,7 @@ import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 /**
  * Tjeneste for å finne andeler i nytt beregningsgrunnlag som har økt refusjon siden orginalbehandlingen.
@@ -22,7 +22,7 @@ public final class AndelerMedØktRefusjonTjeneste {
 
     public static Map<Intervall, List<RefusjonAndel>> finnAndelerMedØktRefusjon(BeregningsgrunnlagDto beregningsgrunnlag,
                                                                                 BeregningsgrunnlagDto originaltGrunnlag,
-                                                                                BigDecimal grenseverdi,
+                                                                                Beløp grenseverdi,
                                                                                 YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         if (beregningsgrunnlag == null || originaltGrunnlag == null) {
             return Collections.emptyMap();

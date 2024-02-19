@@ -1,20 +1,20 @@
 package no.nav.folketrygdloven.kalkulator.steg.refusjon.modell;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class RefusjonAndel {
     private AktivitetStatus aktivitetStatus;
     private Arbeidsgiver arbeidsgiver;
     private InternArbeidsforholdRefDto arbeidsforholdRef;
-    private BigDecimal brutto;
-    private BigDecimal refusjon;
+    private Beløp brutto;
+    private Beløp refusjon;
 
-    public RefusjonAndel(AktivitetStatus aktivitetStatus, Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRef, BigDecimal brutto, BigDecimal refusjon) {
+    public RefusjonAndel(AktivitetStatus aktivitetStatus, Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRef, Beløp brutto, Beløp refusjon) {
         Objects.requireNonNull(aktivitetStatus, "aktivitetStatus");
         Objects.requireNonNull(brutto, "brutto");
         Objects.requireNonNull(refusjon, "refusjon");
@@ -26,11 +26,11 @@ public class RefusjonAndel {
         this.refusjon = refusjon;
     }
 
-    public BigDecimal getBrutto() {
+    public Beløp getBrutto() {
         return brutto;
     }
 
-    public BigDecimal getRefusjon() {
+    public Beløp getRefusjon() {
         return refusjon;
     }
 

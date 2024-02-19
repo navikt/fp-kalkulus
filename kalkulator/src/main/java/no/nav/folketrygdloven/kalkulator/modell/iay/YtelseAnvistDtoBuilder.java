@@ -18,16 +18,16 @@ public class YtelseAnvistDtoBuilder {
         return new YtelseAnvistDtoBuilder(new YtelseAnvistDto());
     }
 
-    public YtelseAnvistDtoBuilder medBeløp(BigDecimal beløp) {
+    public YtelseAnvistDtoBuilder medBeløp(Beløp beløp) {
         if (beløp != null) {
-            this.ytelseAnvist.setBeløp(Beløp.fra(beløp));
+            this.ytelseAnvist.setBeløp(beløp);
         }
         return this;
     }
 
-    public YtelseAnvistDtoBuilder medDagsats(BigDecimal dagsats) {
+    public YtelseAnvistDtoBuilder medDagsats(Beløp dagsats) {
         if (dagsats != null) {
-            this.ytelseAnvist.setDagsats(Beløp.fra(dagsats));
+            this.ytelseAnvist.setDagsats(dagsats);
         }
         return this;
     }

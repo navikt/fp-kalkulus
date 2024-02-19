@@ -29,6 +29,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class FastsettMånedsinntektUtenInntektsmeldingOppdatererTest {
 
@@ -91,7 +92,7 @@ public class FastsettMånedsinntektUtenInntektsmeldingOppdatererTest {
         List<BeregningsgrunnlagPrStatusOgAndelDto> andelerMedFastsattInntekt = beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream().flatMap(periode -> periode.getBeregningsgrunnlagPrStatusOgAndelList().stream())
             .filter(andel -> andel.getBgAndelArbeidsforhold().isPresent() && andel.getBgAndelArbeidsforhold().get().getArbeidsgiver().equals(arbeidsgiver))
             .collect(Collectors.toList());
-        andelerMedFastsattInntekt.forEach(andel -> assertThat(andel.getBeregnetPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(ARBEIDSINNTEKT)));
+        andelerMedFastsattInntekt.forEach(andel -> assertThat(andel.getBeregnetPrÅr()).isEqualByComparingTo(Beløp.fra(ARBEIDSINNTEKT)));
         List<BeregningsgrunnlagPrStatusOgAndelDto> andelerUtenFastsattInntekt = beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream().flatMap(periode -> periode.getBeregningsgrunnlagPrStatusOgAndelList().stream())
             .filter(andel -> andel.getBgAndelArbeidsforhold().isPresent() && andel.getBgAndelArbeidsforhold().get().getArbeidsgiver().equals(arbeidsgiver2))
             .collect(Collectors.toList());

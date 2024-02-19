@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 
@@ -14,6 +13,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 public class SkalKunneEndreAktivitetTest {
@@ -25,7 +25,7 @@ public class SkalKunneEndreAktivitetTest {
 
     @BeforeEach
     public void setUp() {
-        beregningsgrunnlag = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING).medGrunnbeløp(BigDecimal.valueOf(600000)).build();
+        beregningsgrunnlag = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING).medGrunnbeløp(Beløp.fra(600000)).build();
         periode = BeregningsgrunnlagPeriodeDto.ny().medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
                 .build(beregningsgrunnlag);
     }

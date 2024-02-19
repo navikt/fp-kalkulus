@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.felles.frist;
 
-import java.math.BigDecimal;
-
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
-public record KravOgUtfall(BigDecimal refusjonskrav, Utfall utfall) {}
+public record KravOgUtfall(Beløp refusjonskrav, Utfall utfall) {}

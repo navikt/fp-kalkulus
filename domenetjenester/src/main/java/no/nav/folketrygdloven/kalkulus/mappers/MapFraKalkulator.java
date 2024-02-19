@@ -119,7 +119,7 @@ public class MapFraKalkulator {
     }
 
     private static RefusjonsperiodeDto mapRefusjonsperiode(Refusjonsperiode rp) {
-        return new RefusjonsperiodeDto(mapPeriode(rp.getPeriode()), no.nav.folketrygdloven.kalkulus.typer.Beløp.safeVerdi(rp.getBeløp()));
+        return new RefusjonsperiodeDto(mapPeriode(rp.getPeriode()), rp.getBeløp());
     }
 
     public static YtelsespesifiktGrunnlag mapFraDto(FagsakYtelseType ytelseType,

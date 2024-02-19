@@ -36,6 +36,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class RegelMapperTestDataHelper {
     public static final LocalDate NOW = LocalDate.now();
@@ -57,7 +58,7 @@ public class RegelMapperTestDataHelper {
     public static BeregningsgrunnlagDto buildVLBeregningsgrunnlag() {
         return BeregningsgrunnlagDto.builder()
             .medSkjæringstidspunkt(MINUS_DAYS_5)
-            .medGrunnbeløp(BigDecimal.ZERO)
+            .medGrunnbeløp(Beløp.ZERO)
             .build();
     }
 
@@ -71,7 +72,7 @@ public class RegelMapperTestDataHelper {
     public static SammenligningsgrunnlagPrStatusDto buildSammenligningsgrunnlagPrStatus(SammenligningsgrunnlagType sammenligningsgrunnlagType) {
         return SammenligningsgrunnlagPrStatusDto.builder()
             .medSammenligningsperiode(MINUS_YEARS_1, NOW)
-            .medRapportertPrÅr(BigDecimal.valueOf(1098318.12))
+            .medRapportertPrÅr(Beløp.fra(BigDecimal.valueOf(1098318.12)))
             .medAvvikPromilleNy(BigDecimal.valueOf(220L))
             .medSammenligningsgrunnlagType(sammenligningsgrunnlagType)
             .build();
@@ -80,9 +81,9 @@ public class RegelMapperTestDataHelper {
     public static BeregningsgrunnlagPeriodeDto buildVLBGPeriode(BeregningsgrunnlagDto beregningsgrunnlag) {
         return BeregningsgrunnlagPeriodeDto.ny()
             .medBeregningsgrunnlagPeriode(beregningsgrunnlag.getSkjæringstidspunkt(), beregningsgrunnlag.getSkjæringstidspunkt().plusYears(3))
-            .medBruttoPrÅr(BigDecimal.valueOf(534343.55))
-            .medAvkortetPrÅr(BigDecimal.valueOf(223421.334))
-            .medRedusertPrÅr(BigDecimal.valueOf(23412.32))
+            .medBruttoPrÅr(Beløp.fra(BigDecimal.valueOf(534343.55)))
+            .medAvkortetPrÅr(Beløp.fra(BigDecimal.valueOf(223421.334)))
+            .medRedusertPrÅr(Beløp.fra(BigDecimal.valueOf(23412.32)))
             .build(beregningsgrunnlag);
     }
 
@@ -108,19 +109,19 @@ public class RegelMapperTestDataHelper {
             .medInntektskategori(inntektskategori)
             .medBeregningsperiode(fom, tom)
             .medArbforholdType(arbforholdType)
-            .medBeregnetPrÅr(BigDecimal.valueOf(1000.01))
-            .medOverstyrtPrÅr(BigDecimal.valueOf(4444432.32))
-            .medAvkortetPrÅr(BigDecimal.valueOf(12.12))
-            .medRedusertPrÅr(BigDecimal.valueOf(34.34))
-            .medRedusertRefusjonPrÅr(BigDecimal.valueOf(52000.0))
-            .medRedusertBrukersAndelPrÅr(BigDecimal.valueOf(26000.0));
+            .medBeregnetPrÅr(Beløp.fra(BigDecimal.valueOf(1000.01)))
+            .medOverstyrtPrÅr(Beløp.fra(BigDecimal.valueOf(4444432.32)))
+            .medAvkortetPrÅr(Beløp.fra(BigDecimal.valueOf(12.12)))
+            .medRedusertPrÅr(Beløp.fra(BigDecimal.valueOf(34.34)))
+            .medRedusertRefusjonPrÅr(Beløp.fra(BigDecimal.valueOf(52000.0)))
+            .medRedusertBrukersAndelPrÅr(Beløp.fra(BigDecimal.valueOf(26000.0)));
 
         if (AktivitetStatus.ARBEIDSTAKER.equals(aktivitetStatus)) {
             BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto
                 .builder()
                 .medArbeidsgiver(arbeidsgiver)
-                .medRefusjonskravPrÅr(BigDecimal.valueOf(42.00), Utfall.GODKJENT)
-                .medNaturalytelseBortfaltPrÅr(BigDecimal.valueOf(3232.32))
+                .medRefusjonskravPrÅr(Beløp.fra(BigDecimal.valueOf(42.00)), Utfall.GODKJENT)
+                .medNaturalytelseBortfaltPrÅr(Beløp.fra(BigDecimal.valueOf(3232.32)))
                 .medArbeidsperiodeFom(LocalDate.now().minusYears(1))
                 .medArbeidsperiodeTom(LocalDate.now().plusYears(2))
                 .medArbeidsforholdRef((InternArbeidsforholdRefDto) null);

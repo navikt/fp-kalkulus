@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.steg.refusjon;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 
@@ -27,6 +26,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
@@ -47,7 +47,7 @@ class RefusjonTidslinjeTjenesteTest {
     public void setup() {
         originaltBG = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
-                .medGrunnbeløp(BigDecimal.valueOf(GrunnbeløpTestKonstanter.GRUNNBELØP_2018))
+                .medGrunnbeløp(Beløp.fra(GrunnbeløpTestKonstanter.GRUNNBELØP_2018))
                 .build();
         BeregningsgrunnlagAktivitetStatusDto.builder()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
@@ -60,7 +60,7 @@ class RefusjonTidslinjeTjenesteTest {
 
         revurderingBG = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
-                .medGrunnbeløp(BigDecimal.valueOf(GrunnbeløpTestKonstanter.GRUNNBELØP_2018))
+                .medGrunnbeløp(Beløp.fra(GrunnbeløpTestKonstanter.GRUNNBELØP_2018))
                 .build();
         BeregningsgrunnlagAktivitetStatusDto.builder()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
@@ -110,10 +110,10 @@ class RefusjonTidslinjeTjenesteTest {
         assertThat(segment).isNotNull();
         RefusjonPeriodeEndring periodeEndring = segment.getValue();
         assertThat(periodeEndring).isNotNull();
-        assertThat(periodeEndring.getOriginalBrutto()).isEqualByComparingTo(BigDecimal.valueOf(200000));
-        assertThat(periodeEndring.getOriginalRefusjon()).isEqualByComparingTo(BigDecimal.valueOf(1000000));
-        assertThat(periodeEndring.getRevurderingBrutto()).isEqualByComparingTo(BigDecimal.valueOf(100000));
-        assertThat(periodeEndring.getRevurderingRefusjon()).isEqualByComparingTo(BigDecimal.valueOf(400000));
+        assertThat(periodeEndring.getOriginalBrutto()).isEqualByComparingTo(Beløp.fra(200000));
+        assertThat(periodeEndring.getOriginalRefusjon()).isEqualByComparingTo(Beløp.fra(1000000));
+        assertThat(periodeEndring.getRevurderingBrutto()).isEqualByComparingTo(Beløp.fra(100000));
+        assertThat(periodeEndring.getRevurderingRefusjon()).isEqualByComparingTo(Beløp.fra(400000));
     }
 
     @Test
@@ -142,18 +142,18 @@ class RefusjonTidslinjeTjenesteTest {
 
         RefusjonAndel orginalAndel = periodeEndring.getOriginaleAndeler().stream().filter(a -> a.getArbeidsgiver().equals(AG1)).findFirst().orElse(null);
         assertThat(orginalAndel).isNotNull();
-        assertThat(orginalAndel.getBrutto()).isEqualByComparingTo(BigDecimal.valueOf(100000));
-        assertThat(orginalAndel.getRefusjon()).isEqualByComparingTo(BigDecimal.valueOf(500000));
+        assertThat(orginalAndel.getBrutto()).isEqualByComparingTo(Beløp.fra(100000));
+        assertThat(orginalAndel.getRefusjon()).isEqualByComparingTo(Beløp.fra(500000));
 
         RefusjonAndel revurderingAndelAG1 = periodeEndring.getRevurderingAndeler().stream().filter(a -> a.getArbeidsgiver().equals(AG1)).findFirst().orElse(null);
         assertThat(revurderingAndelAG1).isNotNull();
-        assertThat(revurderingAndelAG1.getBrutto()).isEqualByComparingTo(BigDecimal.valueOf(100000));
-        assertThat(revurderingAndelAG1.getRefusjon()).isEqualByComparingTo(BigDecimal.valueOf(400000));
+        assertThat(revurderingAndelAG1.getBrutto()).isEqualByComparingTo(Beløp.fra(100000));
+        assertThat(revurderingAndelAG1.getRefusjon()).isEqualByComparingTo(Beløp.fra(400000));
 
         RefusjonAndel revurderingAndelAG2 = periodeEndring.getRevurderingAndeler().stream().filter(a -> a.getArbeidsgiver().equals(AG2)).findFirst().orElse(null);
         assertThat(revurderingAndelAG2).isNotNull();
-        assertThat(revurderingAndelAG2.getBrutto()).isEqualByComparingTo(BigDecimal.valueOf(200000));
-        assertThat(revurderingAndelAG2.getRefusjon()).isEqualByComparingTo(BigDecimal.valueOf(200000));
+        assertThat(revurderingAndelAG2.getBrutto()).isEqualByComparingTo(Beløp.fra(200000));
+        assertThat(revurderingAndelAG2.getRefusjon()).isEqualByComparingTo(Beløp.fra(200000));
     }
 
     private void leggTilAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode,
@@ -162,14 +162,14 @@ class RefusjonTidslinjeTjenesteTest {
                               int bruttoPrÅr, int refusjonskravPrÅr) {
         BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(aktivitetStatus)
-                .medRedusertBrukersAndelPrÅr(refusjonskravPrÅr > bruttoPrÅr ? BigDecimal.ZERO : BigDecimal.valueOf(bruttoPrÅr - refusjonskravPrÅr))
-                .medRedusertRefusjonPrÅr(refusjonskravPrÅr > bruttoPrÅr ? BigDecimal.valueOf(bruttoPrÅr) : BigDecimal.valueOf(refusjonskravPrÅr))
-                .medBeregnetPrÅr(BigDecimal.valueOf(bruttoPrÅr));
+                .medRedusertBrukersAndelPrÅr(refusjonskravPrÅr > bruttoPrÅr ? Beløp.ZERO : Beløp.fra(bruttoPrÅr - refusjonskravPrÅr))
+                .medRedusertRefusjonPrÅr(refusjonskravPrÅr > bruttoPrÅr ? Beløp.fra(bruttoPrÅr) : Beløp.fra(refusjonskravPrÅr))
+                .medBeregnetPrÅr(Beløp.fra(bruttoPrÅr));
         if (ag != null) {
             BGAndelArbeidsforholdDto.Builder bgAndelArbeidsforholdBuilder = BGAndelArbeidsforholdDto.builder()
                     .medArbeidsgiver(ag)
                     .medArbeidsforholdRef(ref)
-                    .medRefusjonskravPrÅr(BigDecimal.valueOf(refusjonskravPrÅr), Utfall.GODKJENT);
+                    .medRefusjonskravPrÅr(Beløp.fra(refusjonskravPrÅr), Utfall.GODKJENT);
             andelBuilder.medBGAndelArbeidsforhold(bgAndelArbeidsforholdBuilder);
         }
         andelBuilder.build(beregningsgrunnlagPeriode);

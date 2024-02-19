@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.guitjenester.inntektsgrunnlag;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -13,15 +12,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.PGIType;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.PGIGrunnlagDto;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.PGIPrÅrDto;
-
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
-
 import org.junit.jupiter.api.Test;
 
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
@@ -29,9 +22,13 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.PGIType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.InntektsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.InntektsgrunnlagInntektDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.InntektsgrunnlagMånedDto;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.PGIGrunnlagDto;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.PGIPrÅrDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class InntektsgrunnlagMapperTest {
     private static final LocalDate STP = LocalDate.now();
@@ -96,21 +93,21 @@ class InntektsgrunnlagMapperTest {
         assertThat(dto.get().getMåneder().get(0).getInntekter()).hasSize(2);
         assertThat(dto.get().getMåneder().get(0).getInntekter().stream()
                 .anyMatch(innt -> innt.getInntektAktivitetType().equals(InntektAktivitetType.FRILANSINNTEKT)
-                        && innt.getBeløp().verdi().intValue() == 3000))
+                        && innt.getBeløp().intValue() == 3000))
                 .isTrue();
         assertThat(dto.get().getMåneder().get(0).getInntekter().stream()
                 .anyMatch(innt -> innt.getInntektAktivitetType().equals(InntektAktivitetType.ARBEIDSTAKERINNTEKT)
-                        && innt.getBeløp().verdi().intValue() == 5000))
+                        && innt.getBeløp().intValue() == 5000))
                 .isTrue();
 
         assertThat(dto.get().getMåneder().get(1).getInntekter()).hasSize(2);
         assertThat(dto.get().getMåneder().get(1).getInntekter().stream()
                 .anyMatch(innt -> innt.getInntektAktivitetType().equals(InntektAktivitetType.FRILANSINNTEKT)
-                        && innt.getBeløp().verdi().intValue() == 3000))
+                        && innt.getBeløp().intValue() == 3000))
                 .isTrue();
         assertThat(dto.get().getMåneder().get(1).getInntekter().stream()
                 .anyMatch(innt -> innt.getInntektAktivitetType().equals(InntektAktivitetType.ARBEIDSTAKERINNTEKT)
-                        && innt.getBeløp().verdi().intValue() == 5000))
+                        && innt.getBeløp().intValue() == 5000))
                 .isTrue();
     }
 
@@ -209,7 +206,7 @@ class InntektsgrunnlagMapperTest {
     private InntektspostDtoBuilder lagPGIPost(InntektDtoBuilder builder, int inntekt, int år, InntektspostType type) {
         return builder.getInntektspostBuilder()
                 .medPeriode(LocalDate.of(år, 1, 1), LocalDate.of(år, 12, 31))
-                .medBeløp(BigDecimal.valueOf(inntekt))
+                .medBeløp(Beløp.fra(inntekt))
                 .medInntektspostType(type);
     }
 
@@ -220,7 +217,7 @@ class InntektsgrunnlagMapperTest {
     private InntektspostDtoBuilder lagInntektspost(InntektDtoBuilder builder, int inntekt, LocalDate fom, InntektspostType type) {
         return builder.getInntektspostBuilder()
                 .medPeriode(fom, fom.with(TemporalAdjusters.lastDayOfMonth()))
-                .medBeløp(BigDecimal.valueOf(inntekt))
+                .medBeløp(Beløp.fra(inntekt))
                 .medInntektspostType(type);
     }
 

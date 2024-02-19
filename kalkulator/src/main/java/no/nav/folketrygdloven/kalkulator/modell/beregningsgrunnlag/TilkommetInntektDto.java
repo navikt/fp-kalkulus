@@ -1,14 +1,14 @@
 package no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
 import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
+import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class TilkommetInntektDto implements IndexKey {
 
@@ -16,9 +16,9 @@ public class TilkommetInntektDto implements IndexKey {
     private final Arbeidsgiver arbeidsgiver;
     private final InternArbeidsforholdRefDto arbeidsforholdRef;
     @SjekkVedKopiering
-    private BigDecimal bruttoInntektPrÅr;
+    private Beløp bruttoInntektPrÅr;
     @SjekkVedKopiering
-    private BigDecimal tilkommetInntektPrÅr;
+    private Beløp tilkommetInntektPrÅr;
     @SjekkVedKopiering
     private Boolean skalRedusereUtbetaling;
 
@@ -42,8 +42,8 @@ public class TilkommetInntektDto implements IndexKey {
     public TilkommetInntektDto(AktivitetStatus aktivitetStatus,
                                Arbeidsgiver arbeidsgiver,
                                InternArbeidsforholdRefDto arbeidsforholdRef,
-                               BigDecimal bruttoInntektPrÅr,
-                               BigDecimal tilkommetInntektPrÅr,
+                               Beløp bruttoInntektPrÅr,
+                               Beløp tilkommetInntektPrÅr,
                                Boolean skalRedusereUtbetaling) {
         if (skalRedusereUtbetaling != null && !skalRedusereUtbetaling && tilkommetInntektPrÅr != null) {
             throw new IllegalStateException("Skal ikke sette tilkommet inntekt når ikke redusert utbetaling");
@@ -68,11 +68,11 @@ public class TilkommetInntektDto implements IndexKey {
         return arbeidsforholdRef == null ? InternArbeidsforholdRefDto.nullRef() : arbeidsforholdRef;
     }
 
-    public BigDecimal getBruttoInntektPrÅr() {
+    public Beløp getBruttoInntektPrÅr() {
         return bruttoInntektPrÅr;
     }
 
-    public BigDecimal getTilkommetInntektPrÅr() {
+    public Beløp getTilkommetInntektPrÅr() {
         return tilkommetInntektPrÅr;
     }
 

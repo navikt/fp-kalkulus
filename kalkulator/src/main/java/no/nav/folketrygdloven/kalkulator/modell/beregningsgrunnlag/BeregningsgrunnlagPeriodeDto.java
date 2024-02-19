@@ -18,6 +18,7 @@ import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class BeregningsgrunnlagPeriodeDto implements IndexKey {
 
@@ -31,9 +32,9 @@ public class BeregningsgrunnlagPeriodeDto implements IndexKey {
     // Ikkje legg til @SjekkVedKopiering her. Det ødelegger difflogikk ved forlengelse
     private Intervall periode;
     @SjekkVedKopiering
-    private BigDecimal bruttoPrÅr;
-    private BigDecimal avkortetPrÅr;
-    private BigDecimal redusertPrÅr;
+    private Beløp bruttoPrÅr;
+    private Beløp avkortetPrÅr;
+    private Beløp redusertPrÅr;
     private Long dagsats;
     @SjekkVedKopiering
     private List<BeregningsgrunnlagPeriodeÅrsakDto> beregningsgrunnlagPeriodeÅrsaker = new ArrayList<>();
@@ -106,31 +107,31 @@ public class BeregningsgrunnlagPeriodeDto implements IndexKey {
         return periode.getTomDato();
     }
 
-    public BigDecimal getBeregnetPrÅr() {
+    public Beløp getBeregnetPrÅr() {
         return beregningsgrunnlagPrStatusOgAndelList.stream()
                 .map(BeregningsgrunnlagPrStatusOgAndelDto::getBeregnetPrÅr)
                 .filter(Objects::nonNull)
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
+                .reduce(Beløp::adder)
+                .orElse(Beløp.ZERO);
     }
 
     void updateBruttoPrÅr() {
         bruttoPrÅr = beregningsgrunnlagPrStatusOgAndelList.stream()
-                .filter(bgpsa -> bgpsa.getBruttoPrÅr() != null)
                 .map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoPrÅr)
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
+                .filter(Objects::nonNull)
+                .reduce(Beløp::adder)
+                .orElse(Beløp.ZERO);
     }
 
-    public BigDecimal getBruttoPrÅr() {
+    public Beløp getBruttoPrÅr() {
         return bruttoPrÅr;
     }
 
-    public BigDecimal getAvkortetPrÅr() {
+    public Beløp getAvkortetPrÅr() {
         return avkortetPrÅr;
     }
 
-    public BigDecimal getRedusertPrÅr() {
+    public Beløp getRedusertPrÅr() {
         return redusertPrÅr;
     }
 
@@ -303,19 +304,19 @@ public class BeregningsgrunnlagPeriodeDto implements IndexKey {
             return this;
         }
 
-        public Builder medBruttoPrÅr(BigDecimal bruttoPrÅr) {
+        public Builder medBruttoPrÅr(Beløp bruttoPrÅr) {
             verifiserKanModifisere();
             kladd.bruttoPrÅr = bruttoPrÅr;
             return this;
         }
 
-        public Builder medAvkortetPrÅr(BigDecimal avkortetPrÅr) {
+        public Builder medAvkortetPrÅr(Beløp avkortetPrÅr) {
             verifiserKanModifisere();
             kladd.avkortetPrÅr = avkortetPrÅr;
             return this;
         }
 
-        public Builder medRedusertPrÅr(BigDecimal redusertPrÅr) {
+        public Builder medRedusertPrÅr(Beløp redusertPrÅr) {
             verifiserKanModifisere();
             kladd.redusertPrÅr = redusertPrÅr;
             return this;

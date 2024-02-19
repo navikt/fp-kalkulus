@@ -43,6 +43,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PermisjonsbeskrivelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 
@@ -557,7 +558,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
         nyYrkesaktivitet.getAlleAnsettelsesperioder().stream()
                 .map(AktivitetsAvtaleDto::getPeriode)
                 .filter(it -> !perioderMedFulltFravær.contains(it))
-                .forEach(p -> inntektDto.leggTilInntektspost(InntektspostDtoBuilder.ny().medBeløp(BigDecimal.valueOf(10_000)).medPeriode(p.getFomDato(), p.getTomDato()).medInntektspostType(InntektspostType.LØNN)));
+                .forEach(p -> inntektDto.leggTilInntektspost(InntektspostDtoBuilder.ny().medBeløp(Beløp.fra(10_000)).medPeriode(p.getFomDato(), p.getTomDato()).medInntektspostType(InntektspostType.LØNN)));
         return inntektDto;
     }
 

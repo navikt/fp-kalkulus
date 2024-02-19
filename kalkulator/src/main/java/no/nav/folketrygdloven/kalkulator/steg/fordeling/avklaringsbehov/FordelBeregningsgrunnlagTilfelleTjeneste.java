@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.PerioderTilVurderingTjeneste;
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -64,7 +64,7 @@ public final class FordelBeregningsgrunnlagTilfelleTjeneste {
             if (FordelingGraderingTjeneste.gradertAndelVilleBlittAvkortet(andel, grunnbeløp, periode)) {
                 return Optional.of(FordelingTilfelle.GRADERT_ANDEL_SOM_VILLE_HA_BLITT_AVKORTET_TIL_0);
             }
-            boolean refusjonForPeriodeOverstiger6G = grunnbeløp.multipliser(6).verdi().compareTo(finnTotalRefusjonPrÅr(periode)) <= 0;
+            boolean refusjonForPeriodeOverstiger6G = grunnbeløp.multipliser(KonfigTjeneste.getAntallGØvreGrenseverdi()).compareTo(finnTotalRefusjonPrÅr(periode)) <= 0;
             if (refusjonForPeriodeOverstiger6G) {
                 return Optional.of(FordelingTilfelle.TOTALT_REFUSJONSKRAV_STØRRE_ENN_6G);
             }
@@ -74,15 +74,15 @@ public final class FordelBeregningsgrunnlagTilfelleTjeneste {
 
     private static Boolean harInnvilgetRefusjon(BeregningsgrunnlagPrStatusOgAndelDto andel) {
         return andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getInnvilgetRefusjonskravPrÅr)
-                .map(r -> r.compareTo(BigDecimal.ZERO) > 0).orElse(false);
+                .map(r -> r.compareTo(Beløp.ZERO) > 0).orElse(false);
     }
 
-    private static BigDecimal finnTotalRefusjonPrÅr(BeregningsgrunnlagPeriodeDto periode) {
+    private static Beløp finnTotalRefusjonPrÅr(BeregningsgrunnlagPeriodeDto periode) {
         return periode.getBeregningsgrunnlagPrStatusOgAndelList().stream().flatMap(a -> a.getBgAndelArbeidsforhold().stream())
                 .map(BGAndelArbeidsforholdDto::getInnvilgetRefusjonskravPrÅr)
                 .filter(Objects::nonNull)
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
+                .reduce(Beløp::adder)
+                .orElse(Beløp.ZERO);
     }
 
     private static boolean erAutomatiskFordelt(BeregningsgrunnlagPrStatusOgAndelDto andel) {

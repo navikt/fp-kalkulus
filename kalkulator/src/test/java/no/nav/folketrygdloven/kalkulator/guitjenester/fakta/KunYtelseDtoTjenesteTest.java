@@ -8,17 +8,13 @@ import java.time.Month;
 import java.util.List;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
-
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.SvangerskapspengerGrunnlag;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
@@ -29,16 +25,17 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.AndelMedBeløpDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.KunYtelseDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class KunYtelseDtoTjenesteTest {
 
@@ -268,8 +265,8 @@ public class KunYtelseDtoTjenesteTest {
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
                 .build(bg);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-                .medBesteberegningPrÅr(medBesteberegning ? BigDecimal.valueOf(BRUTTO_PR_ÅR) : null)
-                .medBeregnetPrÅr(BigDecimal.valueOf(BRUTTO_PR_ÅR))
+                .medBesteberegningPrÅr(medBesteberegning ? Beløp.fra(BRUTTO_PR_ÅR) : null)
+                .medBeregnetPrÅr(Beløp.fra(BRUTTO_PR_ÅR))
                 .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.BRUKERS_ANDEL)
                 .build(periode1);
 

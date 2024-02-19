@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
 
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +12,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
 
 public class FordelRefusjonTjeneste {
@@ -28,10 +28,10 @@ public class FordelRefusjonTjeneste {
      * @param korrektPeriode periode fra beregningsgrunnlag
      * @return Map fra andel til refusjonsbeløp
      */
-    static Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> getRefusjonPrÅrMap(FordelBeregningsgrunnlagPeriodeDto fordeltPeriode,
+    static Map<FordelBeregningsgrunnlagAndelDto, Beløp> getRefusjonPrÅrMap(FordelBeregningsgrunnlagPeriodeDto fordeltPeriode,
                                                                                 BeregningsgrunnlagPeriodeDto korrektPeriode) {
         var beløpMap = getTotalbeløpPrArbeidsforhold(fordeltPeriode, korrektPeriode);
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> refusjonMap = new HashMap<>();
+        Map<FordelBeregningsgrunnlagAndelDto, Beløp> refusjonMap = new HashMap<>();
         fordeltPeriode.getAndeler()
                 .stream()
                 .filter(a -> a.getArbeidsgiverId() != null)
@@ -43,14 +43,14 @@ public class FordelRefusjonTjeneste {
     }
 
     private static void fordelRefusjonTilAndel(Map<ArbeidsforholdNøkkel, RefusjonOgFastsattBeløp> beløpMap,
-                                               Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> refusjonMap,
+                                               Map<FordelBeregningsgrunnlagAndelDto, Beløp> refusjonMap,
                                                FordelBeregningsgrunnlagAndelDto fordeltAndel,
                                                ArbeidsforholdNøkkel arbeidsforhold) {
         var refusjonOgFastsattBeløp = beløpMap.get(arbeidsforhold);
-        if (refusjonOgFastsattBeløp.getTotalFastsattBeløpPrÅr().compareTo(BigDecimal.ZERO) == 0 ||
-                refusjonOgFastsattBeløp.getTotalRefusjonPrÅr().compareTo(BigDecimal.ZERO) == 0) {
+        if (refusjonOgFastsattBeløp.getTotalFastsattBeløpPrÅr().compareTo(Beløp.ZERO) == 0 ||
+                refusjonOgFastsattBeløp.getTotalRefusjonPrÅr().compareTo(Beløp.ZERO) == 0) {
             if (fordeltAndel.getFastsatteVerdier().getRefusjonPrÅr() != null) {
-                refusjonMap.put(fordeltAndel, BigDecimal.valueOf(fordeltAndel.getFastsatteVerdier().getRefusjonPrÅr()));
+                refusjonMap.put(fordeltAndel, Beløp.fra(fordeltAndel.getFastsatteVerdier().getRefusjonPrÅr()));
             }
             return;
         }
@@ -58,13 +58,13 @@ public class FordelRefusjonTjeneste {
         refusjonMap.put(fordeltAndel, refusjonPrÅr);
     }
 
-    private static BigDecimal getAndelAvTotalRefusjonPrÅr(FordelBeregningsgrunnlagAndelDto fordeltAndel,
+    private static Beløp getAndelAvTotalRefusjonPrÅr(FordelBeregningsgrunnlagAndelDto fordeltAndel,
                                                           RefusjonOgFastsattBeløp refusjonOgFastsattBeløp) {
-        int fastsatt = fordeltAndel.getFastsatteVerdier().finnEllerUtregnFastsattBeløpPrÅr().intValue();
-        var totalFastsatt = refusjonOgFastsattBeløp.getTotalFastsattBeløpPrÅr();
+        var fastsatt = fordeltAndel.getFastsatteVerdier().finnEllerUtregnFastsattBeløpPrÅr();
+        var totalFastsatt = refusjonOgFastsattBeløp.getTotalFastsattBeløpPrÅr().verdi();
         var totalRefusjon = refusjonOgFastsattBeløp.getTotalRefusjonPrÅr();
-        return totalRefusjon.multiply(BigDecimal.valueOf(fastsatt))
-                .divide(totalFastsatt, 10, RoundingMode.HALF_UP);
+        return totalRefusjon.multipliser(fastsatt)
+                .map(v -> v.divide(totalFastsatt, 10, RoundingMode.HALF_UP));
     }
 
     private static Map<ArbeidsforholdNøkkel, RefusjonOgFastsattBeløp> getTotalbeløpPrArbeidsforhold(FordelBeregningsgrunnlagPeriodeDto fordeltPeriode,
@@ -88,13 +88,13 @@ public class FordelRefusjonTjeneste {
     }
 
     private static void settEllerOppdaterFastsattBeløp(Map<ArbeidsforholdNøkkel, RefusjonOgFastsattBeløp> arbeidsforholdRefusjonMap,
-                                                       ArbeidsforholdNøkkel arbeidsforhold, BigDecimal fastsattBeløpPrÅr) {
+                                                       ArbeidsforholdNøkkel arbeidsforhold, Beløp fastsattBeløpPrÅr) {
         if (arbeidsforholdRefusjonMap.containsKey(arbeidsforhold)) {
             RefusjonOgFastsattBeløp nyttBeløp = arbeidsforholdRefusjonMap.get(arbeidsforhold)
                     .leggTilFastsattBeløp(fastsattBeløpPrÅr);
             arbeidsforholdRefusjonMap.put(arbeidsforhold, nyttBeløp);
         } else {
-            arbeidsforholdRefusjonMap.put(arbeidsforhold, new RefusjonOgFastsattBeløp(BigDecimal.ZERO, fastsattBeløpPrÅr));
+            arbeidsforholdRefusjonMap.put(arbeidsforhold, new RefusjonOgFastsattBeløp(Beløp.ZERO, fastsattBeløpPrÅr));
         }
     }
 
@@ -111,7 +111,7 @@ public class FordelRefusjonTjeneste {
     private static void leggTilForEndretFordelingOgRefusjon(Map<ArbeidsforholdNøkkel, RefusjonOgFastsattBeløp> arbeidsforholdRefusjonMap,
                                                             FordelBeregningsgrunnlagAndelDto fordeltAndel) {
         var korrektArbeidsforhold = getArbeidsforholdNøkkel(fordeltAndel);
-        BigDecimal refusjonskravPrÅr = BigDecimal.valueOf(fordeltAndel.getFastsatteVerdier().getRefusjonPrÅr());
+        var refusjonskravPrÅr = Beløp.fra(fordeltAndel.getFastsatteVerdier().getRefusjonPrÅr());
         settEllerOppdaterTotalRefusjon(arbeidsforholdRefusjonMap, korrektArbeidsforhold, refusjonskravPrÅr);
     }
 
@@ -129,7 +129,7 @@ public class FordelRefusjonTjeneste {
 
     private static void leggTilRefusjonForAndelIGrunnlag(Map<ArbeidsforholdNøkkel, RefusjonOgFastsattBeløp> arbeidsforholdRefusjonMap, BeregningsgrunnlagPrStatusOgAndelDto korrektAndel) {
         korrektAndel.getBgAndelArbeidsforhold().ifPresent(arbeidsforhold -> {
-            BigDecimal refusjonskravPrÅr = arbeidsforhold.getGjeldendeRefusjonPrÅr() == null ? BigDecimal.ZERO : arbeidsforhold.getGjeldendeRefusjonPrÅr();
+            var refusjonskravPrÅr = Optional.ofNullable(arbeidsforhold.getGjeldendeRefusjonPrÅr()).orElse(Beløp.ZERO);
             settEllerOppdaterTotalRefusjon(arbeidsforholdRefusjonMap,
                     new ArbeidsforholdNøkkel(arbeidsforhold.getArbeidsgiver(), arbeidsforhold.getArbeidsforholdRef()),
                     refusjonskravPrÅr);
@@ -138,7 +138,7 @@ public class FordelRefusjonTjeneste {
 
     private static void settEllerOppdaterTotalRefusjon(Map<ArbeidsforholdNøkkel, RefusjonOgFastsattBeløp> arbeidsforholdRefusjonMap,
                                                        ArbeidsforholdNøkkel arbeidsforhold,
-                                                       BigDecimal refusjonskravPrÅr) {
+                                                       Beløp refusjonskravPrÅr) {
         if (arbeidsforholdRefusjonMap.containsKey(arbeidsforhold)) {
             var nyttBeløp = arbeidsforholdRefusjonMap.get(arbeidsforhold)
                     .leggTilRefusjon(refusjonskravPrÅr);

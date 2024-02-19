@@ -13,6 +13,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansInntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDtoBuilder;
@@ -31,7 +32,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FrisinnBehandlingType;
 
 class MapInntektstakFRISINNTest {
     private static final BigDecimal G = BigDecimal.valueOf(99858);
-    private static final BigDecimal SEKS_G = G.multiply(BigDecimal.valueOf(6));
+    private static final BigDecimal SEKS_G = G.multiply(KonfigTjeneste.getAntallGØvreGrenseverdi());
     private static BeregningsgrunnlagEntitet beregningsgrunnlagEntitet;
     private static BeregningsgrunnlagPeriode.Builder periode;
     private static OppgittOpptjeningDtoBuilder opptjening;
@@ -415,12 +416,12 @@ class MapInntektstakFRISINNTest {
 
     private void lagNæringOpptjening(Intervall periode) {
         OppgittOpptjeningDtoBuilder.EgenNæringBuilder en = OppgittOpptjeningDtoBuilder.EgenNæringBuilder.ny().medPeriode(periode)
-                .medBruttoInntekt(BigDecimal.ZERO);
+                .medBruttoInntekt(no.nav.folketrygdloven.kalkulus.typer.Beløp.ZERO);
         opptjening.leggTilEgneNæring(en);
     }
 
     private void lagFrilansOpptjening(Intervall periode) {
-        OppgittFrilansInntektDto inntekt = new OppgittFrilansInntektDto(periode, BigDecimal.ZERO);
+        OppgittFrilansInntektDto inntekt = new OppgittFrilansInntektDto(periode, no.nav.folketrygdloven.kalkulus.typer.Beløp.ZERO);
         OppgittFrilansDto oppgittFL = new OppgittFrilansDto(false, Collections.singletonList(inntekt));
         opptjening.leggTilFrilansOpplysninger(oppgittFL);
     }

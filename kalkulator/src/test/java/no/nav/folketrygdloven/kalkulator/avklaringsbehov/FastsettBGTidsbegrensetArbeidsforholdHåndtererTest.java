@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
 import static no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -26,11 +25,12 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class FastsettBGTidsbegrensetArbeidsforholdHåndtererTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now().minusDays(5);
-    private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(90000);
+    private static final Beløp GRUNNBELØP = Beløp.fra(90000);
 
 
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
@@ -96,10 +96,10 @@ public class FastsettBGTidsbegrensetArbeidsforholdHåndtererTest {
         Assertions.assertThat(beregningsgrunnlag.isPresent()).isTrue();
         BeregningsgrunnlagPeriodeDto førstePeriode = beregningsgrunnlag.get().getBeregningsgrunnlagPerioder().get(0);
         BeregningsgrunnlagPeriodeDto andrePeriode = beregningsgrunnlag.get().getBeregningsgrunnlagPerioder().get(1);
-        assertThat(førstePeriode.getBeregningsgrunnlagPrStatusOgAndelList().get(0).getOverstyrtPrÅr()).isEqualTo(BigDecimal.valueOf(FØRSTE_PERIODE_FØRSTE_ANDEL_INNTEKT));
-        assertThat(førstePeriode.getBeregningsgrunnlagPrStatusOgAndelList().get(1).getOverstyrtPrÅr()).isEqualTo(BigDecimal.valueOf(FØRSTE_PERIODE_ANDRE_ANDEL_INNTEKT));
-        assertThat(andrePeriode.getBeregningsgrunnlagPrStatusOgAndelList().get(0).getOverstyrtPrÅr()).isEqualTo(BigDecimal.valueOf(ANDRE_PERIODE_FØRSTE_ANDEL_INNTEKT));
-        assertThat(andrePeriode.getBeregningsgrunnlagPrStatusOgAndelList().get(1).getOverstyrtPrÅr()).isEqualTo(BigDecimal.valueOf(ANDRE_PERIODE_ANDRE_ANDEL_INNTEKT));
+        assertThat(førstePeriode.getBeregningsgrunnlagPrStatusOgAndelList().get(0).getOverstyrtPrÅr()).isEqualTo(Beløp.fra(FØRSTE_PERIODE_FØRSTE_ANDEL_INNTEKT));
+        assertThat(førstePeriode.getBeregningsgrunnlagPrStatusOgAndelList().get(1).getOverstyrtPrÅr()).isEqualTo(Beløp.fra(FØRSTE_PERIODE_ANDRE_ANDEL_INNTEKT));
+        assertThat(andrePeriode.getBeregningsgrunnlagPrStatusOgAndelList().get(0).getOverstyrtPrÅr()).isEqualTo(Beløp.fra(ANDRE_PERIODE_FØRSTE_ANDEL_INNTEKT));
+        assertThat(andrePeriode.getBeregningsgrunnlagPrStatusOgAndelList().get(1).getOverstyrtPrÅr()).isEqualTo(Beløp.fra(ANDRE_PERIODE_ANDRE_ANDEL_INNTEKT));
     }
 
     private void buildBgPrStatusOgAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode,

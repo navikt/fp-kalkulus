@@ -1,12 +1,12 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.VirksomhetType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
 
 public class OppgittOpptjeningDtoBuilder {
@@ -100,7 +100,7 @@ public class OppgittOpptjeningDtoBuilder {
             return this;
         }
 
-        public EgenNæringBuilder medBruttoInntekt(BigDecimal bruttoInntekt) {
+        public EgenNæringBuilder medBruttoInntekt(Beløp bruttoInntekt) {
             this.entitet.setBruttoInntekt(bruttoInntekt);
             return this;
         }
@@ -140,7 +140,7 @@ public class OppgittOpptjeningDtoBuilder {
             return entitet;
         }
 
-        public OppgittArbeidsforholdBuilder medInntekt(BigDecimal inntekt) {
+        public OppgittArbeidsforholdBuilder medInntekt(Beløp inntekt) {
             this.entitet.setInntekt(inntekt);
             return this;
         }

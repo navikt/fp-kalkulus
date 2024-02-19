@@ -27,8 +27,9 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class MapRefusjonskravFraVLTilRegelTest {
 
@@ -42,8 +43,8 @@ public class MapRefusjonskravFraVLTilRegelTest {
         LocalDate skjæringstidspunkt = LocalDate.now();
         LocalDate endringFom = skjæringstidspunkt.plusMonths(1);
         InntektsmeldingDto inntektsmeldingEntitet = InntektsmeldingDtoBuilder.builder()
-                .medRefusjon(BigDecimal.ZERO)
-                .leggTil(new RefusjonDto(BigDecimal.valueOf(11), endringFom))
+                .medRefusjon(Beløp.ZERO)
+                .leggTil(new RefusjonDto(Beløp.fra(11), endringFom))
                 .build();
 
         // Act
@@ -70,8 +71,8 @@ public class MapRefusjonskravFraVLTilRegelTest {
         LocalDate skjæringstidspunkt = LocalDate.now();
         LocalDate endringFom = skjæringstidspunkt.plusMonths(1);
         InntektsmeldingDto inntektsmeldingEntitet = InntektsmeldingDtoBuilder.builder()
-                .medRefusjon(BigDecimal.ZERO)
-                .leggTil(new RefusjonDto(BigDecimal.valueOf(10), endringFom))
+                .medRefusjon(Beløp.ZERO)
+                .leggTil(new RefusjonDto(Beløp.fra(10), endringFom))
                 .build();
 
         // Act
@@ -94,7 +95,7 @@ public class MapRefusjonskravFraVLTilRegelTest {
         // Arrange
         LocalDate skjæringstidspunkt = LocalDate.now();
         InntektsmeldingDto inntektsmeldingEntitet = InntektsmeldingDtoBuilder.builder()
-                .medRefusjon(BigDecimal.TEN)
+                .medRefusjon(Beløp.fra(10))
                 .build();
 
         // Act
@@ -121,13 +122,13 @@ public class MapRefusjonskravFraVLTilRegelTest {
         InntektsmeldingDtoBuilder inntektsmeldingDtoBuilder = InntektsmeldingDtoBuilder.builder();
         inntektsmeldingDtoBuilder.medStartDatoPermisjon(idag)
                 .medArbeidsgiver(ARBEIDSGIVER1)
-                .medRefusjon(BigDecimal.valueOf(0))
-                .leggTil(new RefusjonDto(BigDecimal.valueOf(10000), idag.plusMonths(1)));
+                .medRefusjon(Beløp.ZERO)
+                .leggTil(new RefusjonDto(Beløp.fra(10000), idag.plusMonths(1)));
         InntektsmeldingDtoBuilder inntektsmeldingDtoBuilder2 = InntektsmeldingDtoBuilder.builder();
         inntektsmeldingDtoBuilder2.medStartDatoPermisjon(idag)
                 .medArbeidsgiver(ARBEIDSGIVER2)
-                .medRefusjon(BigDecimal.valueOf(0))
-                .leggTil(new RefusjonDto(BigDecimal.valueOf(10000), idag.plusMonths(1)));
+                .medRefusjon(Beløp.ZERO)
+                .leggTil(new RefusjonDto(Beløp.fra(10000), idag.plusMonths(1)));
 
         inntektsmeldingAggregatDtoBuilder.leggTil(inntektsmeldingDtoBuilder.build());
         inntektsmeldingAggregatDtoBuilder.leggTil(inntektsmeldingDtoBuilder2.build());
@@ -142,10 +143,10 @@ public class MapRefusjonskravFraVLTilRegelTest {
                         List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMed(idag), BigDecimal.valueOf(50))))), List.of());
 
         // Act
-        BigDecimal refusjonPåStp = MapRefusjonskravFraVLTilRegel.finnGradertRefusjonskravPåSkjæringstidspunktet(inntektsmeldingAggregatDto.getInntektsmeldingerSomSkalBrukes(), idag, omsorgspengerGrunnlag);
+        var refusjonPåStp = MapRefusjonskravFraVLTilRegel.finnGradertRefusjonskravPåSkjæringstidspunktet(inntektsmeldingAggregatDto.getInntektsmeldingerSomSkalBrukes(), idag, omsorgspengerGrunnlag);
 
         // Assert
-        assertThat(refusjonPåStp).isEqualByComparingTo(BigDecimal.valueOf(0));
+        assertThat(refusjonPåStp).isEqualByComparingTo(Beløp.ZERO);
     }
 
 
@@ -157,13 +158,13 @@ public class MapRefusjonskravFraVLTilRegelTest {
         InntektsmeldingDtoBuilder inntektsmeldingDtoBuilder = InntektsmeldingDtoBuilder.builder();
         inntektsmeldingDtoBuilder.medStartDatoPermisjon(idag)
                 .medArbeidsgiver(ARBEIDSGIVER1)
-                .medRefusjon(BigDecimal.valueOf(12000))
-                .leggTil(new RefusjonDto(BigDecimal.valueOf(10000), idag.plusMonths(1)));
+                .medRefusjon(Beløp.fra(12000))
+                .leggTil(new RefusjonDto(Beløp.fra(10000), idag.plusMonths(1)));
         InntektsmeldingDtoBuilder inntektsmeldingDtoBuilder2 = InntektsmeldingDtoBuilder.builder();
         inntektsmeldingDtoBuilder2.medStartDatoPermisjon(idag)
                 .medArbeidsgiver(ARBEIDSGIVER2)
-                .medRefusjon(BigDecimal.valueOf(12000))
-                .leggTil(new RefusjonDto(BigDecimal.valueOf(10000), idag.plusMonths(1)));
+                .medRefusjon(Beløp.fra(12000))
+                .leggTil(new RefusjonDto(Beløp.fra(10000), idag.plusMonths(1)));
 
         inntektsmeldingAggregatDtoBuilder.leggTil(inntektsmeldingDtoBuilder.build());
         inntektsmeldingAggregatDtoBuilder.leggTil(inntektsmeldingDtoBuilder2.build());
@@ -178,10 +179,10 @@ public class MapRefusjonskravFraVLTilRegelTest {
                         List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMed(idag), BigDecimal.valueOf(50))))), List.of());
 
         // Act
-        BigDecimal refusjonPåStp = MapRefusjonskravFraVLTilRegel.finnGradertRefusjonskravPåSkjæringstidspunktet(inntektsmeldingAggregatDto.getInntektsmeldingerSomSkalBrukes(), idag, omsorgspengerGrunnlag);
+        var refusjonPåStp = MapRefusjonskravFraVLTilRegel.finnGradertRefusjonskravPåSkjæringstidspunktet(inntektsmeldingAggregatDto.getInntektsmeldingerSomSkalBrukes(), idag, omsorgspengerGrunnlag);
 
         // Assert
-        assertThat(refusjonPåStp).isEqualByComparingTo(BigDecimal.valueOf(216_000));
+        assertThat(refusjonPåStp).isEqualByComparingTo(Beløp.fra(216_000));
     }
 
     @Test
@@ -191,7 +192,7 @@ public class MapRefusjonskravFraVLTilRegelTest {
         InternArbeidsforholdRefDto ref = InternArbeidsforholdRefDto.nyRef();
         LocalDate overstyrtDato = skjæringstidspunkt.plusDays(15);
         InntektsmeldingDto inntektsmeldingEntitet = InntektsmeldingDtoBuilder.builder()
-                .medRefusjon(BigDecimal.valueOf(11))
+                .medRefusjon(Beløp.fra(11))
                 .medArbeidsgiver(ARBEIDSGIVER1)
                 .medArbeidsforholdId(ref)
                 .build();
@@ -219,7 +220,7 @@ public class MapRefusjonskravFraVLTilRegelTest {
         InternArbeidsforholdRefDto refOverstyring = InternArbeidsforholdRefDto.nyRef();
         LocalDate overstyrtDato = skjæringstidspunkt.plusDays(15);
         InntektsmeldingDto inntektsmeldingEntitet = InntektsmeldingDtoBuilder.builder()
-                .medRefusjon(BigDecimal.valueOf(11))
+                .medRefusjon(Beløp.fra(11))
                 .medArbeidsgiver(ARBEIDSGIVER1)
                 .medArbeidsforholdId(refIM)
                 .build();
@@ -245,8 +246,8 @@ public class MapRefusjonskravFraVLTilRegelTest {
         LocalDate skjæringstidspunkt = LocalDate.now();
         LocalDate endringFom = skjæringstidspunkt.plusMonths(1);
         InntektsmeldingDto inntektsmeldingEntitet = InntektsmeldingDtoBuilder.builder()
-                .medRefusjon(BigDecimal.valueOf(15))
-                .leggTil(new RefusjonDto(BigDecimal.valueOf(11), endringFom))
+                .medRefusjon(Beløp.fra(15))
+                .leggTil(new RefusjonDto(Beløp.fra(11), endringFom))
                 .build();
 
         // Act

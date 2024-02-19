@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.steg.refusjon;
 
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_BEGYNNELSE;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,6 +18,7 @@ import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonPeriode;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonPeriodeEndring;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.tid.TimelineWeekendCompressor;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
@@ -45,7 +45,7 @@ public final class BeregningRefusjonTjeneste {
     public static Map<Intervall, List<RefusjonAndel>> finnUtbetaltePerioderMedAndelerMedØktRefusjon(BeregningsgrunnlagDto revurderingBeregningsgrunnlag,
                                                                                                     BeregningsgrunnlagDto originaltBeregningsgrunnlag,
                                                                                                     LocalDate alleredeUtbetaltTOM,
-                                                                                                    BigDecimal grenseverdi,
+                                                                                                    Beløp grenseverdi,
                                                                                                     YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         if (alleredeUtbetaltTOM.isBefore(revurderingBeregningsgrunnlag.getSkjæringstidspunkt())) {
             return Collections.emptyMap();
@@ -72,7 +72,7 @@ public final class BeregningRefusjonTjeneste {
                 null);
     }
 
-    private static Map<Intervall, List<RefusjonAndel>> vurderPerioder(LocalDateTimeline<RefusjonPeriodeEndring> endringTidslinje, BigDecimal grenseverdi) {
+    private static Map<Intervall, List<RefusjonAndel>> vurderPerioder(LocalDateTimeline<RefusjonPeriodeEndring> endringTidslinje, Beløp grenseverdi) {
         Map<Intervall, List<RefusjonAndel>> andelerIPeriode = new HashMap<>();
         endringTidslinje.toSegments().forEach(segment -> {
             RefusjonPeriodeEndring refusjonsendring = segment.getValue();
@@ -100,14 +100,14 @@ public final class BeregningRefusjonTjeneste {
         List<RefusjonAndel> originaleAndelerPåNøkkel = originalAndelMap.getOrDefault(nøkkel, Collections.emptyList());
 
         // Tilkommet arbeidsgiver
-        BigDecimal totalRefusjonRevurdering = totalRefusjon(revurderingAndeler);
+        var totalRefusjonRevurdering = totalRefusjon(revurderingAndeler);
         if (nøkkel.getAktivitetStatus().erArbeidstaker() && originaleAndelerPåNøkkel.isEmpty()) {
-            if (totalRefusjonRevurdering.compareTo(BigDecimal.ZERO) > 0) {
+            if (totalRefusjonRevurdering.compareTo(Beløp.ZERO) > 0) {
                 return revurderingAndeler;
             }
         }
 
-        BigDecimal totalRefusjonOriginal = totalRefusjon(originaleAndelerPåNøkkel);
+        var totalRefusjonOriginal = totalRefusjon(originaleAndelerPåNøkkel);
         boolean refusjonINøkkelHarØkt = totalRefusjonRevurdering.compareTo(totalRefusjonOriginal) > 0;
         if (refusjonINøkkelHarØkt) {
             return FinnAndelerMedØktRefusjonTjeneste.finnAndelerPåSammeNøkkelMedØktRefusjon(revurderingAndeler, originaleAndelerPåNøkkel);
@@ -116,18 +116,19 @@ public final class BeregningRefusjonTjeneste {
         return Collections.emptyList();
     }
 
-    private static BigDecimal totalRefusjon(List<RefusjonAndel> andeler) {
+    private static Beløp totalRefusjon(List<RefusjonAndel> andeler) {
         return andeler.stream()
                 .map(RefusjonAndel::getRefusjon)
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
+                .filter(Objects::nonNull)
+                .reduce(Beløp::adder)
+                .orElse(Beløp.ZERO);
     }
 
-    private static boolean erMindreAndelTilgjengeligForBruker(RefusjonPeriodeEndring refusjonsendring, BigDecimal grenseverdi) {
-        BigDecimal originalBrutto = refusjonsendring.getOriginalBrutto().min(grenseverdi);
-        BigDecimal revurderingBrutto = refusjonsendring.getRevurderingBrutto().min(grenseverdi);
-        BigDecimal originalAndelTilBruker = originalBrutto.subtract(refusjonsendring.getOriginalRefusjon()).max(BigDecimal.ZERO);
-        BigDecimal revurderingAndelTilBruker = revurderingBrutto.subtract(refusjonsendring.getRevurderingRefusjon()).max(BigDecimal.ZERO);
+    private static boolean erMindreAndelTilgjengeligForBruker(RefusjonPeriodeEndring refusjonsendring, Beløp grenseverdi) {
+        var originalBrutto = refusjonsendring.getOriginalBrutto().min(grenseverdi);
+        var revurderingBrutto = refusjonsendring.getRevurderingBrutto().min(grenseverdi);
+        var originalAndelTilBruker = originalBrutto.subtraher(refusjonsendring.getOriginalRefusjon()).max(Beløp.ZERO);
+        Beløp revurderingAndelTilBruker = revurderingBrutto.subtraher(refusjonsendring.getRevurderingRefusjon()).max(Beløp.ZERO);
         return revurderingAndelTilBruker.compareTo(originalAndelTilBruker) < 0;
     }
 

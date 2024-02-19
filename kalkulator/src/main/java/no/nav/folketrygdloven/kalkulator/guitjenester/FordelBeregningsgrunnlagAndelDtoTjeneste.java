@@ -1,8 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester;
 
-import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.periodisering.FastsettNaturalytelsePerioderTjeneste.MÅNEDER_I_1_ÅR;
-
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +10,7 @@ import no.nav.folketrygdloven.kalkulator.felles.FinnInntektsmeldingForAndel;
 import no.nav.folketrygdloven.kalkulator.felles.MatchBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.RefusjonDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
@@ -55,7 +53,7 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
                 periode
         ));
         settFordelingForrigeBehandling(input, andel, endringAndel);
-        endringAndel.setFordeltPrAar(andel.getManueltFordeltPrÅr() == null ? Beløp.fra(andel.getFordeltPrÅr()) : Beløp.fra(andel.getManueltFordeltPrÅr()));
+        endringAndel.setFordeltPrAar(andel.getManueltFordeltPrÅr() == null ? andel.getFordeltPrÅr() : andel.getManueltFordeltPrÅr());
         inntektsmelding.ifPresent(im -> endringAndel.setBelopFraInntektsmelding(im.getInntektBeløp()));
         return endringAndel;
     }
@@ -74,15 +72,15 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
             return;
         }
         BeregningsgrunnlagPeriodeDto periodeIOriginaltGrunnlag = MatchBeregningsgrunnlagTjeneste.finnPeriodeIBeregningsgrunnlag(andel.getBeregningsgrunnlagPeriode(), bgForrigeBehandling.get());
-        BigDecimal fastsattForrigeBehandling = periodeIOriginaltGrunnlag.getBeregningsgrunnlagPrStatusOgAndelList().stream()
+        var fastsattForrigeBehandling = periodeIOriginaltGrunnlag.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(a -> a.matchUtenInntektskategori(andel.getAktivitetStatus(),
                         andel.getArbeidsgiver().orElse(null),
                         andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsforholdRef).orElse(InternArbeidsforholdRefDto.nullRef()),
                         andel.getArbeidsforholdType()))
                 .map(BeregningsgrunnlagPrStatusOgAndelDto::getFordeltPrÅr)
                 .filter(Objects::nonNull)
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
-        endringAndel.setFordelingForrigeBehandling(Beløp.fra(fastsattForrigeBehandling.divide(BigDecimal.valueOf(MÅNEDER_I_1_ÅR), 0, RoundingMode.HALF_UP)));
+                .reduce(Beløp::adder)
+                .orElse(Beløp.ZERO);
+        endringAndel.setFordelingForrigeBehandling(fastsattForrigeBehandling.map(f -> f.divide(KonfigTjeneste.getMånederIÅr(), 0, RoundingMode.HALF_UP)));
     }
 }

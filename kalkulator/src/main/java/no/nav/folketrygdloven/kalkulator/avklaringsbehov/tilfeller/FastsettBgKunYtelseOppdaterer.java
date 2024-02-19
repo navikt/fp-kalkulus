@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.avklaringsbehov.tilfeller;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -11,6 +10,7 @@ import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FaktaBeregningLagre
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FastsattBrukersAndel;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FastsettBgKunYtelseDto;
 import no.nav.folketrygdloven.kalkulator.felles.MatchBeregningsgrunnlagTjeneste;
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -20,11 +20,10 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDt
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 public class FastsettBgKunYtelseOppdaterer {
-
-    private static final int MND_I_1_ÅR = 12;
 
     private FastsettBgKunYtelseOppdaterer() {
     }
@@ -65,7 +64,7 @@ public class FastsettBgKunYtelseOppdaterer {
     private static void settInntektskategoriOgFastsattBeløp(FastsattBrukersAndel andel, BeregningsgrunnlagPrStatusOgAndelDto korrektAndel,
                                                      BeregningsgrunnlagPeriodeDto periode, Boolean skalBrukeBesteberegning) {
         Inntektskategori inntektskategori = andel.getInntektskategori();
-        BigDecimal fastsattBeløp = BigDecimal.valueOf(andel.getFastsattBeløp() * (long) MND_I_1_ÅR);
+        var fastsattBeløp = Beløp.fra(andel.getFastsattBeløp()).multipliser(KonfigTjeneste.getMånederIÅr());
         if (andel.getNyAndel()) {
             BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(korrektAndel)
                     .medBeregnetPrÅr(fastsattBeløp)
@@ -83,7 +82,7 @@ public class FastsettBgKunYtelseOppdaterer {
         }
     }
 
-    private static Runnable leggTilFraForrige(BeregningsgrunnlagPrStatusOgAndelDto korrektAndel, BeregningsgrunnlagPeriodeDto periode, Boolean skalBrukeBesteberegning, Inntektskategori inntektskategori, BigDecimal fastsattBeløp) {
+    private static Runnable leggTilFraForrige(BeregningsgrunnlagPrStatusOgAndelDto korrektAndel, BeregningsgrunnlagPeriodeDto periode, Boolean skalBrukeBesteberegning, Inntektskategori inntektskategori, Beløp fastsattBeløp) {
         return () -> BeregningsgrunnlagPrStatusOgAndelDto.kopier(korrektAndel)
                 .medBeregnetPrÅr(fastsattBeløp)
                 .medBesteberegningPrÅr(Boolean.TRUE.equals(skalBrukeBesteberegning) ? fastsattBeløp : null)
@@ -91,7 +90,7 @@ public class FastsettBgKunYtelseOppdaterer {
                 .medFastsattAvSaksbehandler(true).build(periode);
     }
 
-    private static Consumer<BeregningsgrunnlagPrStatusOgAndelDto> endreEksisterende(Boolean skalBrukeBesteberegning, Inntektskategori inntektskategori, BigDecimal fastsattBeløp) {
+    private static Consumer<BeregningsgrunnlagPrStatusOgAndelDto> endreEksisterende(Boolean skalBrukeBesteberegning, Inntektskategori inntektskategori, Beløp fastsattBeløp) {
         return match -> BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(match)
                 .medBeregnetPrÅr(fastsattBeløp)
                 .medBesteberegningPrÅr(Boolean.TRUE.equals(skalBrukeBesteberegning) ? fastsattBeløp : null)
@@ -102,7 +101,7 @@ public class FastsettBgKunYtelseOppdaterer {
 
     private static void fastsettBeløpForNyAndel(BeregningsgrunnlagPeriodeDto periode,
                                          FastsattBrukersAndel andel, Boolean skalBrukeBesteberegning) {
-        BigDecimal fastsatt = BigDecimal.valueOf(andel.getFastsattBeløp() * (long) MND_I_1_ÅR);// NOSONAR
+        var fastsatt = Beløp.fra(andel.getFastsattBeløp()).multipliser(KonfigTjeneste.getMånederIÅr());
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
                 .medAktivitetStatus(AktivitetStatus.BRUKERS_ANDEL)
                 .medInntektskategori(andel.getInntektskategori())

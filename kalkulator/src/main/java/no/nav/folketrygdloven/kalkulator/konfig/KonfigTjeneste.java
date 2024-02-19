@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.konfig;
 
 import java.math.BigDecimal;
+import java.time.Period;
 import java.util.Map;
 import java.util.Optional;
 
@@ -12,6 +13,8 @@ public class KonfigTjeneste {
             FagsakYtelseType.FORELDREPENGER, BigDecimal.valueOf(3),
             FagsakYtelseType.FRISINN, BigDecimal.ZERO
     );
+
+    private static final Konfigverdier DEFAULTS = new Konfigverdier();
 
     private KonfigTjeneste() {
         // Skjuler default
@@ -34,4 +37,31 @@ public class KonfigTjeneste {
         }
     }
 
+    public static BigDecimal getAvviksgrenseProsent() {
+        return DEFAULTS.getAvviksgrenseProsent();
+    }
+
+    public static BigDecimal getAntallGØvreGrenseverdi() {
+        return DEFAULTS.getAntallGØvreGrenseverdi();
+    }
+
+    public static Period getMeldekortPeriode() {
+        return DEFAULTS.getMeldekortPeriode();
+    }
+
+    public static BigDecimal getYtelsesdagerIÅr() {
+        return DEFAULTS.getYtelsesdagerIÅr();
+    }
+
+    public static BigDecimal getMånederIÅr() {
+        return DEFAULTS.getMånederIÅr();
+    }
+
+    public static int getMånederIÅrInt() {
+        return DEFAULTS.getMånederIÅrInt();
+    }
+
+    public static int getFristMånederEtterRefusjon() {
+        return DEFAULTS.getFristMånederEtterRefusjon();
+    }
 }

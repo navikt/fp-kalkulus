@@ -7,7 +7,6 @@ import static no.nav.folketrygdloven.kalkulator.guitjenester.fakta.SkalKunneEndr
 import static no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde.PROSESS_START;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde.SAKSBEHANDLER_KOFAKBER;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,7 +46,7 @@ public class AndelerForFaktaOmBeregningTjeneste {
         var inntektsmeldinger = input.getInntektsmeldinger();
         var inntektsmeldingForAndel = finnInntektsmelding(andel, inntektsmeldinger);
         var dto = new AndelForFaktaOmBeregningDto();
-        dto.setFastsattBelop(no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(finnInntektForPreutfylling(andel)));
+        dto.setFastsattBelop(finnInntektForPreutfylling(andel));
         dto.setInntektskategori(andel.getGjeldendeInntektskategori());
         dto.setAndelsnr(andel.getAndelsnr());
         dto.setAktivitetStatus(andel.getAktivitetStatus());
@@ -56,17 +55,16 @@ public class AndelerForFaktaOmBeregningTjeneste {
         dto.setLagtTilAvSaksbehandler(andel.erLagtTilAvSaksbehandler());
         BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, inntektsmeldingForAndel, inntektArbeidYtelseGrunnlag)
                 .ifPresent(dto::setArbeidsforhold);
-        finnRefusjonskravFraInntektsmelding(inntektsmeldingForAndel).map(no.nav.folketrygdloven.kalkulus.typer.Beløp::fra).ifPresent(dto::setRefusjonskrav);
+        finnRefusjonskravFraInntektsmelding(inntektsmeldingForAndel).ifPresent(dto::setRefusjonskrav);
         finnInntektForKunLese(ref, andel, inntektsmeldingForAndel, inntektArbeidYtelseGrunnlag,
                 input.getBeregningsgrunnlag().getFaktaOmBeregningTilfeller(),
                 input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList())
-                .map(no.nav.folketrygdloven.kalkulus.typer.Beløp::fra).ifPresent(dto::setBelopReadOnly);
+                .ifPresent(dto::setBelopReadOnly);
         return dto;
     }
 
-    private static Optional<BigDecimal> finnRefusjonskravFraInntektsmelding(Optional<InntektsmeldingDto> inntektsmeldingForAndel) {
+    private static Optional<Beløp> finnRefusjonskravFraInntektsmelding(Optional<InntektsmeldingDto> inntektsmeldingForAndel) {
         return inntektsmeldingForAndel
-                .map(InntektsmeldingDto::getRefusjonBeløpPerMnd)
-                .map(Beløp::verdi);
+                .map(InntektsmeldingDto::getRefusjonBeløpPerMnd);
     }
 }

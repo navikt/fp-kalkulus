@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulus.forvaltning;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -27,6 +28,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.mapFraEntitet.BehandlingslagerTilKalkulusMapper;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @ApplicationScoped
 public class KontrollerBeregningsinputTjeneste {
@@ -99,6 +101,8 @@ public class KontrollerBeregningsinputTjeneste {
         return reberegnetGrunnlag.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(andel -> søkteStatuser.contains(andel.getAktivitetStatus()))
                 .map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoPrÅr)
+                .map(Beløp::safeVerdi)
+                .filter(Objects::nonNull)
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
     }
@@ -107,6 +111,8 @@ public class KontrollerBeregningsinputTjeneste {
         return reberegnetGrunnlag.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(andel -> !søkteStatuser.contains(andel.getAktivitetStatus()))
                 .map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoPrÅr)
+                .map(Beløp::safeVerdi)
+                .filter(Objects::nonNull)
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
     }

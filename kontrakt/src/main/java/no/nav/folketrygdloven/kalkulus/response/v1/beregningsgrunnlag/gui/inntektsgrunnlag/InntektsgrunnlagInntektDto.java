@@ -2,17 +2,12 @@ package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.innte
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
-import java.math.BigDecimal;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektAktivitetType;
 import no.nav.folketrygdloven.kalkulus.typer.Beløp;

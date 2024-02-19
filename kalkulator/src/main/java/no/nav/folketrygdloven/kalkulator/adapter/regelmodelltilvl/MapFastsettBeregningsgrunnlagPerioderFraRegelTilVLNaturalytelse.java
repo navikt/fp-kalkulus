@@ -11,6 +11,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeid
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse extends MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL {
 
@@ -47,8 +48,8 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse ext
             .findFirst();
         regelMatchOpt.ifPresent(regelAndel -> {
             BGAndelArbeidsforholdDto.Builder andelArbeidsforholdBuilder = andelBuilder.getBgAndelArbeidsforholdDtoBuilder()
-                .medNaturalytelseBortfaltPrÅr(regelAndel.getNaturalytelseBortfaltPrÅr().orElse(null))
-                .medNaturalytelseTilkommetPrÅr(regelAndel.getNaturalytelseTilkommetPrÅr().orElse(null));
+                .medNaturalytelseBortfaltPrÅr(Beløp.fra(regelAndel.getNaturalytelseBortfaltPrÅr().orElse(null)))
+                .medNaturalytelseTilkommetPrÅr(Beløp.fra(regelAndel.getNaturalytelseTilkommetPrÅr().orElse(null)));
             andelBuilder.medBGAndelArbeidsforhold(andelArbeidsforholdBuilder);
         });
         andelBuilder

@@ -24,6 +24,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
@@ -58,11 +59,11 @@ public class MapTilFordelingsmodell {
                 .medUtbetalingsgrad(kanFordeleTilAndelen(bgAndel, input) ? BigDecimal.valueOf(100) : BigDecimal.ZERO)
                 .medInntektskategori(MapInntektskategoriFraVLTilRegel.map(bgAndel.getGjeldendeInntektskategori()));
         mapArbeidsforhold(bgAndel).ifPresent(regelBuilder::medArbeidsforhold);
-        bgAndel.getBgAndelArbeidsforhold().ifPresent(arb -> regelBuilder.medGjeldendeRefusjonPrÅr(arb.getGjeldendeRefusjonPrÅr()));
-        bgAndel.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseBortfaltPrÅr).ifPresent(regelBuilder::medNaturalytelseBortfaltPrÅr);
-        bgAndel.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseTilkommetPrÅr).ifPresent(regelBuilder::medNaturalytelseTilkommerPrÅr);
+        bgAndel.getBgAndelArbeidsforhold().ifPresent(arb -> regelBuilder.medGjeldendeRefusjonPrÅr(Beløp.safeVerdi(arb.getGjeldendeRefusjonPrÅr())));
+        bgAndel.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseBortfaltPrÅr).map(Beløp::verdi).ifPresent(regelBuilder::medNaturalytelseBortfaltPrÅr);
+        bgAndel.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseTilkommetPrÅr).map(Beløp::verdi).ifPresent(regelBuilder::medNaturalytelseTilkommerPrÅr);
         if (bgAndel.getBruttoPrÅr() != null) {
-            regelBuilder.medForeslåttPrÅr(bgAndel.getBruttoPrÅr());
+            regelBuilder.medForeslåttPrÅr(Beløp.safeVerdi(bgAndel.getBruttoPrÅr()));
         } else if (erArbeidsandelMedSøktRefusjon(bgAndel)) {
             // Andel er opprettet etter foreslå steget, henter inntekt fra IM for bruk ved andelsmessig fordeling
             regelBuilder.medInntektFraInnektsmelding(finnInntektFraIM(bgAndel, input));
@@ -101,8 +102,8 @@ public class MapTilFordelingsmodell {
     private static boolean erArbeidsandelMedSøktRefusjon(BeregningsgrunnlagPrStatusOgAndelDto bgAndel) {
         var gjeldendeRefusjon = bgAndel.getBgAndelArbeidsforhold()
                 .map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr)
-                .orElse(BigDecimal.ZERO);
-        return bgAndel.getAktivitetStatus().erArbeidstaker() && gjeldendeRefusjon.compareTo(BigDecimal.ZERO) > 0;
+                .orElse(Beløp.ZERO);
+        return bgAndel.getAktivitetStatus().erArbeidstaker() && gjeldendeRefusjon.compareTo(Beløp.ZERO) > 0;
     }
 
     private static BigDecimal finnInntektFraIM(BeregningsgrunnlagPrStatusOgAndelDto bgAndel, BeregningsgrunnlagInput input) {

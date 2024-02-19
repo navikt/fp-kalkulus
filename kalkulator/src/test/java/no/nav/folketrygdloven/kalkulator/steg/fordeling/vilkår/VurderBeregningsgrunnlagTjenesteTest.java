@@ -44,6 +44,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @ExtendWith(MockitoExtension.class)
 public class VurderBeregningsgrunnlagTjenesteTest {
@@ -133,8 +134,8 @@ public class VurderBeregningsgrunnlagTjenesteTest {
     private BeregningsgrunnlagDto lagBeregningsgrunnlag(int inntekt) {
         var sg = SammenligningsgrunnlagPrStatusDto.builder()
                 .medSammenligningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING)
-                .medRapportertPrÅr(BigDecimal.ZERO)
-                .medAvvikPromilleNy(BigDecimal.valueOf(0))
+                .medRapportertPrÅr(Beløp.ZERO)
+                .medAvvikPromilleNy(BigDecimal.ZERO)
                 .medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_AT_FL)
                 .build();
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
@@ -151,11 +152,11 @@ public class VurderBeregningsgrunnlagTjenesteTest {
                         .medArbeidsperiodeFom(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(12))
                         .medArbeidsperiodeTom(SKJÆRINGSTIDSPUNKT_BEREGNING)
                         .medArbeidsgiver(Arbeidsgiver.virksomhet("1234"))
-                        .medRefusjonskravPrÅr(BigDecimal.valueOf(inntekt), Utfall.GODKJENT))
+                        .medRefusjonskravPrÅr(Beløp.fra(inntekt), Utfall.GODKJENT))
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
                 .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(3).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1))
-                .medBeregnetPrÅr(BigDecimal.valueOf(inntekt))
+                .medBeregnetPrÅr(Beløp.fra(inntekt))
                 .build(periode);
         return bg;
     }

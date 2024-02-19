@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class SammenligningsgrunnlagTest {
     private static final BigDecimal RAPPORTERT_PR_ÅR = BigDecimal.valueOf(400000d);
@@ -29,7 +30,7 @@ public class SammenligningsgrunnlagTest {
     public void skal_bygge_instans_med_påkrevde_felter() {
         assertThat(sammenligningsgrunnlag.getSammenligningsperiodeFom()).isEqualTo(PERIODE_FOM);
         assertThat(sammenligningsgrunnlag.getSammenligningsperiodeTom()).isEqualTo(PERIODE_TOM);
-        assertThat(sammenligningsgrunnlag.getRapportertPrÅr()).isEqualTo(RAPPORTERT_PR_ÅR);
+        assertThat(sammenligningsgrunnlag.getRapportertPrÅr()).isEqualTo(Beløp.fra(RAPPORTERT_PR_ÅR));
         assertThat(sammenligningsgrunnlag.getSammenligningsgrunnlagType()).isEqualTo(SAMMENLIGNING_TYPE);
     }
 
@@ -121,7 +122,7 @@ public class SammenligningsgrunnlagTest {
         assertThat(sammenligningsgrunnlag.hashCode()).isEqualTo(sammenligningsgrunnlag2.hashCode());
 
         SammenligningsgrunnlagPrStatusDto.Builder sammenligningsgrunnlagBuilder = lagSammenligningsgrunnlagBuilder();
-        sammenligningsgrunnlagBuilder.medRapportertPrÅr(RAPPORTERT_PR_ÅR.add(BigDecimal.valueOf(1)));
+        sammenligningsgrunnlagBuilder.medRapportertPrÅr(Beløp.fra(RAPPORTERT_PR_ÅR.add(BigDecimal.valueOf(1))));
         sammenligningsgrunnlag2 = sammenligningsgrunnlagBuilder.build();
 
         assertThat(sammenligningsgrunnlag).isNotEqualTo(sammenligningsgrunnlag2);
@@ -148,7 +149,7 @@ public class SammenligningsgrunnlagTest {
         return SammenligningsgrunnlagPrStatusDto.builder()
             .medSammenligningsgrunnlagType(SAMMENLIGNING_TYPE)
             .medSammenligningsperiode(PERIODE_FOM, PERIODE_TOM)
-            .medRapportertPrÅr(RAPPORTERT_PR_ÅR)
+            .medRapportertPrÅr(Beløp.fra(RAPPORTERT_PR_ÅR))
             .medAvvikPromilleNy(AVVIK_PROMILLE);
     }
 }

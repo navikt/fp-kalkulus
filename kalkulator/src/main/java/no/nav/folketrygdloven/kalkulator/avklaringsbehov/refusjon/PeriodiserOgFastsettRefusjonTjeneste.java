@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.avklaringsbehov.refusjon;
 
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,6 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.VurderRefusjonAndelBeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -24,6 +24,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 /**
  * Når beregningsgrunnlagene kommer hit skal de allerede ha satt refusjon fra den dagen refusjon kreves (som regel skjæringstidspunkt for beregning).
@@ -31,7 +32,6 @@ import no.nav.folketrygdloven.kalkulus.typer.AktørId;
  * fastsatt startdato for refusjon og trenger ikke endre perioder der det skal være refusjon
  */
 public final class PeriodiserOgFastsettRefusjonTjeneste {
-    private static final BigDecimal MÅNEDER_I_ÅR = BigDecimal.valueOf(12);
 
     /**
      * @param beregningsgrunnlagDto - beregningsgrunnlaget som skal splittes.
@@ -82,7 +82,7 @@ public final class PeriodiserOgFastsettRefusjonTjeneste {
         return a.getBgAndelArbeidsforhold().isPresent() &&
                 a.getBgAndelArbeidsforhold().get().getRefusjon().isPresent() &&
                 a.getBgAndelArbeidsforhold().get().getRefusjon().get().getInnvilgetRefusjonskravPrÅr() != null &&
-                a.getBgAndelArbeidsforhold().get().getRefusjon().get().getInnvilgetRefusjonskravPrÅr().compareTo(BigDecimal.ZERO) > 0;
+                a.getBgAndelArbeidsforhold().get().getRefusjon().get().getInnvilgetRefusjonskravPrÅr().compareTo(Beløp.ZERO) > 0;
     }
 
     private static boolean refusjonSkalEndres(BeregningsgrunnlagPeriodeDto eksisterendePeriode, LocalDate startdatoRefusjon) {
@@ -157,8 +157,8 @@ public final class PeriodiserOgFastsettRefusjonTjeneste {
                 .collect(Collectors.toList());
     }
 
-    private static BigDecimal mapÅrsbeløpRefusjon(VurderRefusjonAndelBeregningsgrunnlagDto andel) {
-        return andel.getDelvisRefusjonBeløpPrMnd() == null ? BigDecimal.ZERO : BigDecimal.valueOf(andel.getDelvisRefusjonBeløpPrMnd()).multiply(MÅNEDER_I_ÅR);
+    private static Beløp mapÅrsbeløpRefusjon(VurderRefusjonAndelBeregningsgrunnlagDto andel) {
+        return andel.getDelvisRefusjonBeløpPrMnd() == null ? Beløp.ZERO : Beløp.fra(andel.getDelvisRefusjonBeløpPrMnd()).multipliser(KonfigTjeneste.getMånederIÅr());
     }
 
     private static InternArbeidsforholdRefDto mapReferanse(VurderRefusjonAndelBeregningsgrunnlagDto andel) {

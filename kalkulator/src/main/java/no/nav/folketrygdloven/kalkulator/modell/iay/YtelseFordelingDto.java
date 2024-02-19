@@ -1,24 +1,15 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
-import java.math.BigDecimal;
 import java.math.RoundingMode;
-
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektPeriodeType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class YtelseFordelingDto {
 
-    private BigDecimal beløp;
+    private Beløp beløp;
     private InntektPeriodeType inntektPeriodeType;
     private Arbeidsgiver arbeidsgiver;
     private Boolean erRefusjon;
@@ -27,20 +18,20 @@ public class YtelseFordelingDto {
     }
 
     public YtelseFordelingDto(Arbeidsgiver arbeidsgiver, InntektPeriodeType inntektPeriodeType, int beløp, Boolean erRefusjon) {
-        this(arbeidsgiver, inntektPeriodeType, BigDecimal.valueOf(beløp), erRefusjon);
+        this(arbeidsgiver, inntektPeriodeType, Beløp.fra(beløp), erRefusjon);
     }
 
-    public YtelseFordelingDto(Arbeidsgiver arbeidsgiver, InntektPeriodeType inntektPeriodeType, BigDecimal beløp, Boolean erRefusjon) {
+    public YtelseFordelingDto(Arbeidsgiver arbeidsgiver, InntektPeriodeType inntektPeriodeType, Beløp beløp, Boolean erRefusjon) {
         this.arbeidsgiver = arbeidsgiver;
         this.inntektPeriodeType = inntektPeriodeType;
-        this.beløp = beløp == null ? null : beløp.setScale(2, RoundingMode.HALF_UP);
+        this.beløp = Optional.ofNullable(Beløp.safeVerdi(beløp)).map(b -> b.setScale(2, RoundingMode.HALF_UP)).map(Beløp::fra).orElse(null);
     }
 
     public Arbeidsgiver getArbeidsgiver() {
         return arbeidsgiver;
     }
 
-    public BigDecimal getBeløp() {
+    public Beløp getBeløp() {
         return beløp;
     }
 

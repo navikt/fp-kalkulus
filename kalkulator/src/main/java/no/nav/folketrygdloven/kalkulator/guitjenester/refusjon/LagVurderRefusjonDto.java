@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.refusjon;
 
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,6 +14,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
@@ -38,8 +38,6 @@ import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 
 public final class LagVurderRefusjonDto {
-    private static final BigDecimal MÅNEDER_I_ÅR = BigDecimal.valueOf(12);
-
     private LagVurderRefusjonDto() {
         // Skjuler default
     }
@@ -103,10 +101,10 @@ public final class LagVurderRefusjonDto {
         // Valideringsfelter
         getTidligsteMuligeRefusjonsdato(andel, gjeldendeOvertyringer)
                 .ifPresentOrElse(dto::setTidligsteMuligeRefusjonsdato, () -> dto.setTidligsteMuligeRefusjonsdato(gjeldendeBeregningsgrunnlag.getSkjæringstidspunkt()));
-        dto.setMaksTillattDelvisRefusjonPrMnd(Beløp.fra(månedsbeløp(tidligereRefusjonForAndelIPeriode.orElse(andel.getRefusjon()))));
+        dto.setMaksTillattDelvisRefusjonPrMnd(månedsbeløp(tidligereRefusjonForAndelIPeriode.orElse(andel.getRefusjon())));
 
         // Tidligere fastsatte verdier som brukes til preutfylling av gui
-        finnFastsattDelvisRefusjon(gjeldendeBeregningsgrunnlag, andel, periode).map(Beløp::fra).ifPresent(dto::setFastsattDelvisRefusjonPrMnd);
+        finnFastsattDelvisRefusjon(gjeldendeBeregningsgrunnlag, andel, periode).ifPresent(dto::setFastsattDelvisRefusjonPrMnd);
         getFastsattRefusjonStartdato(gjeldendeOvertyringer, andel).ifPresent(dto::setFastsattNyttRefusjonskravFom);
 
         return dto;
@@ -116,7 +114,7 @@ public final class LagVurderRefusjonDto {
         return arbeidsforholdInformasjon.map(d -> d.finnEkstern(andel.getArbeidsgiver(), andel.getArbeidsforholdRef()));
     }
 
-    private static Optional<BigDecimal> finnFastsattDelvisRefusjon(BeregningsgrunnlagDto gjeldendeBeregningsgrunnlag, RefusjonAndel andel, Intervall periode) {
+    private static Optional<Beløp> finnFastsattDelvisRefusjon(BeregningsgrunnlagDto gjeldendeBeregningsgrunnlag, RefusjonAndel andel, Intervall periode) {
         Optional<BeregningsgrunnlagPeriodeDto> bgPeriode = gjeldendeBeregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
                 .filter(bgp -> bgp.getPeriode().inkluderer(periode.getFomDato()))
                 .findFirst();
@@ -127,7 +125,7 @@ public final class LagVurderRefusjonDto {
                 .filter(bgAndel -> bgAndel.getArbeidsgiver().isPresent() && bgAndel.getArbeidsgiver().get().equals(andel.getArbeidsgiver())
                 && bgAndel.getArbeidsforholdRef().orElse(InternArbeidsforholdRefDto.nullRef()).gjelderFor(andel.getArbeidsforholdRef()))
                 .findFirst();
-        Optional<BigDecimal> tidligereFastsattRefusjonPrÅr = matchetAndel.flatMap(bga -> bga.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getSaksbehandletRefusjonPrÅr));
+        var tidligereFastsattRefusjonPrÅr = matchetAndel.flatMap(bga -> bga.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getSaksbehandletRefusjonPrÅr));
         return tidligereFastsattRefusjonPrÅr.map(LagVurderRefusjonDto::månedsbeløp);
     }
 
@@ -142,18 +140,18 @@ public final class LagVurderRefusjonDto {
                 .findFirst();
     }
 
-    private static BigDecimal månedsbeløp(BigDecimal årsbeløp) {
-        if (årsbeløp == null) {
-            return BigDecimal.ZERO;
+    private static Beløp månedsbeløp(Beløp årsbeløp) {
+        if (Beløp.safeVerdi(årsbeløp) == null) {
+            return Beløp.ZERO;
         }
-        return årsbeløp.divide(MÅNEDER_I_ÅR, 0, RoundingMode.HALF_UP);
+        return årsbeløp.map(v -> v.divide(KonfigTjeneste.getMånederIÅr(), 0, RoundingMode.HALF_UP));
     }
 
-    private static boolean erTilkommetAndelEllerRefusjonTidligereInnvilgetMedLavereBeløpStørreEnnNull(Optional<BigDecimal> tidligereRefusjonForAndelIPeriode, RefusjonAndel andel) {
-        return tidligereRefusjonForAndelIPeriode.map(ref -> ref.compareTo(BigDecimal.ZERO) > 0 && andel.getRefusjon().compareTo(ref) > 0).orElse(true);
+    private static boolean erTilkommetAndelEllerRefusjonTidligereInnvilgetMedLavereBeløpStørreEnnNull(Optional<Beløp> tidligereRefusjonForAndelIPeriode, RefusjonAndel andel) {
+        return tidligereRefusjonForAndelIPeriode.map(ref -> ref.compareTo(Beløp.ZERO) > 0 && andel.getRefusjon().compareTo(ref) > 0).orElse(true);
     }
 
-    private static Optional<BigDecimal> finnTidligereUtbetaltRefusjonForAndelIPeriode(Intervall periode, RefusjonAndel refusjonAndel, List<BeregningsgrunnlagDto> orginalBG) {
+    private static Optional<Beløp> finnTidligereUtbetaltRefusjonForAndelIPeriode(Intervall periode, RefusjonAndel refusjonAndel, List<BeregningsgrunnlagDto> orginalBG) {
         List<BeregningsgrunnlagPrStatusOgAndelDto> andelerIOrginalPeriode = finnOrginalBGPeriode(periode.getFomDato(), orginalBG).getBeregningsgrunnlagPrStatusOgAndelList();
         List<BeregningsgrunnlagPrStatusOgAndelDto> matchedeAndeler = andelerIOrginalPeriode.stream()
                 .filter(bga -> {
@@ -165,7 +163,7 @@ public final class LagVurderRefusjonDto {
         return matchedeAndeler.stream()
                 .filter(andel -> andel.getBgAndelArbeidsforhold().isPresent() && andel.getBgAndelArbeidsforhold().get().getGjeldendeRefusjonPrÅr() != null)
                 .map(a -> a.getBgAndelArbeidsforhold().get().getGjeldendeRefusjonPrÅr())
-                .reduce(BigDecimal::add);
+                .reduce(Beløp::adder);
     }
 
     private static BeregningsgrunnlagPeriodeDto finnOrginalBGPeriode(LocalDate fomDato, List<BeregningsgrunnlagDto> orginalBG) {
@@ -241,12 +239,12 @@ public final class LagVurderRefusjonDto {
 
 
     private static Optional<TidligereUtbetalingDto> lagTidligereUtbetaling(BeregningsgrunnlagPrStatusOgAndelDto andelIOrginaltGrunnlag) {
-        if (andelIOrginaltGrunnlag.getDagsats() == null || BigDecimal.valueOf(andelIOrginaltGrunnlag.getDagsats()).compareTo(BigDecimal.ZERO) == 0) {
+        if (andelIOrginaltGrunnlag.getDagsats() == null || andelIOrginaltGrunnlag.getDagsats() == 0) {
             // Ingen utbetaling for andelen på orginalt grunnlag
             return Optional.empty();
         }
         Intervall periode = andelIOrginaltGrunnlag.getBeregningsgrunnlagPeriode().getPeriode();
-        if (andelIOrginaltGrunnlag.getDagsatsArbeidsgiver() != null && BigDecimal.valueOf(andelIOrginaltGrunnlag.getDagsatsArbeidsgiver()).compareTo(BigDecimal.ZERO) > 0) {
+        if (andelIOrginaltGrunnlag.getDagsatsArbeidsgiver() != null && andelIOrginaltGrunnlag.getDagsatsArbeidsgiver() > 0) {
             return Optional.of(new TidligereUtbetalingDto(periode.getFomDato(), periode.getTomDato(), true));
         }
         return Optional.of(new TidligereUtbetalingDto(periode.getFomDato(), periode.getTomDato(), false));

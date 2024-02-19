@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +29,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
 
 public class FastsettMånedsinntektUtenInntektsmeldingTilfelleUtlederTest {
@@ -79,7 +79,7 @@ public class FastsettMånedsinntektUtenInntektsmeldingTilfelleUtlederTest {
         InntektsmeldingDto im = InntektsmeldingDtoBuilder.builder()
                 .medArbeidsgiver(Arbeidsgiver.virksomhet(ORGNR))
                 .medArbeidsforholdId(ref)
-                .medBeløp(BigDecimal.TEN).build();
+                .medBeløp(Beløp.fra(10)).build();
         BeregningsgrunnlagGrunnlagDto grunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medBeregningsgrunnlag(bg).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
 
@@ -118,11 +118,11 @@ public class FastsettMånedsinntektUtenInntektsmeldingTilfelleUtlederTest {
         InntektsmeldingDto im = InntektsmeldingDtoBuilder.builder()
                 .medArbeidsgiver(Arbeidsgiver.virksomhet(ORGNR))
                 .medArbeidsforholdId(ref1)
-                .medBeløp(BigDecimal.TEN).build();
+                .medBeløp(Beløp.fra(10)).build();
         InntektsmeldingDto im2 = InntektsmeldingDtoBuilder.builder()
                 .medArbeidsgiver(Arbeidsgiver.virksomhet(ORGNR))
                 .medArbeidsforholdId(ref2)
-                .medBeløp(BigDecimal.TEN).build();
+                .medBeløp(Beløp.fra(10)).build();
 
         FaktaOmBeregningInput faktaOmBeregningInput = lagFaktaOmBeregningInput(grunnlag, List.of(im, im2));
 

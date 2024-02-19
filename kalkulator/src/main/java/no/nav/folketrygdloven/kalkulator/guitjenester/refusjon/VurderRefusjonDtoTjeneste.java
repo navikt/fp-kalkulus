@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.refusjon;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,6 +19,7 @@ import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusjon.RefusjonTilVurderingDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public final class VurderRefusjonDtoTjeneste {
 
@@ -34,7 +34,7 @@ public final class VurderRefusjonDtoTjeneste {
         if (originaleGrunnlag.isEmpty() || beregningsgrunnlag.isEmpty()) {
             return Optional.empty();
         }
-        BigDecimal grenseverdi = KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi().multiply(beregningsgrunnlag.get().getGrunnbeløp().verdi());
+        var grenseverdi = beregningsgrunnlag.get().getGrunnbeløp().multipliser(KonfigTjeneste.getAntallGØvreGrenseverdi());
 
         Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjon = originaleGrunnlag.stream()
                 .flatMap(originaltBg -> AndelerMedØktRefusjonTjeneste.finnAndelerMedØktRefusjon(beregningsgrunnlag.get(), originaltBg, grenseverdi, input.getYtelsespesifiktGrunnlag()).entrySet().stream())
@@ -68,7 +68,7 @@ public final class VurderRefusjonDtoTjeneste {
         refusjonOverstyringer.forEach(avkalring -> {
             List<RefusjonAndel> tidligereAvklaringerPåAG = avkalring.getRefusjonPerioder().stream()
                     .map(refusjonPeriode -> new RefusjonAndel(AktivitetStatus.ARBEIDSTAKER, avkalring.getArbeidsgiver(), refusjonPeriode.getArbeidsforholdRef(),
-                            BigDecimal.ZERO, BigDecimal.ZERO)) // De to siste parameterne brukes ikke for å lage dto så kan settes til dummy-verdier
+                            Beløp.ZERO, Beløp.ZERO)) // De to siste parameterne brukes ikke for å lage dto så kan settes til dummy-verdier
                     .collect(Collectors.toList());
             andeler.addAll(tidligereAvklaringerPåAG);
         });

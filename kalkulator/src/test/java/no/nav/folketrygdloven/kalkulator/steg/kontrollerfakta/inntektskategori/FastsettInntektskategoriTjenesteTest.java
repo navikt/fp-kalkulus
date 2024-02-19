@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.inntektskategori;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.temporal.TemporalAdjusters;
@@ -33,11 +32,12 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SkatteOgAvgiftsregelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.VirksomhetType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class FastsettInntektskategoriTjenesteTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.MAY, 10);
-    private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(90000);
+    private static final Beløp GRUNNBELØP = Beløp.fra(90000);
     private static final String ARBEIDSFORHOLD_ORGNR = "973152351";
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlag(AktivitetStatus aktivitetStatus) {
@@ -83,7 +83,7 @@ public class FastsettInntektskategoriTjenesteTest {
         LocalDate tom = SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(månederFørStp).with(TemporalAdjusters.lastDayOfMonth());
         return InntektspostDtoBuilder.ny()
                 .medInntektspostType(InntektspostType.LØNN)
-                .medPeriode(fom, tom).medBeløp(BigDecimal.ONE)
+                .medPeriode(fom, tom).medBeløp(Beløp.fra(1))
                 .medSkatteOgAvgiftsregelType(skatteOgAvgiftsregelType);
     }
 

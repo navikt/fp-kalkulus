@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.felles.BeregningstidspunktTjeneste;
-import no.nav.folketrygdloven.kalkulator.konfig.Konfigverdier;
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
@@ -52,7 +52,7 @@ class StartRefusjonTjeneste {
      * @return Første lovlige dato med refusjon på grunnlag av opplysninger tilgjengelig i register
      */
     static LocalDate finnFørsteGyldigeDatoMedRefusjon(LocalDate innsendingsdato) {
-        return innsendingsdato.minusMonths(Konfigverdier.FRIST_MÅNEDER_ETTER_REFUSJON).withDayOfMonth(1);
+        return innsendingsdato.minusMonths(KonfigTjeneste.getFristMånederEtterRefusjon()).withDayOfMonth(1);
     }
 
     private static boolean erTilkommetEtterBeregningstidspunkt(Arbeidsgiver arbeidsgiver,

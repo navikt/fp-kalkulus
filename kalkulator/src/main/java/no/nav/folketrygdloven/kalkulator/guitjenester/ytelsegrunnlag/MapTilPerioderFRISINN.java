@@ -1,8 +1,8 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.ytelsegrunnlag;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittArbeidsforholdDto;
@@ -30,7 +30,7 @@ public final class MapTilPerioderFRISINN {
             periodeDto.setFom(periode.getPeriode().getFomDato());
             periodeDto.setTom(periode.getPeriode().getTomDato());
             List<FrisinnAndelDto> andeler = new ArrayList<>();
-            finnOppgittArbeidsinntekt(periode.getPeriode(), oppgittOpptjening).map(Beløp::fra).ifPresent(periodeDto::setOppgittArbeidsinntekt);
+            finnOppgittArbeidsinntekt(periode.getPeriode(), oppgittOpptjening).ifPresent(periodeDto::setOppgittArbeidsinntekt);
             if (periode.getSøkerFrilans()) {
                 finnOppgittFrilansInntekt(periode.getPeriode(), oppgittOpptjening).ifPresent(andeler::add);
             }
@@ -43,13 +43,13 @@ public final class MapTilPerioderFRISINN {
         return dtoer;
     }
 
-    private static Optional<BigDecimal> finnOppgittArbeidsinntekt(Intervall periode, OppgittOpptjeningDto oppgittOpptjening) {
+    private static Optional<Beløp> finnOppgittArbeidsinntekt(Intervall periode, OppgittOpptjeningDto oppgittOpptjening) {
         return oppgittOpptjening.getOppgittArbeidsforhold().stream()
                 .filter(arbfor -> arbfor.getPeriode().inkluderer(periode.getFomDato())
                         && arbfor.getPeriode().inkluderer(periode.getTomDato()))
-                .filter(af -> af.getInntekt() != null)
                 .map(OppgittArbeidsforholdDto::getInntekt)
-                .reduce(BigDecimal::add);
+                .filter(Objects::nonNull)
+                .reduce(Beløp::adder);
     }
 
     private static Optional<FrisinnAndelDto> finnOppgittNæringsinntekt(Intervall periode, OppgittOpptjeningDto oppgittOpptjening) {
@@ -57,14 +57,14 @@ public final class MapTilPerioderFRISINN {
         if (næringer.isEmpty()) {
             return Optional.empty();
         }
-        Optional<BigDecimal> oppgittNæringsinntektIPerioden = næringer.stream()
+        var oppgittNæringsinntektIPerioden = næringer.stream()
                 .filter(næring -> næring.getPeriode().inkluderer(periode.getFomDato()) &&
                         næring.getPeriode().inkluderer(periode.getTomDato()))
-                .filter(i -> i.getInntekt() != null)
                 .map(OppgittEgenNæringDto::getInntekt)
-                .reduce(BigDecimal::add);
+                .filter(Objects::nonNull)
+                .reduce(Beløp::adder);
 
-        return oppgittNæringsinntektIPerioden.map(inntekt -> new FrisinnAndelDto(Beløp.fra(inntekt), AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE));
+        return oppgittNæringsinntektIPerioden.map(inntekt -> new FrisinnAndelDto(inntekt, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE));
     }
 
     private static Optional<FrisinnAndelDto> finnOppgittFrilansInntekt(Intervall periode, OppgittOpptjeningDto oppgittOpptjening) {
@@ -72,14 +72,15 @@ public final class MapTilPerioderFRISINN {
         if (oppgittFL.isEmpty()) {
             return Optional.empty();
         }
-        Optional<BigDecimal> oppgittFrilansinntektIPeriode = oppgittFL.get().getOppgittFrilansInntekt().stream()
+        var oppgittFrilansinntektIPeriode = oppgittFL.get().getOppgittFrilansInntekt().stream()
                 .filter(frilans -> frilans.getPeriode().inkluderer(periode.getFomDato())
                         && frilans.getPeriode().inkluderer(periode.getTomDato()))
                 .filter(i -> i.getInntekt() != null)
                 .map(OppgittFrilansInntektDto::getInntekt)
-                .reduce(BigDecimal::add);
+                .filter(Objects::nonNull)
+                .reduce(Beløp::adder);
 
-        return oppgittFrilansinntektIPeriode.map(inntekt -> new FrisinnAndelDto(Beløp.fra(inntekt), AktivitetStatus.FRILANSER));
+        return oppgittFrilansinntektIPeriode.map(inntekt -> new FrisinnAndelDto(inntekt, AktivitetStatus.FRILANSER));
 
     }
 }

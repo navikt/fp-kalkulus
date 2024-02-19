@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.guitjenester;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,7 +32,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
@@ -44,6 +42,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusjon.RefusjonAndelTilVurderingDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusjon.RefusjonTilVurderingDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusjon.TidligereUtbetalingDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class LagVurderRefusjonDtoTest {
     private Skjæringstidspunkt STP = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(LocalDate.of(2020,1,1))
@@ -250,7 +249,7 @@ class LagVurderRefusjonDtoTest {
 
     private void byggRefusjonAndel(Arbeidsgiver arbeidsgiver, String internRef, Intervall periode) {
         List<RefusjonAndel> andeler = andelMap.getOrDefault(periode, new ArrayList<>());
-        andeler.add(new RefusjonAndel(arbeidsgiver == null ? AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE : AktivitetStatus.ARBEIDSTAKER, arbeidsgiver, InternArbeidsforholdRefDto.ref(internRef), BigDecimal.ZERO, BigDecimal.ZERO));
+        andeler.add(new RefusjonAndel(arbeidsgiver == null ? AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE : AktivitetStatus.ARBEIDSTAKER, arbeidsgiver, InternArbeidsforholdRefDto.ref(internRef), Beløp.ZERO, Beløp.ZERO));
         andelMap.put(periode, andeler);
     }
 
@@ -311,8 +310,8 @@ class LagVurderRefusjonDtoTest {
                 .medBGAndelArbeidsforhold(bga)
                 .medInntektskategori(no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori.ARBEIDSTAKER)
                 .medAndelsnr(1L)
-                .medRedusertBrukersAndelPrÅr(BigDecimal.valueOf(redusertBruker))
-                .medRedusertRefusjonPrÅr(BigDecimal.valueOf(redusertAG))
+                .medRedusertBrukersAndelPrÅr(Beløp.fra(redusertBruker))
+                .medRedusertRefusjonPrÅr(Beløp.fra(redusertAG))
                 .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER)
                 .medBeregningsperiode(LocalDate.now(), LocalDate.now().plusMonths(1))
                 .build(bgPeriodeOrginal);

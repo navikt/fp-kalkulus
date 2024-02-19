@@ -87,7 +87,7 @@ class UtledEndringIRefusjonsperiodeTest {
         var refusjonEndring = endringAggregat.getRefusjonperiodeEndringer().get(0).getFastsattDelvisRefusjonFørDatoEndring();
         assertThat(refusjonEndring).isNotNull();
         assertThat(refusjonEndring.getFraRefusjon()).isNull();
-        assertThat(refusjonEndring.getTilRefusjon()).isEqualTo(Beløp.fra(BigDecimal.TEN));
+        assertThat(refusjonEndring.getTilRefusjon()).isEqualTo(Beløp.fra(10));
     }
 
     @Test
@@ -124,7 +124,7 @@ class UtledEndringIRefusjonsperiodeTest {
         var refusjonEndring = endringAggregat.getRefusjonperiodeEndringer().get(0).getFastsattDelvisRefusjonFørDatoEndring();
         assertThat(refusjonEndring).isNotNull();
         assertThat(refusjonEndring.getFraRefusjon()).isNull();
-        assertThat(refusjonEndring.getTilRefusjon()).isEqualTo(Beløp.fra(BigDecimal.TEN));
+        assertThat(refusjonEndring.getTilRefusjon()).isEqualTo(Beløp.fra(10));
     }
 
     @Test
@@ -163,8 +163,8 @@ class UtledEndringIRefusjonsperiodeTest {
         assertThat(datoEndring.getTilVerdi()).isEqualTo(nyFom);
         var refusjonEndring = endringAggregat.getRefusjonperiodeEndringer().get(0).getFastsattDelvisRefusjonFørDatoEndring();
         assertThat(refusjonEndring).isNotNull();
-        assertThat(refusjonEndring.getFraRefusjon()).isEqualTo(Beløp.fra(BigDecimal.ONE));
-        assertThat(refusjonEndring.getTilRefusjon()).isEqualTo(Beløp.fra(BigDecimal.TEN));
+        assertThat(refusjonEndring.getFraRefusjon()).isEqualTo(Beløp.fra(1));
+        assertThat(refusjonEndring.getTilRefusjon()).isEqualTo(Beløp.fra(10));
     }
 
 
@@ -180,7 +180,7 @@ class UtledEndringIRefusjonsperiodeTest {
 
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ag).medArbeidsforholdRef(arbeidsforholdRef).medSaksbehandletRefusjonPrÅr(saksbehandletRefusjonPrÅr))
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ag).medArbeidsforholdRef(arbeidsforholdRef).medSaksbehandletRefusjonPrÅr(Beløp.fra(saksbehandletRefusjonPrÅr)))
                 .build(periode1);
 
         var periode2 = BeregningsgrunnlagPeriodeDto.ny()

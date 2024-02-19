@@ -2,15 +2,12 @@ package no.nav.folketrygdloven.kalkulator.guitjenester.ytelsegrunnlag;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 import org.junit.jupiter.api.Test;
 
@@ -23,6 +20,7 @@ import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnPeriode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisinn.FrisinnAndelDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisinn.FrisinnPeriodeDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class MapTilPerioderFRISINNTest {
 
@@ -31,7 +29,7 @@ class MapTilPerioderFRISINNTest {
         // Arrange
         Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         FrisinnPeriode frisinnPeriode = new FrisinnPeriode(april, true, false);
-        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(april, BigDecimal.valueOf(5000)));
+        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(april, Beløp.fra(5000)));
         OppgittOpptjeningDto oo = OppgittOpptjeningDtoBuilder.ny()
                 .leggTilFrilansOpplysninger(new OppgittFrilansDto(false, oppgittFrilansInntekt))
                 .build();
@@ -49,7 +47,7 @@ class MapTilPerioderFRISINNTest {
         // Arrange
         Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         FrisinnPeriode frisinnPeriode = new FrisinnPeriode(april, false, true);
-        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(april, BigDecimal.valueOf(1000)));
+        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(april, Beløp.fra(1000)));
         OppgittOpptjeningDto oo = OppgittOpptjeningDtoBuilder.ny()
                 .leggTilEgneNæringer(oppgittNæring)
                 .build();
@@ -67,8 +65,8 @@ class MapTilPerioderFRISINNTest {
         // Arrange
         Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         FrisinnPeriode frisinnPeriode = new FrisinnPeriode(april, false, true);
-        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(april, BigDecimal.valueOf(1000)));
-        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(april, BigDecimal.valueOf(5000)));
+        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(april, Beløp.fra(1000)));
+        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(april, Beløp.fra(5000)));
         OppgittOpptjeningDto oo = OppgittOpptjeningDtoBuilder.ny()
                 .leggTilEgneNæringer(oppgittNæring)
                 .leggTilFrilansOpplysninger(new OppgittFrilansDto(false, oppgittFrilansInntekt))
@@ -87,8 +85,8 @@ class MapTilPerioderFRISINNTest {
         // Arrange
         Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         FrisinnPeriode frisinnPeriode = new FrisinnPeriode(april, true, false);
-        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(april, BigDecimal.valueOf(1000)));
-        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(april, BigDecimal.valueOf(5000)));
+        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(april, Beløp.fra(1000)));
+        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(april, Beløp.fra(5000)));
         OppgittOpptjeningDto oo = OppgittOpptjeningDtoBuilder.ny()
                 .leggTilEgneNæringer(oppgittNæring)
                 .leggTilFrilansOpplysninger(new OppgittFrilansDto(false, oppgittFrilansInntekt))
@@ -107,8 +105,8 @@ class MapTilPerioderFRISINNTest {
         // Arrange
         Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         FrisinnPeriode frisinnPeriode = new FrisinnPeriode(april, true, true);
-        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(april, BigDecimal.valueOf(1000)));
-        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(april, BigDecimal.valueOf(5000)));
+        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(april, Beløp.fra(1000)));
+        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(april, Beløp.fra(5000)));
         OppgittOpptjeningDto oo = OppgittOpptjeningDtoBuilder.ny()
                 .leggTilEgneNæringer(oppgittNæring)
                 .leggTilFrilansOpplysninger(new OppgittFrilansDto(false, oppgittFrilansInntekt))
@@ -131,8 +129,8 @@ class MapTilPerioderFRISINNTest {
 
         FrisinnPeriode frisinnPeriode = new FrisinnPeriode(aprilDel1, true, false);
         FrisinnPeriode frisinnPeriode2 = new FrisinnPeriode(aprilDel2, true, true);
-        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(april, BigDecimal.valueOf(5000)));
-        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(aprilDel2, BigDecimal.valueOf(1000)));
+        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(april, Beløp.fra(5000)));
+        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(aprilDel2, Beløp.fra(1000)));
         OppgittOpptjeningDto oo = OppgittOpptjeningDtoBuilder.ny()
                 .leggTilEgneNæringer(oppgittNæring)
                 .leggTilFrilansOpplysninger(new OppgittFrilansDto(false, oppgittFrilansInntekt))
@@ -155,7 +153,7 @@ class MapTilPerioderFRISINNTest {
 
         FrisinnPeriode frisinnPeriode = new FrisinnPeriode(april, true, false);
         FrisinnPeriode frisinnPeriode2 = new FrisinnPeriode(mai, true, false);
-        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(april, BigDecimal.valueOf(5000)), lagOppgittFrilansInntekt(mai, BigDecimal.ZERO));
+        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(april, Beløp.fra(5000)), lagOppgittFrilansInntekt(mai, Beløp.ZERO));
         OppgittOpptjeningDto oo = OppgittOpptjeningDtoBuilder.ny()
                 .leggTilFrilansOpplysninger(new OppgittFrilansDto(false, oppgittFrilansInntekt))
                 .build();
@@ -177,8 +175,8 @@ class MapTilPerioderFRISINNTest {
 
         FrisinnPeriode frisinnPeriode = new FrisinnPeriode(april, true, false);
         FrisinnPeriode frisinnPeriode2 = new FrisinnPeriode(mai, true, false);
-        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(april, BigDecimal.valueOf(5000)), lagOppgittFrilansInntekt(mai, BigDecimal.ZERO));
-        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(mai, BigDecimal.valueOf(1000)));
+        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(april, Beløp.fra(5000)), lagOppgittFrilansInntekt(mai, Beløp.ZERO));
+        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(mai, Beløp.fra(1000)));
         OppgittOpptjeningDto oo = OppgittOpptjeningDtoBuilder.ny()
                 .leggTilEgneNæringer(oppgittNæring)
                 .leggTilFrilansOpplysninger(new OppgittFrilansDto(false, oppgittFrilansInntekt))
@@ -201,8 +199,8 @@ class MapTilPerioderFRISINNTest {
 
         FrisinnPeriode frisinnPeriode = new FrisinnPeriode(april, true, false);
         FrisinnPeriode frisinnPeriode2 = new FrisinnPeriode(mai, true, true);
-        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(april, BigDecimal.valueOf(5000)), lagOppgittFrilansInntekt(mai, BigDecimal.ZERO));
-        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(mai, BigDecimal.valueOf(1000)));
+        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(april, Beløp.fra(5000)), lagOppgittFrilansInntekt(mai, Beløp.ZERO));
+        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(mai, Beløp.fra(1000)));
         OppgittOpptjeningDto oo = OppgittOpptjeningDtoBuilder.ny()
                 .leggTilEgneNæringer(oppgittNæring)
                 .leggTilFrilansOpplysninger(new OppgittFrilansDto(false, oppgittFrilansInntekt))
@@ -225,8 +223,8 @@ class MapTilPerioderFRISINNTest {
 
         FrisinnPeriode frisinnPeriode = new FrisinnPeriode(april, true, true);
         FrisinnPeriode frisinnPeriode2 = new FrisinnPeriode(mai, true, true);
-        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(april, BigDecimal.valueOf(5000)), lagOppgittFrilansInntekt(mai, BigDecimal.ZERO));
-        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(april, BigDecimal.ZERO), lagOppgittInntekt(mai, BigDecimal.valueOf(1000)));
+        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(april, Beløp.fra(5000)), lagOppgittFrilansInntekt(mai, Beløp.ZERO));
+        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(april, Beløp.ZERO), lagOppgittInntekt(mai, Beløp.fra(1000)));
         OppgittOpptjeningDto oo = OppgittOpptjeningDtoBuilder.ny()
                 .leggTilEgneNæringer(oppgittNæring)
                 .leggTilFrilansOpplysninger(new OppgittFrilansDto(false, oppgittFrilansInntekt))
@@ -247,9 +245,9 @@ class MapTilPerioderFRISINNTest {
         Intervall mai = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 5, 1), LocalDate.of(2020, 5, 31));
 
         FrisinnPeriode frisinnPeriode = new FrisinnPeriode(mai, true, true);
-        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(mai, BigDecimal.ZERO));
-        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(mai, BigDecimal.valueOf(1000)));
-        OppgittOpptjeningDtoBuilder.OppgittArbeidsforholdBuilder arbfor = lagOppgittArbeidsinntekt(mai, BigDecimal.valueOf(500));
+        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(mai, Beløp.ZERO));
+        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(mai, Beløp.fra(1000)));
+        OppgittOpptjeningDtoBuilder.OppgittArbeidsforholdBuilder arbfor = lagOppgittArbeidsinntekt(mai, Beløp.fra(500));
         OppgittOpptjeningDto oo = OppgittOpptjeningDtoBuilder.ny()
                 .leggTilEgneNæringer(oppgittNæring)
                 .leggTilOppgittArbeidsforhold(arbfor)
@@ -279,8 +277,8 @@ class MapTilPerioderFRISINNTest {
         Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         Intervall halveApril = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 16), LocalDate.of(2020, 4, 30));
         Intervall mai = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 5, 1), LocalDate.of(2020, 5, 31));
-        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(halveApril, BigDecimal.valueOf(1000)), lagOppgittInntekt(mai, BigDecimal.ZERO));
-        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(april, BigDecimal.valueOf(5000)), lagOppgittFrilansInntekt(mai, BigDecimal.ZERO));
+        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(halveApril, Beløp.fra(1000)), lagOppgittInntekt(mai, Beløp.ZERO));
+        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(april, Beløp.fra(5000)), lagOppgittFrilansInntekt(mai, Beløp.ZERO));
         OppgittOpptjeningDto oo = OppgittOpptjeningDtoBuilder.ny()
                 .leggTilEgneNæringer(oppgittNæring)
                 .leggTilFrilansOpplysninger(new OppgittFrilansDto(false, oppgittFrilansInntekt))
@@ -343,21 +341,21 @@ class MapTilPerioderFRISINNTest {
         return new FrisinnAndelDto(Beløp.fra(sum), AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
     }
 
-    private OppgittOpptjeningDtoBuilder.OppgittArbeidsforholdBuilder lagOppgittArbeidsinntekt(Intervall periode, BigDecimal beløp) {
+    private OppgittOpptjeningDtoBuilder.OppgittArbeidsforholdBuilder lagOppgittArbeidsinntekt(Intervall periode, Beløp beløp) {
         return OppgittOpptjeningDtoBuilder.OppgittArbeidsforholdBuilder.ny()
                 .medPeriode(periode)
                 .medInntekt(beløp);
     }
 
 
-    private OppgittOpptjeningDtoBuilder.EgenNæringBuilder lagOppgittInntekt(Intervall april, BigDecimal periodeInntekt) {
+    private OppgittOpptjeningDtoBuilder.EgenNæringBuilder lagOppgittInntekt(Intervall april, Beløp periodeInntekt) {
         return OppgittOpptjeningDtoBuilder.EgenNæringBuilder.ny()
                 .medPeriode(april)
                 .medVirksomhet("999999999")
                 .medBruttoInntekt(periodeInntekt);
     }
 
-    private OppgittFrilansInntektDto lagOppgittFrilansInntekt(Intervall april, BigDecimal periodeInntekt) {
+    private OppgittFrilansInntektDto lagOppgittFrilansInntekt(Intervall april, Beløp periodeInntekt) {
         return new OppgittFrilansInntektDto(april, periodeInntekt);
     }
 

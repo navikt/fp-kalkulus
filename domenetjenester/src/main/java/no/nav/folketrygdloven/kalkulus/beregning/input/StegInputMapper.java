@@ -83,7 +83,7 @@ class StegInputMapper {
         if (førsteFastsatteGrunnlagEntitet.isPresent()) {
             vurderVilkårInput = førsteFastsatteGrunnlagEntitet.get().getBeregningsgrunnlag()
                     .map(BeregningsgrunnlagEntitet::getGrunnbeløp)
-                    .map(Beløp::getVerdi)
+                    .map(Beløp::tilKalkulatorBeløp)
                     .map(vurderVilkårInput::medUregulertGrunnbeløp)
                     .orElse(vurderVilkårInput);
         }
@@ -100,7 +100,7 @@ class StegInputMapper {
         if (førsteFastsatteGrunnlagEntitet.isPresent()) {
             vurderVilkårOgRefusjonBeregningsgrunnlag = førsteFastsatteGrunnlagEntitet.get().getBeregningsgrunnlag()
                     .map(BeregningsgrunnlagEntitet::getGrunnbeløp)
-                    .map(Beløp::getVerdi)
+                    .map(Beløp::tilKalkulatorBeløp)
                     .map(vurderVilkårOgRefusjonBeregningsgrunnlag::medUregulertGrunnbeløp)
                     .orElse(vurderVilkårOgRefusjonBeregningsgrunnlag);
         }
@@ -152,7 +152,7 @@ class StegInputMapper {
         if (førsteFastsatteGrunnlagEntitet.isPresent()) {
             fordelBeregningsgrunnlagInput = førsteFastsatteGrunnlagEntitet.get().getBeregningsgrunnlag()
                     .map(BeregningsgrunnlagEntitet::getGrunnbeløp)
-                    .map(Beløp::getVerdi)
+                    .map(Beløp::tilKalkulatorBeløp)
                     .map(fordelBeregningsgrunnlagInput::medUregulertGrunnbeløp)
                     .orElse(fordelBeregningsgrunnlagInput);
         }
@@ -164,7 +164,7 @@ class StegInputMapper {
         if (førsteFastsatteGrunnlagEntitet.isPresent()) {
             fullføreBeregningsgrunnlagInput = førsteFastsatteGrunnlagEntitet.get().getBeregningsgrunnlag()
                     .map(BeregningsgrunnlagEntitet::getGrunnbeløp)
-                    .map(Beløp::getVerdi)
+                    .map(Beløp::tilKalkulatorBeløp)
                     .map(fullføreBeregningsgrunnlagInput::medUregulertGrunnbeløp)
                     .orElse(fullføreBeregningsgrunnlagInput);
         }

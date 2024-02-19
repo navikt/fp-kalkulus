@@ -25,8 +25,6 @@ import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
  *
  */
 public class FastsettNaturalytelsePerioderTjeneste {
-    public static final int MÅNEDER_I_1_ÅR = 12;
-
     private final MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse oversetterFraRegelNaturalytelse = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse();
 
     public BeregningsgrunnlagRegelResultat fastsettPerioderForNaturalytelse(BeregningsgrunnlagInput input,

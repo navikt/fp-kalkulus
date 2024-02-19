@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.fp;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -15,6 +14,7 @@ import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering.Gradering;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class GraderingUtenBeregningsgrunnlagTjeneste {
 
@@ -44,7 +44,7 @@ public class GraderingUtenBeregningsgrunnlagTjeneste {
     }
 
     private static boolean harIkkeTilkjentBGEtterRedusering(BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        return andel.getRedusertPrÅr() != null && andel.getRedusertPrÅr().compareTo(BigDecimal.ZERO) <= 0;
+        return andel.getRedusertPrÅr() != null && andel.getRedusertPrÅr().compareTo(Beløp.ZERO) <= 0;
     }
 
     private static Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnTilsvarendeAndelIPeriode(AndelGradering andelGradering, BeregningsgrunnlagPeriodeDto periode) {

@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
-import java.math.BigDecimal;
-
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
-public record RefusjonsperiodeDto (Intervall periode, BigDecimal beløp) { }
+public record RefusjonsperiodeDto (Intervall periode, Beløp beløp) { }

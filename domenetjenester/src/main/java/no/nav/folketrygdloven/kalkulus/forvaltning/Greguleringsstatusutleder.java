@@ -48,7 +48,7 @@ public class Greguleringsstatusutleder {
             return false;
         }
         Konfigverdier konfigverdier = KonfigTjeneste.forYtelse(ytelse);
-        if (harGrunnlagSomBleAvkortet(bg, konfigverdier, grunnbeløpBenyttetIBeregningen)) {
+        if (harGrunnlagSomBleAvkortet(bg, grunnbeløpBenyttetIBeregningen)) {
             return true;
         }
         if (erMilitærUnderMinstekravForMilitær(bg, konfigverdier, nyttGrunnbeløp)) {
@@ -60,12 +60,12 @@ public class Greguleringsstatusutleder {
         return false;
     }
 
-    private static boolean harGrunnlagSomBleAvkortet(BeregningsgrunnlagEntitet bg, Konfigverdier konfigverdier, BigDecimal grunnbeløpBenyttetIBeregningen) {
+    private static boolean harGrunnlagSomBleAvkortet(BeregningsgrunnlagEntitet bg, BigDecimal grunnbeløpBenyttetIBeregningen) {
         Beløp størsteBrutto = bg.getBeregningsgrunnlagPerioder().stream()
                 .map(BeregningsgrunnlagPeriode::getBruttoPrÅr)
                 .max(Comparator.naturalOrder())
                 .orElse(Beløp.ZERO);
-        BigDecimal antallGØvreGrenseverdi = konfigverdier.getAntallGØvreGrenseverdi();
+        BigDecimal antallGØvreGrenseverdi = KonfigTjeneste.getAntallGØvreGrenseverdi();
         BigDecimal grenseverdi = antallGØvreGrenseverdi.multiply(grunnbeløpBenyttetIBeregningen);
         return størsteBrutto.compareTo(new Beløp(grenseverdi)) > 0;
 

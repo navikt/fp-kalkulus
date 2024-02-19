@@ -17,7 +17,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.InntektYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.LønnsinntektBeskrivelse;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SkatteOgAvgiftsregelType;
-import no.nav.folketrygdloven.kalkulus.typer.DiffBeløp;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
@@ -47,7 +47,7 @@ public class UtbetalingsPostDto {
      */
     @JsonProperty("beløp")
     @Valid
-    private DiffBeløp beløp;
+    private Beløp beløp;
 
     /**
      * Satt dersom dette gjelder en ytelse, ellers ikke (henger sammen med {@link UtbetalingDto#getKilde()})
@@ -59,7 +59,7 @@ public class UtbetalingsPostDto {
     protected UtbetalingsPostDto() {
     }
 
-    public UtbetalingsPostDto(Periode periode, InntektspostType inntektspostType, DiffBeløp beløp) {
+    public UtbetalingsPostDto(Periode periode, InntektspostType inntektspostType, Beløp beløp) {
         Objects.requireNonNull(periode, "periode");
         Objects.requireNonNull(inntektspostType, "inntektspostType");
         this.beløp = beløp;
@@ -96,19 +96,19 @@ public class UtbetalingsPostDto {
         return periode;
     }
 
-    public DiffBeløp getBeløp() {
+    public Beløp getBeløp() {
         return beløp;
     }
 
-    public void setBeløp(DiffBeløp beløp) {
+    public void setBeløp(Beløp beløp) {
         this.beløp = beløp;
     }
 
     public void setBeløp(BigDecimal beløp) {
-        this.beløp = beløp == null ? null : DiffBeløp.fra(beløp.setScale(2, RoundingMode.HALF_UP));
+        this.beløp = beløp == null ? null : Beløp.fra(beløp.setScale(2, RoundingMode.HALF_UP));
     }
 
-    public UtbetalingsPostDto medBeløp(DiffBeløp beløp) {
+    public UtbetalingsPostDto medBeløp(Beløp beløp) {
         setBeløp(beløp);
         return this;
     }

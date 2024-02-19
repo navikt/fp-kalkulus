@@ -5,7 +5,6 @@ import static no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.F
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_BEGYNNELSE;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.HashMap;
@@ -29,6 +28,7 @@ import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.Fordelin
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.NyPeriodeDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class RefusjonEllerGraderingArbeidsforholdDtoTjeneste {
 
@@ -94,7 +94,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjeneste {
             LocalDate tomDatoPeriode = periode.getBeregningsgrunnlagPeriodeTom() == null ?
                     TIDENES_ENDE : periode.getBeregningsgrunnlagPeriodeTom();
             if (sluttDatoRefusjon.isBefore(tomDatoPeriode)) {
-                Optional<BigDecimal> refusjonBeløpOpt = finnRefusjonsbeløpForAndelIPeriode(distinctAndel, periode);
+                var refusjonBeløpOpt = finnRefusjonsbeløpForAndelIPeriode(distinctAndel, periode);
                 if (refusjonBeløpOpt.isPresent()) {
                     LocalDate startdatoRefusjon = periode.getBeregningsgrunnlagPeriodeFom();
                     sluttDatoRefusjon = finnSluttdato(distinctAndel, perioder, i, refusjonBeløpOpt.get());
@@ -114,14 +114,14 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjeneste {
         return dto;
     }
 
-    private static LocalDate finnSluttdato(BeregningsgrunnlagPrStatusOgAndelDto distinctAndel, List<BeregningsgrunnlagPeriodeDto> perioder, int i, BigDecimal refusjonBeløp) {
+    private static LocalDate finnSluttdato(BeregningsgrunnlagPrStatusOgAndelDto distinctAndel, List<BeregningsgrunnlagPeriodeDto> perioder, int i, Beløp refusjonBeløp) {
         LocalDate sluttDatoRefusjon = TIDENES_ENDE;
         if (i == perioder.size() - 1) {
             return sluttDatoRefusjon;
         }
         for (int k = i + 1; k < perioder.size(); k++) {
             BeregningsgrunnlagPeriodeDto nestePeriode = perioder.get(k);
-            BigDecimal refusjonINestePeriode = finnRefusjonsbeløpForAndelIPeriode(distinctAndel, nestePeriode).orElse(BigDecimal.ZERO);
+            var refusjonINestePeriode = finnRefusjonsbeløpForAndelIPeriode(distinctAndel, nestePeriode).orElse(Beløp.ZERO);
             if (refusjonINestePeriode.compareTo(refusjonBeløp) != 0) {
                 return perioder.get(k - 1).getBeregningsgrunnlagPeriodeTom();
             }
@@ -129,18 +129,16 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjeneste {
         return sluttDatoRefusjon;
     }
 
-    private static Optional<BigDecimal> finnRefusjonsbeløpForAndelIPeriode(BeregningsgrunnlagPrStatusOgAndelDto distinctAndel,
+    private static Optional<Beløp> finnRefusjonsbeløpForAndelIPeriode(BeregningsgrunnlagPrStatusOgAndelDto distinctAndel,
                                                                            BeregningsgrunnlagPeriodeDto periode) {
         Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndel = periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(andel -> !andel.erLagtTilAvSaksbehandler())
                 .filter(andel -> andel.gjelderSammeArbeidsforhold(distinctAndel))
                 .filter(andel -> andel.getBgAndelArbeidsforhold()
-                        .map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(BigDecimal.ZERO).compareTo(BigDecimal.ZERO) != 0)
+                        .map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(Beløp.ZERO).compareTo(Beløp.ZERO) != 0)
                 .findFirst();
         return matchendeAndel
-                .flatMap(andel -> andel.getBgAndelArbeidsforhold()
-                        .map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr)
-                );
+                .flatMap(andel -> andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr));
     }
 
     private static void settEndretArbeidsforholdForSøktGradering(BeregningsgrunnlagPrStatusOgAndelDto distinctAndel,

@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.testutilities;
 
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,6 +13,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.NaturalYtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 public class BeregningInntektsmeldingTestUtil {
@@ -23,14 +23,14 @@ public class BeregningInntektsmeldingTestUtil {
         // for CDI
     }
 
-    public static InntektsmeldingDto opprettInntektsmelding(String orgNummer, LocalDate skjæringstidspunkt, BigDecimal refusjonskrav,
-                                                            BigDecimal inntekt) {
+    public static InntektsmeldingDto opprettInntektsmelding(String orgNummer, LocalDate skjæringstidspunkt, Beløp refusjonskrav,
+                                                            Beløp inntekt) {
         return opprettInntektsmelding(orgNummer, null, skjæringstidspunkt, refusjonskrav, inntekt, TIDENES_ENDE,
             Collections.emptyList(), Collections.emptyList());
     }
 
-    public static InntektsmeldingDto opprettInntektsmelding(String orgNummer, LocalDate skjæringstidspunkt, BigDecimal refusjonskrav,
-                                                            BigDecimal inntekt, LocalDate refusjonOpphørerFom) {
+    public static InntektsmeldingDto opprettInntektsmelding(String orgNummer, LocalDate skjæringstidspunkt, Beløp refusjonskrav,
+                                                            Beløp inntekt, LocalDate refusjonOpphørerFom) {
         return opprettInntektsmelding(orgNummer, null, skjæringstidspunkt, refusjonskrav, inntekt, refusjonOpphørerFom,
             Collections.emptyList(), Collections.emptyList());
     }
@@ -42,8 +42,8 @@ public class BeregningInntektsmeldingTestUtil {
     public static InntektsmeldingDto opprettInntektsmelding(String orgnr, InternArbeidsforholdRefDto arbId, LocalDate skjæringstidspunktOpptjening,
                                                             Integer refusjon) { // NOSONAR - brukes bare
                                                                                                                                        // til test
-        BigDecimal refusjonEllerNull = refusjon != null ? BigDecimal.valueOf(refusjon) : null;
-        return opprettInntektsmelding(orgnr, arbId, skjæringstidspunktOpptjening, refusjonEllerNull, BigDecimal.TEN, TIDENES_ENDE,
+        var refusjonEllerNull = refusjon != null ? Beløp.fra(refusjon) : null;
+        return opprettInntektsmelding(orgnr, arbId, skjæringstidspunktOpptjening, refusjonEllerNull, Beløp.fra(10), TIDENES_ENDE,
             Collections.emptyList(), Collections.emptyList());
     }
 
@@ -54,15 +54,15 @@ public class BeregningInntektsmeldingTestUtil {
                                                                                                                                                         // bare
                                                                                                                                                         // til
                                                                                                                                                         // test
-        BigDecimal refusjonEllerNull = refusjon != null ? BigDecimal.valueOf(refusjon) : null;
-        return opprettInntektsmelding(orgnr, arbId, skjæringstidspunktOpptjening, refusjonEllerNull, BigDecimal.valueOf(inntekt),
+        var refusjonEllerNull = refusjon != null ? Beløp.fra(refusjon) : null;
+        return opprettInntektsmelding(orgnr, arbId, skjæringstidspunktOpptjening, refusjonEllerNull, Beløp.fra(inntekt),
             TIDENES_ENDE, Collections.emptyList(), Collections.emptyList());
     }
 
     public static InntektsmeldingDto opprettInntektsmeldingMedNaturalYtelser(String orgnr, // NOSONAR - brukes bare til test
                                                                              LocalDate skjæringstidspunkt,
-                                                                             BigDecimal inntektBeløp,
-                                                                             BigDecimal refusjonskrav,
+                                                                             Beløp inntektBeløp,
+                                                                             Beløp refusjonskrav,
                                                                              LocalDate refusjonOpphørerDato,
                                                                              NaturalYtelseDto... naturalYtelser) {
         return opprettInntektsmelding(orgnr, null, skjæringstidspunkt, refusjonskrav, inntektBeløp, refusjonOpphørerDato,
@@ -70,15 +70,15 @@ public class BeregningInntektsmeldingTestUtil {
     }
 
     public static InntektsmeldingDto opprettInntektsmeldingMedEndringerIRefusjon(String orgnr, InternArbeidsforholdRefDto arbId,
-                                                                                 LocalDate skjæringstidspunkt, BigDecimal inntektBeløp, // NOSONAR - brukes bare til test
-                                                                                 BigDecimal refusjonskrav, LocalDate refusjonOpphørerDato, List<RefusjonDto> endringRefusjon) {
+                                                                                 LocalDate skjæringstidspunkt, Beløp inntektBeløp, // NOSONAR - brukes bare til test
+                                                                                 Beløp refusjonskrav, LocalDate refusjonOpphørerDato, List<RefusjonDto> endringRefusjon) {
         return opprettInntektsmelding(orgnr, arbId, skjæringstidspunkt, refusjonskrav, inntektBeløp, refusjonOpphørerDato,
             Collections.emptyList(), endringRefusjon);
     }
 
     private static InntektsmeldingDto opprettInntektsmelding(String orgnr, InternArbeidsforholdRefDto internReferanse,
                                                              LocalDate skjæringstidspunktOpptjening,  // NOSONAR - brukes bare til test
-                                                             BigDecimal refusjon, BigDecimal inntekt, LocalDate opphørsdatoRefusjon, List<NaturalYtelseDto> naturalYtelser,
+                                                             Beløp refusjon, Beløp inntekt, LocalDate opphørsdatoRefusjon, List<NaturalYtelseDto> naturalYtelser,
                                                              List<RefusjonDto> endringRefusjon) {
 
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(orgnr);
@@ -88,7 +88,7 @@ public class BeregningInntektsmeldingTestUtil {
 
     public static InntektsmeldingDto opprettInntektsmelding(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto internReferanse,
                                                             LocalDate skjæringstidspunktOpptjening,  // NOSONAR - brukes bare til test
-                                                            BigDecimal refusjon, BigDecimal inntekt,
+                                                            Beløp refusjon, Beløp inntekt,
                                                             LocalDate opphørsdatoRefusjon,
                                                             List<NaturalYtelseDto> naturalYtelser,
                                                             List<RefusjonDto> endringRefusjon) {

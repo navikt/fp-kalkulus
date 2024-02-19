@@ -1,13 +1,11 @@
 package no.nav.folketrygdloven.kalkulator.avklaringsbehov.fordeling;
 
-import java.math.BigDecimal;
-
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 public class FordelFastsatteVerdierDto {
-
-    private static final int MÅNEDER_I_1_ÅR = 12;
 
     private Integer refusjonPrÅr;
     private Integer fastsattBeløp;
@@ -41,17 +39,17 @@ public class FordelFastsatteVerdierDto {
         return fastsattÅrsbeløpInklNaturalytelse;
     }
 
-    public BigDecimal finnEllerUtregnFastsattBeløpPrÅr() {
+    public Beløp finnEllerUtregnFastsattBeløpPrÅr() {
         if (fastsattÅrsbeløpInklNaturalytelse != null) {
-            return BigDecimal.valueOf(fastsattÅrsbeløpInklNaturalytelse);
+            return Beløp.fra(fastsattÅrsbeløpInklNaturalytelse);
         }
         if (fastsattÅrsbeløp != null) {
-            return BigDecimal.valueOf(fastsattÅrsbeløp);
+            return Beløp.fra(fastsattÅrsbeløp);
         }
         if (fastsattBeløp == null) {
             throw new IllegalStateException("Feil under oppdatering: Hverken årslønn eller månedslønn er satt.");
         }
-        return BigDecimal.valueOf((long) fastsattBeløp * MÅNEDER_I_1_ÅR);
+        return Beløp.fra(fastsattBeløp).multipliser(KonfigTjeneste.getMånederIÅr());
     }
 
     public Inntektskategori getInntektskategori() {

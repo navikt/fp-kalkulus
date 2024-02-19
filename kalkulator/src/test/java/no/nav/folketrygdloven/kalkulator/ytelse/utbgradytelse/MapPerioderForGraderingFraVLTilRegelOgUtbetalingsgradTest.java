@@ -40,13 +40,14 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.ytelse.fp.MapRefusjonPerioderFraVLTilRegelFP;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class MapPerioderForGraderingFraVLTilRegelOgUtbetalingsgradTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019, 1, 1);
@@ -264,8 +265,8 @@ public class MapPerioderForGraderingFraVLTilRegelOgUtbetalingsgradTest {
         return InntektsmeldingDtoBuilder.builder()
                 .medArbeidsgiver(arbeidsgiver)
                 .medStartDatoPermisjon(startDatoPermisjon)
-                .medRefusjon(REFUSJON)
-                .medBeløp(BigDecimal.valueOf(44733))
+                .medRefusjon(Beløp.fra(REFUSJON))
+                .medBeløp(Beløp.fra(44733))
                 .medArbeidsforholdId(arbeidsforholdRef)
                 .build();
     }
@@ -299,11 +300,11 @@ public class MapPerioderForGraderingFraVLTilRegelOgUtbetalingsgradTest {
                 .build();
         BeregningsgrunnlagPeriodeDto periodeDto = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
-                .medBruttoPrÅr(BigDecimal.valueOf(531064))
+                .medBruttoPrÅr(Beløp.fra(531064))
                 .build(bg);
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-                .medBeregnetPrÅr(BigDecimal.valueOf(531064))
+                .medBeregnetPrÅr(Beløp.fra(531064))
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ag1)
                         .medArbeidsforholdRef(arbeidsforholdRef))
                 .build(periodeDto);

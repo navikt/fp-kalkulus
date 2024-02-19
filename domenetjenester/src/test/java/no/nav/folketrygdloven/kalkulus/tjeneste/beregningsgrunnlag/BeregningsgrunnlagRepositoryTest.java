@@ -9,8 +9,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import no.nav.folketrygdloven.kalkulus.typer.DiffBeløp;
-
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -266,7 +264,7 @@ public class BeregningsgrunnlagRepositoryTest extends EntityManagerAwareTest {
         iayGrunnlag.medInntekterDto(
                 new InntekterDto(List.of(new UtbetalingDto(InntektskildeType.INNTEKT_BEREGNING,
                         List.of(new UtbetalingsPostDto(periode, InntektspostType.LØNN,
-                                DiffBeløp.fra(1000L)))))));
+                                no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(1000L)))))));
         iayGrunnlag.medInntektsmeldingerDto(
                 new InntektsmeldingerDto(List.of(new InntektsmeldingDto(organisasjon,
                         new BeløpDto(BigDecimal.valueOf(100)), List.of(), List.of(), null, null,

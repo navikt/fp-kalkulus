@@ -17,6 +17,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregnings
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrStatus;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
@@ -27,6 +28,7 @@ import no.nav.folketrygdloven.kalkulator.tid.Virkedager;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class BeregneFraYtelse {
 
@@ -54,8 +56,8 @@ public class BeregneFraYtelse {
                     continue;
                 }
 
-                BigDecimal direkteUtbetalingForAndel = finnSumDirekteUtbetaltYtelseIPeriodeForAndel(beregningsperiode, anvisninger, beregnetAndel);
-                BigDecimal andelLønnOgYtelse = finnLønnOgDirekteUtbetaltYtelseForAndel(regelmodell, beregningsperiode, atflStatus, arbeidsforholdUtenInntektsmeldingMedBeregningsperiode, beregnetAndel, direkteUtbetalingForAndel);
+                var direkteUtbetalingForAndel = finnSumDirekteUtbetaltYtelseIPeriodeForAndel(beregningsperiode, anvisninger, beregnetAndel);
+                BigDecimal andelLønnOgYtelse = finnLønnOgDirekteUtbetaltYtelseForAndel(regelmodell, beregningsperiode, atflStatus, arbeidsforholdUtenInntektsmeldingMedBeregningsperiode, beregnetAndel, direkteUtbetalingForAndel.verdi());
                 if (beregnetAndel.getBeregnetPrÅr().compareTo(andelLønnOgYtelse) != 0) {
                     loggBeregning(input, beregnetAndel, direkteUtbetalingForAndel, andelLønnOgYtelse, "Fant differanse i beregning");
                 } else {
@@ -85,10 +87,10 @@ public class BeregneFraYtelse {
                 .collect(Collectors.toList());
     }
 
-    private static BigDecimal finnSumDirekteUtbetaltYtelseIPeriodeForAndel(Intervall beregningsperiode, List<YtelseAnvistDto> anvisninger, BeregningsgrunnlagPrArbeidsforhold beregnetAndel) {
+    private static Beløp finnSumDirekteUtbetaltYtelseIPeriodeForAndel(Intervall beregningsperiode, List<YtelseAnvistDto> anvisninger, BeregningsgrunnlagPrArbeidsforhold beregnetAndel) {
         return anvisninger.stream()
-                .map(anvisning -> finnDirekteUtbetalingForAndelIPeriode(beregningsperiode, beregnetAndel, anvisning)).reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
+                .map(anvisning -> finnDirekteUtbetalingForAndelIPeriode(beregningsperiode, beregnetAndel, anvisning)).reduce(Beløp::adder)
+                .orElse(Beløp.ZERO);
     }
 
     private static BigDecimal finnLønnOgDirekteUtbetaltYtelseForAndel(Beregningsgrunnlag regelmodell, Intervall beregningsperiode, BeregningsgrunnlagPrStatus atflStatus, List<BeregningsgrunnlagPrArbeidsforhold> arbeidsforholdUtenInntektsmelding, BeregningsgrunnlagPrArbeidsforhold beregnetAndel, BigDecimal direkteUtbetalingForAndel) {
@@ -114,17 +116,17 @@ public class BeregneFraYtelse {
         BigDecimal sum = inntekter.stream().map(Periodeinntekt::getInntekt)
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO).add(direkteUtbetalingForAndel);
-        BigDecimal snittFraBeregningsperiodenPrÅr = sum.multiply(BigDecimal.valueOf(12)).divide(BigDecimal.valueOf(3), 10, RoundingMode.HALF_EVEN);
+        BigDecimal snittFraBeregningsperiodenPrÅr = sum.multiply(KonfigTjeneste.getMånederIÅr()).divide(BigDecimal.valueOf(3), 10, RoundingMode.HALF_EVEN);
         return snittFraBeregningsperiodenPrÅr;
     }
 
-    private static void loggBeregning(ForeslåBeregningsgrunnlagInput input, BeregningsgrunnlagPrArbeidsforhold beregnetAndel, BigDecimal direkteUtbetalingForAndel, BigDecimal andelLønnOgYtelse, String startMelding) {
+    private static void loggBeregning(ForeslåBeregningsgrunnlagInput input, BeregningsgrunnlagPrArbeidsforhold beregnetAndel, Beløp direkteUtbetalingForAndel, BigDecimal andelLønnOgYtelse, String startMelding) {
         List<FaktaArbeidsforholdDto> fakta = input.getBeregningsgrunnlagGrunnlag().getFaktaAggregat().map(FaktaAggregatDto::getFaktaArbeidsforhold).orElse(Collections.emptyList());
         Boolean harMottattYtelse = fakta.stream().filter(f -> f.getArbeidsgiver().getIdentifikator().equals(beregnetAndel.getArbeidsgiverId()))
                 .findFirst()
                 .map(FaktaArbeidsforholdDto::getHarMottattYtelseVurdering)
                 .orElse(null);
-        boolean harMottattYtelseRegister = direkteUtbetalingForAndel.compareTo(BigDecimal.ZERO) > 0;
+        boolean harMottattYtelseRegister = direkteUtbetalingForAndel.compareTo(Beløp.ZERO) > 0;
         Long koblingId = input.getKoblingReferanse().getKoblingId();
         lagLoggmelding(beregnetAndel, andelLønnOgYtelse, harMottattYtelse, harMottattYtelseRegister,
                 koblingId, startMelding);
@@ -157,24 +159,24 @@ public class BeregneFraYtelse {
         return inntektFraInntektsmelding;
     }
 
-    private static BigDecimal finnDirekteUtbetalingForAndelIPeriode(Intervall beregningsperiode, BeregningsgrunnlagPrArbeidsforhold beregnetAndel, YtelseAnvistDto anvisning) {
+    private static Beløp finnDirekteUtbetalingForAndelIPeriode(Intervall beregningsperiode, BeregningsgrunnlagPrArbeidsforhold beregnetAndel, YtelseAnvistDto anvisning) {
         if (anvisning.getAnvisteAndeler() != null) {
             int antallVirkedagerOverlapperMedBP = finnAntallVirkedagerIBergningsperiode(beregningsperiode, anvisning);
             int virkedagerIAnvistPeriode = Virkedager.beregnAntallVirkedagerEllerKunHelg(anvisning.getAnvistFOM(), anvisning.getAnvistTOM());
             var anvistAndel = finnAnvistAndel(beregnetAndel, anvisning);
             return anvistAndel.map(anvist -> finnDirekteUtbetaltBeløp(antallVirkedagerOverlapperMedBP, virkedagerIAnvistPeriode, anvist))
-                    .orElse(BigDecimal.ZERO);
+                    .orElse(Beløp.ZERO);
         }
-        return BigDecimal.ZERO;
+        return Beløp.ZERO;
     }
 
-    private static BigDecimal finnDirekteUtbetaltBeløp(int antallVirkedagerOverlapperMedBP, int virkedagerIAnvistPeriode, AnvistAndel anvist) {
+    private static Beløp finnDirekteUtbetaltBeløp(int antallVirkedagerOverlapperMedBP, int virkedagerIAnvistPeriode, AnvistAndel anvist) {
         BigDecimal direkteUtbetalingProsent = BigDecimal.valueOf(100).subtract(anvist.getRefusjonsgrad().getVerdi());
         BigDecimal direkteUtbetalingGrad = direkteUtbetalingProsent.divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
         return anvist.getBeløp()
-                .multiply(direkteUtbetalingGrad)
-                .multiply(BigDecimal.valueOf(antallVirkedagerOverlapperMedBP))
-                .divide(BigDecimal.valueOf(virkedagerIAnvistPeriode), RoundingMode.HALF_UP);
+                .multipliser(direkteUtbetalingGrad)
+                .multipliser(BigDecimal.valueOf(antallVirkedagerOverlapperMedBP))
+                .map(v -> v.divide(BigDecimal.valueOf(virkedagerIAnvistPeriode), RoundingMode.HALF_UP));
     }
 
     private static Optional<AnvistAndel> finnAnvistAndel(BeregningsgrunnlagPrArbeidsforhold beregnetAndel, YtelseAnvistDto anvisning) {

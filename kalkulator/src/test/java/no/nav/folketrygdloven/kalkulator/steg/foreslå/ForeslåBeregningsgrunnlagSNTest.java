@@ -17,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -37,6 +36,7 @@ import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrun
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @ExtendWith(MockitoExtension.class)
 public class ForeslåBeregningsgrunnlagSNTest {
@@ -48,7 +48,7 @@ public class ForeslåBeregningsgrunnlagSNTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.MAY, 10);
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT_BEREGNING = SKJÆRINGSTIDSPUNKT_OPPTJENING;
-    private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(90000);
+    private static final Beløp GRUNNBELØP = Beløp.fra(90000);
 
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
 
@@ -102,7 +102,7 @@ public class ForeslåBeregningsgrunnlagSNTest {
         assertThat(periode.getBeregningsgrunnlagPeriodeFom()).isEqualTo(fom);
         assertThat(periode.getBeregningsgrunnlagPeriodeTom()).isEqualTo(tom);
         assertThat(periode.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(antallAndeler);
-        assertThat(periode.getBruttoPrÅr().doubleValue()).isCloseTo(BEREGNINGSGRUNNLAG, within(0.01));
+        assertThat(periode.getBruttoPrÅr().verdi().doubleValue()).isCloseTo(BEREGNINGSGRUNNLAG, within(0.01));
         assertThat(periode.getRedusertPrÅr()).isNull();
         assertThat(periode.getAvkortetPrÅr()).isNull();
     }
@@ -113,8 +113,8 @@ public class ForeslåBeregningsgrunnlagSNTest {
         assertThat(bgpsa.getBeregningsperiodeTom()).isEqualTo(LocalDate.of(2016, Month.DECEMBER, 31));
         assertThat(bgpsa.getBgAndelArbeidsforhold()).isEmpty();
         assertThat(bgpsa.getArbeidsforholdType()).isEqualTo(OpptjeningAktivitetType.UDEFINERT);
-        assertThat(bgpsa.getBeregnetPrÅr().doubleValue()).isCloseTo(BEREGNINGSGRUNNLAG, within(0.01));
-        assertThat(bgpsa.getBruttoPrÅr().doubleValue()).isCloseTo(BEREGNINGSGRUNNLAG, within(0.01));
+        assertThat(bgpsa.getBeregnetPrÅr().verdi().doubleValue()).isCloseTo(BEREGNINGSGRUNNLAG, within(0.01));
+        assertThat(bgpsa.getBruttoPrÅr().verdi().doubleValue()).isCloseTo(BEREGNINGSGRUNNLAG, within(0.01));
         assertThat(bgpsa.getOverstyrtPrÅr()).isNull();
         assertThat(bgpsa.getRedusertPrÅr()).isNull();
         assertThat(bgpsa.getAvkortetPrÅr()).isNull();

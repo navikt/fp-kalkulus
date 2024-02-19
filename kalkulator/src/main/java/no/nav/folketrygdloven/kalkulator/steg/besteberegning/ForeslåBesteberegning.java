@@ -3,8 +3,6 @@ package no.nav.folketrygdloven.kalkulator.steg.besteberegning;
 import static no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapRegelSporingFraRegelTilVL.mapRegelSporingGrunnlag;
 import static no.nav.folketrygdloven.kalkulator.steg.besteberegning.MapBesteberegningFraRegelTilVL.mapTilBeregningsgrunnlag;
 
-import java.math.BigDecimal;
-
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.besteberegning.modell.BesteberegningRegelmodell;
 import no.nav.folketrygdloven.besteberegning.modell.output.BesteberegningOutput;
@@ -12,6 +10,7 @@ import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
 
 public class ForeslåBesteberegning {
@@ -38,11 +37,11 @@ public class ForeslåBesteberegning {
                 besteberegningVurderingsgrunnlag);
     }
 
-    private BigDecimal finnAvvik(BesteberegningRegelmodell regelmodell, BeregningsgrunnlagDto besteberegnetGrunnlag) {
+    private Beløp finnAvvik(BesteberegningRegelmodell regelmodell, BeregningsgrunnlagDto besteberegnetGrunnlag) {
         var beregningEtter1ledd = regelmodell.getInput().getBeregnetGrunnlag();
-        var beregningEtter3ledd = besteberegnetGrunnlag.getBeregningsgrunnlagPerioder().get(0).getBruttoPrÅr();
-        var avvik = beregningEtter3ledd.subtract(beregningEtter1ledd);
-        if (avvik.compareTo(BigDecimal.ZERO) < 0) {
+        var beregningEtter3ledd = besteberegnetGrunnlag.getBeregningsgrunnlagPerioder().get(0).getBruttoPrÅr().verdi();
+        var avvik = Beløp.fra(beregningEtter3ledd.subtract(beregningEtter1ledd));
+        if (avvik.compareTo(Beløp.ZERO) < 0) {
             throw new IllegalStateException("Avvik kan ikke være mindre enn 0 kr når sak skal besteberegnes");
         }
         return avvik;

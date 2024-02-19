@@ -18,7 +18,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.mappers.MapTilAvslagsårsakerFRISINN;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.frisinn.Avslagsårsak;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.frisinn.BeregningsgrunnlagFRISINNDto;
@@ -29,7 +28,7 @@ public class MapBeregningsgrunnlagFRISINN {
     private final static BigDecimal ANTALL_G_GRENSEVERDI;
 
     static {
-        ANTALL_G_GRENSEVERDI = KonfigTjeneste.forYtelse(FagsakYtelseType.FRISINN).getAntallGØvreGrenseverdi();
+        ANTALL_G_GRENSEVERDI = KonfigTjeneste.getAntallGØvreGrenseverdi();
     }
 
     private MapBeregningsgrunnlagFRISINN() {

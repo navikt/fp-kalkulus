@@ -25,6 +25,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.folketrygdloven.utils.Tuple;
 
 
@@ -257,8 +258,8 @@ public class AvklarAktiviteterTjenesteImplTest {
         return ytelseBuilder.getAnvistBuilder()
             .medAnvistPeriode(Intervall.fraOgMedTilOgMed(periode.getFom(), periode.getTom()))
             .medUtbetalingsgradProsent(BigDecimal.valueOf(utbetalingsgrad))
-            .medDagsats(BigDecimal.valueOf(1000))
-            .medBeløp(BigDecimal.valueOf(10000))
+            .medDagsats(Beløp.fra(1000))
+            .medBeløp(Beløp.fra(10000))
             .build();
     }
 

@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -21,12 +20,13 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 public class FastsettBruttoBeregningsgrunnlagSNHåndtererTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now().minusDays(5);
-    private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(90000);
+    private static final Beløp GRUNNBELØP = Beløp.fra(90000);
     private static final int BRUTTO_BG = 200000;
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
     private BeregningsgrunnlagInput input;
@@ -71,7 +71,7 @@ public class FastsettBruttoBeregningsgrunnlagSNHåndtererTest {
             beregningsgrunnlagPerioder.forEach(beregningsgrunnlagPeriode -> {
                 List<BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList = beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList();
                 Assertions.assertThat(beregningsgrunnlagPrStatusOgAndelList).hasSize(1);
-                assertThat(beregningsgrunnlagPrStatusOgAndelList.get(0).getBruttoPrÅr().doubleValue()).isEqualTo(BRUTTO_BG);
+                assertThat(beregningsgrunnlagPrStatusOgAndelList.get(0).getBruttoPrÅr().verdi().doubleValue()).isEqualTo(BRUTTO_BG);
             });
         });
     }

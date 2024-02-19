@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulus.mappers;
 
 import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,8 +9,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +24,7 @@ import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidDto;
 import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
@@ -48,7 +46,7 @@ class LagKravperioder {
         iayGrunnlag.getInntektsmeldingDto().getInntektsmeldinger()
                 .stream()
                 .filter(im -> (im.getRefusjonBeløpPerMnd() != null &&
-                        im.getRefusjonBeløpPerMnd().getVerdi().compareTo(BigDecimal.ZERO) > 0) ||
+                        im.getRefusjonBeløpPerMnd().getBeløp().compareTo(Beløp.ZERO) > 0) ||
                         !im.getEndringerRefusjon().isEmpty())
                 .filter(im -> !refusjonOpphørerFørStart(im, finnStartdatoRefusjon(im, skjæringstidspunktBeregning, iayGrunnlag.getArbeidDto())))
                 .forEach(im -> {
@@ -121,20 +119,20 @@ class LagKravperioder {
     }
 
     private static List<Refusjonsperiode> lagPerioder(InntektsmeldingDto im, LocalDate startdatoRefusjon) {
-        ArrayList<LocalDateSegment<BigDecimal>> alleSegmenter = new ArrayList<>();
+        ArrayList<LocalDateSegment<Beløp>> alleSegmenter = new ArrayList<>();
         if (refusjonOpphørerFørStart(im, startdatoRefusjon)) {
             return Collections.emptyList();
         }
-        if (!(im.getRefusjonBeløpPerMnd() == null || im.getRefusjonBeløpPerMnd().getVerdi().compareTo(BigDecimal.ZERO) == 0)) {
-            alleSegmenter.add(new LocalDateSegment<>(startdatoRefusjon, TIDENES_ENDE, im.getRefusjonBeløpPerMnd().getVerdi()));
+        if (!(im.getRefusjonBeløpPerMnd() == null || im.getRefusjonBeløpPerMnd().getBeløp().compareTo(Beløp.ZERO) == 0)) {
+            alleSegmenter.add(new LocalDateSegment<>(startdatoRefusjon, TIDENES_ENDE, im.getRefusjonBeløpPerMnd().getBeløp()));
         }
 
         alleSegmenter.addAll(im.getEndringerRefusjon().stream().map(e ->
-                new LocalDateSegment<>(e.getFom(), TIDENES_ENDE, e.getRefusjonsbeløpMnd().getVerdi())
+                new LocalDateSegment<>(e.getFom(), TIDENES_ENDE, e.getRefusjonsbeløpMnd().getBeløp())
         ).collect(Collectors.toList()));
 
         if (im.getRefusjonOpphører() != null && !im.getRefusjonOpphører().equals(TIDENES_ENDE)) {
-            alleSegmenter.add(new LocalDateSegment<>(im.getRefusjonOpphører().plusDays(1), TIDENES_ENDE, BigDecimal.ZERO));
+            alleSegmenter.add(new LocalDateSegment<>(im.getRefusjonOpphører().plusDays(1), TIDENES_ENDE, Beløp.ZERO));
         }
 
         var refusjonTidslinje = new LocalDateTimeline<>(alleSegmenter, (interval, lhs, rhs) -> {
@@ -144,7 +142,7 @@ class LagKravperioder {
             return new LocalDateSegment<>(interval, lhs.getValue());
         });
         return refusjonTidslinje.stream()
-                .map(r -> new Refusjonsperiode(new Periode(r.getFom(), r.getTom()), Beløp.fra(r.getValue())))
+                .map(r -> new Refusjonsperiode(new Periode(r.getFom(), r.getTom()), r.getValue()))
                 .collect(Collectors.toList());
 
     }

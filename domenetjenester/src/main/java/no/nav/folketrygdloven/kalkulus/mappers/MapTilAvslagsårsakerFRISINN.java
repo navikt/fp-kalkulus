@@ -12,17 +12,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittPeriodeInntekt;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.EffektivÅrsinntektTjenesteFRISINN;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.frisinn.Avslagsårsak;
 
 public class MapTilAvslagsårsakerFRISINN {
@@ -66,7 +65,7 @@ public class MapTilAvslagsårsakerFRISINN {
             return Optional.of(INGEN_FRILANS_I_PERIODE_UTEN_YTELSE);
         }
         if (andel.getAvkortetPrÅr().compareTo(Beløp.ZERO) == 0) {
-            BigDecimal antallGØvreGrenseverdi = KonfigTjeneste.forYtelse(FagsakYtelseType.FRISINN).getAntallGØvreGrenseverdi();
+            BigDecimal antallGØvreGrenseverdi = KonfigTjeneste.getAntallGØvreGrenseverdi();
             Beløp grunnlagFraArbeid = finnGrunnlagFraArbeid(andelerISammePeriode);
             BigDecimal seksG = grunnbeløp.multiply(antallGØvreGrenseverdi);
             if (grunnlagFraArbeid.compareTo(new Beløp(seksG)) >= 0) {
@@ -103,7 +102,7 @@ public class MapTilAvslagsårsakerFRISINN {
             return Optional.empty();
         }
         if (andel.getAvkortetPrÅr().compareTo(Beløp.ZERO) == 0) {
-            BigDecimal antallGØvreGrenseverdi = KonfigTjeneste.forYtelse(FagsakYtelseType.FRISINN).getAntallGØvreGrenseverdi();
+            BigDecimal antallGØvreGrenseverdi = KonfigTjeneste.getAntallGØvreGrenseverdi();
             Beløp grunnlagFraArbeid = finnGrunnlagFraArbeid(andelerISammePeriode);
 
             Beløp seksG = new Beløp(grunnbeløp.multiply(antallGØvreGrenseverdi));

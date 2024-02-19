@@ -28,6 +28,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 
 
@@ -171,8 +172,8 @@ public class BeregningsgrunnlagTestUtil {
         for (int j = 0; j < perioder.size(); j++) {
             BeregningsgrunnlagPeriodeDto.Builder periodeBuilder = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(perioder.get(j).getFomDato(), perioder.get(j).getTomDato())
-                .medAvkortetPrÅr(avkortet.get(j) != null ? BigDecimal.valueOf(avkortet.get(j)) : null)
-                .medRedusertPrÅr(redusert.get(j) != null ? BigDecimal.valueOf(redusert.get(j)) : null);
+                .medAvkortetPrÅr(avkortet.get(j) != null ? Beløp.fra(avkortet.get(j)) : null)
+                .medRedusertPrÅr(redusert.get(j) != null ? Beløp.fra(redusert.get(j)) : null);
             if (!periodePeriodeÅrsaker.isEmpty()) {
                 periodeBuilder.leggTilPeriodeÅrsaker(periodePeriodeÅrsaker.get(j));
             }
@@ -252,7 +253,7 @@ public class BeregningsgrunnlagTestUtil {
             .medArbeidsgiver(arbeidsgiver)
             .medArbeidsforholdRef(arbId)
             .medRefusjonskravPrÅr(refusjonPrÅr.get(identifikator) != null ?
-                BigDecimal.valueOf(refusjonPrÅr.get(identifikator)) : null, Utfall.GODKJENT)
+                    Beløp.fra(refusjonPrÅr.get(identifikator)) : null, Utfall.GODKJENT)
             .medArbeidsperiodeFom(arbeidsperiode.getFomDato())
             .medArbeidsperiodeTom(arbeidsperiode.getTomDato());
     }
@@ -266,8 +267,8 @@ public class BeregningsgrunnlagTestUtil {
             .medBeregningsperiode(skjæringstidspunkt.minusMonths(3).withDayOfMonth(1), skjæringstidspunkt.withDayOfMonth(1).minusDays(1))
             .medBGAndelArbeidsforhold(bga)
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medAvkortetPrÅr(avkortetPrÅr != null ? BigDecimal.valueOf(avkortetPrÅr) : null)
-            .medBeregnetPrÅr(bruttoPrÅr != null ? BigDecimal.valueOf(bruttoPrÅr) : null)
+            .medAvkortetPrÅr(avkortetPrÅr != null ? Beløp.fra(avkortetPrÅr) : null)
+            .medBeregnetPrÅr(bruttoPrÅr != null ? Beløp.fra(bruttoPrÅr) : null)
             .medKilde(lagtTilAvSaksbehandler ? AndelKilde.SAKSBEHANDLER_KOFAKBER : AndelKilde.PROSESS_START)
             .medInntektskategori(inntektskategori)
             .build(beregningsgrunnlagPeriode);

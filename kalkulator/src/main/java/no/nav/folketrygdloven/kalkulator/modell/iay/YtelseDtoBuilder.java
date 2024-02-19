@@ -38,8 +38,8 @@ public class YtelseDtoBuilder {
     }
 
 
-    public YtelseDtoBuilder medVedtaksDagsats(BigDecimal vedtakDagsats) {
-        ytelse.setVedtaksDagsats(Beløp.fra(vedtakDagsats));
+    public YtelseDtoBuilder medVedtaksDagsats(Beløp vedtakDagsats) {
+        ytelse.setVedtaksDagsats(vedtakDagsats);
         return this;
     }
 

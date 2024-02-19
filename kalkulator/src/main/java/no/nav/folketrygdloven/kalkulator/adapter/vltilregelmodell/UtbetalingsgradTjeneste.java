@@ -17,16 +17,17 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class UtbetalingsgradTjeneste {
 
-    public static BigDecimal finnGradertBruttoForAndel(BeregningsgrunnlagPrStatusOgAndelDto andel,
-                                                       Intervall periode,
-                                                       YtelsespesifiktGrunnlag ytelsesSpesifiktGrunnlag) {
-        BigDecimal utbetalingsgrad = finnUtbetalingsgradForAndel(andel, periode, ytelsesSpesifiktGrunnlag, false);
+    public static Beløp finnGradertBruttoForAndel(BeregningsgrunnlagPrStatusOgAndelDto andel,
+                                                  Intervall periode,
+                                                  YtelsespesifiktGrunnlag ytelsesSpesifiktGrunnlag) {
+        var utbetalingsgrad = finnUtbetalingsgradForAndel(andel, periode, ytelsesSpesifiktGrunnlag, false);
         return andel.getBruttoInkludertNaturalYtelser()
-                .divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_EVEN)
-                .multiply(utbetalingsgrad);
+                .map(v -> v.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_EVEN))
+                .multipliser(utbetalingsgrad);
     }
 
 

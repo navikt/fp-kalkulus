@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.input;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
@@ -38,9 +37,9 @@ public class FordelBeregningsgrunnlagInput extends StegProsesseringInput {
     }
 
 
-    public FordelBeregningsgrunnlagInput medUregulertGrunnbeløp(BigDecimal uregulertGrunnbeløp) {
+    public FordelBeregningsgrunnlagInput medUregulertGrunnbeløp(Beløp uregulertGrunnbeløp) {
         var newInput = new FordelBeregningsgrunnlagInput(this);
-        newInput.uregulertGrunnbeløp = Beløp.fra(uregulertGrunnbeløp);
+        newInput.uregulertGrunnbeløp = uregulertGrunnbeløp;
         return newInput;
     }
 

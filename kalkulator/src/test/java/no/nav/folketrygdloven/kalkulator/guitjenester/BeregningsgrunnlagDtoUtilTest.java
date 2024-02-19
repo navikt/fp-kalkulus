@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
-
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
@@ -26,14 +24,16 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class BeregningsgrunnlagDtoUtilTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
-    private static final BigDecimal GRUNNBELØP = BigDecimal.TEN;
+    private static final Beløp GRUNNBELØP = Beløp.fra(10);
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.MAY, 10);
     public static final Arbeidsgiver ARBEIDSGIVER = Arbeidsgiver.virksomhet("123456789");
     public static final BeregningsgrunnlagPrStatusOgAndelDto ARBEIDSTAKER_ANDEL = BeregningsgrunnlagPrStatusOgAndelDto.ny()

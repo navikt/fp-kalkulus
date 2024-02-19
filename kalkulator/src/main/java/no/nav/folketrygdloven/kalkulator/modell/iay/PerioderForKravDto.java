@@ -1,12 +1,12 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 import no.nav.fpsak.tidsserie.StandardCombinators;
@@ -31,8 +31,8 @@ public class PerioderForKravDto {
     }
 
     public Optional<PerioderForKravDto> finnKravMedOverlappMedSisteSøkte(LocalDateTimeline<Boolean> søktePerioderTimeline) {
-        LocalDateTimeline<BigDecimal> periodeTimeline = finnKravperioderTidslinje();
-        LocalDateTimeline<BigDecimal> overlapp = søktePerioderTimeline.intersection(periodeTimeline, StandardCombinators::rightOnly);
+        LocalDateTimeline<Beløp> periodeTimeline = finnKravperioderTidslinje();
+        LocalDateTimeline<Beløp> overlapp = søktePerioderTimeline.intersection(periodeTimeline, StandardCombinators::rightOnly);
         if (overlapp.isEmpty()) {
             return Optional.empty();
         }
@@ -40,19 +40,19 @@ public class PerioderForKravDto {
 
     }
 
-    private LocalDateTimeline<BigDecimal> finnKravperioderTidslinje() {
-        List<LocalDateSegment<BigDecimal>> periodeSegmenter = perioder.stream()
+    private LocalDateTimeline<Beløp> finnKravperioderTidslinje() {
+        List<LocalDateSegment<Beløp>> periodeSegmenter = perioder.stream()
                 .map(p -> new LocalDateSegment<>(p.periode().getFomDato(), p.periode().getTomDato(), p.beløp()))
                 .collect(Collectors.toList());
-        LocalDateTimeline<BigDecimal> periodeTimeline = new LocalDateTimeline<>(periodeSegmenter);
+        LocalDateTimeline<Beløp> periodeTimeline = new LocalDateTimeline<>(periodeSegmenter);
         return periodeTimeline;
     }
 
-    private PerioderForKravDto lagMedOverlapp(LocalDateTimeline<BigDecimal> overlapp) {
+    private PerioderForKravDto lagMedOverlapp(LocalDateTimeline<Beløp> overlapp) {
         return new PerioderForKravDto(innsendingsdato, finnPerioderFraTidslinje(overlapp));
     }
 
-    private List<RefusjonsperiodeDto> finnPerioderFraTidslinje(LocalDateTimeline<BigDecimal> overlapp) {
+    private List<RefusjonsperiodeDto> finnPerioderFraTidslinje(LocalDateTimeline<Beløp> overlapp) {
         return overlapp.stream()
                 .map(p -> new RefusjonsperiodeDto(Intervall.fraOgMedTilOgMed(p.getFom(), p.getTom()), p.getValue()))
                 .collect(Collectors.toList());

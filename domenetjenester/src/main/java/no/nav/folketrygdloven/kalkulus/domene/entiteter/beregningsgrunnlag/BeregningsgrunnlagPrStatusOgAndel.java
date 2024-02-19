@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -8,6 +7,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
@@ -24,12 +28,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
-
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.FastsattInntektskategori;
@@ -507,7 +506,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
             verifiserKanModifisere();
             kladd.redusertRefusjonPrÅr = redusertRefusjonPrÅr;
             kladd.dagsatsArbeidsgiver = redusertRefusjonPrÅr == null ?
-                null : redusertRefusjonPrÅr.getVerdi().divide(BigDecimal.valueOf(260), 0, RoundingMode.HALF_UP).longValue();
+                null : redusertRefusjonPrÅr.getVerdi().divide(KonfigTjeneste.getYtelsesdagerIÅr(), 0, RoundingMode.HALF_UP).longValue();
             return this;
         }
 
@@ -521,7 +520,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
             verifiserKanModifisere();
             kladd.redusertBrukersAndelPrÅr = redusertBrukersAndelPrÅr;
             kladd.dagsatsBruker = redusertBrukersAndelPrÅr == null ?
-                null : redusertBrukersAndelPrÅr.getVerdi().divide(BigDecimal.valueOf(260), 0, RoundingMode.HALF_UP).longValue();
+                null : redusertBrukersAndelPrÅr.getVerdi().divide(KonfigTjeneste.getYtelsesdagerIÅr(), 0, RoundingMode.HALF_UP).longValue();
             return this;
         }
 

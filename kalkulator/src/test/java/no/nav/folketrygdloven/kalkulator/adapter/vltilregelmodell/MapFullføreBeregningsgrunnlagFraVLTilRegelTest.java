@@ -71,6 +71,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @ExtendWith(MockitoExtension.class)
 public class MapFullføreBeregningsgrunnlagFraVLTilRegelTest {
@@ -113,7 +114,7 @@ public class MapFullføreBeregningsgrunnlagFraVLTilRegelTest {
         YtelseDtoBuilder ytelse = lagYtelse(YtelseType.DAGPENGER,
                 skjæring.minusMonths(1).plusDays(1),
                 skjæring.plusMonths(6),
-                new BigDecimal(MELDEKORTSATS1),
+                Beløp.fra(MELDEKORTSATS1),
                 MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG,
                 skjæring.minusMonths(1).plusDays(2),
                 skjæring.minusMonths(1).plusDays(16));
@@ -121,7 +122,7 @@ public class MapFullføreBeregningsgrunnlagFraVLTilRegelTest {
         ytelse = lagYtelse(YtelseType.DAGPENGER,
                 skjæring.minusMonths(3),
                 skjæring.minusMonths(1),
-                new BigDecimal(MELDEKORTSATS2),
+                Beløp.fra(MELDEKORTSATS2),
                 new BigDecimal(100),
                 skjæring.minusMonths(1).minusDays(13),
                 skjæring.minusMonths(1).plusDays(1));
@@ -137,7 +138,7 @@ public class MapFullføreBeregningsgrunnlagFraVLTilRegelTest {
         YtelseDtoBuilder ytelse = lagYtelse(YtelseType.ARBEIDSAVKLARINGSPENGER,
                 skjæring.minusWeeks(2),
                 skjæring.plusMonths(6),
-                new BigDecimal(MELDEKORTSATS1),
+                Beløp.fra(MELDEKORTSATS1),
                 MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG.subtract(BigDecimal.TEN),
                 skjæring.minusDays(5),
                 skjæring.plusDays(9));
@@ -148,7 +149,7 @@ public class MapFullføreBeregningsgrunnlagFraVLTilRegelTest {
     }
 
     private YtelseDtoBuilder lagYtelse(YtelseType relatertYtelseType,
-                                       LocalDate fom, LocalDate tom, BigDecimal beløp, BigDecimal utbetalingsgrad,
+                                       LocalDate fom, LocalDate tom, Beløp beløp, BigDecimal utbetalingsgrad,
                                        LocalDate meldekortFom, LocalDate meldekortTom) {
         YtelseDtoBuilder ytelselseBuilder = YtelseDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom)).medYtelseType(relatertYtelseType);
         return ytelselseBuilder.medYtelseType(YtelseType.DAGPENGER)
@@ -189,7 +190,7 @@ public class MapFullføreBeregningsgrunnlagFraVLTilRegelTest {
         Stream.of(InntektskildeType.INNTEKT_BEREGNING, InntektskildeType.INNTEKT_SAMMENLIGNING).forEach(kilde -> {
             InntektDtoBuilder inntektBuilder = aktørInntektBuilder.getInntektBuilder(kilde, opptjeningsnøkkel);
             InntektspostDtoBuilder inntektspost = InntektspostDtoBuilder.ny()
-                    .medBeløp(BigDecimal.valueOf(INNTEKT_BELOP))
+                    .medBeløp(Beløp.fra(INNTEKT_BELOP))
                     .medPeriode(fom, tom)
                     .medInntektspostType(InntektspostType.LØNN);
             inntektBuilder.leggTilInntektspost(inntektspost).medArbeidsgiver(yrkesaktivitetBuilder.build().getArbeidsgiver());
@@ -257,7 +258,7 @@ public class MapFullføreBeregningsgrunnlagFraVLTilRegelTest {
 
     private InntektspostDtoBuilder opprettInntektspostForSigrun(int år, int inntekt) {
         return InntektspostDtoBuilder.ny()
-                .medBeløp(BigDecimal.valueOf(inntekt))
+                .medBeløp(Beløp.fra(inntekt))
                 .medPeriode(LocalDate.of(år, Month.JANUARY, 1), LocalDate.of(år, Month.DECEMBER, 31))
                 .medInntektspostType(InntektspostType.LØNN);
     }

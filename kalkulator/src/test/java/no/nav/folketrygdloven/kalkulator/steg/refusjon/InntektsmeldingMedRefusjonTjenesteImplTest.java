@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.steg.refusjon;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +41,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class InntektsmeldingMedRefusjonTjenesteImplTest {
     private static final String ORGNR = "974760673";
@@ -92,9 +92,9 @@ public class InntektsmeldingMedRefusjonTjenesteImplTest {
         BeregningAktivitetAggregatDto aktivitetAggregat = leggTilAktivitet(registerBuilder, List.of(ORGNR, ORGNR2));
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
         Arbeidsgiver arbeidsgiver2 = Arbeidsgiver.virksomhet(ORGNR2);
-        InntektsmeldingDto im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR, SKJÆRINGSTIDSPUNKT, BigDecimal.TEN, BigDecimal.TEN);
+        InntektsmeldingDto im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR, SKJÆRINGSTIDSPUNKT, Beløp.fra(10), Beløp.fra(10));
         førsteInnsendingMap.put(arbeidsgiver, SKJÆRINGSTIDSPUNKT.plusMonths(4));
-        InntektsmeldingDto im2 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR2, SKJÆRINGSTIDSPUNKT, BigDecimal.TEN, BigDecimal.TEN);
+        InntektsmeldingDto im2 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR2, SKJÆRINGSTIDSPUNKT, Beløp.fra(10), Beløp.fra(10));
         førsteInnsendingMap.put(arbeidsgiver2, SKJÆRINGSTIDSPUNKT.plusMonths(2));
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlag = byggGrunnlag(aktivitetAggregat, List.of(arbeidsgiver, arbeidsgiver2));
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
@@ -149,9 +149,9 @@ public class InntektsmeldingMedRefusjonTjenesteImplTest {
         BeregningAktivitetAggregatDto aktivitetAggregat = leggTilAktivitet(registerBuilder, List.of(ORGNR, ORGNR2));
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
         Arbeidsgiver arbeidsgiver2 = Arbeidsgiver.virksomhet(ORGNR2);
-        InntektsmeldingDto im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR, SKJÆRINGSTIDSPUNKT, BigDecimal.TEN, BigDecimal.TEN);
+        InntektsmeldingDto im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR, SKJÆRINGSTIDSPUNKT, Beløp.fra(10), Beløp.fra(10));
         førsteInnsendingMap.put(arbeidsgiver, SKJÆRINGSTIDSPUNKT.plusMonths(1));
-        InntektsmeldingDto im2 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR2, SKJÆRINGSTIDSPUNKT, BigDecimal.TEN, BigDecimal.TEN);
+        InntektsmeldingDto im2 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR2, SKJÆRINGSTIDSPUNKT, Beløp.fra(10), Beløp.fra(10));
         førsteInnsendingMap.put(arbeidsgiver2, SKJÆRINGSTIDSPUNKT.plusMonths(2));
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlag = byggGrunnlag(aktivitetAggregat, List.of(arbeidsgiver, arbeidsgiver2));
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())

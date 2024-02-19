@@ -143,7 +143,7 @@ public class MapTilBesteberegningRegelmodell {
             throw new IllegalStateException("Liste med perioder skal ikke vere tom");
         }
         BeregningsgrunnlagPeriodeDto førstePeriode = perioder.get(0);
-        return førstePeriode.getBruttoPrÅr();
+        return Beløp.safeVerdi(førstePeriode.getBruttoPrÅr());
     }
 
     private static List<Periode> finnPerioderMedOppgittNæring(ForeslåBesteberegningInput input) {

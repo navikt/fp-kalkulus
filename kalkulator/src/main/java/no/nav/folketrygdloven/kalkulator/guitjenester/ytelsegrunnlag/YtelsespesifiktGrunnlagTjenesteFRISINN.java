@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -63,7 +64,7 @@ public class YtelsespesifiktGrunnlagTjenesteFRISINN implements YtelsespesifiktGr
                 .map(periode -> new AvslagsårsakPrPeriodeDto(periode.getBeregningsgrunnlagPeriodeFom(), periode.getBeregningsgrunnlagPeriodeTom(),
                         MapTilAvslagsårsakerFRISINN.finnForPeriode(periode, frisinnGrunnlag,
                                 oppgitOpptjening,
-                                input.getBeregningsgrunnlag().getGrunnbeløp().verdi(),
+                                input.getBeregningsgrunnlag().getGrunnbeløp(),
                                 input.getSkjæringstidspunktForBeregning()).orElse(null)))
                 .filter(a -> a.getAvslagsårsak() != null)
                 .collect(Collectors.toList());
@@ -131,23 +132,24 @@ public class YtelsespesifiktGrunnlagTjenesteFRISINN implements YtelsespesifiktGr
                 .orElse(Collections.emptyList());
 
         boolean erNyoppstartetNæringsdrivende = næringer.stream().anyMatch(OppgittEgenNæringDto::getNyoppstartet);
-        BigDecimal oppgittLøpendeÅrsinntekt = næringer.stream()
+        var oppgittLøpendeÅrsinntekt = næringer.stream()
                 .filter(en -> !stpBg.isAfter(en.getTilOgMed()))
                 .filter(en -> en.getBruttoInntekt() != null)
                 .map(EffektivÅrsinntektTjenesteFRISINN::finnEffektivÅrsinntektForLøpenedeInntekt)
                 .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
-        BigDecimal oppgittLøpendeInntekt = næringer.stream()
+                .map(Beløp::fra)
+                .orElse(Beløp.ZERO);
+        var oppgittLøpendeInntekt = næringer.stream()
                 .filter(en -> !stpBg.isAfter(en.getTilOgMed()))
-                .filter(en -> en.getBruttoInntekt() != null)
                 .map(OppgittEgenNæringDto::getBruttoInntekt)
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
+                .filter(Objects::nonNull)
+                .reduce(Beløp::adder)
+                .orElse(Beløp.ZERO);
 
         SøknadsopplysningerDto dto = new SøknadsopplysningerDto();
         dto.setErNyoppstartet(erNyoppstartetNæringsdrivende);
-        dto.setOppgittÅrsinntekt(Beløp.fra(oppgittLøpendeÅrsinntekt));
-        dto.setOppgittInntekt(Beløp.fra(oppgittLøpendeInntekt));
+        dto.setOppgittÅrsinntekt(oppgittLøpendeÅrsinntekt);
+        dto.setOppgittInntekt(oppgittLøpendeInntekt);
         return dto;
     }
 
@@ -163,19 +165,21 @@ public class YtelsespesifiktGrunnlagTjenesteFRISINN implements YtelsespesifiktGr
                 .map(OppgittFrilansDto::getOppgittFrilansInntekt)
                 .orElse(Collections.emptyList());
 
-        BigDecimal oppgittLøpendeÅrsinntekt = oppgittFLInntekt.stream()
+        var oppgittLøpendeÅrsinntekt = oppgittFLInntekt.stream()
                 .filter(oi -> !oi.getPeriode().getFomDato().isBefore(stpBg))
                 .map(EffektivÅrsinntektTjenesteFRISINN::finnEffektivÅrsinntektForLøpenedeInntekt)
                 .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
-        BigDecimal oppgittLøpendeInntekt = oppgittFLInntekt.stream()
+                .map(Beløp::fra)
+                .orElse(Beløp.ZERO);
+        var oppgittLøpendeInntekt = oppgittFLInntekt.stream()
                 .filter(oi -> !oi.getPeriode().getFomDato().isBefore(stpBg))
                 .map(OppgittFrilansInntektDto::getInntekt)
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
+                .filter(Objects::nonNull)
+                .reduce(Beløp::adder)
+                .orElse(Beløp.ZERO);
         SøknadsopplysningerDto dto = new SøknadsopplysningerDto();
-        dto.setOppgittInntekt(Beløp.fra(oppgittLøpendeInntekt));
-        dto.setOppgittÅrsinntekt(Beløp.fra(oppgittLøpendeÅrsinntekt));
+        dto.setOppgittInntekt(oppgittLøpendeInntekt);
+        dto.setOppgittÅrsinntekt(oppgittLøpendeÅrsinntekt);
         dto.setErNyoppstartet(erNyoppstartetFrilans);
         return dto;
     }

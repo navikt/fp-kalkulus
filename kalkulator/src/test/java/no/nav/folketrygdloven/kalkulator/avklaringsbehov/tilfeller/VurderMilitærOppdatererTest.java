@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.avklaringsbehov.tilfeller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,7 +35,7 @@ import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class VurderMilitærOppdatererTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019,1,1);
-    private static final Beløp GRUNNBELØP = Beløp.fra(BigDecimal.valueOf(85000));
+    private static final Beløp GRUNNBELØP = Beløp.fra(85000);
 
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
 

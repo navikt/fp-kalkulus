@@ -1,23 +1,23 @@
 package no.nav.folketrygdloven.kalkulator.avklaringsbehov.refusjon;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class RefusjonSplittAndel {
     private Arbeidsgiver arbeidsgiver;
     private InternArbeidsforholdRefDto internArbeidsforholdRefDto;
     private LocalDate startdatoRefusjon;
-    private BigDecimal delvisRefusjonBeløpPrÅr;
+    private Beløp delvisRefusjonBeløpPrÅr;
 
     public RefusjonSplittAndel(Arbeidsgiver arbeidsgiver,
                                InternArbeidsforholdRefDto internArbeidsforholdRefDto,
                                LocalDate startdatoRefusjon,
-                               BigDecimal delvisRefusjonBeløpPrÅr) {
+                               Beløp delvisRefusjonBeløpPrÅr) {
         this.arbeidsgiver = arbeidsgiver;
         this.internArbeidsforholdRefDto = internArbeidsforholdRefDto;
         this.startdatoRefusjon = startdatoRefusjon;
@@ -43,7 +43,7 @@ public class RefusjonSplittAndel {
         return Objects.equals(andelAG, arbeidsgiver) && Objects.equals(getInternArbeidsforholdRefDto().getReferanse(), andelRef.getReferanse());
     }
 
-    public BigDecimal getDelvisRefusjonBeløpPrÅr() {
+    public Beløp getDelvisRefusjonBeløpPrÅr() {
         return delvisRefusjonBeløpPrÅr;
     }
 

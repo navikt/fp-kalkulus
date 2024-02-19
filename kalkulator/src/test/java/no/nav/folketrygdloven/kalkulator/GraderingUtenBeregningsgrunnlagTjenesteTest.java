@@ -19,6 +19,7 @@ import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.ytelse.fp.GraderingUtenBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class GraderingUtenBeregningsgrunnlagTjenesteTest {
 
@@ -437,7 +438,7 @@ public class GraderingUtenBeregningsgrunnlagTjenesteTest {
                 .medArbeidsperiodeTom(arbeidsperiodeTom);
         BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(aktivitetStatus)
-                .medRedusertPrÅr(redusertPrÅr);
+                .medRedusertPrÅr(Beløp.fra(redusertPrÅr));
 
         if (aktivitetStatus.erArbeidstaker()) {
             andelBuilder.medBGAndelArbeidsforhold(bgAndelBuilder);

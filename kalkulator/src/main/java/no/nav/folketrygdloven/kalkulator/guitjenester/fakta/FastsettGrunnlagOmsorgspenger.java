@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste.finnGradertBruttoForAndel;
 import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapRefusjonskravFraVLTilRegel.finnGradertRefusjonskravPåSkjæringstidspunktet;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
@@ -17,6 +16,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class FastsettGrunnlagOmsorgspenger extends FastsettGrunnlagGenerell {
 
@@ -61,14 +61,14 @@ public class FastsettGrunnlagOmsorgspenger extends FastsettGrunnlagGenerell {
         if (!harForeslåttBeregning(input.getBeregningsgrunnlagGrunnlag())) {
             return false;
         }
-        BigDecimal grenseverdi6G = input.getBeregningsgrunnlag().getGrunnbeløp().verdi().multiply(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi());
-        BigDecimal gradertRefusjonVedSkjæringstidspunkt = finnGradertRefusjonskravPåSkjæringstidspunktet(input.getInntektsmeldinger(), input.getSkjæringstidspunktForBeregning(), input.getYtelsespesifiktGrunnlag());
-        BigDecimal lavesteGrenseRefusjon = grenseverdi6G.min(gradertRefusjonVedSkjæringstidspunkt);
-        BigDecimal totaltBeregningsgrunnlag = periode.getBeregningsgrunnlagPrStatusOgAndelList()
+        var grenseverdi6G = input.getBeregningsgrunnlag().getGrunnbeløp().multipliser(KonfigTjeneste.getAntallGØvreGrenseverdi());
+        var gradertRefusjonVedSkjæringstidspunkt = finnGradertRefusjonskravPåSkjæringstidspunktet(input.getInntektsmeldinger(), input.getSkjæringstidspunktForBeregning(), input.getYtelsespesifiktGrunnlag());
+        var lavesteGrenseRefusjon = grenseverdi6G.min(gradertRefusjonVedSkjæringstidspunkt);
+        var totaltBeregningsgrunnlag = periode.getBeregningsgrunnlagPrStatusOgAndelList()
                 .stream()
                 .map(a -> finnGradertBruttoForAndel(a, periode.getPeriode(), input.getYtelsespesifiktGrunnlag()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal avkortetTotaltGrunnlag = grenseverdi6G.min(totaltBeregningsgrunnlag);
+                .reduce(Beløp.ZERO, Beløp::adder);
+        var avkortetTotaltGrunnlag = grenseverdi6G.min(totaltBeregningsgrunnlag);
 
         return lavesteGrenseRefusjon.compareTo(avkortetTotaltGrunnlag) < 0;
     }

@@ -3,12 +3,9 @@ package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
-import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
 
 import org.junit.jupiter.api.Test;
 
@@ -29,6 +26,8 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class MapInntektsgrunnlagVLTilRegelTest {
 
@@ -41,7 +40,7 @@ public class MapInntektsgrunnlagVLTilRegelTest {
     public void skal_mappe_inntektsmelding_for_arbeid_med_fleire_yrkesaktiviteter() {
         // Arrange
         InntektsmeldingDto im = InntektsmeldingDtoBuilder.builder()
-                .medBeløp(BigDecimal.TEN)
+                .medBeløp(Beløp.fra(10))
                 .medArbeidsgiver(VIRKSOMHET)
                 .build();
         Intervall p1 = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(12),
@@ -65,7 +64,7 @@ public class MapInntektsgrunnlagVLTilRegelTest {
     public void skal_ikkje_mappe_inntektsmelding_for_arbeid_som_slutter_dagen_før_skjæringstidspunktet() {
         // Arrange
         InntektsmeldingDto im = InntektsmeldingDtoBuilder.builder()
-                .medBeløp(BigDecimal.TEN)
+                .medBeløp(Beløp.fra(10))
                 .medArbeidsgiver(VIRKSOMHET)
                 .build();
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIAYGrunnlagMedArbeidIPeriode(
@@ -85,7 +84,7 @@ public class MapInntektsgrunnlagVLTilRegelTest {
     public void skal_mappe_inntektsmelding_for_arbeid_som_slutter_på_skjæringstidspunktet() {
         // Arrange
         InntektsmeldingDto im = InntektsmeldingDtoBuilder.builder()
-                .medBeløp(BigDecimal.TEN)
+                .medBeløp(Beløp.fra(10))
                 .medArbeidsgiver(VIRKSOMHET)
                 .build();
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIAYGrunnlagMedArbeidIPeriode(
@@ -105,7 +104,7 @@ public class MapInntektsgrunnlagVLTilRegelTest {
     public void skal_mappe_inntektsmelding_for_arbeid_som_slutter_dagen_etter_skjæringstidspunktet() {
         // Arrange
         InntektsmeldingDto im = InntektsmeldingDtoBuilder.builder()
-                .medBeløp(BigDecimal.TEN)
+                .medBeløp(Beløp.fra(10))
                 .medArbeidsgiver(VIRKSOMHET)
                 .build();
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIAYGrunnlagMedArbeidIPeriode(

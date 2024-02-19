@@ -55,7 +55,7 @@ public class FastsettBesteberegningFødendeKvinneOppdaterer  {
     private static FastsatteVerdierDto mapTilFastsatteVerdier(DagpengeAndelLagtTilBesteberegningDto nyDagpengeAndel) {
         FastsatteVerdierForBesteberegningDto fastsatteVerdier = nyDagpengeAndel.getFastsatteVerdier();
         return FastsatteVerdierDto.Builder.ny()
-                .medFastsattBeløpPrÅr(fastsatteVerdier.finnFastsattBeløpPrÅr().intValue())
+                .medFastsattBeløpPrÅr(fastsatteVerdier.finnFastsattBeløpPrÅr())
                 .medInntektskategori(fastsatteVerdier.getInntektskategori())
                 .medSkalHaBesteberegning(true)
                 .build();
@@ -72,7 +72,7 @@ public class FastsettBesteberegningFødendeKvinneOppdaterer  {
     private static FastsatteVerdierDto mapTilFastsatteVerdier(BesteberegningFødendeKvinneAndelDto dtoAndel) {
         FastsatteVerdierForBesteberegningDto fastsatteVerdier = dtoAndel.getFastsatteVerdier();
         return FastsatteVerdierDto.Builder.ny()
-                .medFastsattBeløpPrÅr(fastsatteVerdier.finnFastsattBeløpPrÅr().intValue())
+                .medFastsattBeløpPrÅr(fastsatteVerdier.finnFastsattBeløpPrÅr())
                 .medInntektskategori(fastsatteVerdier.getInntektskategori())
                 .medSkalHaBesteberegning(fastsatteVerdier.getSkalHaBesteberegning())
                 .build();

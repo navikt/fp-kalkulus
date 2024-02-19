@@ -43,6 +43,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PermisjonsbeskrivelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
 
@@ -865,7 +866,7 @@ class MapBeregningAktiviteterFraVLTilRegelFellesTest {
         aktørArbeidBuilder.leggTilYrkesaktivitet(lagYrkesaktivitet(ansettelsesDato, permisjoner));
         register.leggTilAktørArbeid(aktørArbeidBuilder);
 
-        InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder().medArbeidsgiver(ARBEIDSGIVER).medArbeidsforholdId(arbeidsforholdReferanse).medBeløp(BigDecimal.valueOf(300000)).build();
+        InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder().medArbeidsgiver(ARBEIDSGIVER).medArbeidsforholdId(arbeidsforholdReferanse).medBeløp(Beløp.fra(300000)).build();
         var iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of(inntektsmelding));
         iayGrunnlagBuilder.medData(register);
         return iayGrunnlagBuilder;

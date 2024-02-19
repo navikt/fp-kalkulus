@@ -207,11 +207,10 @@ public class ForlengelseTjeneste {
     private LocalDateTimeline<Boolean> finnTidslinjeFørForlengelse(BeregningsgrunnlagDto nyttBg, List<Intervall> forlengelseperioder) {
         var førsteDagMedForlengelse = forlengelseperioder.stream().map(Intervall::getFomDato)
                 .min(Comparator.naturalOrder()).orElse(TIDENES_ENDE);
-        var perioderFørForlengelse = nyttBg.getBeregningsgrunnlagPerioder().stream().map(BeregningsgrunnlagPeriodeDto::getPeriode)
+        return nyttBg.getBeregningsgrunnlagPerioder().stream().map(BeregningsgrunnlagPeriodeDto::getPeriode)
                 .filter(p -> p.getTomDato().isBefore(førsteDagMedForlengelse))
                 .map(p -> new LocalDateSegment<>(p.getFomDato(), p.getTomDato(), true))
-                .collect(Collectors.toList());
-        return new LocalDateTimeline<>(perioderFørForlengelse);
+                .collect(Collectors.collectingAndThen(Collectors.toList(), LocalDateTimeline::new));
     }
 
     private LocalDateTimeline<Boolean> finnTidslinjeUtenDifferanse(BeregningsgrunnlagDto nyttBg, Optional<BeregningsgrunnlagDto> forrigeBg) {

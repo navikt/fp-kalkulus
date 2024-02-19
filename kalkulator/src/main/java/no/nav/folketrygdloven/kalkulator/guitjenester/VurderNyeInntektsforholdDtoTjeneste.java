@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester;
 
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -12,6 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.TilkommetInntektDto;
@@ -106,8 +106,8 @@ public class VurderNyeInntektsforholdDtoTjeneste {
                 tilkommetInntektDto.getArbeidsforholdRef().getReferanse(),
                 finnEksternArbeidsforholdId(tilkommetInntektDto.getArbeidsgiver(), tilkommetInntektDto.getArbeidsforholdRef(), iayGrunnlag).map(EksternArbeidsforholdRef::getReferanse).orElse(null),
                 periode,
-                inntektsmelding.map(im -> im.getInntektBeløp().multipliser(12)).map(Beløp::verdi).map(BigDecimal::intValue).orElse(null),
-                tilkommetInntektDto.getBruttoInntektPrÅr() != null ? tilkommetInntektDto.getBruttoInntektPrÅr().intValue() : null,
+                inntektsmelding.map(im -> im.getInntektBeløp().multipliser(KonfigTjeneste.getMånederIÅr())).map(Beløp::intValue).orElse(null),
+                Beløp.safeVerdi(tilkommetInntektDto.getBruttoInntektPrÅr()) != null ? tilkommetInntektDto.getBruttoInntektPrÅr().intValue() : null,
                 tilkommetInntektDto.skalRedusereUtbetaling()
         );
     }

@@ -6,7 +6,6 @@ import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstan
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
@@ -33,11 +32,12 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class SpolFramoverTjenesteTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019, Month.JANUARY, 4);
-    private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(90000L);
+    private static final Beløp GRUNNBELØP = Beløp.fra(90000L);
     private static final String ORG_NUMMER = "974652269";
 
     @Test
@@ -129,13 +129,13 @@ class SpolFramoverTjenesteTest {
         BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraStegUt = lagGrunnlagUtenPerioder(tilstandFraStegUt, SKJÆRINGSTIDSPUNKT);
 
         // Legger til første periode i alle grunnlag
-        BigDecimal fordeltFørstePeriode = BigDecimal.valueOf(100_000);
+        var fordeltFørstePeriode = Beløp.fra(100_000);
         lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), null);
         lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), null);
         lagAndel(lagPeriode(forrigeGrunnlagFraStegUt.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), fordeltFørstePeriode);
 
         // Legger til andre periode i alle grunnlag
-        BigDecimal fordeltAndrePeriode = BigDecimal.valueOf(200_000);
+        var fordeltAndrePeriode = Beløp.fra(200_000);
         lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), null);
         lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), null);
         lagAndel(lagPeriode(forrigeGrunnlagFraStegUt.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), fordeltAndrePeriode);
@@ -188,11 +188,11 @@ class SpolFramoverTjenesteTest {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = lagGrunnlagUtenPerioder(tilstandFraSteg, SKJÆRINGSTIDSPUNKT);
         BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraSteg = lagGrunnlagUtenPerioder(tilstandFraSteg, SKJÆRINGSTIDSPUNKT);
 
-        BigDecimal fordeltFørstePeriode = BigDecimal.valueOf(100_000);
+        var fordeltFørstePeriode = Beløp.fra(100_000);
         lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(5)), fordeltFørstePeriode);
 
-        BigDecimal fordeltAndrePeriode = BigDecimal.valueOf(200_000);
-        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), BigDecimal.valueOf(50_000));
+        var fordeltAndrePeriode = Beløp.fra(200_000);
+        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), Beløp.fra(50_000));
         lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), fordeltAndrePeriode);
 
         // Act
@@ -275,11 +275,11 @@ class SpolFramoverTjenesteTest {
                 .build(beregningsgrunnlag);
     }
 
-    private void lagAndel(BeregningsgrunnlagPeriodeDto periode, BigDecimal fordeltPrÅr) {
+    private void lagAndel(BeregningsgrunnlagPeriodeDto periode, Beløp fordeltPrÅr) {
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(Arbeidsgiver.virksomhet(ORG_NUMMER)))
-                .medBeregnetPrÅr(BigDecimal.valueOf(100_000))
+                .medBeregnetPrÅr(Beløp.fra(100_000))
                 .medFordeltPrÅr(fordeltPrÅr)
                 .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
                         .medKilde(AndelKilde.PROSESS_START)

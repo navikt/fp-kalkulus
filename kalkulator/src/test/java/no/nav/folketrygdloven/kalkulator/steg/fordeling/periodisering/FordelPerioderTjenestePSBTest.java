@@ -41,7 +41,6 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
@@ -51,6 +50,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
+import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @ExtendWith(MockitoExtension.class)
 public class FordelPerioderTjenestePSBTest {
@@ -59,7 +60,7 @@ public class FordelPerioderTjenestePSBTest {
             .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT)
             .medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
             .build();
-    private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(90000L);
+    private static final Beløp GRUNNBELØP = Beløp.fra(90000L);
     private static final String ORG_NUMMER = "45345";
     private static final String ORG_NUMMER_2 = "15345";
 
@@ -98,8 +99,8 @@ public class FordelPerioderTjenestePSBTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(List.of(ORG_NUMMER), beregningAktivitetAggregat);
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
 
-        BigDecimal inntekt = BigDecimal.valueOf(40000);
-        var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORG_NUMMER, SKJÆRINGSTIDSPUNKT, BigDecimal.ZERO, inntekt);
+        var inntekt = Beløp.fra(40000);
+        var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORG_NUMMER, SKJÆRINGSTIDSPUNKT, Beløp.ZERO, inntekt);
 
         SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = new SvangerskapspengerGrunnlag(List.of(utbetalingsgrader1, utbetalingsgraderTilkommet));
 

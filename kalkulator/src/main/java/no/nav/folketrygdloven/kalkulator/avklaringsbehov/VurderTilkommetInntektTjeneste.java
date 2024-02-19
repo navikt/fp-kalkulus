@@ -14,6 +14,7 @@ import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.StandardPeriode
 import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -28,6 +29,7 @@ import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.VurderTilkommetI
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
@@ -94,9 +96,9 @@ public class VurderTilkommetInntektTjeneste {
     }
 
 
-    private static BigDecimal finnBruttoPrÅr(NyttInntektsforholdDto i, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+    private static Beløp finnBruttoPrÅr(NyttInntektsforholdDto i, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         if (i.getBruttoInntektPrÅr() != null) {
-            return BigDecimal.valueOf(i.getBruttoInntektPrÅr());
+            return Beløp.fra(i.getBruttoInntektPrÅr());
         }
         var inntektsmelding = finnInntektsmelding(i, iayGrunnlag);
         return inntektsmelding.map(VurderTilkommetInntektTjeneste::mapTilÅrsinntekt).orElse(null);
@@ -106,8 +108,8 @@ public class VurderTilkommetInntektTjeneste {
         return iayGrunnlag.getInntektsmeldinger().stream().flatMap(ims -> ims.getAlleInntektsmeldinger().stream()).filter(im -> Objects.equals(im.getArbeidsgiver().getIdentifikator(), i.getArbeidsgiverIdentifikator()) && InternArbeidsforholdRefDto.ref(i.getArbeidsforholdId()).gjelderFor(im.getArbeidsforholdRef())).findFirst();
     }
 
-    private static BigDecimal mapTilÅrsinntekt(InntektsmeldingDto inntektsmeldingDto) {
-        return inntektsmeldingDto.getInntektBeløp().verdi().multiply(BigDecimal.valueOf(12));
+    private static Beløp mapTilÅrsinntekt(InntektsmeldingDto inntektsmeldingDto) {
+        return inntektsmeldingDto.getInntektBeløp().multipliser(KonfigTjeneste.getMånederIÅr());
     }
 
     private static Arbeidsgiver mapArbeidsgiver(NyttInntektsforholdDto i) {
@@ -117,7 +119,7 @@ public class VurderTilkommetInntektTjeneste {
         return OrgNummer.erGyldigOrgnr(i.getArbeidsgiverIdentifikator()) ? Arbeidsgiver.virksomhet(i.getArbeidsgiverIdentifikator()) : Arbeidsgiver.person(new AktørId(i.getArbeidsgiverIdentifikator()));
     }
 
-    private static BigDecimal utledTilkommetFraBrutto(NyttInntektsforholdDto inntektsforhold,
+    private static Beløp utledTilkommetFraBrutto(NyttInntektsforholdDto inntektsforhold,
                                                       Intervall periode,
                                                       YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {
@@ -126,13 +128,13 @@ public class VurderTilkommetInntektTjeneste {
                 var utbetalingsprosent = UtbetalingsgradTjeneste.finnUtbetalingsgradForArbeid(mapArbeidsgiver(inntektsforhold), InternArbeidsforholdRefDto.ref(inntektsforhold.getArbeidsforholdId()), periode, ytelsespesifiktGrunnlag, true);
                 var tilommetGrad = aktivitetsProsent.map(grad -> grad.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP))
                         .orElse(BigDecimal.valueOf(1).subtract(utbetalingsprosent.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP)));
-                return BigDecimal.valueOf(inntektsforhold.getBruttoInntektPrÅr()).multiply(tilommetGrad);
+                return Beløp.fra(inntektsforhold.getBruttoInntektPrÅr()).multipliser(tilommetGrad);
             } else {
                 var utbetalingsprosent = UtbetalingsgradTjeneste.finnUtbetalingsgradForStatus(inntektsforhold.getAktivitetStatus(), periode, ytelsespesifiktGrunnlag);
                 var aktivitetsProsent = UtbetalingsgradTjeneste.finnAktivitetsgradForStatus(inntektsforhold.getAktivitetStatus(), periode, ytelsespesifiktGrunnlag);
                 var tilommetGrad = aktivitetsProsent.map(grad -> grad.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP))
                         .orElse(BigDecimal.valueOf(1).subtract(utbetalingsprosent.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP)));
-                return BigDecimal.valueOf(inntektsforhold.getBruttoInntektPrÅr()).multiply(tilommetGrad);
+                return Beløp.fra(inntektsforhold.getBruttoInntektPrÅr()).multipliser(tilommetGrad);
             }
         }
         throw new IllegalStateException("Kun gyldig ved utbetalingsgradgrunnlag");

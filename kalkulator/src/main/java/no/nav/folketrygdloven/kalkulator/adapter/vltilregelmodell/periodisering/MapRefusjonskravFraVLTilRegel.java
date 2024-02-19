@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Refusjonskrav;
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonPeriodeDto;
@@ -226,7 +227,7 @@ public class MapRefusjonskravFraVLTilRegel {
         return Optional.empty();
     }
 
-    public static BigDecimal finnGradertRefusjonskravPåSkjæringstidspunktet(Collection<InntektsmeldingDto> inntektsmeldingerSomSkalBrukes,
+    public static Beløp finnGradertRefusjonskravPåSkjæringstidspunktet(Collection<InntektsmeldingDto> inntektsmeldingerSomSkalBrukes,
                                                                             LocalDate stp,
                                                                             YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         List<Refusjonskrav> refusjonskravs = new ArrayList<>();
@@ -242,11 +243,12 @@ public class MapRefusjonskravFraVLTilRegel {
         List<Refusjonskrav> relevanteRefusjonskrav = refusjonskravs.stream()
                 .filter(p -> p.getPeriode().inneholder(stp))
                 .collect(Collectors.toList());
-        return relevanteRefusjonskrav.stream()
+        var fraRegel = relevanteRefusjonskrav.stream()
                 .map(Refusjonskrav::getMånedsbeløp)
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO)
-                .multiply(BigDecimal.valueOf(12));
+                .multiply(KonfigTjeneste.getMånederIÅr());
+        return Beløp.fra(fraRegel);
     }
 
 }

@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -15,6 +14,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 public class FastsettBeregningsgrunnlagATFLHåndterer {
@@ -43,7 +43,7 @@ public class FastsettBeregningsgrunnlagATFLHåndterer {
                 for (BeregningsgrunnlagPeriodeDto periode : beregningsgrunnlagPerioder) {
                     Optional<BeregningsgrunnlagPrStatusOgAndelDto> korresponderendeAndelOpt = finnRiktigAndel(korresponderendeAndelIFørstePeriode, periode);
                     korresponderendeAndelOpt.ifPresent(andel-> BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(andel)
-                        .medOverstyrtPrÅr(BigDecimal.valueOf(inntekPrAndel.getInntekt())));
+                        .medOverstyrtPrÅr(Beløp.fra(inntekPrAndel.getInntekt())));
                 }
             }
         }
@@ -54,7 +54,7 @@ public class FastsettBeregningsgrunnlagATFLHåndterer {
                     .filter(andel -> andel.getAktivitetStatus().equals(AktivitetStatus.FRILANSER))
                     .collect(Collectors.toList());
                 frilanserList.forEach(prStatusOgAndel ->
-                    BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(prStatusOgAndel).medOverstyrtPrÅr(BigDecimal.valueOf(dto.getInntektFrilanser())));
+                    BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(prStatusOgAndel).medOverstyrtPrÅr(Beløp.fra(dto.getInntektFrilanser())));
             }
         }
 

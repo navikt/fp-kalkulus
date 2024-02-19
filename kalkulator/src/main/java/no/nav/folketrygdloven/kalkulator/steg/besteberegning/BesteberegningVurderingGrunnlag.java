@@ -1,15 +1,16 @@
 package no.nav.folketrygdloven.kalkulator.steg.besteberegning;
 
-import java.math.BigDecimal;
 import java.util.List;
+
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class BesteberegningVurderingGrunnlag {
 
     private final List<BesteberegningMånedGrunnlag> seksBesteMåneder;
-    private final BigDecimal avvikFraFørsteLedd;
+    private final Beløp avvikFraFørsteLedd;
 
     public BesteberegningVurderingGrunnlag(List<BesteberegningMånedGrunnlag> seksBesteMåneder,
-                                           BigDecimal avvikFraFørsteLedd) {
+                                           Beløp avvikFraFørsteLedd) {
         this.seksBesteMåneder = seksBesteMåneder;
         this.avvikFraFørsteLedd = avvikFraFørsteLedd;
     }
@@ -18,7 +19,7 @@ public class BesteberegningVurderingGrunnlag {
         return seksBesteMåneder;
     }
 
-    public BigDecimal getAvvikFraFørsteLedd() {
+    public Beløp getAvvikFraFørsteLedd() {
         return avvikFraFørsteLedd;
     }
 }

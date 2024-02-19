@@ -13,7 +13,6 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.InntektEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.NyttInntektsforholdEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.ToggleEndring;
-import no.nav.folketrygdloven.kalkulus.typer.DiffBeløp;
 
 public class UtledEndringINyeInntektsforhold {
 
@@ -37,7 +36,7 @@ public class UtledEndringINyeInntektsforhold {
         return new NyttInntektsforholdEndring(
                 inntektsforhold.getAktivitetStatus(),
                 mapArbeidsgiver(inntektsforhold),
-                new InntektEndring(DiffBeløp.fra(forrigeInntektsforhold.map(TilkommetInntektDto::getBruttoInntektPrÅr).orElse(null)), DiffBeløp.fra(inntektsforhold.getBruttoInntektPrÅr())),
+                new InntektEndring(forrigeInntektsforhold.map(TilkommetInntektDto::getBruttoInntektPrÅr).orElse(null), inntektsforhold.getBruttoInntektPrÅr()),
                 new ToggleEndring(forrigeInntektsforhold.map(TilkommetInntektDto::skalRedusereUtbetaling).orElse(null), inntektsforhold.skalRedusereUtbetaling()));
     }
 

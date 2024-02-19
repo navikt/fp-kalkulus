@@ -44,10 +44,11 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.NaturalYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class FastsettNaturalytelsePerioderTjenesteImplTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019, Month.JANUARY, 4);
-    private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(90000L);
+    private static final Beløp GRUNNBELØP = Beløp.fra(90000L);
     private static final String ORG_NUMMER = "974652269";
     private static final Intervall ARBEIDSPERIODE = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), TIDENES_ENDE);
     private BeregningAktivitetAggregatDto beregningAktivitetAggregat;
@@ -134,7 +135,7 @@ public class FastsettNaturalytelsePerioderTjenesteImplTest {
         // Arrange
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER), beregningAktivitetAggregat);
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
-        BigDecimal inntekt = BigDecimal.valueOf(40000);
+        var inntekt = Beløp.fra(40000);
         NaturalYtelseDto naturalYtelseTilkommer = new NaturalYtelseDto(SKJÆRINGSTIDSPUNKT.plusDays(30), TIDENES_ENDE, BigDecimal.valueOf(350),
                 NaturalYtelseType.ELEKTRISK_KOMMUNIKASJON);
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmeldingMedNaturalYtelser(ORG_NUMMER, SKJÆRINGSTIDSPUNKT, inntekt, inntekt, null,
@@ -157,7 +158,7 @@ public class FastsettNaturalytelsePerioderTjenesteImplTest {
         // Arrange
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER), beregningAktivitetAggregat);
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
-        BigDecimal inntekt = BigDecimal.valueOf(40000);
+        var inntekt = Beløp.fra(40000);
         NaturalYtelseDto naturalYtelseBortfall = new NaturalYtelseDto(SKJÆRINGSTIDSPUNKT.minusYears(2), SKJÆRINGSTIDSPUNKT.plusDays(30),
                 BigDecimal.valueOf(350), NaturalYtelseType.ELEKTRISK_KOMMUNIKASJON);
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmeldingMedNaturalYtelser(ORG_NUMMER, SKJÆRINGSTIDSPUNKT, inntekt, inntekt, null,
@@ -180,7 +181,7 @@ public class FastsettNaturalytelsePerioderTjenesteImplTest {
         // Arrange
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER), beregningAktivitetAggregat);
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
-        BigDecimal inntekt = BigDecimal.valueOf(40000);
+        var inntekt = Beløp.fra(40000);
         NaturalYtelseDto naturalYtelseBortfall = new NaturalYtelseDto(SKJÆRINGSTIDSPUNKT.minusYears(2), SKJÆRINGSTIDSPUNKT.minusDays(1),
                 BigDecimal.valueOf(350), NaturalYtelseType.ELEKTRISK_KOMMUNIKASJON);
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmeldingMedNaturalYtelser(ORG_NUMMER, SKJÆRINGSTIDSPUNKT, inntekt, inntekt, null,
@@ -202,7 +203,7 @@ public class FastsettNaturalytelsePerioderTjenesteImplTest {
         // Arrange
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER), beregningAktivitetAggregat);
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
-        BigDecimal inntekt = BigDecimal.valueOf(40000);
+        var inntekt = Beløp.fra(40000);
         NaturalYtelseDto naturalYtelseBortfall = new NaturalYtelseDto(SKJÆRINGSTIDSPUNKT.minusYears(2), SKJÆRINGSTIDSPUNKT, BigDecimal.valueOf(350),
                 NaturalYtelseType.ELEKTRISK_KOMMUNIKASJON);
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmeldingMedNaturalYtelser(ORG_NUMMER, SKJÆRINGSTIDSPUNKT, inntekt, inntekt, null,
@@ -225,7 +226,7 @@ public class FastsettNaturalytelsePerioderTjenesteImplTest {
         // Arrange
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER), beregningAktivitetAggregat);
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
-        BigDecimal inntekt = BigDecimal.valueOf(40000);
+        var inntekt = Beløp.fra(40000);
         NaturalYtelseDto naturalYtelseBortfalt = new NaturalYtelseDto(SKJÆRINGSTIDSPUNKT.minusYears(2), SKJÆRINGSTIDSPUNKT.plusDays(30),
                 BigDecimal.valueOf(350), NaturalYtelseType.ELEKTRISK_KOMMUNIKASJON);
         NaturalYtelseDto naturalYtelseTilkommer = new NaturalYtelseDto(SKJÆRINGSTIDSPUNKT.plusDays(90), TIDENES_ENDE, BigDecimal.valueOf(350),

@@ -34,7 +34,7 @@ import no.nav.folketrygdloven.kalkulator.felles.frist.ArbeidsgiverRefusjonskravT
 import no.nav.folketrygdloven.kalkulator.felles.frist.KravOgUtfall;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
-import no.nav.folketrygdloven.kalkulator.konfig.Konfigverdier;
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
@@ -199,7 +199,7 @@ public abstract class MapRefusjonPerioderFraVLTilRegel {
                         yrkesaktiviteter
                 ));
         builder.medRefusjonskravFrist(new RefusjonskravFrist(
-                Konfigverdier.FRIST_MÅNEDER_ETTER_REFUSJON,
+                KonfigTjeneste.getFristMånederEtterRefusjon(),
                 BeregningsgrunnlagHjemmel.REFUSJONSKRAV_FRIST));
         Arbeidsforhold arbeidsforhold = lagArbeidsforhold(im, matchendeAndel);
         return builder.medAnsettelsesperiode(ansettelsesPeriode)

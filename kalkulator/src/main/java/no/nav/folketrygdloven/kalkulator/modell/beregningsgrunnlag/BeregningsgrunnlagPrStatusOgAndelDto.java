@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag;
 
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -9,6 +8,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.diff.DiffIgnore;
 import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
@@ -37,33 +37,33 @@ public class BeregningsgrunnlagPrStatusOgAndelDto implements IndexKey {
     @SjekkVedKopiering
     private Årsgrunnlag grunnlagPrÅr = new Årsgrunnlag();
     @SjekkVedKopiering
-    private BigDecimal avkortetPrÅr;
+    private Beløp avkortetPrÅr;
     @SjekkVedKopiering
-    private BigDecimal redusertPrÅr;
+    private Beløp redusertPrÅr;
     @SjekkVedKopiering
-    private BigDecimal maksimalRefusjonPrÅr;
+    private Beløp maksimalRefusjonPrÅr;
     @SjekkVedKopiering
-    private BigDecimal avkortetRefusjonPrÅr;
+    private Beløp avkortetRefusjonPrÅr;
     @SjekkVedKopiering
-    private BigDecimal redusertRefusjonPrÅr;
+    private Beløp redusertRefusjonPrÅr;
     @SjekkVedKopiering
-    private BigDecimal avkortetBrukersAndelPrÅr;
+    private Beløp avkortetBrukersAndelPrÅr;
     @SjekkVedKopiering
-    private BigDecimal redusertBrukersAndelPrÅr;
+    private Beløp redusertBrukersAndelPrÅr;
     @SjekkVedKopiering
     private Long dagsatsBruker;
     @SjekkVedKopiering
     private Long dagsatsArbeidsgiver;
     @SjekkVedKopiering
-    private BigDecimal avkortetFørGraderingPrÅr;
+    private Beløp avkortetFørGraderingPrÅr;
     @SjekkVedKopiering
-    private BigDecimal pgiSnitt;
+    private Beløp pgiSnitt;
     @SjekkVedKopiering
-    private BigDecimal pgi1;
+    private Beløp pgi1;
     @SjekkVedKopiering
-    private BigDecimal pgi2;
+    private Beløp pgi2;
     @SjekkVedKopiering
-    private BigDecimal pgi3;
+    private Beløp pgi3;
     @SjekkVedKopiering
     private Beløp årsbeløpFraTilstøtendeYtelse;
     @SjekkVedKopiering
@@ -181,55 +181,55 @@ public class BeregningsgrunnlagPrStatusOgAndelDto implements IndexKey {
         return arbeidsforholdType;
     }
 
-    public BigDecimal getBruttoPrÅr() {
+    public Beløp getBruttoPrÅr() {
         return grunnlagPrÅr.getBruttoPrÅr();
     }
 
-    public BigDecimal getBruttoUtenManueltFordelt() {
+    public Beløp getBruttoUtenManueltFordelt() {
         return grunnlagPrÅr.getBruttoUtenManueltFordelt();
     }
 
-    public BigDecimal getOverstyrtPrÅr() {
+    public Beløp getOverstyrtPrÅr() {
         return grunnlagPrÅr.getOverstyrtPrÅr();
     }
 
-    public BigDecimal getAvkortetPrÅr() {
+    public Beløp getAvkortetPrÅr() {
         return avkortetPrÅr;
     }
 
-    public BigDecimal getRedusertPrÅr() {
+    public Beløp getRedusertPrÅr() {
         return redusertPrÅr;
     }
 
-    public BigDecimal getBeregnetPrÅr() {
+    public Beløp getBeregnetPrÅr() {
         return grunnlagPrÅr.getBeregnetPrÅr();
     }
 
-    public BigDecimal getFordeltPrÅr() {
+    public Beløp getFordeltPrÅr() {
         return grunnlagPrÅr.getFordeltPrÅr();
     }
 
-    public BigDecimal getManueltFordeltPrÅr() {
+    public Beløp getManueltFordeltPrÅr() {
         return grunnlagPrÅr.getManueltFordeltPrÅr();
     }
 
-    public BigDecimal getMaksimalRefusjonPrÅr() {
+    public Beløp getMaksimalRefusjonPrÅr() {
         return maksimalRefusjonPrÅr;
     }
 
-    public BigDecimal getAvkortetRefusjonPrÅr() {
+    public Beløp getAvkortetRefusjonPrÅr() {
         return avkortetRefusjonPrÅr;
     }
 
-    public BigDecimal getRedusertRefusjonPrÅr() {
+    public Beløp getRedusertRefusjonPrÅr() {
         return redusertRefusjonPrÅr;
     }
 
-    public BigDecimal getAvkortetBrukersAndelPrÅr() {
+    public Beløp getAvkortetBrukersAndelPrÅr() {
         return avkortetBrukersAndelPrÅr;
     }
 
-    public BigDecimal getRedusertBrukersAndelPrÅr() {
+    public Beløp getRedusertBrukersAndelPrÅr() {
         return redusertBrukersAndelPrÅr;
     }
 
@@ -249,11 +249,11 @@ public class BeregningsgrunnlagPrStatusOgAndelDto implements IndexKey {
         return grunnlagPrÅr;
     }
 
-    public BigDecimal getBruttoInkludertNaturalYtelser() {
-        BigDecimal naturalytelseBortfalt = getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseBortfaltPrÅr).orElse(BigDecimal.ZERO);
-        BigDecimal naturalYtelseTilkommet = getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseTilkommetPrÅr).orElse(BigDecimal.ZERO);
-        BigDecimal brutto = grunnlagPrÅr.getBruttoPrÅr() != null ? grunnlagPrÅr.getBruttoPrÅr() : BigDecimal.ZERO;
-        return brutto.add(naturalytelseBortfalt).subtract(naturalYtelseTilkommet);
+    public Beløp getBruttoInkludertNaturalYtelser() {
+        var naturalytelseBortfalt = getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseBortfaltPrÅr).orElse(Beløp.ZERO);
+        var naturalYtelseTilkommet = getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseTilkommetPrÅr).orElse(Beløp.ZERO);
+        var brutto = Optional.ofNullable(grunnlagPrÅr.getBruttoPrÅr()).orElse(Beløp.ZERO);
+        return brutto.adder(naturalytelseBortfalt).subtraher(naturalYtelseTilkommet);
     }
 
     public Long getDagsatsBruker() {
@@ -274,19 +274,19 @@ public class BeregningsgrunnlagPrStatusOgAndelDto implements IndexKey {
         return dagsatsBruker + dagsatsArbeidsgiver;
     }
 
-    public BigDecimal getPgiSnitt() {
+    public Beløp getPgiSnitt() {
         return pgiSnitt;
     }
 
-    public BigDecimal getPgi1() {
+    public Beløp getPgi1() {
         return pgi1;
     }
 
-    public BigDecimal getPgi2() {
+    public Beløp getPgi2() {
         return pgi2;
     }
 
-    public BigDecimal getPgi3() {
+    public Beløp getPgi3() {
         return pgi3;
     }
 
@@ -294,12 +294,11 @@ public class BeregningsgrunnlagPrStatusOgAndelDto implements IndexKey {
         return årsbeløpFraTilstøtendeYtelse;
     }
 
-    public BigDecimal getÅrsbeløpFraTilstøtendeYtelseVerdi() {
-        return Optional.ofNullable(getÅrsbeløpFraTilstøtendeYtelse())
-                .map(Beløp::verdi).orElse(BigDecimal.ZERO);
+    public Beløp getÅrsbeløpFraTilstøtendeYtelseVerdi() {
+        return Optional.ofNullable(getÅrsbeløpFraTilstøtendeYtelse()).orElse(Beløp.ZERO);
     }
 
-    public BigDecimal getAvkortetFørGraderingPrÅr() {
+    public Beløp getAvkortetFørGraderingPrÅr() {
         return avkortetFørGraderingPrÅr;
     }
 
@@ -307,7 +306,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto implements IndexKey {
         return andelsnr;
     }
 
-    public BigDecimal getBesteberegningPrÅr() {
+    public Beløp getBesteberegningPrÅr() {
         return grunnlagPrÅr.getBesteberegningPrÅr();
     }
 
@@ -479,7 +478,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto implements IndexKey {
             return this;
         }
 
-        public Builder medOverstyrtPrÅr(BigDecimal overstyrtPrÅr) {
+        public Builder medOverstyrtPrÅr(Beløp overstyrtPrÅr) {
             verifiserKanModifisere();
             kladd.grunnlagPrÅr.setOverstyrtPrÅr(overstyrtPrÅr);
             oppdaterPeriodebrutto();
@@ -492,14 +491,14 @@ public class BeregningsgrunnlagPrStatusOgAndelDto implements IndexKey {
             }
         }
 
-        public Builder medFordeltPrÅr(BigDecimal fordeltPrÅr) {
+        public Builder medFordeltPrÅr(Beløp fordeltPrÅr) {
             verifiserKanModifisere();
             kladd.grunnlagPrÅr.setFordeltPrÅr(fordeltPrÅr);
             oppdaterPeriodebrutto();
             return this;
         }
 
-        public Builder medManueltFordeltPrÅr(BigDecimal fordeltPrÅr) {
+        public Builder medManueltFordeltPrÅr(Beløp fordeltPrÅr) {
             verifiserKanModifisere();
             kladd.grunnlagPrÅr.setManueltFordeltPrÅr(fordeltPrÅr);
             oppdaterPeriodebrutto();
@@ -507,60 +506,61 @@ public class BeregningsgrunnlagPrStatusOgAndelDto implements IndexKey {
         }
 
 
-        public Builder medAvkortetPrÅr(BigDecimal avkortetPrÅr) {
+        public Builder medAvkortetPrÅr(Beløp avkortetPrÅr) {
             verifiserKanModifisere();
             kladd.avkortetPrÅr = avkortetPrÅr;
             return this;
         }
 
-        public Builder medRedusertPrÅr(BigDecimal redusertPrÅr) {
+        public Builder medRedusertPrÅr(Beløp redusertPrÅr) {
             verifiserKanModifisere();
             kladd.redusertPrÅr = redusertPrÅr;
             return this;
         }
 
-        public Builder medMaksimalRefusjonPrÅr(BigDecimal maksimalRefusjonPrÅr) {
+        public Builder medMaksimalRefusjonPrÅr(Beløp maksimalRefusjonPrÅr) {
             verifiserKanModifisere();
             kladd.maksimalRefusjonPrÅr = maksimalRefusjonPrÅr;
             return this;
         }
 
-        public Builder medAvkortetRefusjonPrÅr(BigDecimal avkortetRefusjonPrÅr) {
+        public Builder medAvkortetRefusjonPrÅr(Beløp avkortetRefusjonPrÅr) {
             verifiserKanModifisere();
             kladd.avkortetRefusjonPrÅr = avkortetRefusjonPrÅr;
             return this;
         }
 
-        public Builder medRedusertRefusjonPrÅr(BigDecimal redusertRefusjonPrÅr) {
+        public Builder medRedusertRefusjonPrÅr(Beløp redusertRefusjonPrÅr) {
             verifiserKanModifisere();
             kladd.redusertRefusjonPrÅr = redusertRefusjonPrÅr;
-            kladd.dagsatsArbeidsgiver = redusertRefusjonPrÅr == null ?
-                    null : redusertRefusjonPrÅr.divide(BigDecimal.valueOf(260), 0, RoundingMode.HALF_UP).longValue();
+            kladd.dagsatsArbeidsgiver = Optional.ofNullable(Beløp.safeVerdi(redusertRefusjonPrÅr))
+                    .map(v -> v.divide(KonfigTjeneste.getYtelsesdagerIÅr(), 0, RoundingMode.HALF_UP).longValue()).orElse(null);
             return this;
         }
 
-        public Builder medAvkortetBrukersAndelPrÅr(BigDecimal avkortetBrukersAndelPrÅr) {
+        public Builder medAvkortetBrukersAndelPrÅr(Beløp avkortetBrukersAndelPrÅr) {
             verifiserKanModifisere();
             kladd.avkortetBrukersAndelPrÅr = avkortetBrukersAndelPrÅr;
             return this;
         }
 
-        public Builder medRedusertBrukersAndelPrÅr(BigDecimal redusertBrukersAndelPrÅr) {
+        public Builder medRedusertBrukersAndelPrÅr(Beløp redusertBrukersAndelPrÅr) {
             verifiserKanModifisere();
             kladd.redusertBrukersAndelPrÅr = redusertBrukersAndelPrÅr;
-            kladd.dagsatsBruker = redusertBrukersAndelPrÅr == null ?
-                    null : redusertBrukersAndelPrÅr.divide(BigDecimal.valueOf(260), 0, RoundingMode.HALF_UP).longValue();
+            kladd.dagsatsBruker = Optional.ofNullable(Beløp.safeVerdi(redusertBrukersAndelPrÅr))
+                    .map(b -> b.divide(KonfigTjeneste.getYtelsesdagerIÅr(), 0, RoundingMode.HALF_UP).longValue())
+                    .orElse(null);
             return this;
         }
 
-        public Builder medBeregnetPrÅr(BigDecimal beregnetPrÅr) {
+        public Builder medBeregnetPrÅr(Beløp beregnetPrÅr) {
             verifiserKanModifisere();
             kladd.grunnlagPrÅr.setBeregnetPrÅr(beregnetPrÅr);
             oppdaterPeriodebrutto();
             return this;
         }
 
-        public Builder medPgi(BigDecimal pgiSnitt, List<BigDecimal> pgiListe) {
+        public Builder medPgi(Beløp pgiSnitt, List<Beløp> pgiListe) {
             verifiserKanModifisere();
             kladd.pgiSnitt = pgiSnitt;
             kladd.pgi1 = pgiListe.isEmpty() ? null : pgiListe.get(0);
@@ -569,14 +569,14 @@ public class BeregningsgrunnlagPrStatusOgAndelDto implements IndexKey {
             return this;
         }
 
-        public Builder medÅrsbeløpFraTilstøtendeYtelse(BigDecimal årsbeløpFraTilstøtendeYtelse) {
+        public Builder medÅrsbeløpFraTilstøtendeYtelse(Beløp årsbeløpFraTilstøtendeYtelse) {
             verifiserKanModifisere();
-            kladd.årsbeløpFraTilstøtendeYtelse = Beløp.fra(årsbeløpFraTilstøtendeYtelse);
+            kladd.årsbeløpFraTilstøtendeYtelse = årsbeløpFraTilstøtendeYtelse;
             return this;
         }
 
 
-        public Builder medAvkortetFørGraderingPrÅr(BigDecimal avkortetFørGraderingPrÅr) {
+        public Builder medAvkortetFørGraderingPrÅr(Beløp avkortetFørGraderingPrÅr) {
             verifiserKanModifisere();
             kladd.avkortetFørGraderingPrÅr = avkortetFørGraderingPrÅr;
             return this;
@@ -624,7 +624,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto implements IndexKey {
             return this;
         }
 
-        public Builder medBesteberegningPrÅr(BigDecimal besteberegningPrÅr) {
+        public Builder medBesteberegningPrÅr(Beløp besteberegningPrÅr) {
             verifiserKanModifisere();
             kladd.grunnlagPrÅr.setBesteberegningPrÅr(besteberegningPrÅr);
             oppdaterPeriodebrutto();

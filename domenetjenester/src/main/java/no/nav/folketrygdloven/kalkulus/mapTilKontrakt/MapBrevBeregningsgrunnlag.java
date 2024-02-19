@@ -42,7 +42,7 @@ public class MapBrevBeregningsgrunnlag {
                 mapAktivitetstatuser(beregningsgrunnlagEntitet),
                 mapBeregningsgrunnlagPerioder(beregningsgrunnlagEntitet, ytelsespesifiktGrunnlag),
                 mapSammenligningsgrunnlagPrStatusListe(beregningsgrunnlagEntitet),
-                beregningsgrunnlagEntitet.getGrunnbeløp() == null ? null : beregningsgrunnlagEntitet.getGrunnbeløp());
+                beregningsgrunnlagEntitet.getGrunnbeløp());
     }
 
     private static List<SammenligningsgrunnlagPrStatusDto> mapSammenligningsgrunnlagPrStatusListe(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlagEntitet) {
@@ -54,7 +54,7 @@ public class MapBrevBeregningsgrunnlag {
         return new SammenligningsgrunnlagPrStatusDto(
                 new Periode(sammenligningsgrunnlagPrStatus.getSammenligningsperiodeFom(), sammenligningsgrunnlagPrStatus.getSammenligningsperiodeTom()),
                 sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType(),
-                Beløp.fra(sammenligningsgrunnlagPrStatus.getRapportertPrÅr()),
+                sammenligningsgrunnlagPrStatus.getRapportertPrÅr(),
                 sammenligningsgrunnlagPrStatus.getAvvikPromilleNy());
     }
 
@@ -68,8 +68,8 @@ public class MapBrevBeregningsgrunnlag {
                 mapAndeler(beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList(), beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag, grunnbeløp),
                 mapTilkomneInntektsforhold(beregningsgrunnlagPeriode.getTilkomneInntekter()),
                 new Periode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom()),
-                Beløp.fra(beregningsgrunnlagPeriode.getBruttoPrÅr()),
-                Beløp.fra(beregningsgrunnlagPeriode.getAvkortetPrÅr()),
+                beregningsgrunnlagPeriode.getBruttoPrÅr(),
+                beregningsgrunnlagPeriode.getAvkortetPrÅr(),
                 beregningsgrunnlagPeriode.getDagsats(),
                 beregningsgrunnlagPeriode.getTotalUtbetalingsgradFraUttak(),
                 beregningsgrunnlagPeriode.getTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt());
@@ -97,18 +97,18 @@ public class MapBrevBeregningsgrunnlag {
                 andel.getAktivitetStatus(),
                 andel.getArbeidsforholdType(),
                 andel.getBeregningsperiodeFom() == null ? null : new Periode(andel.getBeregningsperiodeFom(), andel.getBeregningsperiodeTom()),
-                Beløp.fra(andel.getBruttoPrÅr()),
+                andel.getBruttoPrÅr(),
                 andel.getDagsatsBruker(),
                 andel.getDagsatsArbeidsgiver(),
                 finnUgradertDagsatsBruker(andel, periode, ytelsespesifiktGrunnlag, grunnbeløp),
                 finnUgradertDagsatsArbeidsgiver(andel, periode, ytelsespesifiktGrunnlag, grunnbeløp),
                 andel.getFastsattInntektskategori().getInntektskategori(),
                 mapBgAndelArbeidsforhold(andel),
-                Beløp.fra(andel.getAvkortetFørGraderingPrÅr()),
-                Beløp.fra(andel.getAvkortetPrÅr()),
-                Beløp.fra(andel.getOverstyrtPrÅr()),
-                Beløp.fra(andel.getRedusertPrÅr()),
-                Beløp.fra(andel.getBeregnetPrÅr()),
+                andel.getAvkortetFørGraderingPrÅr(),
+                andel.getAvkortetPrÅr(),
+                andel.getOverstyrtPrÅr(),
+                andel.getRedusertPrÅr(),
+                andel.getBeregnetPrÅr(),
                 andel.getFastsattAvSaksbehandler());
     }
 
@@ -118,29 +118,29 @@ public class MapBrevBeregningsgrunnlag {
         if (andel.getDagsatsBruker() == null) {
             return null;
         }
-        if (andel.getAvkortetPrÅr().compareTo(BigDecimal.ZERO) == 0) {
+        if (andel.getAvkortetPrÅr().compareTo(Beløp.ZERO) == 0) {
             return 0L;
         }
-        var andelTilBruker = andel.getAvkortetBrukersAndelPrÅr().divide(andel.getAvkortetPrÅr(), 10, RoundingMode.HALF_UP);
+        var andelTilBruker = andel.getAvkortetBrukersAndelPrÅr().verdi().divide(andel.getAvkortetPrÅr().verdi(), 10, RoundingMode.HALF_UP);
         BigDecimal avkortetFørGraderingPrÅr = finnAvkortetFørGradering(andel, periode, ytelsespesifiktGrunnlag, grunnbeløp);
         return avkortetFørGraderingPrÅr.
                 multiply(andelTilBruker)
-                .divide(BigDecimal.valueOf(260), 10, RoundingMode.HALF_UP).longValue();
+                .divide(KonfigTjeneste.getYtelsesdagerIÅr(), 10, RoundingMode.HALF_UP).longValue();
     }
 
     private static BigDecimal finnAvkortetFørGradering(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                        no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto periode,
                                                        YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, BigDecimal grunnbeløp) {
         BigDecimal avkortetFørGraderingPrÅr;
-        if (andel.getAvkortetFørGraderingPrÅr() != null) {
+        if (Beløp.safeVerdi(andel.getAvkortetFørGraderingPrÅr()) != null) {
             // Grunnet en feil i mapping har vi ikke lagret avkortetFørGradering for andeler i siste periode for en del behandlinger før 16.12.2021
-            avkortetFørGraderingPrÅr = andel.getAvkortetFørGraderingPrÅr();
+            avkortetFørGraderingPrÅr = andel.getAvkortetFørGraderingPrÅr().verdi();
         } else if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
             // Fallback for saker der avkortetFørGraderingPrÅr ikke er satt
-            var grenseverdi = grunnbeløp.multiply(KonfigTjeneste.forUtbetalingsgradYtelse().getAntallGØvreGrenseverdi());
+            var grenseverdi = grunnbeløp.multiply(KonfigTjeneste.getAntallGØvreGrenseverdi());
             avkortetFørGraderingPrÅr = FinnInntektstak.finnInntektstakForAndel(andel, periode, utbetalingsgradGrunnlag, grenseverdi);
         } else {
-            avkortetFørGraderingPrÅr = andel.getAvkortetPrÅr();
+            avkortetFørGraderingPrÅr = andel.getAvkortetPrÅr().verdi();
         }
         return avkortetFørGraderingPrÅr;
     }
@@ -151,13 +151,13 @@ public class MapBrevBeregningsgrunnlag {
         if (andel.getDagsatsArbeidsgiver() == null) {
             return null;
         }
-        if (andel.getAvkortetPrÅr().compareTo(BigDecimal.ZERO) == 0) {
+        if (andel.getAvkortetPrÅr().compareTo(Beløp.ZERO) == 0) {
             return 0L;
         }
-        var andelTilArbeidsgiver = andel.getAvkortetRefusjonPrÅr().divide(andel.getAvkortetPrÅr(), 10, RoundingMode.HALF_UP);
+        var andelTilArbeidsgiver = andel.getAvkortetRefusjonPrÅr().verdi().divide(andel.getAvkortetPrÅr().verdi(), 10, RoundingMode.HALF_UP);
         var avkortetFørGraderingPrÅr = finnAvkortetFørGradering(andel, periode, ytelsespesifiktGrunnlag, grunnbeløp);
         return avkortetFørGraderingPrÅr.multiply(andelTilArbeidsgiver)
-                .divide(BigDecimal.valueOf(260), 10, RoundingMode.HALF_UP).longValue();
+                .divide(KonfigTjeneste.getYtelsesdagerIÅr(), 10, RoundingMode.HALF_UP).longValue();
 
     }
 
@@ -169,7 +169,7 @@ public class MapBrevBeregningsgrunnlag {
         return new BGAndelArbeidsforhold(
                 mapArbeidsgiver(bgAndelArbeidsforhold.getArbeidsgiver()),
                 bgAndelArbeidsforhold.getArbeidsforholdRef().getReferanse(),
-                Beløp.fra(bgAndelArbeidsforhold.getGjeldendeRefusjonPrÅr()));
+                bgAndelArbeidsforhold.getGjeldendeRefusjonPrÅr());
     }
 
     private static List<AktivitetStatus> mapAktivitetstatuser(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlagEntitet) {

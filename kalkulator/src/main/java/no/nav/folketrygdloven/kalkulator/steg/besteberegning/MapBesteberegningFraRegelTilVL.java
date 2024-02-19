@@ -24,6 +24,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class MapBesteberegningFraRegelTilVL {
     private static final List<Aktivitet> YTELSER_FRA_SAMMENLIGNINGSFILTERET = Arrays.asList(Aktivitet.SYKEPENGER_MOTTAKER, Aktivitet.FORELDREPENGER_MOTTAKER,
@@ -63,7 +64,7 @@ public class MapBesteberegningFraRegelTilVL {
     private static void settBesteberegningTilNullForAndreAndeler(BeregningsgrunnlagDto nyttGrunnlag) {
         nyttGrunnlag.getBeregningsgrunnlagPerioder().stream().flatMap(p -> p.getBeregningsgrunnlagPrStatusOgAndelList().stream()).forEach(andel -> {
             if (andel.getBesteberegningPrÅr() == null) {
-                BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(andel).medBesteberegningPrÅr(BigDecimal.ZERO);
+                BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(andel).medBesteberegningPrÅr(Beløp.ZERO);
             }
         });
     }
@@ -139,8 +140,8 @@ public class MapBesteberegningFraRegelTilVL {
     }
 
     private static void oppdaterBesteberegningForAndel(BigDecimal besteberegnetBeløp, BeregningsgrunnlagPrStatusOgAndelDto matchendeAndel) {
-        BigDecimal besteberegnet = matchendeAndel.getBesteberegningPrÅr();
-        BigDecimal beregnet = besteberegnet == null ? besteberegnetBeløp : besteberegnet.add(besteberegnetBeløp);
+        var besteberegnet = matchendeAndel.getBesteberegningPrÅr();
+        var beregnet = Beløp.safeVerdi(besteberegnet) == null ? Beløp.fra(besteberegnetBeløp) : besteberegnet.adder(Beløp.fra(besteberegnetBeløp));
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(matchendeAndel)
                 .medBesteberegningPrÅr(beregnet);
     }
@@ -153,7 +154,7 @@ public class MapBesteberegningFraRegelTilVL {
             oppdaterBesteberegningForAndel(a.getBesteberegnetPrÅr(), dagpengeAndel.get());
         } else {
             BeregningsgrunnlagPrStatusOgAndelDto.ny().medKilde(AndelKilde.PROSESS_BESTEBEREGNING)
-                    .medBesteberegningPrÅr(a.getBesteberegnetPrÅr())
+                    .medBesteberegningPrÅr(Beløp.fra(a.getBesteberegnetPrÅr()))
                     .medAktivitetStatus(AktivitetStatus.DAGPENGER)
                     .medInntektskategori(Inntektskategori.DAGPENGER)
                     .build(periode);
@@ -174,9 +175,9 @@ public class MapBesteberegningFraRegelTilVL {
             return new no.nav.folketrygdloven.kalkulator.steg.besteberegning.Inntekt(
                     mapArbeidsgiver(inntekt.getAktivitetNøkkel()),
                     mapArbeidsforholdRef(inntekt.getAktivitetNøkkel()),
-                    inntekt.getInntektPrMåned());
+                    Beløp.fra(inntekt.getInntektPrMåned()));
         }
-        return new no.nav.folketrygdloven.kalkulator.steg.besteberegning.Inntekt(mapAktivitetStatus(inntekt.getAktivitetNøkkel().getType()), inntekt.getInntektPrMåned());
+        return new no.nav.folketrygdloven.kalkulator.steg.besteberegning.Inntekt(mapAktivitetStatus(inntekt.getAktivitetNøkkel().getType()), Beløp.fra(inntekt.getInntektPrMåned()));
     }
 
     private static OpptjeningAktivitetType mapAktivitetStatus(Aktivitet type) {

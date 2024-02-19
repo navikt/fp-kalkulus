@@ -5,19 +5,17 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.typer.Beløp;
-import no.nav.folketrygdloven.kalkulus.typer.DiffBeløp;
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -57,7 +55,7 @@ public class SammenligningsgrunnlagDto {
 
     @Valid
     @JsonProperty(value = "differanseBeregnet")
-    private DiffBeløp differanseBeregnet;
+    private Beløp differanseBeregnet;
 
     public SammenligningsgrunnlagDto() {
         // trengs for deserialisering av JSON
@@ -83,7 +81,7 @@ public class SammenligningsgrunnlagDto {
         return sammenligningsgrunnlagType;
     }
 
-    public DiffBeløp getDifferanseBeregnet() {
+    public Beløp getDifferanseBeregnet() {
         return differanseBeregnet;
     }
 
@@ -115,7 +113,7 @@ public class SammenligningsgrunnlagDto {
         this.sammenligningsgrunnlagType = sammenligningsgrunnlagType;
     }
 
-    public void setDifferanseBeregnet(DiffBeløp differanseBeregnet) {
+    public void setDifferanseBeregnet(Beløp differanseBeregnet) {
         this.differanseBeregnet = differanseBeregnet;
     }
 }

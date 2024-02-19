@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.modell.iay;
 
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -87,15 +86,15 @@ public class InntektsmeldingDtoBuilder {
         return this;
     }
 
-    public InntektsmeldingDtoBuilder medBeløp(BigDecimal verdi) {
+    public InntektsmeldingDtoBuilder medBeløp(Beløp verdi) {
         precondition();
-        kladd.setInntektBeløp(Beløp.fra(verdi));
+        kladd.setInntektBeløp(verdi);
         return this;
     }
 
-    public InntektsmeldingDtoBuilder medRefusjon(BigDecimal verdi) {
+    public InntektsmeldingDtoBuilder medRefusjon(Beløp verdi) {
         precondition();
-        kladd.setRefusjonBeløpPerMnd(Beløp.fra(verdi));
+        kladd.setRefusjonBeløpPerMnd(verdi);
         kladd.setRefusjonOpphører(TIDENES_ENDE);
         return this;
     }
@@ -113,9 +112,9 @@ public class InntektsmeldingDtoBuilder {
 
     }
 
-    public InntektsmeldingDtoBuilder medRefusjon(BigDecimal verdi, LocalDate opphører) {
+    public InntektsmeldingDtoBuilder medRefusjon(Beløp verdi, LocalDate opphører) {
         precondition();
-        kladd.setRefusjonBeløpPerMnd(Beløp.fra(verdi));
+        kladd.setRefusjonBeløpPerMnd(verdi);
         kladd.setRefusjonOpphører(opphører);
         return this;
     }

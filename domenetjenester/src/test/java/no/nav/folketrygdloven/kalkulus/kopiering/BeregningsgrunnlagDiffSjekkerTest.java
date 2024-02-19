@@ -20,6 +20,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class BeregningsgrunnlagDiffSjekkerTest {
 
@@ -90,13 +91,13 @@ class BeregningsgrunnlagDiffSjekkerTest {
     @Test
     public void skalReturnereFalseNårSammenligningsgrunnlagPrStatusListeErLik(){
         SammenligningsgrunnlagPrStatusDto.Builder sammenligningsgrunnlagPrStatusAt = new SammenligningsgrunnlagPrStatusDto.Builder();
-        sammenligningsgrunnlagPrStatusAt.medRapportertPrÅr(BigDecimal.valueOf(100_000));
+        sammenligningsgrunnlagPrStatusAt.medRapportertPrÅr(Beløp.fra(100_000));
         sammenligningsgrunnlagPrStatusAt.medAvvikPromilleNy(BigDecimal.ZERO);
         sammenligningsgrunnlagPrStatusAt.medSammenligningsperiode(LocalDate.now().minusYears(1), LocalDate.now());
         sammenligningsgrunnlagPrStatusAt.medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_AT);
 
         SammenligningsgrunnlagPrStatusDto.Builder sammenligningsgrunnlagPrStatusFl = new SammenligningsgrunnlagPrStatusDto.Builder();
-        sammenligningsgrunnlagPrStatusFl.medRapportertPrÅr(BigDecimal.valueOf(200_000));
+        sammenligningsgrunnlagPrStatusFl.medRapportertPrÅr(Beløp.fra(200_000));
         sammenligningsgrunnlagPrStatusFl.medAvvikPromilleNy(BigDecimal.valueOf(250));
         sammenligningsgrunnlagPrStatusFl.medSammenligningsperiode(LocalDate.now().minusYears(1), LocalDate.now());
         sammenligningsgrunnlagPrStatusFl.medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_FL);
@@ -113,13 +114,13 @@ class BeregningsgrunnlagDiffSjekkerTest {
     @Test
     public void skalReturnereTrueNårSammenligningsgrunnlagPrStatusListeIkkeInneholderSammeTyper(){
         SammenligningsgrunnlagPrStatusDto.Builder sammenligningsgrunnlagPrStatusAt = new SammenligningsgrunnlagPrStatusDto.Builder();
-        sammenligningsgrunnlagPrStatusAt.medRapportertPrÅr(BigDecimal.valueOf(100_000));
+        sammenligningsgrunnlagPrStatusAt.medRapportertPrÅr(Beløp.fra(100_000));
         sammenligningsgrunnlagPrStatusAt.medAvvikPromilleNy(BigDecimal.ZERO);
         sammenligningsgrunnlagPrStatusAt.medSammenligningsperiode(LocalDate.now().minusYears(1), LocalDate.now());
         sammenligningsgrunnlagPrStatusAt.medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_AT);
 
         SammenligningsgrunnlagPrStatusDto.Builder sammenligningsgrunnlagPrStatusFl = new SammenligningsgrunnlagPrStatusDto.Builder();
-        sammenligningsgrunnlagPrStatusFl.medRapportertPrÅr(BigDecimal.valueOf(200_000));
+        sammenligningsgrunnlagPrStatusFl.medRapportertPrÅr(Beløp.fra(200_000));
         sammenligningsgrunnlagPrStatusFl.medAvvikPromilleNy(BigDecimal.valueOf(250));
         sammenligningsgrunnlagPrStatusFl.medSammenligningsperiode(LocalDate.now().minusYears(1), LocalDate.now());
         sammenligningsgrunnlagPrStatusFl.medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_FL);
@@ -141,25 +142,25 @@ class BeregningsgrunnlagDiffSjekkerTest {
         BigDecimal avvikPromilleAtAktivt = BigDecimal.ZERO;
         BigDecimal avvikPromilleAtForrige = BigDecimal.valueOf(10);
         SammenligningsgrunnlagPrStatusDto.Builder sammenligningsgrunnlagPrStatusAtAktivt = new SammenligningsgrunnlagPrStatusDto.Builder();
-        sammenligningsgrunnlagPrStatusAtAktivt.medRapportertPrÅr(BigDecimal.valueOf(100_000));
+        sammenligningsgrunnlagPrStatusAtAktivt.medRapportertPrÅr(Beløp.fra(100_000));
         sammenligningsgrunnlagPrStatusAtAktivt.medAvvikPromilleNy(avvikPromilleAtAktivt);
         sammenligningsgrunnlagPrStatusAtAktivt.medSammenligningsperiode(LocalDate.now().minusYears(1), LocalDate.now());
         sammenligningsgrunnlagPrStatusAtAktivt.medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_AT);
 
         SammenligningsgrunnlagPrStatusDto.Builder sammenligningsgrunnlagPrStatusFlAktivt = new SammenligningsgrunnlagPrStatusDto.Builder();
-        sammenligningsgrunnlagPrStatusFlAktivt.medRapportertPrÅr(BigDecimal.valueOf(200_000));
+        sammenligningsgrunnlagPrStatusFlAktivt.medRapportertPrÅr(Beløp.fra(200_000));
         sammenligningsgrunnlagPrStatusFlAktivt.medAvvikPromilleNy(BigDecimal.valueOf(250));
         sammenligningsgrunnlagPrStatusFlAktivt.medSammenligningsperiode(LocalDate.now().minusYears(1), LocalDate.now());
         sammenligningsgrunnlagPrStatusFlAktivt.medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_FL);
 
         SammenligningsgrunnlagPrStatusDto.Builder sammenligningsgrunnlagPrStatusFlForrige = new SammenligningsgrunnlagPrStatusDto.Builder();
-        sammenligningsgrunnlagPrStatusFlForrige.medRapportertPrÅr(BigDecimal.valueOf(200_000));
+        sammenligningsgrunnlagPrStatusFlForrige.medRapportertPrÅr(Beløp.fra(200_000));
         sammenligningsgrunnlagPrStatusFlForrige.medAvvikPromilleNy(BigDecimal.valueOf(250));
         sammenligningsgrunnlagPrStatusFlForrige.medSammenligningsperiode(LocalDate.now().minusYears(1), LocalDate.now());
         sammenligningsgrunnlagPrStatusFlForrige.medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_FL);
 
         SammenligningsgrunnlagPrStatusDto.Builder sammenligningsgrunnlagPrStatusAtForrige = new SammenligningsgrunnlagPrStatusDto.Builder();
-        sammenligningsgrunnlagPrStatusAtForrige.medRapportertPrÅr(BigDecimal.valueOf(100_000));
+        sammenligningsgrunnlagPrStatusAtForrige.medRapportertPrÅr(Beløp.fra(100_000));
         sammenligningsgrunnlagPrStatusAtForrige.medAvvikPromilleNy(avvikPromilleAtForrige);
         sammenligningsgrunnlagPrStatusAtForrige.medSammenligningsperiode(LocalDate.now().minusYears(1), LocalDate.now());
         sammenligningsgrunnlagPrStatusAtForrige.medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_AT);
@@ -190,7 +191,7 @@ class BeregningsgrunnlagDiffSjekkerTest {
     @Test
     public void skalReturnereTrueNårSammenligningsgrunnlagPrStatusListeIkkeErSattForDetEneBeregningsgrunnlaget(){
         SammenligningsgrunnlagPrStatusDto.Builder sammenligningsgrunnlagPrStatusAt = new SammenligningsgrunnlagPrStatusDto.Builder();
-        sammenligningsgrunnlagPrStatusAt.medRapportertPrÅr(BigDecimal.valueOf(100_000));
+        sammenligningsgrunnlagPrStatusAt.medRapportertPrÅr(Beløp.fra(100_000));
         sammenligningsgrunnlagPrStatusAt.medAvvikPromilleNy(BigDecimal.ZERO);
         sammenligningsgrunnlagPrStatusAt.medSammenligningsperiode(LocalDate.now().minusYears(1), LocalDate.now());
         sammenligningsgrunnlagPrStatusAt.medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_AT);
