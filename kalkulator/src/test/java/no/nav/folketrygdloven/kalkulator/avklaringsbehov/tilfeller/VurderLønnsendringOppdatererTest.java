@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -135,4 +137,72 @@ public class VurderLønnsendringOppdatererTest {
         assertThat(faktaAggregat.get().getFaktaArbeidsforhold(arbeidstakerAndel).get().getHarLønnsendringIBeregningsperiodenVurdering()).isFalse();
         assertThat(frilansAndel.getBgAndelArbeidsforhold()).isNotPresent();
     }
+
+    @Test
+    public void flere_yrkesaktiviteter_for_andel() {
+        // Arrange
+
+        var builder1 = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty()).medArbeidsgiver(Arbeidsgiver.virksomhet("999999999"))
+                .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
+                .medArbeidsforholdId(InternArbeidsforholdRefDto.nyRef());
+        builder1.leggTilAktivitetsAvtale(builder1.getAktivitetsAvtaleBuilder().medPeriode(Intervall.fraOgMed(LocalDate.of(2023, 10, 1))).medSisteLønnsendringsdato(LocalDate.of(2023, 10, 20)));
+        builder1.leggTilAktivitetsAvtale(builder1.getAktivitetsAvtaleBuilder().medPeriode(Intervall.fraOgMedTilOgMed(LocalDate.of(2023, 10, 20), LocalDate.of(2024,7,1))));
+
+        var builder2 = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty()).medArbeidsgiver(Arbeidsgiver.virksomhet("999999999"))
+                .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
+                .medArbeidsforholdId(InternArbeidsforholdRefDto.nyRef());
+        builder2.leggTilAktivitetsAvtale(builder2.getAktivitetsAvtaleBuilder().medPeriode(Intervall.fraOgMed(LocalDate.of(2023, 10, 1))).medSisteLønnsendringsdato(LocalDate.of(2023, 10, 20)));
+        builder2.leggTilAktivitetsAvtale(builder2.getAktivitetsAvtaleBuilder().medPeriode(Intervall.fraOgMedTilOgMed(LocalDate.of(2023, 10, 20), LocalDate.of(2024,3,1))));
+
+        var builder3 = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty()).medArbeidsgiver(Arbeidsgiver.virksomhet("999999999"))
+                .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
+                .medArbeidsforholdId(InternArbeidsforholdRefDto.nyRef());
+        builder3.leggTilAktivitetsAvtale(builder3.getAktivitetsAvtaleBuilder().medPeriode(Intervall.fraOgMed(LocalDate.of(2023, 12, 1))).medSisteLønnsendringsdato(LocalDate.of(2024, 1, 15)));
+        builder3.leggTilAktivitetsAvtale(builder3.getAktivitetsAvtaleBuilder().medPeriode(Intervall.fraOgMedTilOgMed(LocalDate.of(2024, 1, 15), LocalDate.of(2024,2,9))));
+
+        var aa = InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder.oppdatere(Optional.empty());
+        aa.leggTilYrkesaktivitet(builder1).leggTilYrkesaktivitet(builder2).leggTilYrkesaktivitet(builder3);
+
+        Arbeidsgiver virksomheten = Arbeidsgiver.virksomhet("999999999");
+        beregningsgrunnlag = BeregningsgrunnlagDto.builder()
+
+                .medGrunnbeløp(GRUNNBELØP)
+                .medSkjæringstidspunkt(LocalDate.of(2024,2,29))
+                .leggTilFaktaOmBeregningTilfeller(FAKTA_OM_BEREGNING_TILFELLER)
+                .build();
+        BeregningsgrunnlagPeriodeDto periode1 = BeregningsgrunnlagPeriodeDto.ny()
+                .medBeregningsgrunnlagPeriode(LocalDate.of(2024,2,29), LocalDate.of(9999,12,31))
+                .build(beregningsgrunnlag);
+        arbeidstakerAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
+                .medBeregningsperiode(LocalDate.of(2023,11,1), LocalDate.of(2024,1,31))
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(virksomheten))
+                .medAndelsnr(ANDELSNR_ARBEIDSTAKER)
+                .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .build(periode1);
+
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
+                .medData(InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER)
+                        .leggTilAktørArbeid(aa))
+                .build();
+        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(koblingReferanse, BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
+                        .medBeregningsgrunnlag(beregningsgrunnlag),
+                BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag);
+
+        VurderLønnsendringDto lønnsendringDto = new VurderLønnsendringDto(false);
+        FaktaBeregningLagreDto dto = new FaktaBeregningLagreDto(FAKTA_OM_BEREGNING_TILFELLER);
+        dto.setVurdertLonnsendring(lønnsendringDto);
+
+        // Act
+        BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
+        VurderLønnsendringOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        Optional<FaktaAggregatDto> faktaAggregat = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT).getFaktaAggregat();
+
+        // Assert
+        assertThat(faktaAggregat).isPresent();
+        assertThat(faktaAggregat.get().getFaktaArbeidsforhold()).hasSize(1);
+        assertThat(faktaAggregat.get().getFaktaArbeidsforhold(arbeidstakerAndel).get().getHarLønnsendringIBeregningsperiodenVurdering()).isFalse();
+        assertThat(frilansAndel.getBgAndelArbeidsforhold()).isNotPresent();
+    }
+
 }

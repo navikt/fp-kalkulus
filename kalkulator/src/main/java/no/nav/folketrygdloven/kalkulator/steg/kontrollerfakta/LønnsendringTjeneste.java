@@ -101,36 +101,25 @@ public class LønnsendringTjeneste {
         alleArbeidstakerandelerMedBeregningsperiode(beregningsgrunnlag).forEach(andel -> {
             Optional<AktørArbeidDto> aktørArbeid = iayGrunnlag.getAktørArbeidFraRegister();
             var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), aktørArbeid);
-            Optional<YrkesaktivitetDto> yrkesaktivitet = finnMatchendeYrkesaktivitetMedLønnsendring(andel, filter);
-            yrkesaktivitet.ifPresent(ya -> {
-                boolean harLønnsendringIBeregningsperiode = harLønnsendringIBeregningsperiode(harBeregningsperiodeSomOverlapperDato, andel, filter, ya);
+            Optional<YrkesaktivitetDto> yrkesaktivitetMedLønnsendringIBeregningsperiode = finnMatchendeYrkesaktivitetMedLønnsendring(andel, filter, harBeregningsperiodeSomOverlapperDato);
+            yrkesaktivitetMedLønnsendringIBeregningsperiode.ifPresent(ya -> {
                 boolean manglerIM = manglerInntektsmelding(inntektsmeldinger, andel);
-                if (manglerIM && harLønnsendringIBeregningsperiode) {
-                    aktiviteterMedLønnsendring.add(yrkesaktivitet.get());
+                if (manglerIM) {
+                    aktiviteterMedLønnsendring.add(ya);
                 }
             });
         });
         return aktiviteterMedLønnsendring;
     }
 
-    private static boolean harLønnsendringIBeregningsperiode(BiPredicate<BeregningsgrunnlagPrStatusOgAndelDto, LocalDate> harBeregningsperiodeSomOverlapperDato,
-                                                             BeregningsgrunnlagPrStatusOgAndelDto andel,
-                                                             YrkesaktivitetFilterDto filter,
-                                                             YrkesaktivitetDto ya) {
-        return harAvtalerMedLønnsendringIPerioden(filter.getAktivitetsAvtalerForArbeid(ya), harBeregningsperiodeSomOverlapperDato, andel);
-    }
-
-    private static boolean harAvtalerMedLønnsendringIPerioden(Collection<AktivitetsAvtaleDto> aktivitetsAvtalerForArbeid,
-                                                              BiPredicate<BeregningsgrunnlagPrStatusOgAndelDto, LocalDate> harBeregningsperiodeSomOverlapperDato,
-                                                              BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        return aktivitetsAvtalerForArbeid
-                .stream()
-                .filter(aa -> aa.getSisteLønnsendringsdato() != null)
-                .anyMatch(aa -> harBeregningsperiodeSomOverlapperDato.test(andel, aa.getSisteLønnsendringsdato()));
-    }
-
-    private static Optional<YrkesaktivitetDto> finnMatchendeYrkesaktivitetMedLønnsendring(BeregningsgrunnlagPrStatusOgAndelDto andel, YrkesaktivitetFilterDto filter) {
-        return filter.getYrkesaktiviteterForBeregning().stream().filter(ya -> andel.gjelderSammeArbeidsforhold(ya.getArbeidsgiver(), ya.getArbeidsforholdRef())).findFirst();
+    private static Optional<YrkesaktivitetDto> finnMatchendeYrkesaktivitetMedLønnsendring(BeregningsgrunnlagPrStatusOgAndelDto andel,
+                                                                                          YrkesaktivitetFilterDto filter,
+                                                                                          BiPredicate<BeregningsgrunnlagPrStatusOgAndelDto, LocalDate> harBeregningsperiodeSomOverlapperDato) {
+        return filter.getYrkesaktiviteterForBeregning().stream()
+                .filter(ya -> andel.gjelderSammeArbeidsforhold(ya.getArbeidsgiver(), ya.getArbeidsforholdRef()))
+                .filter(ya -> ya.getAlleAktivitetsAvtaler().stream().anyMatch(aa -> aa.getSisteLønnsendringsdato() != null
+                        && harBeregningsperiodeSomOverlapperDato.test(andel, aa.getSisteLønnsendringsdato())))
+                .findFirst();
 
     }
 
