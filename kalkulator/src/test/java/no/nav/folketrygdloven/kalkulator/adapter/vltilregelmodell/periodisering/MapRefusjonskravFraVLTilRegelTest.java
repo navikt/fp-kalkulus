@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
+
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
@@ -137,10 +139,10 @@ public class MapRefusjonskravFraVLTilRegelTest {
         OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(
                 new UtbetalingsgradPrAktivitetDto(
                         new AktivitetDto(ARBEIDSGIVER1, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID),
-                        List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMed(idag), BigDecimal.valueOf(100)))),
+                        List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMed(idag), Utbetalingsgrad.valueOf(100)))),
                 new UtbetalingsgradPrAktivitetDto(
                         new AktivitetDto(ARBEIDSGIVER2, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID),
-                        List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMed(idag), BigDecimal.valueOf(50))))), List.of());
+                        List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMed(idag), Utbetalingsgrad.valueOf(50))))), List.of());
 
         // Act
         var refusjonPåStp = MapRefusjonskravFraVLTilRegel.finnGradertRefusjonskravPåSkjæringstidspunktet(inntektsmeldingAggregatDto.getInntektsmeldingerSomSkalBrukes(), idag, omsorgspengerGrunnlag);
@@ -173,10 +175,10 @@ public class MapRefusjonskravFraVLTilRegelTest {
         OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(
                 new UtbetalingsgradPrAktivitetDto(
                         new AktivitetDto(ARBEIDSGIVER1, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID),
-                        List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMed(idag), BigDecimal.valueOf(100)))),
+                        List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMed(idag), Utbetalingsgrad.valueOf(100)))),
                 new UtbetalingsgradPrAktivitetDto(
                         new AktivitetDto(ARBEIDSGIVER2, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID),
-                        List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMed(idag), BigDecimal.valueOf(50))))), List.of());
+                        List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMed(idag), Utbetalingsgrad.valueOf(50))))), List.of());
 
         // Act
         var refusjonPåStp = MapRefusjonskravFraVLTilRegel.finnGradertRefusjonskravPåSkjæringstidspunktet(inntektsmeldingAggregatDto.getInntektsmeldingerSomSkalBrukes(), idag, omsorgspengerGrunnlag);

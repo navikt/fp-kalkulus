@@ -12,6 +12,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
+
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
+
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
@@ -321,7 +325,7 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
     }
 
     private PeriodeMedUtbetalingsgradDto lagYGPeriode(LocalDate fom, LocalDate tom, int utbGrad) {
-        return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(fom, tom), BigDecimal.valueOf(utbGrad));
+        return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(fom, tom), Utbetalingsgrad.valueOf(utbGrad));
     }
 
     private void lagUtbGrunnlasg(AktivitetDto arbfor, PeriodeMedUtbetalingsgradDto... utbPerioder) {

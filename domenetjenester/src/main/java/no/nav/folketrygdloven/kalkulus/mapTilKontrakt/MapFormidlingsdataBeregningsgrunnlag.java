@@ -20,6 +20,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulus.typer.Beløp;
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
 public class MapFormidlingsdataBeregningsgrunnlag {
 
@@ -198,6 +199,6 @@ public class MapFormidlingsdataBeregningsgrunnlag {
     private static boolean harSøktUtbetalingIPeriode(List<PeriodeMedUtbetalingsgradDto> periodeMedUtbetalingsgrad, Periode periode) {
         return periodeMedUtbetalingsgrad.stream()
                 .filter(utbPeriode -> utbPeriode.getPeriode().overlapper(Intervall.fraOgMedTilOgMed(periode.getFom(), periode.getTom())))
-                .anyMatch(utbPeriode -> utbPeriode.getUtbetalingsgrad().compareTo(BigDecimal.ZERO) > 0);
+                .anyMatch(utbPeriode -> utbPeriode.getUtbetalingsgrad().compareTo(Utbetalingsgrad.ZERO) > 0);
     }
 }

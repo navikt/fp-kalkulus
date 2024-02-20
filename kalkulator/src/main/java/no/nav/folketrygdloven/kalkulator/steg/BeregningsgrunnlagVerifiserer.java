@@ -25,6 +25,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public final class BeregningsgrunnlagVerifiserer {
@@ -136,8 +137,8 @@ public final class BeregningsgrunnlagVerifiserer {
                         UtbetalingsgradTjeneste.finnAktivitetsgradForAndel(a, p.getPeriode(), ytelsespesifiktGrunnlag, false))));
     }
 
-    private static void verifiserUtbetaling(BeregningsgrunnlagPrStatusOgAndelDto andel, BigDecimal utbetalingsgrad, Optional<BigDecimal> aktivitetsgrad) {
-        var inaktivitetsgrad = aktivitetsgrad.map(BigDecimal.valueOf(100)::subtract).orElse(utbetalingsgrad);
+    private static void verifiserUtbetaling(BeregningsgrunnlagPrStatusOgAndelDto andel, Utbetalingsgrad utbetalingsgrad, Optional<BigDecimal> aktivitetsgrad) {
+        var inaktivitetsgrad = aktivitetsgrad.map(BigDecimal.valueOf(100)::subtract).orElse(utbetalingsgrad.verdi());
         if (inaktivitetsgrad.compareTo(BigDecimal.ZERO) == 0 && !harRefusjon(andel)) {
             if (andel.getDagsats() > 0L) {
                 throw new IllegalStateException("Dagsats større enn 0 for andel uten krav");

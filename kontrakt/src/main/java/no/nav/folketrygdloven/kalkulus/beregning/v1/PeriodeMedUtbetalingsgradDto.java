@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE, creatorVisibility = Visibility.NONE)
@@ -30,10 +31,7 @@ public class PeriodeMedUtbetalingsgradDto {
 
     @JsonProperty(value = "utbetalingsgrad", required = true)
     @Valid
-    @DecimalMin(value = "0.00", message = "utbetalingsgrad ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "100.00", message = "utbetalingsgrad ${validatedValue} må være <= {value}")
-    @Digits(integer = 3, fraction = 2)
-    private BigDecimal utbetalingsgrad;
+    private Utbetalingsgrad utbetalingsgrad;
 
     @JsonProperty(value = "aktivitetsgrad")
     @Valid
@@ -45,13 +43,13 @@ public class PeriodeMedUtbetalingsgradDto {
     public PeriodeMedUtbetalingsgradDto() {
     }
 
-    public PeriodeMedUtbetalingsgradDto(@NotNull @Valid Periode periode, @Valid @DecimalMin(value = "0.00", message = "utbetalingsgrad ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "utbetalingsgrad ${validatedValue} må være <= {value}") BigDecimal utbetalingsgrad) {
+    public PeriodeMedUtbetalingsgradDto(@NotNull @Valid Periode periode, @Valid @DecimalMin(value = "0.00", message = "utbetalingsgrad ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "utbetalingsgrad ${validatedValue} må være <= {value}") Utbetalingsgrad utbetalingsgrad) {
         this.periode = periode;
         this.utbetalingsgrad = utbetalingsgrad;
     }
 
     public PeriodeMedUtbetalingsgradDto(@NotNull @Valid Periode periode,
-                                        @Valid @DecimalMin(value = "0.00", message = "utbetalingsgrad ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "utbetalingsgrad ${validatedValue} må være <= {value}") BigDecimal utbetalingsgrad,
+                                        @Valid @DecimalMin(value = "0.00", message = "utbetalingsgrad ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "utbetalingsgrad ${validatedValue} må være <= {value}") Utbetalingsgrad utbetalingsgrad,
                                         @Valid @DecimalMin(value = "0.00", message = "aktivitetsgrad ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "aktivitetsgrad ${validatedValue} må være <= {value}") BigDecimal aktivitetsgrad) {
         this.periode = periode;
         this.utbetalingsgrad = utbetalingsgrad;
@@ -62,7 +60,7 @@ public class PeriodeMedUtbetalingsgradDto {
         return periode;
     }
 
-    public BigDecimal getUtbetalingsgrad() {
+    public Utbetalingsgrad getUtbetalingsgrad() {
         return utbetalingsgrad;
     }
 

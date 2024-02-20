@@ -239,7 +239,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medFastsattAvSaksbehandler(vlBGPStatus.getFastsattAvSaksbehandler())
                 .medBesteberegningPrÅr(Beløp.safeVerdi(vlBGPStatus.getBesteberegningPrÅr()))
                 .medOrginalDagsatsFraTilstøtendeYtelse(vlBGPStatus.getOrginalDagsatsFraTilstøtendeYtelse())
-                .medUtbetalingsprosent(finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false))
+                .medUtbetalingsprosent(finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false).verdi())
                 .build();
     }
 
@@ -280,7 +280,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medFordeltPrÅr(Optional.ofNullable(Beløp.safeVerdi(vlBGPStatus.getManueltFordeltPrÅr())).orElseGet(() -> Beløp.safeVerdi(vlBGPStatus.getFordeltPrÅr()))) // Midlertidig løsning til vi lager egen mapping for fastsettsteget vl til regel
                 .medBesteberegningPrÅr(Beløp.safeVerdi(vlBGPStatus.getBesteberegningPrÅr()))
                 .medArbeidsforhold(MapArbeidsforholdFraVLTilRegel.arbeidsforholdForMedStartdato(vlBGPStatus, input.getIayGrunnlag(), input.getSkjæringstidspunktForBeregning()))
-                .medUtbetalingsprosentSVP(finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false));
+                .medUtbetalingsprosentSVP(finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false).verdi());
         Optional<Boolean> erTidsbegrenset = input.getBeregningsgrunnlagGrunnlag().getFaktaAggregat().flatMap(fa -> fa.getFaktaArbeidsforhold(vlBGPStatus))
                 .map(FaktaArbeidsforholdDto::getErTidsbegrensetVurdering);
         vlBGPStatus.getBgAndelArbeidsforhold().ifPresent(bga ->

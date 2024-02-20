@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
+
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
@@ -73,7 +75,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
         lagBehandling(Beregningsgrunnlag, arbeidsgiver);
         LocalDate PeriodeFom =SKJÆRINGSTIDSPUNKT;
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(PeriodeFom,
-                PeriodeFom.plusMonths(1)), BigDecimal.valueOf(100));
+                PeriodeFom.plusMonths(1)), Utbetalingsgrad.valueOf(100));
         AktivitetDto aktivitetDto = new AktivitetDto(arbeidsgiver,
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
@@ -119,7 +121,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
         lagBehandling(Beregningsgrunnlag, arbeidsgiver);
         LocalDate PeriodeFom =SKJÆRINGSTIDSPUNKT;
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(PeriodeFom,
-                PeriodeFom.plusMonths(1)), BigDecimal.valueOf(100));
+                PeriodeFom.plusMonths(1)), Utbetalingsgrad.valueOf(100));
         AktivitetDto aktivitetDto = new AktivitetDto(arbeidsgiver,
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
@@ -152,7 +154,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
         lagBehandling(Beregningsgrunnlag, arbeidsgiver);
         LocalDate PeriodeFom =LocalDate.of(2020,01,26);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(PeriodeFom,
-                PeriodeFom.plusMonths(1)), BigDecimal.valueOf(100));
+                PeriodeFom.plusMonths(1)), Utbetalingsgrad.valueOf(100));
         AktivitetDto aktivitetDto = new AktivitetDto(arbeidsgiver,
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
@@ -184,7 +186,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
         lagBehandling(Beregningsgrunnlag, arbeidsgiver);
         LocalDate PeriodeFom =ANDEL_FOM;
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(PeriodeFom,
-                PeriodeFom.plusMonths(1)), BigDecimal.valueOf(100));
+                PeriodeFom.plusMonths(1)), Utbetalingsgrad.valueOf(100));
         AktivitetDto aktivitetDto = new AktivitetDto(arbeidsgiver,
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
@@ -235,7 +237,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
 
         LocalDate PeriodeFom =LocalDate.of(2020,01,26);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(PeriodeFom,
-                PeriodeFom.plusMonths(1)), BigDecimal.valueOf(100));
+                PeriodeFom.plusMonths(1)), Utbetalingsgrad.valueOf(100));
         AktivitetDto aktivitetDto = new AktivitetDto(arbeidsgiver,
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));

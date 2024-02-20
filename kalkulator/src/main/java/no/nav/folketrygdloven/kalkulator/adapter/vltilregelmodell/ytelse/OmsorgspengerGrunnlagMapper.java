@@ -15,6 +15,7 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDt
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
 
 public class OmsorgspengerGrunnlagMapper {
@@ -46,7 +47,7 @@ public class OmsorgspengerGrunnlagMapper {
 
     private boolean harUtbetaling(UtbetalingsgradPrAktivitetDto aktivitet) {
         return aktivitet.getPeriodeMedUtbetalingsgrad().stream()
-                .anyMatch(p -> p.getUtbetalingsgrad().compareTo(BigDecimal.ZERO) > 0);
+                .anyMatch(p -> p.getUtbetalingsgrad().compareTo(Utbetalingsgrad.ZERO) > 0);
     }
 
     private boolean erFrilansEllerNæring(UtbetalingsgradPrAktivitetDto aktivitet) {

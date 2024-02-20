@@ -5,18 +5,19 @@ import java.util.Objects;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
 public class PeriodeMedUtbetalingsgradDto implements Comparable<PeriodeMedUtbetalingsgradDto> {
     private Intervall periode;
-    private BigDecimal utbetalingsgrad;
+    private Utbetalingsgrad utbetalingsgrad;
     private BigDecimal aktivitetsgrad;
 
-    public PeriodeMedUtbetalingsgradDto(Intervall periode, BigDecimal utbetalingsgrad) {
+    public PeriodeMedUtbetalingsgradDto(Intervall periode, Utbetalingsgrad utbetalingsgrad) {
         this.periode = periode;
         this.utbetalingsgrad = utbetalingsgrad;
     }
 
-    public PeriodeMedUtbetalingsgradDto(Intervall periode, BigDecimal utbetalingsgrad, BigDecimal aktivitetsgrad) {
+    public PeriodeMedUtbetalingsgradDto(Intervall periode, Utbetalingsgrad utbetalingsgrad, BigDecimal aktivitetsgrad) {
         this.periode = periode;
         this.utbetalingsgrad = utbetalingsgrad;
         this.aktivitetsgrad = aktivitetsgrad;
@@ -26,7 +27,7 @@ public class PeriodeMedUtbetalingsgradDto implements Comparable<PeriodeMedUtbeta
         return periode;
     }
 
-    public BigDecimal getUtbetalingsgrad() {
+    public Utbetalingsgrad getUtbetalingsgrad() {
         return utbetalingsgrad;
     }
 

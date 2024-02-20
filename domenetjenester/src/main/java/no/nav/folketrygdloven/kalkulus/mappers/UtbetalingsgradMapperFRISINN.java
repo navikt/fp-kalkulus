@@ -23,6 +23,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
 public class UtbetalingsgradMapperFRISINN {
 
@@ -112,6 +113,6 @@ public class UtbetalingsgradMapperFRISINN {
                 .orElse(BigDecimal.ZERO);
         BigDecimal bortfaltInntekt = totalInntektIPeriode.subtract(løpendeÅrsinntekt).max(BigDecimal.ZERO);
         BigDecimal utbetalingsgrad = totalInntektIPeriode.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : bortfaltInntekt.divide(totalInntektIPeriode, 10, RoundingMode.HALF_EVEN);
-        return new PeriodeMedUtbetalingsgradDto(oppgittPeriodeInntekt.getPeriode(), utbetalingsgrad.multiply(BigDecimal.valueOf(100)));
+        return new PeriodeMedUtbetalingsgradDto(oppgittPeriodeInntekt.getPeriode(), Utbetalingsgrad.fra(utbetalingsgrad.multiply(BigDecimal.valueOf(100))));
     }
 }

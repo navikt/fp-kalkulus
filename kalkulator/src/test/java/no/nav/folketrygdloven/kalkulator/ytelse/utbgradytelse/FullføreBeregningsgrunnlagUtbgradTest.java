@@ -16,6 +16,8 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
+
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -1133,7 +1135,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
     }
 
     private PeriodeMedUtbetalingsgradDto lagPeriodeMedUtbetaling(LocalDate skjæringstidspunkt, BigDecimal utbetalingsgrad) {
-        return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(skjæringstidspunkt, skjæringstidspunkt.plusMonths(3)), utbetalingsgrad);
+        return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(skjæringstidspunkt, skjæringstidspunkt.plusMonths(3)), Utbetalingsgrad.fra(utbetalingsgrad));
     }
 
     private SvangerskapspengerGrunnlag lagSvangerskapspengerGrunnlag(List<UtbetalingsgradPrAktivitetDto> tilretteleggingMedUtbelingsgrad) {

@@ -20,6 +20,7 @@ import no.nav.folketrygdloven.kalkulator.steg.refusjon.AvklaringsbehovutlederRef
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.AvklaringsbehovutlederVurderRefusjon;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
 public class AvklaringsbehovutledertjenesteVurderRefusjonSVP {
 
@@ -45,7 +46,7 @@ public class AvklaringsbehovutledertjenesteVurderRefusjonSVP {
     private Optional<LocalDate> finnSisteDagMedUtbetaling(SvangerskapspengerGrunnlag svpGrunnlag) {
         return svpGrunnlag.getUtbetalingsgradPrAktivitet().stream()
                 .flatMap(svp -> svp.getPeriodeMedUtbetalingsgrad().stream())
-                .filter(utb -> utb.getUtbetalingsgrad().compareTo(BigDecimal.ZERO) > 0)
+                .filter(utb -> utb.getUtbetalingsgrad().compareTo(Utbetalingsgrad.ZERO) > 0)
                 .map(PeriodeMedUtbetalingsgradDto::getPeriode).map(Intervall::getTomDato)
                 .max(Comparator.naturalOrder());
 

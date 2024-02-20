@@ -15,7 +15,7 @@ public class FinnArbeidsprosenterUtbetalingsgrad implements FinnArbeidsprosenter
                                                          YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
                                                          Intervall periode) {
         var utbetalingsgrad = UtbetalingsgradTjeneste.finnUtbetalingsgradForAndel(andel, periode, ytelsespesifiktGrunnlag, false);
-        return List.of(BigDecimal.valueOf(100).subtract(utbetalingsgrad));
+        return List.of(BigDecimal.valueOf(100).subtract(utbetalingsgrad.verdi()));
     }
 
 

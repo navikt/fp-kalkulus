@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -555,7 +557,7 @@ public class ForeslåBeregningsgrunnlagTest {
     public void skalIkkeReturnereAvklaringsbehovNårOmsorgspengerOgATMedOver25ProsentAvvikOOgRefusjonTilsvarerBeregnet() {
         // Arrange
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING,
-                SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(1)), BigDecimal.valueOf(100));
+                SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(1)), Utbetalingsgrad.valueOf(100));
         AktivitetDto aktivitetDto = new AktivitetDto(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1),
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
@@ -579,7 +581,7 @@ public class ForeslåBeregningsgrunnlagTest {
     public void skalIkkeReturnereAvklaringsbehovNårOmsorgspengerOgATMedAvvikOver25ProsentAvvikOOgRefusjon6G() {
         // Arrange
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING,
-                SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(1)), BigDecimal.valueOf(100));
+                SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(1)), Utbetalingsgrad.valueOf(100));
         AktivitetDto aktivitetDto = new AktivitetDto(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1),
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
@@ -604,7 +606,7 @@ public class ForeslåBeregningsgrunnlagTest {
     public void skalIkkeReturnereAvklaringsbehovNårOmsorgspengerOgATMedAvvikOver25ProsentAvvikOgAvkorting() {
         // Arrange
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING,
-                SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(1)), BigDecimal.valueOf(100));
+                SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(1)), Utbetalingsgrad.valueOf(100));
         AktivitetDto aktivitetDto = new AktivitetDto(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1),
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
@@ -629,7 +631,7 @@ public class ForeslåBeregningsgrunnlagTest {
     public void skalReturnereAvklaringsbehovNårOmsorgspengerOgATMedOver25ProsentAvvikOgUtbetalingDirekteTilBruker() {
         // Arrange
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING,
-                SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(1)), BigDecimal.valueOf(100));
+                SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(1)), Utbetalingsgrad.valueOf(100));
         AktivitetDto aktivitetDto = new AktivitetDto(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1),
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
@@ -661,7 +663,7 @@ public class ForeslåBeregningsgrunnlagTest {
         // Arrange
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagFL();
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING,
-                SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(1)), BigDecimal.valueOf(100));
+                SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(1)), Utbetalingsgrad.valueOf(100));
         AktivitetDto aktivitetDto = new AktivitetDto(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1),
                 InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.FRILANS);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
@@ -702,7 +704,7 @@ public class ForeslåBeregningsgrunnlagTest {
         Arbeidsgiver Arbeidsgiver2 = Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR2);
 
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING,
-                SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(1)), BigDecimal.valueOf(100));
+                SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(1)), Utbetalingsgrad.valueOf(100));
         AktivitetDto aktivitetDto = new AktivitetDto(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1),
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));

@@ -204,11 +204,11 @@ public class SimulerGraderingMotInntektTjeneste {
                         periode,
                         ytelsespesifiktGrunnlag,
                         true);
-                var utbetalingsgrad = utbetalingsgradProsent.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP);
+                var utbetalingsgrad = utbetalingsgradProsent.verdi().divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP);
                 return inntekt.map(i -> i.multiply(BigDecimal.ONE.subtract(utbetalingsgrad)));
             } else if (inntektsforhold.getAktivitetStatus().equals(AktivitetStatus.FRILANSER)) {
                 var utbetalingsgradProsent = UtbetalingsgradTjeneste.finnUtbetalingsgradForStatus(AktivitetStatus.FRILANSER, periode, ytelsespesifiktGrunnlag);
-                var utbetalingsgrad = utbetalingsgradProsent.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP);
+                var utbetalingsgrad = utbetalingsgradProsent.verdi().divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP);
                 return inntekt.map(i -> i.multiply(BigDecimal.ONE.subtract(utbetalingsgrad)));
             } else {
                 return Beløp.ZERO;
@@ -269,7 +269,7 @@ public class SimulerGraderingMotInntektTjeneste {
                 .filter(p -> p.getPeriode().inkluderer(periode.getFomDato()))
                 .map(p -> {
                     var virkedager = getBeregnVirkedager(p.getPeriode());
-                    return BigDecimal.valueOf(virkedager).multiply(p.getUtbetalingsgrad());
+                    return BigDecimal.valueOf(virkedager).multiply(p.getUtbetalingsgrad().verdi());
                 })
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO)

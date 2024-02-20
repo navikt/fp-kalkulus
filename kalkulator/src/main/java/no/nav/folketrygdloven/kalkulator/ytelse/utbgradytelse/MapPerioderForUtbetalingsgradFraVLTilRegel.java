@@ -143,7 +143,7 @@ public class MapPerioderForUtbetalingsgradFraVLTilRegel {
         } else {
             periode = Periode.of(utbetalingsgradPeriode.getFomDato(), utbetalingsgradPeriode.getTomDato());
         }
-        return new Utbetalingsgrad(periode, periodeMedUtbetalingsgrad.getUtbetalingsgrad());
+        return new Utbetalingsgrad(periode, periodeMedUtbetalingsgrad.getUtbetalingsgrad().verdi());
     }
 
     // TODO: Denne bør vere private

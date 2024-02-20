@@ -23,6 +23,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonFilter;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 import no.nav.fpsak.tidsserie.StandardCombinators;
@@ -81,7 +82,7 @@ public class MapRefusjonPerioderFraVLTilRegelUtbgrad
         final List<LocalDateTimeline<Boolean>> segmenterMedUtbetaling = UtbetalingsgradTjeneste.finnPerioderForArbeid(ytelsespesifiktGrunnlag, im.getArbeidsgiver(), im.getArbeidsforholdRef(), false)
                 .stream()
                 .flatMap(u -> u.getPeriodeMedUtbetalingsgrad().stream())
-                .filter(p -> p.getUtbetalingsgrad() != null && p.getUtbetalingsgrad().compareTo(BigDecimal.ZERO) > 0
+                .filter(p -> p.getUtbetalingsgrad() != null && p.getUtbetalingsgrad().compareTo(Utbetalingsgrad.ZERO) > 0
                         || harAktivitetsgradMedTilkommetInntektToggle(p))
                 .map(PeriodeMedUtbetalingsgradDto::getPeriode)
                 .map(p -> new LocalDateTimeline<>(List.of(new LocalDateSegment<>(p.getFomDato(), p.getTomDato(), true))))
@@ -116,7 +117,7 @@ public class MapRefusjonPerioderFraVLTilRegelUtbgrad
                 .flatMap(Collection::stream)
                 .toList();
         Optional<LocalDate> førsteDatoMedUtbetalingOpt = utbetalingsgrader.stream()
-                .filter(periodeMedUtbetalingsgradDto -> periodeMedUtbetalingsgradDto.getUtbetalingsgrad().compareTo(BigDecimal.ZERO) != 0)
+                .filter(periodeMedUtbetalingsgradDto -> periodeMedUtbetalingsgradDto.getUtbetalingsgrad().compareTo(Utbetalingsgrad.ZERO) != 0)
                 .map(PeriodeMedUtbetalingsgradDto::getPeriode)
                 .map(Intervall::getFomDato)
                 .min(Comparator.naturalOrder());

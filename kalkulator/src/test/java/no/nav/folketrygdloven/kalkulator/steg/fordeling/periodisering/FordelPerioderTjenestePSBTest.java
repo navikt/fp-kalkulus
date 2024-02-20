@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -241,7 +243,7 @@ public class FordelPerioderTjenestePSBTest {
     }
 
     private PeriodeMedUtbetalingsgradDto lagPeriodeMedUtbetaling(LocalDate skjæringstidspunkt, LocalDate tomDato, BigDecimal utbetalingsgrad, BigDecimal aktivitetsgrad) {
-        return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(skjæringstidspunkt, tomDato), utbetalingsgrad, aktivitetsgrad);
+        return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(skjæringstidspunkt, tomDato), Utbetalingsgrad.fra(utbetalingsgrad), aktivitetsgrad);
     }
 
 }

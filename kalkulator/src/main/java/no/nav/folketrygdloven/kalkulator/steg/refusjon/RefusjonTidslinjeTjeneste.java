@@ -15,6 +15,7 @@ import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonPeriode;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonPeriodeEndring;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
@@ -42,7 +43,7 @@ public class RefusjonTidslinjeTjeneste {
     }
 
     private static boolean harUtbetalingForAndelIPeriode(BeregningsgrunnlagPrStatusOgAndelDto andel, Intervall periode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        return UtbetalingsgradTjeneste.finnUtbetalingsgradForAndel(andel, periode, ytelsespesifiktGrunnlag, false).compareTo(BigDecimal.ZERO) > 0;
+        return UtbetalingsgradTjeneste.finnUtbetalingsgradForAndel(andel, periode, ytelsespesifiktGrunnlag, false).compareTo(Utbetalingsgrad.ZERO) > 0;
     }
 
     private static Beløp getBrutto(BeregningsgrunnlagPrStatusOgAndelDto a, boolean gjelderOriginaltGrunnlag, boolean skalHaUtbetaling) {

@@ -24,6 +24,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
@@ -95,7 +96,7 @@ public class MapTilFordelingsmodell {
             }
         }
         var ubetalingsgrad = finnUtbetalingsgradForAndel(bgAndel, periode, input.getYtelsespesifiktGrunnlag(), false);
-        return ubetalingsgrad.compareTo(BigDecimal.ZERO) > 0;
+        return ubetalingsgrad.compareTo(Utbetalingsgrad.ZERO) > 0;
     }
 
 
@@ -126,7 +127,7 @@ public class MapTilFordelingsmodell {
             }
         }
         var utbGrad = finnUtbetalingsgradForAndel(bgAndel, bgAndel.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);
-        return utbGrad.compareTo(BigDecimal.ZERO) > 0;
+        return utbGrad.compareTo(Utbetalingsgrad.ZERO) > 0;
     }
 
     private static Optional<Arbeidsforhold> mapArbeidsforhold(BeregningsgrunnlagPrStatusOgAndelDto bgAndel) {

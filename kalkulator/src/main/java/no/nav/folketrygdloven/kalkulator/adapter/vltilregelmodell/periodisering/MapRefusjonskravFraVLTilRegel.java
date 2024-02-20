@@ -157,7 +157,7 @@ public class MapRefusjonskravFraVLTilRegel {
         Beløp refusjonBeløpPerMnd = Optional.ofNullable(inntektsmelding.getRefusjonBeløpPerMnd()).orElse(Beløp.ZERO);
         Optional<PeriodeMedUtbetalingsgradDto> førsteUtbetalingsperiode = finnFørsteUtbetalingsgradPeriode(utbetalingsgrader, stp);
         BigDecimal utbetalingsgradVedStart = førsteUtbetalingsperiode.map(PeriodeMedUtbetalingsgradDto::getUtbetalingsgrad)
-                .map(g -> g.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_EVEN)).orElse(BigDecimal.ZERO);
+                .map(g -> g.verdi().divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_EVEN)).orElse(BigDecimal.ZERO);
         LocalDate startdatoPermisjon = førsteUtbetalingsperiode.map(PeriodeMedUtbetalingsgradDto::getPeriode).map(Intervall::getFomDato).orElse(TIDENES_ENDE);
         refusjoner.put(startdatoPermisjon, refusjonBeløpPerMnd.multipliser(utbetalingsgradVedStart));
         inntektsmelding.getEndringerRefusjon()
@@ -181,7 +181,7 @@ public class MapRefusjonskravFraVLTilRegel {
     private static BigDecimal finnUtbetalingsgradForDato(List<PeriodeMedUtbetalingsgradDto> utbetalingsgrader, LocalDate startdatoPermisjon) {
         return utbetalingsgrader.stream().filter(u -> u.getPeriode().inkluderer(startdatoPermisjon))
                 .map(PeriodeMedUtbetalingsgradDto::getUtbetalingsgrad)
-                .map(b -> b.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_EVEN))
+                .map(b -> b.verdi().divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_EVEN))
                 .findFirst()
                 .orElse(BigDecimal.ZERO);
     }

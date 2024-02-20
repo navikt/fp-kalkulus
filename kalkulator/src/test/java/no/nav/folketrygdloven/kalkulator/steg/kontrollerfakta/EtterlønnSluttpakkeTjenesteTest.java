@@ -33,11 +33,6 @@ public class EtterlønnSluttpakkeTjenesteTest {
     public EtterlønnSluttpakkeTjenesteTest() {
     }
 
-    @BeforeEach
-    public void setup() {
-        initMocks(this);
-    }
-
     @Test
     public void skalGiTilfelleDersomSøkerHarAndelMedEtterlønnSluttpakke() {
         //Arrange

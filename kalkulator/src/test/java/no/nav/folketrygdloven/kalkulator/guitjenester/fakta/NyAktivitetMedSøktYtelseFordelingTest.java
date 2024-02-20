@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
+
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.input.SvangerskapspengerGrunnlag;
@@ -82,6 +84,6 @@ class NyAktivitetMedSøktYtelseFordelingTest {
     }
 
     private PeriodeMedUtbetalingsgradDto lagPeriode(LocalDate fom, LocalDate tom, BigDecimal utbetalingsgrad) {
-        return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(fom, tom), utbetalingsgrad);
+        return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(fom, tom), Utbetalingsgrad.fra(utbetalingsgrad));
     }
 }

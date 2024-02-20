@@ -14,6 +14,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
@@ -170,7 +171,7 @@ class FinnInntektstak {
     private static boolean harSøktUtbetalingIPeriode(List<PeriodeMedUtbetalingsgradDto> periodeMedUtbetalingsgrad, Intervall periode) {
         return periodeMedUtbetalingsgrad.stream()
                 .filter(utbPeriode -> utbPeriode.getPeriode().overlapper(Intervall.fraOgMedTilOgMed(periode.getFomDato(), periode.getTomDato())))
-                .anyMatch(utbPeriode -> utbPeriode.getUtbetalingsgrad().compareTo(BigDecimal.ZERO) > 0);
+                .anyMatch(utbPeriode -> utbPeriode.getUtbetalingsgrad().compareTo(Utbetalingsgrad.ZERO) > 0);
     }
 
 }

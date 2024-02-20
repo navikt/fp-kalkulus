@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
+
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
@@ -81,7 +83,7 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
 
         LocalDate PeriodeFom =ANDEL_FOM;
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(PeriodeFom,
-                PeriodeFom.plusMonths(1)), BigDecimal.valueOf(100));
+                PeriodeFom.plusMonths(1)), Utbetalingsgrad.valueOf(100));
         AktivitetDto aktivitetDto = new AktivitetDto(arbeidsgiver,
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
@@ -135,7 +137,7 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
 
         LocalDate PeriodeFom =SKJÆRINGSTIDSPUNKT;
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(PeriodeFom,
-                PeriodeFom.plusMonths(1)), BigDecimal.valueOf(100));
+                PeriodeFom.plusMonths(1)), Utbetalingsgrad.valueOf(100));
         AktivitetDto aktivitetDto = new AktivitetDto(arbeidsgiver,
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));

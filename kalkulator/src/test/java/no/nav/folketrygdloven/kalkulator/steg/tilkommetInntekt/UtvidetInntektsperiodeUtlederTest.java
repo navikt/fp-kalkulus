@@ -9,6 +9,8 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Set;
 
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
+
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.felles.inntektgradering.DagsatsPrKategoriOgArbeidsgiver;
@@ -143,7 +145,7 @@ class UtvidetInntektsperiodeUtlederTest {
                 ),
                 List.of(new PeriodeMedUtbetalingsgradDto(
                         Intervall.fraOgMedTilOgMed(LocalDate.of(2022, 7, 1), LocalDate.of(2022, 7, 31)),
-                        BigDecimal.valueOf(100), BigDecimal.ZERO
+                        Utbetalingsgrad.valueOf(100), BigDecimal.ZERO
                 ))
         );
     }

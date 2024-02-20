@@ -9,6 +9,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
+
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AktivitetStatusV2;
@@ -182,17 +184,17 @@ public class MapPerioderForGraderingFraVLTilRegelOgUtbetalingsgradTest {
         assertThat(andelArb1.get(0).getUbetalingsgrader()).anySatisfy(gradering -> {
             assertThat(gradering.getPeriode().getFom()).isEqualTo(periode1.getPeriode().getFomDato());
             assertThat(gradering.getPeriode().getTom()).isEqualTo(periode1.getPeriode().getTomDato());
-            assertThat(gradering.getUtbetalingsprosent()).isEqualByComparingTo(periode1.getUtbetalingsgrad());
+            assertThat(gradering.getUtbetalingsprosent()).isEqualByComparingTo(periode1.getUtbetalingsgrad().verdi());
         });
         assertThat(andelArb1.get(0).getUbetalingsgrader()).anySatisfy(gradering -> {
             assertThat(gradering.getPeriode().getFom()).isEqualTo(periode2.getPeriode().getFomDato());
             assertThat(gradering.getPeriode().getTom()).isEqualTo(periode2.getPeriode().getTomDato());
-            assertThat(gradering.getUtbetalingsprosent()).isEqualByComparingTo(periode2.getUtbetalingsgrad());
+            assertThat(gradering.getUtbetalingsprosent()).isEqualByComparingTo(periode2.getUtbetalingsgrad().verdi());
         });
         assertThat(andelArb2.get(0).getUbetalingsgrader()).anySatisfy(gradering -> {
             assertThat(gradering.getPeriode().getFom()).isEqualTo(periode3.getPeriode().getFomDato());
             assertThat(gradering.getPeriode().getTom()).isEqualTo(periode3.getPeriode().getTomDato());
-            assertThat(gradering.getUtbetalingsprosent()).isEqualByComparingTo(periode3.getUtbetalingsgrad());
+            assertThat(gradering.getUtbetalingsprosent()).isEqualByComparingTo(periode3.getUtbetalingsgrad().verdi());
         });
     }
 
@@ -226,12 +228,12 @@ public class MapPerioderForGraderingFraVLTilRegelOgUtbetalingsgradTest {
         assertThat(andelArb1.get(0).getUbetalingsgrader()).anySatisfy(gradering -> {
             assertThat(gradering.getPeriode().getFom()).isEqualTo(SKJÆRINGSTIDSPUNKT);
             assertThat(gradering.getPeriode().getTom()).isEqualTo(periode1.getPeriode().getTomDato());
-            assertThat(gradering.getUtbetalingsprosent()).isEqualByComparingTo(periode1.getUtbetalingsgrad());
+            assertThat(gradering.getUtbetalingsprosent()).isEqualByComparingTo(periode1.getUtbetalingsgrad().verdi());
         });
         assertThat(andelArb1.get(0).getUbetalingsgrader()).anySatisfy(gradering -> {
             assertThat(gradering.getPeriode().getFom()).isEqualTo(periode2.getPeriode().getFomDato());
             assertThat(gradering.getPeriode().getTom()).isEqualTo(periode2.getPeriode().getTomDato());
-            assertThat(gradering.getUtbetalingsprosent()).isEqualByComparingTo(periode2.getUtbetalingsgrad());
+            assertThat(gradering.getUtbetalingsprosent()).isEqualByComparingTo(periode2.getUtbetalingsgrad().verdi());
         });
     }
 
@@ -258,7 +260,7 @@ public class MapPerioderForGraderingFraVLTilRegelOgUtbetalingsgradTest {
     }
 
     private PeriodeMedUtbetalingsgradDto lagPeriodeMedUtbetaling(LocalDate skjæringstidspunkt, BigDecimal utbetalingsgrad) {
-        return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(skjæringstidspunkt, skjæringstidspunkt.plusWeeks(1)), utbetalingsgrad);
+        return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(skjæringstidspunkt, skjæringstidspunkt.plusWeeks(1)), Utbetalingsgrad.fra(utbetalingsgrad));
     }
 
     private InntektsmeldingDto lagInntektsmelding(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRef, LocalDate startDatoPermisjon) {

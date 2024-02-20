@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -170,8 +172,8 @@ class MapRefusjonPerioderFraVLTilRegelUtbgradTest {
                 .build();
 
         AktivitetDto tilretteleggingArbeidsforhold = new AktivitetDto(virksomhet, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID);
-        PeriodeMedUtbetalingsgradDto periodeMedUtbetaling = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, LocalDate.of(2019, 10, 21)), BigDecimal.valueOf(100));
-        PeriodeMedUtbetalingsgradDto periodeMedUtbetaling2 = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(LocalDate.of(2019, 10, 22), LocalDate.of(2020, 1, 19)), BigDecimal.valueOf(40));
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetaling = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, LocalDate.of(2019, 10, 21)), Utbetalingsgrad.valueOf(100));
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetaling2 = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(LocalDate.of(2019, 10, 22), LocalDate.of(2020, 1, 19)), Utbetalingsgrad.valueOf(40));
 
         UtbetalingsgradPrAktivitetDto tilrettelegging = new UtbetalingsgradPrAktivitetDto(tilretteleggingArbeidsforhold,
                 List.of(periodeMedUtbetaling, periodeMedUtbetaling2));
@@ -225,13 +227,13 @@ class MapRefusjonPerioderFraVLTilRegelUtbgradTest {
     private PleiepengerSyktBarnGrunnlag lagUtbetalingsgrunnlag(Arbeidsgiver arbeidsgiver, Intervall utbetalingsperiode) {
         return new PleiepengerSyktBarnGrunnlag(List.of(new UtbetalingsgradPrAktivitetDto(
                 new AktivitetDto(arbeidsgiver, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID),
-                List.of(new PeriodeMedUtbetalingsgradDto(utbetalingsperiode, BigDecimal.ONE)))));
+                List.of(new PeriodeMedUtbetalingsgradDto(utbetalingsperiode, Utbetalingsgrad.valueOf(1))))));
     }
 
     private PleiepengerSyktBarnGrunnlag lagUtbetalingsgrunnlagInaktiv(Intervall utbetalingsperiode) {
         return new PleiepengerSyktBarnGrunnlag(List.of(new UtbetalingsgradPrAktivitetDto(
                 new AktivitetDto(null, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.MIDL_INAKTIV),
-                List.of(new PeriodeMedUtbetalingsgradDto(utbetalingsperiode, BigDecimal.ONE)))));
+                List.of(new PeriodeMedUtbetalingsgradDto(utbetalingsperiode, Utbetalingsgrad.valueOf(1))))));
     }
 
 
