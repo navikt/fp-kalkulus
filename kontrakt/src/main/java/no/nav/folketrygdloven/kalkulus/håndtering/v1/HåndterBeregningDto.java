@@ -21,7 +21,6 @@ import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.VurderTilkommetI
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBGTidsbegrensetArbeidsforholdHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBeregningsgrunnlagATFLHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBruttoBeregningsgrunnlagSNHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.VurderVarigEndretArbeidssituasjonHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.VurderVarigEndringEllerNyoppstartetSNHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.overstyring.OverstyrBeregningsaktiviteterDto;
@@ -42,7 +41,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.KodeKonstanter;
         @JsonSubTypes.Type(value = FastsettBeregningsgrunnlagATFLHåndteringDto.class, name = KodeKonstanter.AB_FASTSETT_BG_AT_FL),
         @JsonSubTypes.Type(value = FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto.class, name = KodeKonstanter.AB_FASTSETT_BG_SN_NY_I_ARB_LIVT),
         @JsonSubTypes.Type(value = FastsettBGTidsbegrensetArbeidsforholdHåndteringDto.class, name = KodeKonstanter.AB_FASTSETT_BG_TB_ARB),
-        @JsonSubTypes.Type(value = FastsettBruttoBeregningsgrunnlagSNHåndteringDto.class, name = KodeKonstanter.AB_FASTSETT_BG_SN),
         @JsonSubTypes.Type(value = VurderRefusjonBeregningsgrunnlagDto.class, name = KodeKonstanter.AB_VURDER_REFUSJONSKRAV),
         @JsonSubTypes.Type(value = VurderVarigEndringEllerNyoppstartetSNHåndteringDto.class, name = KodeKonstanter.AB_VURDER_VARIG_ENDRT_NYOPPSTR_NAERNG_SN),
         @JsonSubTypes.Type(value = VurderVarigEndretArbeidssituasjonHåndteringDto.class, name = KodeKonstanter.AB_VURDER_VARIG_ENDRT_ARB_SITSJN_MDL_INAKTV),

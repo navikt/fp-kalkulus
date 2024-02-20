@@ -10,7 +10,6 @@ public class KodeKonstanter {
     public static final String AB_FASTSETT_BG_AT_FL = "FASTSETT_BG_AT_FL";
     public static final String AB_VURDER_VARIG_ENDRT_NYOPPSTR_NAERNG_SN = "VURDER_VARIG_ENDRT_NYOPPSTR_NAERNG_SN";
     public static final String AB_VURDER_VARIG_ENDRT_ARB_SITSJN_MDL_INAKTV = "VURDER_VARIG_ENDRT_ARB_SITSJN_MDL_INAKTV";
-    public static final String AB_FASTSETT_BG_SN = "FASTSETT_BG_SN";
     public static final String AB_FORDEL_BG = "FORDEL_BG";
     public static final String AB_FASTSETT_BG_TB_ARB = "FASTSETT_BG_TB_ARB";
     public static final String AB_VURDER_NYTT_INNTKTSFRHLD = "VURDER_NYTT_INNTKTSFRHLD";
