@@ -46,20 +46,7 @@ enum AvklaringsbehovDefinisjon implements Kodeverdi, DatabaseKode, KontraktKode 
 
     // 8000 frisinn
     AUTO_VENT_FRISINN("AUTO_VENT_FRISINN", AUTOPUNKT, BeregningSteg.FASTSETT_STP_BER, "Sak settes på vent på grunn av manglende funksjonalitet"),
-    INGEN_AKTIVITETER("INGEN_AKTIVITETER", AUTOPUNKT, BeregningSteg.FASTSETT_STP_BER, "Gir avslag"),
-
-    // Punkter som ikke lenger utledes, tas vare på så vi vet hvilke koder kalkulus har brukt før
-    @Deprecated
-    FASTSETT_BG_SN("FASTSETT_BG_SN", MANUELL, BeregningSteg.FORS_BERGRUNN_2, "Fastsett beregningsgrunnlag for selvstendig næringsdrivende"),
-    @Deprecated
-    VURDER_GRADERING_UTEN_BG("VURDER_GRADERING_UTEN_BG", MANUELL, BeregningSteg.FAST_BERGRUNN, "Vurder gradering på andel uten beregningsgrunnlag"),
-    @Deprecated
-    AUTO_VENT_ULIKE_STARTDTR_SVP("AUTO_VENT_ULIKE_STARTDTR_SVP", AUTOPUNKT, null, "Autopunkt ulike startdatoer svangerskapspenger"),
-    @Deprecated
-    AUTO_VENT_DELVS_TILRTLGGNG_REFSJN_SVP("AUTO_VENT_DELVS_TILRTLGGNG_REFSJN_SVP", AUTOPUNKT, null, "Autopunkt delvis SVP og refusjon"),
-    @Deprecated
-    AUTO_VENT_PÅ_MANGLND_ARB_FHLD_KOMNRFRM("AUTO_VENT_PAA_MANGLND_ARB_FHLD_KOMNRFRM", AUTOPUNKT, null, "Sak settes på vent pga kommune- og fylkesammenslåing."),
-    ;
+    INGEN_AKTIVITETER("INGEN_AKTIVITETER", AUTOPUNKT, BeregningSteg.FASTSETT_STP_BER, "Gir avslag");
 
     private static final Map<String, AvklaringsbehovDefinisjon> KODER = new LinkedHashMap<>();
 
