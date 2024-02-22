@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
 import org.junit.jupiter.api.Test;
@@ -52,7 +53,7 @@ class PeriodiserForAktivitetsgradTjenesteTest {
         BeregningsgrunnlagDto bg = lagBeregningsgrunnlagMedEnPeriode(stp);
         var ytelsespesifiktGrunnlag = new PleiepengerSyktBarnGrunnlag(List.of(new UtbetalingsgradPrAktivitetDto(
                 new AktivitetDto(Arbeidsgiver.virksomhet("123456789"), InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID),
-                List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, stp.plusMonths(1)), Utbetalingsgrad.valueOf(10), BigDecimal.TEN))
+                List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, stp.plusMonths(1)), Utbetalingsgrad.valueOf(10), Aktivitetsgrad.fra(BigDecimal.TEN)))
         )), stp);
 
         // Act
@@ -75,8 +76,8 @@ class PeriodiserForAktivitetsgradTjenesteTest {
         var stp = LocalDate.now();
         BeregningsgrunnlagDto bg = lagBeregningsgrunnlagMedEnPeriode(stp);
         var ytelsespesifiktGrunnlag = new PleiepengerSyktBarnGrunnlag(List.of(
-                new UtbetalingsgradPrAktivitetDto(new AktivitetDto(Arbeidsgiver.virksomhet("111111111"), InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID), List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, TIDENES_ENDE), Utbetalingsgrad.valueOf(0), BigDecimal.ZERO))),
-                new UtbetalingsgradPrAktivitetDto(new AktivitetDto(Arbeidsgiver.virksomhet("123456789"), InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID), List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, stp.plusMonths(1)), Utbetalingsgrad.valueOf(10), BigDecimal.TEN)))
+                new UtbetalingsgradPrAktivitetDto(new AktivitetDto(Arbeidsgiver.virksomhet("111111111"), InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID), List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, TIDENES_ENDE), Utbetalingsgrad.valueOf(0), Aktivitetsgrad.ZERO))),
+                new UtbetalingsgradPrAktivitetDto(new AktivitetDto(Arbeidsgiver.virksomhet("123456789"), InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID), List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, stp.plusMonths(1)), Utbetalingsgrad.valueOf(10), Aktivitetsgrad.valueOf(10))))
         ), stp);
 
         // Act
@@ -100,8 +101,8 @@ class PeriodiserForAktivitetsgradTjenesteTest {
         BeregningsgrunnlagDto bg = lagBeregningsgrunnlagMedEnPeriode(stp);
         var ytelsespesifiktGrunnlag = new PleiepengerSyktBarnGrunnlag(List.of(new UtbetalingsgradPrAktivitetDto(
                 new AktivitetDto(Arbeidsgiver.virksomhet("123456789"), InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID),
-                List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, stp.plusMonths(1)), Utbetalingsgrad.valueOf(10), BigDecimal.TEN),
-                        new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp.plusMonths(1).plusDays(1), stp.plusMonths(2)), Utbetalingsgrad.valueOf(10), BigDecimal.valueOf(50)))
+                List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, stp.plusMonths(1)), Utbetalingsgrad.valueOf(10), Aktivitetsgrad.valueOf(10)),
+                        new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp.plusMonths(1).plusDays(1), stp.plusMonths(2)), Utbetalingsgrad.valueOf(10), Aktivitetsgrad.valueOf(50)))
         )), stp);
 
         // Act
@@ -130,11 +131,11 @@ class PeriodiserForAktivitetsgradTjenesteTest {
         BeregningsgrunnlagDto bg = lagBeregningsgrunnlagMedEnPeriode(stp);
         var ytelsespesifiktGrunnlag = new PleiepengerSyktBarnGrunnlag(List.of(new UtbetalingsgradPrAktivitetDto(
                         new AktivitetDto(Arbeidsgiver.virksomhet("123456789"), InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID),
-                        List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, stp.plusMonths(1)), Utbetalingsgrad.valueOf(10), BigDecimal.TEN))
+                        List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, stp.plusMonths(1)), Utbetalingsgrad.valueOf(10), Aktivitetsgrad.valueOf(10)))
                 ),
                 new UtbetalingsgradPrAktivitetDto(
                         new AktivitetDto(Arbeidsgiver.virksomhet("987654321"), InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID),
-                        List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, stp.plusMonths(2)), Utbetalingsgrad.valueOf(10), BigDecimal.valueOf(50)))
+                        List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, stp.plusMonths(2)), Utbetalingsgrad.valueOf(10), Aktivitetsgrad.valueOf(50)))
                 )), stp);
 
         // Act
@@ -163,12 +164,12 @@ class PeriodiserForAktivitetsgradTjenesteTest {
         BeregningsgrunnlagDto bg = lagBeregningsgrunnlagMedEnPeriode(stp);
         var ytelsespesifiktGrunnlag = new PleiepengerSyktBarnGrunnlag(List.of(new UtbetalingsgradPrAktivitetDto(
                         new AktivitetDto(Arbeidsgiver.virksomhet("123456789"), InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID),
-                        List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, stp.plusMonths(1)), Utbetalingsgrad.valueOf(10), BigDecimal.TEN))
+                        List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, stp.plusMonths(1)), Utbetalingsgrad.valueOf(10), Aktivitetsgrad.valueOf(10)))
                 ),
                 new UtbetalingsgradPrAktivitetDto(
                         new AktivitetDto(Arbeidsgiver.virksomhet("987654321"), InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID),
-                        List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, stp.plusMonths(2)), Utbetalingsgrad.valueOf(10), BigDecimal.valueOf(50)),
-                                new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp.plusMonths(3), stp.plusMonths(4)), Utbetalingsgrad.valueOf(10), BigDecimal.valueOf(50)))
+                        List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, stp.plusMonths(2)), Utbetalingsgrad.valueOf(10), Aktivitetsgrad.valueOf(50)),
+                                new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp.plusMonths(3), stp.plusMonths(4)), Utbetalingsgrad.valueOf(10), Aktivitetsgrad.valueOf(50)))
                 )), stp);
 
         // Act
@@ -204,8 +205,8 @@ class PeriodiserForAktivitetsgradTjenesteTest {
         BeregningsgrunnlagDto bg = lagBeregningsgrunnlagMedEnPeriode(stp);
         var ytelsespesifiktGrunnlag = new PleiepengerSyktBarnGrunnlag(List.of(new UtbetalingsgradPrAktivitetDto(
                 new AktivitetDto(Arbeidsgiver.virksomhet("123456789"), InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID),
-                List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, stp.plusMonths(1)), Utbetalingsgrad.valueOf(10), BigDecimal.TEN),
-                        new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp.plusMonths(1).plusDays(1), stp.plusMonths(2)), Utbetalingsgrad.valueOf(10), BigDecimal.TEN))
+                List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, stp.plusMonths(1)), Utbetalingsgrad.valueOf(10), Aktivitetsgrad.valueOf(10)),
+                        new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp.plusMonths(1).plusDays(1), stp.plusMonths(2)), Utbetalingsgrad.valueOf(10), Aktivitetsgrad.valueOf(10)))
         )), stp);
 
         // Act

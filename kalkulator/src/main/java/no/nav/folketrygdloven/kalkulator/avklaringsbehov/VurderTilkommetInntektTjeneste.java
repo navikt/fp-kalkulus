@@ -127,13 +127,13 @@ public class VurderTilkommetInntektTjeneste {
             if (inntektsforhold.getAktivitetStatus().erArbeidstaker() && inntektsforhold.getArbeidsgiverIdentifikator() != null) {
                 var aktivitetsProsent = UtbetalingsgradTjeneste.finnAktivitetsgradForArbeid(mapArbeidsgiver(inntektsforhold), InternArbeidsforholdRefDto.ref(inntektsforhold.getArbeidsforholdId()), periode, ytelsespesifiktGrunnlag, true);
                 var utbetalingsprosent = UtbetalingsgradTjeneste.finnUtbetalingsgradForArbeid(mapArbeidsgiver(inntektsforhold), InternArbeidsforholdRefDto.ref(inntektsforhold.getArbeidsforholdId()), periode, ytelsespesifiktGrunnlag, true);
-                var tilommetGrad = aktivitetsProsent.map(grad -> grad.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP))
+                var tilommetGrad = aktivitetsProsent.map(grad -> grad.verdi().divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP))
                         .orElse(BigDecimal.valueOf(1).subtract(utbetalingsprosent.verdi().divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP)));
                 return Beløp.fra(inntektsforhold.getBruttoInntektPrÅr()).multipliser(tilommetGrad);
             } else {
                 var utbetalingsprosent = UtbetalingsgradTjeneste.finnUtbetalingsgradForStatus(inntektsforhold.getAktivitetStatus(), periode, ytelsespesifiktGrunnlag);
                 var aktivitetsProsent = UtbetalingsgradTjeneste.finnAktivitetsgradForStatus(inntektsforhold.getAktivitetStatus(), periode, ytelsespesifiktGrunnlag);
-                var tilommetGrad = aktivitetsProsent.map(grad -> grad.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP))
+                var tilommetGrad = aktivitetsProsent.map(grad -> grad.verdi().divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP))
                         .orElse(BigDecimal.valueOf(1).subtract(utbetalingsprosent.verdi().divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP)));
                 return Beløp.fra(inntektsforhold.getBruttoInntektPrÅr()).multipliser(tilommetGrad);
             }

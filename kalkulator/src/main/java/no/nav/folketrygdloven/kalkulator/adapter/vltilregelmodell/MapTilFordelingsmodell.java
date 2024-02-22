@@ -24,6 +24,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
@@ -92,7 +93,7 @@ public class MapTilFordelingsmodell {
             var aktivitetsgrad = finnAktivitetsgradForAndel(bgAndel, bgAndel.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);
             var brukAktivitetsgrad = aktivitetsgrad.isPresent() && erTilkommet;
             if (brukAktivitetsgrad) {
-                return aktivitetsgrad.get().compareTo(BigDecimal.valueOf(100)) < 0;
+                return aktivitetsgrad.get().compareTo(Aktivitetsgrad.valueOf(100)) < 0;
             }
         }
         var ubetalingsgrad = finnUtbetalingsgradForAndel(bgAndel, periode, input.getYtelsespesifiktGrunnlag(), false);
@@ -123,7 +124,7 @@ public class MapTilFordelingsmodell {
             var aktivitetsgrad = finnAktivitetsgradForAndel(bgAndel, bgAndel.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);
             var brukAktivitetsgrad = aktivitetsgrad.isPresent() && erTilkommet;
             if (brukAktivitetsgrad) {
-                return aktivitetsgrad.get().compareTo(BigDecimal.valueOf(100)) < 0;
+                return aktivitetsgrad.get().compareTo(Aktivitetsgrad.valueOf(100)) < 0;
             }
         }
         var utbGrad = finnUtbetalingsgradForAndel(bgAndel, bgAndel.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);

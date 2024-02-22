@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -85,9 +86,9 @@ public class FordelPerioderTjenestePSBTest {
 
         // Arrange
         PeriodeMedUtbetalingsgradDto periode1 = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusMonths(1), BigDecimal.valueOf(100), null);
-        PeriodeMedUtbetalingsgradDto periodeTilkommet1 = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT.plusDays(5), SKJÆRINGSTIDSPUNKT.plusDays(9), BigDecimal.valueOf(50), BigDecimal.valueOf(50));
+        PeriodeMedUtbetalingsgradDto periodeTilkommet1 = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT.plusDays(5), SKJÆRINGSTIDSPUNKT.plusDays(9), BigDecimal.valueOf(50), Aktivitetsgrad.valueOf(50));
 
-        PeriodeMedUtbetalingsgradDto periodeTilkommet2 = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT.plusDays(10), SKJÆRINGSTIDSPUNKT.plusMonths(1), BigDecimal.ZERO, BigDecimal.valueOf(50));
+        PeriodeMedUtbetalingsgradDto periodeTilkommet2 = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT.plusDays(10), SKJÆRINGSTIDSPUNKT.plusMonths(1), BigDecimal.ZERO, Aktivitetsgrad.valueOf(50));
 
         UtbetalingsgradPrAktivitetDto utbetalingsgrader1 = lagUtbetalingsgradPrAktivitet(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORG_NUMMER),
                 periode1);
@@ -242,7 +243,7 @@ public class FordelPerioderTjenestePSBTest {
         return new UtbetalingsgradPrAktivitetDto(tilretteleggingArbeidsforhold, List.of(perioder));
     }
 
-    private PeriodeMedUtbetalingsgradDto lagPeriodeMedUtbetaling(LocalDate skjæringstidspunkt, LocalDate tomDato, BigDecimal utbetalingsgrad, BigDecimal aktivitetsgrad) {
+    private PeriodeMedUtbetalingsgradDto lagPeriodeMedUtbetaling(LocalDate skjæringstidspunkt, LocalDate tomDato, BigDecimal utbetalingsgrad, Aktivitetsgrad aktivitetsgrad) {
         return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(skjæringstidspunkt, tomDato), Utbetalingsgrad.fra(utbetalingsgrad), aktivitetsgrad);
     }
 

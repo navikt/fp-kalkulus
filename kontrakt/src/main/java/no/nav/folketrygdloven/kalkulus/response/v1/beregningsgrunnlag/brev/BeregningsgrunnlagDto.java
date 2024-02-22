@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.brev;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Comparator;

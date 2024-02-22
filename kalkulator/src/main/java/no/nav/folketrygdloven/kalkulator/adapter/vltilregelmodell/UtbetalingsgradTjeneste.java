@@ -17,6 +17,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
@@ -47,7 +48,7 @@ public class UtbetalingsgradTjeneste {
         return Utbetalingsgrad.valueOf(100);
     }
 
-    public static Optional<BigDecimal> finnAktivitetsgradForAndel(BeregningsgrunnlagPrStatusOgAndelDto andel,
+    public static Optional<Aktivitetsgrad> finnAktivitetsgradForAndel(BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                          Intervall periode,
                                                          YtelsespesifiktGrunnlag ytelsesSpesifiktGrunnlag,
                                                          boolean skalIgnorereIkkeYrkesaktivStatus) {
@@ -71,9 +72,9 @@ public class UtbetalingsgradTjeneste {
         return Utbetalingsgrad.valueOf(100);
     }
 
-    public static Optional<BigDecimal> finnAktivitetsgradForStatus(AktivitetStatus status,
-                                                          Intervall periode,
-                                                          YtelsespesifiktGrunnlag ytelsesSpesifiktGrunnlag) {
+    public static Optional<Aktivitetsgrad> finnAktivitetsgradForStatus(AktivitetStatus status,
+                                                                       Intervall periode,
+                                                                       YtelsespesifiktGrunnlag ytelsesSpesifiktGrunnlag) {
         if (ytelsesSpesifiktGrunnlag instanceof UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
             return finnGraderForStatus(status, periode, utbetalingsgradGrunnlag).flatMap(PeriodeMedUtbetalingsgradDto::getAktivitetsgrad);
         }
@@ -116,7 +117,7 @@ public class UtbetalingsgradTjeneste {
         return Utbetalingsgrad.valueOf(100);
     }
 
-    public static Optional<BigDecimal> finnAktivitetsgradForArbeid(Arbeidsgiver arbeidsgiver,
+    public static Optional<Aktivitetsgrad> finnAktivitetsgradForArbeid(Arbeidsgiver arbeidsgiver,
                                                           InternArbeidsforholdRefDto arbeidsforholdRef,
                                                           Intervall periode,
                                                           YtelsespesifiktGrunnlag ytelsesSpesifiktGrunnlag,

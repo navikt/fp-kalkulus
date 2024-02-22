@@ -1,13 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.beregning.v1;
 
-import java.math.BigDecimal;
 import java.util.Objects;
-
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -16,7 +9,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -35,10 +33,7 @@ public class PeriodeMedUtbetalingsgradDto {
 
     @JsonProperty(value = "aktivitetsgrad")
     @Valid
-    @DecimalMin(value = "0.00", message = "aktivitetsgrad ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "100.00", message = "aktivitetsgrad ${validatedValue} må være <= {value}")
-    @Digits(integer = 3, fraction = 2)
-    private BigDecimal aktivitetsgrad;
+    private Aktivitetsgrad aktivitetsgrad;
 
     public PeriodeMedUtbetalingsgradDto() {
     }
@@ -50,7 +45,7 @@ public class PeriodeMedUtbetalingsgradDto {
 
     public PeriodeMedUtbetalingsgradDto(@NotNull @Valid Periode periode,
                                         @Valid @DecimalMin(value = "0.00", message = "utbetalingsgrad ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "utbetalingsgrad ${validatedValue} må være <= {value}") Utbetalingsgrad utbetalingsgrad,
-                                        @Valid @DecimalMin(value = "0.00", message = "aktivitetsgrad ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "aktivitetsgrad ${validatedValue} må være <= {value}") BigDecimal aktivitetsgrad) {
+                                        @Valid @DecimalMin(value = "0.00", message = "aktivitetsgrad ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "aktivitetsgrad ${validatedValue} må være <= {value}") Aktivitetsgrad aktivitetsgrad) {
         this.periode = periode;
         this.utbetalingsgrad = utbetalingsgrad;
         this.aktivitetsgrad = aktivitetsgrad;
@@ -64,7 +59,7 @@ public class PeriodeMedUtbetalingsgradDto {
         return utbetalingsgrad;
     }
 
-    public BigDecimal getAktivitetsgrad() {
+    public Aktivitetsgrad getAktivitetsgrad() {
         return aktivitetsgrad;
     }
 

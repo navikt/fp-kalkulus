@@ -23,6 +23,7 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
@@ -123,7 +124,7 @@ class UtvidetInntektsperiodeUtleder {
     private static List<LocalDateSegment<Boolean>> godkjennGrunnetFulltFravær(List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitetDto) {
         return utbetalingsgradPrAktivitetDto.stream()
                 .flatMap(it -> it.getPeriodeMedUtbetalingsgrad().stream())
-                .filter(p -> p.getAktivitetsgrad().map(ag -> ag.compareTo(BigDecimal.ZERO) == 0).orElse(false))
+                .filter(p -> p.getAktivitetsgrad().map(ag -> ag.compareTo(Aktivitetsgrad.ZERO) == 0).orElse(false))
                 .map(PeriodeMedUtbetalingsgradDto::getPeriode)
                 .map(it -> new LocalDateSegment<>(it.getFomDato(), it.getTomDato(), TRUE))
                 .toList();

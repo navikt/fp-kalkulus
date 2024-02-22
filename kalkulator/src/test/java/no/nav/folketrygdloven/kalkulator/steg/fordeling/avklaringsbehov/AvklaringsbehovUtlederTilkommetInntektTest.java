@@ -12,6 +12,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
+
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -553,7 +555,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
     }
 
     private InntektDtoBuilder lagInntektsposterForYrkesaktivitet(YrkesaktivitetDto nyYrkesaktivitet, List<PeriodeMedUtbetalingsgradDto> perioderMedUtbetalingsgrad) {
-        var perioderMedFulltFravær = perioderMedUtbetalingsgrad.stream().filter(it -> it.getAktivitetsgrad().map(v -> v.compareTo(BigDecimal.ZERO) == 0).orElse(false)).map(PeriodeMedUtbetalingsgradDto::getPeriode).toList();
+        var perioderMedFulltFravær = perioderMedUtbetalingsgrad.stream().filter(it -> it.getAktivitetsgrad().map(v -> v.compareTo(Aktivitetsgrad.ZERO) == 0).orElse(false)).map(PeriodeMedUtbetalingsgradDto::getPeriode).toList();
         var inntektDto = InntektDtoBuilder.oppdatere(Optional.empty()).medArbeidsgiver(nyYrkesaktivitet.getArbeidsgiver()).medInntektsKilde(InntektskildeType.INNTEKT_BEREGNING);
         nyYrkesaktivitet.getAlleAnsettelsesperioder().stream()
                 .map(AktivitetsAvtaleDto::getPeriode)
@@ -669,7 +671,7 @@ class AvklaringsbehovUtlederTilkommetInntektTest {
     }
 
     private PeriodeMedUtbetalingsgradDto lagPeriodeMedUtbetalingsgrad(int i, LocalDate fom, LocalDate tom) {
-        return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(fom, tom), null, BigDecimal.valueOf(100 - i));
+        return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(fom, tom), null, Aktivitetsgrad.valueOf(100-i));
     }
 
     private AktivitetDto lagAktivitet(Arbeidsgiver arbeidsgiver2, InternArbeidsforholdRefDto ref) {

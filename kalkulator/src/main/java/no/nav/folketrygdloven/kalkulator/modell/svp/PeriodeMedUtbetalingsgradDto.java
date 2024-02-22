@@ -1,23 +1,23 @@
 package no.nav.folketrygdloven.kalkulator.modell.svp;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
 public class PeriodeMedUtbetalingsgradDto implements Comparable<PeriodeMedUtbetalingsgradDto> {
     private Intervall periode;
     private Utbetalingsgrad utbetalingsgrad;
-    private BigDecimal aktivitetsgrad;
+    private Aktivitetsgrad aktivitetsgrad;
 
     public PeriodeMedUtbetalingsgradDto(Intervall periode, Utbetalingsgrad utbetalingsgrad) {
         this.periode = periode;
         this.utbetalingsgrad = utbetalingsgrad;
     }
 
-    public PeriodeMedUtbetalingsgradDto(Intervall periode, Utbetalingsgrad utbetalingsgrad, BigDecimal aktivitetsgrad) {
+    public PeriodeMedUtbetalingsgradDto(Intervall periode, Utbetalingsgrad utbetalingsgrad, Aktivitetsgrad aktivitetsgrad) {
         this.periode = periode;
         this.utbetalingsgrad = utbetalingsgrad;
         this.aktivitetsgrad = aktivitetsgrad;
@@ -31,7 +31,7 @@ public class PeriodeMedUtbetalingsgradDto implements Comparable<PeriodeMedUtbeta
         return utbetalingsgrad;
     }
 
-    public Optional<BigDecimal> getAktivitetsgrad() {
+    public Optional<Aktivitetsgrad> getAktivitetsgrad() {
         return Optional.ofNullable(aktivitetsgrad);
     }
 

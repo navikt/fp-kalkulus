@@ -19,6 +19,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.MapRefusjonPerioderFraVLTilRegelUtbgrad;
+import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
@@ -106,7 +107,7 @@ public class MapRefusjonPerioderFraVLTilRegelPleiepenger extends MapRefusjonPeri
     }
 
     private static boolean harAktivitetsgradMedTilkommetInntektToggle(PeriodeMedUtbetalingsgradDto p) {
-        return p.getAktivitetsgrad().map(ag -> ag.compareTo(BigDecimal.valueOf(100)) < 0).orElse(false)
+        return p.getAktivitetsgrad().map(ag -> ag.compareTo(Aktivitetsgrad.HUNDRE) < 0).orElse(false)
                 && KonfigurasjonVerdi.instance().get("GRADERING_MOT_INNTEKT", false);
     }
 

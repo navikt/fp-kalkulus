@@ -174,7 +174,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medInntektsgrunnlagPrÅr(Beløp.safeVerdi(vlBGPStatus.getGrunnlagPrÅr().getBruttoUtenFordelt()) != null ? vlBGPStatus.getGrunnlagPrÅr().getBruttoUtenFordelt().verdi() : BigDecimal.ZERO)
                 .medAndelNr(vlBGPStatus.getAndelsnr())
                 .medUtbetalingsprosent(BigDecimal.valueOf(100));
-        aktivitetsgrad.ifPresent(builder::medAktivitetsgrad);
+        aktivitetsgrad.ifPresent(ag -> builder.medAktivitetsgrad(ag.verdi()));
         return builder.build();
     }
 
@@ -202,7 +202,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medAndelNr(vlBGPStatus.getAndelsnr())
                 .medArbeidsforhold(MapArbeidsforholdFraVLTilRegel.arbeidsforholdFor(vlBGPStatus))
                 .medUtbetalingsprosent(BigDecimal.valueOf(100));
-        aktivitetsgrad.ifPresentOrElse(builder::medAktivitetsgrad, () -> builder.medAktivitetsgrad(BigDecimal.ZERO));
+        aktivitetsgrad.ifPresentOrElse(ag -> builder.medAktivitetsgrad(ag.verdi()), () -> builder.medAktivitetsgrad(BigDecimal.ZERO));
         vlBGPStatus.getBgAndelArbeidsforhold().ifPresent(bga ->
                 builder
                         .medNaturalytelseBortfaltPrÅr(bga.getNaturalytelseBortfaltPrÅr().map(Beløp::verdi).orElse(null))
