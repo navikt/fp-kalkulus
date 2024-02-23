@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer;
+
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulus.UuidDto;
@@ -80,7 +82,7 @@ public class KalkulatorMapperTest {
     @Test
     public void skal_generere_og_validere_roundtrip_av_start_beregning_request() throws Exception {
         //arrange
-        String saksnummer = "1234";
+        Saksnummer saksnummer = new Saksnummer("1234");
         AktørIdPersonident dummy = AktørIdPersonident.dummy();
         KalkulatorInputDto kalkulatorInputDto = byggKalkulatorInput();
 

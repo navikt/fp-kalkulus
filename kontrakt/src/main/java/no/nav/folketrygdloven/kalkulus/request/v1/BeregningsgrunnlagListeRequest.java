@@ -1,13 +1,11 @@
 package no.nav.folketrygdloven.kalkulus.request.v1;
 
-import java.rmi.server.UID;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -16,6 +14,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer;
 
 /**
  * Spesifikasjon for å hente aktivt beregningsgrunnlag.
@@ -33,9 +33,8 @@ public class BeregningsgrunnlagListeRequest implements KalkulusRequest {
 
     @JsonProperty(value = "saksnummer", required = true)
     @NotNull
-    @Pattern(regexp = "^[A-Za-z0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'")
     @Valid
-    private String saksnummer;
+    private Saksnummer saksnummer;
 
     @JsonProperty(value = "behandlingUuid", required = true)
     @Valid
@@ -45,7 +44,7 @@ public class BeregningsgrunnlagListeRequest implements KalkulusRequest {
     }
 
     @JsonCreator
-    public BeregningsgrunnlagListeRequest(@JsonProperty(value = "saksnummer", required = true) String saksnummer,
+    public BeregningsgrunnlagListeRequest(@JsonProperty(value = "saksnummer", required = true) Saksnummer saksnummer,
                                           @JsonProperty(value = "beregningsgrunnlagRequest", required = true) List<BeregningsgrunnlagRequest> requestPrReferanse,
                                           @JsonProperty(value = "behandlingUuid") UUID behandlingUuid) {
         this.beregningsgrunnlagRequest = Objects.requireNonNull(requestPrReferanse, "requestPrReferanse");
@@ -58,7 +57,7 @@ public class BeregningsgrunnlagListeRequest implements KalkulusRequest {
     }
 
     @Override
-    public String getSaksnummer() {
+    public Saksnummer getSaksnummer() {
         return saksnummer;
     }
 

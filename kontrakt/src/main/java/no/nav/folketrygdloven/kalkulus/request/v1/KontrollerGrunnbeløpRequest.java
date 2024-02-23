@@ -5,10 +5,11 @@ import java.util.UUID;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer;
 
 public class KontrollerGrunnbeløpRequest {
 
@@ -21,9 +22,8 @@ public class KontrollerGrunnbeløpRequest {
 
     @JsonProperty(value = "saksnummer", required = true)
     @NotNull
-    @Pattern(regexp = "^[A-Za-z0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'")
     @Valid
-    private String saksnummer;
+    private Saksnummer saksnummer;
 
 
     protected KontrollerGrunnbeløpRequest() {
@@ -31,7 +31,7 @@ public class KontrollerGrunnbeløpRequest {
     }
 
     public KontrollerGrunnbeløpRequest(@Valid @NotNull @Size(min = 1) List<UUID> koblinger,
-                                       @JsonProperty(value = "saksnummer", required = true) @NotNull @Pattern(regexp = "^[A-Za-z0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'") @Valid String saksnummer) {
+                                       @JsonProperty(value = "saksnummer", required = true) @NotNull @Valid Saksnummer saksnummer) {
         this.koblinger = koblinger;
         this.saksnummer = saksnummer;
     }
@@ -40,7 +40,7 @@ public class KontrollerGrunnbeløpRequest {
         return koblinger;
     }
 
-    public String getSaksnummer() {
+    public Saksnummer getSaksnummer() {
         return saksnummer;
     }
 }

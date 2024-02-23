@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -13,6 +12,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer;
 
 /**
  * Spesifikasjon for å hente aktivt beregningsgrunnlag.
@@ -35,20 +36,19 @@ public class HentBeregningsgrunnlagListeRequest implements KalkulusRequest {
 
     @JsonProperty(value = "inkluderRegelSporing", required = false)
     private boolean inkluderRegelSporing;
-    
+
     //TODO: set saksnummer required + @NotNull når fpsak/k9-sak er oppdatert
     @JsonProperty(value = "saksnummer", required = false)
-    @Pattern(regexp = "^[A-Za-z0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'")
     @Valid
-    private String saksnummer;
+    private Saksnummer saksnummer;
 
     protected HentBeregningsgrunnlagListeRequest() {
         // default ctor
     }
 
     public HentBeregningsgrunnlagListeRequest(@Valid @NotNull List<HentBeregningsgrunnlagRequest> requestPrReferanse,
-                                              @Valid @NotNull UUID behandlingUuid, 
-                                              @Valid String saksnummer,
+                                              @Valid @NotNull UUID behandlingUuid,
+                                              @Valid Saksnummer saksnummer,
                                               boolean inkluderRegelSporing) {
         this.requestPrReferanse = requestPrReferanse;
         this.behandlingUuid = behandlingUuid;
@@ -63,13 +63,13 @@ public class HentBeregningsgrunnlagListeRequest implements KalkulusRequest {
     public UUID getBehandlingUuid() {
         return behandlingUuid;
     }
-    
+
     public boolean getInkluderRegelSporing() {
         return inkluderRegelSporing;
     }
-    
+
     @Override
-    public String getSaksnummer() {
+    public Saksnummer getSaksnummer() {
         return saksnummer;
     }
 }

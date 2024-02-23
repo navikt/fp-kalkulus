@@ -11,8 +11,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer;
 
 /**
  * Spesifikasjon for å hente aktivt beregningsgrunnlag.
@@ -38,9 +38,8 @@ public class HentBeregningsgrunnlagRequest implements KalkulusRequest {
 
     //TODO: set saksnummer required + @NotNull når fpsak/k9-sak er oppdatert
     @JsonProperty(value = "saksnummer", required = false)
-    @Pattern(regexp = "^[A-Za-z0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'")
     @Valid
-    private String saksnummer;
+    private Saksnummer saksnummer;
 
     @JsonProperty(value = "behandlingUuid", required = true)
     @Valid
@@ -51,7 +50,7 @@ public class HentBeregningsgrunnlagRequest implements KalkulusRequest {
     }
 
     public HentBeregningsgrunnlagRequest(@Valid @NotNull UUID eksternReferanse,
-                                         @Valid String saksnummer,
+                                         @Valid Saksnummer saksnummer,
                                          @Valid UUID behandlingUuid,
                                          @NotNull @Valid FagsakYtelseType ytelseSomSkalBeregnes) {
 
@@ -62,7 +61,7 @@ public class HentBeregningsgrunnlagRequest implements KalkulusRequest {
     }
 
     public HentBeregningsgrunnlagRequest(@Valid @NotNull UUID eksternReferanse,
-                                         @Valid String saksnummer,
+                                         @Valid Saksnummer saksnummer,
                                          @NotNull @Valid FagsakYtelseType ytelseSomSkalBeregnes,
                                          Boolean inkluderRegelSporing) {
 
@@ -85,7 +84,7 @@ public class HentBeregningsgrunnlagRequest implements KalkulusRequest {
     }
 
     @Override
-    public String getSaksnummer() {
+    public Saksnummer getSaksnummer() {
         return saksnummer;
     }
 

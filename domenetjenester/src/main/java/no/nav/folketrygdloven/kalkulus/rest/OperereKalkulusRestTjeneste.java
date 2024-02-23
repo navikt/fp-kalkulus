@@ -106,13 +106,13 @@ public class OperereKalkulusRestTjeneste {
     @BeskyttetRessurs(action = CREATE, property = BEREGNINGSGRUNNLAG)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response beregn(@NotNull @Valid BeregnListeRequestAbacDto spesifikasjon) {
-        var saksnummer = new Saksnummer(spesifikasjon.getSaksnummer());
-        MDC.put("prosess_saksnummer", saksnummer.getVerdi());
+        var saksnummerEntitet = new Saksnummer(spesifikasjon.getSaksnummer().verdi());
+        MDC.put("prosess_saksnummer", saksnummerEntitet.getVerdi());
         Map<Long, KalkulusRespons> respons;
         try {
             respons = orkestrerer.beregn(
                     spesifikasjon.getStegType(),
-                    new Saksnummer(spesifikasjon.getSaksnummer()),
+                    saksnummerEntitet,
                     new AktørId(spesifikasjon.getAktør().getIdent()),
                     spesifikasjon.getYtelseSomSkalBeregnes(),
                     spesifikasjon.getBeregnForListe()
@@ -134,11 +134,12 @@ public class OperereKalkulusRestTjeneste {
     })
     @BeskyttetRessurs(action = UPDATE, property = BEREGNINGSGRUNNLAG)
     public Response kopierBeregning(@NotNull @Valid KopierBeregningListeRequestAbacDto spesifikasjon) {
-        MDC.put("prosess_saksnummer", spesifikasjon.getSaksnummer());
+        MDC.put("prosess_saksnummer", spesifikasjon.getSaksnummer().verdi());
+        var saksnummerEntitet = new Saksnummer(spesifikasjon.getSaksnummer().verdi());
         kopierTjeneste.kopierGrunnlagOgOpprettKoblinger(
                 spesifikasjon.getKopierBeregningListe(),
                 spesifikasjon.getYtelseSomSkalBeregnes(),
-                new Saksnummer(spesifikasjon.getSaksnummer()),
+                saksnummerEntitet,
                 spesifikasjon.getStegType() == null ? BeregningSteg.VURDER_VILKAR_BERGRUNN : spesifikasjon.getStegType(),
                 null);
         return Response.ok(spesifikasjon.getKopierBeregningListe()
@@ -156,13 +157,14 @@ public class OperereKalkulusRestTjeneste {
     @BeskyttetRessurs(action = UPDATE, property = FAGSAK)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response oppdaterListe(@NotNull @Valid HåndterBeregningListeRequestAbacDto spesifikasjon) {
-        MDC.put("prosess_saksnummer", spesifikasjon.getSaksnummer());
+        MDC.put("prosess_saksnummer", spesifikasjon.getSaksnummer().verdi());
         Map<Long, KalkulusRespons> respons;
         try {
+            var saksnummerEntitet = new Saksnummer(spesifikasjon.getSaksnummer().verdi());
             respons = orkestrerer.håndter(
                     spesifikasjon.getKalkulatorInputPerKoblingReferanse(),
                     spesifikasjon.getYtelseSomSkalBeregnes(),
-                    new Saksnummer(spesifikasjon.getSaksnummer()),
+                    saksnummerEntitet,
                     spesifikasjon.getHåndterBeregningListe());
         } catch (UgyldigInputException e) {
             return Response.ok(new OppdateringListeRespons(true)).build();
@@ -181,7 +183,7 @@ public class OperereKalkulusRestTjeneste {
     @BeskyttetRessurs(action = UPDATE, property = BEREGNINGSGRUNNLAG)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response deaktiverBeregningsgrunnlag(@NotNull @Valid DeaktiverBeregningsgrunnlagRequestAbacDto spesifikasjon) {
-        String saksnummer = spesifikasjon.getSaksnummer();
+        String saksnummer = spesifikasjon.getSaksnummer().verdi();
         MDC.put("prosess_saksnummer", saksnummer);
         for (var k : spesifikasjon.getRequestPrReferanse()) {
             var koblingReferanse = new KoblingReferanse(k.getKoblingReferanse());
@@ -212,7 +214,7 @@ public class OperereKalkulusRestTjeneste {
         public BeregnListeRequestAbacDto() {
         }
 
-        public BeregnListeRequestAbacDto(String saksnummer,
+        public BeregnListeRequestAbacDto(no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer saksnummer,
                                          UUID behandlingUuid,
                                          PersonIdent aktør,
                                          FagsakYtelseType ytelseSomSkalBeregnes,
@@ -240,7 +242,7 @@ public class OperereKalkulusRestTjeneste {
         public KopierBeregningListeRequestAbacDto() {
         }
 
-        public KopierBeregningListeRequestAbacDto(String saksnummer,
+        public KopierBeregningListeRequestAbacDto(no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer saksnummer,
                                                   UUID behandlingUuid,
                                                   FagsakYtelseType ytelseSomSkalBeregnes,
                                                   List<KopierBeregningRequest> kopierBeregningListe, BeregningSteg stegType) {
@@ -267,14 +269,13 @@ public class OperereKalkulusRestTjeneste {
         public DeaktiverBeregningsgrunnlagRequestAbacDto() {
         }
 
-        public DeaktiverBeregningsgrunnlagRequestAbacDto(String saksnummer, List<BeregningsgrunnlagRequest> requestPrReferanse, UUID behandlingUuid) {
+        public DeaktiverBeregningsgrunnlagRequestAbacDto(no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer saksnummer, List<BeregningsgrunnlagRequest> requestPrReferanse, UUID behandlingUuid) {
             super(saksnummer, requestPrReferanse, behandlingUuid);
         }
 
         @Override
         public AbacDataAttributter abacAttributter() {
             var abacDataAttributter = AbacDataAttributter.opprett();
-            List<UUID> eksternReferanser = getRequestPrReferanse().stream().map(BeregningsgrunnlagRequest::getKoblingReferanse).collect(Collectors.toList());
             if (getBehandlingUuid() != null) {
                 abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getBehandlingUuid());
             }

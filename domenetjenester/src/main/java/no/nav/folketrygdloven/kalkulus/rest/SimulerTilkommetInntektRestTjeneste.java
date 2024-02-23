@@ -137,7 +137,7 @@ public class SimulerTilkommetInntektRestTjeneste {
     @BeskyttetRessurs(action = READ, property = DRIFT)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response simulerTilkommetInntektForSak(@NotNull @Valid FinnSimulerTilkommetInntektInputRequestAbacDto spesifikasjon) {
-        var koblinger = koblingRepository.hentAlleKoblingerForSaksnummer(new Saksnummer(spesifikasjon.getSaksnummer()));
+        var koblinger = koblingRepository.hentAlleKoblingerForSaksnummer(new Saksnummer(spesifikasjon.getSaksnummer().verdi()));
         var koblingIder = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
         var beregningsgrunnlag = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingIder);
         var inputer = kalkulatorInputTjeneste.hentForKoblinger(beregningsgrunnlag.stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId).collect(Collectors.toSet()));
@@ -162,7 +162,7 @@ public class SimulerTilkommetInntektRestTjeneste {
     @BeskyttetRessurs(action = READ, property = DRIFT)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response simulerTilkommetInntektInput(@NotNull @Valid FinnSimulerTilkommetInntektInputRequestAbacDto spesifikasjon) {
-        var koblinger = koblingRepository.hentAlleKoblingerForSaksnummer(new Saksnummer(spesifikasjon.getSaksnummer()));
+        var koblinger = koblingRepository.hentAlleKoblingerForSaksnummer(new Saksnummer(spesifikasjon.getSaksnummer().verdi()));
         var koblingIder = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
         var beregningsgrunnlag = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingIder);
         var inputer = kalkulatorInputTjeneste.hentForKoblinger(beregningsgrunnlag.stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId).collect(Collectors.toSet()));

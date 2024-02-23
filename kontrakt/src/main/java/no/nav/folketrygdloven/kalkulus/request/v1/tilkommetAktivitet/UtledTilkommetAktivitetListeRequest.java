@@ -12,9 +12,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE, creatorVisibility = Visibility.NONE)
@@ -23,9 +23,8 @@ public class UtledTilkommetAktivitetListeRequest {
 
     @JsonProperty(value = "saksnummer", required = true)
     @NotNull
-    @Pattern(regexp = "^[A-Za-z0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'")
     @Valid
-    private String saksnummer;
+    private Saksnummer saksnummer;
 
     @JsonProperty(value = "ytelseSomSkalBeregnes", required = true)
     @NotNull
@@ -42,7 +41,7 @@ public class UtledTilkommetAktivitetListeRequest {
     }
 
     @JsonCreator
-    public UtledTilkommetAktivitetListeRequest(@JsonProperty(value = "saksnummer", required = true) String saksnummer,
+    public UtledTilkommetAktivitetListeRequest(@JsonProperty(value = "saksnummer", required = true) Saksnummer saksnummer,
                                                @JsonProperty(value = "ytelseType", required = true) FagsakYtelseType ytelseType,
                                                @JsonProperty(value = "liste") List<UtledTilkommetAktivitetForRequest> liste) {
         this.saksnummer = saksnummer;
@@ -50,7 +49,7 @@ public class UtledTilkommetAktivitetListeRequest {
         this.liste = liste;
     }
 
-    public String getSaksnummer() {
+    public Saksnummer getSaksnummer() {
         return saksnummer;
     }
 

@@ -14,7 +14,6 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -41,6 +40,7 @@ import no.nav.folketrygdloven.kalkulus.request.v1.HentGrunnbeløpRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.KontrollerGrunnbeløpRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.GrunnbeløpReguleringRespons;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer;
 import no.nav.k9.felles.sikkerhet.abac.AbacDataAttributter;
 import no.nav.k9.felles.sikkerhet.abac.BeskyttetRessurs;
 
@@ -88,7 +88,7 @@ public class GrunnbeløpRestTjeneste {
 
         for (UUID ref : referanser) {
             if (ref != null) {
-                GrunnbeløpReguleringStatus status = grunnbeløpreguleringTjeneste.undersøkBehovForGregulering(new KoblingReferanse(ref), spesifikasjon.getSaksnummer());
+                GrunnbeløpReguleringStatus status = grunnbeløpreguleringTjeneste.undersøkBehovForGregulering(new KoblingReferanse(ref), spesifikasjon.getSaksnummer().verdi());
                 resultat.put(ref, status);
             }
         }
@@ -124,7 +124,7 @@ public class GrunnbeløpRestTjeneste {
 
         @JsonCreator
         public KontrollerGrunnbeløpRequestAbacDto(@JsonProperty(value = "koblinger", required = true) @Valid @NotNull @Size(min = 1) List<UUID> koblinger,
-                                                  @JsonProperty(value = "saksnummer", required = true) @NotNull @Pattern(regexp = "^[A-Za-z0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'") @Valid String saksnummer) {
+                                                  @JsonProperty(value = "saksnummer", required = true) @NotNull @Valid Saksnummer saksnummer) {
             super(koblinger, saksnummer);
         }
 

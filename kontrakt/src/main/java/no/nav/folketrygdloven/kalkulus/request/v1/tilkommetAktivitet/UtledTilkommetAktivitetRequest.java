@@ -27,8 +27,8 @@ public class UtledTilkommetAktivitetRequest {
     }
 
     @JsonCreator
-    public UtledTilkommetAktivitetRequest(@JsonProperty(value = "periode") Periode saksnummer, Long dagsatsFeiltoleranse) {
-        this.periode = saksnummer;
+    public UtledTilkommetAktivitetRequest(@JsonProperty(value = "periode") Periode periode, Long dagsatsFeiltoleranse) {
+        this.periode = periode;
         this.dagsatsFeiltoleranse = dagsatsFeiltoleranse;
     }
 

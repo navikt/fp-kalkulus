@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
@@ -15,18 +16,18 @@ public class FinnSimulerTilkommetInntektInputRequest {
 
     @JsonProperty(value = "saksnummer")
     @Valid
-    private String saksnummer;
+    private Saksnummer saksnummer;
 
 
     public FinnSimulerTilkommetInntektInputRequest() {
     }
 
     @JsonCreator
-    public FinnSimulerTilkommetInntektInputRequest(@JsonProperty(value = "saksnummer") String saksnummer) {
+    public FinnSimulerTilkommetInntektInputRequest(@JsonProperty(value = "saksnummer") Saksnummer saksnummer) {
         this.saksnummer = saksnummer;
     }
 
-    public String getSaksnummer() {
+    public Saksnummer getSaksnummer() {
         return saksnummer;
     }
 

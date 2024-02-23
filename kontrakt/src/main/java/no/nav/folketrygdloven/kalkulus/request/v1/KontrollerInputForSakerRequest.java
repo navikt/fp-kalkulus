@@ -7,23 +7,25 @@ import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer;
+
 public class KontrollerInputForSakerRequest {
 
     @JsonProperty(value = "saksnummer", required = true)
     @Valid
     @NotNull
-    private List<String> saksnummer;
+    private List<Saksnummer> saksnummer;
 
 
     protected KontrollerInputForSakerRequest() {
         // default ctor
     }
 
-    public KontrollerInputForSakerRequest(@Valid @NotNull List<String> saksnummer) {
+    public KontrollerInputForSakerRequest(@Valid @NotNull List<Saksnummer> saksnummer) {
         this.saksnummer = saksnummer;
     }
 
-    public List<String> getSaksnummer() {
+    public List<Saksnummer> getSaksnummer() {
         return saksnummer;
     }
 

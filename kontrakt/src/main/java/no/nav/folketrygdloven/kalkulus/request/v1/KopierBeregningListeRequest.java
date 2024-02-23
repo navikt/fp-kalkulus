@@ -13,10 +13,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer;
 
 /**
  * Spesifikasjon for å fortsette en beregning.
@@ -30,9 +30,8 @@ public class KopierBeregningListeRequest implements KalkulusRequest {
 
     @JsonProperty(value = "saksnummer", required = true)
     @NotNull
-    @Pattern(regexp = "^[A-Za-z0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'")
     @Valid
-    private String saksnummer;
+    private Saksnummer saksnummer;
 
     @JsonProperty(value = "behandlingUuid", required = true)
     @Valid
@@ -61,7 +60,7 @@ public class KopierBeregningListeRequest implements KalkulusRequest {
     }
 
     @JsonCreator
-    public KopierBeregningListeRequest(String saksnummer,
+    public KopierBeregningListeRequest(Saksnummer saksnummer,
                                        UUID behandlingUuid,
                                        FagsakYtelseType ytelseSomSkalBeregnes,
                                        BeregningSteg stegType,
@@ -74,7 +73,7 @@ public class KopierBeregningListeRequest implements KalkulusRequest {
     }
 
     @Override
-    public String getSaksnummer() {
+    public Saksnummer getSaksnummer() {
         return saksnummer;
     }
 

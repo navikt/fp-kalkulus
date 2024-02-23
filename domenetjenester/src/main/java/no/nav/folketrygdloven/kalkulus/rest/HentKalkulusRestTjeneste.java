@@ -194,7 +194,7 @@ public class HentKalkulusRestTjeneste {
     @Path("/aktive-referanser")
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response hentAktiveReferanser(@NotNull @Valid HentForSakRequestAbacDto spesifikasjon) {
-        var koblinger = koblingTjeneste.hentKoblingerForSak(new Saksnummer(spesifikasjon.getSaksnummer()));
+        var koblinger = koblingTjeneste.hentKoblingerForSak(new Saksnummer(spesifikasjon.getSaksnummer().verdi()));
 
         var koblingIderMedAktiveGrunnlag = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet()))
                 .stream().filter(BeregningsgrunnlagGrunnlagEntitet::erAktivt)

@@ -157,7 +157,7 @@ class KopierOgResetRestTjenesteTest extends EntityManagerAwareTest {
     private void kjørOgVerifiser(UUID originalKoblingReferanse, KoblingEntitet originalKobling, BeregningsgrunnlagGrunnlagEntitet gr1, LocalDateTime behandling1AvsluttetTid, BeregningsgrunnlagGrunnlagEntitet gr2, LocalDateTime behandling2AvsluttetTid, int i) {
         var nyReferanse2 = UUID.randomUUID();
         tjeneste.kopierOgResett(new KopierOgResetRestTjeneste.KopierOgResettBeregningListeRequestAbacDto(
-                SAK.getVerdi(),
+                new no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer(SAK.getVerdi()),
                 UUID.randomUUID(),
                 FagsakYtelseType.PLEIEPENGER_SYKT_BARN,
                 List.of(new KopierBeregningRequest(nyReferanse2, originalKoblingReferanse)),

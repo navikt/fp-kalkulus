@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -16,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer;
 
 
 /**
@@ -41,12 +41,11 @@ public class HentBeregningsgrunnlagDtoListeForGUIRequest implements KalkulusRequ
     @Valid
     @NotNull
     private UUID behandlingUuid;
-    
+
     //TODO: set saksnummer required + @NotNull når fpsak/k9-sak er oppdatert
     @JsonProperty(value = "saksnummer", required = false)
-    @Pattern(regexp = "^[A-Za-z0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'")
     @Valid
-    private String saksnummer;
+    private Saksnummer saksnummer;
 
     protected HentBeregningsgrunnlagDtoListeForGUIRequest() {
         // default ctor
@@ -54,7 +53,7 @@ public class HentBeregningsgrunnlagDtoListeForGUIRequest implements KalkulusRequ
 
     public HentBeregningsgrunnlagDtoListeForGUIRequest(@Valid @NotNull List<HentBeregningsgrunnlagDtoForGUIRequest> requestPrReferanse,
                                                        @Valid Map<UUID, KalkulatorInputDto> kalkulatorInputPerKoblingReferanse,
-                                                       @Valid String saksnummer,
+                                                       @Valid Saksnummer saksnummer,
                                                        @Valid @NotNull UUID behandlingUuid) {
         this.requestPrReferanse = requestPrReferanse;
         this.kalkulatorInputPerKoblingReferanse = kalkulatorInputPerKoblingReferanse;
@@ -79,9 +78,9 @@ public class HentBeregningsgrunnlagDtoListeForGUIRequest implements KalkulusRequ
     public Map<UUID, KalkulatorInputDto> getKalkulatorInputPerKoblingReferanse() {
         return kalkulatorInputPerKoblingReferanse;
     }
-    
+
     @Override
-    public String getSaksnummer() {
+    public Saksnummer getSaksnummer() {
         return saksnummer;
     }
 }

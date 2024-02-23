@@ -4,26 +4,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer;
 
 public class HentForSakRequest {
 
     @JsonProperty(value = "saksnummer", required = true)
-    @Pattern(regexp = "^[A-Za-z0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'")
     @Valid
     @NotNull
-    private String saksnummer;
+    private Saksnummer saksnummer;
 
 
     protected HentForSakRequest() {
         // default ctor
     }
 
-    public HentForSakRequest(@Valid @NotNull String saksnummer) {
+    public HentForSakRequest(@Valid @NotNull Saksnummer saksnummer) {
         this.saksnummer = saksnummer;
     }
 
-    public String getSaksnummer() {
+    public Saksnummer getSaksnummer() {
         return saksnummer;
     }
 

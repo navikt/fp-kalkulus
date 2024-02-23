@@ -67,8 +67,8 @@ public class ForvaltningFrisinnRestTjeneste {
     @Path("/kontrollerInput")
     public Response hentGrunnbeløp(@NotNull @Valid KontrollerInputForSakerRequestAbacDto spesifikasjon) {
         List<DiffResultatDto> differ = new ArrayList<>();
-        for (String saksnummer : spesifikasjon.getSaksnummer()) {
-            Optional<KoblingEntitet> kobling = koblingRepository.hentSisteKoblingForSaksnummer(new Saksnummer(saksnummer));
+        for (var saksnummer : spesifikasjon.getSaksnummer()) {
+            Optional<KoblingEntitet> kobling = koblingRepository.hentSisteKoblingForSaksnummer(new Saksnummer(saksnummer.verdi()));
             kobling.flatMap(koblingEntitet -> kontrollerBeregningsinputTjeneste.kontrollerInputForKobling(koblingEntitet)).ifPresent(differ::add);
         }
         String csv = byggTekst(differ);
@@ -104,7 +104,7 @@ public class ForvaltningFrisinnRestTjeneste {
 
 
         @JsonCreator
-        public KontrollerInputForSakerRequestAbacDto(@JsonProperty(value = "saksnummer", required = true) @Valid @NotNull List<String> saksnummer) {
+        public KontrollerInputForSakerRequestAbacDto(@JsonProperty(value = "saksnummer", required = true) @Valid @NotNull List<no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer> saksnummer) {
             super(saksnummer);
         }
 

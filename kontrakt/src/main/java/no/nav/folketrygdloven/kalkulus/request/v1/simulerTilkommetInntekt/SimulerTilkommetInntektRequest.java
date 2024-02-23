@@ -27,8 +27,8 @@ public class SimulerTilkommetInntektRequest {
     }
 
     @JsonCreator
-    public SimulerTilkommetInntektRequest(@JsonProperty(value = "periode") Periode saksnummer, Long dagsatsFeiltoleranse) {
-        this.periode = saksnummer;
+    public SimulerTilkommetInntektRequest(@JsonProperty(value = "periode") Periode periode, Long dagsatsFeiltoleranse) {
+        this.periode = periode;
         this.dagsatsFeiltoleranse = dagsatsFeiltoleranse;
     }
 

@@ -78,11 +78,11 @@ public class KopierOgResetRestTjeneste {
     })
     @BeskyttetRessurs(action = UPDATE, property = BEREGNINGSGRUNNLAG)
     public Response kopierOgResett(@NotNull @Valid KopierOgResettBeregningListeRequestAbacDto spesifikasjon) {
-        MDC.put("prosess_saksnummer", spesifikasjon.getSaksnummer());
+        MDC.put("prosess_saksnummer", spesifikasjon.getSaksnummer().verdi());
         kopierTjeneste.kopierGrunnlagOgOpprettKoblinger(
                 spesifikasjon.getKopierBeregningListe(),
                 spesifikasjon.getYtelseSomSkalBeregnes(),
-                new Saksnummer(spesifikasjon.getSaksnummer()),
+                new Saksnummer(spesifikasjon.getSaksnummer().verdi()),
                 spesifikasjon.getStegType() == null ? BeregningSteg.FAST_BERGRUNN : spesifikasjon.getStegType(),
                 spesifikasjon.getBehandlingAvsluttetTid());
         resetGrunnlagTjeneste.resetGrunnlag(spesifikasjon.getKopierBeregningListe().stream().map(KopierBeregningRequest::getKopierFraReferanse).toList(), spesifikasjon.getOriginalBehandlingAvsluttetTid());
@@ -113,7 +113,7 @@ public class KopierOgResetRestTjeneste {
         public KopierOgResettBeregningListeRequestAbacDto() {
         }
 
-        public KopierOgResettBeregningListeRequestAbacDto(String saksnummer,
+        public KopierOgResettBeregningListeRequestAbacDto(no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer saksnummer,
                                                           UUID behandlingUuid,
                                                           FagsakYtelseType ytelseSomSkalBeregnes,
                                                           List<KopierBeregningRequest> kopierBeregningListe, BeregningSteg stegType,
