@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -114,7 +115,7 @@ public class KalkulatorMapperTest {
         LocalDate skjæringstidspunkt = periode.getFom();
 
         KalkulatorInputDto kalkulatorInputDto = new KalkulatorInputDto(iayGrunnlag, opptjeningAktiviteter, skjæringstidspunkt);
-        kalkulatorInputDto.medYtelsespesifiktGrunnlag(new ForeldrepengerGrunnlag(BigDecimal.valueOf(100), false, aktivitetGraderingDto, LocalDate.now()));
+        kalkulatorInputDto.medYtelsespesifiktGrunnlag(new ForeldrepengerGrunnlag(BigDecimal.valueOf(100), false, aktivitetGraderingDto, Collections.emptyList()));
         kalkulatorInputDto.medRefusjonskravDatoer(List.of(new RefusjonskravDatoDto(organisasjon, periode.getFom(), periode.getFom().minusMonths(1), true)));
         kalkulatorInputDto.medRefusjonskravDatoer(List.of(new RefusjonskravDatoDto(organisasjon, periode.getFom(), periode.getFom().minusMonths(1), true)));
 

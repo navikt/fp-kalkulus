@@ -128,7 +128,7 @@ public class MapFraKalkulator {
                                                     Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
         var ytelsespesifiktGrunnlag = input.getYtelsespesifiktGrunnlag();
         return switch (ytelseType) {
-            case FORELDREPENGER -> mapForeldrepengerGrunnlag(ytelsespesifiktGrunnlag);
+            case FORELDREPENGER -> mapForeldrepengerGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag)ytelsespesifiktGrunnlag);
             case SVANGERSKAPSPENGER -> mapSvangerskapspengerGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.SvangerskapspengerGrunnlag) ytelsespesifiktGrunnlag);
             case PLEIEPENGER_SYKT_BARN -> mapPleiepengerSyktBarnGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.PleiepengerSyktBarnGrunnlag) ytelsespesifiktGrunnlag);
             case OPPLÆRINGSPENGER -> OpplæringspengerGrunnlagMapper.mapGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.OpplæringspengerGrunnlag) ytelsespesifiktGrunnlag);

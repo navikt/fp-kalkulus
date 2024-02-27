@@ -22,15 +22,12 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
 
 class ForeldrepengerGrunnlagMapper {
 
-    static ForeldrepengerGrunnlag mapForeldrepengerGrunnlag(YtelsespesifiktGrunnlagDto ytelsespesifiktGrunnlag) {
+    static ForeldrepengerGrunnlag mapForeldrepengerGrunnlag(no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag fpKontraktGrunnlag) {
 
-        ForeldrepengerGrunnlag foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(mapDekningsgrad(ytelsespesifiktGrunnlag.getDekningsgrad().intValue()),
-                ytelsespesifiktGrunnlag.getKvalifisererTilBesteberegning());
-        // TODO(OJR) lag builder?
-        no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag fpKontraktGrunnlag = (no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag) ytelsespesifiktGrunnlag;
+        ForeldrepengerGrunnlag foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(mapDekningsgrad(fpKontraktGrunnlag.getDekningsgrad().intValue()),
+                fpKontraktGrunnlag.getKvalifisererTilBesteberegning());
         var aktivitetGradering = fpKontraktGrunnlag.getAktivitetGradering();
         foreldrepengerGrunnlag.setAktivitetGradering(aktivitetGradering == null ? AktivitetGradering.INGEN_GRADERING : mapFraDto(aktivitetGradering));
-        foreldrepengerGrunnlag.setSisteSøkteUttaksdag(fpKontraktGrunnlag.getSisteSøkteUttaksdag());
         foreldrepengerGrunnlag.setBesteberegningYtelsegrunnlag(mapYtelsegrunnlag(fpKontraktGrunnlag.getYtelsegrunnlagForBesteberegning()));
         return foreldrepengerGrunnlag;
     }

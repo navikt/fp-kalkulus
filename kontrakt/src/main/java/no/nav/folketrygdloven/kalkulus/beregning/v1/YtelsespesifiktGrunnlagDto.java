@@ -1,22 +1,13 @@
 package no.nav.folketrygdloven.kalkulus.beregning.v1;
 
-import java.math.BigDecimal;
-import java.util.Objects;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotNull;
 import no.nav.folketrygdloven.kalkulus.kodeverk.KodeKonstanter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -32,56 +23,4 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.KodeKonstanter;
         @JsonSubTypes.Type(value = FrisinnGrunnlag.class, name = KodeKonstanter.YT_FRISINN),
 })
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
-public abstract class YtelsespesifiktGrunnlagDto {
-
-    @JsonProperty(value = "dekningsgrad")
-    @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "100.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 3, fraction = 2)
-    private BigDecimal dekningsgrad = BigDecimal.valueOf(100);
-
-    @JsonProperty(value = "kvalifisererTilBesteberegning")
-    @Valid
-    @NotNull
-    private Boolean kvalifisererTilBesteberegning = false;
-
-    protected YtelsespesifiktGrunnlagDto() {
-        // default ctor
-    }
-
-    public YtelsespesifiktGrunnlagDto(@Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 3, fraction = 2) BigDecimal dekningsgrad, @Valid @NotNull Boolean kvalifisererTilBesteberegning) {
-        this.dekningsgrad = dekningsgrad;
-        this.kvalifisererTilBesteberegning = kvalifisererTilBesteberegning;
-    }
-
-    public BigDecimal getDekningsgrad() {
-        return dekningsgrad;
-    }
-
-    public Boolean getKvalifisererTilBesteberegning() {
-        return kvalifisererTilBesteberegning;
-    }
-
-    @Override
-    public String toString() {
-        return "YtelsespesifiktGrunnlagDto{" +
-                "dekningsgrad=" + dekningsgrad +
-                ", kvalifisererTilBesteberegning=" + kvalifisererTilBesteberegning +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        YtelsespesifiktGrunnlagDto that = (YtelsespesifiktGrunnlagDto) o;
-        return Objects.equals(dekningsgrad, that.dekningsgrad) &&
-                Objects.equals(kvalifisererTilBesteberegning, that.kvalifisererTilBesteberegning);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(dekningsgrad, kvalifisererTilBesteberegning);
-    }
-}
+public abstract class YtelsespesifiktGrunnlagDto {}

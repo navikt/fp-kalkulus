@@ -6,6 +6,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -217,7 +218,7 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
                 skjæringstidspunkt);
         kalkulatorInputDto.medYtelsespesifiktGrunnlag(
                 new ForeldrepengerGrunnlag(BigDecimal.valueOf(100), false, aktivitetGraderingDto,
-                        LocalDate.now()));
+                        Collections.emptyList()));
         kalkulatorInputDto.medRefusjonskravDatoer(List
                 .of(new RefusjonskravDatoDto(organisasjon, periode.getFom(),
                         periode.getFom().minusMonths(1), true)));
