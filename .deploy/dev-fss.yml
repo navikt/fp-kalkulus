@@ -117,5 +117,3 @@ spec:
       value: "true"
     - name: SKAL_VALIDERE_FORLENGELSE_ENDRING
       value: "true"
-    - name: PSB_IKKE_OPPHOER_REFUSJON_VED_ENDT_ARBEIDSFORHOLD
-      value: "true"
