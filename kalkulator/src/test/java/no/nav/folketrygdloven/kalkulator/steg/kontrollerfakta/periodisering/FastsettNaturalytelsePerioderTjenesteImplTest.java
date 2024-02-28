@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.periodisering;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
@@ -136,7 +135,7 @@ public class FastsettNaturalytelsePerioderTjenesteImplTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER), beregningAktivitetAggregat);
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
         var inntekt = Beløp.fra(40000);
-        NaturalYtelseDto naturalYtelseTilkommer = new NaturalYtelseDto(SKJÆRINGSTIDSPUNKT.plusDays(30), TIDENES_ENDE, BigDecimal.valueOf(350),
+        NaturalYtelseDto naturalYtelseTilkommer = new NaturalYtelseDto(SKJÆRINGSTIDSPUNKT.plusDays(30), TIDENES_ENDE, Beløp.fra(350),
                 NaturalYtelseType.ELEKTRISK_KOMMUNIKASJON);
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmeldingMedNaturalYtelser(ORG_NUMMER, SKJÆRINGSTIDSPUNKT, inntekt, inntekt, null,
                 naturalYtelseTilkommer);
@@ -160,7 +159,7 @@ public class FastsettNaturalytelsePerioderTjenesteImplTest {
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
         var inntekt = Beløp.fra(40000);
         NaturalYtelseDto naturalYtelseBortfall = new NaturalYtelseDto(SKJÆRINGSTIDSPUNKT.minusYears(2), SKJÆRINGSTIDSPUNKT.plusDays(30),
-                BigDecimal.valueOf(350), NaturalYtelseType.ELEKTRISK_KOMMUNIKASJON);
+                Beløp.fra(350), NaturalYtelseType.ELEKTRISK_KOMMUNIKASJON);
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmeldingMedNaturalYtelser(ORG_NUMMER, SKJÆRINGSTIDSPUNKT, inntekt, inntekt, null,
                 naturalYtelseBortfall);
         iayGrunnlagBuilder.medInntektsmeldinger(im1);
@@ -183,7 +182,7 @@ public class FastsettNaturalytelsePerioderTjenesteImplTest {
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
         var inntekt = Beløp.fra(40000);
         NaturalYtelseDto naturalYtelseBortfall = new NaturalYtelseDto(SKJÆRINGSTIDSPUNKT.minusYears(2), SKJÆRINGSTIDSPUNKT.minusDays(1),
-                BigDecimal.valueOf(350), NaturalYtelseType.ELEKTRISK_KOMMUNIKASJON);
+                Beløp.fra(350), NaturalYtelseType.ELEKTRISK_KOMMUNIKASJON);
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmeldingMedNaturalYtelser(ORG_NUMMER, SKJÆRINGSTIDSPUNKT, inntekt, inntekt, null,
                 naturalYtelseBortfall);
         iayGrunnlagBuilder.medInntektsmeldinger(im1);
@@ -204,7 +203,7 @@ public class FastsettNaturalytelsePerioderTjenesteImplTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER), beregningAktivitetAggregat);
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
         var inntekt = Beløp.fra(40000);
-        NaturalYtelseDto naturalYtelseBortfall = new NaturalYtelseDto(SKJÆRINGSTIDSPUNKT.minusYears(2), SKJÆRINGSTIDSPUNKT, BigDecimal.valueOf(350),
+        NaturalYtelseDto naturalYtelseBortfall = new NaturalYtelseDto(SKJÆRINGSTIDSPUNKT.minusYears(2), SKJÆRINGSTIDSPUNKT, Beløp.fra(350),
                 NaturalYtelseType.ELEKTRISK_KOMMUNIKASJON);
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmeldingMedNaturalYtelser(ORG_NUMMER, SKJÆRINGSTIDSPUNKT, inntekt, inntekt, null,
                 naturalYtelseBortfall);
@@ -228,8 +227,8 @@ public class FastsettNaturalytelsePerioderTjenesteImplTest {
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
         var inntekt = Beløp.fra(40000);
         NaturalYtelseDto naturalYtelseBortfalt = new NaturalYtelseDto(SKJÆRINGSTIDSPUNKT.minusYears(2), SKJÆRINGSTIDSPUNKT.plusDays(30),
-                BigDecimal.valueOf(350), NaturalYtelseType.ELEKTRISK_KOMMUNIKASJON);
-        NaturalYtelseDto naturalYtelseTilkommer = new NaturalYtelseDto(SKJÆRINGSTIDSPUNKT.plusDays(90), TIDENES_ENDE, BigDecimal.valueOf(350),
+                Beløp.fra(350), NaturalYtelseType.ELEKTRISK_KOMMUNIKASJON);
+        NaturalYtelseDto naturalYtelseTilkommer = new NaturalYtelseDto(SKJÆRINGSTIDSPUNKT.plusDays(90), TIDENES_ENDE, Beløp.fra(350),
                 NaturalYtelseType.ELEKTRISK_KOMMUNIKASJON);
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmeldingMedNaturalYtelser(ORG_NUMMER, SKJÆRINGSTIDSPUNKT, inntekt, inntekt, null,
                 naturalYtelseBortfalt, naturalYtelseTilkommer);

@@ -195,7 +195,7 @@ public class MapInntektsgrunnlagVLTilRegelFelles implements MapInntektsgrunnlagV
                 skjæringstidspunkt,
                 Set.of(arenaYtelse));
         utbetalingsfaktor = sisteUtbetalingFørStp.flatMap(YtelseAnvistDto::getUtbetalingsgradProsent)
-                .map(Stillingsprosent::getVerdi)
+                .map(Stillingsprosent::verdi)
                 .map(v -> v.divide(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG, 10, RoundingMode.HALF_UP))
                 .orElse(BigDecimal.ONE);
         dagsats = nyesteVedtakForDagsats.getVedtaksDagsats().map(Beløp::verdi)

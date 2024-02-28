@@ -97,7 +97,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterFP implements Av
             return Optional.empty();
         }
         Optional<YtelseAnvistDto> nyligsteMeldekort = MeldekortUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyligsteVedtak.get(), skjæringstidspunkt, Set.of(ytelseTypeForMeldekort));
-        return Optional.of(nyligsteMeldekort.flatMap(YtelseAnvistDto::getUtbetalingsgradProsent).map(Stillingsprosent::getVerdi).orElse(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG));
+        return Optional.of(nyligsteMeldekort.flatMap(YtelseAnvistDto::getUtbetalingsgradProsent).map(Stillingsprosent::verdi).orElse(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG));
     }
 
     @Override

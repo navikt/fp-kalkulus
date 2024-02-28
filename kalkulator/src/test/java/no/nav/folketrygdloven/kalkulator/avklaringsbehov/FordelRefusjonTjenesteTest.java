@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +65,7 @@ public class FordelRefusjonTjenesteTest {
     @BeforeEach
     public void setUp() {
         oppdatertBg = BeregningsgrunnlagDto.builder()
-                .medGrunnbeløp(BigDecimal.TEN)
+                .medGrunnbeløp(Beløp.fra(10))
                 .medSkjæringstidspunkt(FOM).build();
         periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(FOM, TOM)

@@ -12,6 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
 import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulus.iay.IayProsent;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 
 /**
@@ -37,11 +38,11 @@ public class AnvistAndel {
     private BeløpDto dagsats;
 
     @JsonProperty("utbetalingsgrad")
-    private BigDecimal utbetalingsgrad;
+    private IayProsent utbetalingsgrad;
 
     // Andel av dagsats som utbetales til arbeidsgiver
     @JsonProperty("refusjonsgrad")
-    private BigDecimal refusjonsgrad;
+    private IayProsent refusjonsgrad;
 
     @JsonProperty(value = "inntektskategori")
     @Valid
@@ -54,13 +55,13 @@ public class AnvistAndel {
         this(arbeidsgiver,
                 new InternArbeidsforholdRefDto(arbeidsforholdId),
                 new BeløpDto(BigDecimal.valueOf(beløp)),
-                BigDecimal.valueOf(utbetalingsgrad),
-                BigDecimal.valueOf(refusjonsgrad),
+                IayProsent.fra(utbetalingsgrad),
+                IayProsent.fra(refusjonsgrad),
                 inntektskategori);
     }
 
     public AnvistAndel(Aktør arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdId,
-                       BeløpDto beløp, BigDecimal utbetalingsgrad, BigDecimal refusjonsgrad, Inntektskategori inntektskategori) {
+                       BeløpDto beløp, IayProsent utbetalingsgrad, IayProsent refusjonsgrad, Inntektskategori inntektskategori) {
         this.arbeidsgiver = arbeidsgiver;
         this.arbeidsforholdId = arbeidsforholdId;
         this.dagsats = beløp;
@@ -81,11 +82,11 @@ public class AnvistAndel {
         return dagsats;
     }
 
-    public BigDecimal getUtbetalingsgrad() {
+    public IayProsent getUtbetalingsgrad() {
         return utbetalingsgrad;
     }
 
-    public BigDecimal getRefusjonsgrad() {
+    public IayProsent getRefusjonsgrad() {
         return refusjonsgrad;
     }
 

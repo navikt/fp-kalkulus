@@ -58,6 +58,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.testutilities.TestHjelper;
 import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -157,7 +158,7 @@ public class MapFullføreBeregningsgrunnlagFraVLTilRegelTest {
                 .leggTilYtelseAnvist(ytelselseBuilder.getAnvistBuilder()
                         .medAnvistPeriode(Intervall.fraOgMedTilOgMed(meldekortFom, meldekortTom))
                         .medDagsats(beløp)
-                        .medUtbetalingsgradProsent(utbetalingsgrad)
+                        .medUtbetalingsgradProsent(Stillingsprosent.fra(utbetalingsgrad))
                         .build());
     }
 

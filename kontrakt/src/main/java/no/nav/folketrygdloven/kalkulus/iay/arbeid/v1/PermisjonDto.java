@@ -2,20 +2,15 @@ package no.nav.folketrygdloven.kalkulus.iay.arbeid.v1;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
-import java.math.BigDecimal;
-
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+import no.nav.folketrygdloven.kalkulus.iay.IayProsent;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PermisjonsbeskrivelseType;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -35,10 +30,7 @@ public class PermisjonDto {
      */
     @JsonProperty("prosentsats")
     @Valid
-    @DecimalMin(value = "0.00", message = "permisjon prosentsats [${validatedValue}] må være >= {value}")
-    @DecimalMax(value = "500.00", message = "permisjon prosentsats [${validatedValue}] må være <= {value}") // insane maks verdi, men Aa-reg sier så
-    @Digits(integer = 3, fraction = 2)
-    private BigDecimal prosentsats;
+    private IayProsent prosentsats;
 
     @Valid
     @JsonProperty(value = "permisjonsbeskrivelseType")
@@ -49,7 +41,7 @@ public class PermisjonDto {
     }
 
     public PermisjonDto(@Valid @NotNull Periode periode,
-                        @Valid BigDecimal prosentsats,
+                        @Valid IayProsent prosentsats,
                         @Valid PermisjonsbeskrivelseType permisjonsbeskrivelseType) {
         this.periode = periode;
         this.prosentsats = prosentsats;
@@ -60,7 +52,7 @@ public class PermisjonDto {
         return periode;
     }
 
-    public BigDecimal getProsentsats() {
+    public IayProsent getProsentsats() {
         return prosentsats;
     }
 

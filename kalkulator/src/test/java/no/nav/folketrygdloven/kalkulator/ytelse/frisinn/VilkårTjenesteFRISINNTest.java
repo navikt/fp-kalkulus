@@ -4,7 +4,6 @@ import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_BEGYNNELSE;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -58,7 +57,7 @@ class VilkårTjenesteFRISINNTest {
     private BeregningsgrunnlagDto lagBgMedAvkortetNæring() {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(NOW)
-                .medGrunnbeløp(BigDecimal.TEN)
+                .medGrunnbeløp(Beløp.fra(10))
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE))
                 .build();
         BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()

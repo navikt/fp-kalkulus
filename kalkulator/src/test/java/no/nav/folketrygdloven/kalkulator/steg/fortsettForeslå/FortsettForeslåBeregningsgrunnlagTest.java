@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.steg.fortsettForeslå;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Collection;
@@ -58,7 +57,7 @@ import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 public class FortsettForeslåBeregningsgrunnlagTest {
 
     private static final String ORGNR = "987123987";
-    private static final double MÅNEDSINNTEKT1 = 12345d;
+    private static final Beløp MÅNEDSINNTEKT1 = Beløp.fra(12345);
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.APRIL, 10);
     private static final LocalDate SKJÆRINGSTIDSPUNKT_BEREGNING = SKJÆRINGSTIDSPUNKT_OPPTJENING;
     private static final Beløp GRUNNBELØP = Beløp.fra(90000);
@@ -136,9 +135,9 @@ public class FortsettForeslåBeregningsgrunnlagTest {
     public void skalGiEittAvklaringsbehovForSNNyIArbeidslivetOgKortvarigArbeidsforhold() {
         // Arrange
         BeregningsgrunnlagDto nyttGrunnlag = lagBeregningsgrunnlagATFL_SN();
-        InntektArbeidYtelseAggregatBuilder register = testHjelper.initBehandlingFor_AT_SN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1),
+        InntektArbeidYtelseAggregatBuilder register = testHjelper.initBehandlingFor_AT_SN(MÅNEDSINNTEKT1.multipliser(12),
                 2014, SKJÆRINGSTIDSPUNKT_BEREGNING, ARBEIDSFORHOLD_ORGNR1,
-                BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
+                MÅNEDSINNTEKT1, MÅNEDSINNTEKT1,
                 iayGrunnlagBuilder);
         iayGrunnlagBuilder.medData(register);
         FaktaAggregatDto faktaAggregat = lagFakta(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), true, true);

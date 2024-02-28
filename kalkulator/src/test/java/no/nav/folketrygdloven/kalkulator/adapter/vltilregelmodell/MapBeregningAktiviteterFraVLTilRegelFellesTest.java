@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,6 +34,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDtoBuilde
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
@@ -102,7 +102,7 @@ class MapBeregningAktiviteterFraVLTilRegelFellesTest {
         // Arrange
         LocalDate ansettelsesDato = SKJÆRINGSTIDSPUNKT.minusYears(1);
         var permisjonsPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.plusDays(1));
-        List<PermisjonDtoBuilder> permisjonDtoBuilders = List.of(PermisjonDtoBuilder.ny().medPeriode(permisjonsPeriode).medProsentsats(BigDecimal.valueOf(100)).medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.ANNEN_PERMISJON_LOVFESTET));
+        List<PermisjonDtoBuilder> permisjonDtoBuilders = List.of(PermisjonDtoBuilder.ny().medPeriode(permisjonsPeriode).medProsentsats(Stillingsprosent.HUNDRED).medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.ANNEN_PERMISJON_LOVFESTET));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = lagIAY(ansettelsesDato, NULL_REF, permisjonDtoBuilders);
         var opptjeningAktiviteterDto = lagOpptjeningsAktivitet(ansettelsesDato, NULL_REF);
 
@@ -123,7 +123,7 @@ class MapBeregningAktiviteterFraVLTilRegelFellesTest {
         // Arrange
         LocalDate ansettelsesDato = SKJÆRINGSTIDSPUNKT.minusYears(1);
         var permisjonsPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.plusDays(1));
-        List<PermisjonDtoBuilder> permisjonDtoBuilders = List.of(PermisjonDtoBuilder.ny().medPeriode(permisjonsPeriode).medProsentsats(BigDecimal.valueOf(60)));
+        List<PermisjonDtoBuilder> permisjonDtoBuilders = List.of(PermisjonDtoBuilder.ny().medPeriode(permisjonsPeriode).medProsentsats(Stillingsprosent.fra(60)));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = lagIAY(ansettelsesDato, NULL_REF, permisjonDtoBuilders);
         var opptjeningAktiviteterDto = lagOpptjeningsAktivitet(ansettelsesDato, NULL_REF);
 
@@ -206,7 +206,7 @@ class MapBeregningAktiviteterFraVLTilRegelFellesTest {
             if (permisjonperiode != null) {
                 var permisjonBuilder = PermisjonDtoBuilder.ny()
                         .medPeriode(permisjonperiode)
-                        .medProsentsats(BigDecimal.valueOf(100))
+                        .medProsentsats(Stillingsprosent.HUNDRED)
                         .medPermisjonsbeskrivelseType(type);
                 yaBuilder.leggTilPermisjon(permisjonBuilder);
             }

@@ -16,8 +16,6 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
-
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,6 +58,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulus.typer.Beløp;
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 import no.nav.folketrygdloven.utils.Tuple;
 
 public class FullføreBeregningsgrunnlagUtbgradTest {
@@ -97,7 +96,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
                 .build();
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_BEREGNING)
-                .medGrunnbeløp(BigDecimal.valueOf(GRUNNBELØP))
+                .medGrunnbeløp(Beløp.fra(GRUNNBELØP))
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER).medHjemmel(Hjemmel.F_14_7_8_30))
                 .leggTilSammenligningsgrunnlag(sg)
                 .build();
@@ -116,7 +115,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
                 .build();
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_BEREGNING)
-                .medGrunnbeløp(BigDecimal.valueOf(GRUNNBELØP))
+                .medGrunnbeløp(Beløp.fra(GRUNNBELØP))
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER).medHjemmel(Hjemmel.F_14_7_8_30))
                 .leggTilSammenligningsgrunnlag(sg)
                 .build();

@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -71,16 +69,17 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.typer.Beløp;
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
 @ExtendWith(MockitoExtension.class)
 public class ForeslåBeregningsgrunnlagTest {
 
-    private static final double MÅNEDSINNTEKT1 = 12345d;
-    private static final double MÅNEDSINNTEKT2 = 6000d;
-    private static final double ÅRSINNTEKT1 = MÅNEDSINNTEKT1 * 12;
-    private static final double ÅRSINNTEKT2 = MÅNEDSINNTEKT2 * 12;
-    private static final double NATURALYTELSE_I_PERIODE_2 = 200d;
-    private static final double NATURALYTELSE_I_PERIODE_3 = 400d;
+    private static final Beløp MÅNEDSINNTEKT1 = Beløp.fra(12345);
+    private static final Beløp MÅNEDSINNTEKT2 = Beløp.fra(6000);
+    private static final Beløp ÅRSINNTEKT1 = MÅNEDSINNTEKT1.multipliser(12);
+    private static final Beløp ÅRSINNTEKT2 = MÅNEDSINNTEKT2.multipliser(12);
+    private static final Beløp NATURALYTELSE_I_PERIODE_2 = Beløp.fra(200);
+    private static final Beløp NATURALYTELSE_I_PERIODE_3 = Beløp.fra(400);
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.APRIL, 10);
     private static final LocalDate SKJÆRINGSTIDSPUNKT_BEREGNING = SKJÆRINGSTIDSPUNKT_OPPTJENING;
     private static final Beløp GRUNNBELØP = Beløp.fra(90000);
@@ -143,8 +142,8 @@ public class ForeslåBeregningsgrunnlagTest {
         return BGAndelArbeidsforholdDto.builder().medArbeidsperiodeFom(fom).medArbeidsperiodeTom(tom).medArbeidsgiver(arbeidsgiver);
     }
 
-    private void lagBehandling(BigDecimal inntektSammenligningsgrunnlag,
-                               BigDecimal inntektBeregningsgrunnlag, Arbeidsgiver arbeidsgiver, LocalDate fraOgMed, LocalDate tilOgMed, InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder) {
+    private void lagBehandling(Beløp inntektSammenligningsgrunnlag,
+                               Beløp inntektBeregningsgrunnlag, Arbeidsgiver arbeidsgiver, LocalDate fraOgMed, LocalDate tilOgMed, InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder) {
 
         var inntektArbeidYtelseBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
 
@@ -161,8 +160,8 @@ public class ForeslåBeregningsgrunnlagTest {
         iayGrunnlagBuilder.medData(inntektArbeidYtelseBuilder);
     }
 
-    private void lagBehandlingFL(BigDecimal inntektSammenligningsgrunnlag,
-                                 BigDecimal inntektFrilans, String virksomhetOrgnr) {
+    private void lagBehandlingFL(Beløp inntektSammenligningsgrunnlag,
+                                 Beløp inntektFrilans, String virksomhetOrgnr) {
         LocalDate fraOgMed = MINUS_YEARS_1.withDayOfMonth(1);
         LocalDate tilOgMed = fraOgMed.plusYears(1);
         InntektArbeidYtelseAggregatBuilder registerBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(iayGrunnlagBuilder.getKladd().getRegisterVersjon(), VersjonTypeDto.REGISTER);
@@ -200,9 +199,9 @@ public class ForeslåBeregningsgrunnlagTest {
     @Test
     public void skalLageEnPeriode() {
         // Arrange
-        lagBehandling(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
+        lagBehandling(MÅNEDSINNTEKT1, MÅNEDSINNTEKT1,
                 Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
-        var im1 = testHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), BigDecimal.valueOf(MÅNEDSINNTEKT1 + 1000), null, null);
+        var im1 = testHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MÅNEDSINNTEKT1.adder(Beløp.fra(1000)), null, null);
         var inntektsmeldinger = List.of(im1);
         // Act
         BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, (FaktaAggregatDto) null);
@@ -218,18 +217,18 @@ public class ForeslåBeregningsgrunnlagTest {
                 BigDecimal.valueOf(81.004455200d), SammenligningsgrunnlagType.SAMMENLIGNING_AT_FL);
         BeregningsgrunnlagPeriodeDto periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE, 1);
-        verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), (MÅNEDSINNTEKT1 + 1000) * 12,
+        verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MÅNEDSINNTEKT1.adder(Beløp.fra(1000)).multipliser(12),
                 null, null);
     }
 
     @Test
     public void skalLageEnPeriodeNårNaturalytelseBortfallerPåSkjæringstidspunktet() {
         // Arrange
-        lagBehandling(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
+        lagBehandling(MÅNEDSINNTEKT1, MÅNEDSINNTEKT1,
                 Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
         splitBeregningsgrunnlagPeriode(beregningsgrunnlag, SKJÆRINGSTIDSPUNKT_BEREGNING, PeriodeÅrsak.NATURALYTELSE_BORTFALT);
-        var im1 = opprettInntektsmeldingNaturalytelseBortfaller(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
-                BigDecimal.valueOf(NATURALYTELSE_I_PERIODE_2), SKJÆRINGSTIDSPUNKT_BEREGNING);
+        var im1 = opprettInntektsmeldingNaturalytelseBortfaller(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MÅNEDSINNTEKT1,
+                NATURALYTELSE_I_PERIODE_2, SKJÆRINGSTIDSPUNKT_BEREGNING);
         var inntektsmeldinger = List.of(im1);
         // Act
         BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, (FaktaAggregatDto) null);
@@ -241,7 +240,7 @@ public class ForeslåBeregningsgrunnlagTest {
         BeregningsgrunnlagPeriodeDto periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE, 1, PeriodeÅrsak.NATURALYTELSE_BORTFALT);
         verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), ÅRSINNTEKT1,
-                NATURALYTELSE_I_PERIODE_2 * 12, null);
+                NATURALYTELSE_I_PERIODE_2.multipliser(12), null);
     }
 
     private BeregningsgrunnlagRegelResultat act(BeregningsgrunnlagDto beregningsgrunnlag, Collection<InntektsmeldingDto> inntektsmeldinger, FaktaAggregatDto faktaAggregat) {
@@ -269,11 +268,11 @@ public class ForeslåBeregningsgrunnlagTest {
     @Test
     public void skalLageToPerioderNaturalYtelseBortfaller() {
         // Arrange
-        lagBehandling(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
+        lagBehandling(MÅNEDSINNTEKT1, MÅNEDSINNTEKT1,
                 Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
         splitBeregningsgrunnlagPeriode(beregningsgrunnlag, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(4), PeriodeÅrsak.NATURALYTELSE_BORTFALT);
-        var im1 = opprettInntektsmeldingNaturalytelseBortfaller(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
-                BigDecimal.valueOf(NATURALYTELSE_I_PERIODE_2), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4));
+        var im1 = opprettInntektsmeldingNaturalytelseBortfaller(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MÅNEDSINNTEKT1,
+                NATURALYTELSE_I_PERIODE_2, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4));
         var inntektsmeldinger = List.of(im1);
         // Act
         BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, (FaktaAggregatDto) null);
@@ -288,17 +287,17 @@ public class ForeslåBeregningsgrunnlagTest {
         periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(1);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(4), TIDENES_ENDE, 1, PeriodeÅrsak.NATURALYTELSE_BORTFALT);
         verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), ÅRSINNTEKT1,
-                NATURALYTELSE_I_PERIODE_2 * 12, null);
+                NATURALYTELSE_I_PERIODE_2.multipliser(12), null);
     }
 
     @Test
     public void skalLageToPerioderNaturalYtelseTilkommer() {
         // Arrange
-        lagBehandling(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
+        lagBehandling(MÅNEDSINNTEKT1, MÅNEDSINNTEKT1,
                 Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
         splitBeregningsgrunnlagPeriode(beregningsgrunnlag, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(4), PeriodeÅrsak.NATURALYTELSE_TILKOMMER);
-        var im1 = opprettInntektsmeldingNaturalytelseTilkommer(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
-                BigDecimal.valueOf(NATURALYTELSE_I_PERIODE_2), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4));
+        var im1 = opprettInntektsmeldingNaturalytelseTilkommer(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MÅNEDSINNTEKT1,
+                NATURALYTELSE_I_PERIODE_2, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4));
         var inntektsmeldinger = List.of(im1);
 
         // Act
@@ -314,14 +313,14 @@ public class ForeslåBeregningsgrunnlagTest {
         periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(1);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(4), TIDENES_ENDE, 1, PeriodeÅrsak.NATURALYTELSE_TILKOMMER);
         verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), ÅRSINNTEKT1, null,
-                NATURALYTELSE_I_PERIODE_2 * 12);
+                NATURALYTELSE_I_PERIODE_2.multipliser(12));
     }
 
     @Test
     public void skalLageToPerioderKortvarigArbeidsforhold() {
         // Arrange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1);
-        lagBehandling(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
+        lagBehandling(MÅNEDSINNTEKT1, MÅNEDSINNTEKT1,
                 arbeidsgiver, MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
         BeregningsgrunnlagDto nyttGrunnlag = beregningsgrunnlag;
         FaktaAggregatDto faktaAggregat = lagFakta(arbeidsgiver, true, null);
@@ -348,12 +347,12 @@ public class ForeslåBeregningsgrunnlagTest {
     public void skalLageTrePerioderKortvarigArbeidsforholdOgNaturalYtelse() {
         // Arrange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1);
-        lagBehandling(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
+        lagBehandling(MÅNEDSINNTEKT1, MÅNEDSINNTEKT1,
                 arbeidsgiver, MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
         BeregningsgrunnlagDto nyttGrunnlag = beregningsgrunnlag;
         FaktaAggregatDto faktaAggregat = lagFakta(arbeidsgiver, true, null);
-        var im1 = opprettInntektsmeldingNaturalytelseBortfaller(arbeidsgiver, BigDecimal.valueOf(MÅNEDSINNTEKT1),
-                BigDecimal.valueOf(NATURALYTELSE_I_PERIODE_2), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(3));
+        var im1 = opprettInntektsmeldingNaturalytelseBortfaller(arbeidsgiver, MÅNEDSINNTEKT1,
+                NATURALYTELSE_I_PERIODE_2, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(3));
         splitBeregningsgrunnlagPeriode(nyttGrunnlag, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(3), PeriodeÅrsak.NATURALYTELSE_BORTFALT);
         lagKortvarigArbeidsforhold(nyttGrunnlag, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4).minusDays(1));
         var inntektsmeldinger = List.of(im1);
@@ -373,12 +372,12 @@ public class ForeslåBeregningsgrunnlagTest {
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(3), SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(4).minusDays(1), 1,
                 PeriodeÅrsak.NATURALYTELSE_BORTFALT);
         verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), arbeidsgiver, ÅRSINNTEKT1,
-                NATURALYTELSE_I_PERIODE_2 * 12, null);
+                NATURALYTELSE_I_PERIODE_2.multipliser(12), null);
 
         periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(2);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(4), TIDENES_ENDE, 1, PeriodeÅrsak.ARBEIDSFORHOLD_AVSLUTTET);
         verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), arbeidsgiver, ÅRSINNTEKT1,
-                NATURALYTELSE_I_PERIODE_2 * 12, null);
+                NATURALYTELSE_I_PERIODE_2.multipliser(12), null);
     }
 
     @Test
@@ -387,7 +386,7 @@ public class ForeslåBeregningsgrunnlagTest {
         BeregningsgrunnlagDto grunnlagFL = lagBeregningsgrunnlagFL();
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(grunnlagFL.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0))
                 .build(grunnlagFL.getBeregningsgrunnlagPerioder().get(0));
-        lagBehandlingFL(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1), ARBEIDSFORHOLD_ORGNR1);
+        lagBehandlingFL(MÅNEDSINNTEKT1, MÅNEDSINNTEKT1, ARBEIDSFORHOLD_ORGNR1);
         Collection<InntektsmeldingDto> inntektsmeldinger = List.of();
 
         // Act
@@ -408,7 +407,7 @@ public class ForeslåBeregningsgrunnlagTest {
         BeregningsgrunnlagDto grunnlagAT = lagBeregningsgrunnlagAT(false);
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(grunnlagAT.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0))
                 .build(grunnlagAT.getBeregningsgrunnlagPerioder().get(0));
-        lagBehandling(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1), privateArbeidsgiver,
+        lagBehandling(MÅNEDSINNTEKT1, MÅNEDSINNTEKT1, privateArbeidsgiver,
                 MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
         Collection<InntektsmeldingDto> inntektsmeldinger = List.of();
 
@@ -443,12 +442,12 @@ public class ForeslåBeregningsgrunnlagTest {
     public void skalLageToPerioderKortvarigArbeidsforholdHvorTomSammenfallerMedBortfallAvNaturalytelse() {
         // Arrange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1);
-        lagBehandling(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
+        lagBehandling(MÅNEDSINNTEKT1, MÅNEDSINNTEKT1,
                 arbeidsgiver, MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
         BeregningsgrunnlagDto nyttGrunnlag = beregningsgrunnlag;
         FaktaAggregatDto faktaAggregat = lagFakta(arbeidsgiver, true, null);
-        var im1 = opprettInntektsmeldingNaturalytelseBortfaller(arbeidsgiver, BigDecimal.valueOf(MÅNEDSINNTEKT1),
-                BigDecimal.valueOf(NATURALYTELSE_I_PERIODE_2), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4));
+        var im1 = opprettInntektsmeldingNaturalytelseBortfaller(arbeidsgiver, MÅNEDSINNTEKT1,
+                NATURALYTELSE_I_PERIODE_2, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4));
         splitBeregningsgrunnlagPeriode(nyttGrunnlag, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4), PeriodeÅrsak.NATURALYTELSE_BORTFALT);
         lagKortvarigArbeidsforhold(nyttGrunnlag, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4).minusDays(1));
         var inntektsmeldinger = List.of(im1);
@@ -468,13 +467,13 @@ public class ForeslåBeregningsgrunnlagTest {
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(4), TIDENES_ENDE, 1, PeriodeÅrsak.ARBEIDSFORHOLD_AVSLUTTET,
                 PeriodeÅrsak.NATURALYTELSE_BORTFALT);
         verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), arbeidsgiver, ÅRSINNTEKT1,
-                NATURALYTELSE_I_PERIODE_2 * 12, null);
+                NATURALYTELSE_I_PERIODE_2.multipliser(12), null);
     }
 
     @Test
     public void skalLageBeregningsgrunnlagMedTrePerioder() {
         // Arrange
-        lagBehandling(BigDecimal.valueOf(MÅNEDSINNTEKT1 + MÅNEDSINNTEKT2), BigDecimal.valueOf(MÅNEDSINNTEKT1 + MÅNEDSINNTEKT2),
+        lagBehandling(MÅNEDSINNTEKT1.adder(MÅNEDSINNTEKT2), MÅNEDSINNTEKT1.adder(MÅNEDSINNTEKT2),
                 Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(Optional.empty())
                 .medArbforholdType(OpptjeningAktivitetType.ARBEID)
@@ -485,10 +484,10 @@ public class ForeslåBeregningsgrunnlagTest {
                 .build(beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0));
         splitBeregningsgrunnlagPeriode(beregningsgrunnlag, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(2), PeriodeÅrsak.NATURALYTELSE_BORTFALT);
         splitBeregningsgrunnlagPeriode(beregningsgrunnlag, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4), PeriodeÅrsak.NATURALYTELSE_BORTFALT);
-        var im1 = opprettInntektsmeldingNaturalytelseBortfaller(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR2), BigDecimal.valueOf(MÅNEDSINNTEKT2),
-                BigDecimal.valueOf(NATURALYTELSE_I_PERIODE_2), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(2));
-        var im2 = opprettInntektsmeldingNaturalytelseBortfaller(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
-                BigDecimal.valueOf(NATURALYTELSE_I_PERIODE_3), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4));
+        var im1 = opprettInntektsmeldingNaturalytelseBortfaller(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR2), MÅNEDSINNTEKT2,
+                NATURALYTELSE_I_PERIODE_2, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(2));
+        var im2 = opprettInntektsmeldingNaturalytelseBortfaller(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MÅNEDSINNTEKT1,
+                NATURALYTELSE_I_PERIODE_3, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4));
         var inntektsmeldinger = List.of(im1, im2);
 
         // Act
@@ -510,21 +509,21 @@ public class ForeslåBeregningsgrunnlagTest {
                 PeriodeÅrsak.NATURALYTELSE_BORTFALT);
         verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), ÅRSINNTEKT1, null, null);
         verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(1), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR2), ÅRSINNTEKT2,
-                NATURALYTELSE_I_PERIODE_2 * 12, null);
+                NATURALYTELSE_I_PERIODE_2.multipliser(12), null);
 
         periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(2);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(4), TIDENES_ENDE, 2, PeriodeÅrsak.NATURALYTELSE_BORTFALT);
         verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), ÅRSINNTEKT1,
-                NATURALYTELSE_I_PERIODE_3 * 12, null);
+                NATURALYTELSE_I_PERIODE_3.multipliser(12), null);
         verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(1), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR2), ÅRSINNTEKT2,
-                NATURALYTELSE_I_PERIODE_2 * 12, null);
+                NATURALYTELSE_I_PERIODE_2.multipliser(12), null);
     }
 
     @Test
     public void skalLageBeregningsgrunnlagMedTrePerioderKortvarigFørNaturalytelse() {
         // Arrange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1);
-        lagBehandling(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
+        lagBehandling(MÅNEDSINNTEKT1, MÅNEDSINNTEKT1,
                 arbeidsgiver, MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
         FaktaAggregatDto faktaAggregat = lagFakta(arbeidsgiver, true, null);
         splitBeregningsgrunnlagPeriode(beregningsgrunnlag, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(3), PeriodeÅrsak.NATURALYTELSE_BORTFALT);
@@ -562,8 +561,8 @@ public class ForeslåBeregningsgrunnlagTest {
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
         OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), List.of());
-        BigDecimal inntektBeregnet = BigDecimal.valueOf(MÅNEDSINNTEKT1);
-        BigDecimal inntektSammenligningsgrunnlag = BigDecimal.valueOf(MÅNEDSINNTEKT1 * 2);
+        var inntektBeregnet = MÅNEDSINNTEKT1;
+        var inntektSammenligningsgrunnlag = MÅNEDSINNTEKT1.multipliser(2);
         lagBehandling(inntektSammenligningsgrunnlag, inntektBeregnet,
                 Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_2.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
         var im1 = testHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1),
@@ -586,9 +585,9 @@ public class ForeslåBeregningsgrunnlagTest {
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
         OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), List.of());
-        BigDecimal inntektBeregnet = BigDecimal.valueOf(70_000);
-        BigDecimal refusjon = BigDecimal.valueOf(50_000);
-        BigDecimal inntektSammenligningsgrunnlag = BigDecimal.valueOf(40_000);
+        var inntektBeregnet = Beløp.fra(70_000);
+        var refusjon = Beløp.fra(50_000);
+        var inntektSammenligningsgrunnlag = Beløp.fra(40_000);
         lagBehandling(inntektSammenligningsgrunnlag, inntektBeregnet,
                 Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_2.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
         var im1 = testHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1),
@@ -611,9 +610,9 @@ public class ForeslåBeregningsgrunnlagTest {
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
         OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), List.of());
-        BigDecimal inntektBeregnet = BigDecimal.valueOf(90_000);
-        BigDecimal refusjon = BigDecimal.valueOf(90_000);
-        BigDecimal inntektSammenligningsgrunnlag = BigDecimal.valueOf(40_000);
+        var inntektBeregnet = Beløp.fra(90_000);
+        var refusjon = Beløp.fra(90_000);
+        var inntektSammenligningsgrunnlag = Beløp.fra(40_000);
         lagBehandling(inntektSammenligningsgrunnlag, inntektBeregnet,
                 Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_2.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
         var im1 = testHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1),
@@ -636,17 +635,17 @@ public class ForeslåBeregningsgrunnlagTest {
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
         OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), List.of(periodeMedUtbetalingsgradDto.getPeriode()));
-        BigDecimal inntektBeregnet = BigDecimal.valueOf(MÅNEDSINNTEKT1);
-        BigDecimal inntektSammenligningsgrunnlag = BigDecimal.valueOf(MÅNEDSINNTEKT1 * 2);
-        BigDecimal refusjonskrav = BigDecimal.valueOf(MÅNEDSINNTEKT1).divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP);
+        var inntektBeregnet = MÅNEDSINNTEKT1;
+        var inntektSammenligningsgrunnlag = MÅNEDSINNTEKT1.multipliser(2);
+        var refusjonskrav = MÅNEDSINNTEKT1.map(v -> v.divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP));
         lagBehandling(inntektSammenligningsgrunnlag, inntektBeregnet,
                 Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_2.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
         var im1 = InntektsmeldingDtoBuilder.builder()
                 .medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1))
-                .medBeløp(Beløp.fra(inntektBeregnet))
-                .medRefusjon(Beløp.fra(refusjonskrav))
-                .leggTil(new RefusjonDto(Beløp.fra(inntektBeregnet), SKJÆRINGSTIDSPUNKT_BEREGNING.plusDays(4)))
-                .leggTil(new RefusjonDto(Beløp.fra(refusjonskrav), SKJÆRINGSTIDSPUNKT_BEREGNING.plusDays(8)))
+                .medBeløp(inntektBeregnet)
+                .medRefusjon(refusjonskrav)
+                .leggTil(new RefusjonDto(inntektBeregnet, SKJÆRINGSTIDSPUNKT_BEREGNING.plusDays(4)))
+                .leggTil(new RefusjonDto(refusjonskrav, SKJÆRINGSTIDSPUNKT_BEREGNING.plusDays(8)))
                 .build();
 
         var inntektsmeldinger = List.of(im1);
@@ -668,8 +667,8 @@ public class ForeslåBeregningsgrunnlagTest {
                 InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.FRILANS);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
         OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), List.of(periodeMedUtbetalingsgradDto.getPeriode()));
-        BigDecimal inntektBeregnet = BigDecimal.valueOf(MÅNEDSINNTEKT1);
-        BigDecimal inntektSammenligningsgrunnlag = BigDecimal.valueOf(MÅNEDSINNTEKT1 * 2);
+        var inntektBeregnet = MÅNEDSINNTEKT1;
+        var inntektSammenligningsgrunnlag = MÅNEDSINNTEKT1.multipliser(2);
 
         var inntektArbeidYtelseBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
         testHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_2.withDayOfMonth(1), ArbeidType.FRILANSER_OPPDRAGSTAKER);
@@ -692,11 +691,11 @@ public class ForeslåBeregningsgrunnlagTest {
     @Test
     public void skalIkkeReturnereAvklaringsbehovNårOmsorgspengerOgFlereArbeidsforholdMedAvvikOgEttKravMedFullRefusjon() {
         // Arrange
-        BigDecimal inntektBeregnetArbeidsgiver1 = BigDecimal.valueOf(40_000);
-        BigDecimal refusjon = BigDecimal.valueOf(40_000);
-        BigDecimal inntektSammenligningsgrunnlagArbeidsgiver1 = BigDecimal.valueOf(40_000);
-        BigDecimal inntektBeregnetArbeidsgiver2 = BigDecimal.valueOf(10_000);
-        BigDecimal inntektSammenligningsgrunnlagArbeidsgiver2 = BigDecimal.valueOf(80_000);
+        var inntektBeregnetArbeidsgiver1 = Beløp.fra(40_000);
+        var refusjon =  Beløp.fra(40_000);
+        var inntektSammenligningsgrunnlagArbeidsgiver1 =  Beløp.fra(40_000);
+        var inntektBeregnetArbeidsgiver2 =  Beløp.fra(10_000);
+        var inntektSammenligningsgrunnlagArbeidsgiver2 =  Beløp.fra(80_000);
 
         LocalDate fraOgMed = MINUS_YEARS_2.withDayOfMonth(1);
         LocalDate tilOgMed = MINUS_YEARS_1.withDayOfMonth(1).plusYears(2);
@@ -749,17 +748,17 @@ public class ForeslåBeregningsgrunnlagTest {
         assertThat(periode.getPeriodeÅrsaker()).containsExactlyInAnyOrder(forventedePeriodeÅrsaker);
     }
 
-    private void verifiserSammenligningsgrunnlag(SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlag, double rapportertPrÅr, LocalDate fom,
+    private void verifiserSammenligningsgrunnlag(SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlag, Beløp rapportertPrÅr, LocalDate fom,
                                                  LocalDate tom, BigDecimal avvikPromille, SammenligningsgrunnlagType forventetType) {
-        assertThat(sammenligningsgrunnlag.getRapportertPrÅr().verdi().doubleValue()).isEqualTo(rapportertPrÅr);
+        assertThat(sammenligningsgrunnlag.getRapportertPrÅr()).isEqualTo(rapportertPrÅr);
         assertThat(sammenligningsgrunnlag.getSammenligningsperiodeFom()).isEqualTo(fom);
         assertThat(sammenligningsgrunnlag.getSammenligningsperiodeTom()).isEqualTo(tom);
         assertThat(sammenligningsgrunnlag.getSammenligningsgrunnlagType()).isEqualTo(forventetType);
         assertThat(sammenligningsgrunnlag.getAvvikPromilleNy().compareTo(avvikPromille)).isEqualTo(0);
     }
 
-    private void verifiserBGAT(BeregningsgrunnlagPrStatusOgAndelDto bgpsa, Arbeidsgiver arbeidsgiver, double årsinntekt,
-                               Double naturalytelseBortfaltPrÅr, Double naturalytelseTilkommerPrÅr) {
+    private void verifiserBGAT(BeregningsgrunnlagPrStatusOgAndelDto bgpsa, Arbeidsgiver arbeidsgiver, Beløp årsinntekt,
+                               Beløp naturalytelseBortfaltPrÅr, Beløp naturalytelseTilkommerPrÅr) {
         assertThat(bgpsa.getAktivitetStatus()).isEqualTo(AktivitetStatus.ARBEIDSTAKER);
         assertThat(bgpsa.getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.ARBEIDSTAKER);
         assertThat(bgpsa.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver))
@@ -770,25 +769,25 @@ public class ForeslåBeregningsgrunnlagTest {
                 .as("gjelderSpesifiktArbeidsforhold").isFalse();
         assertThat(bgpsa.getArbeidsforholdType()).isEqualTo(OpptjeningAktivitetType.ARBEID);
         assertThat(bgpsa.getAvkortetPrÅr()).isNull();
-        assertThat(bgpsa.getBeregnetPrÅr().verdi().doubleValue()).isEqualTo(årsinntekt);
-        assertThat(bgpsa.getBruttoPrÅr().verdi().doubleValue()).isEqualTo(årsinntekt);
+        assertThat(bgpsa.getBeregnetPrÅr()).isEqualTo(årsinntekt);
+        assertThat(bgpsa.getBruttoPrÅr()).isEqualTo(årsinntekt);
         assertThat(bgpsa.getOverstyrtPrÅr()).isNull();
         if (naturalytelseBortfaltPrÅr == null) {
             assertThat(bgpsa.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseBortfaltPrÅr)).as("naturalytelseBortfalt").isEmpty();
         } else {
             assertThat(bgpsa.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseBortfaltPrÅr)).as("naturalytelseBortfalt")
-                    .hasValueSatisfying(naturalytelse -> assertThat(naturalytelse.verdi().doubleValue()).isEqualTo(naturalytelseBortfaltPrÅr));
+                    .hasValueSatisfying(naturalytelse -> assertThat(naturalytelse).isEqualTo(naturalytelseBortfaltPrÅr));
         }
         if (naturalytelseTilkommerPrÅr == null) {
             assertThat(bgpsa.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseTilkommetPrÅr)).as("naturalytelseTilkommer").isEmpty();
         } else {
             assertThat(bgpsa.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseTilkommetPrÅr)).as("naturalytelseTilkommer")
-                    .hasValueSatisfying(naturalytelse -> assertThat(naturalytelse.verdi().doubleValue()).isEqualTo(naturalytelseTilkommerPrÅr));
+                    .hasValueSatisfying(naturalytelse -> assertThat(naturalytelse).isEqualTo(naturalytelseTilkommerPrÅr));
         }
         assertThat(bgpsa.getRedusertPrÅr()).isNull();
     }
 
-    private void verifiserBGFL(BeregningsgrunnlagPrStatusOgAndelDto bgpsa, Arbeidsgiver arbeidsgiver, double årsinntekt) {
+    private void verifiserBGFL(BeregningsgrunnlagPrStatusOgAndelDto bgpsa, Arbeidsgiver arbeidsgiver, Beløp årsinntekt) {
         assertThat(bgpsa.getAktivitetStatus()).isEqualTo(AktivitetStatus.FRILANSER);
         assertThat(bgpsa.getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.FRILANSER);
         assertThat(bgpsa.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver))
@@ -799,20 +798,20 @@ public class ForeslåBeregningsgrunnlagTest {
                 .as("gjelderSpesifiktArbeidsforhold").isFalse();
         assertThat(bgpsa.getArbeidsforholdType()).isEqualTo(OpptjeningAktivitetType.FRILANS);
         assertThat(bgpsa.getAvkortetPrÅr()).isNull();
-        assertThat(bgpsa.getBeregnetPrÅr().verdi().doubleValue()).isEqualTo(årsinntekt);
-        assertThat(bgpsa.getBruttoPrÅr().verdi().doubleValue()).as("BruttoPrÅr").isEqualTo(årsinntekt);
+        assertThat(bgpsa.getBeregnetPrÅr()).isEqualTo(årsinntekt);
+        assertThat(bgpsa.getBruttoPrÅr()).as("BruttoPrÅr").isEqualTo(årsinntekt);
         assertThat(bgpsa.getOverstyrtPrÅr()).as("OverstyrtPrÅr").isNull();
         assertThat(bgpsa.getRedusertPrÅr()).isNull();
     }
 
-    private InntektsmeldingDto opprettInntektsmeldingNaturalytelseBortfaller(Arbeidsgiver arbeidsgiver, BigDecimal inntektInntektsmelding, BigDecimal naturalytelseBortfaller,
+    private InntektsmeldingDto opprettInntektsmeldingNaturalytelseBortfaller(Arbeidsgiver arbeidsgiver, Beløp inntektInntektsmelding, Beløp naturalytelseBortfaller,
                                                                              LocalDate naturalytelseBortfallerDato) {
         return testHjelper.opprettInntektsmeldingMedRefusjonskrav(arbeidsgiver, inntektInntektsmelding,
                 new NaturalYtelseDto(TIDENES_BEGYNNELSE, naturalytelseBortfallerDato.minusDays(1), naturalytelseBortfaller, NaturalYtelseType.ANNET),
                 null);
     }
 
-    private InntektsmeldingDto opprettInntektsmeldingNaturalytelseTilkommer(Arbeidsgiver arbeidsgiver, BigDecimal inntektInntektsmelding, BigDecimal naturalytelseTilkommer,
+    private InntektsmeldingDto opprettInntektsmeldingNaturalytelseTilkommer(Arbeidsgiver arbeidsgiver, Beløp inntektInntektsmelding, Beløp naturalytelseTilkommer,
                                                                             LocalDate naturalytelseTilkommerDato) {
         return testHjelper.opprettInntektsmeldingMedRefusjonskrav(arbeidsgiver, inntektInntektsmelding,
                 new NaturalYtelseDto(naturalytelseTilkommerDato, TIDENES_ENDE, naturalytelseTilkommer, NaturalYtelseType.ANNET), null);

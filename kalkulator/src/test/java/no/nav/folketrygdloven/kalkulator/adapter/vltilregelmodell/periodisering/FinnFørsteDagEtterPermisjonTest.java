@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,6 +16,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDtoBuilde
 import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonFilter;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PermisjonsbeskrivelseType;
 
@@ -67,7 +67,7 @@ class FinnFørsteDagEtterPermisjonTest {
         return PermisjonDtoBuilder.ny()
                 .medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
                 .medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.PERMISJON)
-                .medProsentsats(BigDecimal.valueOf(100));
+                .medProsentsats(Stillingsprosent.HUNDRED);
     }
 
     private YrkesaktivitetDto lagYA(String orgnr, InternArbeidsforholdRefDto ref, LocalDate fom, LocalDate tom, PermisjonDtoBuilder... permisjoner) {

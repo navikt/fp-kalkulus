@@ -31,6 +31,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidsforholdHandlingType;
@@ -128,7 +129,7 @@ public class BeregningIAYTestUtil {
     private static YtelseAnvistDto lagYtelseAnvist(Periode periode, YtelseDtoBuilder ytelseBuilder) {
         return ytelseBuilder.getAnvistBuilder()
             .medAnvistPeriode(Intervall.fraOgMedTilOgMed(periode.getFom(), periode.getTom()))
-            .medUtbetalingsgradProsent(BigDecimal.valueOf(100))
+            .medUtbetalingsgradProsent(Stillingsprosent.HUNDRED)
             .medDagsats(Beløp.fra(1000))
             .medBeløp(Beløp.fra(10000))
             .build();

@@ -69,13 +69,13 @@ class BeregningsgrunnlagDiffSjekkerTest {
     public void skalReturnereTrueOmUlikeGrunnbeløp() {
         // Arrange
         BeregningsgrunnlagDto aktivt = BeregningsgrunnlagDto.builder()
-                .medGrunnbeløp(BigDecimal.TEN)
+                .medGrunnbeløp(Beløp.fra(10))
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.FRILANSER))
                 .medSkjæringstidspunkt(LocalDate.now())
                 .build();
 
         BeregningsgrunnlagDto forrige = BeregningsgrunnlagDto.builder()
-                .medGrunnbeløp(BigDecimal.ONE)
+                .medGrunnbeløp(Beløp.fra(1))
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.FRILANSER))
                 .medSkjæringstidspunkt(LocalDate.now())
                 .build();

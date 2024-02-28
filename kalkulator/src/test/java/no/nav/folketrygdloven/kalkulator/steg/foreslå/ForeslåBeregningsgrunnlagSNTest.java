@@ -41,9 +41,9 @@ import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 @ExtendWith(MockitoExtension.class)
 public class ForeslåBeregningsgrunnlagSNTest {
 
-    private static final double MÅNEDSINNTEKT1 = 12345d;
+    private static final Beløp MÅNEDSINNTEKT1 = Beløp.fra(12345);
 
-    private static final double BEREGNINGSGRUNNLAG = 148989.08d;
+    private static final Beløp BEREGNINGSGRUNNLAG = Beløp.fra(BigDecimal.valueOf(148989.08d));
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.MAY, 10);
 
@@ -65,7 +65,7 @@ public class ForeslåBeregningsgrunnlagSNTest {
             .medRegisterAktiviteter(beregningAktiviteter)
             .medBeregningsgrunnlag(beregningsgrunnlag);
         InntektArbeidYtelseAggregatBuilder registerBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
-        testHjelper.lagBehandlingForSN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1), 2014, registerBuilder);
+        testHjelper.lagBehandlingForSN(MÅNEDSINNTEKT1.multipliser(12), 2014, registerBuilder);
         Collection<InntektsmeldingDto> inntektsmeldinger = List.of();
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
             .medData(registerBuilder)
@@ -102,7 +102,7 @@ public class ForeslåBeregningsgrunnlagSNTest {
         assertThat(periode.getBeregningsgrunnlagPeriodeFom()).isEqualTo(fom);
         assertThat(periode.getBeregningsgrunnlagPeriodeTom()).isEqualTo(tom);
         assertThat(periode.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(antallAndeler);
-        assertThat(periode.getBruttoPrÅr().verdi().doubleValue()).isCloseTo(BEREGNINGSGRUNNLAG, within(0.01));
+        assertThat(periode.getBruttoPrÅr().verdi().doubleValue()).isCloseTo(BEREGNINGSGRUNNLAG.verdi().doubleValue(), within(0.01));
         assertThat(periode.getRedusertPrÅr()).isNull();
         assertThat(periode.getAvkortetPrÅr()).isNull();
     }
@@ -113,8 +113,8 @@ public class ForeslåBeregningsgrunnlagSNTest {
         assertThat(bgpsa.getBeregningsperiodeTom()).isEqualTo(LocalDate.of(2016, Month.DECEMBER, 31));
         assertThat(bgpsa.getBgAndelArbeidsforhold()).isEmpty();
         assertThat(bgpsa.getArbeidsforholdType()).isEqualTo(OpptjeningAktivitetType.UDEFINERT);
-        assertThat(bgpsa.getBeregnetPrÅr().verdi().doubleValue()).isCloseTo(BEREGNINGSGRUNNLAG, within(0.01));
-        assertThat(bgpsa.getBruttoPrÅr().verdi().doubleValue()).isCloseTo(BEREGNINGSGRUNNLAG, within(0.01));
+        assertThat(bgpsa.getBeregnetPrÅr().verdi().doubleValue()).isCloseTo(BEREGNINGSGRUNNLAG.verdi().doubleValue(), within(0.01));
+        assertThat(bgpsa.getBruttoPrÅr().verdi().doubleValue()).isCloseTo(BEREGNINGSGRUNNLAG.verdi().doubleValue(), within(0.01));
         assertThat(bgpsa.getOverstyrtPrÅr()).isNull();
         assertThat(bgpsa.getRedusertPrÅr()).isNull();
         assertThat(bgpsa.getAvkortetPrÅr()).isNull();

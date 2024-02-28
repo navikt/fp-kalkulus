@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -22,6 +21,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAktivitetHandlingType;
@@ -168,7 +168,7 @@ class ErFjernetIOverstyrtTest {
     }
 
     private void lagPermisjonForAG(YrkesaktivitetDtoBuilder ya, LocalDate fom, LocalDate tom) {
-        ya.leggTilPermisjon(PermisjonDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom)).medProsentsats(BigDecimal.valueOf(100)).medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.VELFERDSPERMISJON));
+        ya.leggTilPermisjon(PermisjonDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom)).medProsentsats(Stillingsprosent.HUNDRED).medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.VELFERDSPERMISJON));
     }
 
     private YrkesaktivitetDtoBuilder lagYrkesaktivitet(Arbeidsgiver ag, InternArbeidsforholdRefDto ref) {

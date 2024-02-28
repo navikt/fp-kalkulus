@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.testutilities;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 
@@ -30,26 +29,26 @@ public class TestHjelper {
     public TestHjelper() {
     }
 
-    private InntektsmeldingDto lagInntektsmelding(BigDecimal beløp,
+    private InntektsmeldingDto lagInntektsmelding(Beløp beløp,
                                                   Arbeidsgiver arbeidsgiver,
-                                                  BigDecimal refusjonskrav, NaturalYtelseDto naturalYtelse) {
+                                                  Beløp refusjonskrav, NaturalYtelseDto naturalYtelse) {
         InntektsmeldingDtoBuilder inntektsmeldingBuilder = InntektsmeldingDtoBuilder.builder();
         inntektsmeldingBuilder.medStartDatoPermisjon(SKJÆRINGSTIDSPUNKT_OPPTJENING);
-        inntektsmeldingBuilder.medBeløp(Beløp.fra(beløp));
+        inntektsmeldingBuilder.medBeløp(beløp);
         if (naturalYtelse != null) {
             inntektsmeldingBuilder.leggTil(naturalYtelse);
         }
         if (refusjonskrav != null) {
-            inntektsmeldingBuilder.medRefusjon(Beløp.fra(refusjonskrav));
+            inntektsmeldingBuilder.medRefusjon(refusjonskrav);
         }
         inntektsmeldingBuilder.medArbeidsgiver(arbeidsgiver);
         return inntektsmeldingBuilder.build();
     }
 
-    public InntektArbeidYtelseAggregatBuilder initBehandlingFor_AT_SN(BigDecimal skattbarInntekt,
+    public InntektArbeidYtelseAggregatBuilder initBehandlingFor_AT_SN(Beløp skattbarInntekt,
                                                                       int førsteÅr, LocalDate skjæringstidspunkt, String virksomhetOrgnr,
-                                                                      BigDecimal inntektSammenligningsgrunnlag,
-                                                                      BigDecimal inntektBeregningsgrunnlag,
+                                                                      Beløp inntektSammenligningsgrunnlag,
+                                                                      Beløp inntektBeregningsgrunnlag,
                                                                       InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseBuilder) {
         InntektArbeidYtelseAggregatBuilder register = InntektArbeidYtelseAggregatBuilder.oppdatere(inntektArbeidYtelseBuilder.getKladd().getRegisterVersjon(), VersjonTypeDto.REGISTER);
         for (LocalDate året = LocalDate.of(førsteÅr, Month.JANUARY, 1); året.getYear() < førsteÅr + 3; året = året.plusYears(1)) {
@@ -71,7 +70,7 @@ public class TestHjelper {
         return register;
     }
 
-    public void lagBehandlingForSN(BigDecimal skattbarInntekt,
+    public void lagBehandlingForSN(Beløp skattbarInntekt,
                                    int førsteÅr, InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder) {
         for (LocalDate året = LocalDate.of(førsteÅr, Month.JANUARY, 1); året.getYear() < førsteÅr + 3; året = året.plusYears(1)) {
             lagInntektForSN(inntektArbeidYtelseAggregatBuilder, året, skattbarInntekt);
@@ -79,11 +78,11 @@ public class TestHjelper {
     }
 
     private void lagInntektForSN(InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder,
-                                 LocalDate år, BigDecimal årsinntekt) {
+                                 LocalDate år, Beløp årsinntekt) {
         InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder aktørInntektBuilder = inntektArbeidYtelseAggregatBuilder.getAktørInntektBuilder();
         InntektDtoBuilder inntektBuilder = aktørInntektBuilder.getInntektBuilder(InntektskildeType.SIGRUN, null);
         InntektspostDtoBuilder inntektspost = InntektspostDtoBuilder.ny()
-                .medBeløp(Beløp.fra(årsinntekt))
+                .medBeløp(årsinntekt)
                 .medPeriode(år.withMonth(1).withDayOfMonth(1), år.withMonth(12).withDayOfMonth(31))
                 .medInntektspostType(InntektspostType.SELVSTENDIG_NÆRINGSDRIVENDE);
         inntektBuilder.leggTilInntektspost(inntektspost);
@@ -91,8 +90,8 @@ public class TestHjelper {
         inntektArbeidYtelseAggregatBuilder.leggTilAktørInntekt(aktørInntektBuilder);
     }
 
-    public InntektArbeidYtelseAggregatBuilder initBehandlingFL(BigDecimal inntektSammenligningsgrunnlag,
-                                                               BigDecimal inntektFrilans,
+    public InntektArbeidYtelseAggregatBuilder initBehandlingFL(Beløp inntektSammenligningsgrunnlag,
+                                                               Beløp inntektFrilans,
                                                                String virksomhetOrgnr, LocalDate fraOgMed, LocalDate tilOgMed, InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder) {
 
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(virksomhetOrgnr);
@@ -133,7 +132,7 @@ public class TestHjelper {
 
     public void lagInntektForSammenligning(InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder,
                                            LocalDate fom,
-                                           LocalDate tom, BigDecimal månedsbeløp, Arbeidsgiver arbeidsgiver) {
+                                           LocalDate tom, Beløp månedsbeløp, Arbeidsgiver arbeidsgiver) {
         OpptjeningsnøkkelDto opptjeningsnøkkel = OpptjeningsnøkkelDto.forArbeidsgiver(arbeidsgiver);
 
         InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder aktørInntektBuilder = inntektArbeidYtelseAggregatBuilder.getAktørInntektBuilder();
@@ -141,7 +140,7 @@ public class TestHjelper {
         InntektskildeType kilde = InntektskildeType.INNTEKT_SAMMENLIGNING;
         InntektDtoBuilder inntektBuilder = aktørInntektBuilder.getInntektBuilder(kilde, opptjeningsnøkkel);
         InntektspostDtoBuilder inntektspost = InntektspostDtoBuilder.ny()
-                .medBeløp(Beløp.fra(månedsbeløp))
+                .medBeløp(månedsbeløp)
                 .medPeriode(fom, tom)
                 .medInntektspostType(InntektspostType.LØNN);
         inntektBuilder.leggTilInntektspost(inntektspost).medArbeidsgiver(arbeidsgiver);
@@ -151,7 +150,7 @@ public class TestHjelper {
 
     public void lagInntektForArbeidsforhold(InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder,
                                             LocalDate fom,
-                                            LocalDate tom, BigDecimal månedsbeløp, Arbeidsgiver arbeidsgiver) {
+                                            LocalDate tom, Beløp månedsbeløp, Arbeidsgiver arbeidsgiver) {
         OpptjeningsnøkkelDto opptjeningsnøkkel = OpptjeningsnøkkelDto.forArbeidsgiver(arbeidsgiver);
 
         InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder aktørInntektBuilder = inntektArbeidYtelseAggregatBuilder.getAktørInntektBuilder();
@@ -159,7 +158,7 @@ public class TestHjelper {
         InntektskildeType kilde = InntektskildeType.INNTEKT_BEREGNING;
         InntektDtoBuilder inntektBuilder = aktørInntektBuilder.getInntektBuilder(kilde, opptjeningsnøkkel);
         InntektspostDtoBuilder inntektspost = InntektspostDtoBuilder.ny()
-                .medBeløp(Beløp.fra(månedsbeløp))
+                .medBeløp(månedsbeløp)
                 .medPeriode(fom, tom)
                 .medInntektspostType(InntektspostType.LØNN);
         inntektBuilder.leggTilInntektspost(inntektspost).medArbeidsgiver(arbeidsgiver);
@@ -169,7 +168,7 @@ public class TestHjelper {
 
     void lagInntektForOpptjening(InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder,
                                  LocalDate fom,
-                                 LocalDate tom, BigDecimal månedsbeløp, String virksomhetOrgnr) {
+                                 LocalDate tom, Beløp månedsbeløp, String virksomhetOrgnr) {
         OpptjeningsnøkkelDto opptjeningsnøkkel = OpptjeningsnøkkelDto.forOrgnummer(virksomhetOrgnr);
 
         InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder aktørInntektBuilder = inntektArbeidYtelseAggregatBuilder.getAktørInntektBuilder();
@@ -177,7 +176,7 @@ public class TestHjelper {
         InntektskildeType kilde = InntektskildeType.INNTEKT_OPPTJENING;
         InntektDtoBuilder inntektBuilder = aktørInntektBuilder.getInntektBuilder(kilde, opptjeningsnøkkel);
         InntektspostDtoBuilder inntektspost = InntektspostDtoBuilder.ny()
-                .medBeløp(Beløp.fra(månedsbeløp))
+                .medBeløp(månedsbeløp)
                 .medPeriode(fom, tom)
                 .medInntektspostType(InntektspostType.LØNN);
         inntektBuilder.leggTilInntektspost(inntektspost)
@@ -186,9 +185,9 @@ public class TestHjelper {
         inntektArbeidYtelseAggregatBuilder.leggTilAktørInntekt(aktørInntektBuilder);
     }
 
-    public InntektsmeldingDto opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver arbeidsgiver, BigDecimal inntektInntektsmelding,
+    public InntektsmeldingDto opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver arbeidsgiver, Beløp inntektInntektsmelding,
                                                                      NaturalYtelseDto naturalYtelse,
-                                                                     BigDecimal refusjonskrav) {
+                                                                     Beløp refusjonskrav) {
         return lagInntektsmelding(inntektInntektsmelding,
                 arbeidsgiver,
                 refusjonskrav,

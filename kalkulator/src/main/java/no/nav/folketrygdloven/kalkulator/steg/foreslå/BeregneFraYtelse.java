@@ -171,7 +171,7 @@ public class BeregneFraYtelse {
     }
 
     private static Beløp finnDirekteUtbetaltBeløp(int antallVirkedagerOverlapperMedBP, int virkedagerIAnvistPeriode, AnvistAndel anvist) {
-        BigDecimal direkteUtbetalingProsent = BigDecimal.valueOf(100).subtract(anvist.getRefusjonsgrad().getVerdi());
+        BigDecimal direkteUtbetalingProsent = BigDecimal.valueOf(100).subtract(anvist.getRefusjonsgrad().verdi());
         BigDecimal direkteUtbetalingGrad = direkteUtbetalingProsent.divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
         return anvist.getBeløp()
                 .multipliser(direkteUtbetalingGrad)

@@ -39,6 +39,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Fakta
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaArbeidsforholdEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.FaktaVurdering;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class BehandlingslagerTilKalkulusMapper {
 
@@ -90,7 +91,7 @@ public class BehandlingslagerTilKalkulusMapper {
     public static BeregningsgrunnlagDto mapBeregningsgrunnlag(BeregningsgrunnlagEntitet beregningsgrunnlagFraFagsystem) {
         BeregningsgrunnlagDto.Builder builder = BeregningsgrunnlagDto.builder();
 
-        builder.medGrunnbeløp(beregningsgrunnlagFraFagsystem.getGrunnbeløp().getVerdi());
+        builder.medGrunnbeløp(Beløp.fra(beregningsgrunnlagFraFagsystem.getGrunnbeløp().getVerdi()));
         builder.medOverstyring(beregningsgrunnlagFraFagsystem.isOverstyrt());
 
         builder.medSkjæringstidspunkt(beregningsgrunnlagFraFagsystem.getSkjæringstidspunkt());

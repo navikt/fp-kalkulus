@@ -52,6 +52,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningIAYTestUtil;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -124,7 +125,7 @@ public class FordelPerioderTjenesteTest {
                 .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
                 .leggTilAktivitetsAvtale(aaBuilder1);
         if (permisjonperiode != null) {
-            yaBuilder.leggTilPermisjon(PermisjonDtoBuilder.ny().medProsentsats(BigDecimal.valueOf(100)).medPeriode(permisjonperiode).medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.VELFERDSPERMISJON));
+            yaBuilder.leggTilPermisjon(PermisjonDtoBuilder.ny().medProsentsats(Stillingsprosent.HUNDRED).medPeriode(permisjonperiode).medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.VELFERDSPERMISJON));
         }
         aktørArbeidBuilder.leggTilYrkesaktivitet(yaBuilder);
         return arbeidsgiver;

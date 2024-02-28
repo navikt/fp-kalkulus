@@ -49,7 +49,7 @@ import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 @ExtendWith(MockitoExtension.class)
 public class VurderBeregningsgrunnlagTjenesteTest {
 
-    private static final double MÅNEDSINNTEKT1 = 12345d;
+    private static final Beløp MÅNEDSINNTEKT1 = Beløp.fra(12345);
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.MAY, 10);
     private static final LocalDate SKJÆRINGSTIDSPUNKT_BEREGNING = SKJÆRINGSTIDSPUNKT_OPPTJENING;
 
@@ -73,7 +73,7 @@ public class VurderBeregningsgrunnlagTjenesteTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = grunnlagDtoBuilder
                 .build(BeregningsgrunnlagTilstand.FORESLÅTT);
         InntektArbeidYtelseAggregatBuilder registerBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
-        testHjelper.lagBehandlingForSN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1), 2015, registerBuilder);
+        testHjelper.lagBehandlingForSN(MÅNEDSINNTEKT1.multipliser(12), 2015, registerBuilder);
         KoblingReferanse ref = lagReferanseMedSkjæringstidspunkt(koblingReferanse);
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         var iayGrunnlag = iayGrunnlagBuilder.medData(registerBuilder).medInntektsmeldinger(inntektsmeldinger).build();
@@ -107,7 +107,7 @@ public class VurderBeregningsgrunnlagTjenesteTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = grunnlagDtoBuilder
                 .build(BeregningsgrunnlagTilstand.FORESLÅTT);
         InntektArbeidYtelseAggregatBuilder registerBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
-        testHjelper.lagBehandlingForSN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1), 2015, registerBuilder);
+        testHjelper.lagBehandlingForSN(MÅNEDSINNTEKT1.multipliser(12), 2015, registerBuilder);
 
         KoblingReferanse ref = lagReferanseMedSkjæringstidspunkt(koblingReferanse);
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
@@ -140,7 +140,7 @@ public class VurderBeregningsgrunnlagTjenesteTest {
                 .build();
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_BEREGNING)
-                .medGrunnbeløp(BigDecimal.valueOf(600_000))
+                .medGrunnbeløp(Beløp.fra(600_000))
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
                 .leggTilSammenligningsgrunnlag(sg)
                 .build();

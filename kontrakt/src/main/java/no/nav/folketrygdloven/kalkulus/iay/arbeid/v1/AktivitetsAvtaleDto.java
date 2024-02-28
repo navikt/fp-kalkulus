@@ -1,13 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.iay.arbeid.v1;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -15,7 +8,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+import no.nav.folketrygdloven.kalkulus.iay.IayProsent;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
@@ -31,18 +27,9 @@ public class AktivitetsAvtaleDto {
     @Valid
     private LocalDate sisteLønnsendringsdato;
 
-
-    /**
-     * Det går an å ha stillingprosent mer enn 100%, men innsendingsfeil hos LPS leverandører og manglende Altinn validering
-     * gjør at i noen historiske tilfeller har man akseptert innsending opp til 500% (typisk skjedd når man har tastet inn ett ukesverks antall
-     * timer i dag-felt i de systemene).
-     */
     @JsonProperty("stillingsprosent")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 3, fraction = 2)
-    private BigDecimal stillingsprosent;
+    private IayProsent stillingsprosent;
 
     protected AktivitetsAvtaleDto() {
         // default ctor
@@ -50,7 +37,7 @@ public class AktivitetsAvtaleDto {
 
     public AktivitetsAvtaleDto(@Valid @NotNull Periode periode,
                                @Valid LocalDate sisteLønnsendringsdato,
-                               @Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "1000.00", message = "verdien ${validatedValue} må være <= {value}") BigDecimal stillingsprosent) {
+                               @Valid IayProsent stillingsprosent) {
         this.periode = periode;
         this.sisteLønnsendringsdato = sisteLønnsendringsdato;
         this.stillingsprosent = stillingsprosent;
@@ -60,7 +47,7 @@ public class AktivitetsAvtaleDto {
         return periode;
     }
 
-    public BigDecimal getStillingsprosent() {
+    public IayProsent getStillingsprosent() {
         return stillingsprosent;
     }
 

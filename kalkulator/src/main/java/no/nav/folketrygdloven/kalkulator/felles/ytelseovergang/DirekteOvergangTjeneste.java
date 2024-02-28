@@ -19,6 +19,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
@@ -129,23 +130,23 @@ public class DirekteOvergangTjeneste {
     }
 
     private static Beløp finnDirekteUtbetaltDagsats(AnvistAndel a) {
-        return a.getDagsats().multipliser(BigDecimal.valueOf(100).subtract(a.getRefusjonsgrad().getVerdi()).divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP));
+        return a.getDagsats().multipliser(BigDecimal.valueOf(100).subtract(a.getRefusjonsgrad().verdi()).divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP));
     }
 
     private static boolean erDirekteUtbetalingUtenArbeidsgiver(AnvistAndel a) {
         return a.getInntektskategori().equals(Inntektskategori.ARBEIDSTAKER) &&
                 a.getArbeidsgiver().isEmpty() &&
-                a.getRefusjonsgrad().getVerdi().compareTo(BigDecimal.valueOf(100)) < 0;
+                a.getRefusjonsgrad().compareTo(Stillingsprosent.HUNDRED) < 0;
     }
 
     private static boolean erDirekteutbetaling(AnvistAndel a) {
-        return !a.getInntektskategori().equals(Inntektskategori.ARBEIDSTAKER) || a.getRefusjonsgrad().getVerdi().compareTo(BigDecimal.valueOf(100)) < 0;
+        return !a.getInntektskategori().equals(Inntektskategori.ARBEIDSTAKER) || a.getRefusjonsgrad().compareTo(Stillingsprosent.fra(100)) < 0;
     }
 
     private static boolean erDirekteutbetalingForArbeidsgiver(Arbeidsgiver arbeidsgiver, AnvistAndel a) {
         return a.getArbeidsgiver().isPresent() &&
                 a.getArbeidsgiver().get().equals(arbeidsgiver) &&
-                a.getRefusjonsgrad().getVerdi().compareTo(BigDecimal.valueOf(100)) < 0;
+                a.getRefusjonsgrad().compareTo(Stillingsprosent.HUNDRED) < 0;
     }
 
 

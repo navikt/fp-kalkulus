@@ -284,7 +284,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
     private no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto lagBeregningsgrunnlag(Arbeidsgiver arbeidsgiver) {
         var beregningsgrunnlag = no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
-                .medGrunnbeløp(GRUNNBELØP)
+                .medGrunnbeløp(Beløp.fra(GRUNNBELØP))
                 .leggTilSammenligningsgrunnlag(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto.builder()
                         .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT)
                         .medRapportertPrÅr(RAPPORTERT_PR_AAR)
@@ -306,7 +306,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
     private no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto lagBeregningsgrunnlagMedFlereAndeler(Arbeidsgiver arbeidsgiver) {
         var beregningsgrunnlag = no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
-                .medGrunnbeløp(GRUNNBELØP)
+                .medGrunnbeløp(Beløp.fra(GRUNNBELØP))
                 .leggTilSammenligningsgrunnlag(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto.builder()
                         .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT)
                         .medRapportertPrÅr(RAPPORTERT_PR_AAR)

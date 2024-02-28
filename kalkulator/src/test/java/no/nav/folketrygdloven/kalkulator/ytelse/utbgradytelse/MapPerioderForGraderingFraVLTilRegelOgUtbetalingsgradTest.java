@@ -9,8 +9,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
-
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AktivitetStatusV2;
@@ -50,6 +48,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulus.typer.Beløp;
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
 public class MapPerioderForGraderingFraVLTilRegelOgUtbetalingsgradTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019, 1, 1);
@@ -297,7 +296,7 @@ public class MapPerioderForGraderingFraVLTilRegelOgUtbetalingsgradTest {
 
     private BeregningsgrunnlagDto lagBgMedEnAndel(Arbeidsgiver ag1, InternArbeidsforholdRefDto arbeidsforholdRef) {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
-                .medGrunnbeløp(BigDecimal.valueOf(99000))
+                .medGrunnbeløp(Beløp.fra(99000))
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
                 .build();
         BeregningsgrunnlagPeriodeDto periodeDto = BeregningsgrunnlagPeriodeDto.ny()

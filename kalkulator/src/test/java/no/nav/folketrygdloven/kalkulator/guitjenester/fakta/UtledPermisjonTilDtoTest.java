@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -24,10 +23,12 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PermisjonsbeskrivelseType;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 public class UtledPermisjonTilDtoTest {
@@ -77,7 +78,7 @@ public class UtledPermisjonTilDtoTest {
         AktivitetsAvtaleDtoBuilder aa = lagAktivitetsAvtaleBuilder(yaBuilder, fom, tom);
         YrkesaktivitetDtoBuilder ya = lagYrkesaktivitetBuilder(yaBuilder, aa, arbeidsgiver, ref);
         ya.leggTilPermisjon(PermisjonDtoBuilder.ny().medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.ANNEN_PERMISJON_LOVFESTET).medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
-                .medProsentsats(BigDecimal.valueOf(100)));
+                .medProsentsats(Stillingsprosent.HUNDRED));
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(List.of(ya));
 
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagGrunnlag(aktørArbeidBuilder);
@@ -104,7 +105,7 @@ public class UtledPermisjonTilDtoTest {
         AktivitetsAvtaleDtoBuilder aa = lagAktivitetsAvtaleBuilder(yaBuilder, fom, tom);
         YrkesaktivitetDtoBuilder ya = lagYrkesaktivitetBuilder(yaBuilder, aa, arbeidsgiver, ref);
         ya.leggTilPermisjon(PermisjonDtoBuilder.ny().medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.ANNEN_PERMISJON_LOVFESTET).medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
-                .medProsentsats(BigDecimal.valueOf(100)));
+                .medProsentsats(Stillingsprosent.HUNDRED));
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(List.of(ya));
 
 
@@ -132,7 +133,7 @@ public class UtledPermisjonTilDtoTest {
         AktivitetsAvtaleDtoBuilder aa = lagAktivitetsAvtaleBuilder(yaBuilder, fom, tom);
         YrkesaktivitetDtoBuilder ya = lagYrkesaktivitetBuilder(yaBuilder, aa, arbeidsgiver, ref);
         ya.leggTilPermisjon(PermisjonDtoBuilder.ny().medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.ANNEN_PERMISJON_LOVFESTET).medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
-                .medProsentsats(BigDecimal.valueOf(99)));
+                .medProsentsats(Stillingsprosent.fra(99)));
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(List.of(ya));
 
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagGrunnlag(aktørArbeidBuilder);
@@ -159,7 +160,7 @@ public class UtledPermisjonTilDtoTest {
         AktivitetsAvtaleDtoBuilder aa = lagAktivitetsAvtaleBuilder(yaBuilder, fom, tom);
         YrkesaktivitetDtoBuilder ya = lagYrkesaktivitetBuilder(yaBuilder, aa, arbeidsgiver, ref);
         ya.leggTilPermisjon(PermisjonDtoBuilder.ny().medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.ANNEN_PERMISJON_LOVFESTET).medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
-                .medProsentsats(BigDecimal.valueOf(100)));
+                .medProsentsats(Stillingsprosent.HUNDRED));
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(List.of(ya));
 
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagGrunnlag(aktørArbeidBuilder);
@@ -208,7 +209,7 @@ public class UtledPermisjonTilDtoTest {
     private BGAndelArbeidsforholdDto lagBGAndelArbeidsforhold(Optional<Arbeidsgiver> arbeidsgiverOpt, InternArbeidsforholdRefDto ref) {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
-            .medGrunnbeløp(BigDecimal.valueOf(500_000))
+            .medGrunnbeløp(Beløp.fra(500_000))
             .build();
         BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)

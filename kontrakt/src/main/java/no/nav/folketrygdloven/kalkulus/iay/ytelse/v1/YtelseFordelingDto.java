@@ -43,10 +43,6 @@ public class YtelseFordelingDto {
     protected YtelseFordelingDto() {
     }
 
-    public YtelseFordelingDto(Aktør arbeidsgiver, InntektPeriodeType inntektPeriodeType, int beløp, Boolean erRefusjon) {
-        this(arbeidsgiver, inntektPeriodeType, BigDecimal.valueOf(beløp), erRefusjon);
-    }
-
     public YtelseFordelingDto(Aktør arbeidsgiver, InntektPeriodeType inntektPeriodeType, BigDecimal beløp, Boolean erRefusjon) {
         this(arbeidsgiver, inntektPeriodeType, beløp == null ? null : Beløp.fra(beløp.setScale(2, RoundingMode.HALF_UP)), erRefusjon);
     }

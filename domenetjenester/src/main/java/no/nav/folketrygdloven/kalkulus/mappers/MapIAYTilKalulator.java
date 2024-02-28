@@ -34,6 +34,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
@@ -215,7 +216,7 @@ public class MapIAYTilKalulator {
     private static PermisjonDtoBuilder mapPermisjon(PermisjonDto permisjon) {
         return PermisjonDtoBuilder.ny()
                 .medPeriode(Intervall.fraOgMedTilOgMed(permisjon.getPeriode().getFom(), permisjon.getPeriode().getTom()))
-                .medProsentsats(permisjon.getProsentsats())
+                .medProsentsats(Stillingsprosent.fra(permisjon.getProsentsats()))
                 .medPermisjonsbeskrivelseType(permisjon.getPermisjonsbeskrivelseType());
     }
 
@@ -333,9 +334,7 @@ public class MapIAYTilKalulator {
         if (ytelseAnvist.getDagsats() != null) {
             builder.medDagsats(ytelseAnvist.getDagsats().getBeløp());
         }
-        if (ytelseAnvist.getUtbetalingsgradProsent() != null) {
-            builder.medUtbetalingsgradProsent(ytelseAnvist.getUtbetalingsgradProsent());
-        }
+        builder.medUtbetalingsgradProsent(Stillingsprosent.fra(ytelseAnvist.getUtbetalingsgradProsent()));
         builder.medAnvisteAndeler(AnvistAndelMapper.mapAnvisteAndeler(ytelseAnvist));
         return builder.build();
     }

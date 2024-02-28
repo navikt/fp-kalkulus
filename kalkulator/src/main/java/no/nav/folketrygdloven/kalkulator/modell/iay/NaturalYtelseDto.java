@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -17,10 +16,6 @@ public class NaturalYtelseDto {
     private NaturalYtelseType type = NaturalYtelseType.UDEFINERT;
 
     NaturalYtelseDto() {
-    }
-
-    public NaturalYtelseDto(LocalDate fom, LocalDate tom, BigDecimal beloepPerMnd, NaturalYtelseType type) {
-        this(Intervall.fraOgMedTilOgMed(fom, tom), Beløp.fra(beloepPerMnd), type);
     }
 
     public NaturalYtelseDto(LocalDate fom, LocalDate tom, Beløp beloepPerMnd, NaturalYtelseType type) {

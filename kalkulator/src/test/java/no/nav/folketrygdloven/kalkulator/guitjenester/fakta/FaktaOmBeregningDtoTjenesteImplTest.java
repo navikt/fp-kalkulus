@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,7 +22,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
-import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
@@ -32,6 +30,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class FaktaOmBeregningDtoTjenesteImplTest {
 
@@ -136,7 +135,7 @@ public class FaktaOmBeregningDtoTjenesteImplTest {
         BeregningsgrunnlagDto beregningsgrunnlagDto = oppdatere
             .getBeregningsgrunnlagBuilder()
             .medSkjæringstidspunkt(LocalDate.now().minusDays(5))
-            .medGrunnbeløp(BigDecimal.valueOf(90000))
+            .medGrunnbeløp(Beløp.fra(90000))
             .leggTilFaktaOmBeregningTilfeller(tilfeller)
             .build();
 

@@ -46,6 +46,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.ArbeidstakerUtenInntektsmeldingAndelDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.VurderMottarYtelseDto;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 public class VurderMottarYtelseDtoTjenesteTest {
@@ -72,7 +73,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
     public void setUp() {
         beregningsgrunnlag = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
-                .medGrunnbeløp(BigDecimal.valueOf(91425L))
+                .medGrunnbeløp(Beløp.fra(91425))
                 .leggTilFaktaOmBeregningTilfeller(Collections.singletonList(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE))
                 .build();
         periode = BeregningsgrunnlagPeriodeDto.ny()

@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.modell.iay.permisjon;
 
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
@@ -73,7 +72,7 @@ public final class PermisjonPerYrkesaktivitet {
         return Set.of(Intervall.fraOgMedTilOgMed(it.getPeriode().getFomDato(), it.getPeriode().getTomDato()));
     }
 
-    private static boolean erStørreEllerLik100Prosent(BigDecimal prosentsats) {
-        return Stillingsprosent.HUNDRED.getVerdi().intValue() <= prosentsats.intValue();
+    private static boolean erStørreEllerLik100Prosent(Stillingsprosent prosentsats) {
+        return prosentsats.compareTo(Stillingsprosent.HUNDRED) >= 0;
     }
 }

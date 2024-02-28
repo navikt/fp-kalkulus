@@ -4,7 +4,6 @@ import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_BEGYNNELSE;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,6 +34,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.permisjon.PermisjonDtoBuilde
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
@@ -469,7 +469,7 @@ class FastsettSkjæringstidspunktOgStatuserK14Test {
                 .medArbeidsforholdId(ref)
                 .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
 
-        var perm = PermisjonDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fomPerm, tomPerm)).medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.ANNEN_PERMISJON_LOVFESTET).medProsentsats(BigDecimal.valueOf(100));
+        var perm = PermisjonDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(fomPerm, tomPerm)).medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.ANNEN_PERMISJON_LOVFESTET).medProsentsats(Stillingsprosent.HUNDRED);
         yaBuilder.leggTilPermisjon(perm);
 
         var aaBuilder = yaBuilder.getAktivitetsAvtaleBuilder().medPeriode(Intervall.fraOgMedTilOgMed(fom, tom)).medErAnsettelsesPeriode(true);

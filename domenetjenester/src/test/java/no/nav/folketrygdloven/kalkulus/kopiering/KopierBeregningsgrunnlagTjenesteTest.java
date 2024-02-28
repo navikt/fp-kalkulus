@@ -42,6 +42,7 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+import no.nav.folketrygdloven.kalkulus.iay.IayProsent;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidDto;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.YrkesaktivitetDto;
@@ -233,7 +234,7 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
     private BeregningsgrunnlagGrunnlagBuilder byggGrunnlag(int verdi) {
         BeregningsgrunnlagEntitet bg = BeregningsgrunnlagEntitet.builder()
                 .medSkjæringstidspunkt(STP)
-                .medGrunnbeløp(BigDecimal.valueOf(100_000))
+                .medGrunnbeløp(new Beløp(100000))
                 .build();
         BeregningsgrunnlagPeriode.builder()
                 .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
@@ -261,7 +262,7 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         iayGrunnlag.medArbeidDto(
                 new ArbeidDto(List.of(new YrkesaktivitetDto(organisasjon, ref,
                         ArbeidType.ORDINÆRT_ARBEIDSFORHOLD,
-                        List.of(new AktivitetsAvtaleDto(periode, null, BigDecimal.valueOf(100)),
+                        List.of(new AktivitetsAvtaleDto(periode, null, IayProsent.fra(100)),
                                 new AktivitetsAvtaleDto(periode, null, null))))));
         iayGrunnlag.medYtelserDto(new YtelserDto(byggYtelseDto()));
         iayGrunnlag.medInntekterDto(
@@ -276,12 +277,12 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
     }
 
     private List<YtelseDto> byggYtelseDto() {
-        YtelseAnvistDto ytelseAnvistDto = new YtelseAnvistDto(periode, beløpDto, beløpDto, BigDecimal.TEN,
+        YtelseAnvistDto ytelseAnvistDto = new YtelseAnvistDto(periode, beløpDto, beløpDto, IayProsent.fra(10),
                 List.of(new AnvistAndel(new Organisasjon("974652269"),
                         new InternArbeidsforholdRefDto("r8j3wr8w3"),
                         beløpDto,
-                        BigDecimal.valueOf(100),
-                        BigDecimal.valueOf(100),
+                        IayProsent.fra(100),
+                        IayProsent.fra(100),
                         Inntektskategori.ARBEIDSTAKER)));
         return List.of(new YtelseDto(beløpDto, Set.of(ytelseAnvistDto), YtelseType.FORELDREPENGER,
                 periode,

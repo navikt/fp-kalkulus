@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
-
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -46,6 +44,7 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
@@ -54,6 +53,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PermisjonsbeskrivelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulus.typer.Beløp;
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
 class MapRefusjonPerioderFraVLTilRegelUtbgradTest {
 
@@ -190,7 +190,7 @@ class MapRefusjonPerioderFraVLTilRegelUtbgradTest {
                 .leggTilBeregningsgrunnlagPrStatusOgAndel(andel);
         BeregningsgrunnlagDto beregningsgrunnlagDto = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(stp)
-                .medGrunnbeløp(BigDecimal.valueOf(99000))
+                .medGrunnbeløp(Beløp.fra(99000))
                 .leggTilBeregningsgrunnlagPeriode(bgperiode)
                 .build();
         BeregningsgrunnlagGrunnlagDtoBuilder bg = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
@@ -253,7 +253,7 @@ class MapRefusjonPerioderFraVLTilRegelUtbgradTest {
                 .medArbeidsforholdId(InternArbeidsforholdRefDto.nullRef());
         if (permisjonsperiode != null) {
             builder.leggTilPermisjon(PermisjonDtoBuilder.ny().medPeriode(permisjonsperiode)
-                    .medProsentsats(BigDecimal.valueOf(100))
+                    .medProsentsats(Stillingsprosent.HUNDRED)
                     .medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.VELFERDSPERMISJON));
         }
         builder.leggTilAktivitetsAvtale(aktivitetsavtale);

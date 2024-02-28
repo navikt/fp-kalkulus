@@ -14,6 +14,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
@@ -185,7 +186,7 @@ public class BeregningUtilsTest {
     private YtelseAnvistDto lagMeldekort(BigDecimal utbetalingsgrad, LocalDate fom, LocalDate tom) {
         return YtelseDtoBuilder.ny().getAnvistBuilder()
             .medAnvistPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
-            .medUtbetalingsgradProsent(utbetalingsgrad).build();
+            .medUtbetalingsgradProsent(Stillingsprosent.fra(utbetalingsgrad)).build();
     }
 
 

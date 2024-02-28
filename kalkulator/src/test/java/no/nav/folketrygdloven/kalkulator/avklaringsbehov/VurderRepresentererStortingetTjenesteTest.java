@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
@@ -24,6 +23,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class VurderRepresentererStortingetTjenesteTest {
 
@@ -215,7 +215,7 @@ class VurderRepresentererStortingetTjenesteTest {
     private BeregningsgrunnlagGrunnlagDto lagBeregningsgrunnlag(List<Intervall> perioder) {
         var bgBuilder = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(perioder.stream().map(Intervall::getFomDato).min(Comparator.naturalOrder()).orElse(null))
-                .medGrunnbeløp(BigDecimal.valueOf(100_000));
+                .medGrunnbeløp(Beløp.fra(100_000));
         perioder.forEach(p -> {
             var periodeBuilder = new BeregningsgrunnlagPeriodeDto.Builder();
             periodeBuilder.medBeregningsgrunnlagPeriode(p.getFomDato(), p.getTomDato());

@@ -6,7 +6,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +43,7 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.forvaltning.ResetGrunnlagTjeneste;
+import no.nav.folketrygdloven.kalkulus.iay.IayProsent;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidDto;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.YrkesaktivitetDto;
@@ -215,7 +215,7 @@ class KopierOgResetRestTjenesteTest extends EntityManagerAwareTest {
     private BeregningsgrunnlagGrunnlagBuilder byggGrunnlag(int verdi) {
         BeregningsgrunnlagEntitet bg = BeregningsgrunnlagEntitet.builder()
                 .medSkjæringstidspunkt(STP)
-                .medGrunnbeløp(BigDecimal.valueOf(100_000))
+                .medGrunnbeløp(new Beløp(100_000))
                 .build();
         BeregningsgrunnlagPeriode.builder()
                 .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
@@ -243,7 +243,7 @@ class KopierOgResetRestTjenesteTest extends EntityManagerAwareTest {
         iayGrunnlag.medArbeidDto(
                 new ArbeidDto(List.of(new YrkesaktivitetDto(organisasjon, ref,
                         ArbeidType.ORDINÆRT_ARBEIDSFORHOLD,
-                        List.of(new AktivitetsAvtaleDto(periode, null, BigDecimal.valueOf(100)),
+                        List.of(new AktivitetsAvtaleDto(periode, null, IayProsent.fra(100)),
                                 new AktivitetsAvtaleDto(periode, null, null))))));
         iayGrunnlag.medYtelserDto(new YtelserDto(byggYtelseDto()));
         iayGrunnlag.medInntekterDto(
@@ -258,12 +258,12 @@ class KopierOgResetRestTjenesteTest extends EntityManagerAwareTest {
     }
 
     private List<YtelseDto> byggYtelseDto() {
-        YtelseAnvistDto ytelseAnvistDto = new YtelseAnvistDto(periode, beløpDto, beløpDto, BigDecimal.TEN,
+        YtelseAnvistDto ytelseAnvistDto = new YtelseAnvistDto(periode, beløpDto, beløpDto, IayProsent.fra(10),
                 List.of(new AnvistAndel(new Organisasjon("974652269"),
                         new InternArbeidsforholdRefDto("r8j3wr8w3"),
                         beløpDto,
-                        BigDecimal.valueOf(100),
-                        BigDecimal.valueOf(100),
+                        IayProsent.fra(100),
+                        IayProsent.fra(100),
                         Inntektskategori.ARBEIDSTAKER)));
         return List.of(new YtelseDto(beløpDto, Set.of(ytelseAnvistDto), YtelseType.FORELDREPENGER,
                 periode,

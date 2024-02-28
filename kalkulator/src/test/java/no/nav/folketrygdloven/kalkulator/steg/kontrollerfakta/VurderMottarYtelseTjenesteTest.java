@@ -68,7 +68,7 @@ public class VurderMottarYtelseTjenesteTest {
     public void setUp() {
         beregningsgrunnlag = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
-                .medGrunnbeløp(BigDecimal.valueOf(91425L))
+                .medGrunnbeløp(Beløp.fra(91425))
                 .build();
         periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
@@ -298,7 +298,7 @@ public class VurderMottarYtelseTjenesteTest {
                         .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny()
                                 .medBeløp(Beløp.fra(10))
                                 .medDagsats(Beløp.fra(10))
-                                .medUtbetalingsgradProsent(BigDecimal.valueOf(100))
+                                .medUtbetalingsgradProsent(Stillingsprosent.HUNDRED)
                                 .medAnvistPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10), SKJÆRINGSTIDSPUNKT_OPPTJENING))
                                 .medAnvisteAndeler(List.of(lagAnvistAndelFrilans()))
                                 .build()));
@@ -312,7 +312,7 @@ public class VurderMottarYtelseTjenesteTest {
                                 .medBeløp(Beløp.fra(10))
                                 .medDagsats(Beløp.fra(10))
                                 .medAnvistPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10), SKJÆRINGSTIDSPUNKT_OPPTJENING))
-                                .medUtbetalingsgradProsent(BigDecimal.valueOf(100))
+                                .medUtbetalingsgradProsent(Stillingsprosent.HUNDRED)
                                 .medAnvisteAndeler(List.of(lagAnvistAndelArbeid(arbeidsgiver, fullRefusjon)))
                                 .build()));
     }
@@ -320,7 +320,7 @@ public class VurderMottarYtelseTjenesteTest {
     private AnvistAndel lagAnvistAndelArbeid(Arbeidsgiver arbeidsgiver, boolean fullRefusjon) {
         return new AnvistAndel(arbeidsgiver,
                 Beløp.fra(10),
-                fullRefusjon ? Stillingsprosent.HUNDRED : new Stillingsprosent(BigDecimal.TEN),
+                fullRefusjon ? Stillingsprosent.HUNDRED : Stillingsprosent.fra(BigDecimal.TEN),
                 Inntektskategori.ARBEIDSTAKER);
     }
 

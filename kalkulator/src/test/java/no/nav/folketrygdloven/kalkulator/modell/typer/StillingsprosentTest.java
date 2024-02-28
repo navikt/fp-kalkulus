@@ -14,11 +14,4 @@ class StillingsprosentTest {
 
         assertThat(stillingsprosent).isEqualTo(Stillingsprosent.ZERO);
     }
-
-    @Test
-    void ikke_mer_enn_500() {
-        var stillingsprosent = new Stillingsprosent(new BigDecimal(600));
-
-        assertThat(stillingsprosent).isEqualTo(new Stillingsprosent(500));
-    }
 }

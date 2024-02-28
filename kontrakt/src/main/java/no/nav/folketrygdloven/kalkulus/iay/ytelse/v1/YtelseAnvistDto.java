@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.iay.ytelse.v1;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -10,12 +9,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+import no.nav.folketrygdloven.kalkulus.iay.IayProsent;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.ALWAYS, content = Include.ALWAYS)
@@ -36,10 +33,7 @@ public class YtelseAnvistDto {
 
     @JsonProperty("utbetalingsgradProsent")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "500.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 3, fraction = 2)
-    private BigDecimal utbetalingsgradProsent;
+    private IayProsent utbetalingsgradProsent;
 
     @JsonProperty("anvisteAndeler")
     @Size()
@@ -54,7 +48,7 @@ public class YtelseAnvistDto {
     public YtelseAnvistDto(Periode anvistPeriode,
                            BeløpDto beløp,
                            BeløpDto dagsats,
-                           BigDecimal utbetalingsgradProsent,
+                           IayProsent utbetalingsgradProsent,
                            List<AnvistAndel> anvisteAndeler) {
         this.anvistPeriode = anvistPeriode;
         this.beløp = beløp;
@@ -75,7 +69,7 @@ public class YtelseAnvistDto {
         return dagsats;
     }
 
-    public BigDecimal getUtbetalingsgradProsent() {
+    public IayProsent getUtbetalingsgradProsent() {
         return utbetalingsgradProsent;
     }
 

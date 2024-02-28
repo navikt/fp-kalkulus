@@ -186,7 +186,7 @@ public class BesteberegningInntektDtoForAndelTjenesteTest {
     private void lagBGPeriode() {
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
-                .medGrunnbeløp(BigDecimal.valueOf(91425L))
+                .medGrunnbeløp(Beløp.fra(91425))
                 .build();
         periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)

@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulus.beregning;
 import static java.util.Optional.empty;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
@@ -66,6 +65,7 @@ import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulus.tjeneste.extensions.JpaExtension;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
+import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.k9.felles.konfigurasjon.konfig.Tid;
 import no.nav.k9.felles.testutilities.cdi.CdiAwareExtension;
 import no.nav.k9.felles.testutilities.db.EntityManagerAwareTest;
@@ -382,7 +382,7 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
     private BeregningsgrunnlagGrunnlagDtoBuilder lagBG(String orgnr, boolean medFaktaAggregat) {
         var bg = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(STP)
-                .medGrunnbeløp(BigDecimal.valueOf(99_000))
+                .medGrunnbeløp(Beløp.fra(99_000))
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
                 .build();
         var periode = BeregningsgrunnlagPeriodeDto.ny().medBeregningsgrunnlagPeriode(STP, null).build(bg);

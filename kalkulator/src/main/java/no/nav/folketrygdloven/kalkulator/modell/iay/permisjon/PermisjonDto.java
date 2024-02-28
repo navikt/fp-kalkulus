@@ -1,8 +1,8 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay.permisjon;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
+import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PermisjonsbeskrivelseType;
 
@@ -11,7 +11,7 @@ public class PermisjonDto {
 
     private Intervall periode;
 
-    private BigDecimal prosentsats;
+    private Stillingsprosent prosentsats;
 
     private PermisjonsbeskrivelseType permisjonsbeskrivelseType;
 
@@ -20,7 +20,7 @@ public class PermisjonDto {
     }
 
     public PermisjonDto(Intervall periode,
-                        BigDecimal prosentsats,
+                        Stillingsprosent prosentsats,
                         PermisjonsbeskrivelseType permisjonsbeskrivelseType) {
         this.periode = periode;
         this.prosentsats = prosentsats;
@@ -41,11 +41,11 @@ public class PermisjonDto {
         this.periode = periode;
     }
 
-    public BigDecimal getProsentsats() {
+    public Stillingsprosent getProsentsats() {
         return prosentsats;
     }
 
-    public void setProsentsats(BigDecimal prosentsats) {
+    public void setProsentsats(Stillingsprosent prosentsats) {
         this.prosentsats = prosentsats;
     }
 

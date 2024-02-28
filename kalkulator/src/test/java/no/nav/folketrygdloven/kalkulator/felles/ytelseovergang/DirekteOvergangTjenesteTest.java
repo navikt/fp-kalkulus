@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.felles.ytelseovergang;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -53,7 +52,7 @@ class DirekteOvergangTjenesteTest {
         var fom = LocalDate.now();
         var periode = Intervall.fraOgMedTilOgMed(fom, fom.plusDays(5));
         var arbeidsgiver = Arbeidsgiver.virksomhet("12345587");
-        var ytelse = lagYtelse(periode, List.of(arbeidstakerAndel(arbeidsgiver, new Stillingsprosent(0))));
+        var ytelse = lagYtelse(periode, List.of(arbeidstakerAndel(arbeidsgiver, Stillingsprosent.ZERO)));
         var tidslinje = DirekteOvergangTjeneste.direkteUtbetalingTidslinje(List.of(ytelse), y -> alwaysTrue());
 
         var segmenter = tidslinje.toSegments();
@@ -72,7 +71,7 @@ class DirekteOvergangTjenesteTest {
         var fom = LocalDate.now();
         var periode = Intervall.fraOgMedTilOgMed(fom, fom.plusDays(5));
         var arbeidsgiver = Arbeidsgiver.virksomhet("12345587");
-        var ytelse = lagYtelse(periode, List.of(arbeidstakerAndel(arbeidsgiver, new Stillingsprosent(50))));
+        var ytelse = lagYtelse(periode, List.of(arbeidstakerAndel(arbeidsgiver, Stillingsprosent.fra(50))));
         var tidslinje = DirekteOvergangTjeneste.direkteUtbetalingTidslinje(List.of(ytelse), y -> alwaysTrue());
 
         var segmenter = tidslinje.toSegments();
@@ -91,7 +90,7 @@ class DirekteOvergangTjenesteTest {
         var fom = LocalDate.now();
         var periode = Intervall.fraOgMedTilOgMed(fom, fom.plusDays(5));
         var arbeidsgiver = Arbeidsgiver.virksomhet("12345587");
-        var ytelse = lagYtelse(periode, List.of(arbeidstakerAndel(arbeidsgiver, new Stillingsprosent(100))));
+        var ytelse = lagYtelse(periode, List.of(arbeidstakerAndel(arbeidsgiver, Stillingsprosent.HUNDRED)));
         var tidslinje = DirekteOvergangTjeneste.direkteUtbetalingTidslinje(List.of(ytelse), y -> alwaysTrue());
 
         assertThat(tidslinje.isEmpty()).isTrue();
@@ -133,7 +132,7 @@ class DirekteOvergangTjenesteTest {
         var arbeidsgiver1 = Arbeidsgiver.virksomhet("12345587");
         var arbeidsgiver2 = Arbeidsgiver.virksomhet("76345114");
 
-        var ytelse = lagYtelse(periode, List.of(arbeidstakerAndel(arbeidsgiver1, new Stillingsprosent(0)), arbeidstakerAndel(arbeidsgiver2, new Stillingsprosent(0))));
+        var ytelse = lagYtelse(periode, List.of(arbeidstakerAndel(arbeidsgiver1, Stillingsprosent.ZERO), arbeidstakerAndel(arbeidsgiver2, Stillingsprosent.ZERO)));
         var tidslinje = DirekteOvergangTjeneste.direkteUtbetalingTidslinje(List.of(ytelse), y -> alwaysTrue());
 
         var segmenter = tidslinje.toSegments();
@@ -169,13 +168,13 @@ class DirekteOvergangTjenesteTest {
                 .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode1)
                         .medBeløp(Beløp.fra(5000))
                         .medDagsats(Beløp.fra(1000))
-                        .medUtbetalingsgradProsent(BigDecimal.valueOf(100))
-                        .medAnvisteAndeler(List.of(arbeidstakerAndel(arbeidsgiver1, new Stillingsprosent(0)), arbeidstakerAndel(arbeidsgiver2, new Stillingsprosent(0)))).build())
+                        .medUtbetalingsgradProsent(Stillingsprosent.HUNDRED)
+                        .medAnvisteAndeler(List.of(arbeidstakerAndel(arbeidsgiver1, Stillingsprosent.ZERO), arbeidstakerAndel(arbeidsgiver2, Stillingsprosent.ZERO))).build())
                 .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode2)
                         .medBeløp(Beløp.fra(5000))
                         .medDagsats(Beløp.fra(1000))
-                        .medUtbetalingsgradProsent(BigDecimal.valueOf(100))
-                        .medAnvisteAndeler(List.of(arbeidstakerAndel(arbeidsgiver1, new Stillingsprosent(0)))).build()).build();
+                        .medUtbetalingsgradProsent(Stillingsprosent.HUNDRED)
+                        .medAnvisteAndeler(List.of(arbeidstakerAndel(arbeidsgiver1, Stillingsprosent.ZERO))).build()).build();
 
         var tidslinje = DirekteOvergangTjeneste.direkteUtbetalingTidslinje(List.of(ytelse), y -> alwaysTrue());
 
@@ -207,7 +206,7 @@ class DirekteOvergangTjenesteTest {
     }
 
     private static AnvistAndel frilansAndel() {
-        return new AnvistAndel(null, InternArbeidsforholdRefDto.nullRef(), Beløp.fra(5000), Beløp.fra(1000), new Stillingsprosent(0), Inntektskategori.FRILANSER);
+        return new AnvistAndel(null, InternArbeidsforholdRefDto.nullRef(), Beløp.fra(5000), Beløp.fra(1000), Stillingsprosent.ZERO, Inntektskategori.FRILANSER);
     }
 
     private static AnvistAndel arbeidstakerAndel(Arbeidsgiver arbeidgiver, Stillingsprosent refusjonsgrad) {
@@ -221,7 +220,7 @@ class DirekteOvergangTjenesteTest {
                 .leggTilYtelseAnvist(YtelseAnvistDtoBuilder.ny().medAnvistPeriode(periode)
                         .medBeløp(Beløp.fra(5000))
                         .medDagsats(Beløp.fra(1000))
-                        .medUtbetalingsgradProsent(BigDecimal.valueOf(100))
+                        .medUtbetalingsgradProsent(Stillingsprosent.HUNDRED)
                         .medAnvisteAndeler(andeler).build()).build();
     }
 

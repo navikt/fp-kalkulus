@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay.permisjon;
 
-import java.math.BigDecimal;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PermisjonsbeskrivelseType;
 
@@ -21,7 +21,7 @@ public class PermisjonDtoBuilder {
         return this;
     }
 
-    public PermisjonDtoBuilder medProsentsats(BigDecimal prosentsats) {
+    public PermisjonDtoBuilder medProsentsats(Stillingsprosent prosentsats) {
         this.permisjon.setProsentsats(prosentsats);
         return this;
     }

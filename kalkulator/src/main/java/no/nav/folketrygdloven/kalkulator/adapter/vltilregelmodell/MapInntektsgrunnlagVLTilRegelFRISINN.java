@@ -135,7 +135,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN implements MapInntektsgrunnlag
 
     private boolean harHattUtbetalingForPeriode(YtelseAnvistDto ytelse) {
         return ytelse.getUtbetalingsgradProsent()
-                .map(beløp -> !beløp.erNulltall())
+                .map(beløp -> !beløp.erNullEller0())
                 .orElse(false);
     }
 
@@ -143,7 +143,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN implements MapInntektsgrunnlag
         return Periodeinntekt.builder()
                 .medInntektskildeOgPeriodeType(erAAPEllerDP(ytelsetype) ? Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP : Inntektskilde.ANNEN_YTELSE)
                 .medInntekt(Beløp.safeVerdi(finnBeløp(anvist, vedtaksDagsats)))
-                .medUtbetalingsfaktor(erAAPEllerDP(ytelsetype) ? anvist.getUtbetalingsgradProsent().map(Stillingsprosent::getVerdi)
+                .medUtbetalingsfaktor(erAAPEllerDP(ytelsetype) ? anvist.getUtbetalingsgradProsent().map(Stillingsprosent::verdi)
                         .map(s -> s.divide(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG, 10, RoundingMode.HALF_UP)).orElseThrow() : BigDecimal.ONE)
                 .medPeriode(Periode.of(anvist.getAnvistFOM(), anvist.getAnvistTOM()))
                 .build();

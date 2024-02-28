@@ -112,7 +112,7 @@ public class YrkesaktivitetFilterDto {
         if (arbeidsforholdOverstyringer != null) {
             var overstyringer = arbeidsforholdOverstyringer.getOverstyringer()
                     .stream()
-                    .filter(os -> os.getStillingsprosent() != null && os.getStillingsprosent().getVerdi() != null)
+                    .filter(os -> os.getStillingsprosent() != null && os.getStillingsprosent().verdi() != null)
                     .collect(Collectors.toList());
             for (var arbeidsforholdOverstyringEntitet : overstyringer) {
                 var yrkesaktivitetBuilder = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())

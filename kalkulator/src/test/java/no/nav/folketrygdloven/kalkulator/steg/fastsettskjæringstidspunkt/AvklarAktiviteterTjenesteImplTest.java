@@ -5,7 +5,6 @@ import static no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType.V
 import static no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType.ARBEIDSAVKLARINGSPENGER;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -23,6 +22,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.typer.Beløp;
@@ -257,7 +257,7 @@ public class AvklarAktiviteterTjenesteImplTest {
     private YtelseAnvistDto lagYtelseAnvist(YtelseDtoBuilder ytelseBuilder, Periode periode, int utbetalingsgrad) {
         return ytelseBuilder.getAnvistBuilder()
             .medAnvistPeriode(Intervall.fraOgMedTilOgMed(periode.getFom(), periode.getTom()))
-            .medUtbetalingsgradProsent(BigDecimal.valueOf(utbetalingsgrad))
+            .medUtbetalingsgradProsent(Stillingsprosent.fra(utbetalingsgrad))
             .medDagsats(Beløp.fra(1000))
             .medBeløp(Beløp.fra(10000))
             .build();

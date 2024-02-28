@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
-
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
@@ -42,6 +40,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.Omsorg
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.YtelsespesifiktGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.typer.Beløp;
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
 public class YtelsespesifiktGrunnlagTjenesteOMPTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now().minusDays(5);
@@ -63,7 +62,7 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
         this.beregningAktiviteter = lagBeregningAktiviteter(arbeidsgiver);
         var beregningsgrunnlag = no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
-                .medGrunnbeløp(GRUNNBELØP)
+                .medGrunnbeløp(Beløp.fra(GRUNNBELØP))
                 .build();
         BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(beregningsgrunnlag);
         BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto
@@ -118,7 +117,7 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
         this.beregningAktiviteter = lagBeregningAktiviteter(arbeidsgiver);
         var beregningsgrunnlag = no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
-                .medGrunnbeløp(GRUNNBELØP)
+                .medGrunnbeløp(Beløp.fra(GRUNNBELØP))
                 .build();
         BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(beregningsgrunnlag);
         BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto

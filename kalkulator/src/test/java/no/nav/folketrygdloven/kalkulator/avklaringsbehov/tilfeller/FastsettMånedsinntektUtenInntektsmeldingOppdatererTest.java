@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.avklaringsbehov.tilfeller;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -52,7 +51,7 @@ public class FastsettMånedsinntektUtenInntektsmeldingOppdatererTest {
 
         beregningsgrunnlag = BeregningsgrunnlagDto.builder()
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
-            .medGrunnbeløp(BigDecimal.valueOf(91425L))
+            .medGrunnbeløp(Beløp.fra(91425))
             .leggTilFaktaOmBeregningTilfeller(singletonList(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE))
             .build();
         BeregningsgrunnlagPeriodeDto periode1 = BeregningsgrunnlagPeriodeDto.ny()

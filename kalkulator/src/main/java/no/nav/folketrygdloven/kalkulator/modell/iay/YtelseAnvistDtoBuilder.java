@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
@@ -42,11 +41,8 @@ public class YtelseAnvistDtoBuilder {
         return this;
     }
 
-
-    public YtelseAnvistDtoBuilder medUtbetalingsgradProsent(BigDecimal utbetalingsgradProsent) {
-        if (utbetalingsgradProsent != null) {
-            this.ytelseAnvist.setUtbetalingsgradProsent(new Stillingsprosent(utbetalingsgradProsent));
-        }
+    public YtelseAnvistDtoBuilder medUtbetalingsgradProsent(Stillingsprosent utbetalingsgradProsent) {
+        this.ytelseAnvist.setUtbetalingsgradProsent(utbetalingsgradProsent);
         return this;
     }
 

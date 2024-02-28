@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
@@ -74,7 +73,7 @@ public class YtelseDtoBuilder {
     }
 
     private boolean harUtbetalingsgradOver200(YtelseAnvistDto ya) {
-        return ya.getUtbetalingsgradProsent().orElse(Stillingsprosent.ZERO).getVerdi().compareTo(BigDecimal.valueOf(200)) > 0;
+        return ya.getUtbetalingsgradProsent().orElse(Stillingsprosent.ZERO).compareTo(Stillingsprosent.fra(200)) > 0;
     }
 
     public YtelseAnvistDtoBuilder getAnvistBuilder() {

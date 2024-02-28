@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
@@ -258,7 +257,7 @@ public class KunYtelseDtoTjenesteTest {
     private BeregningsgrunnlagGrunnlagDto lagForrigeBeregningsgrunnlag(boolean medBesteberegning, BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(LocalDate.now().minusDays(5))
-                .medGrunnbeløp(BigDecimal.valueOf(90000))
+                .medGrunnbeløp(Beløp.fra(90000))
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.KUN_YTELSE))
                 .build();
         BeregningsgrunnlagPeriodeDto periode1 = BeregningsgrunnlagPeriodeDto.ny()
@@ -280,7 +279,7 @@ public class KunYtelseDtoTjenesteTest {
     private BeregningsgrunnlagGrunnlagDto lagBeregningsgrunnlag(BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(LocalDate.now().minusDays(5))
-                .medGrunnbeløp(BigDecimal.valueOf(90000))
+                .medGrunnbeløp(Beløp.fra(90000))
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.KUN_YTELSE))
                 .build();
         BeregningsgrunnlagPeriodeDto periode1 = BeregningsgrunnlagPeriodeDto.ny()
@@ -300,7 +299,7 @@ public class KunYtelseDtoTjenesteTest {
     private BeregningsgrunnlagGrunnlagDto lagForrigeBeregningsgrunnlagMedLagtTilAndel(BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(LocalDate.now().minusDays(5))
-                .medGrunnbeløp(BigDecimal.valueOf(90000))
+                .medGrunnbeløp(Beløp.fra(90000))
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.KUN_YTELSE))
                 .build();
         BeregningsgrunnlagPeriodeDto periode1 = BeregningsgrunnlagPeriodeDto.ny()

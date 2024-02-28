@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -198,12 +197,6 @@ public class BeregningsgrunnlagDto {
         public Builder medSkjæringstidspunkt(LocalDate skjæringstidspunkt) {
             verifiserKanModifisere();
             kladd.skjæringstidspunkt = skjæringstidspunkt;
-            return this;
-        }
-
-        public Builder medGrunnbeløp(BigDecimal grunnbeløp) {
-            verifiserKanModifisere();
-            kladd.grunnbeløp = Beløp.fra(grunnbeløp);
             return this;
         }
 

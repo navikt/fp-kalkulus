@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.utils;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,7 +62,7 @@ public class BeregningsgrunnlagTestUtil {
                                                                         AktivitetStatus... statuser) {
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
             .medSkjæringstidspunkt(skjæringstidspunktOpptjening)
-            .medGrunnbeløp(BigDecimal.valueOf(100_000))
+                .medGrunnbeløp(Beløp.fra(100_000))
             .build();
 
         if (statuser.length > 0) {

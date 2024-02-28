@@ -31,7 +31,7 @@ class AnvistAndelMapper {
                 MapIAYTilKalulator.mapArbeidsforholdRef(aa.getArbeidsforholdId()),
                 aa.getDagsats().getBeløp().multipliser(BigDecimal.valueOf(antallVirkedager)),
                 aa.getDagsats().getBeløp(),
-                aa.getRefusjonsgrad() != null ? new Stillingsprosent(aa.getRefusjonsgrad()) : null,
+                Stillingsprosent.fra(aa.getRefusjonsgrad()),
                 aa.getInntektskategori() != null ? aa.getInntektskategori() : Inntektskategori.UDEFINERT
         );
     }

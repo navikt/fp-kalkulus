@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer;
-
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulus.UuidDto;
@@ -29,6 +27,8 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer;
+import no.nav.folketrygdloven.kalkulus.iay.IayProsent;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidDto;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.YrkesaktivitetDto;
@@ -124,7 +124,7 @@ public class KalkulatorMapperTest {
 
     private InntektArbeidYtelseGrunnlagDto byggIAY() {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = new InntektArbeidYtelseGrunnlagDto();
-        iayGrunnlag.medArbeidDto(new ArbeidDto(List.of(new YrkesaktivitetDto(organisasjon, ref, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD, List.of(new AktivitetsAvtaleDto(periode, null, BigDecimal.valueOf(100)), new AktivitetsAvtaleDto(periode, null, null))))));
+        iayGrunnlag.medArbeidDto(new ArbeidDto(List.of(new YrkesaktivitetDto(organisasjon, ref, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD, List.of(new AktivitetsAvtaleDto(periode, null, IayProsent.fra(100)), new AktivitetsAvtaleDto(periode, null, null))))));
         iayGrunnlag.medYtelserDto(new YtelserDto(byggYtelseDto()));
         iayGrunnlag.medInntekterDto(new InntekterDto(List.of(new UtbetalingDto(InntektskildeType.INNTEKT_BEREGNING, List.of(new UtbetalingsPostDto(periode, InntektspostType.LØNN, Beløp.fra(1000L)))))));
         iayGrunnlag.medInntektsmeldingerDto(new InntektsmeldingerDto(List.of(new InntektsmeldingDto(organisasjon, new BeløpDto(BigDecimal.valueOf(100)), List.of(), List.of(), null, null, null, null, null, null))));
@@ -132,11 +132,11 @@ public class KalkulatorMapperTest {
     }
 
     private List<YtelseDto> byggYtelseDto() {
-        YtelseAnvistDto ytelseAnvistDto = new YtelseAnvistDto(periode, beløpDto, beløpDto, BigDecimal.TEN, List.of(new AnvistAndel(new Organisasjon("974652269"),
+        YtelseAnvistDto ytelseAnvistDto = new YtelseAnvistDto(periode, beløpDto, beløpDto, IayProsent.fra(10), List.of(new AnvistAndel(new Organisasjon("974652269"),
                 new InternArbeidsforholdRefDto("r8j3wr8w3"),
                 beløpDto,
-                BigDecimal.valueOf(100),
-                BigDecimal.valueOf(100),
+                IayProsent.fra(100),
+                IayProsent.fra(100),
                 Inntektskategori.ARBEIDSTAKER)));
         return List.of(new YtelseDto(beløpDto, Set.of(ytelseAnvistDto), YtelseType.FORELDREPENGER, periode, null));
     }

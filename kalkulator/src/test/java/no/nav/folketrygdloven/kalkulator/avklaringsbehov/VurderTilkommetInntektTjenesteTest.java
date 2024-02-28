@@ -2,12 +2,9 @@ package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
-import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
 import org.junit.jupiter.api.Test;
 
@@ -45,6 +42,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulus.typer.Beløp;
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
 class VurderTilkommetInntektTjenesteTest {
 
@@ -294,7 +292,7 @@ class VurderTilkommetInntektTjenesteTest {
                 .medBeregningsgrunnlag(BeregningsgrunnlagDto.builder()
                         .leggTilBeregningsgrunnlagPeriode(periodeBuilder)
                         .medSkjæringstidspunkt(fom)
-                        .medGrunnbeløp(BigDecimal.valueOf(100_000))
+                        .medGrunnbeløp(Beløp.fra(100_000))
                         .build())
                 .build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
     }
