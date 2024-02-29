@@ -70,9 +70,9 @@ public final class UtledEndringIRefusjonsperiode {
             DatoEndring datoEndring = new DatoEndring(matchetArbeidsforhold.map(BeregningRefusjonPeriodeDto::getStartdatoRefusjon).orElse(null), periode.getStartdatoRefusjon());
             var refusjonEndring = saksbehandletRefusjon.map(Beløp::fra).map(ref -> new RefusjonEndring(forrigeSaksbehandletRefusjon.map(Beløp::fra).orElse(null), ref));
             if (arbeidsgiver.getErVirksomhet()) {
-                endringer.add(new RefusjonoverstyringPeriodeEndring(new Organisasjon(arbeidsgiver.getIdentifikator()), periode.getArbeidsforholdRef().getReferanse(), datoEndring, refusjonEndring.orElse(null)));
+                endringer.add(new RefusjonoverstyringPeriodeEndring(new Organisasjon(arbeidsgiver.getIdentifikator()), periode.getArbeidsforholdRef().getUUIDReferanse(), datoEndring, refusjonEndring.orElse(null)));
             } else {
-                endringer.add(new RefusjonoverstyringPeriodeEndring(new AktørIdPersonident(arbeidsgiver.getIdentifikator()), periode.getArbeidsforholdRef().getReferanse(), datoEndring, refusjonEndring.orElse(null)));
+                endringer.add(new RefusjonoverstyringPeriodeEndring(new AktørIdPersonident(arbeidsgiver.getIdentifikator()), periode.getArbeidsforholdRef().getUUIDReferanse(), datoEndring, refusjonEndring.orElse(null)));
             }
         });
         return endringer;

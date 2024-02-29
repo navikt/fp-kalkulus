@@ -12,6 +12,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
 
+import java.util.UUID;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
@@ -24,7 +26,7 @@ public class ErTidsbegrensetArbeidsforholdEndring {
 
     @JsonProperty(value = "arbeidsforholdRef")
     @Valid
-    private String arbeidsforholdRef;
+    private UUID arbeidsforholdRef;
 
     @JsonProperty(value = "erTidsbegrensetArbeidsforholdEndring")
     @NotNull
@@ -37,7 +39,7 @@ public class ErTidsbegrensetArbeidsforholdEndring {
 
 
     public ErTidsbegrensetArbeidsforholdEndring(@Valid @NotNull Aktør arbeidsgiver,
-                                                 @Valid String arbeidsforholdRef,
+                                                 @Valid UUID arbeidsforholdRef,
                                                  @NotNull @Valid ToggleEndring erTidsbegrensetArbeidsforholdEndring) {
         this.arbeidsgiver = arbeidsgiver;
         this.arbeidsforholdRef = arbeidsforholdRef;
@@ -48,7 +50,7 @@ public class ErTidsbegrensetArbeidsforholdEndring {
         return arbeidsgiver;
     }
 
-    public String getArbeidsforholdRef() {
+    public UUID getArbeidsforholdRef() {
         return arbeidsforholdRef;
     }
 

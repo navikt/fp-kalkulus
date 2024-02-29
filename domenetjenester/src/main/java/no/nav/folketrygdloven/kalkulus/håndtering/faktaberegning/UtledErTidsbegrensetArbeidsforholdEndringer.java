@@ -38,7 +38,7 @@ class UtledErTidsbegrensetArbeidsforholdEndringer {
         Arbeidsgiver arbeidsgiver = faktaArbeidsforhold.getArbeidsgiver();
         return new ErTidsbegrensetArbeidsforholdEndring(
                 arbeidsgiver.getErVirksomhet() ? new Organisasjon(arbeidsgiver.getIdentifikator()) : new AktørIdPersonident(arbeidsgiver.getIdentifikator()),
-                faktaArbeidsforhold.getArbeidsforholdRef().getReferanse(),
+                faktaArbeidsforhold.getArbeidsforholdRef().getUUIDReferanse(),
                 toggleEndring
         );
     }

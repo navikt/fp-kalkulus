@@ -55,7 +55,7 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
     @Test
     public void skal_teste_utbetaling_i_periode_uten_andre_inntekter() {
         String orgnr = "999999999";
-        String ref = UUID.randomUUID().toString();
+        UUID ref = UUID.randomUUID();
         lagBGPeriode(STP_DATO, etterSTP(10),
                 lagBGAndel(AktivitetStatus.ARBEIDSTAKER, orgnr, ref, 500000));
         lagUtbGrunnlasg(lagYGArbeid(orgnr, ref, UttakArbeidType.ORDINÆRT_ARBEID), lagYGPeriode(STP_DATO, etterSTP(10), 100));
@@ -76,7 +76,7 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
     @Test
     public void skal_teste_utbetaling_i_periode_med_andre_inntekter() {
         String orgnr = "999999999";
-        String ref = UUID.randomUUID().toString();
+        UUID ref = UUID.randomUUID();
         lagBGPeriode(STP_DATO, etterSTP(10),
                 lagBGAndel(AktivitetStatus.ARBEIDSTAKER, orgnr, ref, 500000),
                 lagBGAndel(AktivitetStatus.FRILANSER, null, null, 500000));
@@ -98,7 +98,7 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
     @Test
     public void skal_teste_utbetaling_i_over_flere_perioder() {
         String orgnr = "999999999";
-        String ref = UUID.randomUUID().toString();
+        UUID ref = UUID.randomUUID();
         lagBGPeriode(STP_DATO, etterSTP(10),
                 lagBGAndel(AktivitetStatus.ARBEIDSTAKER, orgnr, ref, 300000),
                 lagBGAndel(AktivitetStatus.FRILANSER, null, null, 200000),
@@ -144,7 +144,7 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
     @Test
     public void skal_teste_utbetaling_i_flere_andeler_samme_periode() {
         String orgnr = "999999999";
-        String ref = UUID.randomUUID().toString();
+        UUID ref = UUID.randomUUID();
         lagBGPeriode(STP_DATO, etterSTP(10),
                 lagBGAndel(AktivitetStatus.ARBEIDSTAKER, orgnr, ref, 200000),
                 lagBGAndel(AktivitetStatus.FRILANSER, null, null, 300000),
@@ -178,7 +178,7 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
     @Test
     public void skal_teste_utbetaling_i_flere_andeler_samme_periode_en_andel_avkortes_til_0() {
         String orgnr = "999999999";
-        String ref = UUID.randomUUID().toString();
+        UUID ref = UUID.randomUUID();
         lagBGPeriode(STP_DATO, etterSTP(10),
                 lagBGAndel(AktivitetStatus.ARBEIDSTAKER, orgnr, ref, 400000),
                 lagBGAndel(AktivitetStatus.FRILANSER, null, null, 300000),
@@ -216,9 +216,9 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
     @Test
     public void flere_at_andeler_søkes_for_i_ulike_perioder() {
         String orgnr1 = "999999999";
-        String ref1 = UUID.randomUUID().toString();
+        UUID ref1 = UUID.randomUUID();
         String orgnr2 = "999999998";
-        String ref2 = UUID.randomUUID().toString();
+        UUID ref2 = UUID.randomUUID();
         lagBGPeriode(STP_DATO, etterSTP(10),
                 lagBGAndel(AktivitetStatus.ARBEIDSTAKER, orgnr1, ref1, 400000),
                 lagBGAndel(AktivitetStatus.ARBEIDSTAKER, orgnr2, ref2, 300000),
@@ -265,7 +265,7 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
         assertAndel(res.getBeregningsgrunnlag(), etterSTP(11), AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, 0);
     }
 
-    private void assertAndel(BeregningsgrunnlagDto bg, LocalDate periodeFom, AktivitetStatus status, String orgnr, String ref, int inntektstak) {
+    private void assertAndel(BeregningsgrunnlagDto bg, LocalDate periodeFom, AktivitetStatus status, String orgnr, UUID ref, int inntektstak) {
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = bg.getBeregningsgrunnlagPerioder().stream()
                 .filter(bgp -> bgp.getBeregningsgrunnlagPeriodeFom().equals(periodeFom))
                 .findFirst()
@@ -306,9 +306,9 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
         return MapFormidlingsdataBeregningsgrunnlag.mapMedBrevfelt(gr, input);
     }
 
-    private boolean matcherAG(BGAndelArbeidsforhold bga, String orgnr, String ref) {
+    private boolean matcherAG(BGAndelArbeidsforhold bga, String orgnr, UUID ref) {
         String andelOrgnr = bga == null ? null : bga.getArbeidsgiver().getArbeidsgiverOrgnr();
-        String andelRef = bga == null ? null : bga.getArbeidsforholdRef();
+        UUID andelRef = bga == null ? null : bga.getArbeidsforholdRef();
         return Objects.equals(orgnr, andelOrgnr) && Objects.equals(ref, andelRef);
     }
 
@@ -316,7 +316,7 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
         return STP_DATO.plusDays(i);
     }
 
-    private AktivitetDto lagYGArbeid(String orgnr, String ref, UttakArbeidType uttakArbeidType) {
+    private AktivitetDto lagYGArbeid(String orgnr, UUID ref, UttakArbeidType uttakArbeidType) {
         if (orgnr == null) {
             return new AktivitetDto(null, InternArbeidsforholdRefDto.nullRef(), uttakArbeidType);
         }
@@ -337,7 +337,7 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
                 null, null, null, null, null, null, null, null));
     }
 
-    private BeregningsgrunnlagPrStatusOgAndelDto lagBGAndel(AktivitetStatus status, String orgnr, String ref, int brutto) {
+    private BeregningsgrunnlagPrStatusOgAndelDto lagBGAndel(AktivitetStatus status, String orgnr, UUID ref, int brutto) {
         BGAndelArbeidsforhold arb = null;
         if (orgnr != null) {
             arb = new BGAndelArbeidsforhold(new Arbeidsgiver(orgnr, null), ref);

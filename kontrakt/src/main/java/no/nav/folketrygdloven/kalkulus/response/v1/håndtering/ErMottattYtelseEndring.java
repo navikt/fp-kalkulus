@@ -13,6 +13,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
+import java.util.UUID;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
@@ -29,7 +31,7 @@ public class ErMottattYtelseEndring {
 
     @JsonProperty(value = "arbeidsforholdRef")
     @Valid
-    private String arbeidsforholdRef;
+    private UUID arbeidsforholdRef;
 
     @JsonProperty(value = "erMottattYtelseEndring")
     @NotNull
@@ -47,7 +49,7 @@ public class ErMottattYtelseEndring {
 
     private ErMottattYtelseEndring(@NotNull @Valid AktivitetStatus aktivitetStatus,
                                   @Valid Aktør arbeidsgiver,
-                                  @Valid String arbeidsforholdRef,
+                                  @Valid UUID arbeidsforholdRef,
                                   @NotNull @Valid ToggleEndring erMottattYtelseEndring) {
         this.aktivitetStatus = aktivitetStatus;
         this.arbeidsgiver = arbeidsgiver;
@@ -59,7 +61,7 @@ public class ErMottattYtelseEndring {
         return new ErMottattYtelseEndring(AktivitetStatus.FRILANSER, toggleEndring);
     }
 
-    public static ErMottattYtelseEndring lagErMottattYtelseEndringForArbeid(ToggleEndring toggleEndring, Aktør arbeidsgiver, String arbeidsforholdRef) {
+    public static ErMottattYtelseEndring lagErMottattYtelseEndringForArbeid(ToggleEndring toggleEndring, Aktør arbeidsgiver, UUID arbeidsforholdRef) {
         return new ErMottattYtelseEndring(AktivitetStatus.ARBEIDSTAKER, arbeidsgiver, arbeidsforholdRef, toggleEndring);
     }
 
@@ -71,7 +73,7 @@ public class ErMottattYtelseEndring {
         return arbeidsgiver;
     }
 
-    public String getArbeidsforholdRef() {
+    public UUID getArbeidsforholdRef() {
         return arbeidsforholdRef;
     }
 

@@ -40,7 +40,7 @@ public class UtledEndringIAndel {
             if (andel.getArbeidsgiver().isPresent()) {
                 Arbeidsgiver arbeidsgiver = andel.getArbeidsgiver().get();
                 Aktør aktør = arbeidsgiver.getErVirksomhet() ? new Organisasjon(arbeidsgiver.getIdentifikator()) : new AktørIdPersonident(arbeidsgiver.getIdentifikator());
-                andelEndring = new BeregningsgrunnlagPrStatusOgAndelEndring(andel.getAndelsnr(), aktør, andel.getArbeidsforholdRef().map(InternArbeidsforholdRefDto::getReferanse).orElse(null));
+                andelEndring = new BeregningsgrunnlagPrStatusOgAndelEndring(andel.getAndelsnr(), aktør, andel.getArbeidsforholdRef().map(InternArbeidsforholdRefDto::getUUIDReferanse).orElse(null));
             } else {
                 andelEndring = BeregningsgrunnlagPrStatusOgAndelEndring.opprettForArbeidstakerUtenArbeidsgiver(andel.getArbeidsforholdType(), andel.getAndelsnr());
             }

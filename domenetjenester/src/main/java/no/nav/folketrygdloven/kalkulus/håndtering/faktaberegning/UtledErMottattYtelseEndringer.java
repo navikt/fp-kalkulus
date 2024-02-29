@@ -51,7 +51,7 @@ class UtledErMottattYtelseEndringer {
         Optional<FaktaArbeidsforholdDto> forrigeFakta = finnForrigeFakta(forrigeFaktaListe, fakta.getArbeidsgiver(), fakta.getArbeidsforholdRef());
         ToggleEndring toggleEndring = utledErMottattYtelseEndring(fakta, forrigeFakta);
         if (toggleEndring != null) {
-            return ErMottattYtelseEndring.lagErMottattYtelseEndringForArbeid(toggleEndring, mapArbeidsgiver(fakta.getArbeidsgiver()), fakta.getArbeidsforholdRef().getReferanse());
+            return ErMottattYtelseEndring.lagErMottattYtelseEndringForArbeid(toggleEndring, mapArbeidsgiver(fakta.getArbeidsgiver()), fakta.getArbeidsforholdRef().getUUIDReferanse());
         }
         return null;
     }

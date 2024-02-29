@@ -290,7 +290,7 @@ public class OppdatererDtoMapper {
 
     private static no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.BeregningsaktivitetLagreDto mapTilBeregningsaktivitetLagreDto(BeregningsaktivitetLagreDto beregningsaktivitetLagreDto) {
         return no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.BeregningsaktivitetLagreDto.builder()
-            .medArbeidsforholdRef(beregningsaktivitetLagreDto.getArbeidsforholdRef())
+            .medArbeidsforholdRef(beregningsaktivitetLagreDto.getArbeidsforholdRef() == null ? null : beregningsaktivitetLagreDto.getArbeidsforholdRef().toString())
             .medArbeidsgiverIdentifikator(beregningsaktivitetLagreDto.getArbeidsgiverIdentifikator())
             .medFom(beregningsaktivitetLagreDto.getFom())
             .medOppdragsgiverOrg(beregningsaktivitetLagreDto.getOppdragsgiverOrg())

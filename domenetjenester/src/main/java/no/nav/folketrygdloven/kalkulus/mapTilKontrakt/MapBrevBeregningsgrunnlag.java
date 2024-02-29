@@ -168,7 +168,7 @@ public class MapBrevBeregningsgrunnlag {
     private static BGAndelArbeidsforhold mapArbeidsforhold(BGAndelArbeidsforholdDto bgAndelArbeidsforhold) {
         return new BGAndelArbeidsforhold(
                 mapArbeidsgiver(bgAndelArbeidsforhold.getArbeidsgiver()),
-                bgAndelArbeidsforhold.getArbeidsforholdRef().getReferanse(),
+                bgAndelArbeidsforhold.getArbeidsforholdRef().getUUIDReferanse(),
                 bgAndelArbeidsforhold.getGjeldendeRefusjonPrÅr());
     }
 

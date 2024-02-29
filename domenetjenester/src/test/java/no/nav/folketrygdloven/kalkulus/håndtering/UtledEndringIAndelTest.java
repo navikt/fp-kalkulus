@@ -36,7 +36,7 @@ public class UtledEndringIAndelTest {
         assert endring.isPresent();
         assertThat(endring.get().getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER);
         assertThat(endring.get().getArbeidsgiver().getIdent()).isEqualTo(ARBEIDSGIVER_ORGNR);
-        assertThat(endring.get().getArbeidsforholdRef()).isEqualTo(ARBEIDSFORHOLD_REF.getReferanse());
+        assertThat(endring.get().getArbeidsforholdRef().toString()).isEqualTo(ARBEIDSFORHOLD_REF.getReferanse());
         assertThat(endring.get().getInntektEndring().getFraInntekt()).isNull();
         assertThat(endring.get().getInntektEndring().getTilInntekt().verdi()).isEqualTo(inntekt);
         assertThat(endring.get().getInntektskategoriEndring().getFraVerdi()).isNull();
@@ -60,7 +60,7 @@ public class UtledEndringIAndelTest {
         assert endring.isPresent();
         assertThat(endring.get().getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER);
         assertThat(endring.get().getArbeidsgiver().getIdent()).isEqualTo(ARBEIDSGIVER_ORGNR);
-        assertThat(endring.get().getArbeidsforholdRef()).isEqualTo(ARBEIDSFORHOLD_REF.getReferanse());
+        assertThat(endring.get().getArbeidsforholdRef().toString()).isEqualTo(ARBEIDSFORHOLD_REF.getReferanse());
         assertThat(endring.get().getInntektEndring().getFraInntekt().verdi()).isEqualTo(forrigeInntekt);
         assertThat(endring.get().getInntektEndring().getTilInntekt().verdi()).isEqualTo(inntekt);
         assertThat(endring.get().getInntektskategoriEndring().getFraVerdi()).isEqualTo(forrigeInntektskategori);

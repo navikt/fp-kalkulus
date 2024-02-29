@@ -4,6 +4,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -48,8 +49,7 @@ public class BeregningsaktivitetLagreDto {
 
     @JsonProperty("arbeidsforholdRef")
     @Valid
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
-    private String arbeidsforholdRef;
+    private UUID arbeidsforholdRef;
 
     @JsonProperty("skalBrukes")
     @Valid
@@ -64,7 +64,7 @@ public class BeregningsaktivitetLagreDto {
                                        @Valid @NotNull LocalDate tom,
                                        @Valid @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{regexp}'") String oppdragsgiverOrg,
                                        @Valid @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{regexp}'") String arbeidsgiverIdentifikator,
-                                       @Valid @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{regexp}'") String arbeidsforholdRef,
+                                       @Valid UUID arbeidsforholdRef,
                                        @Valid @NotNull boolean skalBrukes) {
         this.opptjeningAktivitetType = opptjeningAktivitetType;
         this.fom = fom;
@@ -95,7 +95,7 @@ public class BeregningsaktivitetLagreDto {
         return arbeidsgiverIdentifikator;
     }
 
-    public String getArbeidsforholdRef() {
+    public UUID getArbeidsforholdRef() {
         return arbeidsforholdRef;
     }
 
@@ -139,7 +139,7 @@ public class BeregningsaktivitetLagreDto {
             return this;
         }
 
-        public Builder medArbeidsforholdRef(String arbeidsforholdRef) {
+        public Builder medArbeidsforholdRef(UUID arbeidsforholdRef) {
             kladd.arbeidsforholdRef = arbeidsforholdRef;
             return this;
         }

@@ -13,6 +13,8 @@ import jakarta.validation.constraints.NotNull;
 import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
+import java.util.UUID;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
@@ -25,7 +27,7 @@ public class BGAndelArbeidsforhold {
 
     @JsonProperty(value = "arbeidsforholdRef")
     @Valid
-    private String arbeidsforholdRef;
+    private UUID arbeidsforholdRef;
 
 
     @JsonProperty(value = "refusjonskravPrÅr")
@@ -37,7 +39,7 @@ public class BGAndelArbeidsforhold {
     }
 
 
-    public BGAndelArbeidsforhold(@NotNull @Valid Arbeidsgiver arbeidsgiver, @Valid String arbeidsforholdRef, @Valid Beløp refusjonskravPrÅr) {
+    public BGAndelArbeidsforhold(@NotNull @Valid Arbeidsgiver arbeidsgiver, @Valid UUID arbeidsforholdRef, @Valid Beløp refusjonskravPrÅr) {
         this.arbeidsgiver = arbeidsgiver;
         this.arbeidsforholdRef = arbeidsforholdRef;
         this.refusjonskravPrÅr = refusjonskravPrÅr;
@@ -47,7 +49,7 @@ public class BGAndelArbeidsforhold {
         return arbeidsgiver;
     }
 
-    public String getArbeidsforholdRef() {
+    public UUID getArbeidsforholdRef() {
         return arbeidsforholdRef;
     }
 

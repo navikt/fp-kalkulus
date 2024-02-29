@@ -14,6 +14,8 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
+import java.util.UUID;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
@@ -52,7 +54,7 @@ public class BeregningsgrunnlagPrStatusOgAndelEndring {
 
     @JsonProperty(value = "arbeidsforholdRef")
     @Valid
-    private String arbeidsforholdRef;
+    private UUID arbeidsforholdRef;
 
     public BeregningsgrunnlagPrStatusOgAndelEndring() {
         // For Json deserialisering
@@ -69,7 +71,7 @@ public class BeregningsgrunnlagPrStatusOgAndelEndring {
         this.arbeidsforholdType = arbeidsforholdType;
     }
 
-    public BeregningsgrunnlagPrStatusOgAndelEndring(Long andelsnr, Aktør arbeidsgiver, String arbeidsforholdRef) {
+    public BeregningsgrunnlagPrStatusOgAndelEndring(Long andelsnr, Aktør arbeidsgiver, UUID arbeidsforholdRef) {
         this.andelsnr = andelsnr;
         this.aktivitetStatus = AktivitetStatus.ARBEIDSTAKER;
         this.arbeidsgiver = arbeidsgiver;
@@ -92,7 +94,7 @@ public class BeregningsgrunnlagPrStatusOgAndelEndring {
         return arbeidsgiver;
     }
 
-    public String getArbeidsforholdRef() {
+    public UUID getArbeidsforholdRef() {
         return arbeidsforholdRef;
     }
 

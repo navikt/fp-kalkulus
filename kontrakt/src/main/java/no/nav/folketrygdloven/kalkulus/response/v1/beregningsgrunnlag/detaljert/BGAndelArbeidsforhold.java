@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -27,7 +28,7 @@ public class BGAndelArbeidsforhold {
 
     @JsonProperty(value = "arbeidsforholdRef")
     @Valid
-    private String arbeidsforholdRef;
+    private UUID arbeidsforholdRef;
 
     @JsonProperty(value = "refusjonskravPrÅr")
     @Valid
@@ -55,12 +56,12 @@ public class BGAndelArbeidsforhold {
     }
 
     public BGAndelArbeidsforhold(@NotNull @Valid Arbeidsgiver arbeidsgiver,
-                                 @Valid String arbeidsforholdRef) {
+                                 @Valid UUID arbeidsforholdRef) {
         this.arbeidsgiver = arbeidsgiver;
         this.arbeidsforholdRef = arbeidsforholdRef;
     }
 
-    public BGAndelArbeidsforhold(@NotNull @Valid Arbeidsgiver arbeidsgiver, @Valid String arbeidsforholdRef, @Valid Beløp refusjonskravPrÅr, @Valid Beløp naturalytelseBortfaltPrÅr, @Valid Beløp naturalytelseTilkommetPrÅr, @NotNull @Valid LocalDate arbeidsperiodeFom, @NotNull @Valid LocalDate arbeidsperiodeTom) {
+    public BGAndelArbeidsforhold(@NotNull @Valid Arbeidsgiver arbeidsgiver, @Valid UUID arbeidsforholdRef, @Valid Beløp refusjonskravPrÅr, @Valid Beløp naturalytelseBortfaltPrÅr, @Valid Beløp naturalytelseTilkommetPrÅr, @NotNull @Valid LocalDate arbeidsperiodeFom, @NotNull @Valid LocalDate arbeidsperiodeTom) {
         this.arbeidsgiver = arbeidsgiver;
         this.arbeidsforholdRef = arbeidsforholdRef;
         this.refusjonskravPrÅr = refusjonskravPrÅr;
@@ -74,7 +75,7 @@ public class BGAndelArbeidsforhold {
         return arbeidsgiver;
     }
 
-    public String getArbeidsforholdRef() {
+    public UUID getArbeidsforholdRef() {
         return arbeidsforholdRef;
     }
 

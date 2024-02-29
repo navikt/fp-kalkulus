@@ -224,7 +224,7 @@ public class MapDetaljertBeregningsgrunnlag {
     private static BGAndelArbeidsforhold mapArbeidsforhold(BGAndelArbeidsforholdDto bgAndelArbeidsforhold) {
         return new BGAndelArbeidsforhold(
                 mapArbeidsgiver(bgAndelArbeidsforhold.getArbeidsgiver()),
-                bgAndelArbeidsforhold.getArbeidsforholdRef().getReferanse(),
+                bgAndelArbeidsforhold.getArbeidsforholdRef().getUUIDReferanse(),
                 bgAndelArbeidsforhold.getGjeldendeRefusjonPrÅr(),
                 bgAndelArbeidsforhold.getNaturalytelseBortfaltPrÅr().orElse(null),
                 bgAndelArbeidsforhold.getNaturalytelseTilkommetPrÅr().orElse(null),

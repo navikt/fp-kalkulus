@@ -116,7 +116,7 @@ class UtledEndringIRefusjonsperiodeTest {
         assertThat(endringAggregat).isNotNull();
         assertThat(endringAggregat.getRefusjonperiodeEndringer()).hasSize(1);
         assertThat(endringAggregat.getRefusjonperiodeEndringer().get(0).getArbeidsgiver().getIdent()).isEqualTo(ag.getIdentifikator());
-        assertThat(endringAggregat.getRefusjonperiodeEndringer().get(0).getArbeidsforholdRef()).isEqualTo(ref.getReferanse());
+        assertThat(endringAggregat.getRefusjonperiodeEndringer().get(0).getArbeidsforholdRef()).isEqualTo(ref.getUUIDReferanse());
         DatoEndring datoEndring = endringAggregat.getRefusjonperiodeEndringer().get(0).getFastsattRefusjonFomEndring();
         assertThat(datoEndring).isNotNull();
         assertThat(datoEndring.getFraVerdi()).isNull();
@@ -156,7 +156,7 @@ class UtledEndringIRefusjonsperiodeTest {
         assertThat(endringAggregat).isNotNull();
         assertThat(endringAggregat.getRefusjonperiodeEndringer()).hasSize(1);
         assertThat(endringAggregat.getRefusjonperiodeEndringer().get(0).getArbeidsgiver().getIdent()).isEqualTo(ag.getIdentifikator());
-        assertThat(endringAggregat.getRefusjonperiodeEndringer().get(0).getArbeidsforholdRef()).isEqualTo(ref.getReferanse());
+        assertThat(endringAggregat.getRefusjonperiodeEndringer().get(0).getArbeidsforholdRef()).isEqualTo(ref.getUUIDReferanse());
         DatoEndring datoEndring = endringAggregat.getRefusjonperiodeEndringer().get(0).getFastsattRefusjonFomEndring();
         assertThat(datoEndring).isNotNull();
         assertThat(datoEndring.getFraVerdi()).isEqualTo(forrigeFom);
