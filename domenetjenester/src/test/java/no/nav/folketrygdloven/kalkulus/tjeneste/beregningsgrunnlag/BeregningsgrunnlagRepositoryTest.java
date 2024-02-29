@@ -104,7 +104,7 @@ public class BeregningsgrunnlagRepositoryTest extends EntityManagerAwareTest {
 
     @Test
     public void skal_lagre_ned_json_input() throws Exception {
-        AktørId aktørId = new AktørId("1234123412341");
+        AktørId aktørId = new AktørId("9999999999999");
         KoblingReferanse koblingReferanse = new KoblingReferanse(UUID.randomUUID());
         Saksnummer saksnummer = new Saksnummer("1234");
 
@@ -169,7 +169,7 @@ public class BeregningsgrunnlagRepositoryTest extends EntityManagerAwareTest {
 
     @Test
     public void skal_hente_beregningsgrunnlag_for_referanse() {
-        AktørId aktørId = new AktørId("1234123412341");
+        AktørId aktørId = new AktørId("9999999999999");
         KoblingReferanse koblingReferanse = new KoblingReferanse(UUID.randomUUID());
         Saksnummer saksnummer = new Saksnummer("1234");
 

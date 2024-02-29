@@ -88,7 +88,7 @@ class KopierOgResetRestTjenesteTest extends EntityManagerAwareTest {
 
 
     public static final Saksnummer SAK = new Saksnummer("SAK");
-    public static final AktørId AKTØR_ID = new AktørId("123456789");
+    public static final AktørId AKTØR_ID = new AktørId("9999999999999");
     private final InternArbeidsforholdRefDto ref = new InternArbeidsforholdRefDto(UUID.randomUUID().toString());
     private final Periode periode = new Periode(LocalDate.now(), LocalDate.now().plusMonths(2));
     private final Organisasjon organisasjon = new Organisasjon("974652269");

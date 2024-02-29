@@ -28,7 +28,7 @@ import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class FordelRefusjonTjenesteTest {
 
-    private static final String ARBEIDSGIVER_ORGNR = "910909088";
+    private static final String ARBEIDSGIVER_ORGNR = "974652269";
     private static final int FORRIGE_ARBEIDSTINNTEKT = 100_000;
     private static final Inntektskategori FORRIGE_INNTEKTSKATEGORI = Inntektskategori.ARBEIDSTAKER;
     private final LocalDate FOM = LocalDate.now();

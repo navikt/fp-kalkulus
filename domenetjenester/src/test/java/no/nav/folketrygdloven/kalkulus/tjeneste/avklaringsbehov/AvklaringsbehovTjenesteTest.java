@@ -36,7 +36,7 @@ class AvklaringsbehovTjenesteTest extends EntityManagerAwareTest {
 
     @BeforeEach
     public void setup() {
-        AktørId aktørId = new AktørId("1234123412341");
+        AktørId aktørId = new AktørId("9999999999999");
         KoblingReferanse koblingReferanse = new KoblingReferanse(UUID.randomUUID());
         Saksnummer saksnummer = new Saksnummer("1234");
 

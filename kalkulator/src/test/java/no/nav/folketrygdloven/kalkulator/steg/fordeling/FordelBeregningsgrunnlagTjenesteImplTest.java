@@ -53,7 +53,7 @@ import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 public class FordelBeregningsgrunnlagTjenesteImplTest {
 
     private static final String ORGNR1 = "995428563";
-    private static final String ORGNR2 = "910909088";
+    private static final String ORGNR2 = "974652269";
     private static final String ORGNR3 = "973861778";
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019, Month.JANUARY, 4);
 

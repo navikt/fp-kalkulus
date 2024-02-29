@@ -75,7 +75,7 @@ class DebugDumpstersTest extends EntityManagerAwareTest {
 
     private KoblingEntitet lagKobling() {
         var koblingEntitet = new KoblingEntitet(new KoblingReferanse(UUID.randomUUID()), FagsakYtelseType.PLEIEPENGER_SYKT_BARN,
-                new Saksnummer("sak"), new AktørId("123456789"));
+                new Saksnummer("sak"), new AktørId("9999999999999"));
         getEntityManager().persist(koblingEntitet);
         return koblingEntitet;
     }
@@ -90,7 +90,7 @@ class DebugDumpstersTest extends EntityManagerAwareTest {
                 .medBeregningsgrunnlagPeriode(LocalDate.now(), TIDENES_ENDE)
                 .build(bg);
 
-        var virksomhet = Arbeidsgiver.virksomhet("112345689");
+        var virksomhet = Arbeidsgiver.virksomhet("974652269");
         BeregningsgrunnlagPrStatusOgAndel.builder()
                 .medAndelsnr(1L)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)

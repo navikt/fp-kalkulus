@@ -20,7 +20,7 @@ class KalkulatorInputTjenesteTest {
                     {
                       "arbeidsgiver": {
                         "identType": "ORGNUMMER",
-                        "ident": "910909088"
+                        "ident": "974652269"
                       },
                       "abakusReferanse": {
                         "abakusReferanse": "3f15eb0a-7d0e-48e0-86b1-299663a7c324"
@@ -85,7 +85,7 @@ class KalkulatorInputTjenesteTest {
                     {
                       "arbeidsgiver": {
                         "identType": "ORGNUMMER",
-                        "ident": "910909088"
+                        "ident": "974652269"
                       },
                       "arbeidsforholdRefDto": {
                         "abakusReferanse": "3f15eb0a-7d0e-48e0-86b1-299663a7c324"
@@ -111,7 +111,7 @@ class KalkulatorInputTjenesteTest {
                     },
                     "arbeidsgiver": {
                       "identType": "ORGNUMMER",
-                      "ident": "910909088"
+                      "ident": "974652269"
                     },
                     "abakusReferanse": {
                       "abakusReferanse": "3f15eb0a-7d0e-48e0-86b1-299663a7c324"
@@ -128,7 +128,7 @@ class KalkulatorInputTjenesteTest {
                     },
                     "arbeidsgiver": {
                       "identType": "ORGNUMMER",
-                      "ident": "910909088"
+                      "ident": "974652269"
                     },
                     "abakusReferanse": null
                   }
@@ -143,7 +143,7 @@ class KalkulatorInputTjenesteTest {
                     "utbetalingsgradArbeidsforholdDto": {
                       "arbeidsgiver": {
                         "identType": "ORGNUMMER",
-                        "ident": "910909088"
+                        "ident": "974652269"
                       },
                       "uttakArbeidType": {
                         "kodeverk": "UTTAK_ARBEID_TYPE",
@@ -164,7 +164,7 @@ class KalkulatorInputTjenesteTest {
                     "utbetalingsgradArbeidsforholdDto": {
                       "arbeidsgiver": {
                         "identType": "ORGNUMMER",
-                        "ident": "910909088"
+                        "ident": "974652269"
                       },
                       "uttakArbeidType": {
                         "kode": "AT",
@@ -197,7 +197,7 @@ class KalkulatorInputTjenesteTest {
                     {
                       "arbeidsgiver": {
                         "identType": "ORGNUMMER",
-                        "ident": "910909088"
+                        "ident": "974652269"
                       },
                       "abakusReferanse": {
                         "abakusReferanse": "3f15eb0a-7d0e-48e0-86b1-299663a7c324"
@@ -262,7 +262,7 @@ class KalkulatorInputTjenesteTest {
                     {
                       "arbeidsgiver": {
                         "identType": "ORGNUMMER",
-                        "ident": "910909088"
+                        "ident": "974652269"
                       },
                       "arbeidsforholdRefDto": {
                         "abakusReferanse": "3f15eb0a-7d0e-48e0-86b1-299663a7c324"
@@ -288,7 +288,7 @@ class KalkulatorInputTjenesteTest {
                     },
                     "arbeidsgiver": {
                       "identType": "ORGNUMMER",
-                      "ident": "910909088"
+                      "ident": "974652269"
                     },
                     "abakusReferanse": {
                       "abakusReferanse": "3f15eb0a-7d0e-48e0-86b1-299663a7c324"
@@ -305,7 +305,7 @@ class KalkulatorInputTjenesteTest {
                     },
                     "arbeidsgiver": {
                       "identType": "ORGNUMMER",
-                      "ident": "910909088"
+                      "ident": "974652269"
                     },
                     "abakusReferanse": null
                   }
@@ -320,7 +320,7 @@ class KalkulatorInputTjenesteTest {
                     "utbetalingsgradArbeidsforholdDto": {
                       "arbeidsgiver": {
                         "identType": "ORGNUMMER",
-                        "ident": "910909088"
+                        "ident": "974652269"
                       },
                       "uttakArbeidType": {
                         "kodeverk": "UTTAK_ARBEID_TYPE",
@@ -341,7 +341,7 @@ class KalkulatorInputTjenesteTest {
                     "utbetalingsgradArbeidsforholdDto": {
                       "arbeidsgiver": {
                         "identType": "ORGNUMMER",
-                        "ident": "910909088"
+                        "ident": "974652269"
                       },
                       "uttakArbeidType": {
                         "kode": "AT",
@@ -374,7 +374,7 @@ class KalkulatorInputTjenesteTest {
                     {
                       "arbeidsgiver": {
                         "identType": "ORGNUMMER",
-                        "ident": "910909088"
+                        "ident": "974652269"
                       },
                       "abakusReferanse": {
                         "abakusReferanse": "3f15eb0a-7d0e-48e0-86b1-299663a7c324"
@@ -439,7 +439,7 @@ class KalkulatorInputTjenesteTest {
                     {
                       "arbeidsgiver": {
                         "identType": "ORGNUMMER",
-                        "ident": "910909088"
+                        "ident": "974652269"
                       },
                       "arbeidsforholdRefDto": {
                         "abakusReferanse": "3f15eb0a-7d0e-48e0-86b1-299663a7c324"
@@ -465,7 +465,7 @@ class KalkulatorInputTjenesteTest {
                     },
                     "arbeidsgiver": {
                       "identType": "ORGNUMMER",
-                      "ident": "910909088"
+                      "ident": "974652269"
                     },
                     "abakusReferanse": {
                       "abakusReferanse": "3f15eb0a-7d0e-48e0-86b1-299663a7c324"
@@ -482,7 +482,7 @@ class KalkulatorInputTjenesteTest {
                     },
                     "arbeidsgiver": {
                       "identType": "ORGNUMMER",
-                      "ident": "910909088"
+                      "ident": "974652269"
                     },
                     "abakusReferanse": null
                   }
@@ -497,7 +497,7 @@ class KalkulatorInputTjenesteTest {
                     "utbetalingsgradArbeidsforholdDto": {
                       "arbeidsgiver": {
                         "identType": "ORGNUMMER",
-                        "ident": "910909088"
+                        "ident": "974652269"
                       },
                       "uttakArbeidType": {
                         "kodeverk": "UTTAK_ARBEID_TYPE",
@@ -518,7 +518,7 @@ class KalkulatorInputTjenesteTest {
                     "utbetalingsgradArbeidsforholdDto": {
                       "arbeidsgiver": {
                         "identType": "ORGNUMMER",
-                        "ident": "910909088"
+                        "ident": "974652269"
                       },
                       "uttakArbeidType": {
                         "kode": "AT",

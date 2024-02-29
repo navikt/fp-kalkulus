@@ -47,7 +47,7 @@ import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 class VurderTilkommetInntektTjenesteTest {
 
     public static final String ORGNR = "974652269";
-    public static final String ORGNR2 = "910909088";
+    public static final String ORGNR2 = "974652269";
     private static final LocalDate STP = LocalDate.now();
 
     @Test

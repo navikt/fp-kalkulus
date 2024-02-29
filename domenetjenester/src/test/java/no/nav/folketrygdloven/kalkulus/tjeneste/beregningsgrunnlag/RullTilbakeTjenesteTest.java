@@ -246,7 +246,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
 
 
     private void prepareTestData() {
-        AktørId aktørId = new AktørId("1234123412341");
+        AktørId aktørId = new AktørId("9999999999999");
         KoblingReferanse koblingReferanse = new KoblingReferanse(UUID.randomUUID());
         Saksnummer saksnummer = new Saksnummer("1234");
         KoblingEntitet koblingEntitet = new KoblingEntitet(koblingReferanse, FagsakYtelseType.FORELDREPENGER, saksnummer, aktørId);
