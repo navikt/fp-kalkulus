@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -228,7 +230,7 @@ public class BeregningsgrunnlagRepositoryTest extends EntityManagerAwareTest {
     }
 
     private KalkulatorInputDto byggKalkulatorInput() {
-        GraderingDto graderingDto = new GraderingDto(periode, BigDecimal.valueOf(100));
+        GraderingDto graderingDto = new GraderingDto(periode, Aktivitetsgrad.valueOf(100));
         AndelGraderingDto andelGraderingDto = new AndelGraderingDto(AktivitetStatus.ARBEIDSTAKER, organisasjon,
                 null,
                 List.of(graderingDto));

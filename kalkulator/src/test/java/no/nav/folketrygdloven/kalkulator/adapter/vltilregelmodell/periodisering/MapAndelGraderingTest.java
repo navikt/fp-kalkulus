@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -45,8 +47,8 @@ public class MapAndelGraderingTest {
         Intervall p2 = Intervall.fraOgMedTilOgMed(fom2, tom2);
         var vlAndelGradering = AndelGradering.builder()
             .medStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
-            .leggTilGradering(new AndelGradering.Gradering(p1, BigDecimal.valueOf(50)))
-            .leggTilGradering(new AndelGradering.Gradering(p2, BigDecimal.valueOf(25)))
+            .leggTilGradering(new AndelGradering.Gradering(p1, Aktivitetsgrad.valueOf(50)))
+            .leggTilGradering(new AndelGradering.Gradering(p2, Aktivitetsgrad.valueOf(25)))
             .build();
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(Optional.empty(), Optional.empty());
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
@@ -85,8 +87,8 @@ public class MapAndelGraderingTest {
         Intervall p2 = Intervall.fraOgMedTilOgMed(fom2, tom2);
         var vlAndelGradering = AndelGradering.builder()
             .medStatus(AktivitetStatus.FRILANSER)
-            .leggTilGradering(new AndelGradering.Gradering(p1, BigDecimal.valueOf(50)))
-            .leggTilGradering(new AndelGradering.Gradering(p2, BigDecimal.valueOf(25)))
+            .leggTilGradering(new AndelGradering.Gradering(p1, Aktivitetsgrad.valueOf(50)))
+            .leggTilGradering(new AndelGradering.Gradering(p2, Aktivitetsgrad.valueOf(25)))
                 .build();
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(Optional.empty(), Optional.empty());
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()

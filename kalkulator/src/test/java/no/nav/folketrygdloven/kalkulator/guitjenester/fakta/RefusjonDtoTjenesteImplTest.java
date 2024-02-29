@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
@@ -25,6 +24,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningAndelDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagAndelDto;
+import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.folketrygdloven.utils.Tuple;
 
@@ -149,7 +149,7 @@ public class RefusjonDtoTjenesteImplTest {
             .medArbeidsgiver(ARBEIDSGIVER)
             .medArbeidsforholdRef(ARB_ID)
             .medStatus(AktivitetStatus.ARBEIDSTAKER)
-            .leggTilGradering(new AndelGradering.Gradering(SKJÆRINGSTIDSPUNKT_OPPTJENING, TIDENES_ENDE, BigDecimal.TEN))
+            .leggTilGradering(new AndelGradering.Gradering(SKJÆRINGSTIDSPUNKT_OPPTJENING, TIDENES_ENDE, Aktivitetsgrad.valueOf(10)))
             .build();
 
 
@@ -186,7 +186,7 @@ public class RefusjonDtoTjenesteImplTest {
             .medArbeidsgiver(ARBEIDSGIVER)
             .medArbeidsforholdRef(ARB_ID)
             .medStatus(AktivitetStatus.ARBEIDSTAKER)
-            .leggTilGradering(new AndelGradering.Gradering(SKJÆRINGSTIDSPUNKT_OPPTJENING, TIDENES_ENDE, BigDecimal.TEN))
+            .leggTilGradering(new AndelGradering.Gradering(SKJÆRINGSTIDSPUNKT_OPPTJENING, TIDENES_ENDE, Aktivitetsgrad.valueOf(10)))
             .build();
 
 

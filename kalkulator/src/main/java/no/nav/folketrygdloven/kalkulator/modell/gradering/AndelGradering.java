@@ -13,6 +13,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
 
 public class AndelGradering {
     private AktivitetStatus aktivitetStatus;
@@ -119,10 +120,14 @@ public class AndelGradering {
         }
 
         public Builder medGradering(LocalDate fom, LocalDate tom, int arbeidstidsprosent) {
-            return leggTilGradering(fom, tom, BigDecimal.valueOf(arbeidstidsprosent));
+            return leggTilGradering(fom, tom, Aktivitetsgrad.valueOf(arbeidstidsprosent));
         }
 
-        public Builder leggTilGradering(LocalDate fom, LocalDate tom, BigDecimal arbeidstidsprosent) {
+        public Builder medGradering(LocalDate fom, LocalDate tom, Aktivitetsgrad arbeidstidsprosent) {
+            return leggTilGradering(fom, tom, arbeidstidsprosent);
+        }
+
+        public Builder leggTilGradering(LocalDate fom, LocalDate tom, Aktivitetsgrad arbeidstidsprosent) {
             return leggTilGradering(new Gradering(Intervall.fraOgMedTilOgMed(fom, tom), arbeidstidsprosent));
         }
 
@@ -156,17 +161,14 @@ public class AndelGradering {
          *
          * @return prosentsats
          */
-        private final BigDecimal arbeidstidProsent;
+        private final Aktivitetsgrad arbeidstidProsent;
 
-        public Gradering(LocalDate periodeFom, LocalDate periodeTom, BigDecimal arbeidstidProsent) {
+        public Gradering(LocalDate periodeFom, LocalDate periodeTom, Aktivitetsgrad arbeidstidProsent) {
             this.periode = Intervall.fraOgMedTilOgMed(periodeFom, periodeTom);
             this.arbeidstidProsent = Objects.requireNonNull(arbeidstidProsent);
-            if (arbeidstidProsent.compareTo(BigDecimal.ZERO) < 0) {
-                throw new IllegalArgumentException("Arbeidstidsprosent < 0: " + arbeidstidProsent + ", i periode " + this.periode);
-            }
         }
 
-        public Gradering(Intervall periode, BigDecimal arbeidstidProsent) {
+        public Gradering(Intervall periode, Aktivitetsgrad arbeidstidProsent) {
             this(periode.getFomDato(), periode.getTomDato(), arbeidstidProsent);
         }
 
@@ -174,7 +176,7 @@ public class AndelGradering {
             return periode;
         }
 
-        public BigDecimal getArbeidstidProsent() {
+        public Aktivitetsgrad getArbeidstidProsent() {
             return arbeidstidProsent;
         }
 

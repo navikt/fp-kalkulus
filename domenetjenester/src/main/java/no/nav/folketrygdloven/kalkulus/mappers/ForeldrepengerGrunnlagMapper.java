@@ -16,7 +16,6 @@ import no.nav.folketrygdloven.kalkulator.modell.besteberegning.Ytelsegrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.besteberegning.Ytelseperiode;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetGraderingDto;
-import no.nav.folketrygdloven.kalkulus.beregning.v1.YtelsespesifiktGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
 
@@ -47,7 +46,7 @@ class ForeldrepengerGrunnlagMapper {
         aktivitetGradering.getAndelGraderingDto().forEach(andel -> {
             AndelGradering.Builder builder = AndelGradering.builder();
             andel.getGraderinger()
-                    .forEach(grad -> builder.medGradering(grad.getPeriode().getFom(), grad.getPeriode().getTom(), grad.getArbeidstidProsent().intValue()));
+                    .forEach(grad -> builder.medGradering(grad.getPeriode().getFom(), grad.getPeriode().getTom(), grad.getArbeidstidProsent()));
             builder.medStatus(andel.getAktivitetStatus());
             builder.medArbeidsgiver(mapArbeidsgiver(andel.getArbeidsgiver()));
             no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto arbeidsforholdRef = andel.getArbeidsforholdRef();

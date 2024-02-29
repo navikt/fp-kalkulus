@@ -3,11 +3,12 @@ package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -154,7 +155,7 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
         return AndelGradering.builder()
                 .medStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
                 .leggTilGradering(new AndelGradering.Gradering(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING,
-                        graderingTom), BigDecimal.valueOf(50)))
+                        graderingTom), Aktivitetsgrad.valueOf(50)))
                 .build();
     }
 
@@ -187,7 +188,7 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
     private no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering lagGradering() {
         return no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering.builder()
                 .medStatus(AktivitetStatus.ARBEIDSTAKER)
-                .leggTilGradering(new AndelGradering.Gradering(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING, TIDENES_ENDE), BigDecimal.valueOf(50)))
+                .leggTilGradering(new AndelGradering.Gradering(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING, TIDENES_ENDE), Aktivitetsgrad.valueOf(50)))
                 .medArbeidsgiver(ARBEIDSGIVER2).build();
     }
 

@@ -11,6 +11,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -444,7 +446,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
                 .medArbeidsgiver(arbeidsgiver1)
                 .medArbeidsforholdRef(ARBEIDSFORHOLD_REF)
                 .medStatus(AktivitetStatus.ARBEIDSTAKER)
-                .leggTilGradering(new AndelGradering.Gradering(graderingPeriode, BigDecimal.TEN))
+                .leggTilGradering(new AndelGradering.Gradering(graderingPeriode, Aktivitetsgrad.valueOf(10)))
                 .build();
 
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build();

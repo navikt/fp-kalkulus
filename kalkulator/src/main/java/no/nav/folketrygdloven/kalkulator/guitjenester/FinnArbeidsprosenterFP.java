@@ -30,7 +30,7 @@ public class FinnArbeidsprosenterFP implements FinnArbeidsprosenter {
             return prosentAndelerIPeriode;
         }
         AndelGradering.Gradering gradering = graderingForAndelIPeriode.get(0);
-        prosentAndelerIPeriode.add(gradering.getArbeidstidProsent());
+        prosentAndelerIPeriode.add(gradering.getArbeidstidProsent().verdi());
         if (graderingForAndelIPeriode.size() == 1) {
             if (graderingDekkerHeilePerioden(gradering, periode)) {
                 return prosentAndelerIPeriode;
@@ -41,7 +41,7 @@ public class FinnArbeidsprosenterFP implements FinnArbeidsprosenter {
 
         for (int i = 1; i < graderingForAndelIPeriode.size(); i++) {
             AndelGradering.Gradering nesteGradering = graderingForAndelIPeriode.get(i);
-            prosentAndelerIPeriode.add(nesteGradering.getArbeidstidProsent());
+            prosentAndelerIPeriode.add(nesteGradering.getArbeidstidProsent().verdi());
             if (!gradering.getPeriode().getFomDato().isBefore(periode.getTomDato())) {
                 break;
             }

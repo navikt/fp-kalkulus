@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
+
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
@@ -46,7 +48,7 @@ public class BeregningsgrunnlagDtoUtilTest {
     @Test
     public void arbeidsprosenter_for_uavsluttet_periode() {
         // Arrange
-        BigDecimal arbeidsprosent1 = BigDecimal.valueOf(20);
+        var arbeidsprosent1 = Aktivitetsgrad.valueOf(20);
         List<AndelGradering.Gradering> graderinger = new ArrayList<>();
         graderinger.add(new AndelGradering.Gradering(SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusWeeks(1), arbeidsprosent1));
 
@@ -54,7 +56,7 @@ public class BeregningsgrunnlagDtoUtilTest {
         List<BigDecimal> arbeidsandeler = new FinnArbeidsprosenterFP().finnArbeidsprosenterIPeriode(ARBEIDSTAKER_ANDEL, lagForeldrepengerGrunnlag(graderinger), Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING));
 
         // Assert
-        assertThat(arbeidsandeler).containsExactlyInAnyOrder(BigDecimal.ZERO ,arbeidsprosent1);
+        assertThat(arbeidsandeler).containsExactlyInAnyOrder(BigDecimal.ZERO ,arbeidsprosent1.verdi());
     }
 
     private ForeldrepengerGrunnlag lagForeldrepengerGrunnlag(List<AndelGradering.Gradering> graderinger) {
@@ -69,7 +71,7 @@ public class BeregningsgrunnlagDtoUtilTest {
     @Test
     public void arbeidsprosenter_for_uavsluttet_periode_og_uavsluttet_gradering() {
         // Arrange
-        BigDecimal arbeidsprosent1 = BigDecimal.valueOf(20);
+        var arbeidsprosent1 = Aktivitetsgrad.valueOf(20);
         List<AndelGradering.Gradering> graderinger = new ArrayList<>();
         graderinger.add(new AndelGradering.Gradering(SKJÆRINGSTIDSPUNKT_OPPTJENING, TIDENES_ENDE, arbeidsprosent1));
 
@@ -77,16 +79,16 @@ public class BeregningsgrunnlagDtoUtilTest {
         List<BigDecimal> arbeidsandeler = new FinnArbeidsprosenterFP().finnArbeidsprosenterIPeriode(ARBEIDSTAKER_ANDEL, lagForeldrepengerGrunnlag(graderinger), Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING));
 
         // Assert
-        assertThat(arbeidsandeler).containsExactly(arbeidsprosent1);
+        assertThat(arbeidsandeler).containsExactly(arbeidsprosent1.verdi());
     }
 
     @Test
     public void arbeidsprosenter_for_samanhengande_gradering_med_hull_på_slutten() {
         // Arrange
-        BigDecimal arbeidsprosent1 = BigDecimal.valueOf(20);
-        BigDecimal arbeidsprosent2 = BigDecimal.valueOf(30);
-        BigDecimal arbeidsprosent3 = BigDecimal.valueOf(40);
-        BigDecimal arbeidsprosent4 = BigDecimal.valueOf(50);
+        var arbeidsprosent1 = Aktivitetsgrad.valueOf(20);
+        var arbeidsprosent2 = Aktivitetsgrad.valueOf(30);
+        var arbeidsprosent3 = Aktivitetsgrad.valueOf(40);
+        var arbeidsprosent4 = Aktivitetsgrad.valueOf(50);
         List<AndelGradering.Gradering> graderinger = new ArrayList<>();
         graderinger.add(new AndelGradering.Gradering(SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusWeeks(1), arbeidsprosent1));
         graderinger.add(new AndelGradering.Gradering(SKJÆRINGSTIDSPUNKT_OPPTJENING.plusWeeks(1).plusDays(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusWeeks(2), arbeidsprosent2));
@@ -97,17 +99,17 @@ public class BeregningsgrunnlagDtoUtilTest {
         List<BigDecimal> arbeidsandeler = new FinnArbeidsprosenterFP().finnArbeidsprosenterIPeriode(ARBEIDSTAKER_ANDEL, lagForeldrepengerGrunnlag(graderinger), Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusWeeks(4).plusDays(1)));
 
         // Assert
-        assertThat(arbeidsandeler).containsExactlyInAnyOrder(BigDecimal.ZERO ,arbeidsprosent1, arbeidsprosent2, arbeidsprosent3, arbeidsprosent4);
+        assertThat(arbeidsandeler).containsExactlyInAnyOrder(BigDecimal.ZERO ,arbeidsprosent1.verdi(), arbeidsprosent2.verdi(), arbeidsprosent3.verdi(), arbeidsprosent4.verdi());
     }
 
     @Test
     public void arbeidsprosenter_for_ikkje_samanhengande_gradering() {
         // Arrange
-        BigDecimal arbeidsprosent1 = BigDecimal.valueOf(20);
-        BigDecimal arbeidsprosent2 = BigDecimal.valueOf(30);
-        BigDecimal arbeidsprosent3 = BigDecimal.valueOf(40);
-        BigDecimal arbeidsprosent4 = BigDecimal.valueOf(50);
-        BigDecimal arbeidsprosent5 = BigDecimal.valueOf(60);
+        var arbeidsprosent1 = Aktivitetsgrad.valueOf(20);
+        var arbeidsprosent2 = Aktivitetsgrad.valueOf(30);
+        var arbeidsprosent3 = Aktivitetsgrad.valueOf(40);
+        var arbeidsprosent4 = Aktivitetsgrad.valueOf(50);
+        var arbeidsprosent5 = Aktivitetsgrad.valueOf(60);
         List<AndelGradering.Gradering> graderinger = new ArrayList<>();
         graderinger.add(new AndelGradering.Gradering(SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusWeeks(1), arbeidsprosent1));
         graderinger.add(new AndelGradering.Gradering(SKJÆRINGSTIDSPUNKT_OPPTJENING.plusWeeks(1).plusDays(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusWeeks(2), arbeidsprosent2));
@@ -119,7 +121,7 @@ public class BeregningsgrunnlagDtoUtilTest {
         List<BigDecimal> arbeidsandeler = new FinnArbeidsprosenterFP().finnArbeidsprosenterIPeriode(ARBEIDSTAKER_ANDEL, lagForeldrepengerGrunnlag(graderinger), Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusWeeks(5)));
 
         // Assert
-        assertThat(arbeidsandeler).containsExactlyInAnyOrder(BigDecimal.ZERO ,arbeidsprosent1, arbeidsprosent2, arbeidsprosent3, arbeidsprosent4, arbeidsprosent5);
+        assertThat(arbeidsandeler).containsExactlyInAnyOrder(BigDecimal.ZERO ,arbeidsprosent1.verdi(), arbeidsprosent2.verdi(), arbeidsprosent3.verdi(), arbeidsprosent4.verdi(), arbeidsprosent5.verdi());
     }
 
     @Test

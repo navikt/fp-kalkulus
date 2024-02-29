@@ -344,7 +344,7 @@ public class RefusjonOgGraderingTjenesteTest {
 
         AktivitetGradering aktivitetGradering = new AktivitetGradering(AndelGradering.builder()
             .medStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
-            .leggTilGradering(fom, tom, BigDecimal.valueOf(50))
+            .medGradering(fom, tom, 50)
             .build());
 
         // Act
@@ -367,7 +367,7 @@ public class RefusjonOgGraderingTjenesteTest {
         // Act
         AktivitetGradering aktivitetGradering = new AktivitetGradering(AndelGradering.builder()
             .medStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
-            .leggTilGradering(fom, tom, BigDecimal.valueOf(50))
+            .medGradering(fom, tom, 50)
             .build());
 
         Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, aktivitetGradering, List.of());
