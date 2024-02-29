@@ -13,8 +13,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
-import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
 @JsonIgnoreProperties(ignoreUnknown = true)

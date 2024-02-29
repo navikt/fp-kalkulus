@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Aktivitetsgrad;
 
 import org.junit.jupiter.api.Test;
 

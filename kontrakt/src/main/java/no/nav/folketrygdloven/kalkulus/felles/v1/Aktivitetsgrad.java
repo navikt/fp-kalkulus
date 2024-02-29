@@ -1,13 +1,29 @@
-package no.nav.folketrygdloven.kalkulus.typer;
+package no.nav.folketrygdloven.kalkulus.felles.v1;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
-public record Aktivitetsgrad(BigDecimal verdi) implements Comparable<Aktivitetsgrad> {
+public record Aktivitetsgrad(@JsonValue
+                    @Valid
+                    @NotNull
+                    @DecimalMin(value = "0.00")
+                    @DecimalMax(value = "100.00")
+                    @Digits(integer = 3, fraction = 2)
+                    BigDecimal verdi) implements Comparable<Aktivitetsgrad> {
 
     public static final Aktivitetsgrad ZERO = Aktivitetsgrad.fra(BigDecimal.ZERO);
     public static final Aktivitetsgrad HUNDRE = Aktivitetsgrad.fra(BigDecimal.valueOf(100));
 
+    @JsonCreator
     public static Aktivitetsgrad fra(BigDecimal grad) {
         return grad != null ? new Aktivitetsgrad(grad) : null;
     }

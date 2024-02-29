@@ -11,6 +11,7 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.UtbetalingsgradPrAktivitetDto;
+import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
 class UtbetalingsgradMapper {
@@ -40,7 +41,8 @@ class UtbetalingsgradMapper {
     }
 
     private static PeriodeMedUtbetalingsgradDto mapPeriodeMedUtbetalingsgrad(no.nav.folketrygdloven.kalkulus.beregning.v1.PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto) {
-        return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(periodeMedUtbetalingsgradDto.getPeriode().getFom(), periodeMedUtbetalingsgradDto.getPeriode().getTom()), periodeMedUtbetalingsgradDto.getUtbetalingsgrad(), periodeMedUtbetalingsgradDto.getAktivitetsgrad());
+        var aktivitetsgradDomene = periodeMedUtbetalingsgradDto.getAktivitetsgrad() == null ? null : Aktivitetsgrad.fra(periodeMedUtbetalingsgradDto.getAktivitetsgrad().verdi());
+        return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(periodeMedUtbetalingsgradDto.getPeriode().getFom(), periodeMedUtbetalingsgradDto.getPeriode().getTom()), periodeMedUtbetalingsgradDto.getUtbetalingsgrad(), aktivitetsgradDomene);
     }
 
     public static AktivitetDto mapArbeidsforhold(no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetDto aktivitetDto) {
