@@ -54,7 +54,8 @@ public class PdpRequestBuilderImpl implements PdpRequestBuilder {
     public PdpRequest lagPdpRequest(AbacAttributtSamling attributter) {
         var saksnr = attributter.getVerdier(StandardAbacAttributtType.SAKSNUMMER);
         if (!saksnr.isEmpty()) {
-            MDC.put("prosess_saksnummer", saksnr.iterator().next().toString());
+            var nesteSak = (no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer) saksnr.iterator().next();
+            MDC.put("prosess_saksnummer", nesteSak.verdi());
         }
 
         PdpRequest pdpRequest = new PdpRequest();
