@@ -61,7 +61,7 @@ public class SaksnummerDto implements AbacDto {
     @Override
     public AbacDataAttributter abacAttributter() {
         final var abacDataAttributter = AbacDataAttributter.opprett();
-        abacDataAttributter.leggTil(StandardAbacAttributtType.SAKSNUMMER, getVerdi().getVerdi());
+        abacDataAttributter.leggTil(StandardAbacAttributtType.SAKSNUMMER, new no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer(getVerdi().getVerdi()));
         return abacDataAttributter;
     }
 

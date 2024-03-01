@@ -87,10 +87,10 @@ public class PdpRequestBuilderImpl implements PdpRequestBuilder {
     }
 
     private Optional<AktørId> utledAktørId(AbacAttributtSamling attributter) {
-        Set<String> saksnummer = attributter.getVerdier(StandardAbacAttributtType.SAKSNUMMER);
+        Set<no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer> saksnummer = attributter.getVerdier(StandardAbacAttributtType.SAKSNUMMER);
         if (saksnummer.isEmpty()) {
             return Optional.empty();
         }
-        return koblingTjeneste.hentAktørIdForSak(new Saksnummer(saksnummer.iterator().next()));
+        return koblingTjeneste.hentAktørIdForSak(new Saksnummer(saksnummer.iterator().next().verdi()));
     }
 }
