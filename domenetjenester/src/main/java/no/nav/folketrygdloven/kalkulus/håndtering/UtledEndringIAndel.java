@@ -3,9 +3,11 @@ package no.nav.folketrygdloven.kalkulus.håndtering;
 import java.util.Objects;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
 import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
@@ -14,7 +16,6 @@ import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.Beregningsgrunnla
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.InntektEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.InntektskategoriEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.RefusjonEndring;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class UtledEndringIAndel {
 
@@ -56,7 +57,7 @@ public class UtledEndringIAndel {
 
     private static InntektEndring lagInntektEndring(BeregningsgrunnlagPrStatusOgAndelDto andel, Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
         return Beløp.safeVerdi(andel.getBruttoPrÅr()) != null ?
-                new InntektEndring(forrigeAndel.map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoPrÅr).orElse(null), andel.getBruttoPrÅr()) : null;
+                new InntektEndring(forrigeAndel.map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoPrÅr).map(ModellTyperMapper::beløpTilDto).orElse(null), ModellTyperMapper.beløpTilDto(andel.getBruttoPrÅr())) : null;
     }
 
     private static InntektskategoriEndring utledInntektskategoriEndring(BeregningsgrunnlagPrStatusOgAndelDto andel, Optional<BeregningsgrunnlagPrStatusOgAndelDto> andelFraSteg, Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
@@ -85,7 +86,7 @@ public class UtledEndringIAndel {
     }
 
     private static RefusjonEndring initRefusjonEndring(BeregningsgrunnlagPrStatusOgAndelDto andel, Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
-        return new RefusjonEndring(finnRefusjon(forrigeAndel), initRefusjon(andel));
+        return new RefusjonEndring(ModellTyperMapper.beløpTilDto(finnRefusjon(forrigeAndel)), ModellTyperMapper.beløpTilDto(initRefusjon(andel)));
     }
 
     private static Beløp initRefusjon(BeregningsgrunnlagPrStatusOgAndelDto andel) {

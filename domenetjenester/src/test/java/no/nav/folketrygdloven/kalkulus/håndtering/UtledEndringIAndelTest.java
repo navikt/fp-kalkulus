@@ -3,18 +3,18 @@ package no.nav.folketrygdloven.kalkulus.håndtering;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class UtledEndringIAndelTest {
 
@@ -24,7 +24,7 @@ public class UtledEndringIAndelTest {
     @Test
     public void skal_utlede_endring_for_arbeidstaker_uten_forrige_andel() {
         // Arrange
-        BigDecimal inntekt = BigDecimal.TEN;
+        var inntekt = Beløp.fra(10);
         Inntektskategori inntektskategori = Inntektskategori.FRILANSER;
         BeregningsgrunnlagPrStatusOgAndelDto andelUtenInntektskategori = lagArbeidstakerAndel(inntekt, null);
         BeregningsgrunnlagPrStatusOgAndelDto nyAndel = lagArbeidstakerAndel(inntekt, inntektskategori);
@@ -38,7 +38,7 @@ public class UtledEndringIAndelTest {
         assertThat(endring.get().getArbeidsgiver().getIdent()).isEqualTo(ARBEIDSGIVER_ORGNR);
         assertThat(endring.get().getArbeidsforholdRef().toString()).isEqualTo(ARBEIDSFORHOLD_REF.getReferanse());
         assertThat(endring.get().getInntektEndring().getFraInntekt()).isNull();
-        assertThat(endring.get().getInntektEndring().getTilInntekt().verdi()).isEqualTo(inntekt);
+        assertThat(endring.get().getInntektEndring().getTilInntekt()).isEqualTo(inntekt);
         assertThat(endring.get().getInntektskategoriEndring().getFraVerdi()).isNull();
         assertThat(endring.get().getInntektskategoriEndring().getTilVerdi()).isEqualTo(inntektskategori);
     }
@@ -46,11 +46,11 @@ public class UtledEndringIAndelTest {
     @Test
     public void skal_utlede_endring_for_arbeidstaker_med_forrige_andel() {
         // Arrange
-        BigDecimal inntekt = BigDecimal.TEN;
+        var inntekt = Beløp.fra(10);
         Inntektskategori inntektskategori = Inntektskategori.FRILANSER;
         BeregningsgrunnlagPrStatusOgAndelDto nyAndel = lagArbeidstakerAndel(inntekt, inntektskategori);
         Inntektskategori forrigeInntektskategori = Inntektskategori.ARBEIDSTAKER;
-        BigDecimal forrigeInntekt = BigDecimal.ZERO;
+        var forrigeInntekt = Beløp.ZERO;
         BeregningsgrunnlagPrStatusOgAndelDto forrigeAndel = lagArbeidstakerAndel(forrigeInntekt, forrigeInntektskategori);
 
         // Act
@@ -61,8 +61,8 @@ public class UtledEndringIAndelTest {
         assertThat(endring.get().getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER);
         assertThat(endring.get().getArbeidsgiver().getIdent()).isEqualTo(ARBEIDSGIVER_ORGNR);
         assertThat(endring.get().getArbeidsforholdRef().toString()).isEqualTo(ARBEIDSFORHOLD_REF.getReferanse());
-        assertThat(endring.get().getInntektEndring().getFraInntekt().verdi()).isEqualTo(forrigeInntekt);
-        assertThat(endring.get().getInntektEndring().getTilInntekt().verdi()).isEqualTo(inntekt);
+        assertThat(endring.get().getInntektEndring().getFraInntekt()).isEqualTo(forrigeInntekt);
+        assertThat(endring.get().getInntektEndring().getTilInntekt()).isEqualTo(inntekt);
         assertThat(endring.get().getInntektskategoriEndring().getFraVerdi()).isEqualTo(forrigeInntektskategori);
         assertThat(endring.get().getInntektskategoriEndring().getTilVerdi()).isEqualTo(inntektskategori);
     }
@@ -70,11 +70,11 @@ public class UtledEndringIAndelTest {
     @Test
     public void skal_utlede_endring_for_frilans_med_forrige_andel() {
         // Arrange
-        BigDecimal inntekt = BigDecimal.TEN;
+        var inntekt = Beløp.fra(10);
         Inntektskategori inntektskategori = Inntektskategori.FISKER;
         BeregningsgrunnlagPrStatusOgAndelDto nyAndel = lagFrilanserAndel(inntekt, inntektskategori);
         Inntektskategori forrigeInntektskategori = Inntektskategori.FRILANSER;
-        BigDecimal forrigeInntekt = BigDecimal.ZERO;
+        var forrigeInntekt = Beløp.ZERO;
         BeregningsgrunnlagPrStatusOgAndelDto forrigeAndel = lagFrilanserAndel(forrigeInntekt, forrigeInntektskategori);
 
         // Act
@@ -85,16 +85,16 @@ public class UtledEndringIAndelTest {
         assertThat(endring.get().getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.FRILANSER);
         assertThat(endring.get().getArbeidsgiver()).isNull();
         assertThat(endring.get().getArbeidsforholdRef()).isNull();
-        assertThat(endring.get().getInntektEndring().getFraInntekt().verdi()).isEqualTo(forrigeInntekt);
-        assertThat(endring.get().getInntektEndring().getTilInntekt().verdi()).isEqualTo(inntekt);
+        assertThat(endring.get().getInntektEndring().getFraInntekt()).isEqualTo(forrigeInntekt);
+        assertThat(endring.get().getInntektEndring().getTilInntekt()).isEqualTo(inntekt);
         assertThat(endring.get().getInntektskategoriEndring().getFraVerdi()).isEqualTo(forrigeInntektskategori);
         assertThat(endring.get().getInntektskategoriEndring().getTilVerdi()).isEqualTo(inntektskategori);
     }
 
-    private BeregningsgrunnlagPrStatusOgAndelDto lagArbeidstakerAndel(BigDecimal inntekt, Inntektskategori inntektskategori) {
+    private BeregningsgrunnlagPrStatusOgAndelDto lagArbeidstakerAndel(Beløp inntekt, Inntektskategori inntektskategori) {
         return BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
                 .medInntektskategori(inntektskategori)
-                .medBeregnetPrÅr(Beløp.fra(inntekt))
+                .medBeregnetPrÅr(ModellTyperMapper.beløpFraDto(inntekt))
                 .medAndelsnr(1L)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
@@ -103,10 +103,10 @@ public class UtledEndringIAndelTest {
                 .build();
     }
 
-    private BeregningsgrunnlagPrStatusOgAndelDto lagFrilanserAndel(BigDecimal inntekt, Inntektskategori inntektskategori) {
+    private BeregningsgrunnlagPrStatusOgAndelDto lagFrilanserAndel(Beløp inntekt, Inntektskategori inntektskategori) {
         return BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
                 .medInntektskategori(inntektskategori)
-                .medBeregnetPrÅr(Beløp.fra(inntekt))
+                .medBeregnetPrÅr(ModellTyperMapper.beløpFraDto(inntekt))
                 .medAndelsnr(1L)
                 .medAktivitetStatus(AktivitetStatus.FRILANSER)
                 .build();

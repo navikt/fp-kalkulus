@@ -20,6 +20,7 @@ import java.util.List;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.input.GrunnbeløpInput;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 
 public class GrunnbeløpMock {
 
@@ -33,9 +34,8 @@ public class GrunnbeløpMock {
             new GrunnbeløpInput(LocalDate.of(2019, 5, 1), LocalDate.of(2020, 4, 30), GRUNNBELØP_2019, GSNITT_2019)
     );
 
-    public static Long finnGrunnbeløp(LocalDate dato) {
-        return finnGyldigGrunnbeløpPåDato(dato)
-            .gVerdi();
+    public static Beløp finnGrunnbeløp(LocalDate dato) {
+        return Beløp.fra(finnGyldigGrunnbeløpPåDato(dato).gVerdi().intValue());
     }
 
     private static GrunnbeløpInput finnGyldigGrunnbeløpPåDato(LocalDate dato) {

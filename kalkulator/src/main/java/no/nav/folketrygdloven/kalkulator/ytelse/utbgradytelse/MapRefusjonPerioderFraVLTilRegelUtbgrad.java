@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;

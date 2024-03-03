@@ -1,13 +1,12 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.frisinn;
 
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittPeriodeInntekt;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.tid.Virkedager;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public final class EffektivÅrsinntektTjenesteFRISINN {
 
@@ -21,9 +20,9 @@ public final class EffektivÅrsinntektTjenesteFRISINN {
      * @param oppgittInntekt oppgitt inntektsinformasjon
      * @return effektiv årsinntekt fra inntekt
      */
-    public static BigDecimal finnEffektivÅrsinntektForLøpenedeInntekt(OppgittPeriodeInntekt oppgittInntekt) {
-        BigDecimal dagsats = finnEffektivDagsatsIPeriode(oppgittInntekt);
-        return dagsats.multiply(KonfigTjeneste.getYtelsesdagerIÅr());
+    public static Beløp finnEffektivÅrsinntektForLøpenedeInntekt(OppgittPeriodeInntekt oppgittInntekt) {
+        var dagsats = finnEffektivDagsatsIPeriode(oppgittInntekt);
+        return dagsats.multipliser(KonfigTjeneste.getYtelsesdagerIÅr());
     }
 
     /**
@@ -32,12 +31,12 @@ public final class EffektivÅrsinntektTjenesteFRISINN {
      * @param oppgittInntekt Informasjon om oppgitt inntekt
      * @return dagsats i periode
      */
-    private static BigDecimal finnEffektivDagsatsIPeriode(OppgittPeriodeInntekt oppgittInntekt) {
+    private static Beløp finnEffektivDagsatsIPeriode(OppgittPeriodeInntekt oppgittInntekt) {
         Intervall periode = oppgittInntekt.getPeriode();
-        long dagerIRapportertPeriode = Virkedager.beregnAntallVirkedagerEllerKunHelg(periode.getFomDato(), periode.getTomDato());
+        var dagerIRapportertPeriode = Virkedager.beregnAntallVirkedagerEllerKunHelg(periode.getFomDato(), periode.getTomDato());
         if (Beløp.safeVerdi(oppgittInntekt.getInntekt()) == null) {
-            return BigDecimal.ZERO;
+            return Beløp.ZERO;
         }
-        return oppgittInntekt.getInntekt().verdi().divide(BigDecimal.valueOf(dagerIRapportertPeriode), 10, RoundingMode.HALF_EVEN);
+        return oppgittInntekt.getInntekt().divider(dagerIRapportertPeriode, 10, RoundingMode.HALF_EVEN);
     }
 }

@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 
 public class RefusjonPeriodeEndring {
     private List<RefusjonAndel> originaleAndeler;

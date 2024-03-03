@@ -13,18 +13,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import no.nav.folketrygdloven.kalkulus.felles.v1.Aktivitetsgrad;
-
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulus.UuidDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetGraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AndelGraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.GraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.RefusjonskravDatoDto;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
-import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
@@ -57,14 +55,13 @@ import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.request.v1.BeregnForRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.BeregnListeRequest;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class KalkulatorMapperTest {
 
     private final InternArbeidsforholdRefDto ref = new InternArbeidsforholdRefDto(UUID.randomUUID().toString());
     private final Periode periode = new Periode(LocalDate.now(), LocalDate.now().plusMonths(2));
     private final Organisasjon organisasjon = new Organisasjon("974652269");
-    private final BeløpDto beløpDto = new BeløpDto(BigDecimal.TEN);
+    private final Beløp beløpDto = Beløp.fra(BigDecimal.TEN);
 
     @Test
     void skal_generere_og_validere_roundtrip_kalkulator_input_json() throws Exception {
@@ -72,7 +69,6 @@ public class KalkulatorMapperTest {
         KalkulatorInputDto grunnlag = byggKalkulatorInput();
 
         String json = WRITER_JSON.writeValueAsString(grunnlag);
-        System.out.println(json);
 
         KalkulatorInputDto roundTripped = READER_JSON.forType(KalkulatorInputDto.class).readValue(json);
 
@@ -89,21 +85,20 @@ public class KalkulatorMapperTest {
         AktørIdPersonident dummy = AktørIdPersonident.dummy();
         KalkulatorInputDto kalkulatorInputDto = byggKalkulatorInput();
 
-        UuidDto koblingReferanse = new UuidDto(UUID.randomUUID());
+        var enUuid = UUID.randomUUID();
         BeregnListeRequest spesifikasjon = new BeregnListeRequest(
                 saksnummer, UUID.randomUUID(), dummy, FagsakYtelseType.PLEIEPENGER_SYKT_BARN,
                 BeregningSteg.FASTSETT_STP_BER,
-                List.of(new BeregnForRequest(koblingReferanse.toUuidReferanse(), List.of(UUID.randomUUID()), kalkulatorInputDto, null)));
+                List.of(new BeregnForRequest(enUuid, List.of(UUID.randomUUID()), kalkulatorInputDto, null)));
 
         String json = WRITER_JSON.writeValueAsString(spesifikasjon);
-        System.out.println(json);
 
         BeregnListeRequest roundTripped = READER_JSON.forType(BeregnListeRequest.class).readValue(json);
 
         assertThat(roundTripped).isNotNull();
         assertThat(roundTripped.getAktør()).isEqualTo(dummy);
         assertThat(roundTripped.getSaksnummer()).isEqualTo(saksnummer);
-        assertThat(roundTripped.getBeregnForListe().iterator().next().getEksternReferanse()).isEqualTo(koblingReferanse.toUuidReferanse());
+        assertThat(roundTripped.getBeregnForListe().getFirst().getEksternReferanse()).isEqualTo(enUuid);
         validateResult(roundTripped);
     }
 
@@ -128,8 +123,8 @@ public class KalkulatorMapperTest {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = new InntektArbeidYtelseGrunnlagDto();
         iayGrunnlag.medArbeidDto(new ArbeidDto(List.of(new YrkesaktivitetDto(organisasjon, ref, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD, List.of(new AktivitetsAvtaleDto(periode, null, IayProsent.fra(100)), new AktivitetsAvtaleDto(periode, null, null))))));
         iayGrunnlag.medYtelserDto(new YtelserDto(byggYtelseDto()));
-        iayGrunnlag.medInntekterDto(new InntekterDto(List.of(new UtbetalingDto(InntektskildeType.INNTEKT_BEREGNING, List.of(new UtbetalingsPostDto(periode, InntektspostType.LØNN, Beløp.fra(1000L)))))));
-        iayGrunnlag.medInntektsmeldingerDto(new InntektsmeldingerDto(List.of(new InntektsmeldingDto(organisasjon, new BeløpDto(BigDecimal.valueOf(100)), List.of(), List.of(), null, null, null, null, null, null))));
+        iayGrunnlag.medInntekterDto(new InntekterDto(List.of(new UtbetalingDto(InntektskildeType.INNTEKT_BEREGNING, List.of(new UtbetalingsPostDto(periode, InntektspostType.LØNN, Beløp.fra(1000)))))));
+        iayGrunnlag.medInntektsmeldingerDto(new InntektsmeldingerDto(List.of(new InntektsmeldingDto(organisasjon, Beløp.fra(100), List.of(), List.of(), null, null, null, null, null, null))));
         return iayGrunnlag;
     }
 

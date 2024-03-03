@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.SvangerskapspengerGrunnlag;
@@ -24,6 +25,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
@@ -34,12 +36,11 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.AndelMedBeløpDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.KunYtelseDto;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class KunYtelseDtoTjenesteTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.MAY, 10);
-    private static final int BRUTTO_PR_ÅR = 10000;
+    private static final Beløp BRUTTO_PR_ÅR = Beløp.fra(10000);
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_OPPTJENING);
 
     private KunYtelseDtoTjeneste kunYtelseDtoTjeneste;
@@ -208,7 +209,7 @@ public class KunYtelseDtoTjenesteTest {
         // Assert
         List<AndelMedBeløpDto> andeler = kunytelse.getAndeler();
         assertThat(andeler).hasSize(1);
-        assertThat(andeler.get(0).getFastsattBelopPrMnd()).isNotEqualByComparingTo(Beløp.fra(BRUTTO_PR_ÅR));
+        assertThat(andeler.get(0).getFastsattBelopPrMnd()).isNotEqualByComparingTo(ModellTyperMapper.beløpTilDto(BRUTTO_PR_ÅR));
         assertThat(andeler.get(0).getAktivitetStatus()).isEqualTo(AktivitetStatus.BRUKERS_ANDEL);
         assertThat(andeler.get(0).getAndelsnr()).isEqualTo(1L);
         assertThat(andeler.get(0).getInntektskategori()).isEqualTo(Inntektskategori.UDEFINERT);
@@ -236,7 +237,7 @@ public class KunYtelseDtoTjenesteTest {
         // Assert
         List<AndelMedBeløpDto> andeler = kunytelse.getAndeler();
         assertThat(andeler).hasSize(1);
-        assertThat(andeler.get(0).getFastsattBelopPrMnd()).isNotEqualByComparingTo(Beløp.fra(BRUTTO_PR_ÅR));
+        assertThat(andeler.get(0).getFastsattBelopPrMnd()).isNotEqualByComparingTo(ModellTyperMapper.beløpTilDto(BRUTTO_PR_ÅR));
         assertThat(andeler.get(0).getAktivitetStatus()).isEqualTo(AktivitetStatus.BRUKERS_ANDEL);
         assertThat(andeler.get(0).getAndelsnr()).isEqualTo(1L);
         assertThat(andeler.get(0).getInntektskategori()).isEqualTo(Inntektskategori.UDEFINERT);
@@ -264,8 +265,8 @@ public class KunYtelseDtoTjenesteTest {
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
                 .build(bg);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-                .medBesteberegningPrÅr(medBesteberegning ? Beløp.fra(BRUTTO_PR_ÅR) : null)
-                .medBeregnetPrÅr(Beløp.fra(BRUTTO_PR_ÅR))
+                .medBesteberegningPrÅr(medBesteberegning ? BRUTTO_PR_ÅR : null)
+                .medBeregnetPrÅr(BRUTTO_PR_ÅR)
                 .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.BRUKERS_ANDEL)
                 .build(periode1);
 

@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
@@ -24,7 +24,7 @@ public class YtelseDto {
 
     @JsonProperty(value = "vedtaksDagsats")
     @Valid
-    private BeløpDto vedtaksDagsats;
+    private Beløp vedtaksDagsats;
 
     @JsonProperty("ytelseAnvist")
     @Valid
@@ -50,7 +50,7 @@ public class YtelseDto {
         // default ctor
     }
 
-    public YtelseDto(@Valid BeløpDto vedtaksDagsats,
+    public YtelseDto(@Valid Beløp vedtaksDagsats,
                      @Valid @Size Set<YtelseAnvistDto> ytelseAnvist,
                      @Valid @NotNull YtelseType relatertYtelseType,
                      @Valid @NotNull Periode periode,
@@ -74,7 +74,7 @@ public class YtelseDto {
         return periode;
     }
 
-    public BeløpDto getVedtaksDagsats() {
+    public Beløp getVedtaksDagsats() {
         return vedtaksDagsats;
     }
 

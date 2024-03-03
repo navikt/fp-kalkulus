@@ -20,9 +20,9 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class InntektForAndelTjeneste {
 
@@ -37,10 +37,10 @@ class InntektForAndelTjeneste {
             return Optional.empty();
         }
         var totalBeløp = finnTotalbeløpIBeregningsperioden(filter, andel, tilDato, beregningsperiodeLengdeIMnd);
-        return Optional.of(totalBeløp).map(tb -> tb.map(t -> t.divide(BigDecimal.valueOf(beregningsperiodeLengdeIMnd), 10, RoundingMode.HALF_EVEN)));
+        return Optional.of(totalBeløp).map(tb -> tb.divider(BigDecimal.valueOf(beregningsperiodeLengdeIMnd), 10, RoundingMode.HALF_EVEN));
     }
 
-    private static long finnHeleMåneder(Intervall periode) {
+    private static int finnHeleMåneder(Intervall periode) {
         int antallMåneder = 0;
         LocalDate date = periode.getFomDato().minusDays(1).with(TemporalAdjusters.lastDayOfMonth());
         while (date.isBefore(periode.getTomDato())) {
@@ -126,7 +126,7 @@ class InntektForAndelTjeneste {
             AtomicReference<Beløp> totalBeløp = new AtomicReference<>(Beløp.ZERO);
             frilansInntekter.forFilter((inntekt, inntektsposter) -> totalBeløp
                     .set(totalBeløp.get().adder(summerInntekterIBeregningsperioden(tilDato, inntektsposter, beregningsperiodeLengdeIMnd))));
-            return Optional.of(totalBeløp.get().map(v -> v.divide(BigDecimal.valueOf(beregningsperiodeLengdeIMnd), 10, RoundingMode.HALF_EVEN)));
+            return Optional.of(totalBeløp.get().divider(BigDecimal.valueOf(beregningsperiodeLengdeIMnd), 10, RoundingMode.HALF_EVEN));
 
         }
         return Optional.empty();

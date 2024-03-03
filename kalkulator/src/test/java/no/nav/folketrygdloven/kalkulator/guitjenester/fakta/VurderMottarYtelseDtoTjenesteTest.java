@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Collections;
@@ -13,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -33,6 +33,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningIAYTestUtil;
@@ -46,7 +47,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.ArbeidstakerUtenInntektsmeldingAndelDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.VurderMottarYtelseDto;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 public class VurderMottarYtelseDtoTjenesteTest {
@@ -54,11 +54,11 @@ public class VurderMottarYtelseDtoTjenesteTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, 9, 30);
     private static final String ORGNR = "973093681";
     private static final EksternArbeidsforholdRef EKSTERN_ARB_ID = EksternArbeidsforholdRef.ref("TEST_REF1");
-    private static final BigDecimal INNTEKT1 = BigDecimal.valueOf(10000);
-    private static final BigDecimal INNTEKT2 = BigDecimal.valueOf(20000);
-    private static final BigDecimal INNTEKT3 = BigDecimal.valueOf(30000);
-    private static final List<BigDecimal> INNTEKT_PR_MND = List.of(INNTEKT1, INNTEKT2, INNTEKT3);
-    private static final BigDecimal INNTEKT_SNITT = INNTEKT1.add(INNTEKT2.add(INNTEKT3)).divide(BigDecimal.valueOf(3), 10, RoundingMode.HALF_EVEN);
+    private static final Beløp INNTEKT1 = Beløp.fra(10000);
+    private static final Beløp INNTEKT2 = Beløp.fra(20000);
+    private static final Beløp INNTEKT3 = Beløp.fra(30000);
+    private static final List<Beløp> INNTEKT_PR_MND = List.of(INNTEKT1, INNTEKT2, INNTEKT3);
+    private static final Beløp INNTEKT_SNITT = INNTEKT1.adder(INNTEKT2.adder(INNTEKT3)).divider(3, 10, RoundingMode.HALF_EVEN);
     private static final String FRILANS_ORGNR = "853498598934";
 
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_OPPTJENING);
@@ -102,13 +102,13 @@ public class VurderMottarYtelseDtoTjenesteTest {
         VurderMottarYtelseDto mottarYtelseDto = dto.getVurderMottarYtelse();
         assertThat(mottarYtelseDto.getErFrilans()).isTrue();
         assertThat(mottarYtelseDto.getFrilansMottarYtelse()).isNull();
-        assertThat(mottarYtelseDto.getFrilansInntektPrMnd().verdi()).isEqualByComparingTo(INNTEKT_SNITT);
+        assertThat(mottarYtelseDto.getFrilansInntektPrMnd()).isEqualByComparingTo(ModellTyperMapper.beløpTilDto(INNTEKT_SNITT));
         assertThat(mottarYtelseDto.getArbeidstakerAndelerUtenIM()).hasSize(1);
         ArbeidstakerUtenInntektsmeldingAndelDto andelUtenIM = mottarYtelseDto.getArbeidstakerAndelerUtenIM().get(0);
         assertThat(andelUtenIM.getMottarYtelse()).isNull();
         assertThat(andelUtenIM.getArbeidsforhold().getArbeidsgiverIdent()).isEqualTo(ORGNR);
         assertThat(andelUtenIM.getAndelsnr()).isEqualTo(arbeidsforholdAndel.getAndelsnr());
-        assertThat(andelUtenIM.getInntektPrMnd().verdi()).isEqualByComparingTo(INNTEKT_SNITT);
+        assertThat(andelUtenIM.getInntektPrMnd()).isEqualByComparingTo(ModellTyperMapper.beløpTilDto(INNTEKT_SNITT));
     }
 
     @Test
@@ -134,13 +134,13 @@ public class VurderMottarYtelseDtoTjenesteTest {
         VurderMottarYtelseDto mottarYtelseDto = dto.getVurderMottarYtelse();
         assertThat(mottarYtelseDto.getErFrilans()).isTrue();
         assertThat(mottarYtelseDto.getFrilansMottarYtelse()).isFalse();
-        assertThat(mottarYtelseDto.getFrilansInntektPrMnd().verdi()).isEqualByComparingTo(INNTEKT_SNITT);
+        assertThat(mottarYtelseDto.getFrilansInntektPrMnd()).isEqualByComparingTo(ModellTyperMapper.beløpTilDto(INNTEKT_SNITT));
         assertThat(mottarYtelseDto.getArbeidstakerAndelerUtenIM()).hasSize(1);
         ArbeidstakerUtenInntektsmeldingAndelDto andelUtenIM = mottarYtelseDto.getArbeidstakerAndelerUtenIM().get(0);
         assertThat(andelUtenIM.getMottarYtelse()).isTrue();
         assertThat(andelUtenIM.getArbeidsforhold().getArbeidsgiverIdent()).isEqualTo(ORGNR);
         assertThat(andelUtenIM.getAndelsnr()).isEqualTo(arbeidsforholdAndel.getAndelsnr());
-        assertThat(andelUtenIM.getInntektPrMnd().verdi()).isEqualByComparingTo(INNTEKT_SNITT);
+        assertThat(andelUtenIM.getInntektPrMnd()).isEqualByComparingTo(ModellTyperMapper.beløpTilDto(INNTEKT_SNITT));
     }
 
     private void byggFrilansAndel() {

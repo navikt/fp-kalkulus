@@ -3,8 +3,8 @@ package no.nav.folketrygdloven.kalkulator.felles.inntektgradering;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public record DagsatsPrKategoriOgArbeidsgiver(Inntektskategori inntektskategori,
                                               Arbeidsgiver arbeidsgiver,

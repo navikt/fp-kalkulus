@@ -166,8 +166,8 @@ public class MapTilAvslagsårsakerFRISINN {
         return periodeInntekter.stream()
                 .filter(i -> i.getPeriode().getFomDato().equals(periode.getFomDato()))
                 .map(EffektivÅrsinntektTjenesteFRISINN::finnEffektivÅrsinntektForLøpenedeInntekt)
-                .map(Beløp::new)
-                .reduce(Beløp::adder)
+                .reduce(no.nav.folketrygdloven.kalkulator.modell.typer.Beløp::adder)
+                .map(VerdityperMapper::beløpTilDao)
                 .orElse(Beløp.ZERO);
     }
 }

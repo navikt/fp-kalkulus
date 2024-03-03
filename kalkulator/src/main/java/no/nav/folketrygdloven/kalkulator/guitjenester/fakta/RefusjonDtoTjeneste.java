@@ -1,22 +1,24 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering.Gradering;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.FordelingGraderingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagAndelDto;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 /**
  * Tjeneste som henter ut informasjon relatert til refusjon fra beregnigsgrunnlag og setter det på dto-objekt
@@ -70,14 +72,17 @@ public class RefusjonDtoTjeneste {
     public static void settRefusjonskrav(BeregningsgrunnlagPrStatusOgAndelDto andel,
                                          FordelBeregningsgrunnlagAndelDto endringAndel) {
         if (andel.erLagtTilAvSaksbehandler()) {
-            endringAndel.setRefusjonskravFraInntektsmeldingPrÅr(no.nav.folketrygdloven.kalkulus.typer.Beløp.ZERO);
+            endringAndel.setRefusjonskravFraInntektsmeldingPrÅr(no.nav.folketrygdloven.kalkulus.felles.v1.Beløp.ZERO);
         } else {
             andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr)
-                    .ifPresent(endringAndel::setRefusjonskravFraInntektsmeldingPrÅr);
+                    .map(b -> b.map(v -> v.setScale(0, RoundingMode.HALF_UP)))
+                    .map(ModellTyperMapper::beløpTilDto).ifPresent(endringAndel::setRefusjonskravFraInntektsmeldingPrÅr);
         }
         endringAndel.setRefusjonskravPrAar(andel.getBgAndelArbeidsforhold()
             .map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr)
-            .orElse(no.nav.folketrygdloven.kalkulus.typer.Beløp.ZERO));
+            .map(b -> b.map(v -> v.setScale(0, RoundingMode.HALF_UP)))
+            .map(ModellTyperMapper::beløpTilDto)
+            .orElse(no.nav.folketrygdloven.kalkulus.felles.v1.Beløp.ZERO));
     }
 
 
@@ -87,11 +92,11 @@ public class RefusjonDtoTjeneste {
      * @param endringAndeler Liste med Dto-objekt for andeler
      */
     public static void slåSammenRefusjonForAndelerISammeArbeidsforhold(List<FordelBeregningsgrunnlagAndelDto> endringAndeler) {
-        Map<BeregningsgrunnlagArbeidsforholdDto, Beløp> totalRefusjonMap = getTotalrefusjonPrArbeidsforhold(endringAndeler);
+        var totalRefusjonMap = getTotalrefusjonPrArbeidsforhold(endringAndeler);
         endringAndeler.forEach(andel -> {
             if (harArbeidsforholdOgErIkkjeLagtTilAvSaksbehandler(andel)) {
                 BeregningsgrunnlagArbeidsforholdDto arbeidsforhold = andel.getArbeidsforhold();
-                var totalRefusjonForArbeidsforhold = totalRefusjonMap.get(arbeidsforhold);
+                var totalRefusjonForArbeidsforhold = ModellTyperMapper.beløpTilDto(totalRefusjonMap.get(arbeidsforhold));
                 andel.setRefusjonskravPrAar(totalRefusjonForArbeidsforhold != null ? totalRefusjonForArbeidsforhold : andel.getRefusjonskravPrAar());
             } else if (harArbeidsforholdOgErLagtTilManuelt(andel)) {
                 BeregningsgrunnlagArbeidsforholdDto arbeidsforhold = andel.getArbeidsforhold();
@@ -106,7 +111,10 @@ public class RefusjonDtoTjeneste {
         andeler.forEach(andel -> {
             if (andel.getArbeidsforhold() != null) {
                 BeregningsgrunnlagArbeidsforholdDto arbeidsforhold = andel.getArbeidsforhold();
-                var refusjonskrav = Optional.ofNullable(andel.getRefusjonskravPrAar()).orElse(Beløp.ZERO);
+                var refusjonskrav = Optional.ofNullable(andel.getRefusjonskravPrAar())
+                        .map(ModellTyperMapper::beløpFraDto)
+                        .map(b -> b.map(v -> v.setScale(0, RoundingMode.HALF_UP)))
+                       .orElse(Beløp.ZERO);
                 if (arbeidsforholdRefusjonMap.containsKey(arbeidsforhold)) {
                     var totalRefusjon = arbeidsforholdRefusjonMap.get(arbeidsforhold).adder(refusjonskrav);
                     arbeidsforholdRefusjonMap.put(arbeidsforhold, totalRefusjon);

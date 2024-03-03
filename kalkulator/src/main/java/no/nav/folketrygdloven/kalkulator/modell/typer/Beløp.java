@@ -1,25 +1,12 @@
-package no.nav.folketrygdloven.kalkulus.typer;
+package no.nav.folketrygdloven.kalkulator.modell.typer;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
-
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotNull;
-
-public record Beløp(@JsonValue
-                    @Valid @NotNull
-                    @DecimalMin(value = "-10000000000.00")
-                    @DecimalMax(value = "1000000000.00")
-                    @Digits(integer = 10, fraction = 2)
-                    BigDecimal verdi) implements Comparable<Beløp> {
+public record Beløp(BigDecimal verdi) implements Comparable<Beløp> {
 
     public static final Beløp ZERO = Beløp.fra(BigDecimal.ZERO);
 
@@ -27,17 +14,12 @@ public record Beløp(@JsonValue
         Objects.requireNonNull(verdi);
     }
 
-    @JsonCreator
-    public static Beløp fra(BigDecimal beløp) {
-        return beløp != null ? new Beløp(beløp) : null;
-    }
-
     public boolean erNullEller0() {
         return verdi == null || this.compareTo(ZERO) == 0;
     }
 
     public Beløp multipliser(int operand) {
-        return new Beløp(this.verdi.multiply(BigDecimal.valueOf(operand)));
+        return multipliser(BigDecimal.valueOf(operand));
     }
 
     public Beløp multipliser(BigDecimal operand) {
@@ -45,7 +27,19 @@ public record Beløp(@JsonValue
     }
 
     public Beløp multipliser(Beløp operand) {
-        return Beløp.fra(this.verdi.multiply(operand.verdi()));
+        return multipliser(operand.verdi());
+    }
+
+    public Beløp divider(int operand, int scale, RoundingMode roundingMode) {
+        return divider(BigDecimal.valueOf(operand), scale, roundingMode);
+    }
+
+    public Beløp divider(BigDecimal operand, int scale, RoundingMode roundingMode) {
+        return new Beløp(this.verdi.divide(operand, scale, roundingMode));
+    }
+
+    public Beløp divider(Beløp operand, int scale, RoundingMode roundingMode) {
+        return divider(operand.verdi(), scale, roundingMode);
     }
 
     public Beløp adder(Beløp operand) {
@@ -86,8 +80,8 @@ public record Beløp(@JsonValue
         }
     }
 
-    public static Beløp fra(Beløp beløp) {
-        return Beløp.fra(safeVerdi(beløp));
+    public static Beløp fra(BigDecimal beløp) {
+        return beløp != null ? new Beløp(beløp) : null;
     }
 
     public static Beløp fra(Long beløp) {
@@ -106,17 +100,13 @@ public record Beløp(@JsonValue
         return Beløp.fra(BigDecimal.valueOf(beløp));
     }
 
-    public void sjekkpositiv() {
-        if (this.compareTo(Beløp.ZERO) < 0 ) {
-            throw new IllegalArgumentException("Negativt beløp" + verdi);
-        }
-    }
-
     public int intValue() {
         return verdi.intValue();
     }
 
-
+    public long longValue() {
+        return verdi.longValue();
+    }
 
     @Override
     public boolean equals(Object o) {

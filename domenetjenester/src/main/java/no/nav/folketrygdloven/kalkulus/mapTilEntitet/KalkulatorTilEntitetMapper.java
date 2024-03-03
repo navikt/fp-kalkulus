@@ -31,10 +31,10 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAktørEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaArbeidsforholdEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.mappers.VerdityperMapper;
 
 
 /**
@@ -63,7 +63,7 @@ public class KalkulatorTilEntitetMapper {
         BeregningsgrunnlagEntitet.Builder builder = BeregningsgrunnlagEntitet.builder();
 
         //med
-        builder.medGrunnbeløp(Beløp.fraKalkulatorBeløp(beregningsgrunnlagFraKalkulus.getGrunnbeløp()));
+        builder.medGrunnbeløp(VerdityperMapper.beløpTilDao(beregningsgrunnlagFraKalkulus.getGrunnbeløp()));
         builder.medOverstyring(beregningsgrunnlagFraKalkulus.isOverstyrt());
         builder.medSkjæringstidspunkt(beregningsgrunnlagFraKalkulus.getSkjæringstidspunkt());
 

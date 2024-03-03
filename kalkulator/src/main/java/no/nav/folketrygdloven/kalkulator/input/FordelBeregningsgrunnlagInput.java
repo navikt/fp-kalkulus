@@ -2,8 +2,8 @@ package no.nav.folketrygdloven.kalkulator.input;
 
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 /** Inputstruktur for beregningsgrunnlag tjenester. */
 public class FordelBeregningsgrunnlagInput extends StegProsesseringInput {

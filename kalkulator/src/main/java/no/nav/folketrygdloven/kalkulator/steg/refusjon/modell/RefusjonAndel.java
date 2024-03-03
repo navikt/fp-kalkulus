@@ -3,9 +3,9 @@ package no.nav.folketrygdloven.kalkulator.steg.refusjon.modell;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class RefusjonAndel {
     private AktivitetStatus aktivitetStatus;

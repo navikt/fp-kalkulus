@@ -22,7 +22,6 @@ import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagI
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
@@ -31,6 +30,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.mapFraEntitet.BehandlingslagerTilKalkulusMapper;
 import no.nav.folketrygdloven.kalkulus.mappers.GrunnbeløpMapper;
 import no.nav.folketrygdloven.kalkulus.mappers.MapFraKalkulator;
+import no.nav.folketrygdloven.kalkulus.mappers.VerdityperMapper;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 
 class StegInputMapper {
@@ -83,7 +83,7 @@ class StegInputMapper {
         if (førsteFastsatteGrunnlagEntitet.isPresent()) {
             vurderVilkårInput = førsteFastsatteGrunnlagEntitet.get().getBeregningsgrunnlag()
                     .map(BeregningsgrunnlagEntitet::getGrunnbeløp)
-                    .map(Beløp::tilKalkulatorBeløp)
+                    .map(VerdityperMapper::beløpFraDao)
                     .map(vurderVilkårInput::medUregulertGrunnbeløp)
                     .orElse(vurderVilkårInput);
         }
@@ -100,7 +100,7 @@ class StegInputMapper {
         if (førsteFastsatteGrunnlagEntitet.isPresent()) {
             vurderVilkårOgRefusjonBeregningsgrunnlag = førsteFastsatteGrunnlagEntitet.get().getBeregningsgrunnlag()
                     .map(BeregningsgrunnlagEntitet::getGrunnbeløp)
-                    .map(Beløp::tilKalkulatorBeløp)
+                    .map(VerdityperMapper::beløpFraDao)
                     .map(vurderVilkårOgRefusjonBeregningsgrunnlag::medUregulertGrunnbeløp)
                     .orElse(vurderVilkårOgRefusjonBeregningsgrunnlag);
         }
@@ -152,7 +152,7 @@ class StegInputMapper {
         if (førsteFastsatteGrunnlagEntitet.isPresent()) {
             fordelBeregningsgrunnlagInput = førsteFastsatteGrunnlagEntitet.get().getBeregningsgrunnlag()
                     .map(BeregningsgrunnlagEntitet::getGrunnbeløp)
-                    .map(Beløp::tilKalkulatorBeløp)
+                    .map(VerdityperMapper::beløpFraDao)
                     .map(fordelBeregningsgrunnlagInput::medUregulertGrunnbeløp)
                     .orElse(fordelBeregningsgrunnlagInput);
         }
@@ -164,7 +164,7 @@ class StegInputMapper {
         if (førsteFastsatteGrunnlagEntitet.isPresent()) {
             fullføreBeregningsgrunnlagInput = førsteFastsatteGrunnlagEntitet.get().getBeregningsgrunnlag()
                     .map(BeregningsgrunnlagEntitet::getGrunnbeløp)
-                    .map(Beløp::tilKalkulatorBeløp)
+                    .map(VerdityperMapper::beløpFraDao)
                     .map(fullføreBeregningsgrunnlagInput::medUregulertGrunnbeløp)
                     .orElse(fullføreBeregningsgrunnlagInput);
         }

@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulus.mapTilKontrakt;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,12 +11,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
-
-import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
-
 import org.junit.jupiter.api.Test;
 
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.input.OmsorgspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.PleiepengerSyktBarnGrunnlag;
@@ -28,6 +24,7 @@ import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
@@ -42,7 +39,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
 class MapFormidlingsdataBeregningsgrunnlagTest {
     private static final Beløp GRUNNBELØP = Beløp.fra(100000);
@@ -280,7 +277,7 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
                 .orElse(null);
         assertThat(andel).isNotNull();
         assertThat(andel.getAvkortetMotInntektstak()).isNotNull();
-        assertThat(andel.getAvkortetMotInntektstak().compareTo(Beløp.fra(inntektstak))).isEqualTo(0);
+        assertThat(andel.getAvkortetMotInntektstak().compareTo(no.nav.folketrygdloven.kalkulus.felles.v1.Beløp.fra(inntektstak))).isEqualTo(0);
     }
 
     private BeregningsgrunnlagGrunnlagDto mapForOmsorgspenger() {
@@ -298,7 +295,7 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
                 Optional.empty(), STP), null, null, (YtelsespesifiktGrunnlag) grunnlag);
 
         BeregningsgrunnlagDto bg = new BeregningsgrunnlagDto(null, null, bgPerioder,
-                null, null, false, GRUNNBELØP);
+                null, null, false, ModellTyperMapper.beløpTilDto(GRUNNBELØP));
 
         BeregningsgrunnlagGrunnlagDto gr = new BeregningsgrunnlagGrunnlagDto(bg, null, null,
                 null, null, null, BeregningsgrunnlagTilstand.FASTSATT);
@@ -344,7 +341,7 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
         }
         return new BeregningsgrunnlagPrStatusOgAndelDto.Builder()
                 .medAktivitetStatus(status)
-                .medBruttoPrÅr(Beløp.fra(brutto))
+                .medBruttoPrÅr(no.nav.folketrygdloven.kalkulus.felles.v1.Beløp.fra(brutto))
                 .medBgAndelArbeidsforhold(arb)
                 .build();
     }

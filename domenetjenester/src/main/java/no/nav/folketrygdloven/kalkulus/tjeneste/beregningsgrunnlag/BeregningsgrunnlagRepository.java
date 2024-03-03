@@ -556,9 +556,7 @@ public class BeregningsgrunnlagRepository {
     public boolean lagreOgSjekkStatus(KalkulatorInputEntitet input) {
 
         deaktiverKalkulatorInput(input.getKoblingId());
-        System.out.println("deaktiverer " + input.getKoblingId());
         entityManager.persist(input);
-        System.out.println("lagrer " + input.getKoblingId());
         entityManager.flush();
         return true;
     }

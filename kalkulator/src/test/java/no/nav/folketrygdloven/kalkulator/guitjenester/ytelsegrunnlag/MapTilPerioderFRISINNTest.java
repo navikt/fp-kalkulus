@@ -11,16 +11,17 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansInntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnPeriode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisinn.FrisinnAndelDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisinn.FrisinnPeriodeDto;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class MapTilPerioderFRISINNTest {
 
@@ -328,17 +329,17 @@ class MapTilPerioderFRISINNTest {
         dto.setFom(periode.getFomDato());
         dto.setFrisinnAndeler(Arrays.asList(andeler));
         if (atInntekt != null) {
-            dto.setOppgittArbeidsinntekt(Beløp.fra(atInntekt));
+            dto.setOppgittArbeidsinntekt(ModellTyperMapper.beløpTilDto(Beløp.fra(atInntekt)));
         }
         return dto;
     }
 
     private FrisinnAndelDto flAndel(int sum) {
-        return new FrisinnAndelDto(Beløp.fra(sum), AktivitetStatus.FRILANSER);
+        return new FrisinnAndelDto(ModellTyperMapper.beløpTilDto(Beløp.fra(sum)), AktivitetStatus.FRILANSER);
     }
 
     private FrisinnAndelDto snAndel(int sum) {
-        return new FrisinnAndelDto(Beløp.fra(sum), AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+        return new FrisinnAndelDto(ModellTyperMapper.beløpTilDto(Beløp.fra(sum)), AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
     }
 
     private OppgittOpptjeningDtoBuilder.OppgittArbeidsforholdBuilder lagOppgittArbeidsinntekt(Intervall periode, Beløp beløp) {

@@ -9,20 +9,20 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnPeriode;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittPeriodeInntekt;
-import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.EffektivÅrsinntektTjenesteFRISINN;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
 public class UtbetalingsgradMapperFRISINN {
@@ -101,8 +101,8 @@ public class UtbetalingsgradMapperFRISINN {
     private static PeriodeMedUtbetalingsgradDto mapTilPeriodeMedUtbetalingsgrad(OppgittPeriodeInntekt oppgittPeriodeInntekt,
                                                                                 BeregningsgrunnlagEntitet bg,
                                                                                 AktivitetStatus aktivitetStatus) {
-        BigDecimal løpendeÅrsinntekt = EffektivÅrsinntektTjenesteFRISINN.finnEffektivÅrsinntektForLøpenedeInntekt(oppgittPeriodeInntekt);
-        BigDecimal totalInntektIPeriode = bg.getBeregningsgrunnlagPerioder().stream()
+        var løpendeÅrsinntekt = EffektivÅrsinntektTjenesteFRISINN.finnEffektivÅrsinntektForLøpenedeInntekt(oppgittPeriodeInntekt);
+        var totalInntektIPeriode = bg.getBeregningsgrunnlagPerioder().stream()
                 .filter(p -> p.getPeriode().inkluderer(oppgittPeriodeInntekt.getPeriode().getFomDato()))
                 .flatMap(p -> p.getBeregningsgrunnlagPrStatusOgAndelList().stream())
                 .filter(a -> a.getAktivitetStatus().equals(aktivitetStatus))
@@ -111,8 +111,8 @@ public class UtbetalingsgradMapperFRISINN {
                 .findFirst()
                 .map(Beløp::getVerdi)
                 .orElse(BigDecimal.ZERO);
-        BigDecimal bortfaltInntekt = totalInntektIPeriode.subtract(løpendeÅrsinntekt).max(BigDecimal.ZERO);
-        BigDecimal utbetalingsgrad = totalInntektIPeriode.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : bortfaltInntekt.divide(totalInntektIPeriode, 10, RoundingMode.HALF_EVEN);
+        var bortfaltInntekt = totalInntektIPeriode.subtract(løpendeÅrsinntekt.verdi()).max(BigDecimal.ZERO);
+        var utbetalingsgrad = totalInntektIPeriode.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : bortfaltInntekt.divide(totalInntektIPeriode, 10, RoundingMode.HALF_EVEN);
         return new PeriodeMedUtbetalingsgradDto(oppgittPeriodeInntekt.getPeriode(), Utbetalingsgrad.fra(utbetalingsgrad.multiply(BigDecimal.valueOf(100))));
     }
 }

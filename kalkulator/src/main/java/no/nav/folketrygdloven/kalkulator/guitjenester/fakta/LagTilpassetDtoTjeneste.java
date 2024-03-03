@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -18,6 +19,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittEgenNæringDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPrStatusOgAndelATDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -27,7 +29,6 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.Beregn
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPrStatusOgAndelYtelseDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.EgenNæringDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.PgiDto;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class LagTilpassetDtoTjeneste {
 
@@ -66,7 +67,7 @@ class LagTilpassetDtoTjeneste {
                 .map(OppgittOpptjeningDto::getEgenNæring)
                 .orElse(Collections.emptyList());
 
-        dtoSN.setPgiSnitt(andel.getPgiSnitt());
+        dtoSN.setPgiSnitt(ModellTyperMapper.beløpTilDto(andel.getPgiSnitt()));
 
 
         // Næringer som startet etter skjæringstidspunktet for beregning er ikke relevante
@@ -89,15 +90,15 @@ class LagTilpassetDtoTjeneste {
             return Collections.emptyList();
         }
         List<PgiDto> liste = new ArrayList<>();
-        liste.add(new PgiDto(andel.getPgi1(), beregningsperiodeTom.getYear()));
-        liste.add(new PgiDto(andel.getPgi2(), beregningsperiodeTom.minusYears(1).getYear()));
-        liste.add(new PgiDto(andel.getPgi3(), beregningsperiodeTom.minusYears(2).getYear()));
+        liste.add(new PgiDto(ModellTyperMapper.beløpTilDto(andel.getPgi1()), beregningsperiodeTom.getYear()));
+        liste.add(new PgiDto(ModellTyperMapper.beløpTilDto(andel.getPgi2()), beregningsperiodeTom.minusYears(1).getYear()));
+        liste.add(new PgiDto(ModellTyperMapper.beløpTilDto(andel.getPgi3()), beregningsperiodeTom.minusYears(2).getYear()));
         return liste;
     }
 
     private static BeregningsgrunnlagPrStatusOgAndelDto opprettATDto(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
         BeregningsgrunnlagPrStatusOgAndelATDto dtoAT = new BeregningsgrunnlagPrStatusOgAndelATDto();
-        dtoAT.setBortfaltNaturalytelse(andel.getBgAndelArbeidsforhold().orElseThrow().getNaturalytelseBortfaltPrÅr().orElseThrow());
+        dtoAT.setBortfaltNaturalytelse(andel.getBgAndelArbeidsforhold().orElseThrow().getNaturalytelseBortfaltPrÅr().map(ModellTyperMapper::beløpTilDto).orElseThrow());
         return dtoAT;
     }
 
@@ -114,14 +115,14 @@ class LagTilpassetDtoTjeneste {
         BeregningsgrunnlagPrStatusOgAndelYtelseDto dtoYtelse = new BeregningsgrunnlagPrStatusOgAndelYtelseDto();
         YtelseFilterDto ytelseFilter = new YtelseFilterDto(inntektArbeidYtelseGrunnlag.getAktørYtelseFraRegister()).før(ref.getSkjæringstidspunktBeregning());
         var årsbeløpFraMeldekort = FinnInntektFraYtelse.finnÅrbeløpFraMeldekortForAndel(ref, andel, ytelseFilter);
-        if (!årsbeløpFraMeldekort.isPresent()) {
-            return dtoYtelse;
-        }
-        dtoYtelse.setBelopFraMeldekortPrAar(årsbeløpFraMeldekort.get());
-        dtoYtelse.setBelopFraMeldekortPrMnd(årsbeløpFraMeldekort.get().map(b -> b.divide(KonfigTjeneste.getMånederIÅr(), 10, RoundingMode.HALF_UP)));
-        if (Beløp.safeVerdi(andel.getBruttoPrÅr()) != null) {
-            dtoYtelse.setOppjustertGrunnlag(finnVisningstallForOppjustertGrunnlag(andel.getAktivitetStatus(), andel.getBruttoPrÅr()));
-        }
+        årsbeløpFraMeldekort.ifPresent(beløp -> {
+            dtoYtelse.setBelopFraMeldekortPrAar(ModellTyperMapper.beløpTilDto(beløp));
+            dtoYtelse.setBelopFraMeldekortPrMnd(ModellTyperMapper.beløpTilDto(beløp.divider(KonfigTjeneste.getMånederIÅr(), 10, RoundingMode.HALF_UP)));
+            if (Beløp.safeVerdi(andel.getBruttoPrÅr()) != null) {
+                dtoYtelse.setOppjustertGrunnlag(ModellTyperMapper.beløpTilDto(finnVisningstallForOppjustertGrunnlag(andel.getAktivitetStatus(), andel.getBruttoPrÅr())));
+            }
+        });
+
         return dtoYtelse;
     }
 
@@ -134,12 +135,12 @@ class LagTilpassetDtoTjeneste {
     }
 
     private static Beløp oppjustertAAPSats(Beløp bruttoPrÅr) {
-        var mellomregning = bruttoPrÅr.map(b -> b.divide(AAP_FAKTOR, 0, RoundingMode.HALF_EVEN));
+        var mellomregning = bruttoPrÅr.divider(AAP_FAKTOR, 0, RoundingMode.HALF_EVEN);
         return mellomregning.multipliser(HUNDRE);
     }
 
     private static Beløp oppjustertDagpengesats(Beløp bruttoPrÅr) {
-        var mellomregning = bruttoPrÅr.map(b -> b.divide(DAGPENGER_FAKTOR, 0, RoundingMode.HALF_EVEN));
+        var mellomregning = bruttoPrÅr.divider(DAGPENGER_FAKTOR, 0, RoundingMode.HALF_EVEN);
         return mellomregning.multipliser(HUNDRE);
     }
 }

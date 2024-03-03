@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
-import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.iay.IayProsent;
 
@@ -25,11 +25,11 @@ public class YtelseAnvistDto {
 
     @JsonProperty("beløp")
     @Valid
-    private BeløpDto beløp;
+    private Beløp beløp;
 
     @JsonProperty("dagsats")
     @Valid
-    private BeløpDto dagsats;
+    private Beløp dagsats;
 
     @JsonProperty("utbetalingsgradProsent")
     @Valid
@@ -46,8 +46,8 @@ public class YtelseAnvistDto {
     }
 
     public YtelseAnvistDto(Periode anvistPeriode,
-                           BeløpDto beløp,
-                           BeløpDto dagsats,
+                           Beløp beløp,
+                           Beløp dagsats,
                            IayProsent utbetalingsgradProsent,
                            List<AnvistAndel> anvisteAndeler) {
         this.anvistPeriode = anvistPeriode;
@@ -61,11 +61,11 @@ public class YtelseAnvistDto {
         return anvistPeriode;
     }
 
-    public BeløpDto getBeløp() {
+    public Beløp getBeløp() {
         return beløp;
     }
 
-    public BeløpDto getDagsats() {
+    public Beløp getDagsats() {
         return dagsats;
     }
 

@@ -24,7 +24,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
@@ -126,7 +125,7 @@ public final class SpolFramoverTjeneste {
         config.setIgnoreNulls(false);
         config.setOnlyCheckTrackedFields(true);
 
-        config.addLeafClasses(BeløpDto.class);
+        config.addLeafClasses(no.nav.folketrygdloven.kalkulus.felles.v1.Beløp.class);
         config.addLeafClasses(InternArbeidsforholdRefDto.class);
         config.addLeafClasses(Arbeidsgiver.class);
 

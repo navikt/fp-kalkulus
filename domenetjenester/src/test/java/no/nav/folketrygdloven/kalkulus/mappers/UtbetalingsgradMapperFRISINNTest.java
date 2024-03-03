@@ -9,8 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
-
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
@@ -34,6 +32,7 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
+import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
 
 class UtbetalingsgradMapperFRISINNTest {
@@ -280,11 +279,11 @@ class UtbetalingsgradMapperFRISINNTest {
         return OppgittOpptjeningDtoBuilder.EgenNæringBuilder.ny()
                 .medPeriode(april)
                 .medVirksomhet(ARBEIDSGIVER.getIdent())
-                .medBruttoInntekt(no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(periodeInntekt));
+                .medBruttoInntekt(no.nav.folketrygdloven.kalkulator.modell.typer.Beløp.fra(periodeInntekt));
     }
 
     private OppgittFrilansInntektDto lagOppgittFrilansInntekt(Intervall april, BigDecimal periodeInntekt) {
-        return new OppgittFrilansInntektDto(april, no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(periodeInntekt));
+        return new OppgittFrilansInntektDto(april, no.nav.folketrygdloven.kalkulator.modell.typer.Beløp.fra(periodeInntekt));
     }
 
     private Optional<BeregningsgrunnlagGrunnlagEntitet> lagBeregningsgrunnlagMedSN(LocalDate skjæringstidspunkt, BigDecimal beregnetPrÅr) {

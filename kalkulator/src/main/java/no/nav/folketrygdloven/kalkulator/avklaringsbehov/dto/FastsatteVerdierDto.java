@@ -1,8 +1,8 @@
 package no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto;
 
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 public class FastsatteVerdierDto {

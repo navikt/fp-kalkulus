@@ -18,11 +18,11 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.DatoEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.RefusjonoverstyringEndring;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class UtledEndringIRefusjonsperiodeTest {
 
@@ -87,7 +87,7 @@ class UtledEndringIRefusjonsperiodeTest {
         var refusjonEndring = endringAggregat.getRefusjonperiodeEndringer().get(0).getFastsattDelvisRefusjonFørDatoEndring();
         assertThat(refusjonEndring).isNotNull();
         assertThat(refusjonEndring.getFraRefusjon()).isNull();
-        assertThat(refusjonEndring.getTilRefusjon()).isEqualTo(Beløp.fra(10));
+        assertThat(refusjonEndring.getTilRefusjon()).isEqualTo(no.nav.folketrygdloven.kalkulus.felles.v1.Beløp.fra(10));
     }
 
     @Test
@@ -124,7 +124,7 @@ class UtledEndringIRefusjonsperiodeTest {
         var refusjonEndring = endringAggregat.getRefusjonperiodeEndringer().get(0).getFastsattDelvisRefusjonFørDatoEndring();
         assertThat(refusjonEndring).isNotNull();
         assertThat(refusjonEndring.getFraRefusjon()).isNull();
-        assertThat(refusjonEndring.getTilRefusjon()).isEqualTo(Beløp.fra(10));
+        assertThat(refusjonEndring.getTilRefusjon()).isEqualTo(no.nav.folketrygdloven.kalkulus.felles.v1.Beløp.fra(10));
     }
 
     @Test
@@ -163,8 +163,8 @@ class UtledEndringIRefusjonsperiodeTest {
         assertThat(datoEndring.getTilVerdi()).isEqualTo(nyFom);
         var refusjonEndring = endringAggregat.getRefusjonperiodeEndringer().get(0).getFastsattDelvisRefusjonFørDatoEndring();
         assertThat(refusjonEndring).isNotNull();
-        assertThat(refusjonEndring.getFraRefusjon()).isEqualTo(Beløp.fra(1));
-        assertThat(refusjonEndring.getTilRefusjon()).isEqualTo(Beløp.fra(10));
+        assertThat(refusjonEndring.getFraRefusjon()).isEqualTo(no.nav.folketrygdloven.kalkulus.felles.v1.Beløp.fra(1));
+        assertThat(refusjonEndring.getTilRefusjon()).isEqualTo(no.nav.folketrygdloven.kalkulus.felles.v1.Beløp.fra(10));
     }
 
 

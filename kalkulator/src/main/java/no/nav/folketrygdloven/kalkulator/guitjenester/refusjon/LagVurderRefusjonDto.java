@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -24,6 +25,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
@@ -34,7 +36,6 @@ import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusjon.RefusjonAndelTilVurderingDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusjon.RefusjonTilVurderingDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusjon.TidligereUtbetalingDto;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 
 public final class LagVurderRefusjonDto {
@@ -101,10 +102,10 @@ public final class LagVurderRefusjonDto {
         // Valideringsfelter
         getTidligsteMuligeRefusjonsdato(andel, gjeldendeOvertyringer)
                 .ifPresentOrElse(dto::setTidligsteMuligeRefusjonsdato, () -> dto.setTidligsteMuligeRefusjonsdato(gjeldendeBeregningsgrunnlag.getSkjæringstidspunkt()));
-        dto.setMaksTillattDelvisRefusjonPrMnd(månedsbeløp(tidligereRefusjonForAndelIPeriode.orElse(andel.getRefusjon())));
+        dto.setMaksTillattDelvisRefusjonPrMnd(ModellTyperMapper.beløpTilDto(månedsbeløp(tidligereRefusjonForAndelIPeriode.orElse(andel.getRefusjon()))));
 
         // Tidligere fastsatte verdier som brukes til preutfylling av gui
-        finnFastsattDelvisRefusjon(gjeldendeBeregningsgrunnlag, andel, periode).ifPresent(dto::setFastsattDelvisRefusjonPrMnd);
+        finnFastsattDelvisRefusjon(gjeldendeBeregningsgrunnlag, andel, periode).map(ModellTyperMapper::beløpTilDto).ifPresent(dto::setFastsattDelvisRefusjonPrMnd);
         getFastsattRefusjonStartdato(gjeldendeOvertyringer, andel).ifPresent(dto::setFastsattNyttRefusjonskravFom);
 
         return dto;
@@ -144,7 +145,7 @@ public final class LagVurderRefusjonDto {
         if (Beløp.safeVerdi(årsbeløp) == null) {
             return Beløp.ZERO;
         }
-        return årsbeløp.map(v -> v.divide(KonfigTjeneste.getMånederIÅr(), 0, RoundingMode.HALF_UP));
+        return årsbeløp.divider(KonfigTjeneste.getMånederIÅr(), 0, RoundingMode.HALF_UP);
     }
 
     private static boolean erTilkommetAndelEllerRefusjonTidligereInnvilgetMedLavereBeløpStørreEnnNull(Optional<Beløp> tidligereRefusjonForAndelIPeriode, RefusjonAndel andel) {

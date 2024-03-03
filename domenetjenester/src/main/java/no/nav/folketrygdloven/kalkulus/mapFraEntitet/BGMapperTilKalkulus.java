@@ -20,6 +20,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Samme
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.TilkommetInntekt;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Promille;
+import no.nav.folketrygdloven.kalkulus.mappers.VerdityperMapper;
 
 
 public class BGMapperTilKalkulus {
@@ -109,8 +110,8 @@ public class BGMapperTilKalkulus {
         builder.medFordeltRefusjonPrÅr(mapFraBeløp(fraFagsystem.getFordeltRefusjonPrÅr()));
 
         fraFagsystem.getArbeidsperiodeTom().ifPresent(builder::medArbeidsperiodeTom);
-        fraFagsystem.getNaturalytelseBortfaltPrÅr().map(Beløp::tilKalkulatorBeløp).ifPresent(builder::medNaturalytelseBortfaltPrÅr);
-        fraFagsystem.getNaturalytelseTilkommetPrÅr().map(Beløp::tilKalkulatorBeløp).ifPresent(builder::medNaturalytelseTilkommetPrÅr);
+        fraFagsystem.getNaturalytelseBortfaltPrÅr().map(VerdityperMapper::beløpFraDao).ifPresent(builder::medNaturalytelseBortfaltPrÅr);
+        fraFagsystem.getNaturalytelseTilkommetPrÅr().map(VerdityperMapper::beløpFraDao).ifPresent(builder::medNaturalytelseTilkommetPrÅr);
         return builder;
     }
 
@@ -152,8 +153,8 @@ public class BGMapperTilKalkulus {
                 it.skalRedusereUtbetaling());
     }
 
-    private static no.nav.folketrygdloven.kalkulus.typer.Beløp mapFraBeløp(Beløp beløp) {
-        return beløp == null ? null : no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(beløp.getVerdi());
+    private static no.nav.folketrygdloven.kalkulator.modell.typer.Beløp mapFraBeløp(Beløp beløp) {
+        return VerdityperMapper.beløpFraDao(beløp);
     }
 
     private static BigDecimal mapFraPromille(Promille promille) {

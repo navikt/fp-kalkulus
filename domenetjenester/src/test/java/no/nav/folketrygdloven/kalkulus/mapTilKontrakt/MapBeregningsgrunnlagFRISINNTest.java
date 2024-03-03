@@ -343,12 +343,12 @@ class MapBeregningsgrunnlagFRISINNTest {
 
     private void lagNæringOpptjening(Intervall periode) {
         var en = OppgittOpptjeningDtoBuilder.EgenNæringBuilder.ny().medPeriode(periode)
-                .medBruttoInntekt(no.nav.folketrygdloven.kalkulus.typer.Beløp.ZERO);
+                .medBruttoInntekt(no.nav.folketrygdloven.kalkulator.modell.typer.Beløp.ZERO);
         opptjening.leggTilEgneNæring(en);
     }
 
     private void lagFrilansOpptjening(Intervall periode) {
-        var inntekt = new OppgittFrilansInntektDto(periode, no.nav.folketrygdloven.kalkulus.typer.Beløp.ZERO);
+        var inntekt = new OppgittFrilansInntektDto(periode, no.nav.folketrygdloven.kalkulator.modell.typer.Beløp.ZERO);
         var oppgittFL = new OppgittFrilansDto(false, Collections.singletonList(inntekt));
         opptjening.leggTilFrilansOpplysninger(oppgittFL);
     }

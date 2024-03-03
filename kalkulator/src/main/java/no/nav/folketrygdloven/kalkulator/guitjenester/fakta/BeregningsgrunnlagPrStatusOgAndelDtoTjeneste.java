@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.felles.FinnInntektsmeldingForAndel;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
@@ -56,14 +57,14 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         dto.setAktivitetStatus(andel.getAktivitetStatus());
         dto.setBeregningsperiodeFom(andel.getBeregningsperiodeFom());
         dto.setBeregningsperiodeTom(andel.getBeregningsperiodeTom());
-        dto.setBruttoPrAar(andel.getBruttoPrÅr());
-        dto.setFordeltPrAar(andel.getFordeltPrÅr());
-        dto.setAvkortetPrAar(andel.getAvkortetPrÅr());
-        dto.setRedusertPrAar(andel.getRedusertPrÅr());
-        dto.setOverstyrtPrAar(andel.getOverstyrtPrÅr());
-        dto.setBeregnetPrAar(andel.getBeregnetPrÅr());
+        dto.setBruttoPrAar(ModellTyperMapper.beløpTilDto(andel.getBruttoPrÅr()));
+        dto.setFordeltPrAar(ModellTyperMapper.beløpTilDto(andel.getFordeltPrÅr()));
+        dto.setAvkortetPrAar(ModellTyperMapper.beløpTilDto(andel.getAvkortetPrÅr()));
+        dto.setRedusertPrAar(ModellTyperMapper.beløpTilDto(andel.getRedusertPrÅr()));
+        dto.setOverstyrtPrAar(ModellTyperMapper.beløpTilDto(andel.getOverstyrtPrÅr()));
+        dto.setBeregnetPrAar(ModellTyperMapper.beløpTilDto(andel.getBeregnetPrÅr()));
         dto.setInntektskategori(andel.getGjeldendeInntektskategori());
-        dto.setBesteberegningPrAar(andel.getBesteberegningPrÅr());
+        dto.setBesteberegningPrAar(ModellTyperMapper.beløpTilDto(andel.getBesteberegningPrÅr()));
         dto.setFastsattAvSaksbehandler(andel.getFastsattAvSaksbehandler());
         faktaAggregat.flatMap(fa -> fa.getFaktaArbeidsforhold(andel))
                 .map(FaktaArbeidsforholdDto::getErTidsbegrensetVurdering).ifPresent(dto::setErTidsbegrensetArbeidsforhold);

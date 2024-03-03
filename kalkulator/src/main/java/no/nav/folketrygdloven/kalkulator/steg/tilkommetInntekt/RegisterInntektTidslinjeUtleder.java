@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.steg.tilkommetInntekt;
 
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -15,9 +14,9 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.kalkulator.felles.inntektgradering.DagsatsPrKategoriOgArbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Virkedager;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
@@ -64,7 +63,7 @@ class RegisterInntektTidslinjeUtleder {
         final var antallVirkedager = Optional.of(Virkedager.beregnVirkedager(p.getPeriode().getFomDato(), p.getPeriode().getTomDato()))
                 .filter(d -> d != 0)
                 .orElseGet(() -> p.getPeriode().getFomDato().until(p.getPeriode().getTomDato().plusDays(1)).getDays());
-        return p.getBeløp().map(v -> v.divide(BigDecimal.valueOf(antallVirkedager), 2, RoundingMode.HALF_UP));
+        return p.getBeløp().divider(antallVirkedager, 2, RoundingMode.HALF_UP);
     }
 
 

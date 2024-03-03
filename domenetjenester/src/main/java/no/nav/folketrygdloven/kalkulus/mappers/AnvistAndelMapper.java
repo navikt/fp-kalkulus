@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AnvistAndel;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Virkedager;
@@ -29,8 +30,8 @@ class AnvistAndelMapper {
         return new AnvistAndel(
                 MapFraKalkulator.mapArbeidsgiver(aa.getArbeidsgiver()),
                 MapIAYTilKalulator.mapArbeidsforholdRef(aa.getArbeidsforholdId()),
-                aa.getDagsats().getBeløp().multipliser(BigDecimal.valueOf(antallVirkedager)),
-                aa.getDagsats().getBeløp(),
+                ModellTyperMapper.beløpFraDto(aa.getDagsats()).multipliser(BigDecimal.valueOf(antallVirkedager)),
+                ModellTyperMapper.beløpFraDto(aa.getDagsats()),
                 Stillingsprosent.fra(aa.getRefusjonsgrad()),
                 aa.getInntektskategori() != null ? aa.getInntektskategori() : Inntektskategori.UDEFINERT
         );

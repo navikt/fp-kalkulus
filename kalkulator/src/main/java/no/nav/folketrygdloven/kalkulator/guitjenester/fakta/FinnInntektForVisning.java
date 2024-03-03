@@ -15,11 +15,11 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class FinnInntektForVisning {
 
@@ -29,9 +29,9 @@ public class FinnInntektForVisning {
 
     public static Beløp finnInntektForPreutfylling(BeregningsgrunnlagPrStatusOgAndelDto andel) {
         if (Beløp.safeVerdi(andel.getBesteberegningPrÅr()) != null) {
-            return andel.getBesteberegningPrÅr().map(v -> v.divide(KonfigTjeneste.getMånederIÅr(), 10, RoundingMode.HALF_EVEN));
+            return andel.getBesteberegningPrÅr().divider(KonfigTjeneste.getMånederIÅr(), 10, RoundingMode.HALF_EVEN);
         }
-        return Beløp.safeVerdi(andel.getBeregnetPrÅr()) == null ? null : andel.getBeregnetPrÅr().map(v -> v.divide(KonfigTjeneste.getMånederIÅr(), 10, RoundingMode.HALF_EVEN));
+        return Beløp.safeVerdi(andel.getBeregnetPrÅr()) == null ? null : andel.getBeregnetPrÅr().divider(KonfigTjeneste.getMånederIÅr(), 10, RoundingMode.HALF_EVEN);
     }
 
     public static Optional<Beløp> finnInntektForKunLese(KoblingReferanse ref,
@@ -59,12 +59,12 @@ public class FinnInntektForVisning {
         if (andel.getAktivitetStatus().erDagpenger()) {
             YtelseFilterDto ytelseFilter = new YtelseFilterDto(inntektArbeidYtelseGrunnlag.getAktørYtelseFraRegister()).før(ref.getSkjæringstidspunktBeregning());
             return FinnInntektFraYtelse.finnÅrbeløpForDagpenger(ref, andel, ytelseFilter, ref.getSkjæringstidspunktBeregning())
-                    .map(årsbeløp -> årsbeløp.map(v -> v.divide(KonfigTjeneste.getMånederIÅr(), 10, RoundingMode.HALF_EVEN)));
+                    .map(årsbeløp -> årsbeløp.divider(KonfigTjeneste.getMånederIÅr(), 10, RoundingMode.HALF_EVEN));
         }
         if (andel.getAktivitetStatus().equals(AktivitetStatus.ARBEIDSAVKLARINGSPENGER)) {
             YtelseFilterDto ytelseFilter = new YtelseFilterDto(inntektArbeidYtelseGrunnlag.getAktørYtelseFraRegister()).før(ref.getSkjæringstidspunktBeregning());
             return FinnInntektFraYtelse.finnÅrbeløpFraMeldekortForAndel(ref, andel, ytelseFilter)
-                    .map(årsbeløp -> årsbeløp.map(v -> v.divide(KonfigTjeneste.getMånederIÅr(), 10, RoundingMode.HALF_EVEN)));
+                    .map(årsbeløp -> årsbeløp.divider(KonfigTjeneste.getMånederIÅr(), 10, RoundingMode.HALF_EVEN));
         }
         return Optional.empty();
     }
@@ -115,7 +115,7 @@ public class FinnInntektForVisning {
         if (restInntektForArbeidsforholdUtenIM.compareTo(Beløp.ZERO) < 0 || antallArbeidsforholdUtenIM == 0) {
             return Beløp.ZERO;
         } else {
-            return restInntektForArbeidsforholdUtenIM.map(v -> v.divide(BigDecimal.valueOf(antallArbeidsforholdUtenIM), 10, RoundingMode.HALF_UP));
+            return restInntektForArbeidsforholdUtenIM.divider(BigDecimal.valueOf(antallArbeidsforholdUtenIM), 10, RoundingMode.HALF_UP);
         }
     }
 
@@ -124,7 +124,7 @@ public class FinnInntektForVisning {
             .flatMap(aktørInntekt -> {
                 var filter = new InntektFilterDto(aktørInntekt).før(ref.getSkjæringstidspunktBeregning());
                 var årsbeløp = InntektForAndelTjeneste.finnSnittinntektPrÅrForArbeidstakerIBeregningsperioden(filter, andel);
-                return årsbeløp.map(b -> b.map(v -> v.divide(KonfigTjeneste.getMånederIÅr(), 10, RoundingMode.HALF_EVEN)));
+                return årsbeløp.map(b -> b.divider(KonfigTjeneste.getMånederIÅr(), 10, RoundingMode.HALF_EVEN));
             });
     }
 

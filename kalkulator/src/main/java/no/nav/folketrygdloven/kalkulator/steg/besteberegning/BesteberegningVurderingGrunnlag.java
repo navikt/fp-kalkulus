@@ -2,7 +2,7 @@ package no.nav.folketrygdloven.kalkulator.steg.besteberegning;
 
 import java.util.List;
 
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 
 public class BesteberegningVurderingGrunnlag {
 

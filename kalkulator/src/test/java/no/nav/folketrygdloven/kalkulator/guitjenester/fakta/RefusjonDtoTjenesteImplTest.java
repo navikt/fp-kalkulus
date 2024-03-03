@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -18,6 +19,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
@@ -25,7 +27,6 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.Beregn
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningAndelDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagAndelDto;
 import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.folketrygdloven.utils.Tuple;
 
 public class RefusjonDtoTjenesteImplTest {
@@ -208,7 +209,7 @@ public class RefusjonDtoTjenesteImplTest {
         RefusjonDtoTjeneste.slåSammenRefusjonForAndelerISammeArbeidsforhold(andeler);
 
         FordelBeregningsgrunnlagAndelDto andelSomIkkjeErLagtTilManuelt = andeler.stream().filter(a -> !a.getLagtTilAvSaksbehandler()).findFirst().get();
-        assertThat(andelSomIkkjeErLagtTilManuelt.getRefusjonskravPrAar()).isEqualByComparingTo(no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(refusjonskrav1+refusjonskrav2+refusjonskrav3));
+        assertThat(andelSomIkkjeErLagtTilManuelt.getRefusjonskravPrAar()).isEqualByComparingTo(ModellTyperMapper.beløpTilDto(Beløp.fra(refusjonskrav1+refusjonskrav2+refusjonskrav3)));
         FordelBeregningsgrunnlagAndelDto andelSomErLagtTilManuelt = andeler.stream().filter(FaktaOmBeregningAndelDto::getLagtTilAvSaksbehandler).findFirst().get();
         assertThat(andelSomErLagtTilManuelt.getRefusjonskravPrAar()).isNull();
     }
@@ -220,9 +221,9 @@ public class RefusjonDtoTjenesteImplTest {
             FordelBeregningsgrunnlagAndelDto andel = new FordelBeregningsgrunnlagAndelDto(new FaktaOmBeregningAndelDto());
             andel.setArbeidsforhold(arbeidsforholdDto);
             andel.setLagtTilAvSaksbehandler(tuple.getElement1());
-            andel.setRefusjonskravPrAar(no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(tuple.getElement2()));
+            andel.setRefusjonskravPrAar(ModellTyperMapper.beløpTilDto(Beløp.fra(tuple.getElement2())));
             if (tuple.getElement1()) {
-                andel.setRefusjonskravFraInntektsmeldingPrÅr(no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(refusjonFraInntektsmelding));
+                andel.setRefusjonskravFraInntektsmeldingPrÅr(ModellTyperMapper.beløpTilDto(Beløp.fra(refusjonFraInntektsmelding)));
             }
             return andel;
         }).collect(Collectors.toList());

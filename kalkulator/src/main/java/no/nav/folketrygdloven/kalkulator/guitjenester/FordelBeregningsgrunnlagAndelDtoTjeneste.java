@@ -17,10 +17,10 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.FordelTilkommetArbeidsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagAndelDto;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class FordelBeregningsgrunnlagAndelDtoTjeneste {
 
@@ -53,8 +53,12 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
                 periode
         ));
         settFordelingForrigeBehandling(input, andel, endringAndel);
-        endringAndel.setFordeltPrAar(andel.getManueltFordeltPrÅr() == null ? andel.getFordeltPrÅr() : andel.getManueltFordeltPrÅr());
-        inntektsmelding.ifPresent(im -> endringAndel.setBelopFraInntektsmelding(im.getInntektBeløp()));
+        var fordelt = andel.getManueltFordeltPrÅr() == null ? andel.getFordeltPrÅr() : andel.getManueltFordeltPrÅr();
+        endringAndel.setFordeltPrAar(ModellTyperMapper.beløpTilDto(fordelt));
+        inntektsmelding.map(InntektsmeldingDto::getInntektBeløp)
+                .map(b -> b.multipliser(KonfigTjeneste.getMånederIÅr()).map(v -> v.setScale(0, RoundingMode.HALF_UP)))
+                .map(ModellTyperMapper::beløpTilDto)
+                .ifPresent(endringAndel::setBelopFraInntektsmeldingPrÅr);
         return endringAndel;
     }
 
@@ -62,7 +66,7 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
                                                        BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                        FordelBeregningsgrunnlagAndelDto endringAndel) {
         if (andel.erLagtTilAvSaksbehandler()) {
-            endringAndel.setFordelingForrigeBehandling(null);
+            endringAndel.setFordelingForrigeBehandlingPrÅr(null);
             return;
         }
         Optional<BeregningsgrunnlagDto> bgForrigeBehandling = input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling()
@@ -81,6 +85,6 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
                 .filter(Objects::nonNull)
                 .reduce(Beløp::adder)
                 .orElse(Beløp.ZERO);
-        endringAndel.setFordelingForrigeBehandling(fastsattForrigeBehandling.map(f -> f.divide(KonfigTjeneste.getMånederIÅr(), 0, RoundingMode.HALF_UP)));
+        endringAndel.setFordelingForrigeBehandlingPrÅr(ModellTyperMapper.beløpTilDto(fastsattForrigeBehandling));
     }
 }

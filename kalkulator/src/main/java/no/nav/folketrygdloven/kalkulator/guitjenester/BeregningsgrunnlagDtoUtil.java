@@ -92,10 +92,10 @@ public class BeregningsgrunnlagDtoUtil {
             arbeidsforhold.setStartdato(bga.getArbeidsperiodeFom());
             arbeidsforhold.setOpphoersdato(finnKorrektOpphørsdato(andel));
             arbeidsforhold.setArbeidsforholdId(bga.getArbeidsforholdRef().getReferanse());
-            arbeidsforhold.setRefusjonPrAar(bga.getGjeldendeRefusjonPrÅr());
-            arbeidsforhold.setNaturalytelseBortfaltPrÅr(bga.getNaturalytelseBortfaltPrÅr().orElse(null));
-            arbeidsforhold.setNaturalytelseTilkommetPrÅr(bga.getNaturalytelseTilkommetPrÅr().orElse(null));
-            inntektsmelding.ifPresent(im -> arbeidsforhold.setBelopFraInntektsmeldingPrMnd(im.getInntektBeløp()));
+            arbeidsforhold.setRefusjonPrAar(ModellTyperMapper.beløpTilDto(bga.getGjeldendeRefusjonPrÅr()));
+            arbeidsforhold.setNaturalytelseBortfaltPrÅr(bga.getNaturalytelseBortfaltPrÅr().map(ModellTyperMapper::beløpTilDto).orElse(null));
+            arbeidsforhold.setNaturalytelseTilkommetPrÅr(bga.getNaturalytelseTilkommetPrÅr().map(ModellTyperMapper::beløpTilDto).orElse(null));
+            inntektsmelding.ifPresent(im -> arbeidsforhold.setBelopFraInntektsmeldingPrMnd(ModellTyperMapper.beløpTilDto(im.getInntektBeløp())));
             mapArbeidsgiver(arbeidsforhold, arbeidsgiver);
             finnEksternArbeidsforholdId(andel, inntektArbeidYtelseGrunnlag).ifPresent(ref -> arbeidsforhold.setEksternArbeidsforholdId(ref.getReferanse()));
         });

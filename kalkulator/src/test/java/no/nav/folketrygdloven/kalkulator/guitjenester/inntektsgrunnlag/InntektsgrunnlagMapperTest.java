@@ -14,10 +14,12 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
@@ -28,7 +30,6 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntek
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.InntektsgrunnlagMånedDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.PGIGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.PGIPrÅrDto;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 class InntektsgrunnlagMapperTest {
     private static final LocalDate STP = LocalDate.now();
@@ -93,21 +94,21 @@ class InntektsgrunnlagMapperTest {
         assertThat(dto.get().getMåneder().get(0).getInntekter()).hasSize(2);
         assertThat(dto.get().getMåneder().get(0).getInntekter().stream()
                 .anyMatch(innt -> innt.getInntektAktivitetType().equals(InntektAktivitetType.FRILANSINNTEKT)
-                        && innt.getBeløp().intValue() == 3000))
+                        && innt.getBeløp().compareTo(no.nav.folketrygdloven.kalkulus.felles.v1.Beløp.fra(3000)) == 0))
                 .isTrue();
         assertThat(dto.get().getMåneder().get(0).getInntekter().stream()
                 .anyMatch(innt -> innt.getInntektAktivitetType().equals(InntektAktivitetType.ARBEIDSTAKERINNTEKT)
-                        && innt.getBeløp().intValue() == 5000))
+                        && innt.getBeløp().compareTo(no.nav.folketrygdloven.kalkulus.felles.v1.Beløp.fra(5000)) == 0))
                 .isTrue();
 
         assertThat(dto.get().getMåneder().get(1).getInntekter()).hasSize(2);
         assertThat(dto.get().getMåneder().get(1).getInntekter().stream()
                 .anyMatch(innt -> innt.getInntektAktivitetType().equals(InntektAktivitetType.FRILANSINNTEKT)
-                        && innt.getBeløp().intValue() == 3000))
+                        && innt.getBeløp().compareTo(no.nav.folketrygdloven.kalkulus.felles.v1.Beløp.fra(3000)) == 0))
                 .isTrue();
         assertThat(dto.get().getMåneder().get(1).getInntekter().stream()
                 .anyMatch(innt -> innt.getInntektAktivitetType().equals(InntektAktivitetType.ARBEIDSTAKERINNTEKT)
-                        && innt.getBeløp().intValue() == 5000))
+                        && innt.getBeløp().compareTo(no.nav.folketrygdloven.kalkulus.felles.v1.Beløp.fra(5000)) == 0))
                 .isTrue();
     }
 
@@ -199,7 +200,7 @@ class InntektsgrunnlagMapperTest {
     private Optional<PGIGrunnlagDto> finnPGIGrunnlag(List<PGIGrunnlagDto> grunnlag, int inntekt, PGIType type) {
         return grunnlag
                 .stream()
-                .filter(i -> i.getBeløp().compareTo(Beløp.fra(inntekt)) == 0 && i.getPgiType().equals(type))
+                .filter(i -> i.getBeløp().compareTo(ModellTyperMapper.beløpTilDto(Beløp.fra(inntekt))) == 0 && i.getPgiType().equals(type))
                 .findFirst();
     }
 

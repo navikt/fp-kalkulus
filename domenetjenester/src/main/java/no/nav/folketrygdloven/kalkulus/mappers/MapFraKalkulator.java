@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
@@ -119,7 +120,7 @@ public class MapFraKalkulator {
     }
 
     private static RefusjonsperiodeDto mapRefusjonsperiode(Refusjonsperiode rp) {
-        return new RefusjonsperiodeDto(mapPeriode(rp.getPeriode()), rp.getBeløp());
+        return new RefusjonsperiodeDto(mapPeriode(rp.getPeriode()), ModellTyperMapper.beløpFraDto(rp.getBeløp()));
     }
 
     public static YtelsespesifiktGrunnlag mapFraDto(FagsakYtelseType ytelseType,

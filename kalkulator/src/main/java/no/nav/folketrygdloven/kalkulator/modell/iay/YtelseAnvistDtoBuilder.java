@@ -2,9 +2,9 @@ package no.nav.folketrygdloven.kalkulator.modell.iay;
 
 import java.util.List;
 
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class YtelseAnvistDtoBuilder {
     private final YtelseAnvistDto ytelseAnvist;

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittPeriodeInntekt;
@@ -14,8 +15,8 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.mappers.MapTilAvslagsårsakerFRISINN;
@@ -67,7 +68,7 @@ public class MapBeregningsgrunnlagFRISINN {
                 mapFraBeløp(beregningsgrunnlagPeriode.getBruttoPrÅr()),
                 mapFraBeløp(beregningsgrunnlagPeriode.getAvkortetPrÅr()),
                 mapFraBeløp(beregningsgrunnlagPeriode.getRedusertPrÅr()),
-                no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(inntektstak),
+                no.nav.folketrygdloven.kalkulus.felles.v1.Beløp.fra(inntektstak),
                 beregningsgrunnlagPeriode.getDagsats(),
                 beregningsgrunnlagPeriode.getPeriodeÅrsaker());
     }
@@ -92,14 +93,14 @@ public class MapBeregningsgrunnlagFRISINN {
                 mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr()),
                 mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getRedusertPrÅr()),
                 mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getAvkortetPrÅr()),
-                no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(finnLøpendeInntekt(beregningsgrunnlagPrStatusOgAndel, oppgittOpptjening)),
-                no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(inntektstak),
+                finnLøpendeInntekt(beregningsgrunnlagPrStatusOgAndel, oppgittOpptjening),
+                no.nav.folketrygdloven.kalkulus.felles.v1.Beløp.fra(inntektstak),
                 beregningsgrunnlagPrStatusOgAndel.getDagsats(),
                 beregningsgrunnlagPrStatusOgAndel.getInntektskategori(),
                 avslagsårsak.orElse(null));
     }
 
-    private static BigDecimal finnLøpendeInntekt(BeregningsgrunnlagPrStatusOgAndel andel, Optional<OppgittOpptjeningDto> oppgittOpptjening) {
+    private static Beløp finnLøpendeInntekt(BeregningsgrunnlagPrStatusOgAndel andel, Optional<OppgittOpptjeningDto> oppgittOpptjening) {
         // Her må vi finne løpende inntekt basert på status og periode
         IntervallEntitet periode = andel.getBeregningsgrunnlagPeriode().getPeriode();
         if (andel.getAktivitetStatus().erFrilanser()) {
@@ -107,15 +108,16 @@ public class MapBeregningsgrunnlagFRISINN {
         } else if (andel.getAktivitetStatus().erSelvstendigNæringsdrivende()) {
             return finnInntektIPeriode(finnOppgittInntektSN(oppgittOpptjening), periode);
         }
-        return BigDecimal.ZERO;
+        return Beløp.ZERO;
     }
 
-    private static BigDecimal finnInntektIPeriode(List<OppgittPeriodeInntekt> periodeInntekter, IntervallEntitet periode) {
+    private static Beløp finnInntektIPeriode(List<OppgittPeriodeInntekt> periodeInntekter, IntervallEntitet periode) {
         return periodeInntekter.stream()
                 .filter(i -> i.getPeriode().getFomDato().equals(periode.getFomDato()))
                 .map(EffektivÅrsinntektTjenesteFRISINN::finnEffektivÅrsinntektForLøpenedeInntekt)
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
+                .reduce(no.nav.folketrygdloven.kalkulator.modell.typer.Beløp::adder)
+                .map(ModellTyperMapper::beløpTilDto)
+                .orElse(Beløp.ZERO);
     }
 
     private static List<OppgittPeriodeInntekt> finnOppgittInntektFL(Optional<OppgittOpptjeningDto> oppgittOpptjening) {
@@ -142,8 +144,8 @@ public class MapBeregningsgrunnlagFRISINN {
                 .collect(Collectors.toList());
     }
 
-    private static no.nav.folketrygdloven.kalkulus.typer.Beløp mapFraBeløp(Beløp beløp) {
-        return beløp != null ? no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(beløp.getVerdi()) : null;
+    private static Beløp mapFraBeløp(no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp beløp) {
+        return beløp != null ? Beløp.fra(beløp.getVerdi()) : null;
     }
 
 

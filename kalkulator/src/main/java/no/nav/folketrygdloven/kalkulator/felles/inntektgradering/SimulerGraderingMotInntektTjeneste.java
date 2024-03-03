@@ -36,6 +36,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.StatusOgArbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.steg.tilkommetInntekt.TilkommetInntektPeriodeTjeneste;
@@ -45,7 +46,6 @@ import no.nav.folketrygdloven.kalkulator.tid.Virkedager;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.folketrygdloven.regelmodelloversetter.KalkulusRegler;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 
@@ -205,11 +205,11 @@ public class SimulerGraderingMotInntektTjeneste {
                         ytelsespesifiktGrunnlag,
                         true);
                 var utbetalingsgrad = utbetalingsgradProsent.verdi().divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP);
-                return inntekt.map(i -> i.multiply(BigDecimal.ONE.subtract(utbetalingsgrad)));
+                return inntekt.multipliser(BigDecimal.ONE.subtract(utbetalingsgrad));
             } else if (inntektsforhold.getAktivitetStatus().equals(AktivitetStatus.FRILANSER)) {
                 var utbetalingsgradProsent = UtbetalingsgradTjeneste.finnUtbetalingsgradForStatus(AktivitetStatus.FRILANSER, periode, ytelsespesifiktGrunnlag);
                 var utbetalingsgrad = utbetalingsgradProsent.verdi().divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP);
-                return inntekt.map(i -> i.multiply(BigDecimal.ONE.subtract(utbetalingsgrad)));
+                return inntekt.multipliser(BigDecimal.ONE.subtract(utbetalingsgrad));
             } else {
                 return Beløp.ZERO;
             }
@@ -227,7 +227,7 @@ public class SimulerGraderingMotInntektTjeneste {
             if (utbetalingsgrad.equals(BigDecimal.ONE)) {
                 return Beløp.ZERO;
             }
-            return tilkommetInntekt.map(t -> t.divide(BigDecimal.ONE.subtract(utbetalingsgrad), 10, RoundingMode.HALF_UP));
+            return tilkommetInntekt.divider(BigDecimal.ONE.subtract(utbetalingsgrad), 10, RoundingMode.HALF_UP);
         }
         return Beløp.ZERO;
     }
@@ -240,7 +240,7 @@ public class SimulerGraderingMotInntektTjeneste {
             if (utbetalingsgrad.equals(BigDecimal.ONE)) {
                 return Beløp.ZERO;
             }
-            return tilkommetInntekt.map(ti -> ti.divide(BigDecimal.ONE.subtract(utbetalingsgrad), 10, RoundingMode.HALF_UP));
+            return tilkommetInntekt.divider(BigDecimal.ONE.subtract(utbetalingsgrad), 10, RoundingMode.HALF_UP);
         }
         return Beløp.ZERO;
     }
@@ -304,12 +304,11 @@ public class SimulerGraderingMotInntektTjeneste {
         }
         var beløp = aktuellePoster.stream()
                 .map(post -> finnBruttoInntektFraInntektspost(arbeidsgiver, arbeidsforholdRef, ytelsespesifiktGrunnlag, post))
-                .map(Beløp::safeVerdi)
                 .filter(Objects::nonNull)
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO)
-                .divide(BigDecimal.valueOf(antallPoster), 10, RoundingMode.HALF_UP);
-        return Beløp.fra(beløp);
+                .reduce(Beløp::adder)
+                .orElse(Beløp.ZERO)
+                .divider(antallPoster, 10, RoundingMode.HALF_UP);
+        return beløp;
     }
 
     private Beløp finnInntektForFrilans(Intervall periode,
@@ -323,14 +322,13 @@ public class SimulerGraderingMotInntektTjeneste {
                 .map(YrkesaktivitetDto::getArbeidsgiver)
                 .distinct();
         return frilansArbeidstaker.map(a -> finnBeregnetÅrsinntekForArbeidSomFrilanser(periode, ytelsespesifiktGrunnlag, inntektFilterDto, a))
-                .reduce(BigDecimal::add)
-                .map(Beløp::fra)
+                .reduce(Beløp::adder)
                 .orElse(Beløp.ZERO);
 
 
     }
 
-    private static BigDecimal finnBeregnetÅrsinntekForArbeidSomFrilanser(Intervall periode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, InntektFilterDto inntektFilterDto, Arbeidsgiver a) {
+    private static Beløp finnBeregnetÅrsinntekForArbeidSomFrilanser(Intervall periode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, InntektFilterDto inntektFilterDto, Arbeidsgiver a) {
         var inntektsposter = inntektFilterDto.filterBeregningsgrunnlag()
                 .filter(a)
                 .getFiltrertInntektsposter();
@@ -342,14 +340,13 @@ public class SimulerGraderingMotInntektTjeneste {
         var antallPoster = aktuellePoster.size();
         if (antallPoster == 0) {
             LOG.info("Fant ingen inntektsposter for arbeidsgiver {} i periode {}", a, periode);
-            return BigDecimal.ZERO;
+            return Beløp.ZERO;
         }
         return aktuellePoster.stream().map(post -> finnBruttoInntektFraInntektspostForFrilans(ytelsespesifiktGrunnlag, post))
-                .map(Beløp::safeVerdi)
                 .filter(Objects::nonNull)
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO)
-                .divide(BigDecimal.valueOf(antallPoster), 10, RoundingMode.HALF_UP);
+                .reduce(Beløp::adder)
+                .orElse(Beløp.ZERO)
+                .divider(antallPoster, 10, RoundingMode.HALF_UP);
     }
 
     private static Beløp finnBruttoInntektFraInntektspost(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRef, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, InntektspostDto post) {
@@ -360,7 +357,7 @@ public class SimulerGraderingMotInntektTjeneste {
             return Beløp.ZERO;
         }
         var bruttoInntekt = utledBruttoInntektFraTilkommetForArbeidstaker(post.getBeløp(), arbeidsgiver, arbeidsforholdRef, postPeriode, ytelsespesifiktGrunnlag);
-        return bruttoInntekt.map(bi -> bi.divide(BigDecimal.valueOf(virkedagerIPeriode), 10, RoundingMode.HALF_UP).multiply(KonfigTjeneste.getYtelsesdagerIÅr()));
+        return bruttoInntekt.divider(virkedagerIPeriode, 10, RoundingMode.HALF_UP).multipliser(KonfigTjeneste.getYtelsesdagerIÅr());
     }
 
     private static Beløp finnBruttoInntektFraInntektspostForFrilans(YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, InntektspostDto post) {
@@ -370,7 +367,7 @@ public class SimulerGraderingMotInntektTjeneste {
             return Beløp.ZERO;
         }
         var bruttoInntekt = utledBruttoInntektFraTilkommetForFrilans(post.getBeløp(), postPeriode, ytelsespesifiktGrunnlag);
-        return bruttoInntekt.map(bi -> bi.divide(BigDecimal.valueOf(virkedagerIPeriode), 10, RoundingMode.HALF_UP).multiply(KonfigTjeneste.getYtelsesdagerIÅr()));
+        return bruttoInntekt.divider(virkedagerIPeriode, 10, RoundingMode.HALF_UP).multipliser(KonfigTjeneste.getYtelsesdagerIÅr());
     }
 
 

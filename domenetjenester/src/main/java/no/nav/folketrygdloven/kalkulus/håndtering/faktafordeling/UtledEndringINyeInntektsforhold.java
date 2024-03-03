@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.TilkommetInntektDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
@@ -36,7 +37,7 @@ public class UtledEndringINyeInntektsforhold {
         return new NyttInntektsforholdEndring(
                 inntektsforhold.getAktivitetStatus(),
                 mapArbeidsgiver(inntektsforhold),
-                new InntektEndring(forrigeInntektsforhold.map(TilkommetInntektDto::getBruttoInntektPrÅr).orElse(null), inntektsforhold.getBruttoInntektPrÅr()),
+                new InntektEndring(forrigeInntektsforhold.map(TilkommetInntektDto::getBruttoInntektPrÅr).map(ModellTyperMapper::beløpTilDto).orElse(null), ModellTyperMapper.beløpTilDto(inntektsforhold.getBruttoInntektPrÅr())),
                 new ToggleEndring(forrigeInntektsforhold.map(TilkommetInntektDto::skalRedusereUtbetaling).orElse(null), inntektsforhold.skalRedusereUtbetaling()));
     }
 

@@ -10,9 +10,9 @@ import no.nav.folketrygdloven.kalkulator.avklaringsbehov.fordeling.FordelBeregni
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
 
 public class FordelRefusjonTjeneste {
@@ -61,10 +61,10 @@ public class FordelRefusjonTjeneste {
     private static Beløp getAndelAvTotalRefusjonPrÅr(FordelBeregningsgrunnlagAndelDto fordeltAndel,
                                                           RefusjonOgFastsattBeløp refusjonOgFastsattBeløp) {
         var fastsatt = fordeltAndel.getFastsatteVerdier().finnEllerUtregnFastsattBeløpPrÅr();
-        var totalFastsatt = refusjonOgFastsattBeløp.getTotalFastsattBeløpPrÅr().verdi();
+        var totalFastsatt = refusjonOgFastsattBeløp.getTotalFastsattBeløpPrÅr();
         var totalRefusjon = refusjonOgFastsattBeløp.getTotalRefusjonPrÅr();
         return totalRefusjon.multipliser(fastsatt)
-                .map(v -> v.divide(totalFastsatt, 10, RoundingMode.HALF_UP));
+                .divider(totalFastsatt, 10, RoundingMode.HALF_UP);
     }
 
     private static Map<ArbeidsforholdNøkkel, RefusjonOgFastsattBeløp> getTotalbeløpPrArbeidsforhold(FordelBeregningsgrunnlagPeriodeDto fordeltPeriode,

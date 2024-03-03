@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -108,7 +109,7 @@ public class FaktaOmBeregningAndelDtoTjeneste {
                             inntektsmeldingMap,
                             arbeidsgiver.getOrgnr(),
                             andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsforholdRef)));
-            inntektsmelding.ifPresent(im -> dto.setInntektPrMnd(im.getInntektBeløp()));
+            inntektsmelding.map(InntektsmeldingDto::getInntektBeløp).map(ModellTyperMapper::beløpTilDto).ifPresent(dto::setInntektPrMnd);
         }
         return dto;
     }

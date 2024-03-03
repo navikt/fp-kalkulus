@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 /**
  * Årsgrunnlag representerer inntektsgrunnlaget for en andel

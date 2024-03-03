@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningMånedGrunnlag;
@@ -33,7 +34,7 @@ public class YtelsespesifiktGrunnlagTjenesteFP implements YtelsespesifiktGrunnla
         List<BesteberegningMånedGrunnlagDto> besteMåneder = besteberegningVurderingGrunnlag.getSeksBesteMåneder().stream()
                 .map(YtelsespesifiktGrunnlagTjenesteFP::mapMånedsgrunnlag)
                 .collect(Collectors.toList());
-        return new BesteberegninggrunnlagDto(besteMåneder, besteberegningVurderingGrunnlag.getAvvikFraFørsteLedd());
+        return new BesteberegninggrunnlagDto(besteMåneder, ModellTyperMapper.beløpTilDto(besteberegningVurderingGrunnlag.getAvvikFraFørsteLedd()));
     }
 
     private static BesteberegningMånedGrunnlagDto mapMånedsgrunnlag(BesteberegningMånedGrunnlag besteberegningMånedGrunnlag) {
@@ -44,8 +45,8 @@ public class YtelsespesifiktGrunnlagTjenesteFP implements YtelsespesifiktGrunnla
 
     private static BesteberegningInntektDto mapBesteberegningInntekt(Inntekt inntekt) {
         if (inntekt.getArbeidsgiver() != null) {
-            return new BesteberegningInntektDto(inntekt.getArbeidsgiver().getIdentifikator(), inntekt.getArbeidsgiver().getIdentifikator(), inntekt.getArbeidsforholdRef().getReferanse(), inntekt.getInntekt());
+            return new BesteberegningInntektDto(inntekt.getArbeidsgiver().getIdentifikator(), inntekt.getArbeidsgiver().getIdentifikator(), inntekt.getArbeidsforholdRef().getReferanse(), ModellTyperMapper.beløpTilDto(inntekt.getInntekt()));
         }
-        return new BesteberegningInntektDto(inntekt.getOpptjeningAktivitetType(), inntekt.getInntekt());
+        return new BesteberegningInntektDto(inntekt.getOpptjeningAktivitetType(), ModellTyperMapper.beløpTilDto(inntekt.getInntekt()));
     }
 }

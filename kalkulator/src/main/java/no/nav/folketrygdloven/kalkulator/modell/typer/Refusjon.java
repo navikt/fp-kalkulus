@@ -6,7 +6,6 @@ import java.util.Objects;
 import no.nav.folketrygdloven.kalkulator.modell.diff.SjekkVedKopiering;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 /** Container for refusjon. */
 public class Refusjon implements Serializable, Comparable<Refusjon> {

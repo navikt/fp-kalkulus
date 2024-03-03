@@ -17,12 +17,12 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatus;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.TilkommetInntekt;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.FastsattInntektskategori;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Promille;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Prosent;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Refusjon;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Årsgrunnlag;
+import no.nav.folketrygdloven.kalkulus.mappers.VerdityperMapper;
 
 
 public class KalkulatorTilBGMapper {
@@ -38,10 +38,10 @@ public class KalkulatorTilBGMapper {
         BeregningsgrunnlagPeriode.Builder builder = new BeregningsgrunnlagPeriode.Builder();
 
         //med
-        builder.medAvkortetPrÅr(Beløp.fraKalkulatorBeløp(fraKalkulus.getAvkortetPrÅr()));
+        builder.medAvkortetPrÅr(VerdityperMapper.beløpTilDao(fraKalkulus.getAvkortetPrÅr()));
         builder.medBeregningsgrunnlagPeriode(fraKalkulus.getBeregningsgrunnlagPeriodeFom(), fraKalkulus.getBeregningsgrunnlagPeriodeTom());
-        builder.medBruttoPrÅr(Beløp.fraKalkulatorBeløp(fraKalkulus.getBruttoPrÅr()));
-        builder.medRedusertPrÅr(Beløp.fraKalkulatorBeløp(fraKalkulus.getRedusertPrÅr()));
+        builder.medBruttoPrÅr(VerdityperMapper.beløpTilDao(fraKalkulus.getBruttoPrÅr()));
+        builder.medRedusertPrÅr(VerdityperMapper.beløpTilDao(fraKalkulus.getRedusertPrÅr()));
         builder.medInntektGraderingsprosentBrutto(fraKalkulus.getInntektgraderingsprosentBrutto() != null ? new Prosent(fraKalkulus.getInntektgraderingsprosentBrutto()) : null);
         builder.medTotalUtbetalingsgradFraUttak(fraKalkulus.getTotalUtbetalingsgradFraUttak());
         builder.medTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt(fraKalkulus.getTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt());
@@ -61,7 +61,7 @@ public class KalkulatorTilBGMapper {
         SammenligningsgrunnlagPrStatus.Builder builder = new SammenligningsgrunnlagPrStatus.Builder();
         builder.medAvvikPromilleNy(mapTilPromille(fraKalkulus.getAvvikPromilleNy()));
         builder.medAvvikPromille(mapTilPromille(fraKalkulus.getAvvikPromilleNy()));
-        builder.medRapportertPrÅr(Beløp.fraKalkulatorBeløp(fraKalkulus.getRapportertPrÅr()));
+        builder.medRapportertPrÅr(VerdityperMapper.beløpTilDao(fraKalkulus.getRapportertPrÅr()));
         builder.medSammenligningsgrunnlagType(fraKalkulus.getSammenligningsgrunnlagType());
         builder.medSammenligningsperiode(fraKalkulus.getSammenligningsperiodeFom(), fraKalkulus.getSammenligningsperiodeTom());
 
@@ -73,27 +73,27 @@ public class KalkulatorTilBGMapper {
                 .medAktivitetStatus(fraKalkulus.getAktivitetStatus())
                 .medAndelsnr(fraKalkulus.getAndelsnr())
                 .medArbforholdType(fraKalkulus.getArbeidsforholdType())
-                .medAvkortetBrukersAndelPrÅr(Beløp.fraKalkulatorBeløp(fraKalkulus.getAvkortetBrukersAndelPrÅr()))
-                .medAvkortetPrÅr(Beløp.fraKalkulatorBeløp(fraKalkulus.getAvkortetPrÅr()))
-                .medAvkortetRefusjonPrÅr(Beløp.fraKalkulatorBeløp(fraKalkulus.getAvkortetRefusjonPrÅr()))
+                .medAvkortetBrukersAndelPrÅr(VerdityperMapper.beløpTilDao(fraKalkulus.getAvkortetBrukersAndelPrÅr()))
+                .medAvkortetPrÅr(VerdityperMapper.beløpTilDao(fraKalkulus.getAvkortetPrÅr()))
+                .medAvkortetRefusjonPrÅr(VerdityperMapper.beløpTilDao(fraKalkulus.getAvkortetRefusjonPrÅr()))
                 .medFastsattAvSaksbehandler(fraKalkulus.getFastsattAvSaksbehandler())
                 .medKilde(fraKalkulus.getKilde())
                 .medGrunnlagPrÅr(map(fraKalkulus.getGrunnlagPrÅr()))
-                .medRedusertPrÅr(Beløp.fraKalkulatorBeløp(fraKalkulus.getRedusertPrÅr()))
-                .medRedusertBrukersAndelPrÅr(Beløp.fraKalkulatorBeløp(fraKalkulus.getRedusertBrukersAndelPrÅr()))
-                .medMaksimalRefusjonPrÅr(Beløp.fraKalkulatorBeløp(fraKalkulus.getMaksimalRefusjonPrÅr()))
-                .medRedusertRefusjonPrÅr(Beløp.fraKalkulatorBeløp(fraKalkulus.getRedusertRefusjonPrÅr()))
-                .medÅrsbeløpFraTilstøtendeYtelse(Beløp.fraKalkulatorBeløp(fraKalkulus.getÅrsbeløpFraTilstøtendeYtelse()))
+                .medRedusertPrÅr(VerdityperMapper.beløpTilDao(fraKalkulus.getRedusertPrÅr()))
+                .medRedusertBrukersAndelPrÅr(VerdityperMapper.beløpTilDao(fraKalkulus.getRedusertBrukersAndelPrÅr()))
+                .medMaksimalRefusjonPrÅr(VerdityperMapper.beløpTilDao(fraKalkulus.getMaksimalRefusjonPrÅr()))
+                .medRedusertRefusjonPrÅr(VerdityperMapper.beløpTilDao(fraKalkulus.getRedusertRefusjonPrÅr()))
+                .medÅrsbeløpFraTilstøtendeYtelse(VerdityperMapper.beløpTilDao(fraKalkulus.getÅrsbeløpFraTilstøtendeYtelse()))
                 .medFastsattInntektskategori(mapTilInntektskategori(fraKalkulus))
                 .medOrginalDagsatsFraTilstøtendeYtelse(fraKalkulus.getOrginalDagsatsFraTilstøtendeYtelse())
-                .medAvkortetFørGraderingPrÅr(Beløp.fraKalkulatorBeløp(fraKalkulus.getAvkortetFørGraderingPrÅr()));
+                .medAvkortetFørGraderingPrÅr(VerdityperMapper.beløpTilDao(fraKalkulus.getAvkortetFørGraderingPrÅr()));
 
         if (fraKalkulus.getBeregningsperiodeFom() != null) {
             builder.medBeregningsperiode(fraKalkulus.getBeregningsperiodeFom(), fraKalkulus.getBeregningsperiodeTom());
         }
 
         if (fraKalkulus.getPgiSnitt() != null) {
-            builder.medPgi(Beløp.fraKalkulatorBeløp(fraKalkulus.getPgiSnitt()), Stream.of(fraKalkulus.getPgi1(), fraKalkulus.getPgi2(), fraKalkulus.getPgi3()).filter(Objects::nonNull).map(Beløp::fraKalkulatorBeløp).collect(Collectors.toList()));
+            builder.medPgi(VerdityperMapper.beløpTilDao(fraKalkulus.getPgiSnitt()), Stream.of(fraKalkulus.getPgi1(), fraKalkulus.getPgi2(), fraKalkulus.getPgi3()).filter(Objects::nonNull).map(VerdityperMapper::beløpTilDao).collect(Collectors.toList()));
         }
 
         fraKalkulus.getBgAndelArbeidsforhold().ifPresent(bgAndelArbeidsforhold -> builder.medBGAndelArbeidsforhold(KalkulatorTilBGMapper.mapBGAndelArbeidsforhold(bgAndelArbeidsforhold)));
@@ -114,12 +114,12 @@ public class KalkulatorTilBGMapper {
     private static Årsgrunnlag map(no.nav.folketrygdloven.kalkulator.modell.typer.Årsgrunnlag grunnlagPrÅr) {
         return grunnlagPrÅr == null || !grunnlagPrÅr.erSatt() ?
                 new Årsgrunnlag() : new Årsgrunnlag(
-                Beløp.fraKalkulatorBeløp(grunnlagPrÅr.getBeregnetPrÅr()),
-                Beløp.fraKalkulatorBeløp(grunnlagPrÅr.getFordeltPrÅr()),
-                Beløp.fraKalkulatorBeløp(grunnlagPrÅr.getManueltFordeltPrÅr()),
-                Beløp.fraKalkulatorBeløp(grunnlagPrÅr.getOverstyrtPrÅr()),
-                Beløp.fraKalkulatorBeløp(grunnlagPrÅr.getBesteberegningPrÅr()),
-                Beløp.fraKalkulatorBeløp(grunnlagPrÅr.getBruttoPrÅr())
+                VerdityperMapper.beløpTilDao(grunnlagPrÅr.getBeregnetPrÅr()),
+                VerdityperMapper.beløpTilDao(grunnlagPrÅr.getFordeltPrÅr()),
+                VerdityperMapper.beløpTilDao(grunnlagPrÅr.getManueltFordeltPrÅr()),
+                VerdityperMapper.beløpTilDao(grunnlagPrÅr.getOverstyrtPrÅr()),
+                VerdityperMapper.beløpTilDao(grunnlagPrÅr.getBesteberegningPrÅr()),
+                VerdityperMapper.beløpTilDao(grunnlagPrÅr.getBruttoPrÅr())
         );
     }
 
@@ -134,8 +134,8 @@ public class KalkulatorTilBGMapper {
         builder.medArbeidsperiodeFom(fraKalkulus.getArbeidsperiodeFom());
         builder.medRefusjon(fraKalkulus.getRefusjon().map(KalkulatorTilBGMapper::mapRefusjon).orElse(null));
         fraKalkulus.getArbeidsperiodeTom().ifPresent(builder::medArbeidsperiodeTom);
-        fraKalkulus.getNaturalytelseBortfaltPrÅr().map(Beløp::fraKalkulatorBeløp).ifPresent(builder::medNaturalytelseBortfaltPrÅr);
-        fraKalkulus.getNaturalytelseTilkommetPrÅr().map(Beløp::fraKalkulatorBeløp).ifPresent(builder::medNaturalytelseTilkommetPrÅr);
+        fraKalkulus.getNaturalytelseBortfaltPrÅr().map(VerdityperMapper::beløpTilDao).ifPresent(builder::medNaturalytelseBortfaltPrÅr);
+        fraKalkulus.getNaturalytelseTilkommetPrÅr().map(VerdityperMapper::beløpTilDao).ifPresent(builder::medNaturalytelseTilkommetPrÅr);
         return builder;
     }
 
@@ -144,10 +144,10 @@ public class KalkulatorTilBGMapper {
             return null;
         }
         return new Refusjon(
-                Beløp.fraKalkulatorBeløp(refusjon.getRefusjonskravPrÅr()),
-                Beløp.fraKalkulatorBeløp(refusjon.getSaksbehandletRefusjonPrÅr()),
-                Beløp.fraKalkulatorBeløp(refusjon.getFordeltRefusjonPrÅr()),
-                Beløp.fraKalkulatorBeløp(refusjon.getManueltFordeltRefusjonPrÅr()),
+                VerdityperMapper.beløpTilDao(refusjon.getRefusjonskravPrÅr()),
+                VerdityperMapper.beløpTilDao(refusjon.getSaksbehandletRefusjonPrÅr()),
+                VerdityperMapper.beløpTilDao(refusjon.getFordeltRefusjonPrÅr()),
+                VerdityperMapper.beløpTilDao(refusjon.getManueltFordeltRefusjonPrÅr()),
                 refusjon.getHjemmelForRefusjonskravfrist(),
                 refusjon.getRefusjonskravFristUtfall()
         );
@@ -165,8 +165,8 @@ public class KalkulatorTilBGMapper {
                 it.getAktivitetStatus(),
                 it.getArbeidsgiver().map(KalkulatorTilIAYMapper::mapArbeidsgiver).orElse(null),
                 KalkulatorTilIAYMapper.mapArbeidsforholdRef(it.getArbeidsforholdRef()),
-                Beløp.fraKalkulatorBeløp(it.getBruttoInntektPrÅr()),
-                Beløp.fraKalkulatorBeløp(it.getTilkommetInntektPrÅr()),
+                VerdityperMapper.beløpTilDao(it.getBruttoInntektPrÅr()),
+                VerdityperMapper.beløpTilDao(it.getTilkommetInntektPrÅr()),
                 it.skalRedusereUtbetaling());
     }
 

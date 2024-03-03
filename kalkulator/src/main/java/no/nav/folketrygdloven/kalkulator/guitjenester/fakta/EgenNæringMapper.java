@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittEgenNæringDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.EgenNæringDto;
 
@@ -22,7 +23,7 @@ public final class EgenNæringMapper {
         dto.setErNyIArbeidslivet(egenNæring.getNyIArbeidslivet());
         dto.setRegnskapsførerNavn(egenNæring.getRegnskapsførerNavn());
         dto.setRegnskapsførerTlf(egenNæring.getRegnskapsførerTlf());
-        dto.setOppgittInntekt(egenNæring.getBruttoInntekt());
+        dto.setOppgittInntekt(ModellTyperMapper.beløpTilDto(egenNæring.getBruttoInntekt()));
         return dto;
     }
 

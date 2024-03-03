@@ -1,7 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.iay.ytelse.v1;
 
-import java.math.BigDecimal;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -10,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
-import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.iay.IayProsent;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
@@ -35,7 +33,7 @@ public class AnvistAndel {
 
     @JsonProperty(value = "dagsats", required = true)
     @NotNull
-    private BeløpDto dagsats;
+    private Beløp dagsats;
 
     @JsonProperty("utbetalingsgrad")
     private IayProsent utbetalingsgrad;
@@ -54,14 +52,14 @@ public class AnvistAndel {
     public AnvistAndel(Aktør arbeidsgiver, int beløp, int utbetalingsgrad, int refusjonsgrad, Inntektskategori inntektskategori, String arbeidsforholdId) {
         this(arbeidsgiver,
                 new InternArbeidsforholdRefDto(arbeidsforholdId),
-                new BeløpDto(BigDecimal.valueOf(beløp)),
+                Beløp.fra(beløp),
                 IayProsent.fra(utbetalingsgrad),
                 IayProsent.fra(refusjonsgrad),
                 inntektskategori);
     }
 
     public AnvistAndel(Aktør arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdId,
-                       BeløpDto beløp, IayProsent utbetalingsgrad, IayProsent refusjonsgrad, Inntektskategori inntektskategori) {
+                       Beløp beløp, IayProsent utbetalingsgrad, IayProsent refusjonsgrad, Inntektskategori inntektskategori) {
         this.arbeidsgiver = arbeidsgiver;
         this.arbeidsforholdId = arbeidsforholdId;
         this.dagsats = beløp;
@@ -78,7 +76,7 @@ public class AnvistAndel {
         return arbeidsforholdId;
     }
 
-    public BeløpDto getDagsats() {
+    public Beløp getDagsats() {
         return dagsats;
     }
 

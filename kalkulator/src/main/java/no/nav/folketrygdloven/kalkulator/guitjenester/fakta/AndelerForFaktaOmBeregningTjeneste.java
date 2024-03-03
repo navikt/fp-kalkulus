@@ -12,13 +12,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.AndelForFaktaOmBeregningDto;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class AndelerForFaktaOmBeregningTjeneste {
 
@@ -46,7 +47,7 @@ public class AndelerForFaktaOmBeregningTjeneste {
         var inntektsmeldinger = input.getInntektsmeldinger();
         var inntektsmeldingForAndel = finnInntektsmelding(andel, inntektsmeldinger);
         var dto = new AndelForFaktaOmBeregningDto();
-        dto.setFastsattBelop(finnInntektForPreutfylling(andel));
+        dto.setFastsattBelop(ModellTyperMapper.beløpTilDto(finnInntektForPreutfylling(andel)));
         dto.setInntektskategori(andel.getGjeldendeInntektskategori());
         dto.setAndelsnr(andel.getAndelsnr());
         dto.setAktivitetStatus(andel.getAktivitetStatus());
@@ -55,11 +56,11 @@ public class AndelerForFaktaOmBeregningTjeneste {
         dto.setLagtTilAvSaksbehandler(andel.erLagtTilAvSaksbehandler());
         BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, inntektsmeldingForAndel, inntektArbeidYtelseGrunnlag)
                 .ifPresent(dto::setArbeidsforhold);
-        finnRefusjonskravFraInntektsmelding(inntektsmeldingForAndel).ifPresent(dto::setRefusjonskrav);
+        finnRefusjonskravFraInntektsmelding(inntektsmeldingForAndel).map(ModellTyperMapper::beløpTilDto).ifPresent(dto::setRefusjonskrav);
         finnInntektForKunLese(ref, andel, inntektsmeldingForAndel, inntektArbeidYtelseGrunnlag,
                 input.getBeregningsgrunnlag().getFaktaOmBeregningTilfeller(),
-                input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList())
-                .ifPresent(dto::setBelopReadOnly);
+                input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().getFirst().getBeregningsgrunnlagPrStatusOgAndelList())
+                .map(ModellTyperMapper::beløpTilDto).ifPresent(dto::setBelopReadOnly);
         return dto;
     }
 

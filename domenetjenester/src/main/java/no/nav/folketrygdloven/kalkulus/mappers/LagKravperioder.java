@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.KravperioderPrArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.PerioderForKrav;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.RefusjonskravDatoDto;
@@ -24,7 +26,6 @@ import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidDto;
 import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
@@ -46,7 +47,7 @@ class LagKravperioder {
         iayGrunnlag.getInntektsmeldingDto().getInntektsmeldinger()
                 .stream()
                 .filter(im -> (im.getRefusjonBeløpPerMnd() != null &&
-                        im.getRefusjonBeløpPerMnd().getBeløp().compareTo(Beløp.ZERO) > 0) ||
+                        ModellTyperMapper.beløpFraDto(im.getRefusjonBeløpPerMnd()).compareTo(Beløp.ZERO) > 0) ||
                         !im.getEndringerRefusjon().isEmpty())
                 .filter(im -> !refusjonOpphørerFørStart(im, finnStartdatoRefusjon(im, skjæringstidspunktBeregning, iayGrunnlag.getArbeidDto())))
                 .forEach(im -> {
@@ -123,12 +124,12 @@ class LagKravperioder {
         if (refusjonOpphørerFørStart(im, startdatoRefusjon)) {
             return Collections.emptyList();
         }
-        if (!(im.getRefusjonBeløpPerMnd() == null || im.getRefusjonBeløpPerMnd().getBeløp().compareTo(Beløp.ZERO) == 0)) {
-            alleSegmenter.add(new LocalDateSegment<>(startdatoRefusjon, TIDENES_ENDE, im.getRefusjonBeløpPerMnd().getBeløp()));
+        if (!(im.getRefusjonBeløpPerMnd() == null || ModellTyperMapper.beløpFraDto(im.getRefusjonBeløpPerMnd()).compareTo(Beløp.ZERO) == 0)) {
+            alleSegmenter.add(new LocalDateSegment<>(startdatoRefusjon, TIDENES_ENDE, ModellTyperMapper.beløpFraDto(im.getRefusjonBeløpPerMnd())));
         }
 
         alleSegmenter.addAll(im.getEndringerRefusjon().stream().map(e ->
-                new LocalDateSegment<>(e.getFom(), TIDENES_ENDE, e.getRefusjonsbeløpMnd().getBeløp())
+                new LocalDateSegment<>(e.getFom(), TIDENES_ENDE, ModellTyperMapper.beløpFraDto(e.getRefusjonsbeløpMnd()))
         ).collect(Collectors.toList()));
 
         if (im.getRefusjonOpphører() != null && !im.getRefusjonOpphører().equals(TIDENES_ENDE)) {
@@ -142,7 +143,7 @@ class LagKravperioder {
             return new LocalDateSegment<>(interval, lhs.getValue());
         });
         return refusjonTidslinje.stream()
-                .map(r -> new Refusjonsperiode(new Periode(r.getFom(), r.getTom()), r.getValue()))
+                .map(r -> new Refusjonsperiode(new Periode(r.getFom(), r.getTom()), ModellTyperMapper.beløpTilDto(r.getValue())))
                 .collect(Collectors.toList());
 
     }

@@ -10,9 +10,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
@@ -23,7 +25,6 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntek
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.InntektsgrunnlagMånedDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.PGIGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.PGIPrÅrDto;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class InntektsgrunnlagMapper {
     private final Optional<Intervall> sammenligningsperiode;
@@ -68,7 +69,7 @@ public class InntektsgrunnlagMapper {
                         it -> finnPGIType(it.getInntektspostType()),
                         InntektspostDto::getBeløp,
                         Beløp::adder));
-        var grunnlagPrType = beløpPrType.entrySet().stream().map(e -> new PGIGrunnlagDto(e.getKey(), e.getValue())).toList();
+        var grunnlagPrType = beløpPrType.entrySet().stream().map(e -> new PGIGrunnlagDto(e.getKey(), ModellTyperMapper.beløpTilDto(e.getValue()))).toList();
         return new PGIPrÅrDto(år, grunnlagPrType);
     }
 
@@ -94,7 +95,7 @@ public class InntektsgrunnlagMapper {
         List<InntektsgrunnlagMånedDto> måneder = new ArrayList<>();
         dateMap.forEach((månedFom, poster) -> {
             List<InntektsgrunnlagInntektDto> inntekDtoer = poster.stream()
-                    .map(post -> new InntektsgrunnlagInntektDto(post.inntektAktivitetType, post.beløp))
+                    .map(post -> new InntektsgrunnlagInntektDto(post.inntektAktivitetType, ModellTyperMapper.beløpTilDto(post.beløp)))
                     .toList();
             LocalDate tom = månedFom.with(TemporalAdjusters.lastDayOfMonth());
             måneder.add(new InntektsgrunnlagMånedDto(månedFom, tom, inntekDtoer));

@@ -1,10 +1,10 @@
 package no.nav.folketrygdloven.kalkulus.mapTilKontrakt;
 
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
@@ -12,6 +12,7 @@ import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.TilkommetInntektDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
@@ -22,7 +23,6 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.brev.Bereg
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.brev.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.brev.TilkommetInntektsforholdDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.SammenligningsgrunnlagPrStatusDto;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class MapBrevBeregningsgrunnlag {
 
@@ -42,7 +42,7 @@ public class MapBrevBeregningsgrunnlag {
                 mapAktivitetstatuser(beregningsgrunnlagEntitet),
                 mapBeregningsgrunnlagPerioder(beregningsgrunnlagEntitet, ytelsespesifiktGrunnlag),
                 mapSammenligningsgrunnlagPrStatusListe(beregningsgrunnlagEntitet),
-                beregningsgrunnlagEntitet.getGrunnbeløp());
+                ModellTyperMapper.beløpTilDto(beregningsgrunnlagEntitet.getGrunnbeløp()));
     }
 
     private static List<SammenligningsgrunnlagPrStatusDto> mapSammenligningsgrunnlagPrStatusListe(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlagEntitet) {
@@ -54,22 +54,22 @@ public class MapBrevBeregningsgrunnlag {
         return new SammenligningsgrunnlagPrStatusDto(
                 new Periode(sammenligningsgrunnlagPrStatus.getSammenligningsperiodeFom(), sammenligningsgrunnlagPrStatus.getSammenligningsperiodeTom()),
                 sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType(),
-                sammenligningsgrunnlagPrStatus.getRapportertPrÅr(),
+                ModellTyperMapper.beløpTilDto(sammenligningsgrunnlagPrStatus.getRapportertPrÅr()),
                 sammenligningsgrunnlagPrStatus.getAvvikPromilleNy());
     }
 
     private static List<BeregningsgrunnlagPeriodeDto> mapBeregningsgrunnlagPerioder(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto bg, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        return bg.getBeregningsgrunnlagPerioder().stream().map(p -> MapBrevBeregningsgrunnlag.mapPeriode(p, ytelsespesifiktGrunnlag, bg.getGrunnbeløp().verdi())).collect(Collectors.toList());
+        return bg.getBeregningsgrunnlagPerioder().stream().map(p -> MapBrevBeregningsgrunnlag.mapPeriode(p, ytelsespesifiktGrunnlag, bg.getGrunnbeløp())).collect(Collectors.toList());
     }
 
     private static BeregningsgrunnlagPeriodeDto mapPeriode(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode,
-                                                           YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, BigDecimal grunnbeløp) {
+                                                           YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, Beløp grunnbeløp) {
         return new BeregningsgrunnlagPeriodeDto(
                 mapAndeler(beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList(), beregningsgrunnlagPeriode, ytelsespesifiktGrunnlag, grunnbeløp),
                 mapTilkomneInntektsforhold(beregningsgrunnlagPeriode.getTilkomneInntekter()),
                 new Periode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom()),
-                beregningsgrunnlagPeriode.getBruttoPrÅr(),
-                beregningsgrunnlagPeriode.getAvkortetPrÅr(),
+                ModellTyperMapper.beløpTilDto(beregningsgrunnlagPeriode.getBruttoPrÅr()),
+                ModellTyperMapper.beløpTilDto(beregningsgrunnlagPeriode.getAvkortetPrÅr()),
                 beregningsgrunnlagPeriode.getDagsats(),
                 beregningsgrunnlagPeriode.getTotalUtbetalingsgradFraUttak(),
                 beregningsgrunnlagPeriode.getTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt());
@@ -85,79 +85,76 @@ public class MapBrevBeregningsgrunnlag {
                 .toList();
     }
 
-    private static List<BeregningsgrunnlagPrStatusOgAndelDto> mapAndeler(List<no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList, no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto periode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, BigDecimal grunnbeløp) {
+    private static List<BeregningsgrunnlagPrStatusOgAndelDto> mapAndeler(List<no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList, no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto periode, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, Beløp grunnbeløp) {
         return beregningsgrunnlagPrStatusOgAndelList.stream().map(a -> mapAndel(a, periode, ytelsespesifiktGrunnlag, grunnbeløp)).collect(Collectors.toList());
     }
 
     private static BeregningsgrunnlagPrStatusOgAndelDto mapAndel(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                                  no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto periode,
-                                                                 YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, BigDecimal grunnbeløp) {
+                                                                 YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, Beløp grunnbeløp) {
         return new BeregningsgrunnlagPrStatusOgAndelDto(
                 andel.getAndelsnr(),
                 andel.getAktivitetStatus(),
                 andel.getArbeidsforholdType(),
                 andel.getBeregningsperiodeFom() == null ? null : new Periode(andel.getBeregningsperiodeFom(), andel.getBeregningsperiodeTom()),
-                andel.getBruttoPrÅr(),
+                ModellTyperMapper.beløpTilDto(andel.getBruttoPrÅr()),
                 andel.getDagsatsBruker(),
                 andel.getDagsatsArbeidsgiver(),
                 finnUgradertDagsatsBruker(andel, periode, ytelsespesifiktGrunnlag, grunnbeløp),
                 finnUgradertDagsatsArbeidsgiver(andel, periode, ytelsespesifiktGrunnlag, grunnbeløp),
                 andel.getFastsattInntektskategori().getInntektskategori(),
                 mapBgAndelArbeidsforhold(andel),
-                andel.getAvkortetFørGraderingPrÅr(),
-                andel.getAvkortetPrÅr(),
-                andel.getOverstyrtPrÅr(),
-                andel.getRedusertPrÅr(),
-                andel.getBeregnetPrÅr(),
+                ModellTyperMapper.beløpTilDto(andel.getAvkortetFørGraderingPrÅr()),
+                ModellTyperMapper.beløpTilDto(andel.getAvkortetPrÅr()),
+                ModellTyperMapper.beløpTilDto(andel.getOverstyrtPrÅr()),
+                ModellTyperMapper.beløpTilDto(andel.getRedusertPrÅr()),
+                ModellTyperMapper.beløpTilDto(andel.getBeregnetPrÅr()),
                 andel.getFastsattAvSaksbehandler());
     }
 
     private static Long finnUgradertDagsatsBruker(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                   no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto periode,
-                                                  YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, BigDecimal grunnbeløp) {
+                                                  YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, Beløp grunnbeløp) {
         if (andel.getDagsatsBruker() == null) {
             return null;
         }
         if (andel.getAvkortetPrÅr().compareTo(Beløp.ZERO) == 0) {
             return 0L;
         }
-        var andelTilBruker = andel.getAvkortetBrukersAndelPrÅr().verdi().divide(andel.getAvkortetPrÅr().verdi(), 10, RoundingMode.HALF_UP);
-        BigDecimal avkortetFørGraderingPrÅr = finnAvkortetFørGradering(andel, periode, ytelsespesifiktGrunnlag, grunnbeløp);
-        return avkortetFørGraderingPrÅr.
-                multiply(andelTilBruker)
-                .divide(KonfigTjeneste.getYtelsesdagerIÅr(), 10, RoundingMode.HALF_UP).longValue();
+        var andelTilBruker = andel.getAvkortetBrukersAndelPrÅr().divider(andel.getAvkortetPrÅr(), 10, RoundingMode.HALF_UP);
+        var avkortetFørGraderingPrÅr = finnAvkortetFørGradering(andel, periode, ytelsespesifiktGrunnlag, grunnbeløp);
+        return avkortetFørGraderingPrÅr.multipliser(andelTilBruker)
+                .divider(KonfigTjeneste.getYtelsesdagerIÅr(), 10, RoundingMode.HALF_UP).longValue();
     }
 
-    private static BigDecimal finnAvkortetFørGradering(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel,
+    private static Beløp finnAvkortetFørGradering(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                        no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto periode,
-                                                       YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, BigDecimal grunnbeløp) {
-        BigDecimal avkortetFørGraderingPrÅr;
-        if (Beløp.safeVerdi(andel.getAvkortetFørGraderingPrÅr()) != null) {
+                                                       YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, Beløp grunnbeløp) {
+        if (andel.getAvkortetFørGraderingPrÅr() != null) {
             // Grunnet en feil i mapping har vi ikke lagret avkortetFørGradering for andeler i siste periode for en del behandlinger før 16.12.2021
-            avkortetFørGraderingPrÅr = andel.getAvkortetFørGraderingPrÅr().verdi();
+            return andel.getAvkortetFørGraderingPrÅr();
         } else if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
             // Fallback for saker der avkortetFørGraderingPrÅr ikke er satt
-            var grenseverdi = grunnbeløp.multiply(KonfigTjeneste.getAntallGØvreGrenseverdi());
-            avkortetFørGraderingPrÅr = FinnInntektstak.finnInntektstakForAndel(andel, periode, utbetalingsgradGrunnlag, grenseverdi);
+            var grenseverdi = grunnbeløp.multipliser(KonfigTjeneste.getAntallGØvreGrenseverdi());
+            return FinnInntektstak.finnInntektstakForAndel(andel, periode, utbetalingsgradGrunnlag, grenseverdi);
         } else {
-            avkortetFørGraderingPrÅr = andel.getAvkortetPrÅr().verdi();
+            return andel.getAvkortetPrÅr();
         }
-        return avkortetFørGraderingPrÅr;
     }
 
     private static Long finnUgradertDagsatsArbeidsgiver(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                         no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto periode,
-                                                        YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, BigDecimal grunnbeløp) {
+                                                        YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, Beløp grunnbeløp) {
         if (andel.getDagsatsArbeidsgiver() == null) {
             return null;
         }
         if (andel.getAvkortetPrÅr().compareTo(Beløp.ZERO) == 0) {
             return 0L;
         }
-        var andelTilArbeidsgiver = andel.getAvkortetRefusjonPrÅr().verdi().divide(andel.getAvkortetPrÅr().verdi(), 10, RoundingMode.HALF_UP);
+        var andelTilArbeidsgiver = andel.getAvkortetRefusjonPrÅr().divider(andel.getAvkortetPrÅr(), 10, RoundingMode.HALF_UP);
         var avkortetFørGraderingPrÅr = finnAvkortetFørGradering(andel, periode, ytelsespesifiktGrunnlag, grunnbeløp);
-        return avkortetFørGraderingPrÅr.multiply(andelTilArbeidsgiver)
-                .divide(KonfigTjeneste.getYtelsesdagerIÅr(), 10, RoundingMode.HALF_UP).longValue();
+        return avkortetFørGraderingPrÅr.multipliser(andelTilArbeidsgiver)
+                .divider(KonfigTjeneste.getYtelsesdagerIÅr(), 10, RoundingMode.HALF_UP).longValue();
 
     }
 
@@ -169,7 +166,7 @@ public class MapBrevBeregningsgrunnlag {
         return new BGAndelArbeidsforhold(
                 mapArbeidsgiver(bgAndelArbeidsforhold.getArbeidsgiver()),
                 bgAndelArbeidsforhold.getArbeidsforholdRef().getUUIDReferanse(),
-                bgAndelArbeidsforhold.getGjeldendeRefusjonPrÅr());
+                ModellTyperMapper.beløpTilDto(bgAndelArbeidsforhold.getGjeldendeRefusjonPrÅr()));
     }
 
     private static List<AktivitetStatus> mapAktivitetstatuser(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlagEntitet) {

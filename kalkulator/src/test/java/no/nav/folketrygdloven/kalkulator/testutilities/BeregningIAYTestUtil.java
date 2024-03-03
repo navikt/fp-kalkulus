@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.testutilities;
 
 import static java.util.Collections.singletonList;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +29,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -39,7 +39,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.VirksomhetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 
 public class BeregningIAYTestUtil {
@@ -141,7 +140,7 @@ public class BeregningIAYTestUtil {
                                                InternArbeidsforholdRefDto arbId,
                                                Arbeidsgiver arbeidsgiver,
                                                InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseGrunnlagBuilder) {
-        byggArbeidForBehandling(skjæringstidspunktOpptjening, fraOgMed, tilOgMed, arbId, arbeidsgiver, BigDecimal.TEN, inntektArbeidYtelseGrunnlagBuilder);
+        byggArbeidForBehandling(skjæringstidspunktOpptjening, fraOgMed, tilOgMed, arbId, arbeidsgiver, Beløp.fra(10), inntektArbeidYtelseGrunnlagBuilder);
     }
 
     public static void byggArbeidForBehandling(LocalDate skjæringstidspunktOpptjening,
@@ -150,7 +149,7 @@ public class BeregningIAYTestUtil {
                                                Arbeidsgiver arbeidsgiver,
                                                InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseGrunnlagBuilder) {
         byggArbeidForBehandling(skjæringstidspunktOpptjening, arbeidsperiode.getFomDato(), arbeidsperiode.getTomDato(), arbId, arbeidsgiver,
-            BigDecimal.TEN, inntektArbeidYtelseGrunnlagBuilder);
+                Beløp.fra(10), inntektArbeidYtelseGrunnlagBuilder);
     }
 
     public static void byggArbeidForBehandling(LocalDate skjæringstidspunktOpptjening,
@@ -158,7 +157,7 @@ public class BeregningIAYTestUtil {
                                                LocalDate tilOgMed,
                                                InternArbeidsforholdRefDto arbId,
                                                Arbeidsgiver arbeidsgiver,
-                                               BigDecimal inntektPrMnd,
+                                               Beløp inntektPrMnd,
                                                InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseGrunnlagBuilder) {
         byggArbeidForBehandling(skjæringstidspunktOpptjening, fraOgMed, tilOgMed, arbId, arbeidsgiver,
             ArbeidType.ORDINÆRT_ARBEIDSFORHOLD,
@@ -178,7 +177,7 @@ public class BeregningIAYTestUtil {
                                                InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseGrunnlagBuilder) {
         byggArbeidForBehandling(skjæringstidspunktOpptjening, fraOgMed, tilOgMed, arbId, arbeidsgiver,
             ArbeidType.ORDINÆRT_ARBEIDSFORHOLD,
-            singletonList(BigDecimal.TEN), arbeidsgiver != null, lønnsendringsdato, inntektArbeidYtelseGrunnlagBuilder);
+            singletonList(Beløp.fra(10)), arbeidsgiver != null, lønnsendringsdato, inntektArbeidYtelseGrunnlagBuilder);
     }
 
     public static void byggArbeidForBehandling(LocalDate skjæringstidspunktOpptjening,
@@ -187,7 +186,7 @@ public class BeregningIAYTestUtil {
                                                 InternArbeidsforholdRefDto arbId,
                                                 Arbeidsgiver arbeidsgiver,
                                                 ArbeidType arbeidType,
-                                                List<BigDecimal> inntektPrMnd,
+                                                List<Beløp> inntektPrMnd,
                                                 boolean virksomhetPåInntekt,
                                                 Optional<LocalDate> lønnsendringsdato,
                                                 InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseGrunnlagBuilder) {
@@ -204,7 +203,7 @@ public class BeregningIAYTestUtil {
                                           InternArbeidsforholdRefDto arbId,
                                           Arbeidsgiver arbeidsgiver,
                                           ArbeidType arbeidType,
-                                          List<BigDecimal> inntektPrMnd,
+                                          List<Beløp> inntektPrMnd,
                                           boolean virksomhetPåInntekt,
                                           Optional<LocalDate> lønnsendringsdato,
                                           InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseGrunnlagBuilder) {
@@ -286,7 +285,7 @@ public class BeregningIAYTestUtil {
     }
 
     public static void byggInntektForBehandling(LocalDate skjæringstidspunktOpptjening,
-                                                InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder, List<BigDecimal> inntektPrMnd,
+                                                InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder, List<Beløp> inntektPrMnd,
                                                 boolean virksomhetPåInntekt, Arbeidsgiver arbeidsgiver) {
 
         InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder aktørInntekt = inntektArbeidYtelseAggregatBuilder.getAktørInntektBuilder();
@@ -308,11 +307,11 @@ public class BeregningIAYTestUtil {
         inntektArbeidYtelseAggregatBuilder.leggTilAktørInntekt(aktørInntekt);
     }
 
-    private static void byggInntekt(InntektDtoBuilder builder, LocalDate skjæringstidspunktOpptjening, List<BigDecimal> inntektPrMnd, boolean virksomhetPåInntekt,
+    private static void byggInntekt(InntektDtoBuilder builder, LocalDate skjæringstidspunktOpptjening, List<Beløp> inntektPrMnd, boolean virksomhetPåInntekt,
                                     Arbeidsgiver arbeidsgiver) {
         if (virksomhetPåInntekt) {
             for (int i = 0; i <= 12; i++) {
-                BigDecimal inntekt = getInntekt(inntektPrMnd, i);
+                var inntekt = getInntekt(inntektPrMnd, i);
                 builder
                     .leggTilInntektspost(
                         lagInntektspost(skjæringstidspunktOpptjening.minusMonths(i + 1L).plusDays(1), skjæringstidspunktOpptjening.minusMonths(i), inntekt))
@@ -320,15 +319,15 @@ public class BeregningIAYTestUtil {
             }
         } else {
             for (int i = 0; i <= 12; i++) {
-                BigDecimal inntekt = getInntekt(inntektPrMnd, i);
+                var inntekt = getInntekt(inntektPrMnd, i);
                 builder.leggTilInntektspost(
                     lagInntektspost(skjæringstidspunktOpptjening.minusMonths(i + 1L).plusDays(1), skjæringstidspunktOpptjening.minusMonths(i), inntekt));
             }
         }
     }
 
-    private static BigDecimal getInntekt(List<BigDecimal> inntektPrMnd, int i) {
-        BigDecimal inntekt;
+    private static Beløp getInntekt(List<Beløp> inntektPrMnd, int i) {
+        Beløp inntekt;
         if (inntektPrMnd.size() >= i + 1) {
             inntekt = inntektPrMnd.get(i);
         } else {
@@ -337,9 +336,9 @@ public class BeregningIAYTestUtil {
         return inntekt;
     }
 
-    private static InntektspostDtoBuilder lagInntektspost(LocalDate fom, LocalDate tom, BigDecimal lønn) {
+    private static InntektspostDtoBuilder lagInntektspost(LocalDate fom, LocalDate tom, Beløp lønn) {
         return InntektspostDtoBuilder.ny()
-            .medBeløp(Beløp.fra(lønn))
+            .medBeløp(lønn)
             .medPeriode(fom, tom)
             .medInntektspostType(InntektspostType.LØNN);
     }

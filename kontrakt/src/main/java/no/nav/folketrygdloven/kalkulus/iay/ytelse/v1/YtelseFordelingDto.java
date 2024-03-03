@@ -11,8 +11,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektPeriodeType;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 /** Angir hyppighet og størrelse for ytelse. */
 @JsonIgnoreProperties(ignoreUnknown = true)

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -83,7 +84,7 @@ public class VurderMottarYtelseDtoTjeneste {
 
     private void beregnOgSettInntektPrMnd(InntektFilterDto filter, BeregningsgrunnlagPrStatusOgAndelDto andel, ArbeidstakerUtenInntektsmeldingAndelDto dto) {
         var snittIBeregningsperioden = InntektForAndelTjeneste.finnSnittinntektForArbeidstakerIBeregningsperioden(filter, andel);
-        snittIBeregningsperioden.ifPresent(dto::setInntektPrMnd);
+        snittIBeregningsperioden.map(ModellTyperMapper::beløpTilDto).ifPresent(dto::setInntektPrMnd);
     }
 
     private void lagFrilansDel(BeregningsgrunnlagDto beregningsgrunnlag,
@@ -97,7 +98,7 @@ public class VurderMottarYtelseDtoTjeneste {
                 .ifPresent(frilansAndel -> {
                     vurderMottarYtelseDto.setFrilansMottarYtelse(faktaAktør.map(FaktaAktørDto::getHarFLMottattYtelseVurdering).orElse(null));
                     InntektForAndelTjeneste.finnSnittAvFrilansinntektIBeregningsperioden(inntektArbeidYtelseGrunnlag, frilansAndel, skjæringstidspunkt)
-                            .ifPresent(vurderMottarYtelseDto::setFrilansInntektPrMnd);
+                            .map(ModellTyperMapper::beløpTilDto).ifPresent(vurderMottarYtelseDto::setFrilansInntektPrMnd);
                 });
     }
 

@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
 
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 
 class RefusjonOgFastsattBeløp {
 

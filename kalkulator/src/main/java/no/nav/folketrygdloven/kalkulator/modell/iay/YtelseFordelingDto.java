@@ -4,8 +4,8 @@ import java.math.RoundingMode;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektPeriodeType;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class YtelseFordelingDto {
 

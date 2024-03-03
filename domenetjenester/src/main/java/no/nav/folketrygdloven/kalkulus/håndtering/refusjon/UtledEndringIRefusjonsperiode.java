@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
@@ -15,6 +16,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefu
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Refusjon;
 import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
@@ -23,7 +25,6 @@ import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.DatoEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.RefusjonEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.RefusjonoverstyringEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.RefusjonoverstyringPeriodeEndring;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public final class UtledEndringIRefusjonsperiode {
 
@@ -68,7 +69,7 @@ public final class UtledEndringIRefusjonsperiode {
             var forrigeSaksbehandletRefusjon = forrigeBeregningsgrunnlag.flatMap(bg -> matchetArbeidsforhold.flatMap(p -> finnSaksbehandletRefusjonFørDato(arbeidsgiver, bg, p)));
 
             DatoEndring datoEndring = new DatoEndring(matchetArbeidsforhold.map(BeregningRefusjonPeriodeDto::getStartdatoRefusjon).orElse(null), periode.getStartdatoRefusjon());
-            var refusjonEndring = saksbehandletRefusjon.map(Beløp::fra).map(ref -> new RefusjonEndring(forrigeSaksbehandletRefusjon.map(Beløp::fra).orElse(null), ref));
+            var refusjonEndring = saksbehandletRefusjon.map(Beløp::fra).map(ModellTyperMapper::beløpTilDto).map(ref -> new RefusjonEndring(forrigeSaksbehandletRefusjon.map(Beløp::fra).map(ModellTyperMapper::beløpTilDto).orElse(null), ref));
             if (arbeidsgiver.getErVirksomhet()) {
                 endringer.add(new RefusjonoverstyringPeriodeEndring(new Organisasjon(arbeidsgiver.getIdentifikator()), periode.getArbeidsforholdRef().getUUIDReferanse(), datoEndring, refusjonEndring.orElse(null)));
             } else {

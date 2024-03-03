@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdOverstyringDtoBuilder;
@@ -36,7 +37,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidDto;
@@ -139,12 +139,12 @@ public class MapIAYTilKalulator {
     private static OppgittOpptjeningDtoBuilder.OppgittArbeidsforholdBuilder mapArbeidsforhold(OppgittArbeidsforholdDto arb) {
         return OppgittOpptjeningDtoBuilder.OppgittArbeidsforholdBuilder.ny()
                 .medPeriode(Intervall.fraOgMedTilOgMed(arb.getPeriode().getFom(), arb.getPeriode().getTom()))
-                .medInntekt(arb.getInntekt());
+                .medInntekt(ModellTyperMapper.beløpFraDto(arb.getInntekt()));
     }
 
     private static OppgittFrilansInntektDto mapFrilansInntekt(OppgittFrilansInntekt oppgittFrilansInntekt) {
         Periode periode = oppgittFrilansInntekt.getPeriode();
-        return new OppgittFrilansInntektDto(Intervall.fraOgMedTilOgMed(periode.getFom(), periode.getTom()), oppgittFrilansInntekt.getInntekt());
+        return new OppgittFrilansInntektDto(Intervall.fraOgMedTilOgMed(periode.getFom(), periode.getTom()), ModellTyperMapper.beløpFraDto(oppgittFrilansInntekt.getInntekt()));
     }
 
     private static Intervall mapDatoIntervall(Periode periode) {
@@ -154,7 +154,7 @@ public class MapIAYTilKalulator {
     private static OppgittOpptjeningDtoBuilder.EgenNæringBuilder mapEgenNæring(OppgittEgenNæringDto oppgittEgenNæring) {
         OppgittOpptjeningDtoBuilder.EgenNæringBuilder egenNæringBuilder = OppgittOpptjeningDtoBuilder.EgenNæringBuilder.ny()
                 .medPeriode(mapDatoIntervall(oppgittEgenNæring.getPeriode()))
-                .medBruttoInntekt(oppgittEgenNæring.getBruttoInntekt())
+                .medBruttoInntekt(ModellTyperMapper.beløpFraDto(oppgittEgenNæring.getBruttoInntekt()))
                 .medNyIArbeidslivet(oppgittEgenNæring.getNyIArbeidslivet())
                 .medEndringDato(oppgittEgenNæring.getEndringDato())
                 .medVirksomhetType(oppgittEgenNæring.getVirksomhetType())
@@ -181,8 +181,8 @@ public class MapIAYTilKalulator {
         builder.medArbeidsforholdId(mapArbeidsforholdRef(inntektsmelding.getArbeidsforholdRef()));
         builder.medJournalpostId(inntektsmelding.getJournalpostId());
         builder.medKanalreferanse(inntektsmelding.getKanalreferanse());
-        builder.medRefusjon(Optional.ofNullable(inntektsmelding.getRefusjonBeløpPerMnd()).map(BeløpDto::getBeløp).orElse(null), inntektsmelding.getRefusjonOpphører());
-        builder.medBeløp(inntektsmelding.getInntektBeløp().getBeløp());
+        builder.medRefusjon(Optional.ofNullable(inntektsmelding.getRefusjonBeløpPerMnd()).map(ModellTyperMapper::beløpFraDto).orElse(null), inntektsmelding.getRefusjonOpphører());
+        builder.medBeløp(ModellTyperMapper.beløpFraDto(inntektsmelding.getInntektBeløp()));
         if (inntektsmelding.getNaturalYtelser() != null) {
             inntektsmelding.getNaturalYtelser().stream().map(MapIAYTilKalulator::mapNaturalYtelse).forEach(builder::leggTil);
         }
@@ -198,12 +198,12 @@ public class MapIAYTilKalulator {
     private static NaturalYtelseDto mapNaturalYtelse(no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.NaturalYtelseDto naturalYtelse) {
         return new NaturalYtelseDto(naturalYtelse.getPeriode().getFom(),
                 naturalYtelse.getPeriode().getTom(),
-                naturalYtelse.getBeløp().getBeløp(),
+                ModellTyperMapper.beløpFraDto(naturalYtelse.getBeløp()),
                 naturalYtelse.getType());
     }
 
     private static RefusjonDto mapRefusjon(no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.RefusjonDto refusjon) {
-        return new RefusjonDto(refusjon.getRefusjonsbeløpMnd().getBeløp(), refusjon.getFom());
+        return new RefusjonDto(ModellTyperMapper.beløpFraDto(refusjon.getRefusjonsbeløpMnd()), refusjon.getFom());
     }
 
     private static AktivitetsAvtaleDtoBuilder mapAktivitetsAvtale(AktivitetsAvtaleDto aktivitetsAvtale) {
@@ -249,7 +249,7 @@ public class MapIAYTilKalulator {
 
     private static InntektspostDtoBuilder mapInntektspost(UtbetalingsPostDto inntektspost) {
         InntektspostDtoBuilder builder = InntektspostDtoBuilder.ny();
-        builder.medBeløp(inntektspost.getBeløp());
+        builder.medBeløp(ModellTyperMapper.beløpFraDto(inntektspost.getBeløp()));
         builder.medInntektspostType(inntektspost.getInntektspostType());
         builder.medPeriode(inntektspost.getPeriode().getFom(), inntektspost.getPeriode().getTom());
         if (inntektspost.getSkattAvgiftType() != null) {
@@ -295,7 +295,7 @@ public class MapIAYTilKalulator {
             ytelse.getYtelseAnvist().forEach(ytelseAnvistDto -> builder.leggTilYtelseAnvist(mapYtelseAnvist(ytelseAnvistDto)));
         }
         if (ytelse.getVedtaksDagsats() != null) {
-            builder.medVedtaksDagsats(ytelse.getVedtaksDagsats().getBeløp());
+            builder.medVedtaksDagsats(ModellTyperMapper.beløpFraDto(ytelse.getVedtaksDagsats()));
         }
         builder.medPeriode(mapDatoIntervall(ytelse.getPeriode()));
         builder.medYtelseType(ytelse.getRelatertYtelseType());
@@ -321,7 +321,7 @@ public class MapIAYTilKalulator {
         return new no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFordelingDto(
                 MapFraKalkulator.mapArbeidsgiver(f.getArbeidsgiver()),
                 f.getHyppighet(),
-                f.getBeløp(),
+                ModellTyperMapper.beløpFraDto(f.getBeløp()),
                 f.getErRefusjon());
     }
 
@@ -329,10 +329,10 @@ public class MapIAYTilKalulator {
         YtelseAnvistDtoBuilder builder = YtelseAnvistDtoBuilder.ny();
         builder.medAnvistPeriode(Intervall.fraOgMedTilOgMed(ytelseAnvist.getAnvistPeriode().getFom(), ytelseAnvist.getAnvistPeriode().getTom()));
         if (ytelseAnvist.getBeløp() != null) {
-            builder.medBeløp(ytelseAnvist.getBeløp().getBeløp());
+            builder.medBeløp(ModellTyperMapper.beløpFraDto(ytelseAnvist.getBeløp()));
         }
         if (ytelseAnvist.getDagsats() != null) {
-            builder.medDagsats(ytelseAnvist.getDagsats().getBeløp());
+            builder.medDagsats(ModellTyperMapper.beløpFraDto(ytelseAnvist.getDagsats()));
         }
         builder.medUtbetalingsgradProsent(Stillingsprosent.fra(ytelseAnvist.getUtbetalingsgradProsent()));
         builder.medAnvisteAndeler(AnvistAndelMapper.mapAnvisteAndeler(ytelseAnvist));

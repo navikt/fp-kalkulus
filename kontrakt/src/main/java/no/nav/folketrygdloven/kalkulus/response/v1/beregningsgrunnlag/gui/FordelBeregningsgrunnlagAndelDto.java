@@ -2,8 +2,6 @@ package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
-import java.math.RoundingMode;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -11,15 +9,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
 public class FordelBeregningsgrunnlagAndelDto extends FaktaOmBeregningAndelDto {
-
-    private static final int MÅNEDER_I_1_ÅR = 12;
 
     @Valid
     @JsonProperty(value = "fordelingForrigeBehandlingPrAar")
@@ -60,26 +56,21 @@ public class FordelBeregningsgrunnlagAndelDto extends FaktaOmBeregningAndelDto {
             superDto.getAktivitetStatus(), superDto.getLagtTilAvSaksbehandler(), superDto.getFastsattAvSaksbehandler(), superDto.getAndelIArbeid(), superDto.getKilde());
     }
 
-    public void setBelopFraInntektsmelding(Beløp belopFraInntektsmelding) {
-        this.belopFraInntektsmeldingPrAar = Beløp.safeVerdi(belopFraInntektsmelding) == null ? null :
-                belopFraInntektsmelding.multipliser(MÅNEDER_I_1_ÅR).map(v -> v.setScale(0, RoundingMode.HALF_UP));
+    public void setBelopFraInntektsmeldingPrÅr(Beløp belopFraInntektsmeldingPrAar) {
+        this.belopFraInntektsmeldingPrAar = belopFraInntektsmeldingPrAar;
     }
 
-    public void setFordelingForrigeBehandling(Beløp fordelingForrigeBehandling) {
-        this.fordelingForrigeBehandlingPrAar = Beløp.safeVerdi(fordelingForrigeBehandling) == null ? null :
-                fordelingForrigeBehandling.multipliser(MÅNEDER_I_1_ÅR).map(v -> v.setScale(0, RoundingMode.HALF_UP));
+    public void setFordelingForrigeBehandlingPrÅr(Beløp fordelingForrigeBehandling) {
+        this.fordelingForrigeBehandlingPrAar = fordelingForrigeBehandling;
     }
 
     public void setRefusjonskravPrAar(Beløp refusjonskravPrAar) {
-        this.refusjonskravPrAar = Beløp.safeVerdi(refusjonskravPrAar) == null ? null :
-                refusjonskravPrAar.map(v -> v.setScale(0, RoundingMode.HALF_UP));
+        this.refusjonskravPrAar = refusjonskravPrAar;
     }
 
 
     public void setRefusjonskravFraInntektsmeldingPrÅr(Beløp refusjonskravFraInntektsmelding) {
-        this.refusjonskravFraInntektsmeldingPrAar = Beløp.safeVerdi(refusjonskravFraInntektsmelding) == null ? null :
-                refusjonskravFraInntektsmelding.map(v -> v.setScale(0, RoundingMode.HALF_UP));
-
+        this.refusjonskravFraInntektsmeldingPrAar = refusjonskravFraInntektsmelding;
     }
 
     public OpptjeningAktivitetType getArbeidsforholdType() {

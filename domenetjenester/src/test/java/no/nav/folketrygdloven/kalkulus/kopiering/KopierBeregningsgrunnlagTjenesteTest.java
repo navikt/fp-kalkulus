@@ -12,8 +12,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import no.nav.folketrygdloven.kalkulus.felles.v1.Aktivitetsgrad;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,7 +37,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Årsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
-import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
@@ -93,7 +91,7 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
     private final InternArbeidsforholdRefDto ref = new InternArbeidsforholdRefDto(UUID.randomUUID().toString());
     private final Periode periode = new Periode(LocalDate.now(), LocalDate.now().plusMonths(2));
     private final Organisasjon organisasjon = new Organisasjon("974652269");
-    private final BeløpDto beløpDto = new BeløpDto(BigDecimal.TEN);
+    private final no.nav.folketrygdloven.kalkulus.felles.v1.Beløp beløpDto = no.nav.folketrygdloven.kalkulus.felles.v1.Beløp.fra(BigDecimal.TEN);
 
 
     public static final LocalDate STP = LocalDate.now();
@@ -270,10 +268,10 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         iayGrunnlag.medInntekterDto(
                 new InntekterDto(List.of(new UtbetalingDto(InntektskildeType.INNTEKT_BEREGNING,
                         List.of(new UtbetalingsPostDto(periode, InntektspostType.LØNN,
-                                no.nav.folketrygdloven.kalkulus.typer.Beløp.fra(1000L)))))));
+                                no.nav.folketrygdloven.kalkulus.felles.v1.Beløp.fra(1000)))))));
         iayGrunnlag.medInntektsmeldingerDto(
                 new InntektsmeldingerDto(List.of(new InntektsmeldingDto(organisasjon,
-                        new BeløpDto(BigDecimal.valueOf(100)), List.of(), List.of(), null, null,
+                        no.nav.folketrygdloven.kalkulus.felles.v1.Beløp.fra(100), List.of(), List.of(), null, null,
                         null, null, null, null))));
         return iayGrunnlag;
     }

@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittEgenNæringDto;
@@ -17,13 +18,13 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansInntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.EffektivÅrsinntektTjenesteFRISINN;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.YtelsespesifiktGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisinn.AvslagsårsakPrPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisinn.FrisinnGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisinn.OpplystPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisinn.SøknadsopplysningerDto;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class YtelsespesifiktGrunnlagTjenesteFRISINN implements YtelsespesifiktGrunnlagTjeneste {
 
@@ -136,14 +137,17 @@ public class YtelsespesifiktGrunnlagTjenesteFRISINN implements YtelsespesifiktGr
                 .filter(en -> !stpBg.isAfter(en.getTilOgMed()))
                 .filter(en -> en.getBruttoInntekt() != null)
                 .map(EffektivÅrsinntektTjenesteFRISINN::finnEffektivÅrsinntektForLøpenedeInntekt)
-                .reduce(BigDecimal::add)
-                .map(Beløp::fra)
+                .reduce(no.nav.folketrygdloven.kalkulator.modell.typer.Beløp::adder)
+                .map(ModellTyperMapper::beløpTilDto)
                 .orElse(Beløp.ZERO);
         var oppgittLøpendeInntekt = næringer.stream()
                 .filter(en -> !stpBg.isAfter(en.getTilOgMed()))
                 .map(OppgittEgenNæringDto::getBruttoInntekt)
                 .filter(Objects::nonNull)
-                .reduce(Beløp::adder)
+                .map(no.nav.folketrygdloven.kalkulator.modell.typer.Beløp::verdi)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal::add)
+                .map(Beløp::fra)
                 .orElse(Beløp.ZERO);
 
         SøknadsopplysningerDto dto = new SøknadsopplysningerDto();
@@ -168,14 +172,17 @@ public class YtelsespesifiktGrunnlagTjenesteFRISINN implements YtelsespesifiktGr
         var oppgittLøpendeÅrsinntekt = oppgittFLInntekt.stream()
                 .filter(oi -> !oi.getPeriode().getFomDato().isBefore(stpBg))
                 .map(EffektivÅrsinntektTjenesteFRISINN::finnEffektivÅrsinntektForLøpenedeInntekt)
-                .reduce(BigDecimal::add)
-                .map(Beløp::fra)
+                .reduce(no.nav.folketrygdloven.kalkulator.modell.typer.Beløp::adder)
+                .map(ModellTyperMapper::beløpTilDto)
                 .orElse(Beløp.ZERO);
         var oppgittLøpendeInntekt = oppgittFLInntekt.stream()
                 .filter(oi -> !oi.getPeriode().getFomDato().isBefore(stpBg))
                 .map(OppgittFrilansInntektDto::getInntekt)
                 .filter(Objects::nonNull)
-                .reduce(Beløp::adder)
+                .map(no.nav.folketrygdloven.kalkulator.modell.typer.Beløp::verdi)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal::add)
+                .map(Beløp::fra)
                 .orElse(Beløp.ZERO);
         SøknadsopplysningerDto dto = new SøknadsopplysningerDto();
         dto.setOppgittInntekt(oppgittLøpendeInntekt);

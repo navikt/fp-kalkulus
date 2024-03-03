@@ -20,10 +20,10 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
 
 public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
@@ -57,7 +57,7 @@ public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
 
         var beregningsgrunnlag = BeregningsgrunnlagDto.builder()
             .medSkjæringstidspunkt(skjæringstidspunktForBeregning)
-            .medGrunnbeløp(Beløp.fra(grunnbeløp.getGVerdi()))
+            .medGrunnbeløp(Beløp.fra(grunnbeløp.getGVerdi().longValue()))
             .build();
         regelModell.getAktivitetStatuser()
             .forEach(as -> BeregningsgrunnlagAktivitetStatusDto.builder()

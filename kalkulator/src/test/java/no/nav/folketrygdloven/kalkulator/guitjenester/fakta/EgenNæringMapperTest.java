@@ -6,11 +6,12 @@ import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
 
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittEgenNæringDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.VirksomhetType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.EgenNæringDto;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class EgenNæringMapperTest {
 
@@ -34,7 +35,7 @@ public class EgenNæringMapperTest {
         assertThat(dto.getBegrunnelse()).isEqualTo(egenNæring.getBegrunnelse());
         assertThat(dto.getEndringsdato()).isEqualTo(egenNæring.getEndringDato());
         assertThat(dto.getVirksomhetType()).isEqualTo(no.nav.folketrygdloven.kalkulus.kodeverk.VirksomhetType.FISKE);
-        assertThat(dto.getOppgittInntekt()).isEqualTo(egenNæring.getBruttoInntekt());
+        assertThat(dto.getOppgittInntekt()).isEqualTo(ModellTyperMapper.beløpTilDto(egenNæring.getBruttoInntekt()));
         assertThat(dto.getOrgnr()).isEqualTo(egenNæring.getOrgnr());
         assertThat(dto.isErVarigEndret()).isEqualTo(egenNæring.getVarigEndring());
         assertThat(dto.isErNyoppstartet()).isEqualTo(egenNæring.getNyoppstartet());

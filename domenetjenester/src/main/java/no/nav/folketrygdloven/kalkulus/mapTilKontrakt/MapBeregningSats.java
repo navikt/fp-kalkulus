@@ -1,11 +1,10 @@
 package no.nav.folketrygdloven.kalkulus.mapTilKontrakt;
 
-import java.math.BigDecimal;
-
+import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.response.v1.Grunnbeløp;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class MapBeregningSats {
 
@@ -13,7 +12,7 @@ public class MapBeregningSats {
     }
 
     public static Grunnbeløp map(BeregningSats grunnbeløp) {
-        return new Grunnbeløp(Beløp.fra(grunnbeløp.getVerdi()),
+        return new Grunnbeløp(ModellTyperMapper.beløpTilDto(Beløp.fra(grunnbeløp.getVerdi())),
                 new Periode(grunnbeløp.getPeriode().getFomDato(), grunnbeløp.getPeriode().getTomDato()));
     }
 }

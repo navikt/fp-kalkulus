@@ -3,19 +3,18 @@ package no.nav.folketrygdloven.kalkulus.iay.inntekt.v1;
 import java.time.LocalDate;
 import java.util.List;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
-import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.JournalpostId;
 
@@ -32,7 +31,7 @@ public class InntektsmeldingDto {
     @JsonProperty(value = "inntektBeløp")
     @Valid
     @NotNull
-    private BeløpDto inntektBeløp;
+    private Beløp inntektBeløp;
 
     @JsonProperty(value = "naturalYtelser")
     @Valid
@@ -58,7 +57,7 @@ public class InntektsmeldingDto {
 
     @JsonProperty(value = "refusjonBeløpPerMnd")
     @Valid
-    private BeløpDto refusjonBeløpPerMnd;
+    private Beløp refusjonBeløpPerMnd;
 
     /** JournalpostId - for sporing. */
     @JsonProperty(value = "journalpostId")
@@ -74,14 +73,14 @@ public class InntektsmeldingDto {
         // default ctor
     }
 
-    public InntektsmeldingDto(@Valid @NotNull Aktør arbeidsgiver, 
-                              @Valid @NotNull BeløpDto inntektBeløp, 
+    public InntektsmeldingDto(@Valid @NotNull Aktør arbeidsgiver,
+                              @Valid @NotNull Beløp inntektBeløp,
                               @Valid List<NaturalYtelseDto> naturalYtelser,
-                              @Valid List<RefusjonDto> endringerRefusjon, 
+                              @Valid List<RefusjonDto> endringerRefusjon,
                               @Valid InternArbeidsforholdRefDto arbeidsforholdRef,
-                              @Valid LocalDate startDatoPermisjon, 
-                              @Valid LocalDate refusjonOpphører, 
-                              @Valid BeløpDto refusjonBeløpPerMnd,
+                              @Valid LocalDate startDatoPermisjon,
+                              @Valid LocalDate refusjonOpphører,
+                              @Valid Beløp refusjonBeløpPerMnd,
                               @Valid JournalpostId journalpostId,
                               @Valid String kanalreferanse
                               ) {
@@ -101,7 +100,7 @@ public class InntektsmeldingDto {
         return arbeidsgiver;
     }
 
-    public BeløpDto getInntektBeløp() {
+    public Beløp getInntektBeløp() {
         return inntektBeløp;
     }
 
@@ -125,7 +124,7 @@ public class InntektsmeldingDto {
         return refusjonOpphører;
     }
 
-    public BeløpDto getRefusjonBeløpPerMnd() {
+    public Beløp getRefusjonBeløpPerMnd() {
         return refusjonBeløpPerMnd;
     }
 

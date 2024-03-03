@@ -21,18 +21,18 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
-import no.nav.folketrygdloven.kalkulus.typer.Beløp;
 
 public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLTest {
 
     public static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019, 1, 1);
     private static final Beløp RAPPORTERT_PR_ÅR = Beløp.fra(100000);
-    public static final Beløp GRUNNBELØP = Beløp.fra(GrunnbeløpMock.finnGrunnbeløp(SKJÆRINGSTIDSPUNKT));
+    public static final Beløp GRUNNBELØP = GrunnbeløpMock.finnGrunnbeløp(SKJÆRINGSTIDSPUNKT);
     private static final BigDecimal AVVIK_PROMILLE = BigDecimal.valueOf(20L);
     private static final List<FaktaOmBeregningTilfelle> FAKTA_OM_BEREGNING_TILFELLER = List.of(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE);
     private static final Beløp BRUTTO_PR_ÅR = Beløp.fra(10000);

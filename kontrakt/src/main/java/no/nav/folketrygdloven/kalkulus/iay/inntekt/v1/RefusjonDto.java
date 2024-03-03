@@ -5,14 +5,13 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
 import java.time.LocalDate;
 
-import jakarta.validation.Valid;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
+import jakarta.validation.Valid;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Beløp;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
@@ -21,7 +20,7 @@ public class RefusjonDto {
 
     @JsonProperty(value = "refusjonsbeløpMnd")
     @Valid
-    private BeløpDto refusjonsbeløpMnd;
+    private Beløp refusjonsbeløpMnd;
 
     @JsonProperty(value = "fom")
     @Valid
@@ -31,12 +30,12 @@ public class RefusjonDto {
         // default ctor
     }
 
-    public RefusjonDto(BeløpDto refusjonsbeløpMnd, LocalDate fom) {
+    public RefusjonDto(Beløp refusjonsbeløpMnd, LocalDate fom) {
         this.refusjonsbeløpMnd = refusjonsbeløpMnd;
         this.fom = fom;
     }
 
-    public BeløpDto getRefusjonsbeløpMnd() {
+    public Beløp getRefusjonsbeløpMnd() {
         return refusjonsbeløpMnd;
     }
 
