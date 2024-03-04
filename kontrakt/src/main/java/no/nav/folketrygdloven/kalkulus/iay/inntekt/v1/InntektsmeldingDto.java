@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Beløp;
@@ -64,11 +63,6 @@ public class InntektsmeldingDto {
     @Valid
     private JournalpostId journalpostId;
 
-    /** Opprinnelig kanalreferanse (fra Altinn). for sporing. */
-    @JsonProperty(value = "kanalreferanse")
-    @Pattern(regexp = "^[\\p{Graph}\\s\\t\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message = "Inntektsmelding kanalreferanse [${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
-    private String kanalreferanse;
-
     protected InntektsmeldingDto() {
         // default ctor
     }
@@ -81,8 +75,7 @@ public class InntektsmeldingDto {
                               @Valid LocalDate startDatoPermisjon,
                               @Valid LocalDate refusjonOpphører,
                               @Valid Beløp refusjonBeløpPerMnd,
-                              @Valid JournalpostId journalpostId,
-                              @Valid String kanalreferanse
+                              @Valid JournalpostId journalpostId
                               ) {
         this.arbeidsgiver = arbeidsgiver;
         this.inntektBeløp = inntektBeløp;
@@ -93,7 +86,6 @@ public class InntektsmeldingDto {
         this.refusjonOpphører = refusjonOpphører;
         this.refusjonBeløpPerMnd = refusjonBeløpPerMnd;
         this.journalpostId = journalpostId;
-        this.kanalreferanse = kanalreferanse;
     }
 
     public Aktør getArbeidsgiver() {
@@ -132,7 +124,4 @@ public class InntektsmeldingDto {
         return journalpostId;
     }
 
-    public String getKanalreferanse() {
-        return kanalreferanse;
-    }
 }

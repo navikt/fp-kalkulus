@@ -124,7 +124,7 @@ public class KalkulatorMapperTest {
         iayGrunnlag.medArbeidDto(new ArbeidDto(List.of(new YrkesaktivitetDto(organisasjon, ref, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD, List.of(new AktivitetsAvtaleDto(periode, null, IayProsent.fra(100)), new AktivitetsAvtaleDto(periode, null, null))))));
         iayGrunnlag.medYtelserDto(new YtelserDto(byggYtelseDto()));
         iayGrunnlag.medInntekterDto(new InntekterDto(List.of(new UtbetalingDto(InntektskildeType.INNTEKT_BEREGNING, List.of(new UtbetalingsPostDto(periode, InntektspostType.LØNN, Beløp.fra(1000)))))));
-        iayGrunnlag.medInntektsmeldingerDto(new InntektsmeldingerDto(List.of(new InntektsmeldingDto(organisasjon, Beløp.fra(100), List.of(), List.of(), null, null, null, null, null, null))));
+        iayGrunnlag.medInntektsmeldingerDto(new InntektsmeldingerDto(List.of(new InntektsmeldingDto(organisasjon, Beløp.fra(100), List.of(), List.of(), null, null, null, null, null))));
         return iayGrunnlag;
     }
 

@@ -160,8 +160,8 @@ public class MapInntektsgrunnlagVLTilRegelFelles implements MapInntektsgrunnlagV
             im.getStartDatoPermisjon().ifPresent(dato -> naturalYtelserBuilder.medMåned(dato.minusMonths(1).withDayOfMonth(1)));
             return naturalYtelserBuilder.build();
         } catch (RuntimeException e) {
-            throw new IllegalArgumentException(String.format("Kunne ikke mappe inntektsmelding [journalpostId=%s, kanalreferanse=%s]: %s",
-                    im.getJournalpostId(), im.getKanalreferanse(), e.getMessage()), e);
+            throw new IllegalArgumentException(String.format("Kunne ikke mappe inntektsmelding [journalpostId=%s]: %s",
+                    im.getJournalpostId(), e.getMessage()), e);
         }
     }
 

@@ -272,7 +272,7 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         iayGrunnlag.medInntektsmeldingerDto(
                 new InntektsmeldingerDto(List.of(new InntektsmeldingDto(organisasjon,
                         no.nav.folketrygdloven.kalkulus.felles.v1.Beløp.fra(100), List.of(), List.of(), null, null,
-                        null, null, null, null))));
+                        null, null, null))));
         return iayGrunnlag;
     }
 

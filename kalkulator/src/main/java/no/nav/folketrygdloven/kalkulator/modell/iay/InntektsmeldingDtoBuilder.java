@@ -105,13 +105,6 @@ public class InntektsmeldingDtoBuilder {
         return this;
     }
 
-    public InntektsmeldingDtoBuilder medKanalreferanse(String kanalreferanse) {
-        precondition();
-        kladd.setKanalreferanse(kanalreferanse);
-        return this;
-
-    }
-
     public InntektsmeldingDtoBuilder medRefusjon(Beløp verdi, LocalDate opphører) {
         precondition();
         kladd.setRefusjonBeløpPerMnd(verdi);

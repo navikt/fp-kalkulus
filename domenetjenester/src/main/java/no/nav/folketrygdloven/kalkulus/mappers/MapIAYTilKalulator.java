@@ -180,7 +180,6 @@ public class MapIAYTilKalulator {
         builder.medArbeidsgiver(MapFraKalkulator.mapArbeidsgiver(inntektsmelding.getArbeidsgiver()));
         builder.medArbeidsforholdId(mapArbeidsforholdRef(inntektsmelding.getArbeidsforholdRef()));
         builder.medJournalpostId(inntektsmelding.getJournalpostId());
-        builder.medKanalreferanse(inntektsmelding.getKanalreferanse());
         builder.medRefusjon(Optional.ofNullable(inntektsmelding.getRefusjonBeløpPerMnd()).map(ModellTyperMapper::beløpFraDto).orElse(null), inntektsmelding.getRefusjonOpphører());
         builder.medBeløp(ModellTyperMapper.beløpFraDto(inntektsmelding.getInntektBeløp()));
         if (inntektsmelding.getNaturalYtelser() != null) {

@@ -24,7 +24,6 @@ public class InntektsmeldingDto {
     private Beløp refusjonBeløpPerMnd;
     private LocalDate refusjonOpphører;
     private List<RefusjonDto> endringerRefusjon = new ArrayList<>();
-    private String kanalreferanse;
     private JournalpostId journalpostId;
 
     InntektsmeldingDto() {
@@ -45,7 +44,6 @@ public class InntektsmeldingDto {
             final RefusjonDto refusjon = new RefusjonDto(r);
             return refusjon;
         }).collect(Collectors.toList());
-        this.kanalreferanse = inntektsmelding.getKanalreferanse();
         this.journalpostId = inntektsmelding.getJournalpostId();
     }
 
@@ -69,10 +67,6 @@ public class InntektsmeldingDto {
      */
     public List<NaturalYtelseDto> getNaturalYtelser() {
         return Collections.unmodifiableList(naturalYtelser);
-    }
-
-    public String getKanalreferanse() {
-        return kanalreferanse;
     }
 
     public JournalpostId getJournalpostId() {
@@ -138,10 +132,6 @@ public class InntektsmeldingDto {
 
     void setInntektBeløp(Beløp inntektBeløp) {
         this.inntektBeløp = inntektBeløp;
-    }
-
-    void setKanalreferanse(String kanalreferanse) {
-        this.kanalreferanse = kanalreferanse;
     }
 
     void setJournalpostId(JournalpostId journalpostId) {
