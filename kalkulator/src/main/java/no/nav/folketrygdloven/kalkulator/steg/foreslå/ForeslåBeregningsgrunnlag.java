@@ -56,7 +56,6 @@ public class ForeslåBeregningsgrunnlag {
 
         verifiserBeregningsgrunnlag(foreslåttBeregningsgrunnlag, input);
 
-        BeregneFraYtelse.sjekkBeregningFraYtelse(input, foreslåttBeregningsgrunnlag, regelmodellBeregningsgrunnlag);
         List<RegelSporingPeriode> regelsporinger = MapRegelSporingFraRegelTilVL.mapRegelsporingPerioder(
                 regelResultater,
                 foreslåttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().stream().map(BeregningsgrunnlagPeriodeDto::getPeriode).collect(Collectors.toList()), BeregningsgrunnlagPeriodeRegelType.FORESLÅ);
