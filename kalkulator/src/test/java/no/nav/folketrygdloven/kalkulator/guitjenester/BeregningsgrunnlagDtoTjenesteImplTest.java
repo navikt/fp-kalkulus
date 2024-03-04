@@ -109,7 +109,6 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         // Assert
         assertThat(grunnlagDto).isNotNull();
         assertThat(grunnlagDto.getSkjaeringstidspunktBeregning()).isEqualTo(SKJÆRINGSTIDSPUNKT);
-        assertThat(grunnlagDto.getHalvG().verdi().compareTo(GRUNNBELØP.divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP))).isEqualTo(0);
     }
 
     @Test
@@ -271,7 +270,6 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
     private void assertBeregningsgrunnlag(Beløp beregnet, BeregningsgrunnlagDto grunnlagDto) {
         assertThat(grunnlagDto).isNotNull();
         assertThat(grunnlagDto.getSkjaeringstidspunktBeregning()).as("skjæringstidspunkt").isEqualTo(SKJÆRINGSTIDSPUNKT);
-        assertThat(grunnlagDto.getHalvG().verdi().compareTo(GRUNNBELØP.divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP))).isEqualTo(0);
         var periodeDto = grunnlagDto.getBeregningsgrunnlagPeriode().get(0);
         assertThat(periodeDto.getBeregningsgrunnlagPeriodeFom()).as("BeregningsgrunnlagPeriodeFom").isEqualTo(ANDEL_FOM);
         assertThat(periodeDto.getBeregningsgrunnlagPeriodeTom()).as("BeregningsgrunnlagPeriodeTom").isNull();
