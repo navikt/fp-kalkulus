@@ -1,28 +1,16 @@
-package no.nav.folketrygdloven.kalkulus.typer;
+package no.nav.folketrygdloven.kalkulator.modell.typer;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
-
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotNull;
-
-public record Utbetalingsgrad(@JsonValue
-                    @Valid
-                    @NotNull
-                    @DecimalMin(value = "0.00")
-                    @DecimalMax(value = "100.00")
-                    @Digits(integer = 3, fraction = 2)
-                    BigDecimal verdi) implements Comparable<Utbetalingsgrad> {
+public record Utbetalingsgrad(BigDecimal verdi) implements Comparable<Utbetalingsgrad> {
 
     public static final Utbetalingsgrad ZERO = Utbetalingsgrad.fra(BigDecimal.ZERO);
 
-    @JsonCreator
+    public Utbetalingsgrad {
+        Objects.requireNonNull(verdi);
+    }
+
     public static Utbetalingsgrad fra(BigDecimal grad) {
         return grad != null ? new Utbetalingsgrad(grad) : null;
     }

@@ -5,11 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
-
-import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +18,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
@@ -47,8 +45,8 @@ public class MapAndelGraderingTest {
         Intervall p2 = Intervall.fraOgMedTilOgMed(fom2, tom2);
         var vlAndelGradering = AndelGradering.builder()
             .medStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
-            .leggTilGradering(new AndelGradering.Gradering(p1, Aktivitetsgrad.valueOf(50)))
-            .leggTilGradering(new AndelGradering.Gradering(p2, Aktivitetsgrad.valueOf(25)))
+            .leggTilGradering(new AndelGradering.Gradering(p1, Aktivitetsgrad.fra(50)))
+            .leggTilGradering(new AndelGradering.Gradering(p2, Aktivitetsgrad.fra(25)))
             .build();
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(Optional.empty(), Optional.empty());
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
@@ -87,8 +85,8 @@ public class MapAndelGraderingTest {
         Intervall p2 = Intervall.fraOgMedTilOgMed(fom2, tom2);
         var vlAndelGradering = AndelGradering.builder()
             .medStatus(AktivitetStatus.FRILANSER)
-            .leggTilGradering(new AndelGradering.Gradering(p1, Aktivitetsgrad.valueOf(50)))
-            .leggTilGradering(new AndelGradering.Gradering(p2, Aktivitetsgrad.valueOf(25)))
+            .leggTilGradering(new AndelGradering.Gradering(p1, Aktivitetsgrad.fra(50)))
+            .leggTilGradering(new AndelGradering.Gradering(p2, Aktivitetsgrad.fra(25)))
                 .build();
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(Optional.empty(), Optional.empty());
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()

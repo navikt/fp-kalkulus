@@ -20,6 +20,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -28,7 +29,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 public class BeregningsgrunnlagDtoUtilTest {
@@ -47,7 +47,7 @@ public class BeregningsgrunnlagDtoUtilTest {
     @Test
     public void arbeidsprosenter_for_uavsluttet_periode() {
         // Arrange
-        var arbeidsprosent1 = Aktivitetsgrad.valueOf(20);
+        var arbeidsprosent1 = Aktivitetsgrad.fra(20);
         List<AndelGradering.Gradering> graderinger = new ArrayList<>();
         graderinger.add(new AndelGradering.Gradering(SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusWeeks(1), arbeidsprosent1));
 
@@ -70,7 +70,7 @@ public class BeregningsgrunnlagDtoUtilTest {
     @Test
     public void arbeidsprosenter_for_uavsluttet_periode_og_uavsluttet_gradering() {
         // Arrange
-        var arbeidsprosent1 = Aktivitetsgrad.valueOf(20);
+        var arbeidsprosent1 = Aktivitetsgrad.fra(20);
         List<AndelGradering.Gradering> graderinger = new ArrayList<>();
         graderinger.add(new AndelGradering.Gradering(SKJÆRINGSTIDSPUNKT_OPPTJENING, TIDENES_ENDE, arbeidsprosent1));
 
@@ -84,10 +84,10 @@ public class BeregningsgrunnlagDtoUtilTest {
     @Test
     public void arbeidsprosenter_for_samanhengande_gradering_med_hull_på_slutten() {
         // Arrange
-        var arbeidsprosent1 = Aktivitetsgrad.valueOf(20);
-        var arbeidsprosent2 = Aktivitetsgrad.valueOf(30);
-        var arbeidsprosent3 = Aktivitetsgrad.valueOf(40);
-        var arbeidsprosent4 = Aktivitetsgrad.valueOf(50);
+        var arbeidsprosent1 = Aktivitetsgrad.fra(20);
+        var arbeidsprosent2 = Aktivitetsgrad.fra(30);
+        var arbeidsprosent3 = Aktivitetsgrad.fra(40);
+        var arbeidsprosent4 = Aktivitetsgrad.fra(50);
         List<AndelGradering.Gradering> graderinger = new ArrayList<>();
         graderinger.add(new AndelGradering.Gradering(SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusWeeks(1), arbeidsprosent1));
         graderinger.add(new AndelGradering.Gradering(SKJÆRINGSTIDSPUNKT_OPPTJENING.plusWeeks(1).plusDays(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusWeeks(2), arbeidsprosent2));
@@ -104,11 +104,11 @@ public class BeregningsgrunnlagDtoUtilTest {
     @Test
     public void arbeidsprosenter_for_ikkje_samanhengande_gradering() {
         // Arrange
-        var arbeidsprosent1 = Aktivitetsgrad.valueOf(20);
-        var arbeidsprosent2 = Aktivitetsgrad.valueOf(30);
-        var arbeidsprosent3 = Aktivitetsgrad.valueOf(40);
-        var arbeidsprosent4 = Aktivitetsgrad.valueOf(50);
-        var arbeidsprosent5 = Aktivitetsgrad.valueOf(60);
+        var arbeidsprosent1 = Aktivitetsgrad.fra(20);
+        var arbeidsprosent2 = Aktivitetsgrad.fra(30);
+        var arbeidsprosent3 = Aktivitetsgrad.fra(40);
+        var arbeidsprosent4 = Aktivitetsgrad.fra(50);
+        var arbeidsprosent5 = Aktivitetsgrad.fra(60);
         List<AndelGradering.Gradering> graderinger = new ArrayList<>();
         graderinger.add(new AndelGradering.Gradering(SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusWeeks(1), arbeidsprosent1));
         graderinger.add(new AndelGradering.Gradering(SKJÆRINGSTIDSPUNKT_OPPTJENING.plusWeeks(1).plusDays(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusWeeks(2), arbeidsprosent2));

@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulus.typer;
+package no.nav.folketrygdloven.kalkulator.modell.typer;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -8,11 +8,15 @@ public record Aktivitetsgrad(BigDecimal verdi) implements Comparable<Aktivitetsg
     public static final Aktivitetsgrad ZERO = Aktivitetsgrad.fra(BigDecimal.ZERO);
     public static final Aktivitetsgrad HUNDRE = Aktivitetsgrad.fra(BigDecimal.valueOf(100));
 
+    public Aktivitetsgrad {
+        Objects.requireNonNull(verdi);
+    }
+
     public static Aktivitetsgrad fra(BigDecimal grad) {
         return grad != null ? new Aktivitetsgrad(grad) : null;
     }
 
-    public static Aktivitetsgrad valueOf(Integer grad) {
+    public static Aktivitetsgrad fra(Integer grad) {
         return grad != null ? new Aktivitetsgrad(BigDecimal.valueOf(grad)) : null;
     }
 

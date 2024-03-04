@@ -52,6 +52,7 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDt
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Utbetalingsgrad;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.testutilities.TestHjelper;
@@ -69,7 +70,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
-import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
 @ExtendWith(MockitoExtension.class)
 public class ForeslåBeregningsgrunnlagTest {

@@ -24,9 +24,9 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
-import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
-import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Utbetalingsgrad;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
@@ -93,7 +93,7 @@ public class MapTilFordelingsmodell {
             var aktivitetsgrad = finnAktivitetsgradForAndel(bgAndel, bgAndel.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);
             var brukAktivitetsgrad = aktivitetsgrad.isPresent() && erTilkommet;
             if (brukAktivitetsgrad) {
-                return aktivitetsgrad.get().compareTo(Aktivitetsgrad.valueOf(100)) < 0;
+                return aktivitetsgrad.get().compareTo(Aktivitetsgrad.fra(100)) < 0;
             }
         }
         var ubetalingsgrad = finnUtbetalingsgradForAndel(bgAndel, periode, input.getYtelsespesifiktGrunnlag(), false);
@@ -124,7 +124,7 @@ public class MapTilFordelingsmodell {
             var aktivitetsgrad = finnAktivitetsgradForAndel(bgAndel, bgAndel.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);
             var brukAktivitetsgrad = aktivitetsgrad.isPresent() && erTilkommet;
             if (brukAktivitetsgrad) {
-                return aktivitetsgrad.get().compareTo(Aktivitetsgrad.valueOf(100)) < 0;
+                return aktivitetsgrad.get().compareTo(Aktivitetsgrad.fra(100)) < 0;
             }
         }
         var utbGrad = finnUtbetalingsgradForAndel(bgAndel, bgAndel.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag(), false);

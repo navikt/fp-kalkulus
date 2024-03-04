@@ -18,6 +18,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
@@ -26,7 +27,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningAndelDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagAndelDto;
-import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
 import no.nav.folketrygdloven.utils.Tuple;
 
 public class RefusjonDtoTjenesteImplTest {
@@ -150,7 +150,7 @@ public class RefusjonDtoTjenesteImplTest {
             .medArbeidsgiver(ARBEIDSGIVER)
             .medArbeidsforholdRef(ARB_ID)
             .medStatus(AktivitetStatus.ARBEIDSTAKER)
-            .leggTilGradering(new AndelGradering.Gradering(SKJÆRINGSTIDSPUNKT_OPPTJENING, TIDENES_ENDE, Aktivitetsgrad.valueOf(10)))
+            .leggTilGradering(new AndelGradering.Gradering(SKJÆRINGSTIDSPUNKT_OPPTJENING, TIDENES_ENDE, Aktivitetsgrad.fra(10)))
             .build();
 
 
@@ -187,7 +187,7 @@ public class RefusjonDtoTjenesteImplTest {
             .medArbeidsgiver(ARBEIDSGIVER)
             .medArbeidsforholdRef(ARB_ID)
             .medStatus(AktivitetStatus.ARBEIDSTAKER)
-            .leggTilGradering(new AndelGradering.Gradering(SKJÆRINGSTIDSPUNKT_OPPTJENING, TIDENES_ENDE, Aktivitetsgrad.valueOf(10)))
+            .leggTilGradering(new AndelGradering.Gradering(SKJÆRINGSTIDSPUNKT_OPPTJENING, TIDENES_ENDE, Aktivitetsgrad.fra(10)))
             .build();
 
 

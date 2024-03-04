@@ -12,38 +12,33 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 
-public record Aktivitetsgrad(@JsonValue
+public record Utbetalingsgrad(@JsonValue
                     @Valid
                     @NotNull
                     @DecimalMin(value = "0.00")
                     @DecimalMax(value = "100.00")
                     @Digits(integer = 3, fraction = 2)
-                    BigDecimal verdi) implements Comparable<Aktivitetsgrad> {
+                    BigDecimal verdi) implements Comparable<Utbetalingsgrad> {
 
-    public static final Aktivitetsgrad ZERO = Aktivitetsgrad.fra(BigDecimal.ZERO);
-    public static final Aktivitetsgrad HUNDRE = Aktivitetsgrad.fra(BigDecimal.valueOf(100));
+    public static final Utbetalingsgrad ZERO = Utbetalingsgrad.fra(BigDecimal.ZERO);
 
-    public Aktivitetsgrad {
+    public Utbetalingsgrad {
         Objects.requireNonNull(verdi);
     }
 
     @JsonCreator
-    public static Aktivitetsgrad fra(BigDecimal grad) {
-        return grad != null ? new Aktivitetsgrad(grad) : null;
+    public static Utbetalingsgrad fra(BigDecimal grad) {
+        return grad != null ? new Utbetalingsgrad(grad) : null;
     }
 
-    public static Aktivitetsgrad fra(Integer grad) {
-        return grad != null ? new Aktivitetsgrad(BigDecimal.valueOf(grad)) : null;
-    }
-
-    public Aktivitetsgrad subtraher(Aktivitetsgrad operand) {
-        return new Aktivitetsgrad(this.verdi.subtract(operand.verdi()));
+    public static Utbetalingsgrad fra(Integer grad) {
+        return grad != null ? new Utbetalingsgrad(BigDecimal.valueOf(grad)) : null;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        return o instanceof Aktivitetsgrad ob && (Objects.equals(this.verdi(), ob.verdi()) || (this.verdi() != null && ob.verdi() != null && this.compareTo(ob) == 0));
+        return o instanceof Utbetalingsgrad ob && (Objects.equals(this.verdi(), ob.verdi()) || (this.verdi() != null && ob.verdi() != null && this.compareTo(ob) == 0));
 
     }
 
@@ -53,7 +48,7 @@ public record Aktivitetsgrad(@JsonValue
     }
 
     @Override
-    public int compareTo(Aktivitetsgrad beløp) {
+    public int compareTo(Utbetalingsgrad beløp) {
         return this.verdi.compareTo(beløp.verdi());
     }
 

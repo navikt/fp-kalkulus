@@ -3,9 +3,9 @@ package no.nav.folketrygdloven.kalkulator.modell.svp;
 import java.util.Objects;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulator.modell.typer.Aktivitetsgrad;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Utbetalingsgrad;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
-import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
 public class PeriodeMedUtbetalingsgradDto implements Comparable<PeriodeMedUtbetalingsgradDto> {
     private Intervall periode;

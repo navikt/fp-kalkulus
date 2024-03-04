@@ -24,6 +24,7 @@ import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -32,7 +33,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
-import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
 
 public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
 
@@ -154,7 +154,7 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
         return AndelGradering.builder()
                 .medStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
                 .leggTilGradering(new AndelGradering.Gradering(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING,
-                        graderingTom), Aktivitetsgrad.valueOf(50)))
+                        graderingTom), Aktivitetsgrad.fra(50)))
                 .build();
     }
 
@@ -187,7 +187,7 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
     private no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering lagGradering() {
         return no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering.builder()
                 .medStatus(AktivitetStatus.ARBEIDSTAKER)
-                .leggTilGradering(new AndelGradering.Gradering(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING, TIDENES_ENDE), Aktivitetsgrad.valueOf(50)))
+                .leggTilGradering(new AndelGradering.Gradering(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING, TIDENES_ENDE), Aktivitetsgrad.fra(50)))
                 .medArbeidsgiver(ARBEIDSGIVER2).build();
     }
 

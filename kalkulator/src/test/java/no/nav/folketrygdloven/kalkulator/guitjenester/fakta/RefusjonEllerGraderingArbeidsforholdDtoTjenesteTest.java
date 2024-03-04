@@ -28,6 +28,7 @@ import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
@@ -39,7 +40,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
 
 public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
 
@@ -444,7 +444,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
                 .medArbeidsgiver(arbeidsgiver1)
                 .medArbeidsforholdRef(ARBEIDSFORHOLD_REF)
                 .medStatus(AktivitetStatus.ARBEIDSTAKER)
-                .leggTilGradering(new AndelGradering.Gradering(graderingPeriode, Aktivitetsgrad.valueOf(10)))
+                .leggTilGradering(new AndelGradering.Gradering(graderingPeriode, Aktivitetsgrad.fra(10)))
                 .build();
 
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build();

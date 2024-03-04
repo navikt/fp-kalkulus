@@ -8,11 +8,11 @@ import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
 
 public class AndelGradering {
     private AktivitetStatus aktivitetStatus;
@@ -119,7 +119,7 @@ public class AndelGradering {
         }
 
         public Builder medGradering(LocalDate fom, LocalDate tom, int arbeidstidsprosent) {
-            return leggTilGradering(fom, tom, Aktivitetsgrad.valueOf(arbeidstidsprosent));
+            return leggTilGradering(fom, tom, Aktivitetsgrad.fra(arbeidstidsprosent));
         }
 
         public Builder medGradering(LocalDate fom, LocalDate tom, Aktivitetsgrad arbeidstidsprosent) {

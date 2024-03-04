@@ -203,7 +203,7 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
 
 
     private KalkulatorInputDto byggKalkulatorInput() {
-        GraderingDto graderingDto = new GraderingDto(periode, Aktivitetsgrad.valueOf(100));
+        GraderingDto graderingDto = new GraderingDto(periode, Aktivitetsgrad.fra(100));
         AndelGraderingDto andelGraderingDto = new AndelGraderingDto(AktivitetStatus.ARBEIDSTAKER, organisasjon,
                 null,
                 List.of(graderingDto));

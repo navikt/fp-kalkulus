@@ -39,9 +39,11 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Utbetalingsgrad;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
@@ -52,8 +54,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
-import no.nav.folketrygdloven.kalkulus.typer.Aktivitetsgrad;
-import no.nav.folketrygdloven.kalkulus.typer.Utbetalingsgrad;
 
 @ExtendWith(MockitoExtension.class)
 public class FordelPerioderTjenestePSBTest {
@@ -85,9 +85,9 @@ public class FordelPerioderTjenestePSBTest {
 
         // Arrange
         PeriodeMedUtbetalingsgradDto periode1 = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusMonths(1), BigDecimal.valueOf(100), null);
-        PeriodeMedUtbetalingsgradDto periodeTilkommet1 = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT.plusDays(5), SKJÆRINGSTIDSPUNKT.plusDays(9), BigDecimal.valueOf(50), Aktivitetsgrad.valueOf(50));
+        PeriodeMedUtbetalingsgradDto periodeTilkommet1 = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT.plusDays(5), SKJÆRINGSTIDSPUNKT.plusDays(9), BigDecimal.valueOf(50), Aktivitetsgrad.fra(50));
 
-        PeriodeMedUtbetalingsgradDto periodeTilkommet2 = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT.plusDays(10), SKJÆRINGSTIDSPUNKT.plusMonths(1), BigDecimal.ZERO, Aktivitetsgrad.valueOf(50));
+        PeriodeMedUtbetalingsgradDto periodeTilkommet2 = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT.plusDays(10), SKJÆRINGSTIDSPUNKT.plusMonths(1), BigDecimal.ZERO, Aktivitetsgrad.fra(50));
 
         UtbetalingsgradPrAktivitetDto utbetalingsgrader1 = lagUtbetalingsgradPrAktivitet(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORG_NUMMER),
                 periode1);
