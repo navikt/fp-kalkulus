@@ -39,6 +39,11 @@ public class BeregningsgrunnlagDto {
     @Valid
     private LocalDate skjaeringstidspunktBeregning;
 
+    @JsonProperty(value = "skjæringstidspunkt")
+    @NotNull
+    @Valid
+    private LocalDate skjæringstidspunkt;
+
     @JsonProperty(value = "aktivitetStatus")
     @Size(min = 1)
     @Valid
@@ -49,10 +54,20 @@ public class BeregningsgrunnlagDto {
     @Valid
     private List<BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPeriode;
 
+    @Deprecated//Fjernes og erstattes av sammenligningsgrunnlagPrStatus
+    @JsonProperty(value = "sammenligningsgrunnlag")
+    @NotNull
+    @Valid
+    private SammenligningsgrunnlagDto sammenligningsgrunnlag;
+
     @JsonProperty(value = "sammenligningsgrunnlagPrStatus")
     @Valid
     @Size
     private List<SammenligningsgrunnlagDto> sammenligningsgrunnlagPrStatus;
+
+    @JsonProperty(value = "halvG")
+    @Valid
+    private Beløp halvG;
 
     @JsonProperty(value = "grunnbeløp")
     @Valid
@@ -61,6 +76,15 @@ public class BeregningsgrunnlagDto {
     @JsonProperty(value = "faktaOmBeregning")
     @Valid
     private FaktaOmBeregningDto faktaOmBeregning;
+
+    @JsonProperty(value = "andelerMedGraderingUtenBG")
+    @Valid
+    @Size
+    private List<BeregningsgrunnlagPrStatusOgAndelDto> andelerMedGraderingUtenBG;
+
+    @JsonProperty(value = "hjemmel")
+    @Valid
+    private Hjemmel hjemmel;
 
     @JsonProperty(value = "faktaOmFordeling")
     @Valid
@@ -105,14 +129,19 @@ public class BeregningsgrunnlagDto {
     public BeregningsgrunnlagDto(BeregningsgrunnlagDto beregningsgrunnlagDto) {
         this.aktivitetStatus = beregningsgrunnlagDto.aktivitetStatus;
         this.beregningsgrunnlagPeriode = beregningsgrunnlagDto.beregningsgrunnlagPeriode;
+        this.andelerMedGraderingUtenBG = beregningsgrunnlagDto.andelerMedGraderingUtenBG;
         this.faktaOmBeregning = beregningsgrunnlagDto.faktaOmBeregning;
         this.dekningsgrad = beregningsgrunnlagDto.dekningsgrad;
         this.erOverstyrtInntekt = beregningsgrunnlagDto.erOverstyrtInntekt;
         this.faktaOmFordeling = beregningsgrunnlagDto.faktaOmFordeling;
         this.grunnbeløp = beregningsgrunnlagDto.grunnbeløp;
+        this.halvG = beregningsgrunnlagDto.halvG;
+        this.hjemmel = beregningsgrunnlagDto.hjemmel;
         this.refusjonTilVurdering = beregningsgrunnlagDto.refusjonTilVurdering;
+        this.sammenligningsgrunnlag = beregningsgrunnlagDto.sammenligningsgrunnlag;
         this.sammenligningsgrunnlagPrStatus = beregningsgrunnlagDto.sammenligningsgrunnlagPrStatus;
         this.skjaeringstidspunktBeregning = beregningsgrunnlagDto.skjaeringstidspunktBeregning;
+        this.skjæringstidspunkt = beregningsgrunnlagDto.skjæringstidspunkt;
         this.vilkårsperiodeFom = beregningsgrunnlagDto.vilkårsperiodeFom;
         this.ytelsesspesifiktGrunnlag = beregningsgrunnlagDto.ytelsesspesifiktGrunnlag;
         this.inntektsgrunnlag = beregningsgrunnlagDto.inntektsgrunnlag;
@@ -132,12 +161,24 @@ public class BeregningsgrunnlagDto {
         return beregningsgrunnlagPeriode;
     }
 
+    public SammenligningsgrunnlagDto getSammenligningsgrunnlag() {
+        return sammenligningsgrunnlag;
+    }
+
+    public Beløp getHalvG() {
+        return halvG;
+    }
+
     public FordelingDto getFaktaOmFordeling() {
         return faktaOmFordeling;
     }
 
     public FaktaOmBeregningDto getFaktaOmBeregning() {
         return faktaOmBeregning;
+    }
+
+    public Hjemmel getHjemmel() {
+        return hjemmel;
     }
 
     public List<SammenligningsgrunnlagDto> getSammenligningsgrunnlagPrStatus() {
@@ -156,8 +197,29 @@ public class BeregningsgrunnlagDto {
         this.beregningsgrunnlagPeriode = perioder;
     }
 
+    public void setSammenligningsgrunnlag(SammenligningsgrunnlagDto sammenligningsgrunnlag) {
+        this.sammenligningsgrunnlag = sammenligningsgrunnlag;
+    }
+
+
+    public void setHalvG(Beløp halvG) {
+        this.halvG = halvG;
+    }
+
     public void setFaktaOmBeregning(FaktaOmBeregningDto faktaOmBeregning) {
         this.faktaOmBeregning = faktaOmBeregning;
+    }
+
+    public List<BeregningsgrunnlagPrStatusOgAndelDto> getAndelerMedGraderingUtenBG() {
+        return andelerMedGraderingUtenBG;
+    }
+
+    public void setAndelerMedGraderingUtenBG(List<BeregningsgrunnlagPrStatusOgAndelDto> andelerMedGraderingUtenBG) {
+        this.andelerMedGraderingUtenBG = andelerMedGraderingUtenBG;
+    }
+
+    public void setHjemmel(Hjemmel hjemmel) {
+        this.hjemmel = hjemmel;
     }
 
     public void setFaktaOmFordeling(FordelingDto faktaOmFordelingDto) {
@@ -170,6 +232,14 @@ public class BeregningsgrunnlagDto {
 
     public void setDekningsgrad(int dekningsgrad) {
         this.dekningsgrad = dekningsgrad;
+    }
+
+    public LocalDate getSkjæringstidspunkt() {
+        return skjæringstidspunkt;
+    }
+
+    public void setSkjæringstidspunkt(LocalDate skjæringstidspunkt) {
+        this.skjæringstidspunkt = skjæringstidspunkt;
     }
 
     public Beløp getGrunnbeløp() {
