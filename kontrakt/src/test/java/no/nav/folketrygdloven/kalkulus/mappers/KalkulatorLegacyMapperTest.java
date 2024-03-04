@@ -73,7 +73,7 @@ public class KalkulatorLegacyMapperTest {
     }
 
     private String lesEksempelfil() throws IOException {
-        try (var in = KalkulatorLegacyMapperTest.class.getResourceAsStream("/input/eksempel-input.json")) {
+        try (var in = KalkulatorLegacyMapperTest.class.getResourceAsStream("/input/eksempel-legacy-input.json")) {
             return in != null ? new String(in.readAllBytes()) : null;
         }
     }

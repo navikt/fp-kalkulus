@@ -21,7 +21,10 @@
           "abakusReferanse": {
             "abakusReferanse": "45ea085a-9828-480f-b0cc-526883b5852a"
           },
-          "arbeidType": "FRILANSER_OPPDRAGSTAKER",
+          "arbeidType": {
+              "kode": "FRILANSER_OPPDRAGSTAKER",
+              "kodeverk": "ARBEID_TYPE"
+          },
           "aktivitetsAvtaler": [
             {
               "periode": {
@@ -39,7 +42,10 @@
           "abakusReferanse": {
             "abakusReferanse": "9b9c28d6-24ed-4a50-b9ba-2a4a0bbd5526"
           },
-          "arbeidType": "ORDINÆRT_ARBEIDSFORHOLD",
+          "arbeidType": {
+            "kodeverk": "ARBEID_TYPE",
+            "kode": "ORDINÆRT_ARBEIDSFORHOLD"
+          },
           "aktivitetsAvtaler": [
             {
               "periode": {
@@ -73,7 +79,10 @@
           "abakusReferanse": {
             "abakusReferanse": "0f6d67c7-52fe-46e6-9cba-51d865ff2017"
           },
-          "arbeidType": "ORDINÆRT_ARBEIDSFORHOLD",
+          "arbeidType": {
+            "kodeverk": "ARBEID_TYPE",
+            "kode": "ORDINÆRT_ARBEIDSFORHOLD"
+          },
           "aktivitetsAvtaler": [
             {
               "periode": {
@@ -107,7 +116,10 @@
           "abakusReferanse": {
             "abakusReferanse": "76a8190e-10e5-4199-b384-c135b1150a20"
           },
-          "arbeidType": "ORDINÆRT_ARBEIDSFORHOLD",
+          "arbeidType": {
+            "kodeverk": "ARBEID_TYPE",
+            "kode": "ORDINÆRT_ARBEIDSFORHOLD"
+          },
           "aktivitetsAvtaler": [
             {
               "periode": {
@@ -634,7 +646,10 @@
   "opptjeningAktiviteter": {
     "perioder": [
       {
-        "opptjeningAktivitetType": "NÆRING",
+        "opptjeningAktivitetType": {
+          "kodeverk": "OPPTJENING_AKTIVITET_TYPE",
+          "kode": "NÆRING"
+        },
         "periode": {
           "fom": "2011-06-11",
           "tom": "9999-12-31"
@@ -646,7 +661,10 @@
         "abakusReferanse": null
       },
       {
-        "opptjeningAktivitetType": "ARBEID",
+        "opptjeningAktivitetType": {
+          "kodeverk": "OPPTJENING_AKTIVITET_TYPE",
+          "kode": "ARBEID"
+        },
         "periode": {
           "fom": "2016-01-01",
           "tom": "2018-10-31"
@@ -660,7 +678,10 @@
         }
       },
       {
-        "opptjeningAktivitetType": "ARBEID",
+        "opptjeningAktivitetType": {
+          "kodeverk": "OPPTJENING_AKTIVITET_TYPE",
+          "kode": "ARBEID"
+        },
         "periode": {
           "fom": "2018-11-01",
           "tom": "2019-02-15"
@@ -674,7 +695,10 @@
         }
       },
       {
-        "opptjeningAktivitetType": "ARBEID",
+        "opptjeningAktivitetType": {
+          "kodeverk": "OPPTJENING_AKTIVITET_TYPE",
+          "kode": "ARBEID"
+        },
         "periode": {
           "fom": "2019-02-25",
           "tom": "9999-12-31"

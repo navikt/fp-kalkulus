@@ -118,7 +118,7 @@ public class KalkulatorInputTjeneste {
     static KalkulatorInputDto konverterTilInput(String json, Long koblingId) {
         KalkulatorInputDto input;
         try {
-            input = MAPPER.readValue(json, KalkulatorInputDto.class);
+            input = MAPPER.readValue(skrivOmLegacyInput(json), KalkulatorInputDto.class);
         } catch (JsonProcessingException e) {
             throw new TekniskException("FT-KALKULUS-INPUT-1000002",
                     String.format("Kalkulus klarte ikke lese opp input for koblingId %s med følgende feilmelding %s",
@@ -134,6 +134,34 @@ public class KalkulatorInputTjeneste {
         }
         return input;
 
+    }
+
+    /*
+     * Skriver om input slik at gamle kodeverdier og gamle BeløpDto-objekt endres til nye format
+     * Må til for å modernisere kontrakter
+     */
+    private static String skrivOmLegacyInput(String input) {
+        var s = input;
+        while (s.contains("\"verdi\"")) {
+            var startVerdi = s.indexOf("\"verdi\"");
+            var startObjekt = s.lastIndexOf("{", startVerdi);
+            var sluttObjekt = s.indexOf("}", startVerdi);
+            var startTall = s.indexOf(":", startVerdi) + 1;
+            while (!s.substring(startTall, startTall+1).matches("[0-9,.]")) startTall++;
+            var sluttTall = startTall;
+            while (s.substring(sluttTall, sluttTall+1).matches("[0-9,.]")) sluttTall++;
+            s = s.substring(0, startObjekt) + s.substring(startTall, sluttTall) + s.substring(sluttObjekt + 1);
+        }
+        while (s.contains("\"kode\"")) {
+            var startKodeFelt = s.indexOf("\"kode\"");
+            var startObjekt = s.lastIndexOf("{", startKodeFelt);
+            var sluttObjekt = s.indexOf("}", startKodeFelt);
+            var startKodeverdi = s.indexOf("\"", s.indexOf(":", startKodeFelt));
+            var sluttKodeverdi = startKodeverdi + 1;
+            while (s.charAt(sluttKodeverdi) != '"') sluttKodeverdi++;
+            s = s.substring(0, startObjekt) + s.substring(startKodeverdi, sluttKodeverdi + 1) + s.substring(sluttObjekt + 1);
+        }
+        return s;
     }
 
     public boolean lagreKalkulatorInput(Long koblingId, KalkulatorInputDto kalkulatorInput) {

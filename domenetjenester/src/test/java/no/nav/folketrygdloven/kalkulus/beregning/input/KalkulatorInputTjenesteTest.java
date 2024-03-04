@@ -25,10 +25,7 @@ class KalkulatorInputTjenesteTest {
                       "abakusReferanse": {
                         "abakusReferanse": "3f15eb0a-7d0e-48e0-86b1-299663a7c324"
                       },
-                      "arbeidType": {
-                        "kodeverk": "ARBEID_TYPE",
-                        "kode": "ORDINÆRT_ARBEIDSFORHOLD"
-                      },
+                      "arbeidType": "ORDINÆRT_ARBEIDSFORHOLD",
                       "aktivitetsAvtaler": [
                         {
                           "periode": {
@@ -58,23 +55,17 @@ class KalkulatorInputTjenesteTest {
                             "fom": "2019-06-25",
                             "tom": "2020-03-25"
                           },
-                          "beløp": null,
-                          "dagsats": null,
+                          "beløp": 0,
+                          "dagsats": 0,
                           "utbetalingsgradProsent": 100.00
                         }
                       ],
-                      "relatertYtelseType": {
-                        "kodeverk": "RELATERT_YTELSE_TYPE",
-                        "kode": "FP"
-                      },
+                      "relatertYtelseType": "FP",
                       "periode": {
                         "fom": "2019-06-25",
                         "tom": "2020-03-25"
                       },
-                      "kilde": {
-                        "kodeverk": "FAGSYSTEM",
-                        "kode": "INFOTRYGD"
-                      }
+                      "kilde": "INFOTRYGD"
                     }
                   ]
                 },
@@ -90,10 +81,7 @@ class KalkulatorInputTjenesteTest {
                       "arbeidsforholdRefDto": {
                         "abakusReferanse": "3f15eb0a-7d0e-48e0-86b1-299663a7c324"
                       },
-                      "handling": {
-                        "kodeverk": "ARBEIDSFORHOLD_HANDLING_TYPE",
-                        "kode": "BRUK_UTEN_INNTEKTSMELDING"
-                      }
+                      "handling": "BRUK_UTEN_INNTEKTSMELDING"
                     }
                   ]
                 }
@@ -101,10 +89,7 @@ class KalkulatorInputTjenesteTest {
               "opptjeningAktiviteter": {
                 "perioder": [
                   {
-                    "opptjeningAktivitetType": {
-                      "kodeverk": "OPPTJENING_AKTIVITET_TYPE",
-                      "kode": "ARBEID"
-                    },
+                    "opptjeningAktivitetType": "ARBEID",
                     "periode": {
                       "fom": "2016-03-25",
                       "tom": "9999-12-31"
@@ -118,10 +103,7 @@ class KalkulatorInputTjenesteTest {
                     }
                   },
                   {
-                    "opptjeningAktivitetType": {
-                      "kodeverk": "OPPTJENING_AKTIVITET_TYPE",
-                      "kode": "FORELDREPENGER"
-                    },
+                    "opptjeningAktivitetType": "FORELDREPENGER",
                     "periode": {
                       "fom": "2019-06-25",
                       "tom": "2020-03-25"
@@ -145,10 +127,7 @@ class KalkulatorInputTjenesteTest {
                         "identType": "ORGNUMMER",
                         "ident": "974652269"
                       },
-                      "uttakArbeidType": {
-                        "kodeverk": "UTTAK_ARBEID_TYPE",
-                        "kode": "AT"
-                      }
+                      "uttakArbeidType": "AT"
                     },
                     "periodeMedUtbetalingsgrad": [
                       {
@@ -166,10 +145,7 @@ class KalkulatorInputTjenesteTest {
                         "identType": "ORGNUMMER",
                         "ident": "974652269"
                       },
-                      "uttakArbeidType": {
-                        "kode": "AT",
-                        "kodeverk": "UTTAK_ARBEID_TYPE"
-                      }
+                      "uttakArbeidType": "AT"
                     },
                     "periodeMedUtbetalingsgrad": [
                       {
@@ -202,10 +178,7 @@ class KalkulatorInputTjenesteTest {
                       "abakusReferanse": {
                         "abakusReferanse": "3f15eb0a-7d0e-48e0-86b1-299663a7c324"
                       },
-                      "arbeidType": {
-                        "kodeverk": "ARBEID_TYPE",
-                        "kode": "ORDINÆRT_ARBEIDSFORHOLD"
-                      },
+                      "arbeidType": "ORDINÆRT_ARBEIDSFORHOLD",
                       "aktivitetsAvtaler": [
                         {
                           "periode": {
@@ -235,23 +208,17 @@ class KalkulatorInputTjenesteTest {
                             "fom": "2019-06-25",
                             "tom": "2020-03-25"
                           },
-                          "beløp": null,
-                          "dagsats": null,
+                          "beløp": 0,
+                          "dagsats": 0,
                           "utbetalingsgradProsent": 100.00
                         }
                       ],
-                      "relatertYtelseType": {
-                        "kodeverk": "RELATERT_YTELSE_TYPE",
-                        "kode": "FP"
-                      },
+                      "relatertYtelseType": "FP",
                       "periode": {
                         "fom": "2019-06-25",
                         "tom": "2020-03-25"
                       },
-                      "kilde": {
-                        "kodeverk": "FAGSYSTEM",
-                        "kode": "INFOTRYGD"
-                      }
+                      "kilde": "INFOTRYGD"
                     }
                   ]
                 },
@@ -267,10 +234,7 @@ class KalkulatorInputTjenesteTest {
                       "arbeidsforholdRefDto": {
                         "abakusReferanse": "3f15eb0a-7d0e-48e0-86b1-299663a7c324"
                       },
-                      "handling": {
-                        "kodeverk": "ARBEIDSFORHOLD_HANDLING_TYPE",
-                        "kode": "BRUK_UTEN_INNTEKTSMELDING"
-                      }
+                      "handling": "BRUK_UTEN_INNTEKTSMELDING"
                     }
                   ]
                 }
@@ -278,10 +242,7 @@ class KalkulatorInputTjenesteTest {
               "opptjeningAktiviteter": {
                 "perioder": [
                   {
-                    "opptjeningAktivitetType": {
-                      "kodeverk": "OPPTJENING_AKTIVITET_TYPE",
-                      "kode": "ARBEID"
-                    },
+                    "opptjeningAktivitetType": "ARBEID",
                     "periode": {
                       "fom": "2016-03-25",
                       "tom": "9999-12-31"
@@ -295,10 +256,7 @@ class KalkulatorInputTjenesteTest {
                     }
                   },
                   {
-                    "opptjeningAktivitetType": {
-                      "kodeverk": "OPPTJENING_AKTIVITET_TYPE",
-                      "kode": "FORELDREPENGER"
-                    },
+                    "opptjeningAktivitetType": "FORELDREPENGER",
                     "periode": {
                       "fom": "2019-06-25",
                       "tom": "2020-03-25"
@@ -322,10 +280,7 @@ class KalkulatorInputTjenesteTest {
                         "identType": "ORGNUMMER",
                         "ident": "974652269"
                       },
-                      "uttakArbeidType": {
-                        "kodeverk": "UTTAK_ARBEID_TYPE",
-                        "kode": "AT"
-                      }
+                      "uttakArbeidType": "AT"
                     },
                     "periodeMedUtbetalingsgrad": [
                       {
@@ -343,10 +298,7 @@ class KalkulatorInputTjenesteTest {
                         "identType": "ORGNUMMER",
                         "ident": "974652269"
                       },
-                      "uttakArbeidType": {
-                        "kode": "AT",
-                        "kodeverk": "UTTAK_ARBEID_TYPE"
-                      }
+                      "uttakArbeidType": "AT"
                     },
                     "periodeMedUtbetalingsgrad": [
                       {
@@ -379,10 +331,7 @@ class KalkulatorInputTjenesteTest {
                       "abakusReferanse": {
                         "abakusReferanse": "3f15eb0a-7d0e-48e0-86b1-299663a7c324"
                       },
-                      "arbeidType": {
-                        "kodeverk": "ARBEID_TYPE",
-                        "kode": "ORDINÆRT_ARBEIDSFORHOLD"
-                      },
+                      "arbeidType": "ORDINÆRT_ARBEIDSFORHOLD",
                       "aktivitetsAvtaler": [
                         {
                           "periode": {
@@ -412,23 +361,17 @@ class KalkulatorInputTjenesteTest {
                             "fom": "2019-06-25",
                             "tom": "2020-03-25"
                           },
-                          "beløp": null,
-                          "dagsats": null,
+                          "beløp": 0,
+                          "dagsats": 0,
                           "utbetalingsgradProsent": 100.00
                         }
                       ],
-                      "relatertYtelseType": {
-                        "kodeverk": "RELATERT_YTELSE_TYPE",
-                        "kode": "FP"
-                      },
+                      "relatertYtelseType": "FP",
                       "periode": {
                         "fom": "2019-06-25",
                         "tom": "2020-03-25"
                       },
-                      "kilde": {
-                        "kodeverk": "FAGSYSTEM",
-                        "kode": "INFOTRYGD"
-                      }
+                      "kilde": "INFOTRYGD"
                     }
                   ]
                 },
@@ -444,10 +387,7 @@ class KalkulatorInputTjenesteTest {
                       "arbeidsforholdRefDto": {
                         "abakusReferanse": "3f15eb0a-7d0e-48e0-86b1-299663a7c324"
                       },
-                      "handling": {
-                        "kodeverk": "ARBEIDSFORHOLD_HANDLING_TYPE",
-                        "kode": "BRUK_UTEN_INNTEKTSMELDING"
-                      }
+                      "handling": "BRUK_UTEN_INNTEKTSMELDING"
                     }
                   ]
                 }
@@ -455,10 +395,7 @@ class KalkulatorInputTjenesteTest {
               "opptjeningAktiviteter": {
                 "perioder": [
                   {
-                    "opptjeningAktivitetType": {
-                      "kodeverk": "OPPTJENING_AKTIVITET_TYPE",
-                      "kode": "ARBEID"
-                    },
+                    "opptjeningAktivitetType": "ARBEID",
                     "periode": {
                       "fom": "2016-03-25",
                       "tom": "9999-12-31"
@@ -472,10 +409,7 @@ class KalkulatorInputTjenesteTest {
                     }
                   },
                   {
-                    "opptjeningAktivitetType": {
-                      "kodeverk": "OPPTJENING_AKTIVITET_TYPE",
-                      "kode": "FORELDREPENGER"
-                    },
+                    "opptjeningAktivitetType": "FORELDREPENGER",
                     "periode": {
                       "fom": "2019-06-25",
                       "tom": "2020-03-25"
@@ -499,10 +433,7 @@ class KalkulatorInputTjenesteTest {
                         "identType": "ORGNUMMER",
                         "ident": "974652269"
                       },
-                      "uttakArbeidType": {
-                        "kodeverk": "UTTAK_ARBEID_TYPE",
-                        "kode": "AT"
-                      }
+                      "uttakArbeidType": "AT"
                     },
                     "periodeMedUtbetalingsgrad": [
                       {
@@ -520,10 +451,7 @@ class KalkulatorInputTjenesteTest {
                         "identType": "ORGNUMMER",
                         "ident": "974652269"
                       },
-                      "uttakArbeidType": {
-                        "kode": "AT",
-                        "kodeverk": "UTTAK_ARBEID_TYPE"
-                      }
+                      "uttakArbeidType": "AT"
                     },
                     "periodeMedUtbetalingsgrad": [
                       {
