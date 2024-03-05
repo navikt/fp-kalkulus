@@ -49,6 +49,10 @@ public record Beløp(@JsonValue
         return Beløp.fra(BigDecimal.valueOf(beløp));
     }
 
+    public static BigDecimal safeVerdi(Beløp beløp) {
+        return beløp == null ? null : beløp.verdi();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
