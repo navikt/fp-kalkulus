@@ -19,8 +19,10 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import no.nav.folketrygdloven.kalkulus.rest.forvaltning.dump.DebugDumpsters;
 import no.nav.folketrygdloven.kalkulus.rest.forvaltning.dump.KortTekst;
+import no.nav.folketrygdloven.kalkulus.sikkerhet.AbacAttributtEmptySupplier;
 import no.nav.k9.felles.sikkerhet.abac.BeskyttetRessurs;
 import no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt;
+import no.nav.k9.felles.sikkerhet.abac.TilpassetAbacAttributt;
 
 @Path(DiagnostikkBeregningRestTjeneste.BASE_PATH)
 @OpenAPIDefinition(tags = @Tag(name = "diagnostikk"))
@@ -49,7 +51,8 @@ public class DiagnostikkBeregningRestTjeneste {
     @Operation(description = "Henter en dump av info for debugging og analyse av en sak. Logger hvem som har hatt innsyn i sak", summary = ("Henter en dump av info for debugging og analyse av en sak"), tags = "diagnostikk")
     @BeskyttetRessurs(action = BeskyttetRessursActionAttributt.READ, property = "abac.attributt.drift")
     public Response dumpSak(@NotNull @FormParam("saksnummer") @Parameter(description = "saksnummer", allowEmptyValue = false, required = true, schema = @Schema(type = "string", maximum = "10")) @Valid SaksnummerDto saksnummerDto,
-                            @NotNull @FormParam("begrunnelse") @Parameter(description = "begrunnelse", allowEmptyValue = false, required = true, schema = @Schema(type = "string", maximum = "2000")) @Valid KortTekst begrunnelse) {
+                            @NotNull @FormParam("begrunnelse") @Parameter(description = "begrunnelse", allowEmptyValue = false, required = true, schema = @Schema(type = "string", maximum = "2000")) @Valid KortTekst begrunnelse,
+                            @NotNull @FormParam("inkluderRegelsporing") @Parameter(description = "inkluderRegelsporing", allowEmptyValue = false, required = true) @TilpassetAbacAttributt(supplierClass = AbacAttributtEmptySupplier.class) @Valid boolean inkluderRegelsporing) {
 
         /*
          * logg tilgang til tabell - må gjøres før dumps (siden StreamingOutput ikke kjører i scope av denne metoden på stacken,
@@ -57,10 +60,10 @@ public class DiagnostikkBeregningRestTjeneste {
          */
         entityManager.persist(new DiagnostikkSakLogg(saksnummerDto.getVerdi(),
                 BASE_PATH + "/sak",
-                begrunnelse.getTekst()));
+                begrunnelse.getTekst() + ". inkluderRegelsporing: " + inkluderRegelsporing));
         entityManager.flush();
 
-        var streamingOutput = dumpsters.dumper(saksnummerDto.getVerdi());
+        var streamingOutput = dumpsters.dumper(saksnummerDto.getVerdi(), inkluderRegelsporing);
 
         return Response.ok(streamingOutput)
                 .type(MediaType.APPLICATION_OCTET_STREAM)

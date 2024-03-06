@@ -10,28 +10,19 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Tuple;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
-import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
 
 @ApplicationScoped
-public class ForeslåRegelSporingDump implements DebugDumpSak {
+public class RegelSporingDump implements DebugDumpSak {
 
     private EntityManager entityManager;
-    private KoblingTjeneste koblingTjeneste;
-    private RegelsporingRepository regelsporingRepository;
 
-
-    public ForeslåRegelSporingDump() {
+    public RegelSporingDump() {
         // for proxys
     }
 
     @Inject
-    public ForeslåRegelSporingDump(EntityManager entityManager, KoblingTjeneste koblingTjeneste, RegelsporingRepository regelsporingRepository) {
+    public RegelSporingDump(EntityManager entityManager) {
         this.entityManager = entityManager;
-        this.koblingTjeneste = koblingTjeneste;
-        this.regelsporingRepository = regelsporingRepository;
     }
 
     @Override

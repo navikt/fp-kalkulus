@@ -62,7 +62,7 @@ class DebugDumpstersTest extends EntityManagerAwareTest {
         KoblingEntitet koblingEntitet = lagKobling();
         lagGrunnlag(koblingEntitet);
 
-        var dump = debugDumpsters.dumper(koblingEntitet.getSaksnummer());
+        var dump = debugDumpsters.dumper(koblingEntitet.getSaksnummer(), true);
 
         var response = Response.ok(dump)
                 .type(MediaType.APPLICATION_OCTET_STREAM)

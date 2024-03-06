@@ -33,8 +33,8 @@ public class DebugDumpsters {
         this.dumpere = dumpere;
     }
 
-    public StreamingOutput dumper(Saksnummer saksnummer) {
-        var dumpsters = dumpere.stream().toList();
+    public StreamingOutput dumper(Saksnummer saksnummer, boolean inkluderRegelsporing) {
+        var dumpsters = dumpere.stream().filter(d -> inkluderRegelsporing || !(d instanceof RegelSporingDump)).toList();
         List<DumpOutput> allDumps = dumpOutput(saksnummer, dumpsters);
 
         return new ZipOutput().dump(saksnummer, allDumps);
