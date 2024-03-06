@@ -34,12 +34,8 @@ public class TempAvledeKode {
             default -> throw new IllegalArgumentException("Støtter ikke node av type: " + node.getClass() + " for enum:" + enumCls.getName());
         };
         if (!(node instanceof String)) {
-            try {
-                throw new IllegalArgumentException("Kodeverk");
-            } catch (Exception e) {
-                var melding = String.format("KODEVERK-OBJEKT-KALKULUS: mottok kodeverdi som objekt - kode %s fra kodeverk %s", kode, enumCls.getName());
-                LOG.info(melding, e);
-            }
+            var melding = String.format("KODEVERK-OBJEKT-KALKULUS: mottok kodeverdi som objekt - kode %s fra kodeverk %s", kode, enumCls.getName());
+            LOG.info(melding);
         }
         return kode;
     }
@@ -57,12 +53,8 @@ public class TempAvledeKode {
             default -> throw new IllegalArgumentException("Støtter ikke node av type: " + node.getClass());
         };
         if (!(node instanceof Number)) {
-            try {
-                throw new IllegalArgumentException("Beløp/Verdi");
-            } catch (Exception e) {
-                var melding = String.format("BELØP-OBJEKT-KALKULUS: mottok beløp som objekt av type %s", node.getClass());
-                LOG.info(melding, e);
-            }
+            var melding = String.format("BELØP-OBJEKT-KALKULUS: mottok beløp som objekt av type %s", node.getClass());
+            LOG.info(melding);
         }
         return asBigDecimal;
     }
