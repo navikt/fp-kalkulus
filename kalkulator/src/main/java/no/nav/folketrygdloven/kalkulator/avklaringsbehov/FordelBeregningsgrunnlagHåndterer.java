@@ -8,9 +8,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import no.nav.folketrygdloven.kalkulator.KalkulatorException;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.fordeling.FordelBeregningsgrunnlagAndelDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.fordeling.FordelBeregningsgrunnlagDto;
@@ -28,8 +25,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 
 public class FordelBeregningsgrunnlagHåndterer {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(FordelBeregningsgrunnlagHåndterer.class);
 
     private FordelBeregningsgrunnlagHåndterer() {
         // skjul
@@ -69,7 +64,6 @@ public class FordelBeregningsgrunnlagHåndterer {
                 fordel(refusjonMap, perioderBuilder, endretAndel, builderFraAktivtGrunnlag.get(), endretAndel.erNyAndel());
                 fordelteAndelsnr.add(endretAndel.getAndelsnr());
             } else {
-                LOGGER.info("Fant ikke andel med andelsnr + " + endretAndel.getAndelsnr() + " i periode " + korrektPeriode.getPeriode());
                 var builderFraForrigeGrunnlag = lagBuilderFraForrigeGrunnlagEllerNy(input.getForrigeGrunnlagFraHåndteringTilstand(), endretPeriode.getFom(), endretAndel);
                 var nyAndel = fordel(refusjonMap, perioderBuilder, endretAndel, builderFraForrigeGrunnlag, true);
                 fordelteAndelsnr.add(nyAndel.getAndelsnr());
