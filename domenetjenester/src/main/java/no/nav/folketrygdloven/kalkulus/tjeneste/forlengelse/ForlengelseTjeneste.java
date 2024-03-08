@@ -178,11 +178,8 @@ public class ForlengelseTjeneste {
     private void validerIngenEndringUtenforForlengelse(BeregningsgrunnlagDto nyttBg,
                                                        Optional<BeregningsgrunnlagDto> forrigeBg,
                                                        List<Intervall> forlengelseperioder) {
-        if (forlengelseperioder.isEmpty()) {
+        if (forlengelseperioder.isEmpty() || forrigeBg.isEmpty()) {
             return;
-        }
-        if (forrigeBg.isEmpty()) {
-            throw new IllegalStateException("Forventer å finne forrige grunnlag ved forlengelse");
         }
         LocalDateTimeline<Boolean> noDiffTimeline = finnTidslinjeUtenDifferanse(nyttBg, forrigeBg);
         LocalDateTimeline<Boolean> førForlengelseTimeline = finnTidslinjeFørForlengelse(nyttBg, forlengelseperioder);
