@@ -37,6 +37,8 @@ public class KalkulatorInputTjeneste {
     private static final ObjectMapper MAPPER = JsonMapper.getMapper();
     private static final Validator VALIDATOR = Validation.buildDefaultValidatorFactory().getValidator();
 
+    private static final String LEGACY_KODEVERK = "\"kodeverk\"";
+
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private KoblingTjeneste koblingTjeneste;
 
@@ -137,25 +139,24 @@ public class KalkulatorInputTjeneste {
     }
 
     /*
-     * Skriver om input slik at gamle kodeverdier og gamle BeløpDto-objekt endres til nye format
+     * Skriver om input slik at gamle kodeverdier endres til nye format
      * Må til for å modernisere kontrakter
+     *
+     * Konsekvens: Kan ikke ha felt i kontrakter med navn "kodeverk"
      */
     private static String skrivOmLegacyInput(String input) {
         var s = input;
-        while (s.contains("\"verdi\"")) {
-            var startVerdi = s.indexOf("\"verdi\"");
-            var startObjekt = s.lastIndexOf("{", startVerdi);
-            var sluttObjekt = s.indexOf("}", startVerdi);
-            var startTall = s.indexOf(":", startVerdi) + 1;
-            while (!s.substring(startTall, startTall+1).matches("[0-9,.]")) startTall++;
-            var sluttTall = startTall;
-            while (s.substring(sluttTall, sluttTall+1).matches("[0-9,.]")) sluttTall++;
-            s = s.substring(0, startObjekt) + s.substring(startTall, sluttTall) + s.substring(sluttObjekt + 1);
-        }
-        while (s.contains("\"kode\"")) {
-            var startKodeFelt = s.indexOf("\"kode\"");
-            var startObjekt = s.lastIndexOf("{", startKodeFelt);
-            var sluttObjekt = s.indexOf("}", startKodeFelt);
+        while (s.contains(LEGACY_KODEVERK)) {
+            var startKodeverk = s.indexOf(LEGACY_KODEVERK);
+            var startObjekt = s.lastIndexOf("{", startKodeverk);
+            var sluttObjekt = s.indexOf("}", startKodeverk);
+            // Håndter nøstet kodeverdi med objekt etter første "kodeverk"
+            if (s.indexOf(LEGACY_KODEVERK, startKodeverk+LEGACY_KODEVERK.length(), sluttObjekt) > 0) {
+                startKodeverk = s.indexOf(LEGACY_KODEVERK, startKodeverk+LEGACY_KODEVERK.length(), sluttObjekt);
+                startObjekt = s.lastIndexOf("{", startKodeverk);
+                sluttObjekt = s.indexOf("}", startKodeverk);
+            }
+            var startKodeFelt = s.indexOf("\"kode\"", startObjekt);
             var startKodeverdi = s.indexOf("\"", s.indexOf(":", startKodeFelt));
             var sluttKodeverdi = startKodeverdi + 1;
             while (s.charAt(sluttKodeverdi) != '"') sluttKodeverdi++;

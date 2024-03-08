@@ -45,16 +45,16 @@ public class TempAvledeKode {
         var asBigDecimal = switch (node) {
             case Integer i -> new BigDecimal(i);
             case Double d -> BigDecimal.valueOf(d);
+            case Map map -> !map.isEmpty() && map.get("verdi") != null ? new BigDecimal(String.valueOf(map.get("verdi"))) : null;
             case BigDecimal bd -> bd;
             case Number n -> new BigDecimal(n.toString());
             case String s -> new BigDecimal(s);
             case JsonNode jsonNode -> new BigDecimal(jsonNode.get("verdi").asText());
-            case Map map -> !map.isEmpty() && map.get("verdi") != null ? new BigDecimal(String.valueOf(map.get("verdi"))) : null;
             default -> throw new IllegalArgumentException("Støtter ikke node av type: " + node.getClass());
         };
-        if (!(node instanceof Number)) {
+        if (!(node instanceof Number) && LOG.isDebugEnabled()) {
             var melding = String.format("BELØP-OBJEKT-KALKULUS: mottok beløp som objekt av type %s", node.getClass());
-            LOG.info(melding);
+            LOG.debug(melding);
         }
         return asBigDecimal;
     }
