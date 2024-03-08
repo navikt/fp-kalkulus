@@ -61,7 +61,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         var ref = input.getKoblingReferanse();
         Objects.requireNonNull(ref, "BehandlingReferanse kan ikke være null!");
         Objects.requireNonNull(oppdatertGrunnlag, "BeregningsgrunnlagGrunnlag kan ikke være null");
-        BeregningsgrunnlagDto beregningsgrunnlag = oppdatertGrunnlag.getBeregningsgrunnlag().orElse(null);
+        BeregningsgrunnlagDto beregningsgrunnlag = oppdatertGrunnlag.getBeregningsgrunnlagHvisFinnes().orElse(null);
         Objects.requireNonNull(beregningsgrunnlag, "Beregningsgrunnlag kan ikke være null!");
 
         List<AktivitetStatusMedHjemmel> aktivitetStatuser = beregningsgrunnlag.getAktivitetStatuser().stream()

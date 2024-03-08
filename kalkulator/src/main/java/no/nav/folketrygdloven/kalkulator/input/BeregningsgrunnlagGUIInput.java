@@ -97,7 +97,7 @@ public class BeregningsgrunnlagGUIInput {
     }
 
     public BeregningsgrunnlagDto getBeregningsgrunnlag() {
-        return beregningsgrunnlagGrunnlag == null ? null : beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElseThrow();
+        return beregningsgrunnlagGrunnlag == null ? null : beregningsgrunnlagGrunnlag.getBeregningsgrunnlagHvisFinnes().orElseThrow();
     }
 
     public List<BeregningsgrunnlagGrunnlagDto> getBeregningsgrunnlagGrunnlagFraForrigeBehandling() {
@@ -160,7 +160,7 @@ public class BeregningsgrunnlagGUIInput {
     public BeregningsgrunnlagGUIInput medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDto grunnlag) {
         var newInput = new BeregningsgrunnlagGUIInput(this);
         newInput.beregningsgrunnlagGrunnlag = grunnlag;
-        newInput = grunnlag.getBeregningsgrunnlag()
+        newInput = grunnlag.getBeregningsgrunnlagHvisFinnes()
             .map(BeregningsgrunnlagDto::getSkjæringstidspunkt)
             .map(newInput::medSkjæringstidspunktForBeregning)
             .orElse(newInput);

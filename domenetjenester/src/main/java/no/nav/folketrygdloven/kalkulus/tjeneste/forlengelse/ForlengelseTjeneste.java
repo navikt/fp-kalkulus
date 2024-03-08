@@ -76,10 +76,10 @@ public class ForlengelseTjeneste {
                 forlengelseperioder);
 
         // Validerer ingen endring utenfor forlengelse
-        forlengetGrunnlag.getBeregningsgrunnlag().ifPresent(bg ->
+        forlengetGrunnlag.getBeregningsgrunnlagHvisFinnes().ifPresent(bg ->
                 validerIngenEndringUtenforForlengelse(
                         bg,
-                        eksisterendeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag),
+                        eksisterendeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlagHvisFinnes),
                         forlengelseperioder)
         );
         return forlengetGrunnlag;
@@ -89,12 +89,12 @@ public class ForlengelseTjeneste {
                                                                            Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlagFraStegOpt,
                                                                            List<Intervall> forlengelseperioder) {
 
-        if (forlengelseperioder.isEmpty() || forrigeGrunnlagFraStegOpt.isEmpty() || forrigeGrunnlagFraStegOpt.get().getBeregningsgrunnlag().isEmpty()) {
+        if (forlengelseperioder.isEmpty() || forrigeGrunnlagFraStegOpt.isEmpty() || forrigeGrunnlagFraStegOpt.get().getBeregningsgrunnlagHvisFinnes().isEmpty()) {
             return nyttGrunnlag;
         }
 
         var forrigeGrunnlag = forrigeGrunnlagFraStegOpt.get();
-        var forrigeBeregningsgrunnlag = forrigeGrunnlag.getBeregningsgrunnlag().orElseThrow();
+        var forrigeBeregningsgrunnlag = forrigeGrunnlag.getBeregningsgrunnlagHvisFinnes().orElseThrow();
         var skjæringstidspunkt = forrigeBeregningsgrunnlag.getSkjæringstidspunkt();
         var bgTidslinje = new LocalDateTimeline<>(skjæringstidspunkt, TIDENES_ENDE, TRUE);
         var forlengelseTidslinje = new LocalDateTimeline<>(forlengelseperioder.stream().map(p -> new LocalDateSegment<>(p.getFomDato(), p.getTomDato(), TRUE)).toList());
@@ -222,7 +222,7 @@ public class ForlengelseTjeneste {
     }
 
     public void deaktiverVedTilbakerulling(Set<Long> koblingIder, BeregningsgrunnlagTilstand tilstand) {
-        if (tilstand.erFør(BeregningsgrunnlagTilstand.VURDERT_REFUSJON)) {
+        if (tilstand.erFør(BeregningsgrunnlagTilstand.VURDERT_TILKOMMET_INNTEKT)) {
             logger.info("Deaktiverer forlengelseperioder for koblinger " + koblingIder);
             forlengelseRepository.deaktiverAlle(koblingIder);
         }

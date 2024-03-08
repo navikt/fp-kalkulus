@@ -99,7 +99,8 @@ public class BeregningStegTjeneste {
             case FORS_BERGRUNN_2 -> fortsettForeslåBeregningsgrunnlag((FortsettForeslåBeregningsgrunnlagInput) input);
             case VURDER_VILKAR_BERGRUNN -> vurderBeregningsgrunnlagsvilkår((VurderBeregningsgrunnlagvilkårInput) input);
             case VURDER_TILKOMMET_INNTEKT -> vurderTilkommetInntekt(input);
-            case VURDER_REF_BERGRUNN -> vurderRefusjonForBeregningsgrunnlaget((VurderRefusjonBeregningsgrunnlagInput) input);
+            case VURDER_REF_BERGRUNN ->
+                    vurderRefusjonForBeregningsgrunnlaget((VurderRefusjonBeregningsgrunnlagInput) input);
             case FORDEL_BERGRUNN -> fordelBeregningsgrunnlag((FordelBeregningsgrunnlagInput) input);
             case FAST_BERGRUNN -> fastsettBeregningsgrunnlag(input);
         };
@@ -273,6 +274,7 @@ public class BeregningStegTjeneste {
         lagreRegelsporing(input.getKoblingReferanse().getKoblingId(), resultat.getRegelSporingAggregat(), input.getStegTilstand());
         // Kopiering av data og spoling fram til neste tilstand
         SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(resultat.getBeregningAvklaringsbehovResultater(),
+                        input.getForlengelseperioder(),
                         forlengetGrunnlag,
                         input.getForrigeGrunnlagFraSteg(),
                         input.getForrigeGrunnlagFraStegUt())

@@ -133,7 +133,7 @@ public class FastsettNaturalytelsePerioderTjenesteImplTest {
     public void lagPeriodeForNaturalytelseTilkommer() {
         // Arrange
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
+        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlagHvisFinnes().get();
         var inntekt = Beløp.fra(40000);
         NaturalYtelseDto naturalYtelseTilkommer = new NaturalYtelseDto(SKJÆRINGSTIDSPUNKT.plusDays(30), TIDENES_ENDE, Beløp.fra(350),
                 NaturalYtelseType.ELEKTRISK_KOMMUNIKASJON);
@@ -156,7 +156,7 @@ public class FastsettNaturalytelsePerioderTjenesteImplTest {
     public void lagPeriodeForNaturalytelseBortfalt() {
         // Arrange
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
+        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlagHvisFinnes().get();
         var inntekt = Beløp.fra(40000);
         NaturalYtelseDto naturalYtelseBortfall = new NaturalYtelseDto(SKJÆRINGSTIDSPUNKT.minusYears(2), SKJÆRINGSTIDSPUNKT.plusDays(30),
                 Beløp.fra(350), NaturalYtelseType.ELEKTRISK_KOMMUNIKASJON);
@@ -179,7 +179,7 @@ public class FastsettNaturalytelsePerioderTjenesteImplTest {
     public void ikkeLagPeriodeForNaturalytelseBortfaltPåStp() {
         // Arrange
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
+        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlagHvisFinnes().get();
         var inntekt = Beløp.fra(40000);
         NaturalYtelseDto naturalYtelseBortfall = new NaturalYtelseDto(SKJÆRINGSTIDSPUNKT.minusYears(2), SKJÆRINGSTIDSPUNKT.minusDays(1),
                 Beløp.fra(350), NaturalYtelseType.ELEKTRISK_KOMMUNIKASJON);
@@ -201,7 +201,7 @@ public class FastsettNaturalytelsePerioderTjenesteImplTest {
     public void lagPeriodeForNaturalytelseBortfaltDagenEtterStp() {
         // Arrange
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
+        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlagHvisFinnes().get();
         var inntekt = Beløp.fra(40000);
         NaturalYtelseDto naturalYtelseBortfall = new NaturalYtelseDto(SKJÆRINGSTIDSPUNKT.minusYears(2), SKJÆRINGSTIDSPUNKT, Beløp.fra(350),
                 NaturalYtelseType.ELEKTRISK_KOMMUNIKASJON);
@@ -224,7 +224,7 @@ public class FastsettNaturalytelsePerioderTjenesteImplTest {
     public void lagPerioderForNaturalytelseBortfaltOgTilkommer() {
         // Arrange
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
+        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlagHvisFinnes().get();
         var inntekt = Beløp.fra(40000);
         NaturalYtelseDto naturalYtelseBortfalt = new NaturalYtelseDto(SKJÆRINGSTIDSPUNKT.minusYears(2), SKJÆRINGSTIDSPUNKT.plusDays(30),
                 Beløp.fra(350), NaturalYtelseType.ELEKTRISK_KOMMUNIKASJON);

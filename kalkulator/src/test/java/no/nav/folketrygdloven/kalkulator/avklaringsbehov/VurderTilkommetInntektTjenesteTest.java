@@ -82,7 +82,7 @@ class VurderTilkommetInntektTjenesteTest {
         // Act
         var nyttGr = VurderTilkommetInntektTjeneste.løsAvklaringsbehov(dto, new HåndterBeregningsgrunnlagInput(input, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
-        var tilkomneInntekter = nyttGr.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0)
+        var tilkomneInntekter = nyttGr.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder().get(0)
                 .getTilkomneInntekter();
 
         // Assert
@@ -132,15 +132,15 @@ class VurderTilkommetInntektTjenesteTest {
 
 
         // Assert
-        assertThat(nyttGr.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().size()).isEqualTo(2);
-        var tilkomneInntekter1 = nyttGr.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0)
+        assertThat(nyttGr.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder().size()).isEqualTo(2);
+        var tilkomneInntekter1 = nyttGr.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder().get(0)
                 .getTilkomneInntekter();
         assertThat(tilkomneInntekter1.size()).isEqualTo(1);
         assertThat(tilkomneInntekter1.get(0).getArbeidsgiver().get()).isEqualTo(arbeidsgiver2);
         assertThat(tilkomneInntekter1.get(0).getAktivitetStatus()).isEqualTo(AktivitetStatus.ARBEIDSTAKER);
         assertThat(tilkomneInntekter1.get(0).getBruttoInntektPrÅr().compareTo(Beløp.fra(100_000))).isEqualTo(0);
 
-        var periodeLagtTil = nyttGr.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(1);
+        var periodeLagtTil = nyttGr.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder().get(1);
         var tilkomneInntekter2 = periodeLagtTil
                 .getTilkomneInntekter();
         assertThat(periodeLagtTil.getPeriodeÅrsaker().contains(PeriodeÅrsak.TILKOMMET_INNTEKT_MANUELT)).isTrue();
@@ -189,15 +189,15 @@ class VurderTilkommetInntektTjenesteTest {
 
 
         // Assert
-        assertThat(nyttGr.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().size()).isEqualTo(2);
-        var tilkomneInntekter1 = nyttGr.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0)
+        assertThat(nyttGr.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder().size()).isEqualTo(2);
+        var tilkomneInntekter1 = nyttGr.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder().get(0)
                 .getTilkomneInntekter();
         assertThat(tilkomneInntekter1.size()).isEqualTo(1);
         assertThat(tilkomneInntekter1.get(0).getArbeidsgiver().get()).isEqualTo(arbeidsgiver2);
         assertThat(tilkomneInntekter1.get(0).getAktivitetStatus()).isEqualTo(AktivitetStatus.ARBEIDSTAKER);
         assertThat(tilkomneInntekter1.get(0).getBruttoInntektPrÅr().compareTo(Beløp.fra(100_000))).isEqualTo(0);
 
-        var periodeLagtTil = nyttGr.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(1);
+        var periodeLagtTil = nyttGr.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder().get(1);
         var tilkomneInntekter2 = periodeLagtTil
                 .getTilkomneInntekter();
         assertThat(tilkomneInntekter2.size()).isEqualTo(1);
@@ -239,7 +239,7 @@ class VurderTilkommetInntektTjenesteTest {
         // Act
         var nyttGr = VurderTilkommetInntektTjeneste.løsAvklaringsbehov(dto, new HåndterBeregningsgrunnlagInput(input, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
-        var tilkomneInntekter = nyttGr.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0)
+        var tilkomneInntekter = nyttGr.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder().get(0)
                 .getTilkomneInntekter();
 
         // Assert

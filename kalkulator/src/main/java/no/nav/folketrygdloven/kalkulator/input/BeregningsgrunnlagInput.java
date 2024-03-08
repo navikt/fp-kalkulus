@@ -131,7 +131,7 @@ public class BeregningsgrunnlagInput {
     }
 
     public BeregningsgrunnlagDto getBeregningsgrunnlag() {
-        return beregningsgrunnlagGrunnlag == null ? null : beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElseThrow();
+        return beregningsgrunnlagGrunnlag == null ? null : beregningsgrunnlagGrunnlag.getBeregningsgrunnlagHvisFinnes().orElseThrow();
     }
 
     public FagsakYtelseType getFagsakYtelseType() {
@@ -199,7 +199,7 @@ public class BeregningsgrunnlagInput {
     public BeregningsgrunnlagInput medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDto grunnlag) {
         var newInput = new BeregningsgrunnlagInput(this);
         newInput.beregningsgrunnlagGrunnlag = grunnlag;
-        newInput = grunnlag.getBeregningsgrunnlag()
+        newInput = grunnlag.getBeregningsgrunnlagHvisFinnes()
                 .map(BeregningsgrunnlagDto::getSkjæringstidspunkt)
                 .map(newInput::medSkjæringstidspunktForBeregning)
                 .orElse(newInput);

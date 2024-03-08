@@ -31,7 +31,7 @@ public class MapBrevBeregningsgrunnlag {
                                                             no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagEntitet,
                                                             YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
                                                             boolean erForlengelse) {
-        BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlagEntitet.getBeregningsgrunnlag()
+        BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlagEntitet.getBeregningsgrunnlagHvisFinnes()
                 .map(gr -> MapBrevBeregningsgrunnlag.map(gr, ytelsespesifiktGrunnlag)).orElse(null);
         return new BeregningsgrunnlagGrunnlagDto(koblingReferanse.getKoblingUuid(), beregningsgrunnlag, erForlengelse);
     }

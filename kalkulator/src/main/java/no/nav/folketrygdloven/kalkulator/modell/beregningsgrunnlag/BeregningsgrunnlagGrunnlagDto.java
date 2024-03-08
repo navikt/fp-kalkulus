@@ -21,7 +21,7 @@ public class BeregningsgrunnlagGrunnlagDto {
     }
 
     BeregningsgrunnlagGrunnlagDto(BeregningsgrunnlagGrunnlagDto grunnlag) {
-        grunnlag.getBeregningsgrunnlag().ifPresent(this::setBeregningsgrunnlag);
+        grunnlag.getBeregningsgrunnlagHvisFinnes().ifPresent(this::setBeregningsgrunnlag);
         this.setRegisterAktiviteter(grunnlag.getRegisterAktiviteter());
         grunnlag.getSaksbehandletAktiviteter().ifPresent(this::setSaksbehandletAktiviteter);
         grunnlag.getOverstyring().ifPresent(this::setOverstyringer);
@@ -30,10 +30,13 @@ public class BeregningsgrunnlagGrunnlagDto {
         this.beregningsgrunnlagTilstand = grunnlag.getBeregningsgrunnlagTilstand();
     }
 
-    public Optional<BeregningsgrunnlagDto> getBeregningsgrunnlag() {
+    public Optional<BeregningsgrunnlagDto> getBeregningsgrunnlagHvisFinnes() {
         return Optional.ofNullable(beregningsgrunnlag);
     }
 
+    public BeregningsgrunnlagDto getBeregningsgrunnlag() {
+        return beregningsgrunnlag;
+    }
     public BeregningAktivitetAggregatDto getRegisterAktiviteter() {
         return registerAktiviteter;
     }

@@ -71,7 +71,7 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
         }
         Optional<BeregningsgrunnlagDto> bgForrigeBehandling = input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling()
                 .stream().findFirst()
-                .flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag);
+                .flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlagHvisFinnes);
         if (bgForrigeBehandling.isEmpty()) {
             return;
         }

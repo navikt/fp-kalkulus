@@ -29,7 +29,7 @@ public class AndelerForFaktaOmBeregningTjeneste {
 
     public static List<AndelForFaktaOmBeregningDto> lagAndelerForFaktaOmBeregning(BeregningsgrunnlagGUIInput input) {
         return input.getBeregningsgrunnlagGrunnlag()
-                .getBeregningsgrunnlag()
+                .getBeregningsgrunnlagHvisFinnes()
                 .map(BeregningsgrunnlagDto::getBeregningsgrunnlagPerioder)
                 .filter(c -> !c.isEmpty())
                 .map(b -> b.get(0))

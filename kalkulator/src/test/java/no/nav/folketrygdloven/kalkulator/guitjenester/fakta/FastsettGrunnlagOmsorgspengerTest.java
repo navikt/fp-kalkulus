@@ -92,7 +92,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
         FastsettGrunnlagOmsorgspenger fastsettGrunnlagOmsorgspenger = new FastsettGrunnlagOmsorgspenger();
         //Act
         var skalGrunnlagFastsettes = fastsettGrunnlagOmsorgspenger.skalGrunnlagFastsettes(input,
-                grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0));
+                grunnlag.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0));
         // Assert
         assertThat(skalGrunnlagFastsettes).isEqualTo(false);
     }
@@ -138,7 +138,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
         FastsettGrunnlagOmsorgspenger fastsettGrunnlagOmsorgspenger = new FastsettGrunnlagOmsorgspenger();
         //Act
         boolean skalGrunnlagFastsettes = fastsettGrunnlagOmsorgspenger.skalGrunnlagFastsettes(input,
-                grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0));
+                grunnlag.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0));
         // Assert
         assertThat(skalGrunnlagFastsettes).isEqualTo(false);
     }
@@ -170,7 +170,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
         FastsettGrunnlagOmsorgspenger fastsettGrunnlagOmsorgspenger = new FastsettGrunnlagOmsorgspenger();
         //Act
         boolean skalGrunnlagFastsettes = fastsettGrunnlagOmsorgspenger.skalGrunnlagFastsettes(input,
-                grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0));
+                grunnlag.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0));
         // Assert
         assertThat(skalGrunnlagFastsettes).isEqualTo(false);
     }
@@ -203,7 +203,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
         FastsettGrunnlagOmsorgspenger fastsettGrunnlagOmsorgspenger = new FastsettGrunnlagOmsorgspenger();
         //Act
         boolean skalGrunnlagFastsettes = fastsettGrunnlagOmsorgspenger.skalGrunnlagFastsettes(input,
-                grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0));
+                grunnlag.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0));
         // Assert
         assertThat(skalGrunnlagFastsettes).isEqualTo(true);
     }
@@ -254,7 +254,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
         FastsettGrunnlagOmsorgspenger fastsettGrunnlagOmsorgspenger = new FastsettGrunnlagOmsorgspenger();
         //Act
         boolean skalGrunnlagFastsettes = fastsettGrunnlagOmsorgspenger.skalGrunnlagFastsettes(input,
-                grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0));
+                grunnlag.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0));
         // Assert
         assertThat(skalGrunnlagFastsettes).isEqualTo(false);
     }

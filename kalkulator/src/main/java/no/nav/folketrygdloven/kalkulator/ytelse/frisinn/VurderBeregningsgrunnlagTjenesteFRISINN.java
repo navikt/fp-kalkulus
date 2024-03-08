@@ -56,7 +56,7 @@ public class VurderBeregningsgrunnlagTjenesteFRISINN {
         }
         List<RegelResultat> regelResultater = kjørRegel(input, beregningsgrunnlagRegel);
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = Collections.emptyList();
-        return mapTilRegelresultat(input, regelResultater, oppdatertGrunnlag.getBeregningsgrunnlag().orElseThrow(), avklaringsbehov);
+        return mapTilRegelresultat(input, regelResultater, oppdatertGrunnlag.getBeregningsgrunnlagHvisFinnes().orElseThrow(), avklaringsbehov);
     }
 
     protected List<RegelResultat> kjørRegel(BeregningsgrunnlagInput input, Beregningsgrunnlag beregningsgrunnlagRegel) {

@@ -96,7 +96,7 @@ public class FordelBeregningsgrunnlagHåndterer {
 
     private static BeregningsgrunnlagPrStatusOgAndelDto.Builder lagBuilderFraForrigeGrunnlagEllerNy(Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlagFraHåndteringTilstand,
                                                                                                     LocalDate fom, FordelBeregningsgrunnlagAndelDto endretAndel) {
-        return forrigeGrunnlagFraHåndteringTilstand.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag)
+        return forrigeGrunnlagFraHåndteringTilstand.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlagHvisFinnes)
                 .stream()
                 .flatMap(bg -> bg.getBeregningsgrunnlagPerioder().stream())
                 .filter(p -> p.getPeriode().getFomDato().equals(fom))

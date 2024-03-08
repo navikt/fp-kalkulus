@@ -62,7 +62,7 @@ public class FastsettBeregningsgrunnlagATFLHåndtererTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = FastsettBeregningsgrunnlagATFLHåndterer.håndter(input, dto);
 
         //Assert
-        Optional<BeregningsgrunnlagDto> beregningsgrunnlagOpt = grunnlag.getBeregningsgrunnlag();
+        Optional<BeregningsgrunnlagDto> beregningsgrunnlagOpt = grunnlag.getBeregningsgrunnlagHvisFinnes();
         Assertions.assertThat(beregningsgrunnlagOpt).hasValueSatisfying(beregningsgrunnlag -> assertBeregningsgrunnlag(beregningsgrunnlag, 1, OVERSTYRT_PR_AR));
     }
 
@@ -85,7 +85,7 @@ public class FastsettBeregningsgrunnlagATFLHåndtererTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = FastsettBeregningsgrunnlagATFLHåndterer.håndter(input, dto);
 
         //Assert
-        Optional<BeregningsgrunnlagDto> beregningsgrunnlagOpt = grunnlag.getBeregningsgrunnlag();
+        Optional<BeregningsgrunnlagDto> beregningsgrunnlagOpt = grunnlag.getBeregningsgrunnlagHvisFinnes();
         Assertions.assertThat(beregningsgrunnlagOpt).hasValueSatisfying(beregningsgrunnlag -> {
             BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
             List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList();
@@ -117,7 +117,7 @@ public class FastsettBeregningsgrunnlagATFLHåndtererTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = FastsettBeregningsgrunnlagATFLHåndterer.håndter(input, dto);
 
         //Assert
-        Optional<BeregningsgrunnlagDto> beregningsgrunnlagOpt = grunnlag.getBeregningsgrunnlag();
+        Optional<BeregningsgrunnlagDto> beregningsgrunnlagOpt = grunnlag.getBeregningsgrunnlagHvisFinnes();
         List<BeregningsgrunnlagPeriodeDto> perioder = beregningsgrunnlagOpt.get().getBeregningsgrunnlagPerioder();
         Assertions.assertThat(perioder).hasSize(2);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andelerPeriode1 = perioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
@@ -143,7 +143,7 @@ public class FastsettBeregningsgrunnlagATFLHåndtererTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = FastsettBeregningsgrunnlagATFLHåndterer.håndter(input, dto);
 
         //Assert
-        Optional<BeregningsgrunnlagDto> beregningsgrunnlagOpt = grunnlag.getBeregningsgrunnlag();
+        Optional<BeregningsgrunnlagDto> beregningsgrunnlagOpt = grunnlag.getBeregningsgrunnlagHvisFinnes();
         Assertions.assertThat(beregningsgrunnlagOpt).hasValueSatisfying(beregningsgrunnlag -> assertBeregningsgrunnlag(beregningsgrunnlag, antallPerioder, OVERSTYRT_PR_AR));
     }
 
@@ -159,7 +159,7 @@ public class FastsettBeregningsgrunnlagATFLHåndtererTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = FastsettBeregningsgrunnlagATFLHåndterer.håndter(input, dto);
 
         //Assert
-        Optional<BeregningsgrunnlagDto> beregningsgrunnlagOpt = grunnlag.getBeregningsgrunnlag();
+        Optional<BeregningsgrunnlagDto> beregningsgrunnlagOpt = grunnlag.getBeregningsgrunnlagHvisFinnes();
         Assertions.assertThat(beregningsgrunnlagOpt).hasValueSatisfying(beregningsgrunnlag -> assertBeregningsgrunnlag(beregningsgrunnlag, 1, FRILANSER_INNTEKT));
     }
 
@@ -176,7 +176,7 @@ public class FastsettBeregningsgrunnlagATFLHåndtererTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = FastsettBeregningsgrunnlagATFLHåndterer.håndter(input, dto);
 
         //Assert
-        Optional<BeregningsgrunnlagDto> beregningsgrunnlagOpt = grunnlag.getBeregningsgrunnlag();
+        Optional<BeregningsgrunnlagDto> beregningsgrunnlagOpt = grunnlag.getBeregningsgrunnlagHvisFinnes();
         Assertions.assertThat(beregningsgrunnlagOpt).hasValueSatisfying(beregningsgrunnlag -> assertBeregningsgrunnlag(beregningsgrunnlag, antallPerioder, FRILANSER_INNTEKT));
     }
 

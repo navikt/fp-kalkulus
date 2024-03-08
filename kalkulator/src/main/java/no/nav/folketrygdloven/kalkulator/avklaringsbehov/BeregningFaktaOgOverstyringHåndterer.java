@@ -26,7 +26,7 @@ public class BeregningFaktaOgOverstyringHåndterer {
     public static BeregningsgrunnlagGrunnlagDto håndter(HåndterBeregningsgrunnlagInput input, FaktaBeregningLagreDto faktaDto) {
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
 
-        Optional<BeregningsgrunnlagDto> forrigeBg = input.getForrigeGrunnlagFraHåndteringTilstand().flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag);
+        Optional<BeregningsgrunnlagDto> forrigeBg = input.getForrigeGrunnlagFraHåndteringTilstand().flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlagHvisFinnes);
 
         FaktaOmBeregningTilfellerOppdaterer.oppdater(faktaDto, forrigeBg, input, grunnlagBuilder);
         return grunnlagBuilder.build(input.getHåndteringTilstand());
@@ -38,7 +38,7 @@ public class BeregningFaktaOgOverstyringHåndterer {
         BeregningsgrunnlagGrunnlagDto aktivtGrunnlag = input.getBeregningsgrunnlagGrunnlag();
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(aktivtGrunnlag);
 
-        Optional<BeregningsgrunnlagDto> forrigeBg = input.getForrigeGrunnlagFraHåndteringTilstand().flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag);
+        Optional<BeregningsgrunnlagDto> forrigeBg = input.getForrigeGrunnlagFraHåndteringTilstand().flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlagHvisFinnes);
 
         FaktaBeregningLagreDto fakta = dto.getFakta();
         if (fakta != null) {

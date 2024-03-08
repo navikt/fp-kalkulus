@@ -41,7 +41,7 @@ class VurderRepresentererStortingetTjenesteTest {
 
         // Act
         var nyttGr = VurderRepresentererStortingetTjeneste.løsAvklaringsbehov(dto, new HåndterBeregningsgrunnlagInput(input, BeregningsgrunnlagTilstand.FASTSATT_INN));
-        var perioder = nyttGr.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder();
+        var perioder = nyttGr.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder();
 
         // Assert
         assertThat(perioder.size()).isEqualTo(2);
@@ -59,7 +59,7 @@ class VurderRepresentererStortingetTjenesteTest {
 
         // Act
         var nyttGr = VurderRepresentererStortingetTjeneste.løsAvklaringsbehov(dto, new HåndterBeregningsgrunnlagInput(input, BeregningsgrunnlagTilstand.FASTSATT_INN));
-        var perioder = nyttGr.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder();
+        var perioder = nyttGr.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder();
 
         // Assert
         assertThat(perioder.size()).isEqualTo(2);
@@ -81,7 +81,7 @@ class VurderRepresentererStortingetTjenesteTest {
 
         // Act
         var nyttGr = VurderRepresentererStortingetTjeneste.løsAvklaringsbehov(dto, new HåndterBeregningsgrunnlagInput(input, BeregningsgrunnlagTilstand.FASTSATT_INN));
-        var perioder = nyttGr.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder();
+        var perioder = nyttGr.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder();
 
         // Assert
         assertThat(perioder.size()).isEqualTo(2);
@@ -99,7 +99,7 @@ class VurderRepresentererStortingetTjenesteTest {
 
         // Act
         var nyttGr = VurderRepresentererStortingetTjeneste.løsAvklaringsbehov(dto, new HåndterBeregningsgrunnlagInput(input, BeregningsgrunnlagTilstand.FASTSATT_INN));
-        var perioder = nyttGr.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder();
+        var perioder = nyttGr.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder();
 
         // Assert
         assertThat(perioder.size()).isEqualTo(2);
@@ -124,7 +124,7 @@ class VurderRepresentererStortingetTjenesteTest {
 
         // Act
         var nyttGr = VurderRepresentererStortingetTjeneste.løsAvklaringsbehov(dto, new HåndterBeregningsgrunnlagInput(input, BeregningsgrunnlagTilstand.FASTSATT_INN));
-        var perioder = nyttGr.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder();
+        var perioder = nyttGr.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder();
 
         // Assert
         assertThat(perioder.size()).isEqualTo(2);
@@ -147,7 +147,7 @@ class VurderRepresentererStortingetTjenesteTest {
 
         // Act
         var nyttGr = VurderRepresentererStortingetTjeneste.løsAvklaringsbehov(dto, new HåndterBeregningsgrunnlagInput(input, BeregningsgrunnlagTilstand.FASTSATT_INN));
-        var perioder = nyttGr.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder();
+        var perioder = nyttGr.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder();
 
         // Assert
         assertThat(perioder.size()).isEqualTo(3);
@@ -179,7 +179,7 @@ class VurderRepresentererStortingetTjenesteTest {
 
         // Act
         var nyttGr = VurderRepresentererStortingetTjeneste.løsAvklaringsbehov(dto, new HåndterBeregningsgrunnlagInput(input, BeregningsgrunnlagTilstand.FASTSATT_INN));
-        var perioder = nyttGr.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder();
+        var perioder = nyttGr.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder();
 
         // Assert
         assertThat(perioder.size()).isEqualTo(3);

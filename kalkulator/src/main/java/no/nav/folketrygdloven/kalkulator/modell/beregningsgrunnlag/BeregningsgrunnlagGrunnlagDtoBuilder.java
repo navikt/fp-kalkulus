@@ -27,7 +27,7 @@ public class BeregningsgrunnlagGrunnlagDtoBuilder {
     }
 
     public BeregningsgrunnlagDto.Builder getBeregningsgrunnlagBuilder() {
-        return BeregningsgrunnlagDto.Builder.oppdater(kladd.getBeregningsgrunnlag());
+        return BeregningsgrunnlagDto.Builder.oppdater(kladd.getBeregningsgrunnlagHvisFinnes());
     }
 
     /** Henter oppdaterere for fakta-aggregat

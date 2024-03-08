@@ -398,7 +398,7 @@ public class FordelPerioderTjenesteTest {
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORG_NUMMER_2, SKJÆRINGSTIDSPUNKT, inntekt1, inntekt1);
         iayGrunnlagBuilder.medInntektsmeldinger(im1);
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER, ORG_NUMMER_2), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
+        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlagHvisFinnes().get();
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
                 .build(beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0));
@@ -422,7 +422,7 @@ public class FordelPerioderTjenesteTest {
         leggTilYrkesaktiviteterOgBeregningAktiviteter(List.of(ORG_NUMMER_2), iayGrunnlagBuilder);
         BigDecimal inntekt1 = BigDecimal.valueOf(90000);
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER_2), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
+        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlagHvisFinnes().get();
         BeregningsgrunnlagPeriodeDto bgPeriode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
@@ -499,7 +499,7 @@ public class FordelPerioderTjenesteTest {
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORG_NUMMER_2, SKJÆRINGSTIDSPUNKT, refusjonskrav1, inntekt1);
         newGrunnlagBuilder.medInntektsmeldinger(im1);
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER, ORG_NUMMER_2), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
+        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlagHvisFinnes().get();
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(AktivitetStatus.FRILANSER)
                 .medBeregningsperiode(SKJÆRINGSTIDSPUNKT, TIDENES_ENDE)
@@ -1046,7 +1046,7 @@ public class FordelPerioderTjenesteTest {
         Intervall arbeidsperiode = fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), TIDENES_ENDE);
         List<String> orgnrs = List.of();
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(orgnrs, beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
+        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlagHvisFinnes().get();
         var inntekt = Beløp.fra(40000);
         List<RefusjonDto> refusjonsListe = List.of(
                 new RefusjonDto(Beløp.fra(20000), SKJÆRINGSTIDSPUNKT.plusMonths(3)),
@@ -1167,7 +1167,7 @@ public class FordelPerioderTjenesteTest {
         newGrunnlagBuilder.medInntektsmeldinger(im1);
 
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER_2), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
+        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlagHvisFinnes().get();
         beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(periode -> {
             BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto.builder()
                     .medArbeidsperiodeFom(arbeidsperiode.getFomDato())
@@ -1273,7 +1273,7 @@ public class FordelPerioderTjenesteTest {
         newGrunnlagBuilder.medInntektsmeldinger(im1);
 
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER_2), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
+        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlagHvisFinnes().get();
         beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(periode -> {
             BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto.builder()
                     .medArbeidsperiodeFom(arbeidsperiode.getFomDato())
@@ -1323,7 +1323,7 @@ public class FordelPerioderTjenesteTest {
         );
         iayGrunnlagBuilder.medInntektsmeldinger(im1);
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER_2), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
+        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlagHvisFinnes().get();
         beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(periode -> {
             BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto.builder()
                     .medArbeidsperiodeFom(arbeidsperiode.getFomDato())
@@ -1390,7 +1390,7 @@ public class FordelPerioderTjenesteTest {
         grunnlagBuilder.medInntektsmeldinger(im1);
 
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER_2), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
+        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlagHvisFinnes().get();
         beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(periode -> {
             BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto.builder()
                     .medArbeidsperiodeFom(arbeidsperiode.getFomDato())
@@ -1461,7 +1461,7 @@ public class FordelPerioderTjenesteTest {
         newGrunnlagBuilder.medInntektsmeldinger(im1);
 
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER_2), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
+        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlagHvisFinnes().get();
         beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(periode -> {
             BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto.builder()
                     .medArbeidsperiodeFom(arbeidsperiode.getFomDato())

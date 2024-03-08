@@ -10,6 +10,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.PeriodeSplitter;
 import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.SplittPeriodeConfig;
 import no.nav.folketrygdloven.kalkulator.felles.periodesplitting.StandardPeriodeCompressLikhetspredikat;
@@ -29,8 +32,11 @@ import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateSegmentCombinator;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
+import no.nav.fpsak.tidsserie.StandardCombinators;
 
 public final class SpolFramoverTjeneste {
+
+    private static Logger LOG = LoggerFactory.getLogger(SpolFramoverTjeneste.class);
 
     private SpolFramoverTjeneste() {
         // Skjul
@@ -42,13 +48,14 @@ public final class SpolFramoverTjeneste {
      * Spolingen kopierer hele eller deler av grunnlaget som er lagret ved håndtering av aksjonspunkter mellom inneværende og neste steg.
      *
      * @param avklaringsbehov          avklaringsbehov som er utledet i steget
+     * @param forlengelseperioder
      * @param nyttGrunnlag             nytt grunnlag som er opprettet i steget
      * @param forrigeGrunnlagFraSteg   forrige grunnlag fra steget
      * @param forrigeGrunnlagFraStegUt forrige grunnlag fra steg ut
      * @return Builder for grunnlag som det skal spoles fram til
      */
     public static Optional<BeregningsgrunnlagGrunnlagDto> finnGrunnlagDetSkalSpolesTil(Collection<BeregningAvklaringsbehovResultat> avklaringsbehov,
-                                                                                       BeregningsgrunnlagGrunnlagDto nyttGrunnlag,
+                                                                                       List<Intervall> forlengelseperioder, BeregningsgrunnlagGrunnlagDto nyttGrunnlag,
                                                                                        Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlagFraSteg,
                                                                                        Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlagFraStegUt) {
 
@@ -58,22 +65,36 @@ public final class SpolFramoverTjeneste {
                 forrigeGrunnlagFraSteg);
         if (kanSpoleFramHeleGrunnlaget) {
             return forrigeGrunnlagFraStegUt;
-        } else if (!avklaringsbehov.isEmpty() && forrigeGrunnlagFraSteg.isPresent() && forrigeGrunnlagFraStegUt.isPresent()) {
-            return spolFramLikePerioderOmMulig(nyttGrunnlag, forrigeGrunnlagFraSteg.get(), forrigeGrunnlagFraStegUt.get());
         }
-        return Optional.empty();
+        Optional<BeregningsgrunnlagGrunnlagDto> spoltGrunnlag = Optional.empty();
+        if (!avklaringsbehov.isEmpty() && forrigeGrunnlagFraSteg.isPresent() && forrigeGrunnlagFraStegUt.isPresent()) {
+            spoltGrunnlag = spolFramLikePerioderOmMulig(nyttGrunnlag, forrigeGrunnlagFraSteg.get(), forrigeGrunnlagFraStegUt.get());
+        }
+        if (!forlengelseperioder.isEmpty() && forrigeGrunnlagFraSteg.isPresent() && forrigeGrunnlagFraStegUt.isPresent()) {
+            var perioderSomKopieres = finnPerioderUtenforForlengelseperioder(forlengelseperioder, nyttGrunnlag);
+            LOG.info("Kopierer intervaller for manuelt avklart grunnlag ved forlengelse: " + perioderSomKopieres);
+            spoltGrunnlag = Optional.of(kopierPerioderFraForrigeGrunnlag(spoltGrunnlag.orElse(nyttGrunnlag), forrigeGrunnlagFraStegUt.get(), perioderSomKopieres, true));
+        }
+        return spoltGrunnlag;
     }
 
+    private static Set<Intervall> finnPerioderUtenforForlengelseperioder(List<Intervall> forlengelseperioder, BeregningsgrunnlagGrunnlagDto grunnlag) {
+        return grunnlag.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()
+                .stream().map(BeregningsgrunnlagPeriodeDto::getPeriode)
+                .filter(p  -> forlengelseperioder.stream().noneMatch(fp -> fp.overlapper(p)))
+                .collect(Collectors.toSet());
+    }
 
     private static Optional<BeregningsgrunnlagGrunnlagDto> spolFramLikePerioderOmMulig(BeregningsgrunnlagGrunnlagDto nyttGrunnlag,
                                                                                        BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraSteg,
                                                                                        BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraStegUt) {
         Set<Intervall> intervallerSomKanKopieres = finnPerioderSomKanKopieres(
-                nyttGrunnlag.getBeregningsgrunnlag(),
-                forrigeGrunnlagFraSteg.getBeregningsgrunnlag());
+                nyttGrunnlag.getBeregningsgrunnlagHvisFinnes(),
+                forrigeGrunnlagFraSteg.getBeregningsgrunnlagHvisFinnes());
         if (intervallerSomKanKopieres.isEmpty()) {
             return Optional.empty();
         } else {
+            LOG.info("Kopierer intervaller for manuelt avklart grunnlag: " + intervallerSomKanKopieres);
             return Optional.of(kopierPerioderFraForrigeGrunnlag(nyttGrunnlag, forrigeGrunnlagFraStegUt, intervallerSomKanKopieres, true));
         }
 
@@ -82,7 +103,7 @@ public final class SpolFramoverTjeneste {
     public static BeregningsgrunnlagGrunnlagDto kopierPerioderFraForrigeGrunnlag(BeregningsgrunnlagGrunnlagDto nyttGrunnlag,
                                                                                  BeregningsgrunnlagGrunnlagDto eksisterendeGrunnlag,
                                                                                  Set<Intervall> intervallerSomKanKopieres, boolean skalBeholdePeriodisering) {
-        BeregningsgrunnlagDto nyttBg = nyttGrunnlag.getBeregningsgrunnlag().orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag om perioder skal kopieres"));
+        BeregningsgrunnlagDto nyttBg = nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag om perioder skal kopieres"));
         var medKopiertePerioder = leggTilPerioder(eksisterendeGrunnlag, nyttBg, intervallerSomKanKopieres, skalBeholdePeriodisering);
         return BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(nyttGrunnlag)
                 .medBeregningsgrunnlag(medKopiertePerioder)
@@ -93,7 +114,7 @@ public final class SpolFramoverTjeneste {
                                                          BeregningsgrunnlagDto nyttBg,
                                                          Set<Intervall> intervallerSomKanKopieres,
                                                          boolean skalBeholdePeriodisering) {
-        List<BeregningsgrunnlagPeriodeDto> eksisterendePerioder = eksisterende.getBeregningsgrunnlag()
+        List<BeregningsgrunnlagPeriodeDto> eksisterendePerioder = eksisterende.getBeregningsgrunnlagHvisFinnes()
                 .stream()
                 .flatMap(bg -> bg.getBeregningsgrunnlagPerioder().stream())
                 .collect(Collectors.toList());

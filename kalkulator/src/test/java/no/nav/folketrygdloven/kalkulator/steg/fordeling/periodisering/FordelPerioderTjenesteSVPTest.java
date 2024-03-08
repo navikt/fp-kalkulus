@@ -150,7 +150,7 @@ public class FordelPerioderTjenesteSVPTest {
         InntektArbeidYtelseAggregatBuilder iayAggregatBuilder = leggTilYrkesaktiviteterOgBeregningAktiviteter(List.of(ORG_NUMMER, ORG_NUMMER_2));
 
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(List.of(ORG_NUMMER, ORG_NUMMER_2), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
+        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlagHvisFinnes().get();
 
         var inntekt = Beløp.fra(40000);
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORG_NUMMER, SKJÆRINGSTIDSPUNKT, Beløp.ZERO, inntekt);
@@ -187,7 +187,7 @@ public class FordelPerioderTjenesteSVPTest {
         );
 
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(List.of(ORG_NUMMER_2), beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
+        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlagHvisFinnes().get();
 
         var inntekt = Beløp.fra(40000);
         var im2 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORG_NUMMER_2, SKJÆRINGSTIDSPUNKT, Beløp.ZERO, inntekt);

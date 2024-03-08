@@ -2,12 +2,10 @@ package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
 import static no.nav.folketrygdloven.kalkulator.guitjenester.fakta.saksopplysninger.SaksopplysningerTjeneste.lagSaksopplysninger;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -34,7 +32,7 @@ public class FaktaOmBeregningDtoTjeneste {
                 saksbehandletAktivitetAggregat, arbeidsforholdInformasjon, faktaOmBeregningDto);
 
         // Denne delen krever Beregningsgrunnlag
-        var beregningsgrunnlag = grunnlagEntitet.getBeregningsgrunnlag().orElse(null);
+        var beregningsgrunnlag = grunnlagEntitet.getBeregningsgrunnlagHvisFinnes().orElse(null);
         if (beregningsgrunnlag != null && !beregningsgrunnlag.getBeregningsgrunnlagPerioder().isEmpty()) {
             faktaOmBeregningDto.setAndelerForFaktaOmBeregning(AndelerForFaktaOmBeregningTjeneste.lagAndelerForFaktaOmBeregning(input));
             faktaOmBeregningDto.setSaksopplysninger(lagSaksopplysninger(input));

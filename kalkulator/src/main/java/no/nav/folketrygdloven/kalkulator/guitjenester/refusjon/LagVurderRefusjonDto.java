@@ -46,10 +46,10 @@ public final class LagVurderRefusjonDto {
     public static Optional<RefusjonTilVurderingDto> lagDto(Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjon,
                                                            BeregningsgrunnlagGUIInput input) {
         List<BeregningsgrunnlagGrunnlagDto> originaleGrunnlag = input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling();
-        if (originaleGrunnlag.isEmpty() || originaleGrunnlag.stream().anyMatch(bg -> bg.getBeregningsgrunnlag().isEmpty())) {
+        if (originaleGrunnlag.isEmpty() || originaleGrunnlag.stream().anyMatch(bg -> bg.getBeregningsgrunnlagHvisFinnes().isEmpty())) {
             return Optional.empty();
         }
-        var originaleBg = originaleGrunnlag.stream().flatMap(gr -> gr.getBeregningsgrunnlag().stream()).collect(Collectors.toList());
+        var originaleBg = originaleGrunnlag.stream().flatMap(gr -> gr.getBeregningsgrunnlagHvisFinnes().stream()).collect(Collectors.toList());
 
         List<BeregningRefusjonOverstyringDto> gjeldendeOverstyringer = input.getBeregningsgrunnlagGrunnlag().getRefusjonOverstyringer()
                 .map(BeregningRefusjonOverstyringerDto::getRefusjonOverstyringer)

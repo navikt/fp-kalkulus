@@ -23,7 +23,7 @@ public class AvklaringsbehovUtlederFaktaOmBeregning {
     public FaktaOmBeregningAvklaringsbehovResultat utledAvklaringsbehovFor(FaktaOmBeregningInput input,
                                                                            BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag,
                                                                            boolean erOverstyrt) {
-        BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElse(null);
+        BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlagHvisFinnes().orElse(null);
         Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
 
         List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = FaktaOmBeregningTilfelleTjeneste.finnTilfellerForFellesAvklaringsbehov(input, beregningsgrunnlagGrunnlag);

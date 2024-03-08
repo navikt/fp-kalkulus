@@ -50,7 +50,7 @@ class SpolFramoverTjenesteTest {
         BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraStegUt = lagGrunnlag(tilstandFraStegUt, SKJÆRINGSTIDSPUNKT);
 
         // Act
-        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(List.of(), nyttGrunnlag,
+        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(List.of(), List.of(), nyttGrunnlag,
                 Optional.of(forrigeGrunnlagFraSteg),
                 Optional.of(forrigeGrunnlagFraStegUt)
         );
@@ -68,7 +68,7 @@ class SpolFramoverTjenesteTest {
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BG));
 
         // Act
-        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,
+        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, List.of(), nyttGrunnlag,
                 Optional.of(forrigeGrunnlagFraSteg),
                 Optional.empty()
         );
@@ -88,7 +88,7 @@ class SpolFramoverTjenesteTest {
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BG));
 
         // Act
-        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,
+        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, List.of(), nyttGrunnlag,
                 Optional.of(forrigeGrunnlagFraSteg),
                 Optional.of(forrigeGrunnlagFraStegUt)
         );
@@ -108,7 +108,7 @@ class SpolFramoverTjenesteTest {
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BG));
 
         // Act
-        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,
+        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, List.of(), nyttGrunnlag,
                 Optional.of(forrigeGrunnlagFraSteg),
                 Optional.of(forrigeGrunnlagFraStegUt)
         );
@@ -116,11 +116,11 @@ class SpolFramoverTjenesteTest {
         // Assert
         assertThat(spolFramGrunnlag).isPresent();
         BeregningsgrunnlagGrunnlagDto gr = spolFramGrunnlag.get();
-        assertThat(gr.getBeregningsgrunnlag().get().getSkjæringstidspunkt()).isEqualTo(SKJÆRINGSTIDSPUNKT.minusDays(1));
+        assertThat(gr.getBeregningsgrunnlagHvisFinnes().get().getSkjæringstidspunkt()).isEqualTo(SKJÆRINGSTIDSPUNKT.minusDays(1));
     }
 
     @Test
-    void skal_kopiere_like_perioder_ved_forlengelse() {
+    void skal_kopiere_like_perioder_ny_periode_i_nyeste_grunnlag() {
         // Arrange
         BeregningsgrunnlagTilstand tilstandFraSteg = OPPDATERT_MED_REFUSJON_OG_GRADERING;
         BeregningsgrunnlagTilstand tilstandFraStegUt = FASTSATT_INN;
@@ -130,28 +130,28 @@ class SpolFramoverTjenesteTest {
 
         // Legger til første periode i alle grunnlag
         var fordeltFørstePeriode = Beløp.fra(100_000);
-        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), null);
-        lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), null);
-        lagAndel(lagPeriode(forrigeGrunnlagFraStegUt.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), fordeltFørstePeriode);
+        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraStegUt.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), fordeltFørstePeriode);
 
         // Legger til andre periode i alle grunnlag
         var fordeltAndrePeriode = Beløp.fra(200_000);
-        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), null);
-        lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), null);
-        lagAndel(lagPeriode(forrigeGrunnlagFraStegUt.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), fordeltAndrePeriode);
+        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraStegUt.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), fordeltAndrePeriode);
 
         // Tredje periode er ulik
-        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT.plusDays(6), SKJÆRINGSTIDSPUNKT.plusDays(7)), null);
-        lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT.plusDays(6), TIDENES_ENDE), null);
-        lagAndel(lagPeriode(forrigeGrunnlagFraStegUt.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT.plusDays(6), TIDENES_ENDE), null);
+        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(6), SKJÆRINGSTIDSPUNKT.plusDays(7)), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(6), TIDENES_ENDE), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraStegUt.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(6), TIDENES_ENDE), null);
 
         // Fjerde periode eksisterer kun i siste grunnlag
-        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT.plusDays(8), TIDENES_ENDE), null);
+        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(8), TIDENES_ENDE), null);
 
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BG));
 
         // Act
-        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,
+        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, List.of(), nyttGrunnlag,
                 Optional.of(forrigeGrunnlagFraSteg),
                 Optional.of(forrigeGrunnlagFraStegUt)
         );
@@ -159,7 +159,7 @@ class SpolFramoverTjenesteTest {
         // Assert
         assertThat(spolFramGrunnlag).isPresent();
         BeregningsgrunnlagGrunnlagDto gr = spolFramGrunnlag.get();
-        BeregningsgrunnlagDto bg = gr.getBeregningsgrunnlag().get();
+        BeregningsgrunnlagDto bg = gr.getBeregningsgrunnlagHvisFinnes().get();
         assertThat(bg.getSkjæringstidspunkt()).isEqualTo(SKJÆRINGSTIDSPUNKT);
         assertThat(bg.getBeregningsgrunnlagPerioder().size()).isEqualTo(4);
         assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getPeriode().getFomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT);
@@ -179,6 +179,239 @@ class SpolFramoverTjenesteTest {
         assertThat(bg.getBeregningsgrunnlagPerioder().get(3).getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFordeltPrÅr()).isNull();
     }
 
+    @Test
+    void skal_kopiere_like_perioder_ny_periode_i_nyeste_grunnlag_der_nyeste_periode_er_forlengelse() {
+        // Arrange
+        BeregningsgrunnlagTilstand tilstandFraSteg = OPPDATERT_MED_REFUSJON_OG_GRADERING;
+        BeregningsgrunnlagTilstand tilstandFraStegUt = FASTSATT_INN;
+        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = lagGrunnlagUtenPerioder(tilstandFraSteg, SKJÆRINGSTIDSPUNKT);
+        BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraSteg = lagGrunnlagUtenPerioder(tilstandFraSteg, SKJÆRINGSTIDSPUNKT);
+        BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraStegUt = lagGrunnlagUtenPerioder(tilstandFraStegUt, SKJÆRINGSTIDSPUNKT);
+
+        // Legger til første periode i alle grunnlag
+        var fordeltFørstePeriode = Beløp.fra(100_000);
+        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraStegUt.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), fordeltFørstePeriode);
+
+        // Legger til andre periode i alle grunnlag
+        var fordeltAndrePeriode = Beløp.fra(200_000);
+        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraStegUt.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), fordeltAndrePeriode);
+
+        // Tredje periode er ulik
+        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(6), SKJÆRINGSTIDSPUNKT.plusDays(7)), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(6), TIDENES_ENDE), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraStegUt.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(6), TIDENES_ENDE), null);
+
+        // Fjerde periode eksisterer kun i siste grunnlag
+        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(8), TIDENES_ENDE), null);
+
+        List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BG));
+
+        // Act
+        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, List.of(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.plusDays(6), SKJÆRINGSTIDSPUNKT.plusDays(7))), nyttGrunnlag,
+                Optional.of(forrigeGrunnlagFraSteg),
+                Optional.of(forrigeGrunnlagFraStegUt)
+        );
+
+        // Assert
+        assertThat(spolFramGrunnlag).isPresent();
+        BeregningsgrunnlagGrunnlagDto gr = spolFramGrunnlag.get();
+        BeregningsgrunnlagDto bg = gr.getBeregningsgrunnlagHvisFinnes().get();
+        assertThat(bg.getSkjæringstidspunkt()).isEqualTo(SKJÆRINGSTIDSPUNKT);
+        assertThat(bg.getBeregningsgrunnlagPerioder().size()).isEqualTo(4);
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getPeriode().getFomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT);
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getPeriode().getTomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(2));
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFordeltPrÅr()).isEqualTo(fordeltFørstePeriode);
+
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(1).getPeriode().getFomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(3));
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(1).getPeriode().getTomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(5));
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(1).getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFordeltPrÅr()).isEqualTo(fordeltAndrePeriode);
+
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(2).getPeriode().getFomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(6));
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(2).getPeriode().getTomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(7));
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(2).getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFordeltPrÅr()).isNull();
+
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(3).getPeriode().getFomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(8));
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(3).getPeriode().getTomDato()).isEqualTo(TIDENES_ENDE);
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(3).getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFordeltPrÅr()).isNull();
+    }
+
+    @Test
+    void skal_kopiere_like_perioder_ny_periode_i_nyeste_grunnlag_der_nyeste_periode_er_forlengelse_uten_avklaringsbehov() {
+        // Arrange
+        BeregningsgrunnlagTilstand tilstandFraSteg = OPPDATERT_MED_REFUSJON_OG_GRADERING;
+        BeregningsgrunnlagTilstand tilstandFraStegUt = FASTSATT_INN;
+        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = lagGrunnlagUtenPerioder(tilstandFraSteg, SKJÆRINGSTIDSPUNKT);
+        BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraSteg = lagGrunnlagUtenPerioder(tilstandFraSteg, SKJÆRINGSTIDSPUNKT);
+        BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraStegUt = lagGrunnlagUtenPerioder(tilstandFraStegUt, SKJÆRINGSTIDSPUNKT);
+
+        // Legger til første periode i alle grunnlag
+        var fordeltFørstePeriode = Beløp.fra(100_000);
+        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraStegUt.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), fordeltFørstePeriode);
+
+        // Legger til andre periode i alle grunnlag
+        var fordeltAndrePeriode = Beløp.fra(200_000);
+        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraStegUt.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), fordeltAndrePeriode);
+
+        // Tredje periode er ulik
+        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(6), SKJÆRINGSTIDSPUNKT.plusDays(7)), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(6), TIDENES_ENDE), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraStegUt.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(6), TIDENES_ENDE), null);
+
+        // Fjerde periode eksisterer kun i siste grunnlag
+        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(8), TIDENES_ENDE), null);
+
+        List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of();
+
+        // Act
+        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, List.of(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.plusDays(6), SKJÆRINGSTIDSPUNKT.plusDays(7))), nyttGrunnlag,
+                Optional.of(forrigeGrunnlagFraSteg),
+                Optional.of(forrigeGrunnlagFraStegUt)
+        );
+
+        // Assert
+        assertThat(spolFramGrunnlag).isPresent();
+        BeregningsgrunnlagGrunnlagDto gr = spolFramGrunnlag.get();
+        BeregningsgrunnlagDto bg = gr.getBeregningsgrunnlagHvisFinnes().get();
+        assertThat(bg.getSkjæringstidspunkt()).isEqualTo(SKJÆRINGSTIDSPUNKT);
+        assertThat(bg.getBeregningsgrunnlagPerioder().size()).isEqualTo(4);
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getPeriode().getFomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT);
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getPeriode().getTomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(2));
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFordeltPrÅr()).isEqualTo(fordeltFørstePeriode);
+
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(1).getPeriode().getFomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(3));
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(1).getPeriode().getTomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(5));
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(1).getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFordeltPrÅr()).isEqualTo(fordeltAndrePeriode);
+
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(2).getPeriode().getFomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(6));
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(2).getPeriode().getTomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(7));
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(2).getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFordeltPrÅr()).isNull();
+
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(3).getPeriode().getFomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(8));
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(3).getPeriode().getTomDato()).isEqualTo(TIDENES_ENDE);
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(3).getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFordeltPrÅr()).isNull();
+    }
+
+    @Test
+    void skal_kopiere_like_perioder_trekk_av_eksisterende_periode() {
+        // Arrange
+        BeregningsgrunnlagTilstand tilstandFraSteg = OPPDATERT_MED_REFUSJON_OG_GRADERING;
+        BeregningsgrunnlagTilstand tilstandFraStegUt = FASTSATT_INN;
+        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = lagGrunnlagUtenPerioder(tilstandFraSteg, SKJÆRINGSTIDSPUNKT);
+        BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraSteg = lagGrunnlagUtenPerioder(tilstandFraSteg, SKJÆRINGSTIDSPUNKT);
+        BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraStegUt = lagGrunnlagUtenPerioder(tilstandFraStegUt, SKJÆRINGSTIDSPUNKT);
+
+        // Legger til første periode i alle grunnlag
+        var fordeltFørstePeriode = Beløp.fra(100_000);
+        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraStegUt.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), fordeltFørstePeriode);
+
+        // Legger til andre periode i alle grunnlag
+        var fordeltAndrePeriode = Beløp.fra(200_000);
+        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(4)), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraStegUt.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), fordeltAndrePeriode);
+
+        // Tredje periode er ulik
+        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(5), TIDENES_ENDE), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(6), TIDENES_ENDE), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraStegUt.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(6), TIDENES_ENDE), null);
+
+
+        List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of();
+
+        // Act
+        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov,
+                List.of(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.plusDays(5), SKJÆRINGSTIDSPUNKT.plusDays(6))),
+                nyttGrunnlag,
+                Optional.of(forrigeGrunnlagFraSteg),
+                Optional.of(forrigeGrunnlagFraStegUt)
+        );
+
+        // Assert
+        assertThat(spolFramGrunnlag).isPresent();
+        BeregningsgrunnlagGrunnlagDto gr = spolFramGrunnlag.get();
+        BeregningsgrunnlagDto bg = gr.getBeregningsgrunnlagHvisFinnes().get();
+        assertThat(bg.getSkjæringstidspunkt()).isEqualTo(SKJÆRINGSTIDSPUNKT);
+        assertThat(bg.getBeregningsgrunnlagPerioder().size()).isEqualTo(3);
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getPeriode().getFomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT);
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getPeriode().getTomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(2));
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFordeltPrÅr()).isEqualTo(fordeltFørstePeriode);
+
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(1).getPeriode().getFomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(3));
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(1).getPeriode().getTomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(4));
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(1).getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFordeltPrÅr()).isEqualTo(fordeltAndrePeriode);
+
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(2).getPeriode().getFomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(5));
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(2).getPeriode().getTomDato()).isEqualTo(TIDENES_ENDE);
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(2).getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFordeltPrÅr()).isNull();
+    }
+
+
+    @Test
+    void skal_kopiere_like_perioder_endring_av_eksisterende_periode() {
+        // Arrange
+        BeregningsgrunnlagTilstand tilstandFraSteg = OPPDATERT_MED_REFUSJON_OG_GRADERING;
+        BeregningsgrunnlagTilstand tilstandFraStegUt = FASTSATT_INN;
+        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = lagGrunnlagUtenPerioder(tilstandFraSteg, SKJÆRINGSTIDSPUNKT);
+        BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraSteg = lagGrunnlagUtenPerioder(tilstandFraSteg, SKJÆRINGSTIDSPUNKT);
+        BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraStegUt = lagGrunnlagUtenPerioder(tilstandFraStegUt, SKJÆRINGSTIDSPUNKT);
+
+        // Legger til første periode i alle grunnlag
+        var fordeltFørstePeriode = Beløp.fra(100_000);
+        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraStegUt.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), fordeltFørstePeriode);
+
+        // Legger til andre periode i alle grunnlag
+        var fordeltAndrePeriode = Beløp.fra(200_000);
+        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraStegUt.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), fordeltAndrePeriode);
+
+        // Tredje periode er lik
+        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(6), TIDENES_ENDE), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(6), TIDENES_ENDE), null);
+        lagAndel(lagPeriode(forrigeGrunnlagFraStegUt.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(6), TIDENES_ENDE), null);
+
+
+        List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of();
+
+        // Act
+        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov,
+                List.of(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5))),
+                nyttGrunnlag,
+                Optional.of(forrigeGrunnlagFraSteg),
+                Optional.of(forrigeGrunnlagFraStegUt)
+        );
+
+        // Assert
+        assertThat(spolFramGrunnlag).isPresent();
+        BeregningsgrunnlagGrunnlagDto gr = spolFramGrunnlag.get();
+        BeregningsgrunnlagDto bg = gr.getBeregningsgrunnlagHvisFinnes().get();
+        assertThat(bg.getSkjæringstidspunkt()).isEqualTo(SKJÆRINGSTIDSPUNKT);
+        assertThat(bg.getBeregningsgrunnlagPerioder().size()).isEqualTo(3);
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getPeriode().getFomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT);
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getPeriode().getTomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(2));
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFordeltPrÅr()).isEqualTo(fordeltFørstePeriode);
+
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(1).getPeriode().getFomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(3));
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(1).getPeriode().getTomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(5));
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(1).getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFordeltPrÅr()).isNull();
+
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(2).getPeriode().getFomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(6));
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(2).getPeriode().getTomDato()).isEqualTo(TIDENES_ENDE);
+        assertThat(bg.getBeregningsgrunnlagPerioder().get(2).getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFordeltPrÅr()).isNull();
+    }
+
 
 
     @Test
@@ -189,11 +422,11 @@ class SpolFramoverTjenesteTest {
         BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraSteg = lagGrunnlagUtenPerioder(tilstandFraSteg, SKJÆRINGSTIDSPUNKT);
 
         var fordeltFørstePeriode = Beløp.fra(100_000);
-        lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(5)), fordeltFørstePeriode);
+        lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(5)), fordeltFørstePeriode);
 
         var fordeltAndrePeriode = Beløp.fra(200_000);
-        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), Beløp.fra(50_000));
-        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlag().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), fordeltAndrePeriode);
+        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), Beløp.fra(50_000));
+        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), fordeltAndrePeriode);
 
         // Act
         var gr = SpolFramoverTjeneste.kopierPerioderFraForrigeGrunnlag(nyttGrunnlag,
@@ -202,7 +435,7 @@ class SpolFramoverTjenesteTest {
                 true);
 
         // Assert
-        BeregningsgrunnlagDto bg = gr.getBeregningsgrunnlag().get();
+        BeregningsgrunnlagDto bg = gr.getBeregningsgrunnlagHvisFinnes().get();
         assertThat(bg.getSkjæringstidspunkt()).isEqualTo(SKJÆRINGSTIDSPUNKT);
         assertThat(bg.getBeregningsgrunnlagPerioder().size()).isEqualTo(2);
         assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getPeriode().getFomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT);

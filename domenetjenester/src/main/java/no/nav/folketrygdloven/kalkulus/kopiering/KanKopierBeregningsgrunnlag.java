@@ -1,20 +1,16 @@
 package no.nav.folketrygdloven.kalkulus.kopiering;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.kopiering.BeregningsgrunnlagDiffSjekker;
 
 @ApplicationScoped
 class KanKopierBeregningsgrunnlag {
@@ -37,8 +33,8 @@ class KanKopierBeregningsgrunnlag {
         }
         boolean kanKopiereAktiviteter = kanKopiereAktiviteter(nyttGrunnlag, forrigeGrunnlag);
         boolean kanKopiereBeregningsgrunnlag = kanKopiereBeregningsgrunnlag(
-                nyttGrunnlag.getBeregningsgrunnlag(),
-                forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag));
+                nyttGrunnlag.getBeregningsgrunnlagHvisFinnes(),
+                forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlagHvisFinnes));
         return kanKopiereAktiviteter && kanKopiereBeregningsgrunnlag;
     }
 

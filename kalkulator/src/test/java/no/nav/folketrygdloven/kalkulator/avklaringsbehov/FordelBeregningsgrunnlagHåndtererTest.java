@@ -101,7 +101,7 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         // Act
         BeregningsgrunnlagGrunnlagDto grunnlag = FordelBeregningsgrunnlagHåndterer.håndter(dto, input);
 
-        BeregningsgrunnlagDto grunnlagEtterOppdatering = grunnlag.getBeregningsgrunnlag().orElseThrow();
+        BeregningsgrunnlagDto grunnlagEtterOppdatering = grunnlag.getBeregningsgrunnlagHvisFinnes().orElseThrow();
 
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = grunnlagEtterOppdatering.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList();
 
@@ -149,7 +149,7 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         // Act
         BeregningsgrunnlagGrunnlagDto grunnlag = FordelBeregningsgrunnlagHåndterer.håndter(dto, input);
 
-        BeregningsgrunnlagDto grunnlagEtterOppdatering = grunnlag.getBeregningsgrunnlag().orElseThrow();
+        BeregningsgrunnlagDto grunnlagEtterOppdatering = grunnlag.getBeregningsgrunnlagHvisFinnes().orElseThrow();
 
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = grunnlagEtterOppdatering.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList();
 
@@ -186,7 +186,7 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         // Act
         BeregningsgrunnlagGrunnlagDto grunnlag = FordelBeregningsgrunnlagHåndterer.håndter(dto, input);
 
-        BeregningsgrunnlagDto grunnlagEtterOppdatering = grunnlag.getBeregningsgrunnlag().orElseThrow();
+        BeregningsgrunnlagDto grunnlagEtterOppdatering = grunnlag.getBeregningsgrunnlagHvisFinnes().orElseThrow();
         BeregningsgrunnlagPrStatusOgAndelDto andelEtterOppdatering = grunnlagEtterOppdatering.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0);
         // Assert
         assertThat(andelEtterOppdatering.getManueltFordeltPrÅr()).isEqualByComparingTo(Beløp.fra(fastsatt * 12));
@@ -218,7 +218,7 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         // Act
         BeregningsgrunnlagGrunnlagDto grunnlag = FordelBeregningsgrunnlagHåndterer.håndter(dto, input);
 
-        BeregningsgrunnlagDto grunnlagEtterOppdatering = grunnlag.getBeregningsgrunnlag().orElseThrow();
+        BeregningsgrunnlagDto grunnlagEtterOppdatering = grunnlag.getBeregningsgrunnlagHvisFinnes().orElseThrow();
         BeregningsgrunnlagPrStatusOgAndelDto andelEtterOppdatering = grunnlagEtterOppdatering.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0);
         // Assert
         assertThat(andelEtterOppdatering.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(Beløp.ZERO)).isEqualByComparingTo(Beløp.ZERO);
@@ -259,7 +259,7 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         // Act
         BeregningsgrunnlagGrunnlagDto grunnlag = FordelBeregningsgrunnlagHåndterer.håndter(dto, input);
 
-        BeregningsgrunnlagDto nyttBG = grunnlag.getBeregningsgrunnlag().orElseThrow();
+        BeregningsgrunnlagDto nyttBG = grunnlag.getBeregningsgrunnlagHvisFinnes().orElseThrow();
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBG.getBeregningsgrunnlagPerioder();
@@ -391,7 +391,7 @@ public class FordelBeregningsgrunnlagHåndtererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDto grunnlag = FordelBeregningsgrunnlagHåndterer.håndter(dto, input);
-        BeregningsgrunnlagDto nyttBG = grunnlag.getBeregningsgrunnlag().orElseThrow();
+        BeregningsgrunnlagDto nyttBG = grunnlag.getBeregningsgrunnlagHvisFinnes().orElseThrow();
         BeregningsgrunnlagPrStatusOgAndelDto andelEtterOppdatering = nyttBG.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0);
         // Assert
         assertThat(andelEtterOppdatering.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(null)).isEqualByComparingTo(Beløp.fra(refusjon * 12));
@@ -431,7 +431,7 @@ public class FordelBeregningsgrunnlagHåndtererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDto grunnlag = FordelBeregningsgrunnlagHåndterer.håndter(dto, input);
-        BeregningsgrunnlagDto nyttBG = grunnlag.getBeregningsgrunnlag().orElseThrow();
+        BeregningsgrunnlagDto nyttBG = grunnlag.getBeregningsgrunnlagHvisFinnes().orElseThrow();
 
         // Assert
         double totalFastsatt = fastsatt + fastsatt2;
@@ -506,7 +506,7 @@ public class FordelBeregningsgrunnlagHåndtererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDto grunnlag = FordelBeregningsgrunnlagHåndterer.håndter(dto, input);
-        BeregningsgrunnlagDto nyttBG = grunnlag.getBeregningsgrunnlag().orElseThrow();
+        BeregningsgrunnlagDto nyttBG = grunnlag.getBeregningsgrunnlagHvisFinnes().orElseThrow();
         // Assert
         double totalRefusjon = refusjon + refusjon2;
         double totalFastsatt = fastsatt + fastsatt2;
@@ -578,7 +578,7 @@ public class FordelBeregningsgrunnlagHåndtererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDto grunnlag = FordelBeregningsgrunnlagHåndterer.håndter(dto, input);
-        BeregningsgrunnlagDto nyttBG = grunnlag.getBeregningsgrunnlag().orElseThrow();
+        BeregningsgrunnlagDto nyttBG = grunnlag.getBeregningsgrunnlagHvisFinnes().orElseThrow();
 
         // Assert
         double totalRefusjon = refusjon + refusjon2;
@@ -645,7 +645,7 @@ public class FordelBeregningsgrunnlagHåndtererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDto grunnlag = FordelBeregningsgrunnlagHåndterer.håndter(dto, input);
-        BeregningsgrunnlagDto nyttBG = grunnlag.getBeregningsgrunnlag().orElseThrow();
+        BeregningsgrunnlagDto nyttBG = grunnlag.getBeregningsgrunnlagHvisFinnes().orElseThrow();
         // Assert
         assertThat(nyttBG.getBeregningsgrunnlagPerioder()).hasSize(1);
         assertThat(nyttBG.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(1);
@@ -740,7 +740,7 @@ public class FordelBeregningsgrunnlagHåndtererTest {
 
         // Act
         BeregningsgrunnlagGrunnlagDto grunnlag = FordelBeregningsgrunnlagHåndterer.håndter(dto, input);
-        BeregningsgrunnlagDto nyttBG = grunnlag.getBeregningsgrunnlag().orElseThrow();
+        BeregningsgrunnlagDto nyttBG = grunnlag.getBeregningsgrunnlagHvisFinnes().orElseThrow();
 
         // Assert
         double totalRefusjon1 = refusjon + refusjon2 + refusjon3;

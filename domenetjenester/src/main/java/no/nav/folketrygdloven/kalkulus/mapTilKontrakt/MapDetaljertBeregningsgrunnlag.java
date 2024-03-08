@@ -37,7 +37,7 @@ public class MapDetaljertBeregningsgrunnlag {
     }
 
     public static BeregningsgrunnlagGrunnlagDto mapGrunnlag(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagEntitet) {
-        BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlagEntitet.getBeregningsgrunnlag()
+        BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlagEntitet.getBeregningsgrunnlagHvisFinnes()
                 .map(MapDetaljertBeregningsgrunnlag::map).orElse(null);
 
         return new BeregningsgrunnlagGrunnlagDto(

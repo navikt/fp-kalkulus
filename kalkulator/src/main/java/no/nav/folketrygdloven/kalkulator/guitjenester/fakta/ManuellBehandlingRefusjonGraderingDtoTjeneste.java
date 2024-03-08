@@ -65,7 +65,7 @@ public class ManuellBehandlingRefusjonGraderingDtoTjeneste {
                                                                                                                  BeregningsgrunnlagPeriodeDto periode,
                                                                                                                  Collection<InntektsmeldingDto> inntektsmeldinger,
                                                                                                                  List<Intervall> forlengelseperioder) {
-        var fordelingInput = new FordelBeregningsgrunnlagTilfelleInput(grunnlag.getBeregningsgrunnlag().orElse(null), aktivitetGradering, inntektsmeldinger, forlengelseperioder);
+        var fordelingInput = new FordelBeregningsgrunnlagTilfelleInput(grunnlag.getBeregningsgrunnlagHvisFinnes().orElse(null), aktivitetGradering, inntektsmeldinger, forlengelseperioder);
         return FordelBeregningsgrunnlagTilfelleTjeneste.vurderManuellBehandlingForPeriode(periode, fordelingInput);
     }
 

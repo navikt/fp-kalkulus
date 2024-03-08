@@ -32,7 +32,7 @@ public class InntektsmeldingMedRefusjonTjeneste {
                                                                        List<KravperioderPrArbeidsforholdDto> kravperioder,
                                                                        FagsakYtelseType ytelseType) {
         Collection<YrkesaktivitetDto> yrkesaktiviteter = FinnYrkesaktiviteterForBeregningTjeneste.finnYrkesaktiviteter(iayGrunnlag, grunnlag, koblingReferanse.getSkjæringstidspunktBeregning());
-        LocalDate skjæringstidspunktBeregning = grunnlag.getBeregningsgrunnlag().map(BeregningsgrunnlagDto::getSkjæringstidspunkt)
+        LocalDate skjæringstidspunktBeregning = grunnlag.getBeregningsgrunnlagHvisFinnes().map(BeregningsgrunnlagDto::getSkjæringstidspunkt)
             .orElseThrow(() -> new IllegalStateException("Utviklerfeil: Skal ha beregningsgrunnlag"));
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = grunnlag.getGjeldendeAktiviteter();
         var harSøktForSentMap = ArbeidsgiverRefusjonskravTjeneste.lagFristTidslinjePrArbeidsgiver(

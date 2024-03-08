@@ -45,7 +45,7 @@ public class ForeslåBeregningsgrunnlag {
 
         // Oversetter initielt Beregningsgrunnlag -> regelmodell
         Beregningsgrunnlag regelmodellBeregningsgrunnlag = mapBeregningsgrunnlagFraVLTilRegel.map(input, grunnlag);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag()
+        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlagHvisFinnes()
                 .orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag her"));
         splittPerioder(input, regelmodellBeregningsgrunnlag, beregningsgrunnlag, input.getBeregningsgrunnlagGrunnlag().getFaktaAggregat());
         List<RegelResultat> regelResultater = kjørRegelForeslåBeregningsgrunnlag(regelmodellBeregningsgrunnlag);

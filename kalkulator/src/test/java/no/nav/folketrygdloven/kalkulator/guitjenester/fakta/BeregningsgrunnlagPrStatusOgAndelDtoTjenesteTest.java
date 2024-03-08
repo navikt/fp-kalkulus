@@ -73,7 +73,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
         //Act
         var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
-                grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
+                grunnlag.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
         // Assert
         assertThat(beregningsgrunnlagPrStatusOgAndelDto.get(0).getSkalFastsetteGrunnlag()).isEqualTo(false);
         assertThat(beregningsgrunnlagPrStatusOgAndelDto.get(1).getSkalFastsetteGrunnlag()).isEqualTo(false);
@@ -95,7 +95,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
         //Act
         var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
-                grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
+                grunnlag.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
         // Assert
         assertThat(beregningsgrunnlagPrStatusOgAndelDto.get(0).getSkalFastsetteGrunnlag()).isEqualTo(true);
         assertThat(beregningsgrunnlagPrStatusOgAndelDto.get(1).getSkalFastsetteGrunnlag()).isEqualTo(true);
@@ -120,7 +120,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
         //Act
         var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
-                grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
+                grunnlag.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
         // Assert
         assertThat(beregningsgrunnlagPrStatusOgAndelDto.get(0).getSkalFastsetteGrunnlag()).isEqualTo(false);
         assertThat(beregningsgrunnlagPrStatusOgAndelDto.get(1).getSkalFastsetteGrunnlag()).isEqualTo(false);
@@ -144,7 +144,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
         //Act
         var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
-                grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
+                grunnlag.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
         // Assert
         assertThat(beregningsgrunnlagPrStatusOgAndelDto.get(0).getSkalFastsetteGrunnlag()).isEqualTo(true);
     }
@@ -163,7 +163,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
         //Act
         tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
-                grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
+                grunnlag.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
     }
 
     @Test
@@ -181,7 +181,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
         //Act
         var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
-                grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
+                grunnlag.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
         // Assert
         assertThat(beregningsgrunnlagPrStatusOgAndelDto.get(0).getSkalFastsetteGrunnlag()).isEqualTo(true);
         assertThat(beregningsgrunnlagPrStatusOgAndelDto.get(1).getSkalFastsetteGrunnlag()).isEqualTo(false);
@@ -202,7 +202,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
         //Act
         var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
-                grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
+                grunnlag.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
         // Assert
         assertThat(beregningsgrunnlagPrStatusOgAndelDto.get(0).getSkalFastsetteGrunnlag()).isEqualTo(true);
         assertThat(beregningsgrunnlagPrStatusOgAndelDto.get(1).getSkalFastsetteGrunnlag()).isEqualTo(true);
@@ -227,7 +227,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
         //Act
         var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
-                grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
+                grunnlag.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
         // Assert
         assertThat(beregningsgrunnlagPrStatusOgAndelDto.get(0).getSkalFastsetteGrunnlag()).isEqualTo(false);
         assertThat(beregningsgrunnlagPrStatusOgAndelDto.get(1).getSkalFastsetteGrunnlag()).isEqualTo(false);
@@ -248,7 +248,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste();
         //Act
         tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
-                grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
+                grunnlag.getBeregningsgrunnlagHvisFinnes().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
     }
 
 

@@ -26,7 +26,7 @@ public class VurderBesteberegningTilfelleUtleder implements TilfelleUtleder {
         if (kanAutomatiskBesteberegnes) {
             return Optional.empty();
         }
-        boolean harKunYtelse = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElseThrow(() -> new IllegalArgumentException("Skal ha beregningsgrunnlag"))
+        boolean harKunYtelse = beregningsgrunnlagGrunnlag.getBeregningsgrunnlagHvisFinnes().orElseThrow(() -> new IllegalArgumentException("Skal ha beregningsgrunnlag"))
                 .getAktivitetStatuser()
                 .stream()
                 .anyMatch(s -> AktivitetStatus.KUN_YTELSE.equals(s.getAktivitetStatus()));

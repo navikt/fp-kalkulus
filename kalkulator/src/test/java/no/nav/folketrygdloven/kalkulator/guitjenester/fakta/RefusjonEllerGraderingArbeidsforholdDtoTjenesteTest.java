@@ -80,7 +80,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
                 .medBGAndelArbeidsforhold(arbeidsforholdBuilder)
                 .build(periode);
         grunnlagEntitet = mock(BeregningsgrunnlagGrunnlagDto.class);
-        when(grunnlagEntitet.getBeregningsgrunnlag()).thenReturn(Optional.of(beregningsgrunnlag));
+        when(grunnlagEntitet.getBeregningsgrunnlagHvisFinnes()).thenReturn(Optional.of(beregningsgrunnlag));
         when(grunnlagEntitet.getGjeldendeAktiviteter()).thenReturn(beregningAktivitetAggregat);
         when(grunnlagEntitet.getBeregningsgrunnlagTilstand()).thenReturn(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
     }

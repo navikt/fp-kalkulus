@@ -20,7 +20,7 @@ public class VurderRefusjonBeregningsgrunnlagHåndterer {
         BeregningRefusjonOverstyringerDto refusjonOverstyringer = MapTilRefusjonOverstyring.map(dto, input);
 
         // Periodiser og fastsett refusjon på eksisterende beregningsgrunnlag basert på data fra overstyringsobjekter
-        BeregningsgrunnlagDto beregningsgrunnlag = input.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlag().orElseThrow();
+        BeregningsgrunnlagDto beregningsgrunnlag = input.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlagHvisFinnes().orElseThrow();
         BeregningsgrunnlagDto periodisertPåFastsattRefusjon = PeriodiserOgFastsettRefusjonTjeneste.periodiserOgFastsett(beregningsgrunnlag, dto.getAndeler());
 
         // Lag nytt aggregat og sett korrekt tilstand

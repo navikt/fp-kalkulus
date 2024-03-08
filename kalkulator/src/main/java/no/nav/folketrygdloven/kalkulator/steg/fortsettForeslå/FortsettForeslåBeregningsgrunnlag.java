@@ -29,7 +29,7 @@ public class FortsettForeslåBeregningsgrunnlag {
 
     public BeregningsgrunnlagRegelResultat fortsettForeslåBeregningsgrunnlag(FortsettForeslåBeregningsgrunnlagInput input) {
         BeregningsgrunnlagGrunnlagDto grunnlag = input.getBeregningsgrunnlagGrunnlag();
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag()
+        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlagHvisFinnes()
                 .orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag her"));
 
         // Oversetter initielt Beregningsgrunnlag -> regelmodell

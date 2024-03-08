@@ -32,7 +32,7 @@ public class KontrollerFaktaBeregningFrilanserTjeneste {
     }
 
     public static boolean erNyoppstartetFrilanser(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        var beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElse(null);
+        var beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlagHvisFinnes().orElse(null);
         Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
         boolean erFrilanser = beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream().flatMap(periode -> periode.getBeregningsgrunnlagPrStatusOgAndelList().stream())
             .anyMatch(andel -> andel.getAktivitetStatus().erFrilanser());
@@ -51,7 +51,7 @@ public class KontrollerFaktaBeregningFrilanserTjeneste {
                     .findFirst()
                     .orElse(TIDENES_BEGYNNELSE);
 
-            BeregningsgrunnlagDto bg = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag()
+            BeregningsgrunnlagDto bg = beregningsgrunnlagGrunnlag.getBeregningsgrunnlagHvisFinnes()
                     .orElseThrow();
             var startAvBeregningsperiode = bg
                     .getBeregningsgrunnlagPerioder().stream()

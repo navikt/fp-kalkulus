@@ -15,7 +15,7 @@ public class VurderLønnsendringTilfelleUtleder implements TilfelleUtleder {
 
     @Override
     public Optional<FaktaOmBeregningTilfelle> utled(FaktaOmBeregningInput input, BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
-        BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElseThrow();
+        BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlagHvisFinnes().orElseThrow();
         List<YrkesaktivitetDto> lønnsendringer = LønnsendringTjeneste.finnAktiviteterMedLønnsendringUtenInntektsmeldingIBeregningsperiodenOgTilStp(beregningsgrunnlag, input.getIayGrunnlag(), input.getInntektsmeldinger());
         return lønnsendringer.isEmpty()
                 ? Optional.empty()

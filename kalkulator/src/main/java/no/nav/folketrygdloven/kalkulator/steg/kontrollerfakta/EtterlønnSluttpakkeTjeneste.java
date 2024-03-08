@@ -18,7 +18,7 @@ public class EtterlønnSluttpakkeTjeneste {
     }
 
     public static boolean skalVurdereOmBrukerHarEtterlønnSluttpakke(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
-        BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElse(null);
+        BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlagHvisFinnes().orElse(null);
         Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
         return søkerErArbeidstaker(beregningsgrunnlag) && søkerHarBGAndelForEtterlønnSluttpakke(beregningsgrunnlag);
     }

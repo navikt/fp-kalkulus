@@ -37,7 +37,7 @@ public class FordelBeregningsgrunnlagHåndterer implements BeregningHåndterer<F
     }
 
     private static void validerAtBruttoErSatt(BeregningsgrunnlagGrunnlagDto nyttGrunnlag, HåndterBeregningsgrunnlagInput beregningsgrunnlagInput) {
-        var andelerUtenGrunnlag = nyttGrunnlag.getBeregningsgrunnlag().orElseThrow()
+        var andelerUtenGrunnlag = nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().orElseThrow()
                 .getBeregningsgrunnlagPerioder()
                 .stream()
                 .filter(p -> harAndelMedFravær(beregningsgrunnlagInput, p))

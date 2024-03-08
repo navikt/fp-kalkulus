@@ -48,7 +48,7 @@ public class VurderBeregningsgrunnlagTjeneste {
         var beregningsgrunnlagRegel = mapBeregningsgrunnlagFraVLTilRegel.map(input, oppdatertGrunnlag);
         List<RegelResultat> regelResultater = kjørRegel(input, beregningsgrunnlagRegel);
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = Collections.emptyList();
-        BeregningsgrunnlagDto beregningsgrunnlag = oppdatertGrunnlag.getBeregningsgrunnlag().orElseThrow();
+        BeregningsgrunnlagDto beregningsgrunnlag = oppdatertGrunnlag.getBeregningsgrunnlagHvisFinnes().orElseThrow();
         return mapTilRegelresultat(input, regelResultater, beregningsgrunnlag, avklaringsbehov);
     }
 

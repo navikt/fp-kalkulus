@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.output;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +34,7 @@ public class BeregningResultatAggregat {
     }
 
     public BeregningsgrunnlagDto getBeregningsgrunnlag() {
-        return beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElseThrow(() -> new IllegalStateException("Forventet å ha beregningsgrunnlag"));
+        return beregningsgrunnlagGrunnlag.getBeregningsgrunnlagHvisFinnes().orElseThrow(() -> new IllegalStateException("Forventet å ha beregningsgrunnlag"));
     }
 
     public BeregningVilkårResultat getBeregningVilkårResultat() {

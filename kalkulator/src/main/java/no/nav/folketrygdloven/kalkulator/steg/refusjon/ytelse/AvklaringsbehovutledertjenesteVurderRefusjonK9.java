@@ -24,7 +24,7 @@ public class AvklaringsbehovutledertjenesteVurderRefusjonK9 {
 
         VurderRefusjonBeregningsgrunnlagInput vurderInput = (VurderRefusjonBeregningsgrunnlagInput) input;
         List<BeregningsgrunnlagGrunnlagDto> orginaltBGGrunnlag = vurderInput.getBeregningsgrunnlagGrunnlagFraForrigeBehandling();
-        if (orginaltBGGrunnlag.isEmpty() || orginaltBGGrunnlag.stream().noneMatch(gr -> gr.getBeregningsgrunnlag().isPresent())) {
+        if (orginaltBGGrunnlag.isEmpty() || orginaltBGGrunnlag.stream().noneMatch(gr -> gr.getBeregningsgrunnlagHvisFinnes().isPresent())) {
             log.info("Fant ingen beregningsgrunnlag fra forrige behandling");
         } else {
             log.info("Fant beregningsgrunnlag fra forrige behandling");

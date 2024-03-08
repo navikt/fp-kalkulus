@@ -32,7 +32,7 @@ public class MapBesteberegningFraRegelTilVL {
 
     public static BeregningsgrunnlagDto mapTilBeregningsgrunnlag(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag,
                                                            BesteberegningOutput output) {
-        BeregningsgrunnlagDto gammeltGrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElseThrow();
+        BeregningsgrunnlagDto gammeltGrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlagHvisFinnes().orElseThrow();
         var nyttGrunnlag = new BeregningsgrunnlagDto(gammeltGrunnlag);
         validerIngenBesteberegningSatt(nyttGrunnlag);
         if  (output.getSkalBeregnesEtterSeksBesteMåneder()) {

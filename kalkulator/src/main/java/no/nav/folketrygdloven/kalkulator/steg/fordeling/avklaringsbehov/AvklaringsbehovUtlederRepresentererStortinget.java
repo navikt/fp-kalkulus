@@ -22,7 +22,7 @@ public class AvklaringsbehovUtlederRepresentererStortinget {
             return false;
         }
 
-        var bg = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag her"));
+        var bg = beregningsgrunnlagGrunnlag.getBeregningsgrunnlagHvisFinnes().orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag her"));
 
         var tilVurderingTjeneste = new PerioderTilVurderingTjeneste(forlengelseperioder, bg);
         var perioderSomSkalVurderes = bg.getBeregningsgrunnlagPerioder().stream()

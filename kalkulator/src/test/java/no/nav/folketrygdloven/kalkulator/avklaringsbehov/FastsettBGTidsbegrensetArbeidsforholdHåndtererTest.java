@@ -92,7 +92,7 @@ public class FastsettBGTidsbegrensetArbeidsforholdHåndtererTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = FastsettBGTidsbegrensetArbeidsforholdHåndterer.håndter(input, dto);
 
         //Assert
-        Optional<BeregningsgrunnlagDto> beregningsgrunnlag = grunnlag.getBeregningsgrunnlag();
+        Optional<BeregningsgrunnlagDto> beregningsgrunnlag = grunnlag.getBeregningsgrunnlagHvisFinnes();
         Assertions.assertThat(beregningsgrunnlag.isPresent()).isTrue();
         BeregningsgrunnlagPeriodeDto førstePeriode = beregningsgrunnlag.get().getBeregningsgrunnlagPerioder().get(0);
         BeregningsgrunnlagPeriodeDto andrePeriode = beregningsgrunnlag.get().getBeregningsgrunnlagPerioder().get(1);

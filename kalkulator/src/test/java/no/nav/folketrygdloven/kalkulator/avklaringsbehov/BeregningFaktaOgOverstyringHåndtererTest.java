@@ -61,7 +61,7 @@ public class BeregningFaktaOgOverstyringHåndtererTest {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = beregningFaktaOgOverstyringHåndterer.håndterMedOverstyring(håndterBeregningsgrunnlagInput, overstyrDto);
 
         // Assert
-        Optional<BeregningsgrunnlagDto> nyttBg = nyttGrunnlag.getBeregningsgrunnlag();
+        Optional<BeregningsgrunnlagDto> nyttBg = nyttGrunnlag.getBeregningsgrunnlagHvisFinnes();
         assertThat(nyttBg).isPresent();
         assertThat(nyttBg.get().isOverstyrt()).isTrue();
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBg.get().getBeregningsgrunnlagPerioder();
@@ -90,7 +90,7 @@ public class BeregningFaktaOgOverstyringHåndtererTest {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = beregningFaktaOgOverstyringHåndterer.håndterMedOverstyring(håndterBeregningsgrunnlagInput, overstyrDto);
 
         // Assert
-        Optional<BeregningsgrunnlagDto> nyttBg = nyttGrunnlag.getBeregningsgrunnlag();
+        Optional<BeregningsgrunnlagDto> nyttBg = nyttGrunnlag.getBeregningsgrunnlagHvisFinnes();
         assertThat(nyttBg).isPresent();
         assertThat(nyttBg.get().isOverstyrt()).isTrue();
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBg.get().getBeregningsgrunnlagPerioder();
@@ -119,7 +119,7 @@ public class BeregningFaktaOgOverstyringHåndtererTest {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = beregningFaktaOgOverstyringHåndterer.håndterMedOverstyring(håndterBeregningsgrunnlagInput, overstyrDto);
 
         // Assert
-        Optional<BeregningsgrunnlagDto> nyttBg = nyttGrunnlag.getBeregningsgrunnlag();
+        Optional<BeregningsgrunnlagDto> nyttBg = nyttGrunnlag.getBeregningsgrunnlagHvisFinnes();
         assertThat(nyttBg).isPresent();
         assertThat(nyttBg.get().isOverstyrt()).isTrue();
         var statuser = nyttBg.get().getAktivitetStatuser().stream().map(BeregningsgrunnlagAktivitetStatusDto::getAktivitetStatus).collect(Collectors.toList());

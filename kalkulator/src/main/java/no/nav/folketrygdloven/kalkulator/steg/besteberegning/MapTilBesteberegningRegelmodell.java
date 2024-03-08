@@ -156,7 +156,7 @@ public class MapTilBesteberegningRegelmodell {
 
     private static BigDecimal finnGrunnbeløp(ForeslåBesteberegningInput input) {
         return input.getBeregningsgrunnlagGrunnlag()
-                .getBeregningsgrunnlag().map(BeregningsgrunnlagDto::getGrunnbeløp).map(Beløp::verdi).orElseThrow(() -> new IllegalStateException("Forventer grunnbeløp"));
+                .getBeregningsgrunnlagHvisFinnes().map(BeregningsgrunnlagDto::getGrunnbeløp).map(Beløp::verdi).orElseThrow(() -> new IllegalStateException("Forventer grunnbeløp"));
     }
 
     private static List<Periodeinntekt> mapInntekterForBesteberegning(BeregningsgrunnlagInput input) {

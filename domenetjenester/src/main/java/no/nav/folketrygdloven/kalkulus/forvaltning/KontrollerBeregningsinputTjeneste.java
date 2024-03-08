@@ -62,7 +62,7 @@ public class KontrollerBeregningsinputTjeneste {
         BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(foreslåBeregningsgrunnlagInput);
         BeregningsgrunnlagDto reberegnetGrunnlag = beregningsgrunnlagRegelResultat.getBeregningsgrunnlag();
         BeregningsgrunnlagGrunnlagEntitet gjeldendeBGGrunnlag = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitet(kobling.getId(), BeregningsgrunnlagTilstand.FORESLÅTT).orElseThrow();
-        BeregningsgrunnlagDto gjeldendeGrunnlag = BehandlingslagerTilKalkulusMapper.mapGrunnlag(gjeldendeBGGrunnlag).getBeregningsgrunnlag().orElseThrow();
+        BeregningsgrunnlagDto gjeldendeGrunnlag = BehandlingslagerTilKalkulusMapper.mapGrunnlag(gjeldendeBGGrunnlag).getBeregningsgrunnlagHvisFinnes().orElseThrow();
 
         if (gjeldendeGrunnlag.getBeregningsgrunnlagPerioder().isEmpty() || reberegnetGrunnlag.getBeregningsgrunnlagPerioder().isEmpty()) {
             return Optional.empty();

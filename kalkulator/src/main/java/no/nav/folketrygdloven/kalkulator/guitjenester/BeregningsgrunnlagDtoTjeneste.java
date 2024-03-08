@@ -50,7 +50,7 @@ public class BeregningsgrunnlagDtoTjeneste {
         mapAvklaringsbehov(input, dto);
         mapFaktaOmBeregning(input, dto);
         mapForlengelsePerioder(input, dto);
-        if (input.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlag().isPresent()) {
+        if (input.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlagHvisFinnes().isPresent()) {
             mapOverstyring(input, dto);
             mapSkjæringstidspunkt(input, dto);
             mapFaktaOmRefusjon(input, dto);

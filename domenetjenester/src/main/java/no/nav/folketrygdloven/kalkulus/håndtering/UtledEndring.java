@@ -47,11 +47,11 @@ public class UtledEndring {
                            HåndterBeregningDto dto,
                            InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         var endringBuilder = Endringer.ny();
-        BeregningsgrunnlagDto beregningsgrunnlagDto = beregningsgrunnlagGrunnlagDto.getBeregningsgrunnlag()
+        BeregningsgrunnlagDto beregningsgrunnlagDto = beregningsgrunnlagGrunnlagDto.getBeregningsgrunnlagHvisFinnes()
                 .orElseThrow(() -> new IllegalArgumentException("Skal ha beregningsgrunnlag her"));
-        BeregningsgrunnlagDto bgFraSteg = grunnlagFraSteg.getBeregningsgrunnlag()
+        BeregningsgrunnlagDto bgFraSteg = grunnlagFraSteg.getBeregningsgrunnlagHvisFinnes()
                 .orElseThrow(() -> new IllegalArgumentException("Skal ha beregningsgrunnlag her"));
-        Optional<BeregningsgrunnlagDto> forrigeBeregningsgrunnlagOpt = forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag);
+        Optional<BeregningsgrunnlagDto> forrigeBeregningsgrunnlagOpt = forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlagHvisFinnes);
         BeregningsgrunnlagEndring beregningsgrunnlagEndring = utledBeregningsgrunnlagEndring(beregningsgrunnlagDto, bgFraSteg, forrigeBeregningsgrunnlagOpt);
         endringBuilder.medBeregningsgrunnlagEndring(beregningsgrunnlagEndring);
         UtledEndringIAktiviteter.utedEndring(dto, beregningsgrunnlagGrunnlagDto.getRegisterAktiviteter(),
@@ -72,7 +72,7 @@ public class UtledEndring {
         if (dto instanceof VurderVarigEndringEllerNyoppstartetSNHåndteringDto) {
             return Optional.of(UtledVarigEndringEllerNyoppstartetVurderinger.utledForVarigEndretEllerNyoppstartetNæring(
                     beregningsgrunnlagDto,
-                    forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag),
+                    forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlagHvisFinnes),
                     iayGrunnlag
             ));
         }
@@ -83,7 +83,7 @@ public class UtledEndring {
         if (dto instanceof VurderVarigEndretArbeidssituasjonHåndteringDto) {
             var endring = UtledVarigEndringEllerNyoppstartetVurderinger.utledEndring(
                     beregningsgrunnlagDto,
-                    forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag),
+                    forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlagHvisFinnes),
                     UtledEndring::finnBrukersAndel);
             return Optional.of(new VarigEndretArbeidssituasjonEndring(endring));
         }

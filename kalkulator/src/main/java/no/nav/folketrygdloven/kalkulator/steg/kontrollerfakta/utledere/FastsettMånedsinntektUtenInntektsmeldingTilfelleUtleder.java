@@ -34,7 +34,7 @@ public class FastsettMånedsinntektUtenInntektsmeldingTilfelleUtleder implements
     }
 
     private boolean harArbeidstakerandelerForSammeVirksomhetMedOgUtenInntektsmelding(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag, Collection<InntektsmeldingDto> inntektsmeldinger) {
-        Map<Arbeidsgiver, List<BeregningsgrunnlagPrStatusOgAndelDto>> arbeidsgiverTilAndelerMap = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag()
+        Map<Arbeidsgiver, List<BeregningsgrunnlagPrStatusOgAndelDto>> arbeidsgiverTilAndelerMap = beregningsgrunnlagGrunnlag.getBeregningsgrunnlagHvisFinnes()
                 .map(bg -> bg.getBeregningsgrunnlagPerioder().get(0))
                 .stream()
                 .flatMap(p -> p.getBeregningsgrunnlagPrStatusOgAndelList().stream())
@@ -62,7 +62,7 @@ public class FastsettMånedsinntektUtenInntektsmeldingTilfelleUtleder implements
 
 
     private boolean harBeregningsgrunnlagKunstigVirksomhet(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
-        return beregningsgrunnlagGrunnlag.getBeregningsgrunnlag()
+        return beregningsgrunnlagGrunnlag.getBeregningsgrunnlagHvisFinnes()
                 .stream()
                 .flatMap(bg -> bg.getBeregningsgrunnlagPerioder().stream())
                 .flatMap(p -> p.getBeregningsgrunnlagPrStatusOgAndelList().stream())

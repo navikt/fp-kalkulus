@@ -261,7 +261,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
 
     private boolean harOverstyrtBergningsgrunnlag(StegProsesseringInput input) {
         return input.getForrigeGrunnlagFraStegUt()
-                .flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag)
+                .flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlagHvisFinnes)
                 .stream()
                 .anyMatch(BeregningsgrunnlagDto::isOverstyrt);
     }
