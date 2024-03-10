@@ -56,7 +56,7 @@ public class BeregningsgrunnlagDiffSjekker {
     }
 
 
-    private static DiffForKopieringResult getDiff(Object dtoObject1, Object dtoObject2) {
+    public static DiffForKopieringResult getDiff(Object dtoObject1, Object dtoObject2) {
         var config = new TraverseGraphConfig();
         config.setIgnoreNulls(false);
         config.setOnlyCheckTrackedFields(true);
