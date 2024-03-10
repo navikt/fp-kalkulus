@@ -22,8 +22,8 @@ public class Organisasjon extends Aktør {
     private String ident;
 
     @JsonCreator
-    public Organisasjon(@JsonProperty(value = "ident", required=true, index=1) String kode) {
-        this.ident = kode;
+    public Organisasjon(@JsonProperty(value = "ident", required=true, index=1) String ident) {
+        this.ident = ident;
     }
 
     @Override

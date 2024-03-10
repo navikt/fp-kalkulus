@@ -25,8 +25,8 @@ public class AktørIdPersonident extends PersonIdent {
     private String ident;
 
     @JsonCreator
-    public AktørIdPersonident(@JsonProperty(value = "ident", required=true, index=1) String kode) {
-        this.ident = kode;
+    public AktørIdPersonident(@JsonProperty(value = "ident", required=true, index=1) String ident) {
+        this.ident = ident;
     }
 
     @Override

@@ -37,7 +37,7 @@ public class KalkulatorInputTjeneste {
     private static final ObjectMapper MAPPER = JsonMapper.getMapper();
     private static final Validator VALIDATOR = Validation.buildDefaultValidatorFactory().getValidator();
 
-    private static final String LEGACY_KODEVERK = "\"kodeverk\"";
+    private static final String LEGACY_KODE = "\"kode\"";
 
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private KoblingTjeneste koblingTjeneste;
@@ -142,21 +142,21 @@ public class KalkulatorInputTjeneste {
      * Skriver om input slik at gamle kodeverdier endres til nye format
      * Må til for å modernisere kontrakter
      *
-     * Konsekvens: Kan ikke ha felt i kontrakter med navn "kodeverk"
+     * Konsekvens: Kan ikke ha felt i kontrakter med navn "kode"
      */
     private static String skrivOmLegacyKodeverdiInput(String input) {
         var s = input;
-        while (s.contains(LEGACY_KODEVERK)) {
-            var startKodeverk = s.indexOf(LEGACY_KODEVERK);
+        while (s.contains(LEGACY_KODE)) {
+            var startKodeverk = s.indexOf(LEGACY_KODE);
             var startObjekt = s.lastIndexOf("{", startKodeverk);
             var sluttObjekt = s.indexOf("}", startKodeverk);
-            // Håndter nøstet kodeverdi med objekt etter første "kodeverk"
-            if (s.indexOf(LEGACY_KODEVERK, startKodeverk+LEGACY_KODEVERK.length(), sluttObjekt) > 0) {
-                startKodeverk = s.indexOf(LEGACY_KODEVERK, startKodeverk+LEGACY_KODEVERK.length(), sluttObjekt);
+            // Håndter nøstet kodeverdi med objekt etter første "kode"
+            if (s.indexOf(LEGACY_KODE, startKodeverk+ LEGACY_KODE.length(), sluttObjekt) > 0) {
+                startKodeverk = s.indexOf(LEGACY_KODE, startKodeverk+ LEGACY_KODE.length(), sluttObjekt);
                 startObjekt = s.lastIndexOf("{", startKodeverk);
                 sluttObjekt = s.indexOf("}", startKodeverk);
             }
-            var startKodeFelt = s.indexOf("\"kode\"", startObjekt);
+            var startKodeFelt = s.indexOf(LEGACY_KODE, startObjekt);
             var startKodeverdi = s.indexOf("\"", s.indexOf(":", startKodeFelt));
             var sluttKodeverdi = startKodeverdi + 1;
             while (s.charAt(sluttKodeverdi) != '"') sluttKodeverdi++;
