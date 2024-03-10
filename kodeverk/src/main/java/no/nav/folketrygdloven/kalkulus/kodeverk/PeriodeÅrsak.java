@@ -1,16 +1,9 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 
-@JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum PeriodeÅrsak implements Kodeverdi, DatabaseKode, KontraktKode {
 
     NATURALYTELSE_BORTFALT,
@@ -30,28 +23,15 @@ public enum PeriodeÅrsak implements Kodeverdi, DatabaseKode, KontraktKode {
     UDEFINERT,
     ;
 
-    private static final Map<String, PeriodeÅrsak> KODER = new LinkedHashMap<>();
-
-    static {
-        KODER.putIfAbsent(KodeKonstanter.UDEFINERT, UDEFINERT);
-        for (var v : values()) {
-            if (KODER.putIfAbsent(v.name(), v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.name());
-            }
-        }
-    }
-
-    @JsonCreator(mode = Mode.DELEGATING)
-    public static PeriodeÅrsak fraKode(Object node) {
-        if (node == null) {
+    @JsonCreator
+    public static PeriodeÅrsak fraKode(String kode) {
+        if (kode == null) {
             return null;
         }
-        String kode = TempAvledeKode.getVerdi(PeriodeÅrsak.class, node, "kode");
-        var ad = KODER.get(kode);
-        if (ad == null) {
-            throw new IllegalArgumentException("Ukjent PeriodeÅrsak: " + kode);
+        if (KodeKonstanter.UDEFINERT.equals(kode)) {
+            return UDEFINERT;
         }
-        return ad;
+        return PeriodeÅrsak.valueOf(kode);
     }
 
 

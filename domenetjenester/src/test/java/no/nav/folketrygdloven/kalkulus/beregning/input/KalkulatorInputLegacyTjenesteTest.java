@@ -1,6 +1,14 @@
 package no.nav.folketrygdloven.kalkulus.beregning.input;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.IOException;
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
+
+import jakarta.validation.Validation;
+import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 
 
 class KalkulatorInputLegacyTjenesteTest {
@@ -47,7 +55,7 @@ class KalkulatorInputLegacyTjenesteTest {
                 "ytelserDto": {
                   "ytelser": [
                     {
-                      "vedtaksDagsats": null,
+                      "vedtaksDagsats": {},
                       "ytelseAnvist": [
                         {
                           "anvistPeriode": {
@@ -187,6 +195,26 @@ class KalkulatorInputLegacyTjenesteTest {
     @Test
     void skal_konvertere_input() {
         KalkulatorInputTjeneste.konverterTilInput(LEGACY_INPUT, 1L);
+    }
+
+    @Test
+    void skal_lese_kalkulator_input_json() throws Exception {
+        var input = Optional.ofNullable(lesEksempelfil()).orElseThrow();
+        KalkulatorInputDto grunnlag = KalkulatorInputTjeneste.konverterTilInput(input, 123L);
+
+        assertThat(grunnlag).isNotNull();
+        assertThat(grunnlag.getIayGrunnlag()).isNotNull();
+        try (var factory = Validation.buildDefaultValidatorFactory()) {
+            var validator = factory.getValidator();
+            var violations = validator.validate(grunnlag);
+            assertThat(violations).isEmpty();
+        }
+    }
+
+    private String lesEksempelfil() throws IOException {
+        try (var in = KalkulatorInputLegacyTjenesteTest.class.getResourceAsStream("/input/eksempel-legacy-input.json")) {
+            return in != null ? new String(in.readAllBytes()) : null;
+        }
     }
 
 

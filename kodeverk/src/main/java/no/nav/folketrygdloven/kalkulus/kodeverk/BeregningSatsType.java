@@ -1,9 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-
 public enum BeregningSatsType implements Kodeverdi, DatabaseKode {
     ENGANG,
     GRUNNBELØP,

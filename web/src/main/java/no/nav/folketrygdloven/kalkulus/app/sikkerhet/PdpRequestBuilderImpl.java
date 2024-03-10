@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.app.sikkerhet;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -72,8 +73,8 @@ public class PdpRequestBuilderImpl implements PdpRequestBuilder {
         }
 
         var aksjonspunktTyper = attributter.getVerdier(StandardAbacAttributtType.AKSJONSPUNKT_KODE).stream()
-                .map(AvklaringsbehovDefinisjon::fraKode)
-                .map(AvklaringsbehovDefinisjon::getAvklaringsbehovType)
+                .map(o -> o instanceof AvklaringsbehovDefinisjon ad ? ad.getAvklaringsbehovType() : null)
+                .filter(Objects::nonNull)
                 .map(AvklaringsbehovType::getNavn) // Antar her at AvklaringsbehovType stemmer overens med offisiellKode fra AksjonspunktType
                 .collect(Collectors.toSet());
 

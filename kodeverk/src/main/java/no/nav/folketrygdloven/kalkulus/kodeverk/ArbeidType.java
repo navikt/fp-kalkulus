@@ -1,17 +1,11 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 
-@JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum ArbeidType implements Kodeverdi, KontraktKode {
 
     ETTERLØNN_SLUTTPAKKE,
@@ -36,29 +30,17 @@ public enum ArbeidType implements Kodeverdi, KontraktKode {
             ArbeidType.MARITIMT_ARBEIDSFORHOLD,
             ArbeidType.FORENKLET_OPPGJØRSORDNING);
 
-    private static final Map<String, ArbeidType> KODER = new LinkedHashMap<>();
-
-    static {
-        KODER.putIfAbsent(KodeKonstanter.UDEFINERT, UDEFINERT);
-        for (var v : values()) {
-            if (KODER.putIfAbsent(v.name(), v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.name());
-            }
-        }
-    }
 
 
-    @JsonCreator(mode = Mode.DELEGATING)
-    public static ArbeidType fraKode(Object node) {
-        if (node == null) {
+    @JsonCreator
+    public static ArbeidType fraKode(String kode) {
+        if (kode == null) {
             return null;
         }
-        String kode = TempAvledeKode.getVerdi(ArbeidType.class, node, "kode");
-        var ad = KODER.get(kode);
-        if (ad == null) {
-            throw new IllegalArgumentException("Ukjent ArbeidType: " + kode);
+        if (KodeKonstanter.UDEFINERT.equals(kode)) {
+            return UDEFINERT;
         }
-        return ad;
+        return ArbeidType.valueOf(kode);
     }
 
     @Override

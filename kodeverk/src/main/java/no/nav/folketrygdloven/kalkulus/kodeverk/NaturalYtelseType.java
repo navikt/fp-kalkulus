@@ -1,16 +1,9 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 
-@JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum NaturalYtelseType implements Kodeverdi, KontraktKode {
 
     ELEKTRISK_KOMMUNIKASJON,
@@ -35,28 +28,16 @@ public enum NaturalYtelseType implements Kodeverdi, KontraktKode {
     UDEFINERT,
     ;
 
-    private static final Map<String, NaturalYtelseType> KODER = new LinkedHashMap<>();
 
-    static {
-        KODER.putIfAbsent(KodeKonstanter.UDEFINERT, UDEFINERT);
-        for (var v : values()) {
-            if (KODER.putIfAbsent(v.name(), v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.name());
-            }
-        }
-    }
-
-    @JsonCreator(mode = Mode.DELEGATING)
-    public static NaturalYtelseType fraKode(Object node) {
-        if (node == null) {
+    @JsonCreator
+    public static NaturalYtelseType fraKode(String kode) {
+        if (kode == null) {
             return null;
         }
-        String kode = TempAvledeKode.getVerdi(NaturalYtelseType.class, node, "kode");
-        var ad = KODER.get(kode);
-        if (ad == null) {
-            throw new IllegalArgumentException("Ukjent NaturalYtelseType: " + kode);
+        if (KodeKonstanter.UDEFINERT.equals(kode)) {
+            return UDEFINERT;
         }
-        return ad;
+        return NaturalYtelseType.valueOf(kode);
     }
 
     @Override

@@ -3,10 +3,6 @@ package no.nav.folketrygdloven.kalkulus.kodeverk;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 
@@ -16,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * UTFØRT - Avklaringsbehovet er opprettet og løst av saksbehandler
  * AVBRUTT - Avklaringsbehovet var før opprettet men er blitt avbrutt
  */
-@JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum AvklaringsbehovStatus implements Kodeverdi, DatabaseKode, KontraktKode {
 
     OPPRETTET("OPPR"),
@@ -45,12 +40,10 @@ public enum AvklaringsbehovStatus implements Kodeverdi, DatabaseKode, KontraktKo
         return kode;
     }
 
-    @JsonCreator(mode = Mode.DELEGATING)
-    public static AvklaringsbehovStatus fraKode(Object node) {
-        if (node == null) {
+    public static AvklaringsbehovStatus fraKode(String kode) {
+        if (kode == null) {
             return null;
         }
-        String kode = TempAvledeKode.getVerdi(AvklaringsbehovStatus.class, node, "kode");
         var ad = KODER.get(kode);
         if (ad == null) {
             throw new IllegalArgumentException("Ukjent AvklaringsbehovStatus: " + kode);

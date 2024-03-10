@@ -8,10 +8,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -19,7 +15,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /**
  * Definerer avklaringsbehov som kan utledes i beregning.
  */
-@JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public
 enum AvklaringsbehovDefinisjon implements Kodeverdi, DatabaseKode, KontraktKode {
 
@@ -90,13 +85,10 @@ enum AvklaringsbehovDefinisjon implements Kodeverdi, DatabaseKode, KontraktKode 
         return stegFunnet;
     }
 
-    @JsonCreator(mode = Mode.DELEGATING)
-    @Deprecated
-    public static AvklaringsbehovDefinisjon fraKode(Object node) {
-        if (node == null) {
+    public static AvklaringsbehovDefinisjon fraKode(String kode) {
+        if (kode == null) {
             return null;
         }
-        String kode = TempAvledeKode.getVerdi(AvklaringsbehovDefinisjon.class, node, "kode");
         var ny = KODER.get(kode);
         if (ny == null) {
             throw new IllegalArgumentException("Ukjent BeregningAvklaringsbehovDefinisjon: " + kode);

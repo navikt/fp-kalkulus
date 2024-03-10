@@ -1,12 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 
@@ -14,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Et tilfelle som kan oppstå i fakta om beregning. Hvert tilfelle beskriver en spesifikk situasjon der informasjon må innhentes eller manuell vurdering
  * må gjøres av saksbehandler.
  */
-@JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum FaktaOmBeregningTilfelle implements Kodeverdi, DatabaseKode, KontraktKode {
 
     VURDER_TIDSBEGRENSET_ARBEIDSFORHOLD,
@@ -37,28 +30,16 @@ public enum FaktaOmBeregningTilfelle implements Kodeverdi, DatabaseKode, Kontrak
     FASTSETT_ENDRET_BEREGNINGSGRUNNLAG, // Fastsette endring i beregningsgrunnlag
     UDEFINERT,
     ;
-    private static final Map<String, FaktaOmBeregningTilfelle> KODER = new LinkedHashMap<>();
 
-    static {
-        KODER.putIfAbsent(KodeKonstanter.UDEFINERT, UDEFINERT);
-        for (var v : values()) {
-            if (KODER.putIfAbsent(v.name(), v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.name());
-            }
-        }
-    }
-
-    @JsonCreator(mode = Mode.DELEGATING)
-    public static FaktaOmBeregningTilfelle fraKode(Object node) {
-        if (node == null) {
+    @JsonCreator
+    public static FaktaOmBeregningTilfelle fraKode(String kode) {
+        if (kode == null) {
             return null;
         }
-        String kode = TempAvledeKode.getVerdi(FaktaOmBeregningTilfelle.class, node, "kode");
-        var ad = KODER.get(kode);
-        if (ad == null) {
-            throw new IllegalArgumentException("Ukjent FaktaOmBeregningTilfelle: " + kode);
+        if (KodeKonstanter.UDEFINERT.equals(kode)) {
+            return UDEFINERT;
         }
-        return ad;
+        return FaktaOmBeregningTilfelle.valueOf(kode);
     }
 
     @Override

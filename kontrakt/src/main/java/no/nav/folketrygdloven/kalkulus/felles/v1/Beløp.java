@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.felles.v1;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -11,7 +12,6 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
-import no.nav.folketrygdloven.kalkulus.kodeverk.TempAvledeKode;
 
 public record Beløp(@JsonValue
                     @Valid @NotNull
@@ -26,22 +26,29 @@ public record Beløp(@JsonValue
         Objects.requireNonNull(verdi);
     }
 
-    // Bruk denne som JsonCreator etter overgang + avklaring av ft-kalkulus sin lagret input
     public static Beløp fra(BigDecimal beløp) {
         return beløp != null ? new Beløp(beløp) : null;
     }
 
     /*
-     * Midlertidig fram til konsumenter er konvertert og ft-kalkulus har ryddet lagret input
-     * Trenger da ikke lenger delegating
+     * Trengs pga persisterte tilfelle av serialisert gammel BeløpDto - klasse med felt verdi - kan være tomt objekt
+     * Vil som regel komme inn som Integer (123) eller Double (123.45) eller objekt (Map). Resten for sikkerhets skyld
      */
-    @Deprecated(since = "2024-03-03", forRemoval = true)
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+    @SuppressWarnings("rawtypes")
+    @JsonCreator
     public static Beløp fraGenerell(Object beløp) {
         if (beløp == null) {
             return null;
         }
-        var asBigDecimal = TempAvledeKode.getBeløp(beløp);
+        var asBigDecimal = switch (beløp) {
+            case Integer i -> new BigDecimal(i);
+            case Double d -> BigDecimal.valueOf(d);
+            case Map map -> !map.isEmpty() && map.get("verdi") != null ? new BigDecimal(String.valueOf(map.get("verdi"))) : null;
+            case BigDecimal bd -> bd;
+            case Number n -> new BigDecimal(n.toString());
+            case String s -> new BigDecimal(s);
+            default -> throw new IllegalArgumentException("Støtter ikke node av type: " + beløp.getClass());
+        };
         return Beløp.fra(asBigDecimal);
     }
 

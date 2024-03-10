@@ -2,20 +2,13 @@ package no.nav.folketrygdloven.kalkulus.kodeverk;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /*
  * Alle ytelser som kalkulus forholder seg til i prosessen og som kan være innhentet i IAY-grunnlag
  */
-@JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum YtelseType implements Kodeverdi, KontraktKode {
 
     /**
@@ -61,8 +54,6 @@ public enum YtelseType implements Kodeverdi, KontraktKode {
     UDEFINERT(KodeKonstanter.UDEFINERT),
     ;
 
-    private static final Map<String, YtelseType> KODER = new LinkedHashMap<>();
-
     private static final Set<YtelseType> ARENA_YTELSER = new HashSet<>(Arrays.asList(DAGPENGER,
             ARBEIDSAVKLARINGSPENGER));
 
@@ -72,33 +63,12 @@ public enum YtelseType implements Kodeverdi, KontraktKode {
             PLEIEPENGER_NÆRSTÅENDE,
             OPPLÆRINGSPENGER);
 
-    static {
-        for (var v : values()) {
-            if (KODER.putIfAbsent(v.kode, v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.kode);
-            }
-        }
-    }
-
 
     @JsonValue
     private final String kode;
 
     YtelseType(String kode) {
         this.kode = kode;
-    }
-
-    @JsonCreator(mode = Mode.DELEGATING)
-    public static YtelseType fraKode(Object node) {
-        if (node == null) {
-            return null;
-        }
-        String kode = TempAvledeKode.getVerdi(YtelseType.class, node, "kode");
-        var ad = KODER.get(kode);
-        if (ad == null) {
-            throw new IllegalArgumentException("Ukjent FagsakYtelseType: " + kode);
-        }
-        return ad;
     }
 
     public boolean erArenaytelse() {

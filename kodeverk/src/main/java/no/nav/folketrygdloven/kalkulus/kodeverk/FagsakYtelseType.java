@@ -4,16 +4,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /*
  * Ytelser som kalkulus kan beregne etter Ftl kap 8, 9, 14
  */
-@JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum FagsakYtelseType implements Kodeverdi, DatabaseKode, KontraktKode {
 
     /**
@@ -66,12 +61,10 @@ public enum FagsakYtelseType implements Kodeverdi, DatabaseKode, KontraktKode {
         this.tilsvarende = tilsvarende;
     }
 
-    @JsonCreator(mode = Mode.DELEGATING)
-    public static FagsakYtelseType fraKode(Object node) {
-        if (node == null) {
+    public static FagsakYtelseType fraKode(String kode) {
+        if (kode == null) {
             return null;
         }
-        String kode = TempAvledeKode.getVerdi(FagsakYtelseType.class, node, "kode");
         var ad = KODER.get(kode);
         if (ad == null) {
             throw new IllegalArgumentException("Ukjent FagsakYtelseType: " + kode);

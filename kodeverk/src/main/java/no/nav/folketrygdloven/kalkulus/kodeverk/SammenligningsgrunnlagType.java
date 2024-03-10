@@ -1,22 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-/**
- * <h3>Internt kodeverk</h3>
- * Definerer status/type av {@link SammenligningsgrunnlagPrStatus}
- * <p>
- */
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.fasterxml.jackson.annotation.JsonValue;
-
-
-@JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum SammenligningsgrunnlagType implements Kodeverdi, DatabaseKode, KontraktKode {
 
     SAMMENLIGNING_AT,
@@ -27,31 +10,11 @@ public enum SammenligningsgrunnlagType implements Kodeverdi, DatabaseKode, Kontr
     SAMMENLIGNING_MIDL_INAKTIV,
     ;
 
-    private static final Map<String, SammenligningsgrunnlagType> KODER = new LinkedHashMap<>();
-
-    static {
-        for (var v : values()) {
-            if (KODER.putIfAbsent(v.name(), v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.name());
-            }
-        }
-    }
-
-    @JsonCreator(mode = Mode.DELEGATING)
-    public static SammenligningsgrunnlagType fraKode(Object node) {
-        if (node == null) {
-            return null;
-        }
-        String kode = TempAvledeKode.getVerdi(SammenligningsgrunnlagType.class, node, "kode");
-        var ad = KODER.get(kode);
-        if (ad == null) {
-            throw new IllegalArgumentException("Ukjent SammenligningsgrunnlagType: " + kode);
-        }
-        return ad;
+    public static SammenligningsgrunnlagType fraKode(String kode) {
+        return kode == null ? null : SammenligningsgrunnlagType.valueOf(kode);
     }
 
     @Override
-    @JsonValue
     public String getKode() {
         return name();
     }

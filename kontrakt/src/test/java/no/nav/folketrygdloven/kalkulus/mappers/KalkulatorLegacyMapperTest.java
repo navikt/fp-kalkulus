@@ -2,17 +2,13 @@ package no.nav.folketrygdloven.kalkulus.mappers;
 
 
 import static no.nav.folketrygdloven.kalkulus.mappers.JsonMapperUtil.READER_JSON;
-import static no.nav.folketrygdloven.kalkulus.mappers.JsonMapperUtil.validateResult;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulus.felles.v1.Beløp;
-import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 
 public class KalkulatorLegacyMapperTest {
 
@@ -58,24 +54,6 @@ public class KalkulatorLegacyMapperTest {
         assertThat(desimal).isEqualTo(new MedBeløp(Beløp.fra(new BigDecimal("101.23"))));
         assertThat(legacyHeltall).isEqualTo(new MedBeløp(Beløp.fra(101)));
         assertThat(legacyDesimal).isEqualTo(new MedBeløp(Beløp.fra(BigDecimal.valueOf(987.123d))));
-    }
-
-
-
-    @Test
-    void skal_lese_kalkulator_input_json() throws Exception {
-        var input = Optional.ofNullable(lesEksempelfil()).orElseThrow();
-        KalkulatorInputDto grunnlag = READER_JSON.forType(KalkulatorInputDto.class).readValue(input);
-
-        assertThat(grunnlag).isNotNull();
-        assertThat(grunnlag.getIayGrunnlag()).isNotNull();
-        validateResult(grunnlag);
-    }
-
-    private String lesEksempelfil() throws IOException {
-        try (var in = KalkulatorLegacyMapperTest.class.getResourceAsStream("/input/eksempel-legacy-input.json")) {
-            return in != null ? new String(in.readAllBytes()) : null;
-        }
     }
 
 }

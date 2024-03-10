@@ -303,10 +303,9 @@ public class OperereKalkulusRestTjeneste {
             return abacDataAttributter;
         }
 
-        private List<String> getAksjonspunktKoder() {
+        private List<AvklaringsbehovDefinisjon> getAksjonspunktKoder() {
             return getHåndterBeregningListe().stream().map(HåndterBeregningRequest::getHåndterBeregning)
                     .map(HåndterBeregningDto::getAvklaringsbehovDefinisjon)
-                    .map(AvklaringsbehovDefinisjon::getKode)
                     .collect(Collectors.toList());
         }
 

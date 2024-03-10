@@ -1,18 +1,12 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 
-@JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum BeregningsgrunnlagTilstand implements Kodeverdi, DatabaseKode, KontraktKode {
 
     OPPRETTET,
@@ -34,8 +28,6 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi, DatabaseKode, Kontr
     FASTSATT,
     UDEFINERT,
     ;
-
-    private static final Map<String, BeregningsgrunnlagTilstand> KODER = new LinkedHashMap<>();
 
     /**
      * Rekkefølge tilstandene opptrer i løsningen.
@@ -62,31 +54,9 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi, DatabaseKode, Kontr
             FASTSATT
     );
 
-    static {
-        KODER.putIfAbsent(KodeKonstanter.UDEFINERT, UDEFINERT);
-        for (var v : values()) {
-            if (KODER.putIfAbsent(v.name(), v) != null) {
-                throw new IllegalArgumentException("Duplikat : " + v.name());
-            }
-        }
-    }
-
 
     public static List<BeregningsgrunnlagTilstand> getTilstandRekkefølge() {
         return tilstandRekkefølge;
-    }
-
-    @JsonCreator(mode = Mode.DELEGATING)
-    public static BeregningsgrunnlagTilstand fraKode(Object node) {
-        if (node == null) {
-            return null;
-        }
-        String kode = TempAvledeKode.getVerdi(BeregningsgrunnlagTilstand.class, node, "kode");
-        var ad = KODER.get(kode);
-        if (ad == null) {
-            throw new IllegalArgumentException("Ukjent BeregningsgrunnlagTilstand: " + kode);
-        }
-        return ad;
     }
 
     public static BeregningsgrunnlagTilstand finnFørste() {
@@ -123,6 +93,17 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi, DatabaseKode, Kontr
         int thisIndex = tilstandRekkefølge.indexOf(this);
         int thatIndex = tilstandRekkefølge.indexOf(that);
         return thisIndex > thatIndex;
+    }
+
+    @JsonCreator
+    public static BeregningsgrunnlagTilstand fraKode(String kode) {
+        if (kode == null) {
+            return null;
+        }
+        if (KodeKonstanter.UDEFINERT.equals(kode)) {
+            return UDEFINERT;
+        }
+        return BeregningsgrunnlagTilstand.valueOf(kode);
     }
 
     @Override

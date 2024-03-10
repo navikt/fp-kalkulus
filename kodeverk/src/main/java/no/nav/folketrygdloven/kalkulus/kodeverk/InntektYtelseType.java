@@ -1,11 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-@JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum InntektYtelseType implements Kodeverdi, KontraktKode {
 
     // Ytelse utbetalt til person som er arbeidstaker/frilanser/ytelsesmottaker
@@ -49,6 +45,7 @@ public enum InntektYtelseType implements Kodeverdi, KontraktKode {
     KOMPENSASJON_FOR_TAPT_PERSONINNTEKT(Kategori.NÆRING)
     ;
 
+    @JsonIgnore
     private final Kategori kategori;
 
     InntektYtelseType(Kategori kategori) {
@@ -59,17 +56,8 @@ public enum InntektYtelseType implements Kodeverdi, KontraktKode {
         return kode != null ? InntektYtelseType.valueOf(kode) : null;
     }
 
-    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static InntektYtelseType fraKode(Object node) {
-        if (node == null) {
-            return null;
-        }
-        String kode = TempAvledeKode.getVerdi(InntektYtelseType.class, node, "kode");
-        return fraKode(kode);
-    }
 
     @Override
-    @JsonValue
     public String getKode() {
         return name();
     }

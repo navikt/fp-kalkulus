@@ -6,15 +6,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 
-@JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum AktivitetStatus implements Kodeverdi, DatabaseKode, KontraktKode {
 
     MIDLERTIDIG_INAKTIV("MIDL_INAKTIV", Inntektskategori.UDEFINERT),
@@ -59,12 +54,10 @@ public enum AktivitetStatus implements Kodeverdi, DatabaseKode, KontraktKode {
         this.inntektskategori = inntektskategori;
     }
 
-    @JsonCreator(mode = Mode.DELEGATING)
-    public static AktivitetStatus fraKode(Object node) {
-        if (node == null) {
+    public static AktivitetStatus fraKode(String kode) {
+        if (kode == null) {
             return null;
         }
-        String kode = TempAvledeKode.getVerdi(AktivitetStatus.class, node, "kode");
         var ad = KODER.get(kode);
         if (ad == null) {
             throw new IllegalArgumentException("Ukjent AktivitetStatus: " + kode);

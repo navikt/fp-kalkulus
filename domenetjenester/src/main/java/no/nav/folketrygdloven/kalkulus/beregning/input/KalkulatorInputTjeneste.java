@@ -120,7 +120,7 @@ public class KalkulatorInputTjeneste {
     static KalkulatorInputDto konverterTilInput(String json, Long koblingId) {
         KalkulatorInputDto input;
         try {
-            input = MAPPER.readValue(skrivOmLegacyInput(json), KalkulatorInputDto.class);
+            input = MAPPER.readValue(skrivOmLegacyKodeverdiInput(json), KalkulatorInputDto.class);
         } catch (JsonProcessingException e) {
             throw new TekniskException("FT-KALKULUS-INPUT-1000002",
                     String.format("Kalkulus klarte ikke lese opp input for koblingId %s med følgende feilmelding %s",
@@ -144,7 +144,7 @@ public class KalkulatorInputTjeneste {
      *
      * Konsekvens: Kan ikke ha felt i kontrakter med navn "kodeverk"
      */
-    private static String skrivOmLegacyInput(String input) {
+    private static String skrivOmLegacyKodeverdiInput(String input) {
         var s = input;
         while (s.contains(LEGACY_KODEVERK)) {
             var startKodeverk = s.indexOf(LEGACY_KODEVERK);
