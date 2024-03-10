@@ -8,7 +8,7 @@ public enum MidlertidigInaktivType implements Kodeverdi, KontraktKode {
     A("8-47 A"), B("8-47 B");
 
     @JsonValue
-    private String kode;
+    private final String kode;
 
 
     MidlertidigInaktivType(String s) {

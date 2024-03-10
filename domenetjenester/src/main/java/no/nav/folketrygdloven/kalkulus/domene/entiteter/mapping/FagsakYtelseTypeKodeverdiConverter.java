@@ -13,7 +13,6 @@ public class FagsakYtelseTypeKodeverdiConverter implements AttributeConverter<Fa
 
     @Override
     public FagsakYtelseType convertToEntityAttribute(String dbData) {
-        return dbData == null || FagsakYtelseType.UDEFINERT.getKode().equals(dbData) ?
-                FagsakYtelseType.UDEFINERT : FagsakYtelseType.fraDatabaseKode(dbData);
+        return KodeKonstanter.fraDatabasekode(dbData, FagsakYtelseType.UDEFINERT, FagsakYtelseType::fraKode);
     }
 }

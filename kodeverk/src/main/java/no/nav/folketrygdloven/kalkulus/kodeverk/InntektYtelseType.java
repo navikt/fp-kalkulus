@@ -52,10 +52,6 @@ public enum InntektYtelseType implements Kodeverdi, KontraktKode {
         this.kategori = kategori;
     }
 
-    public static InntektYtelseType fraKode(String kode) {
-        return kode != null ? InntektYtelseType.valueOf(kode) : null;
-    }
-
 
     @Override
     public String getKode() {

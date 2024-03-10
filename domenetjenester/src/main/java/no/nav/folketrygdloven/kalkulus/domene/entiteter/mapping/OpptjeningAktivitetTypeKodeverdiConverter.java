@@ -9,14 +9,12 @@ public class OpptjeningAktivitetTypeKodeverdiConverter implements AttributeConve
 
     @Override
     public String convertToDatabaseColumn(OpptjeningAktivitetType attribute) {
-        return attribute == null ? null : OpptjeningAktivitetType.UDEFINERT.equals(attribute) ?
-                KodeKonstanter.UDEFINERT : attribute.getDatabaseKode();
+        return KodeKonstanter.tilDatabasekode(attribute, OpptjeningAktivitetType.UDEFINERT);
     }
 
     @Override
     public OpptjeningAktivitetType convertToEntityAttribute(String dbData) {
-        return dbData == null ? null : KodeKonstanter.UDEFINERT.equals(dbData) ?
-                OpptjeningAktivitetType.UDEFINERT : OpptjeningAktivitetType.fraDatabaseKode(dbData);
+        return KodeKonstanter.fraDatabasekode(dbData, OpptjeningAktivitetType.UDEFINERT, OpptjeningAktivitetType::valueOf);
     }
 
 }

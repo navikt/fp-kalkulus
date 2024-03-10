@@ -7,7 +7,7 @@ public enum Dekningsgrad {
     DEKNINGSGRAD_80(0.8),
     DEKNINGSGRAD_100(1.0);
 
-    private double verdi;
+    private final double verdi;
 
     Dekningsgrad(double verdi) {
         this.verdi = verdi;

@@ -9,20 +9,11 @@ public enum AndelKilde implements Kodeverdi, DatabaseKode, KontraktKode {
     PROSESS_OMFORDELING, // Prosess for automatisk omfordeling
     PROSESS_START, // Start av beregning
     PROSESS_PERIODISERING_TILKOMMET_INNTEKT // Periodisering for tilkommet inntekt
-
     ;
-
-    public static AndelKilde fraKode(String kode) {
-        return kode == null ? null : AndelKilde.valueOf(kode);
-    }
 
     @Override
     public String getKode() {
         return name();
-    }
-
-    public static AndelKilde fraDatabaseKode(String databaseKode) {
-        return fraKode(databaseKode);
     }
 
 }

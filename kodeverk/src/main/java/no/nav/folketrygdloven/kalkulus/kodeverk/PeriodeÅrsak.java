@@ -41,8 +41,5 @@ public enum PeriodeÅrsak implements Kodeverdi, DatabaseKode, KontraktKode {
         return this == UDEFINERT ? KodeKonstanter.UDEFINERT : name();
     }
 
-    public static PeriodeÅrsak fraDatabaseKode(String databaseKode) {
-        return fraKode(databaseKode);
-    }
 
 }

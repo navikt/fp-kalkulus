@@ -1,7 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import java.util.Arrays;
-
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum UttakArbeidType implements Kodeverdi, KontraktKode {
@@ -19,7 +17,7 @@ public enum UttakArbeidType implements Kodeverdi, KontraktKode {
     ;
 
     @JsonValue
-    private String kode;
+    private final String kode;
 
     UttakArbeidType(String kode) {
         this.kode = kode;
@@ -30,17 +28,5 @@ public enum UttakArbeidType implements Kodeverdi, KontraktKode {
         return kode;
     }
 
-
-    // Service til k9-sak som mapper fra en Kotlin-string ...
-    public static UttakArbeidType fraKode(String kode) {
-        if (kode == null) {
-            return null;
-        }
-        var ad = Arrays.stream(values()).filter(v -> v.kode.equals(kode)).findFirst().orElse(null);
-        if (ad == null) {
-            throw new IllegalArgumentException("Ukjent UttakArbeidType: " + kode);
-        }
-        return ad;
-    }
 
 }

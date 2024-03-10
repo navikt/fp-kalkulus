@@ -98,10 +98,6 @@ public enum AktivitetStatus implements Kodeverdi, DatabaseKode, KontraktKode {
         return kode;
     }
 
-    public static AktivitetStatus fraDatabaseKode(String databaseKode) {
-        return fraKode(databaseKode);
-    }
-
     public Inntektskategori getInntektskategori() {
         return inntektskategori;
     }

@@ -9,14 +9,12 @@ public class RefusjonskravFristUtfallKodeverdiConverter implements AttributeConv
 
     @Override
     public String convertToDatabaseColumn(Utfall attribute) {
-        return attribute == null ? null : Utfall.UDEFINERT.equals(attribute) ?
-                KodeKonstanter.UDEFINERT : attribute.getDatabaseKode();
+        return KodeKonstanter.tilDatabasekode(attribute, Utfall.UDEFINERT);
     }
 
     @Override
     public Utfall convertToEntityAttribute(String dbData) {
-        return dbData == null ? null : KodeKonstanter.UDEFINERT.equals(dbData) ?
-                Utfall.UDEFINERT : Utfall.fraDatabaseKode(dbData);
+        return KodeKonstanter.fraDatabasekode(dbData, Utfall.UDEFINERT, Utfall::valueOf);
     }
 
 }

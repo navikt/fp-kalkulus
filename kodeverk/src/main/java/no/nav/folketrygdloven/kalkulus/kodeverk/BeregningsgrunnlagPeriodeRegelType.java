@@ -29,23 +29,9 @@ public enum BeregningsgrunnlagPeriodeRegelType implements Kodeverdi, DatabaseKod
         this.lagretTilstand = lagretTilstand;
     }
 
-    public static BeregningsgrunnlagPeriodeRegelType fraKode(String kode) {
-        if (kode == null) {
-            return null;
-        }
-        if (KodeKonstanter.UDEFINERT.equals(kode)) {
-            return UDEFINERT;
-        }
-        return BeregningsgrunnlagPeriodeRegelType.valueOf(kode);
-    }
-
     @Override
     public String getKode() {
         return this == UDEFINERT ? KodeKonstanter.UDEFINERT : name();
-    }
-
-    public static BeregningsgrunnlagPeriodeRegelType fraDatabaseKode(String databaseKode) {
-        return fraKode(databaseKode);
     }
 
     public BeregningsgrunnlagTilstand getLagretTilstand() {

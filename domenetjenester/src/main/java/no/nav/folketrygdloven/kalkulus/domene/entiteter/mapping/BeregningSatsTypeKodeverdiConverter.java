@@ -9,13 +9,11 @@ public class BeregningSatsTypeKodeverdiConverter implements AttributeConverter<B
 
     @Override
     public String convertToDatabaseColumn(BeregningSatsType attribute) {
-        return attribute == null ? null : BeregningSatsType.UDEFINERT.equals(attribute) ?
-                KodeKonstanter.UDEFINERT : attribute.getDatabaseKode();
+        return KodeKonstanter.tilDatabasekode(attribute, BeregningSatsType.UDEFINERT);
     }
 
     @Override
     public BeregningSatsType convertToEntityAttribute(String dbData) {
-        return dbData == null ? null : KodeKonstanter.UDEFINERT.equals(dbData) ?
-                BeregningSatsType.UDEFINERT : BeregningSatsType.fraDatabaseKode(dbData);
+        return KodeKonstanter.fraDatabasekode(dbData, BeregningSatsType.UDEFINERT, BeregningSatsType::valueOf);
     }
 }

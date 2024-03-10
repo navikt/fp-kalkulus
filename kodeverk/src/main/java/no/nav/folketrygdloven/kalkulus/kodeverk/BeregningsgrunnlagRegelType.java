@@ -24,30 +24,15 @@ public enum BeregningsgrunnlagRegelType implements Kodeverdi, DatabaseKode {
     PERIODISERING(OPPDATERT_MED_REFUSJON_OG_GRADERING), // Periodiser beregningsgrunnlag
     ;
 
-
     private final BeregningsgrunnlagTilstand lagretTilstand;
 
     BeregningsgrunnlagRegelType(BeregningsgrunnlagTilstand lagretTilstand) {
         this.lagretTilstand = lagretTilstand;
     }
 
-    public static BeregningsgrunnlagRegelType fraKode(String kode) {
-        if (kode == null) {
-            return null;
-        }
-        if (KodeKonstanter.UDEFINERT.equals(kode)) {
-            return UDEFINERT;
-        }
-        return BeregningsgrunnlagRegelType.valueOf(kode);
-    }
-
     @Override
     public String getKode() {
         return this == UDEFINERT ? KodeKonstanter.UDEFINERT : name();
-    }
-
-    public static BeregningsgrunnlagRegelType fraDatabaseKode(String databaseKode) {
-        return fraKode(databaseKode);
     }
 
 

@@ -56,8 +56,4 @@ public enum OpptjeningAktivitetType implements Kodeverdi, DatabaseKode, Kontrakt
         return this == UDEFINERT ? KodeKonstanter.UDEFINERT : name();
     }
 
-    public static OpptjeningAktivitetType fraDatabaseKode(String databaseKode) {
-        return fraKode(databaseKode);
-    }
-
 }

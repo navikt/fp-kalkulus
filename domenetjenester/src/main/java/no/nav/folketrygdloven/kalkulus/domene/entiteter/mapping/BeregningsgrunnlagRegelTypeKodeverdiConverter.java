@@ -9,13 +9,11 @@ public class BeregningsgrunnlagRegelTypeKodeverdiConverter implements AttributeC
 
     @Override
     public String convertToDatabaseColumn(BeregningsgrunnlagRegelType attribute) {
-        return attribute == null ? null : BeregningsgrunnlagRegelType.UDEFINERT.equals(attribute) ?
-                KodeKonstanter.UDEFINERT : attribute.getDatabaseKode();
+        return KodeKonstanter.tilDatabasekode(attribute, BeregningsgrunnlagRegelType.UDEFINERT);
     }
 
     @Override
     public BeregningsgrunnlagRegelType convertToEntityAttribute(String dbData) {
-        return dbData == null ? null : KodeKonstanter.UDEFINERT.equals(dbData) ?
-                BeregningsgrunnlagRegelType.UDEFINERT : BeregningsgrunnlagRegelType.fraDatabaseKode(dbData);
+        return KodeKonstanter.fraDatabasekode(dbData, BeregningsgrunnlagRegelType.UDEFINERT, BeregningsgrunnlagRegelType::valueOf);
     }
 }

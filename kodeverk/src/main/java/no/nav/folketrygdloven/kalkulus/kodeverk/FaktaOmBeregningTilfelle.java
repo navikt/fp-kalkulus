@@ -48,8 +48,5 @@ public enum FaktaOmBeregningTilfelle implements Kodeverdi, DatabaseKode, Kontrak
         return this == UDEFINERT ? KodeKonstanter.UDEFINERT : name();
     }
 
-    public static FaktaOmBeregningTilfelle fraDatabaseKode(String databaseKode) {
-        return fraKode(databaseKode);
-    }
 
 }

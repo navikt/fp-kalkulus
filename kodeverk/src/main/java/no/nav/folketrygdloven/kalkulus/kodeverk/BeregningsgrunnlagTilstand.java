@@ -112,8 +112,5 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi, DatabaseKode, Kontr
         return this == UDEFINERT ? KodeKonstanter.UDEFINERT : name();
     }
 
-    public static BeregningsgrunnlagTilstand fraDatabaseKode(String databaseKode) {
-        return fraKode(databaseKode);
-    }
 
 }

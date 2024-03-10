@@ -9,13 +9,11 @@ public class BeregningsgrunnlagPeriodeRegelTypeKodeverdiConverter implements Att
 
     @Override
     public String convertToDatabaseColumn(BeregningsgrunnlagPeriodeRegelType attribute) {
-        return attribute == null ? null : BeregningsgrunnlagPeriodeRegelType.UDEFINERT.equals(attribute) ?
-                KodeKonstanter.UDEFINERT : attribute.getDatabaseKode();
+        return KodeKonstanter.tilDatabasekode(attribute, BeregningsgrunnlagPeriodeRegelType.UDEFINERT);
     }
 
     @Override
     public BeregningsgrunnlagPeriodeRegelType convertToEntityAttribute(String dbData) {
-        return dbData == null ? null : KodeKonstanter.UDEFINERT.equals(dbData) ?
-                BeregningsgrunnlagPeriodeRegelType.UDEFINERT : BeregningsgrunnlagPeriodeRegelType.fraDatabaseKode(dbData);
+        return KodeKonstanter.fraDatabasekode(dbData, BeregningsgrunnlagPeriodeRegelType.UDEFINERT, BeregningsgrunnlagPeriodeRegelType::valueOf);
     }
 }

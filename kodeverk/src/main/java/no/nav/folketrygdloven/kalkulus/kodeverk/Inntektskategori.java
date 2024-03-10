@@ -36,8 +36,4 @@ public enum Inntektskategori implements Kodeverdi, DatabaseKode, KontraktKode {
         return this == UDEFINERT ? KodeKonstanter.UDEFINERT : name();
     }
 
-    public static Inntektskategori fraDatabaseKode(String databaseKode) {
-        return fraKode(databaseKode);
-    }
-
 }

@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /*
@@ -53,7 +54,7 @@ public enum FagsakYtelseType implements Kodeverdi, DatabaseKode, KontraktKode {
 
     @JsonValue
     private final String kode;
-
+    @JsonIgnore
     private final YtelseType tilsvarende;
 
     FagsakYtelseType(String kode, YtelseType tilsvarende) {
@@ -81,7 +82,4 @@ public enum FagsakYtelseType implements Kodeverdi, DatabaseKode, KontraktKode {
         return tilsvarende;
     }
 
-    public static FagsakYtelseType fraDatabaseKode(String databaseKode) {
-        return fraKode(databaseKode);
-    }
 }

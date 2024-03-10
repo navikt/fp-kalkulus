@@ -57,8 +57,4 @@ public enum Hjemmel implements Kodeverdi, DatabaseKode, KontraktKode {
         return this == UDEFINERT ? KodeKonstanter.UDEFINERT : name();
     }
 
-    public static Hjemmel fraDatabaseKode(String databaseKode) {
-        return fraKode(databaseKode);
-    }
-
 }

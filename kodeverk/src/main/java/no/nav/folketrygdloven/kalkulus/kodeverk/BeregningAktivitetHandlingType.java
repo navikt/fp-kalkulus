@@ -28,8 +28,5 @@ public enum BeregningAktivitetHandlingType implements Kodeverdi, DatabaseKode, K
         return this == UDEFINERT ? KodeKonstanter.UDEFINERT : name();
     }
 
-    public static BeregningAktivitetHandlingType fraDatabaseKode(String databaseKode) {
-        return fraKode(databaseKode);
-    }
 
 }

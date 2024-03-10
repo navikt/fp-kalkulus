@@ -9,13 +9,11 @@ public class HjemmelKodeverdiConverter implements AttributeConverter<Hjemmel, St
 
     @Override
     public String convertToDatabaseColumn(Hjemmel attribute) {
-        return attribute == null ? null : Hjemmel.UDEFINERT.equals(attribute) ?
-                KodeKonstanter.UDEFINERT : attribute.getDatabaseKode();
+        return KodeKonstanter.tilDatabasekode(attribute, Hjemmel.UDEFINERT);
     }
 
     @Override
     public Hjemmel convertToEntityAttribute(String dbData) {
-        return dbData == null ? null : KodeKonstanter.UDEFINERT.equals(dbData) ?
-                Hjemmel.UDEFINERT : Hjemmel.fraDatabaseKode(dbData);
+        return KodeKonstanter.fraDatabasekode(dbData, Hjemmel.UDEFINERT, Hjemmel::valueOf);
     }
 }

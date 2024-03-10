@@ -9,13 +9,11 @@ public class BeregningsgrunnlagTilstandKodeverdiConverter implements AttributeCo
 
     @Override
     public String convertToDatabaseColumn(BeregningsgrunnlagTilstand attribute) {
-        return attribute == null ? null : BeregningsgrunnlagTilstand.UDEFINERT.equals(attribute) ?
-                KodeKonstanter.UDEFINERT : attribute.getDatabaseKode();
+        return KodeKonstanter.tilDatabasekode(attribute, BeregningsgrunnlagTilstand.UDEFINERT);
     }
 
     @Override
     public BeregningsgrunnlagTilstand convertToEntityAttribute(String dbData) {
-        return dbData == null ? null : KodeKonstanter.UDEFINERT.equals(dbData) ?
-                BeregningsgrunnlagTilstand.UDEFINERT : BeregningsgrunnlagTilstand.fraDatabaseKode(dbData);
+        return KodeKonstanter.fraDatabasekode(dbData, BeregningsgrunnlagTilstand.UDEFINERT, BeregningsgrunnlagTilstand::valueOf);
     }
 }

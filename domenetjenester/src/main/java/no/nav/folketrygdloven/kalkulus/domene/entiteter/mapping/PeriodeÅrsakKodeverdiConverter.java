@@ -9,13 +9,11 @@ public class PeriodeÅrsakKodeverdiConverter implements AttributeConverter<Perio
 
     @Override
     public String convertToDatabaseColumn(PeriodeÅrsak attribute) {
-        return attribute == null ? null : PeriodeÅrsak.UDEFINERT.equals(attribute) ?
-                KodeKonstanter.UDEFINERT : attribute.getDatabaseKode();
+        return KodeKonstanter.tilDatabasekode(attribute, PeriodeÅrsak.UDEFINERT);
     }
 
     @Override
     public PeriodeÅrsak convertToEntityAttribute(String dbData) {
-        return dbData == null ? null : KodeKonstanter.UDEFINERT.equals(dbData) ?
-                PeriodeÅrsak.UDEFINERT : PeriodeÅrsak.fraDatabaseKode(dbData);
+        return KodeKonstanter.fraDatabasekode(dbData, PeriodeÅrsak.UDEFINERT, PeriodeÅrsak::valueOf);
     }
 }

@@ -13,7 +13,7 @@ public class AndelKildeKodeverdiConverter implements AttributeConverter<AndelKil
 
     @Override
     public AndelKilde convertToEntityAttribute(String dbData) {
-        return dbData == null ? null : AndelKilde.fraDatabaseKode(dbData); // Har ikke UDEFINERT
+        return KodeKonstanter.fraDatabasekode(dbData, AndelKilde::valueOf); // Har ikke UDEFINERT
     }
 
 }

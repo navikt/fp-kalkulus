@@ -9,13 +9,11 @@ public class AktivitetStatusKodeverdiConverter implements AttributeConverter<Akt
 
     @Override
     public String convertToDatabaseColumn(AktivitetStatus attribute) {
-        return attribute == null ? null : AktivitetStatus.UDEFINERT.equals(attribute) ?
-                KodeKonstanter.UDEFINERT : attribute.getDatabaseKode();
+        return KodeKonstanter.tilDatabasekode(attribute, AktivitetStatus.UDEFINERT);
     }
 
     @Override
     public AktivitetStatus convertToEntityAttribute(String dbData) {
-        return dbData == null ? null : KodeKonstanter.UDEFINERT.equals(dbData) ?
-                AktivitetStatus.UDEFINERT : AktivitetStatus.fraDatabaseKode(dbData);
+        return KodeKonstanter.fraDatabasekode(dbData, AktivitetStatus.UDEFINERT, AktivitetStatus::fraKode);
     }
 }

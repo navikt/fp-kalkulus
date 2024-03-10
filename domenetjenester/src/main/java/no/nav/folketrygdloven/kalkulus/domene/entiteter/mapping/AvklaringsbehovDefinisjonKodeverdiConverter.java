@@ -13,7 +13,7 @@ public class AvklaringsbehovDefinisjonKodeverdiConverter implements AttributeCon
 
     @Override
     public AvklaringsbehovDefinisjon convertToEntityAttribute(String dbData) {
-        return dbData == null ? null : AvklaringsbehovDefinisjon.fraDatabaseKode(dbData); // Har ikke UDEFINERT
+        return KodeKonstanter.fraDatabasekode(dbData, AvklaringsbehovDefinisjon::fraKode); // Har ikke UDEFINERT
     }
 
 }

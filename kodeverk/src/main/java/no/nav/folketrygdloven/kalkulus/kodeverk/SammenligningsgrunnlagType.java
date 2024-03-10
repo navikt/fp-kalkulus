@@ -10,17 +10,10 @@ public enum SammenligningsgrunnlagType implements Kodeverdi, DatabaseKode, Kontr
     SAMMENLIGNING_MIDL_INAKTIV,
     ;
 
-    public static SammenligningsgrunnlagType fraKode(String kode) {
-        return kode == null ? null : SammenligningsgrunnlagType.valueOf(kode);
-    }
-
     @Override
     public String getKode() {
         return name();
     }
 
-    public static SammenligningsgrunnlagType fraDatabaseKode(String databaseKode) {
-        return fraKode(databaseKode);
-    }
 
 }

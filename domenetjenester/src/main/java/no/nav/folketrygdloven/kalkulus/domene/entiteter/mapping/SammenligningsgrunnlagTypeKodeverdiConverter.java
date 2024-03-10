@@ -13,7 +13,7 @@ public class SammenligningsgrunnlagTypeKodeverdiConverter implements AttributeCo
 
     @Override
     public SammenligningsgrunnlagType convertToEntityAttribute(String dbData) {
-        return dbData == null ? null : SammenligningsgrunnlagType.fraDatabaseKode(dbData); // Har ikke UDEFINERT
+        return KodeKonstanter.fraDatabasekode(dbData, SammenligningsgrunnlagType::valueOf); // Har ikke UDEFINERT
     }
 
 }

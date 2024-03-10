@@ -51,8 +51,4 @@ public enum AvklaringsbehovStatus implements Kodeverdi, DatabaseKode, KontraktKo
         return ad;
     }
 
-    public static AvklaringsbehovStatus fraDatabaseKode(String databaseKode) {
-        return fraKode(databaseKode);
-    }
-
 }
