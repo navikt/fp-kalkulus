@@ -20,11 +20,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
-import no.nav.folketrygdloven.kalkulator.modell.diff.DiffForKopieringDto;
-import no.nav.folketrygdloven.kalkulator.modell.diff.TraverseGraph;
-import no.nav.folketrygdloven.kalkulator.modell.diff.TraverseGraphConfig;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
@@ -32,7 +27,6 @@ import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateSegmentCombinator;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
-import no.nav.fpsak.tidsserie.StandardCombinators;
 
 public final class SpolFramoverTjeneste {
 
@@ -81,7 +75,7 @@ public final class SpolFramoverTjeneste {
     private static Set<Intervall> finnPerioderUtenforForlengelseperioder(List<Intervall> forlengelseperioder, BeregningsgrunnlagGrunnlagDto grunnlag) {
         return grunnlag.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()
                 .stream().map(BeregningsgrunnlagPeriodeDto::getPeriode)
-                .filter(p  -> forlengelseperioder.stream().noneMatch(fp -> fp.overlapper(p)))
+                .filter(p -> forlengelseperioder.stream().noneMatch(fp -> fp.overlapper(p)))
                 .collect(Collectors.toSet());
     }
 
@@ -142,17 +136,7 @@ public final class SpolFramoverTjeneste {
     }
 
     private static boolean erLike(BeregningsgrunnlagPeriodeDto dtoObject1, BeregningsgrunnlagPeriodeDto dtoObject2) {
-        var config = new TraverseGraphConfig();
-        config.setIgnoreNulls(false);
-        config.setOnlyCheckTrackedFields(true);
-
-        config.addLeafClasses(no.nav.folketrygdloven.kalkulus.felles.v1.Beløp.class);
-        config.addLeafClasses(InternArbeidsforholdRefDto.class);
-        config.addLeafClasses(Arbeidsgiver.class);
-
-        var diffEntity = new DiffForKopieringDto(new TraverseGraph(config));
-
-        return diffEntity.diff(dtoObject1, dtoObject2).isEmpty();
+        return BeregningsgrunnlagDiffSjekker.getDiff(dtoObject1, dtoObject2).isEmpty();
     }
 
     private static LocalDateSegmentCombinator<BeregningsgrunnlagPeriodeDto, BeregningsgrunnlagPeriodeDto, BeregningsgrunnlagPeriodeDto> kopiCombinator(Set<Intervall> intervallerSomKanKopieres) {

@@ -34,7 +34,6 @@ import no.nav.folketrygdloven.kalkulus.request.v1.BeregnForRequest;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
-import no.nav.fpsak.tidsserie.StandardCombinators;
 
 @ApplicationScoped
 public class ForlengelseTjeneste {
@@ -188,26 +187,10 @@ public class ForlengelseTjeneste {
         boolean harDiffUtenforForlengelse = !tidslinjeMedDiff.isEmpty();
         if (harDiffUtenforForlengelse && !erKunHelg(tidslinjeMedDiff)) {
             logger.info("Perioder med diff:" + tidslinjeMedDiff.toSegments().stream().map(LocalDateSegment::getLocalDateInterval).toList());
-            loggPerioderMedDiff(nyttBg, forrigeBg.get(), tidslinjeMedDiff);
             throw new IllegalStateException("Fant differanse i beregnet grunnlag utenfor oppgitt periode for forlengelse. Skjæringstidspunkt: " + nyttBg.getSkjæringstidspunkt() + " Forlengelseperioder: " + forlengelseperioder);
         }
     }
-
-    private void loggPerioderMedDiff(BeregningsgrunnlagDto nyttBg, BeregningsgrunnlagDto forrigeBg, LocalDateTimeline<Boolean> tidslinjeMedDiff) {
-        var nyTidslinje = nyttBg.getBeregningsgrunnlagPerioder().stream()
-                .map(p -> new LocalDateSegment<>(p.getBeregningsgrunnlagPeriodeFom(), p.getBeregningsgrunnlagPeriodeTom(), p))
-                .collect(Collectors.collectingAndThen(Collectors.toList(), LocalDateTimeline::new));
-        var forrigeTidslinje = forrigeBg.getBeregningsgrunnlagPerioder().stream()
-                .map(p -> new LocalDateSegment<>(p.getBeregningsgrunnlagPeriodeFom(), p.getBeregningsgrunnlagPeriodeTom(), p))
-                .collect(Collectors.collectingAndThen(Collectors.toList(), LocalDateTimeline::new));
-        var diff = nyTidslinje.intersection(forrigeTidslinje, (di, lhs, rhs) -> new LocalDateSegment<>(di, BeregningsgrunnlagDiffSjekker.getDiff(lhs.getValue(), rhs.getValue()).getLeafDifferences()))
-                .intersection(tidslinjeMedDiff, StandardCombinators::leftOnly);
-
-        diff.toSegments().forEach(s -> {
-            logger.info("Periode: " + s.getLocalDateInterval() + " Diff: " + s.getValue());
-        });
-    }
-
+    
     private boolean erKunHelg(LocalDateTimeline<Boolean> tidslinjeMedDiff) {
         return tidslinjeMedDiff.getLocalDateIntervals().stream().allMatch(this::erHelg);
     }
