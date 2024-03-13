@@ -117,3 +117,5 @@ spec:
       value: "true"
     - name: SKAL_VALIDERE_FORLENGELSE_ENDRING
       value: "true"
+    - name: BRUKERS_ANDEL_8_47_B
+      value: "true"

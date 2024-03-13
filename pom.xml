@@ -34,7 +34,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <ftberegning.version>5.0.0</ftberegning.version>
+        <ftberegning.version>5.0.1</ftberegning.version>
 
 
         <felles.version>2.5.1</felles.version>
