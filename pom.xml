@@ -12,11 +12,8 @@
 
     <modules>
         <module>web</module>
-        <module>kalkulator</module>
-        <module>kontrakt</module>
         <module>domenetjenester</module>
         <module>migreringer</module>
-        <module>kodeverk</module>
     </modules>
 
 
@@ -37,7 +34,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <beregningsgrunnlag.regelmodell.version>4.3.2</beregningsgrunnlag.regelmodell.version>
+        <ftberegning.version>5.0.0</ftberegning.version>
 
 
         <felles.version>2.5.1</felles.version>
@@ -114,24 +111,6 @@
             <!-- Interne avhengigheter -->
             <dependency>
                 <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-                <artifactId>kalkulus-kontrakt</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-                <artifactId>kalkulus-kodeverk</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-                <artifactId>kalkulus-kalkulator</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
                 <artifactId>migreringer</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -162,10 +141,26 @@
                 <version>3.1.0</version>
             </dependency>
 
+            <!-- Avhengigheter til ft-beregning -->
             <dependency>
-                <groupId>no.nav.folketrygdloven</groupId>
-                <artifactId>beregningsgrunnlag-regelmodell</artifactId>
-                <version>${beregningsgrunnlag.regelmodell.version}</version>
+                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+                <artifactId>beregning-kontrakt</artifactId>
+                <version>${ftberegning.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+                <artifactId>beregning-kodeverk</artifactId>
+                <version>${ftberegning.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+                <artifactId>beregning-kalkulator</artifactId>
+                <version>${ftberegning.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+                <artifactId>beregning-regler</artifactId>
+                <version>${ftberegning.version}</version>
             </dependency>
 
             <!-- Eksterne avhengigheter til andre prosjekter -->

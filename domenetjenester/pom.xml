@@ -31,11 +31,11 @@
         <!-- Interne avhengigheter  -->
         <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>kalkulus-kontrakt</artifactId>
+            <artifactId>beregning-kontrakt</artifactId>
         </dependency>
         <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>kalkulus-kalkulator</artifactId>
+            <artifactId>beregning-kalkulator</artifactId>
         </dependency>
         <dependency>
             <groupId>no.nav.k9.felles</groupId>
@@ -121,11 +121,7 @@
             <artifactId>flyway-database-postgresql</artifactId>
             <scope>test</scope>
         </dependency>
-
-
     </dependencies>
-
-
 
     <build>
         <plugins>

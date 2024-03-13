@@ -1,11 +1,3 @@
-domene/kontrakt:
-  - changed-files:
-      - any-glob-to-any-file: ['kontrakt/src/main/java/**/*', 'kodeverk/src/main/java/**/*']
-
-domene/kalkulator:
-  - changed-files:
-      - any-glob-to-any-file: ['felles/src/main/java/**/*', 'kalkulator/src/main/java/**/*']
-
 migreringer:
   - changed-files:
       - any-glob-to-any-file: ['migreringer/src/main/**/*']
