@@ -1,39 +1,37 @@
 version: 2
 registries:
-  k9-felles:
+  maven-github:
     type: maven-repository
-    url: https://maven.pkg.github.com/navikt/k9-felles
+    url: https://maven.pkg.github.com/navikt/fp-felles
     username: x-access-token
-    password: ${{secrets.PAT}}
-  k9-format:
-    type: maven-repository
-    url: https://maven.pkg.github.com/navikt/k9-format
-    username: x-access-token
-    password: ${{secrets.PAT}}
-  fp-nare:
-    type: maven-repository
-    url: https://maven.pkg.github.com/navikt/fp-nare
-    username: x-access-token
-    password: ${{secrets.PAT}}
-  fp-tidsserie:
-    type: maven-repository
-    url: https://maven.pkg.github.com/navikt/fp-tidsserie
-    username: x-access-token
-    password: ${{secrets.PAT}}
+    password: ${{ secrets.READER_TOKEN }}
+
 updates:
-  - package-ecosystem: maven
-    directory: "/"
-    schedule:
-      interval: daily
-    open-pull-requests-limit: 15
-    registries:
-      - k9-felles
-      - k9-format
-      - fp-nare
-      - fp-tidsserie
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
       interval: daily
-    open-pull-requests-limit: 15
-
+    open-pull-requests-limit: 10
+  - package-ecosystem: maven
+    directory: "/"
+    registries:
+      - maven-github
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 20
+    allow:
+      - dependency-type: "all"
+    groups:
+      prod-deps:
+        dependency-type: "production"
+        exclude-patterns:
+          - "no.nav.*"
+      dev-deps:
+        dependency-type: "development"
+        exclude-patterns:
+          - "no.nav.*"
+      interne-deps:
+        patterns:
+          - "no.nav.*"
+        exclude-patterns:
+          - "no.nav.folketrygdloven.*"

@@ -1,16 +1,16 @@
-FROM ghcr.io/navikt/baseimages/temurin:21-appdynamics
-LABEL org.opencontainers.image.source=https://github.com/navikt/ft-kalkulus
-ENV APPD_ENABLED=true
-ENV JAVA_OPTS="-XX:MaxRAMPercentage=75.0 \
-    -Djava.security.egd=file:/dev/urandom"
+FROM ghcr.io/navikt/fp-baseimages/java:21
+LABEL org.opencontainers.image.source=https://github.com/navikt/fp-kalkulus
+ENV TZ=Europe/Oslo
 
-RUN mkdir webapp
+RUN mkdir lib
+RUN mkdir conf
 
-# Export vault properties
-COPY --chown=apprunner:root .scripts/03-import-appdynamics.sh /init-scripts/03-import-appdynamics.sh
-COPY --chown=apprunner:root .scripts/05-import-users.sh /init-scripts/05-import-users.sh
-COPY --chown=apprunner:root .scripts/08-remote-debug.sh /init-scripts/08-remote-debug.sh
+ENV JAVA_OPTS="-Djava.security.egd=file:/dev/urandom \
+    -Dlogback.configurationFile=conf/logback.xml"
+
+# Config
+COPY web/target/classes/logback*.xml ./conf/
 
 # Application Container (Jetty)
-COPY web/target/lib/*.jar ./
+COPY web/target/lib/*.jar ./lib/
 COPY web/target/app.jar .
