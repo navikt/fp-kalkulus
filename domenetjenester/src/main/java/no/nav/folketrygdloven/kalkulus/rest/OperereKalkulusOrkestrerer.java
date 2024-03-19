@@ -109,7 +109,7 @@ public class OperereKalkulusOrkestrerer {
         Set<Long> koblingIder = koblingTilDto.keySet();
         // Lag input
         Map<Long, KalkulatorInputDto> kalkulatorInputPrKobling = null;
-        Objects.requireNonNull(kalkulatorInputPrKobling, "Trenger kalkulatorinput for å kunne løse avklaringsbehov");
+        Objects.requireNonNull(kalkulatorInputPrKobling, "Trenger kalkulatorinput for å kunne løse avklaringsbehov"); // TODO tfp-5742 fiks
         var håndterInputPrKobling = lagInputOgRullTilbakeVedBehov(
                 koblingIder,
             kalkulatorInputPrKobling,

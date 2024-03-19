@@ -65,9 +65,9 @@ public class GUIBeregningsgrunnlagInputTjeneste {
                 .map(grunnlagEntitet -> {
                     Long koblingId = grunnlagEntitet.getKoblingId();
                     var kalkulatorInput = Optional.ofNullable(koblingKalkulatorInput.get(koblingId))
-                            .orElseThrow(() -> new TekniskException("FT-KALKULUS-INPUT-1000000", String.format("Kalkulus finner ikke kalkulator input for koblingId: %s", koblingId)));
+                            .orElseThrow(() -> new TekniskException("FP-KALKULUS-INPUT-1000000", String.format("Kalkulus finner ikke kalkulator input for koblingId: %s", koblingId)));
                     var kobling = Optional.ofNullable(koblinger.get(koblingId))
-                            .orElseThrow(() -> new TekniskException("FT-KALKULUS-INPUT-1000003", String.format("Kalkulus finner ikke kobling: %s", koblingId)));
+                            .orElseThrow(() -> new TekniskException("FP-KALKULUS-INPUT-1000003", String.format("Kalkulus finner ikke kobling: %s", koblingId)));
                     var avklaringsbehov = avklaringsbehovPrKobling.getOrDefault(koblingId, Collections.emptyList());
                     BeregningsgrunnlagGUIInput input = lagInput(kobling, kalkulatorInput, Optional.of(grunnlagEntitet));
                     return input.medBeregningsgrunnlagGrunnlag(mapGrunnlag(grunnlagEntitet))
@@ -105,6 +105,7 @@ public class GUIBeregningsgrunnlagInputTjeneste {
             .hentBeregningsgrunnlagGrunnlagEntiteter(koblingRelasjoner.stream().map(KoblingRelasjon::getOriginalKoblingId).collect(Collectors.toList()));
     Map<Long, KalkulatorInputDto> inputMap = Map.of();
     if (inputMap.isEmpty()) {
+        // TODO tfp-5742 fiks input her
         throw new IllegalStateException("Må ha kalkulatorinput for å kunne lage GUI dto");
     }
     return mapKalkulatorInputTilModell(koblingerMedBeregningsgrunnlag,

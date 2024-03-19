@@ -41,7 +41,7 @@ public class GrunnbeløpreguleringTjeneste {
             return GrunnbeløpReguleringStatus.IKKE_VURDERT;
         }
         Optional<BeregningsgrunnlagGrunnlagEntitet> gjeldendeBG = koblingEntitetOpt.flatMap(k -> beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(k.getId()));
-        KalkulatorInputDto input = null; // Skal gregulering gjøres i fpsak eller kalkulus?
+        KalkulatorInputDto input = null; // TODO tfp-5742 skal gregulering gjøres i fpsak eller kalkulus?
         Objects.requireNonNull(input, "kan ikke undersøke gregulering uten input");
         BeregningSats nySats = beregningsgrunnlagRepository.finnGrunnbeløp(input.getSkjæringstidspunkt());
         return Greguleringsstatusutleder.utledStatus(gjeldendeBG, BigDecimal.valueOf(nySats.getVerdi()), koblingEntitetOpt.get().getYtelseType());

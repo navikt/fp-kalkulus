@@ -42,7 +42,6 @@ public final class SpolFramoverTjeneste {
      * Spolingen kopierer hele eller deler av grunnlaget som er lagret ved håndtering av aksjonspunkter mellom inneværende og neste steg.
      *
      * @param avklaringsbehov          avklaringsbehov som er utledet i steget
-     * @param forlengelseperioder
      * @param nyttGrunnlag             nytt grunnlag som er opprettet i steget
      * @param forrigeGrunnlagFraSteg   forrige grunnlag fra steget
      * @param forrigeGrunnlagFraStegUt forrige grunnlag fra steg ut
