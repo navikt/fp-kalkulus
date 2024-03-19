@@ -10,13 +10,11 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.TilkommetInntektDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatus;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.TilkommetInntekt;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.FastsattInntektskategori;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Promille;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Prosent;
@@ -50,9 +48,6 @@ public class KalkulatorTilBGMapper {
         //legg til
         fraKalkulus.getPeriodeÅrsaker().forEach(builder::leggTilPeriodeÅrsak);
         fraKalkulus.getBeregningsgrunnlagPrStatusOgAndelList().forEach(statusOgAndel -> builder.leggTilBeregningsgrunnlagPrStatusOgAndel(mapStatusOgAndel(statusOgAndel)));
-        fraKalkulus.getTilkomneInntekter().stream()
-                .map(KalkulatorTilBGMapper::mapTilkommetInntekt)
-                .forEach(builder::leggTilTilkommetInntekt);
 
         return builder;
     }
@@ -159,16 +154,4 @@ public class KalkulatorTilBGMapper {
         }
         return refusjon.getGjeldendeRefusjonPrÅr() != null;
     }
-
-    private static TilkommetInntekt mapTilkommetInntekt(TilkommetInntektDto it) {
-        return new TilkommetInntekt(
-                it.getAktivitetStatus(),
-                it.getArbeidsgiver().map(KalkulatorTilIAYMapper::mapArbeidsgiver).orElse(null),
-                KalkulatorTilIAYMapper.mapArbeidsforholdRef(it.getArbeidsforholdRef()),
-                VerdityperMapper.beløpTilDao(it.getBruttoInntektPrÅr()),
-                VerdityperMapper.beløpTilDao(it.getTilkommetInntektPrÅr()),
-                it.skalRedusereUtbetaling());
-    }
-
-
 }

@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-
-import org.hibernate.annotations.BatchSize;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
@@ -21,9 +18,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+
+import org.hibernate.annotations.BatchSize;
+
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.diff.ChangeTracked;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
@@ -52,9 +51,6 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
     @BatchSize(size = 20)
     private final List<BeregningsgrunnlagPeriode> beregningsgrunnlagPerioder = new ArrayList<>();
 
-    @OneToOne(mappedBy = "beregningsgrunnlag", cascade = CascadeType.PERSIST)
-    private Sammenligningsgrunnlag sammenligningsgrunnlag;
-
     @OneToMany(mappedBy = "beregningsgrunnlag")
     @BatchSize(size = 20)
     private final List<SammenligningsgrunnlagPrStatus> sammenligningsgrunnlagPrStatusListe = new ArrayList<>();
@@ -75,7 +71,6 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
         this.grunnbeløp = kopi.getGrunnbeløp();
         this.overstyrt = kopi.isOverstyrt();
         this.skjæringstidspunkt = kopi.getSkjæringstidspunkt();
-        kopi.getSammenligningsgrunnlag().map(Sammenligningsgrunnlag::new).ifPresent(this::setSammenligningsgrunnlag);
         kopi.getSammenligningsgrunnlagPrStatusListe().stream().map(SammenligningsgrunnlagPrStatus::new).forEach(this::leggTilSammenligningsgrunnlagPrStatus);
         kopi.getFaktaOmBeregningTilfeller().stream().map(BeregningsgrunnlagFaktaOmBeregningTilfelle::new).forEach(this::leggTilFaktaOmBeregningTilfelle);
         kopi.getAktivitetStatuser().stream().map(BeregningsgrunnlagAktivitetStatus::new).forEach(this::leggTilBeregningsgrunnlagAktivitetStatus);
@@ -84,6 +79,7 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
     }
 
     public BeregningsgrunnlagEntitet() {
+        // Hibernate
     }
 
     public Long getId() {
@@ -105,15 +101,6 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
                 .stream()
                 .sorted(Comparator.comparing(BeregningsgrunnlagPeriode::getBeregningsgrunnlagPeriodeFom))
                 .toList();
-    }
-
-    public Optional<Sammenligningsgrunnlag> getSammenligningsgrunnlag() {
-        return Optional.ofNullable(sammenligningsgrunnlag);
-    }
-
-    void setSammenligningsgrunnlag(Sammenligningsgrunnlag sammenligningsgrunnlag) {
-        sammenligningsgrunnlag.setBeregningsgrunnlag(this);
-        this.sammenligningsgrunnlag = sammenligningsgrunnlag;
     }
 
     public Beløp getGrunnbeløp() {
@@ -247,17 +234,6 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
         public Builder leggTilFaktaOmBeregningTilfeller(List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller) {
             verifiserKanModifisere();
             faktaOmBeregningTilfeller.forEach(tilfelle -> BeregningsgrunnlagFaktaOmBeregningTilfelle.builder().medFaktaOmBeregningTilfelle(tilfelle).build(kladd));
-            return this;
-        }
-
-        /**
-         * @deprecated bruk -> {@link SammenligningsgrunnlagPrStatus}
-         */
-        @Deprecated
-        public Builder medSammenligningsgrunnlagOld(Sammenligningsgrunnlag sammenligningsgrunnlag) {
-            verifiserKanModifisere();
-            sammenligningsgrunnlag.setBeregningsgrunnlag(kladd);
-            kladd.sammenligningsgrunnlag = sammenligningsgrunnlag;
             return this;
         }
 

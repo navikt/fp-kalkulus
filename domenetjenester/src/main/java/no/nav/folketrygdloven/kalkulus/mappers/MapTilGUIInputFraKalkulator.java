@@ -17,8 +17,7 @@ public class MapTilGUIInputFraKalkulator {
 
     public static BeregningsgrunnlagGUIInput mapFraKalkulatorInput(KoblingEntitet kobling,
                                                                    KalkulatorInputDto input,
-                                                                   Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet,
-                                                                   List<IntervallEntitet> forlengelseperioder) {
+                                                                   Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
         var skjæringstidspunkt = Skjæringstidspunkt.builder()
                 .medFørsteUttaksdato(input.getSkjæringstidspunkt())
                 .medSkjæringstidspunktOpptjening(input.getSkjæringstidspunkt()).build();
@@ -35,7 +34,6 @@ public class MapTilGUIInputFraKalkulator {
                 iayGrunnlagMappet,
                 MapFraKalkulator.mapFraDto(input.getRefusjonskravPrArbeidsforhold(), input.getRefusjonskravDatoer(), input.getIayGrunnlag(), input.getSkjæringstidspunkt()),
                 MapFraKalkulator.mapFraDto(kobling.getYtelseType(), input, iayGrunnlagMappet, beregningsgrunnlagGrunnlagEntitet));
-        beregningsgrunnlagGUIInput.setForlengelseperioder(MapFraKalkulator.mapPerioder(forlengelseperioder));
         return beregningsgrunnlagGUIInput;
     }
 

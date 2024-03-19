@@ -10,15 +10,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.slf4j.MDC;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -31,11 +22,20 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
+
+import org.slf4j.MDC;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagGuiTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.KalkulatorGuiInterface;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulus.beregning.GUIBeregningsgrunnlagInputTjeneste;
-import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
@@ -58,7 +58,6 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagListe;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
-import no.nav.folketrygdloven.kalkulus.tjeneste.forlengelse.ForlengelseTjeneste;
 import no.nav.k9.felles.sikkerhet.abac.AbacDataAttributter;
 import no.nav.k9.felles.sikkerhet.abac.BeskyttetRessurs;
 import no.nav.k9.felles.sikkerhet.abac.StandardAbacAttributtType;
@@ -72,10 +71,8 @@ public class HentKalkulusRestTjeneste {
 
     private KoblingTjeneste koblingTjeneste;
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
-    private KalkulatorInputTjeneste kalkulatorInputTjeneste;
     private GUIBeregningsgrunnlagInputTjeneste guiInputTjeneste;
     private final KalkulatorGuiInterface dtoTjeneste = new BeregningsgrunnlagGuiTjeneste();
-    private ForlengelseTjeneste forlengelseTjeneste;
 
     public HentKalkulusRestTjeneste() {
         // for CDI
@@ -84,14 +81,10 @@ public class HentKalkulusRestTjeneste {
     @Inject
     public HentKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste,
                                     BeregningsgrunnlagRepository beregningsgrunnlagRepository,
-                                    KalkulatorInputTjeneste kalkulatorInputTjeneste,
-                                    GUIBeregningsgrunnlagInputTjeneste guiInputTjeneste,
-                                    ForlengelseTjeneste forlengelseTjeneste) {
+                                    GUIBeregningsgrunnlagInputTjeneste guiInputTjeneste) {
         this.koblingTjeneste = koblingTjeneste;
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
-        this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
         this.guiInputTjeneste = guiInputTjeneste;
-        this.forlengelseTjeneste = forlengelseTjeneste;
     }
 
 
@@ -145,14 +138,12 @@ public class HentKalkulusRestTjeneste {
         var koblingReferanser = spesifikasjon.getRequestPrReferanse().stream().map(v -> new KoblingReferanse(v.getKoblingReferanse()))
                 .collect(Collectors.toList());
         var koblinger = koblingTjeneste.hentKoblinger(koblingReferanser, ytelseType);
-        var erForlengelsePrKobling = forlengelseTjeneste.erForlengelser(koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet()));
         var input = guiInputTjeneste.lagInputForKoblinger(koblinger.stream().map(KoblingEntitet::getId).toList(), List.of());
         var dtoer = input.values().stream()
                 .map(v -> MapBrevBeregningsgrunnlag.mapGrunnlag(
                         v.getKoblingReferanse(),
                         v.getBeregningsgrunnlagGrunnlag(),
-                        v.getYtelsespesifiktGrunnlag(),
-                        erForlengelsePrKobling.getOrDefault(v.getKoblingReferanse().getKoblingId(), false)))
+                        v.getYtelsespesifiktGrunnlag()))
                 .collect(Collectors.toList());
         return dtoer.isEmpty() ? Response.noContent().build() : Response.ok(dtoer).build();
     }
@@ -166,11 +157,6 @@ public class HentKalkulusRestTjeneste {
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response hentBeregningsgrunnlagDtoListe(@NotNull @Valid HentBeregningsgrunnlagDtoListeForGUIRequestAbacDto spesifikasjon) {
         List<HentBeregningsgrunnlagDtoForGUIRequest> spesifikasjoner = spesifikasjon.getRequestPrReferanse();
-        if (spesifikasjon.getKalkulatorInputPerKoblingReferanse() != null) {
-            var ytelseTyper = spesifikasjoner.stream().map(HentBeregningsgrunnlagDtoForGUIRequest::getYtelseSomSkalBeregnes).collect(Collectors.toSet());
-            var ytelseType = ytelseTyper.iterator().next();
-            kalkulatorInputTjeneste.lagreKalkulatorInput(ytelseType, spesifikasjon.getKalkulatorInputPerKoblingReferanse());
-        }
         Map<Long, BeregningsgrunnlagGUIInput> inputResultat;
         try {
             inputResultat = finnInputForGenereringAvDtoTilGUI(spesifikasjoner);
@@ -222,7 +208,7 @@ public class HentKalkulusRestTjeneste {
         koblingTjeneste.hentFor(koblingReferanse).map(KoblingEntitet::getSaksnummer)
                 .ifPresent(saksnummer -> MDC.put("prosess_saksnummer", saksnummer.getVerdi()));
         Optional<Long> koblingId = koblingTjeneste.hentKoblingHvisFinnes(koblingReferanse, spesifikasjon.getYtelseSomSkalBeregnes());
-        if (koblingId.isEmpty() || !harKalkulatorInput(koblingId)) {
+        if (koblingId.isEmpty()) {
             return Response.noContent().build();
         }
         Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository
@@ -275,11 +261,6 @@ public class HentKalkulusRestTjeneste {
         MDC.remove("prosess_koblingId");
         return beregningsgrunnlagDto;
     }
-
-    private Boolean harKalkulatorInput(Optional<Long> koblingId) {
-        return koblingId.map(id -> beregningsgrunnlagRepository.hvisEksistererKalkulatorInput(id)).orElse(false);
-    }
-
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)

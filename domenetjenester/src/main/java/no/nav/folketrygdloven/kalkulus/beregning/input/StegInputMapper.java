@@ -48,9 +48,8 @@ class StegInputMapper {
                                                  KalkulatorInputDto input,
                                                  Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagEntitet,
                                                  BeregningSteg stegType,
-                                                 List<Long> originaleKoblinger,
-                                                 List<IntervallEntitet> forlengelseperioder) {
-        StegProsesseringInput stegProsesseringInput = lagStegProsesseringInput(kobling, input, grunnlagEntitet, stegType, forlengelseperioder);
+                                                 List<Long> originaleKoblinger) {
+        StegProsesseringInput stegProsesseringInput = lagStegProsesseringInput(kobling, input, grunnlagEntitet, stegType);
         if (stegType.equals(BeregningSteg.FASTSETT_STP_BER)) {
             return new FastsettBeregningsaktiviteterInput(stegProsesseringInput).medGrunnbeløpInput(finnInputSatser());
         } else if (stegType.equals(BeregningSteg.KOFAKBER)) {
@@ -114,9 +113,8 @@ class StegInputMapper {
     private StegProsesseringInput lagStegProsesseringInput(KoblingEntitet kobling,
                                                            KalkulatorInputDto input,
                                                            Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagEntitet,
-                                                           BeregningSteg stegType,
-                                                           List<IntervallEntitet> forlengelseperioder) {
-        var beregningsgrunnlagInput = MapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input, grunnlagEntitet, forlengelseperioder);
+                                                           BeregningSteg stegType) {
+        var beregningsgrunnlagInput = MapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input, grunnlagEntitet);
         var grunnlagFraSteg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(
                 kobling,
                 mapTilStegTilstand(stegType), input.getSkjæringstidspunkt());

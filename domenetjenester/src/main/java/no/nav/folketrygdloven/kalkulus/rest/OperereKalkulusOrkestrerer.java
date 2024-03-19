@@ -3,12 +3,15 @@ package no.nav.folketrygdloven.kalkulus.rest;
 import static no.nav.folketrygdloven.kalkulus.beregning.MapStegTilTilstand.mapTilStegTilstand;
 import static no.nav.folketrygdloven.kalkulus.beregning.MapStegTilTilstand.mapTilStegUtTilstand;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
 
 import org.slf4j.MDC;
 
@@ -19,12 +22,10 @@ import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulus.beregning.BeregningStegTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.input.HåndteringInputTjeneste;
-import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.input.StegProsessInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.HåndtererApplikasjonTjeneste;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
@@ -36,16 +37,13 @@ import no.nav.folketrygdloven.kalkulus.request.v1.BeregnForRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.HåndterBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.KalkulusRespons;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
-import no.nav.folketrygdloven.kalkulus.tjeneste.forlengelse.ForlengelseTjeneste;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 @ApplicationScoped
 public class OperereKalkulusOrkestrerer {
 
     private KoblingTjeneste koblingTjeneste;
-    private ForlengelseTjeneste forlengelseTjeneste;
     private BeregningStegTjeneste beregningStegTjeneste;
-    private KalkulatorInputTjeneste kalkulatorInputTjeneste;
     private StegProsessInputTjeneste stegInputTjeneste;
     private HåndteringInputTjeneste håndteringInputTjeneste;
     private HåndtererApplikasjonTjeneste håndtererApplikasjonTjeneste;
@@ -57,16 +55,13 @@ public class OperereKalkulusOrkestrerer {
 
     @Inject
     public OperereKalkulusOrkestrerer(KoblingTjeneste koblingTjeneste,
-                                      ForlengelseTjeneste forlengelseTjeneste, BeregningStegTjeneste beregningStegTjeneste,
-                                      KalkulatorInputTjeneste kalkulatorInputTjeneste,
+                                      BeregningStegTjeneste beregningStegTjeneste,
                                       StegProsessInputTjeneste stegInputTjeneste,
                                       HåndteringInputTjeneste håndteringInputTjeneste,
                                       HåndtererApplikasjonTjeneste håndtererApplikasjonTjeneste,
                                       RullTilbakeTjeneste rullTilbakeTjeneste) {
         this.koblingTjeneste = koblingTjeneste;
-        this.forlengelseTjeneste = forlengelseTjeneste;
         this.beregningStegTjeneste = beregningStegTjeneste;
-        this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
         this.stegInputTjeneste = stegInputTjeneste;
         this.håndteringInputTjeneste = håndteringInputTjeneste;
         this.håndtererApplikasjonTjeneste = håndtererApplikasjonTjeneste;
@@ -83,14 +78,12 @@ public class OperereKalkulusOrkestrerer {
         var koblinger = finnKoblinger(ytelseSomSkalBeregnes, saksnummer, referanser, aktørId);
         var koblingrelasjoner = finnKoblingRelasjonMap(beregnForListe);
         var koblingRelasjonEntiteter = koblingTjeneste.finnOgOpprettKoblingRelasjoner(koblingrelasjoner);
-        forlengelseTjeneste.lagrePerioderForForlengelse(steg, beregnForListe, koblinger);
 
-        Set<Long> koblingIder = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
+        List<Long> koblingIder = koblinger.stream().map(KoblingEntitet::getId).toList();
         // Lag input
-        var inputPrReferanse = finnKalkulatorInputPrReferanseMap(beregnForListe);
-        var hentInputResultat = kalkulatorInputTjeneste.hentOgLagreForSteg(inputPrReferanse, koblingIder, steg);
-        var stegInputPrKobling = lagInputOgRullTilbakeVedBehov(koblingIder,
-                hentInputResultat,
+        Map<Long, KalkulatorInputDto> kalkulatorInputPrKobling = Map.of(koblingIder.getFirst(), beregnForListe.getFirst().getKalkulatorInput());
+        var stegInputPrKobling = lagInputOgRullTilbakeVedBehov(new HashSet<>(koblingIder),
+            kalkulatorInputPrKobling,
                 new InputForSteg(steg, koblingRelasjonEntiteter), true);
 
         // Operer
@@ -115,10 +108,11 @@ public class OperereKalkulusOrkestrerer {
         var koblingTilDto = lagDtoMap(håndterBeregningListe, koblinger);
         Set<Long> koblingIder = koblingTilDto.keySet();
         // Lag input
-        var hentInputResultat = kalkulatorInputTjeneste.hentOgLagre(inputPrReferanse, koblingIder);
+        Map<Long, KalkulatorInputDto> kalkulatorInputPrKobling = null;
+        Objects.requireNonNull(kalkulatorInputPrKobling, "Trenger kalkulatorinput for å kunne løse avklaringsbehov");
         var håndterInputPrKobling = lagInputOgRullTilbakeVedBehov(
                 koblingIder,
-                hentInputResultat,
+            kalkulatorInputPrKobling,
                 new InputForHåndtering(koblingTilDto), false);
         // Operer
         return opererAlle(håndterInputPrKobling, new Håndterer(koblingTilDto));

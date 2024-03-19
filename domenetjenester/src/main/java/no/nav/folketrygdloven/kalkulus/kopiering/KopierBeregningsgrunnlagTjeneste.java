@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import no.nav.folketrygdloven.kalkulus.beregning.MapStegTilTilstand;
-import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
@@ -37,7 +36,6 @@ public class KopierBeregningsgrunnlagTjeneste {
     private KoblingTjeneste koblingTjeneste;
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
-    private KalkulatorInputTjeneste kalkulatorInputTjeneste;
 
     public KopierBeregningsgrunnlagTjeneste() {
     }
@@ -45,11 +43,10 @@ public class KopierBeregningsgrunnlagTjeneste {
     @Inject
     public KopierBeregningsgrunnlagTjeneste(KoblingTjeneste koblingTjeneste,
                                             BeregningsgrunnlagRepository beregningsgrunnlagRepository,
-                                            AvklaringsbehovTjeneste avklaringsbehovTjeneste, KalkulatorInputTjeneste kalkulatorInputTjeneste) {
+                                            AvklaringsbehovTjeneste avklaringsbehovTjeneste) {
         this.koblingTjeneste = koblingTjeneste;
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.avklaringsbehovTjeneste = avklaringsbehovTjeneste;
-        this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
     }
 
 
@@ -72,15 +69,8 @@ public class KopierBeregningsgrunnlagTjeneste {
         var nyeKoblinger = opprettNyeKoblinger(kopiRequests, ytelseType, aktørId, saksnummer);
         opprettKoblingrelasjoner(kopiRequests);
         kopierBeregningsgrunnlag(kopiRequests, nyeKoblinger, eksisterendeKoblinger, steg, opprettetTidMax);
-        kopierKalkulatorInput(kopiRequests, eksisterendeKoblinger, nyeKoblinger);
         kopierAvklaringsbehov(kopiRequests, eksisterendeKoblinger, nyeKoblinger, steg);
     }
-
-    private void kopierKalkulatorInput(List<KopierBeregningRequest> kopiRequests, List<KoblingEntitet> eksisterendeKoblinger, List<KoblingEntitet> nyeKoblinger) {
-        kalkulatorInputTjeneste.hentForKoblinger(eksisterendeKoblinger.stream().map(KoblingEntitet::getId).toList())
-                .forEach((key, value) -> kalkulatorInputTjeneste.lagreKalkulatorInput(finnNyKoblingId(key, eksisterendeKoblinger, nyeKoblinger, kopiRequests), value));
-    }
-
 
     private void opprettKoblingrelasjoner(List<KopierBeregningRequest> kopiRequests) {
         var koblingrelasjoner = kopiRequests.stream()
@@ -135,7 +125,6 @@ public class KopierBeregningsgrunnlagTjeneste {
             var nyKoblingId = finnNyKoblingId(koblingId, eksisterendeKoblinger, nyeKoblinger, kopiRequests);
             var kopi = BeregningsgrunnlagGrunnlagBuilder.kopiere(gr);
             beregningsgrunnlagRepository.lagre(nyKoblingId, kopi, MapStegTilTilstand.mapTilStegTilstand(steg));
-            koblingTjeneste.lagreGrunnlagskopiSporing(nyKoblingId, gr.getKoblingId(), gr.getId());
         });
     }
 

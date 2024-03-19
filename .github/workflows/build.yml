@@ -25,7 +25,7 @@ jobs:
       id-token: write
     uses: navikt/fp-gha-workflows/.github/workflows/build-app-postgres.yml@main
     with:
-      postgres-user: ftkalkulus_unit # TODO: endre til fpkalkulus_unit + resten av kodebasen
+      postgres-user: fpkalkulus_unit # TODO: endre til fpkalkulus_unit + resten av kodebasen
       build-image: ${{ github.ref_name == 'master' }} # default: true
       push-image: ${{ github.ref_name == 'master' }} # default: false
     secrets: inherit

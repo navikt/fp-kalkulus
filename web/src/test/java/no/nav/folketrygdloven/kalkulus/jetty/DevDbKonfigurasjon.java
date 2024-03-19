@@ -12,8 +12,8 @@ public class DevDbKonfigurasjon {
     private static final String location = "classpath:/db/migration/";
 
     private String datasource = "defaultDS";
-    private String url = "jdbc:postgresql://127.0.0.1:5432/ftkalkulus?reWriteBatchedInserts=true";
-    private String user = "ftkalkulus";
+    private String url = "jdbc:postgresql://127.0.0.1:5432/fpkalkulus?reWriteBatchedInserts=true";
+    private String user = "fpkalkulus";
     private String password = user;
 
     static void clean(DataSource dataSource) {

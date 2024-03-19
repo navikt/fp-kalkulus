@@ -49,7 +49,7 @@ public final class SpolFramoverTjeneste {
      * @return Builder for grunnlag som det skal spoles fram til
      */
     public static Optional<BeregningsgrunnlagGrunnlagDto> finnGrunnlagDetSkalSpolesTil(Collection<BeregningAvklaringsbehovResultat> avklaringsbehov,
-                                                                                       List<Intervall> forlengelseperioder, BeregningsgrunnlagGrunnlagDto nyttGrunnlag,
+                                                                                       BeregningsgrunnlagGrunnlagDto nyttGrunnlag,
                                                                                        Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlagFraSteg,
                                                                                        Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlagFraStegUt) {
 
@@ -64,19 +64,7 @@ public final class SpolFramoverTjeneste {
         if (!avklaringsbehov.isEmpty() && forrigeGrunnlagFraSteg.isPresent() && forrigeGrunnlagFraStegUt.isPresent()) {
             spoltGrunnlag = spolFramLikePerioderOmMulig(nyttGrunnlag, forrigeGrunnlagFraSteg.get(), forrigeGrunnlagFraStegUt.get());
         }
-        if (!forlengelseperioder.isEmpty() && forrigeGrunnlagFraSteg.isPresent() && forrigeGrunnlagFraStegUt.isPresent()) {
-            var perioderSomKopieres = finnPerioderUtenforForlengelseperioder(forlengelseperioder, nyttGrunnlag);
-            LOG.info("Kopierer intervaller for manuelt avklart grunnlag ved forlengelse: " + perioderSomKopieres);
-            spoltGrunnlag = Optional.of(kopierPerioderFraForrigeGrunnlag(spoltGrunnlag.orElse(nyttGrunnlag), forrigeGrunnlagFraStegUt.get(), perioderSomKopieres, true));
-        }
         return spoltGrunnlag;
-    }
-
-    private static Set<Intervall> finnPerioderUtenforForlengelseperioder(List<Intervall> forlengelseperioder, BeregningsgrunnlagGrunnlagDto grunnlag) {
-        return grunnlag.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()
-                .stream().map(BeregningsgrunnlagPeriodeDto::getPeriode)
-                .filter(p -> forlengelseperioder.stream().noneMatch(fp -> fp.overlapper(p)))
-                .collect(Collectors.toSet());
     }
 
     private static Optional<BeregningsgrunnlagGrunnlagDto> spolFramLikePerioderOmMulig(BeregningsgrunnlagGrunnlagDto nyttGrunnlag,

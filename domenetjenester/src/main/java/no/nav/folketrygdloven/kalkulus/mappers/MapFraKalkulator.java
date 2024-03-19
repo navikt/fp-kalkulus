@@ -54,8 +54,7 @@ public class MapFraKalkulator {
 
     public static BeregningsgrunnlagInput mapFraKalkulatorInputTilBeregningsgrunnlagInput(KoblingEntitet kobling,
                                                                                           KalkulatorInputDto input,
-                                                                                          Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet,
-                                                                                          List<IntervallEntitet> forlengelseperioder) {
+                                                                                          Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
         var koblingId = kobling.getId();
         var skjæringstidspunkt = input.getSkjæringstidspunkt();
 
@@ -82,14 +81,9 @@ public class MapFraKalkulator {
                         beregningsgrunnlagGrunnlagEntitet));
 
         utenGrunnbeløp.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
-        utenGrunnbeløp.setForlengelseperioder(mapPerioder(forlengelseperioder));
         return beregningsgrunnlagGrunnlagEntitet.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag)
                 .map(utenGrunnbeløp::medBeregningsgrunnlagGrunnlag)
                 .orElse(utenGrunnbeløp);
-    }
-
-    public static List<Intervall> mapPerioder(List<IntervallEntitet> forlengelseperioder) {
-        return forlengelseperioder.stream().map(p -> Intervall.fraOgMedTilOgMed(p.getFomDato(), p.getTomDato())).toList();
     }
 
     public static List<KravperioderPrArbeidsforholdDto> mapFraDto(List<KravperioderPrArbeidsforhold> kravPrArbeidsforhold, List<RefusjonskravDatoDto> refusjonskravDatoer, InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDate stp) {

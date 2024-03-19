@@ -17,7 +17,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatus;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.TilkommetInntekt;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Promille;
 import no.nav.folketrygdloven.kalkulus.mappers.VerdityperMapper;
@@ -48,7 +47,6 @@ public class BGMapperTilKalkulus {
         //legg til
         fraFagsystem.getPeriodeÅrsaker().forEach(builder::leggTilPeriodeÅrsak);
         fraFagsystem.getBeregningsgrunnlagPrStatusOgAndelList().forEach(statusOgAndel -> builder.leggTilBeregningsgrunnlagPrStatusOgAndel(mapStatusOgAndel(statusOgAndel)));
-        fraFagsystem.getTilkomneInntekter().forEach(it -> builder.leggTilTilkommetInntekt(mapTilkommetInntekt(it)));
         return builder;
     }
 
@@ -115,21 +113,6 @@ public class BGMapperTilKalkulus {
         return builder;
     }
 
-    public static List<SammenligningsgrunnlagPrStatusDto> mapGammeltTilNyttSammenligningsgrunnlag(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
-        if (beregningsgrunnlagEntitet.getSammenligningsgrunnlag().isEmpty()) {
-            return Collections.emptyList();
-        }
-        var gammeltSG = beregningsgrunnlagEntitet.getSammenligningsgrunnlag().get();
-        var sammenligningsgrunnlagType = SammenligningTypeMapper.finnSammenligningtypeFraAktivitetstatus(beregningsgrunnlagEntitet);
-        return Collections.singletonList(SammenligningsgrunnlagPrStatusDto.builder()
-                .medSammenligningsgrunnlagType(sammenligningsgrunnlagType)
-                .medSammenligningsperiode(gammeltSG.getSammenligningsperiodeFom(), gammeltSG.getSammenligningsperiodeTom())
-                .medAvvikPromilleNy(mapFraPromille(gammeltSG.getAvvikPromilleNy()))
-                .medRapportertPrÅr(mapFraBeløp(gammeltSG.getRapportertPrÅr()))
-                .build());
-
-    }
-
     private static Refusjon mapRefusjon(no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Refusjon refusjon) {
         if (refusjon == null) {
             return null;
@@ -143,16 +126,6 @@ public class BGMapperTilKalkulus {
                 refusjon.getRefusjonskravFristUtfall());
     }
 
-    private static TilkommetInntektDto mapTilkommetInntekt(TilkommetInntekt it) {
-        return new TilkommetInntektDto(
-                it.getAktivitetStatus(),
-                it.getArbeidsgiver().map(IAYMapperTilKalkulus::mapArbeidsgiver).orElse(null),
-                IAYMapperTilKalkulus.mapArbeidsforholdRef(it.getArbeidsforholdRef()),
-                mapFraBeløp(it.getBruttoInntektPrÅr()),
-                mapFraBeløp(it.getTilkommetInntektPrÅr()),
-                it.skalRedusereUtbetaling());
-    }
-
     private static no.nav.folketrygdloven.kalkulator.modell.typer.Beløp mapFraBeløp(Beløp beløp) {
         return VerdityperMapper.beløpFraDao(beløp);
     }
@@ -160,5 +133,4 @@ public class BGMapperTilKalkulus {
     private static BigDecimal mapFraPromille(Promille promille) {
         return promille == null ? null : promille.getVerdi();
     }
-
 }

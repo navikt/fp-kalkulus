@@ -28,7 +28,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetOverstyringerEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningRefusjonOverstyringEntitet;
@@ -446,19 +445,6 @@ public class BeregningsgrunnlagRepository {
         return BeregningsgrunnlagGrunnlagBuilder.kopiere(grunnlag);
     }
 
-    public void deaktiverKalkulatorInput(Long koblingId) {
-        var query = entityManager.createQuery("Update KalkulatorInput " +
-                        "set aktiv = false, " +
-                        "endretTidspunkt = :endretTid " +
-                        "where koblingId = :koblingId and aktiv = true")
-                .setParameter(KOBLING_ID, koblingId)
-                .setParameter("endretTid", LocalDateTime.now());
-
-        var perioderOppdaterteRader = query.executeUpdate();
-        LOG.debug("Deaktivert {} KalkulatorInput for koblingId={}", perioderOppdaterteRader, koblingId);
-        entityManager.flush();
-    }
-
     public void deaktiverBeregningsgrunnlagGrunnlagEntitet(Long koblingId) {
         Optional<BeregningsgrunnlagGrunnlagEntitet> entitetOpt = hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
         entitetOpt.ifPresent(this::deaktiverBeregningsgrunnlagGrunnlagEntitet);
@@ -552,57 +538,4 @@ public class BeregningsgrunnlagRepository {
         }
         return maksOppretteTidPrKobling;
     }
-
-    public boolean lagreOgSjekkStatus(KalkulatorInputEntitet input) {
-
-        deaktiverKalkulatorInput(input.getKoblingId());
-        entityManager.persist(input);
-        entityManager.flush();
-        return true;
-    }
-
-    public KalkulatorInputEntitet hentKalkulatorInput(Long koblingId) {
-        TypedQuery<KalkulatorInputEntitet> query = entityManager.createQuery("from KalkulatorInput where koblingId =:koblingId and aktiv =:aktiv",
-                KalkulatorInputEntitet.class);
-        query.setParameter("koblingId", koblingId); //$NON-NLS-1$
-        query.setParameter("aktiv", true); //$NON-NLS-1$
-        return hentEksaktResultat(query);
-    }
-
-    public Optional<KalkulatorInputEntitet> hentHvisEksitererKalkulatorInput(Long koblingId) {
-        TypedQuery<KalkulatorInputEntitet> query = entityManager.createQuery("from KalkulatorInput where koblingId =:koblingId and aktiv =:aktiv",
-                KalkulatorInputEntitet.class);
-        query.setParameter("koblingId", koblingId); //$NON-NLS-1$
-        query.setParameter("aktiv", true); //$NON-NLS-1$
-        return hentUniktResultat(query);
-    }
-
-    public List<KalkulatorInputEntitet> hentHvisEksistererKalkulatorInput(Collection<Long> koblingId) {
-        TypedQuery<KalkulatorInputEntitet> query = entityManager.createQuery("from KalkulatorInput where koblingId IN (:koblingId) and aktiv =:aktiv",
-                KalkulatorInputEntitet.class);
-        query.setParameter("koblingId", koblingId); //$NON-NLS-1$
-        query.setParameter("aktiv", true); //$NON-NLS-1$
-        return query.getResultList();
-    }
-
-    public boolean hvisEksistererKalkulatorInput(Long koblingId) {
-        return !hvisEksistererKalkulatorInput(List.of(koblingId)).isEmpty();
-    }
-
-    /**
-     * returnerer koblingIder som har kalkulator input fra angitt input.
-     */
-    public NavigableSet<Long> hvisEksistererKalkulatorInput(Collection<Long> koblingIder) {
-        @SuppressWarnings("unchecked")
-        var resultat = (NavigableSet<Long>) entityManager
-                .createQuery("select k.koblingId from KalkulatorInput k where k.koblingId IN (:koblingIder) and k.aktiv =:aktiv")
-                .setParameter("koblingIder", koblingIder)
-                .setParameter("aktiv", true)
-                .getResultStream()
-                .map(r -> ((Number) r).longValue())
-                .collect(Collectors.toCollection(TreeSet::new));
-        return Collections.unmodifiableNavigableSet(resultat);
-
-    }
-
 }

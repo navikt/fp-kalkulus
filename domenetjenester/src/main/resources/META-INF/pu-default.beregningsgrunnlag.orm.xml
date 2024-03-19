@@ -27,7 +27,7 @@
     <sequence-generator name="SEQ_FAKTA_ARBEIDSFORHOLD" allocation-size="50" sequence-name="SEQ_FAKTA_ARBEIDSFORHOLD"/>
     <sequence-generator name="SEQ_FAKTA_AKTOER" allocation-size="50" sequence-name="SEQ_FAKTA_AKTOER"/>
     <sequence-generator name="SEQ_AVKLARINGSBEHOV" allocation-size="50" sequence-name="SEQ_AVKLARINGSBEHOV"/>
-    <sequence-generator name="SEQ_TILKOMMET_INNTEKT" allocation-size="50" sequence-name="SEQ_TILKOMMET_INNTEKT" />
+
 
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats"/>
@@ -36,7 +36,6 @@
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriodeÅrsak" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforhold" />
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.TilkommetInntekt" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Sammenligningsgrunnlag" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatus" />

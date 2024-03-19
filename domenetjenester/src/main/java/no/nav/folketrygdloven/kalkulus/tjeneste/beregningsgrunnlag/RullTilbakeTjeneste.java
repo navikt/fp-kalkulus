@@ -10,7 +10,6 @@ import no.nav.folketrygdloven.kalkulus.beregning.MapTilstandTilSteg;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
-import no.nav.folketrygdloven.kalkulus.tjeneste.forlengelse.ForlengelseTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
 
 @ApplicationScoped
@@ -19,7 +18,6 @@ public class RullTilbakeTjeneste {
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private RegelsporingRepository regelsporingRepository;
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
-    private ForlengelseTjeneste forlengelseTjeneste;
 
     public RullTilbakeTjeneste() {
         // CDI
@@ -28,11 +26,10 @@ public class RullTilbakeTjeneste {
     @Inject
     public RullTilbakeTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository,
                                RegelsporingRepository regelsporingRepository,
-                               AvklaringsbehovTjeneste avklaringsbehovTjeneste, ForlengelseTjeneste forlengelseTjeneste) {
+                               AvklaringsbehovTjeneste avklaringsbehovTjeneste) {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.regelsporingRepository = regelsporingRepository;
         this.avklaringsbehovTjeneste = avklaringsbehovTjeneste;
-        this.forlengelseTjeneste = forlengelseTjeneste;
     }
 
     public void rullTilbakeTilForrigeTilstandVedBehov(Set<Long> koblingIder, BeregningsgrunnlagTilstand tilstand, boolean skalKjøreSteget) {
@@ -42,8 +39,6 @@ public class RullTilbakeTjeneste {
             rullTilbakeGrunnlag(tilstand, rullTilbakeListe);
         }
         avklaringsbehovTjeneste.avbrytAlleAvklaringsbehovEtterEllerISteg(koblingIder, MapTilstandTilSteg.mapTilSteg(tilstand), skalKjøreSteget);
-        forlengelseTjeneste.deaktiverVedTilbakerulling(koblingIder, tilstand);
-
     }
 
     private void rullTilbakeGrunnlag(BeregningsgrunnlagTilstand tilstand, List<BeregningsgrunnlagGrunnlagEntitet> rullTilbakeListe) {
@@ -78,7 +73,6 @@ public class RullTilbakeTjeneste {
 
     public void deaktiverAllKoblingdata(Long koblingId) {
         beregningsgrunnlagRepository.deaktiverBeregningsgrunnlagGrunnlagEntitet(koblingId);
-        beregningsgrunnlagRepository.deaktiverKalkulatorInput(koblingId);
         avklaringsbehovTjeneste.avbrytAlleAvklaringsbehov(koblingId);
         regelsporingRepository.ryddRegelsporingForTilstand(koblingId, BeregningsgrunnlagTilstand.finnFørste());
     }

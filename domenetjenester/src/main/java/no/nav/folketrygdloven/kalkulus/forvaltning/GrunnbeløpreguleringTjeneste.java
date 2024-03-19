@@ -2,11 +2,11 @@ package no.nav.folketrygdloven.kalkulus.forvaltning;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
@@ -22,7 +22,6 @@ public class GrunnbeløpreguleringTjeneste {
 
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private KoblingTjeneste koblingTjeneste;
-    private KalkulatorInputTjeneste kalkulatorInputTjeneste;
 
 
     public GrunnbeløpreguleringTjeneste() {
@@ -31,11 +30,9 @@ public class GrunnbeløpreguleringTjeneste {
 
     @Inject
     public GrunnbeløpreguleringTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository,
-                                        KoblingTjeneste koblingTjeneste,
-                                        KalkulatorInputTjeneste kalkulatorInputTjeneste) {
+                                        KoblingTjeneste koblingTjeneste) {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.koblingTjeneste = koblingTjeneste;
-        this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
     }
 
     public GrunnbeløpReguleringStatus undersøkBehovForGregulering(KoblingReferanse referanse, String saksnummer) {
@@ -44,8 +41,8 @@ public class GrunnbeløpreguleringTjeneste {
             return GrunnbeløpReguleringStatus.IKKE_VURDERT;
         }
         Optional<BeregningsgrunnlagGrunnlagEntitet> gjeldendeBG = koblingEntitetOpt.flatMap(k -> beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(k.getId()));
-        var inputresultat = kalkulatorInputTjeneste.hentForKoblinger(Collections.singletonList(koblingEntitetOpt.get().getId()));
-        KalkulatorInputDto input = inputresultat.get(koblingEntitetOpt.get().getId());
+        KalkulatorInputDto input = null; // Skal gregulering gjøres i fpsak eller kalkulus?
+        Objects.requireNonNull(input, "kan ikke undersøke gregulering uten input");
         BeregningSats nySats = beregningsgrunnlagRepository.finnGrunnbeløp(input.getSkjæringstidspunkt());
         return Greguleringsstatusutleder.utledStatus(gjeldendeBG, BigDecimal.valueOf(nySats.getVerdi()), koblingEntitetOpt.get().getYtelseType());
     }

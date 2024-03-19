@@ -6,16 +6,7 @@
         version="3.0">
 
     <sequence-generator name="SEQ_KOBLING" allocation-size="50" sequence-name="SEQ_KOBLING"/>
-    <sequence-generator name="SEQ_KOBLING_RELASJON" allocation-size="50" sequence-name="SEQ_KOBLING_RELASJON"/>
-    <sequence-generator name="SEQ_KOBLING_GRUNNLAGSKOPI_SPORING" allocation-size="50" sequence-name="SEQ_KOBLING_GRUNNLAGSKOPI_SPORING"/>
-    <sequence-generator name="SEQ_KALKULATOR_INPUT" allocation-size="50" sequence-name="SEQ_KALKULATOR_INPUT"/>
 
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet" />
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon" />
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingGrunnlagskopiSporing" />
-
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet" />
-
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelInputKomprimering" />
 
 </entity-mappings>

@@ -46,7 +46,6 @@ import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.VidereførOverstyring;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
-import no.nav.folketrygdloven.kalkulus.tjeneste.forlengelse.ForlengelseTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelSporingTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
 
@@ -58,7 +57,6 @@ public class BeregningStegTjeneste {
     private BeregningsgrunnlagRepository repository;
     private RegelsporingRepository regelsporingRepository;
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
-    private ForlengelseTjeneste forlengelseTjeneste;
     private Instance<VidereførOverstyring> videreførOverstyring;
     private RegelSporingTjeneste regelSporingTjeneste;
 
@@ -71,13 +69,11 @@ public class BeregningStegTjeneste {
     public BeregningStegTjeneste(BeregningsgrunnlagRepository repository,
                                  RegelsporingRepository regelsporingRepository,
                                  AvklaringsbehovTjeneste avklaringsbehovTjeneste,
-                                 ForlengelseTjeneste forlengelseTjeneste,
                                  @Any Instance<VidereførOverstyring> videreførOverstyring,
                                  RegelSporingTjeneste regelSporingTjeneste) {
         this.repository = repository;
         this.regelsporingRepository = regelsporingRepository;
         this.avklaringsbehovTjeneste = avklaringsbehovTjeneste;
-        this.forlengelseTjeneste = forlengelseTjeneste;
         this.videreførOverstyring = videreførOverstyring;
         this.regelSporingTjeneste = regelSporingTjeneste;
     }
@@ -266,16 +262,12 @@ public class BeregningStegTjeneste {
 
     private void lagreOgKopier(StegProsesseringInput input,
                                BeregningResultatAggregat resultat) {
-        // Validering ved forlengelse og kopier bg utenfor forlengelseperioder
-        var forlengetGrunnlag = forlengelseTjeneste.forlengEksisterendeBeregningsgrunnlag(input.getForlengelseperioder(), resultat.getBeregningsgrunnlagGrunnlag(), input.getOriginalGrunnlagFraSteg());
-
         // Lagring av grunnlag fra steg
-        repository.lagre(input.getKoblingId(), mapGrunnlag(forlengetGrunnlag), input.getStegTilstand());
+        repository.lagre(input.getKoblingId(), mapGrunnlag(resultat.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
         lagreRegelsporing(input.getKoblingReferanse().getKoblingId(), resultat.getRegelSporingAggregat(), input.getStegTilstand());
         // Kopiering av data og spoling fram til neste tilstand
         SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(resultat.getBeregningAvklaringsbehovResultater(),
-                        input.getForlengelseperioder(),
-                        forlengetGrunnlag,
+                resultat.getBeregningsgrunnlagGrunnlag(),
                         input.getForrigeGrunnlagFraSteg(),
                         input.getForrigeGrunnlagFraStegUt())
                 .map(KalkulatorTilEntitetMapper::mapGrunnlag)

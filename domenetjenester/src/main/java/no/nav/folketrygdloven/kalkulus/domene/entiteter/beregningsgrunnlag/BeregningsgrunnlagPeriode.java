@@ -56,10 +56,6 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
     @BatchSize(size = 20)
     private final List<BeregningsgrunnlagPrStatusOgAndel> beregningsgrunnlagPrStatusOgAndelList = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlagPeriode", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    @BatchSize(size = 20)
-    private final List<TilkommetInntekt> tilkomneInntekter = new ArrayList<>();
-
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "fomDato", column = @Column(name = "bg_periode_fom")),
@@ -113,11 +109,10 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
                 .forEach(this::addBeregningsgrunnlagPeriodeÅrsak);
         beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream().map(BeregningsgrunnlagPrStatusOgAndel::new)
                 .forEach(this::addBeregningsgrunnlagPrStatusOgAndel);
-        beregningsgrunnlagPeriode.getTilkomneInntekter().stream().map(TilkommetInntekt::new)
-                .forEach(this::addTilkommetInntekt);
     }
 
-    private BeregningsgrunnlagPeriode() {
+    public BeregningsgrunnlagPeriode() {
+        // Hibernate
     }
 
     public Long getId() {
@@ -132,10 +127,6 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
         return beregningsgrunnlagPrStatusOgAndelList.stream()
                 .sorted(Comparator.comparing(BeregningsgrunnlagPrStatusOgAndel::getAndelsnr))
                 .collect(Collectors.toUnmodifiableList());
-    }
-
-    public List<TilkommetInntekt> getTilkomneInntekter() {
-        return tilkomneInntekter;
     }
 
     public IntervallEntitet getPeriode() {
@@ -213,15 +204,6 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
         }
     }
 
-    void addTilkommetInntekt(TilkommetInntekt tilkommetInntekt) {
-        Objects.requireNonNull(tilkommetInntekt, "beregningsgrunnlagPrStatusOgAndel");
-        if (!tilkomneInntekter.contains(tilkommetInntekt)) { // NOSONAR Class defines List based fields but uses them like Sets: Ingening å tjene på å bytte til Set ettersom det er små lister
-            tilkommetInntekt.setBeregningsgrunnlagPeriode(this);
-            tilkomneInntekter.add(tilkommetInntekt);
-        }
-    }
-
-
     void addBeregningsgrunnlagPeriodeÅrsak(BeregningsgrunnlagPeriodeÅrsak bgPeriodeÅrsak) {
         Objects.requireNonNull(bgPeriodeÅrsak, "beregningsgrunnlagPeriodeÅrsak");
         if (!beregningsgrunnlagPeriodeÅrsaker.contains(bgPeriodeÅrsak)) { // NOSONAR Class defines List based fields but uses them like Sets: Ingening å tjene på å bytte til Set ettersom det er små lister
@@ -296,13 +278,6 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
             prStatusOgAndelBuilder.build(kladd);
             return this;
         }
-
-        public Builder leggTilTilkommetInntekt(TilkommetInntekt tilkommetInntekt) {
-            verifiserKanModifisere();
-            kladd.addTilkommetInntekt(tilkommetInntekt);
-            return this;
-        }
-
 
         public Builder medBeregningsgrunnlagPeriode(LocalDate fraOgMed, LocalDate tilOgMed) {
             verifiserKanModifisere();

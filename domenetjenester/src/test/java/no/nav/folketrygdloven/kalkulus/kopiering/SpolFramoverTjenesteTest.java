@@ -50,7 +50,7 @@ class SpolFramoverTjenesteTest {
         BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraStegUt = lagGrunnlag(tilstandFraStegUt, SKJÆRINGSTIDSPUNKT);
 
         // Act
-        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(List.of(), List.of(), nyttGrunnlag,
+        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(List.of(), nyttGrunnlag,
                 Optional.of(forrigeGrunnlagFraSteg),
                 Optional.of(forrigeGrunnlagFraStegUt)
         );
@@ -68,7 +68,7 @@ class SpolFramoverTjenesteTest {
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BG));
 
         // Act
-        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, List.of(), nyttGrunnlag,
+        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,
                 Optional.of(forrigeGrunnlagFraSteg),
                 Optional.empty()
         );
@@ -88,7 +88,7 @@ class SpolFramoverTjenesteTest {
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BG));
 
         // Act
-        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, List.of(), nyttGrunnlag,
+        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,
                 Optional.of(forrigeGrunnlagFraSteg),
                 Optional.of(forrigeGrunnlagFraStegUt)
         );
@@ -108,7 +108,7 @@ class SpolFramoverTjenesteTest {
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BG));
 
         // Act
-        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, List.of(), nyttGrunnlag,
+        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,
                 Optional.of(forrigeGrunnlagFraSteg),
                 Optional.of(forrigeGrunnlagFraStegUt)
         );
@@ -151,7 +151,7 @@ class SpolFramoverTjenesteTest {
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BG));
 
         // Act
-        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, List.of(), nyttGrunnlag,
+        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,
                 Optional.of(forrigeGrunnlagFraSteg),
                 Optional.of(forrigeGrunnlagFraStegUt)
         );
@@ -211,7 +211,7 @@ class SpolFramoverTjenesteTest {
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BG));
 
         // Act
-        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, List.of(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.plusDays(6), SKJÆRINGSTIDSPUNKT.plusDays(7))), nyttGrunnlag,
+        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,
                 Optional.of(forrigeGrunnlagFraSteg),
                 Optional.of(forrigeGrunnlagFraStegUt)
         );
@@ -271,7 +271,7 @@ class SpolFramoverTjenesteTest {
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of();
 
         // Act
-        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, List.of(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.plusDays(6), SKJÆRINGSTIDSPUNKT.plusDays(7))), nyttGrunnlag,
+        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,
                 Optional.of(forrigeGrunnlagFraSteg),
                 Optional.of(forrigeGrunnlagFraStegUt)
         );
@@ -330,7 +330,6 @@ class SpolFramoverTjenesteTest {
 
         // Act
         var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov,
-                List.of(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.plusDays(5), SKJÆRINGSTIDSPUNKT.plusDays(6))),
                 nyttGrunnlag,
                 Optional.of(forrigeGrunnlagFraSteg),
                 Optional.of(forrigeGrunnlagFraStegUt)
@@ -387,7 +386,6 @@ class SpolFramoverTjenesteTest {
 
         // Act
         var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov,
-                List.of(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5))),
                 nyttGrunnlag,
                 Optional.of(forrigeGrunnlagFraSteg),
                 Optional.of(forrigeGrunnlagFraStegUt)

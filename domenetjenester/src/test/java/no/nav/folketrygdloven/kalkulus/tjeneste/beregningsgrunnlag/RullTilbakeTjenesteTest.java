@@ -14,7 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingPeriode;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovKontrollTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
@@ -33,8 +32,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.extensions.JpaExtension;
-import no.nav.folketrygdloven.kalkulus.tjeneste.forlengelse.ForlengelseRepository;
-import no.nav.folketrygdloven.kalkulus.tjeneste.forlengelse.ForlengelseTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelSporingTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
@@ -49,7 +46,6 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
     private KoblingRepository koblingRepository;
     private RullTilbakeTjeneste rullTilbakeTjeneste;
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
-    private ForlengelseTjeneste forlengelseTjeneste;
     private RegelSporingTjeneste regelSporingTjeneste;
     private Long koblingId;
 
@@ -59,11 +55,10 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
         regelsporingRepository = new RegelsporingRepository(getEntityManager());
         regelSporingTjeneste = new RegelSporingTjeneste(regelsporingRepository);
         koblingRepository = new KoblingRepository(getEntityManager());
-        forlengelseTjeneste = new ForlengelseTjeneste(new ForlengelseRepository(getEntityManager()));
         AvklaringsbehovRepository avklaringsbehovRepository = new AvklaringsbehovRepository(getEntityManager());
         AvklaringsbehovKontrollTjeneste avklaringsbehovKontrollTjeneste = new AvklaringsbehovKontrollTjeneste();
         avklaringsbehovTjeneste = new AvklaringsbehovTjeneste(avklaringsbehovRepository, koblingRepository, avklaringsbehovKontrollTjeneste);
-        rullTilbakeTjeneste = new RullTilbakeTjeneste(repository, regelsporingRepository, avklaringsbehovTjeneste, forlengelseTjeneste);
+        rullTilbakeTjeneste = new RullTilbakeTjeneste(repository, regelsporingRepository, avklaringsbehovTjeneste);
     }
 
     @Test
@@ -177,9 +172,6 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
     public void skal_deaktivere_beregningsgrunnlag_og_input() {
         prepareTestData();
         // Arrange
-        String json = getTestJSON();
-        KalkulatorInputEntitet input = new KalkulatorInputEntitet(koblingId, json);
-        repository.lagreOgSjekkStatus(input);
         AvklaringsbehovDefinisjon avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.VURDER_FAKTA_ATFL_SN;
         avklaringsbehovTjeneste.opprettEllerGjennopprettAvklaringsbehov(koblingId, avklaringsbehovDefinisjon);
         repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
@@ -193,12 +185,10 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
 
         // Act
         Optional<BeregningsgrunnlagGrunnlagEntitet> aktivtGrunnlag = repository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
-        Optional<KalkulatorInputEntitet> kalkulatorInputEntitet = repository.hentHvisEksitererKalkulatorInput(koblingId);
         var aktiveRegelsporinger = regelsporingRepository.hentRegelSporingGrunnlagMedGittType(koblingId, List.of(BeregningsgrunnlagRegelType.SKJÆRINGSTIDSPUNKT));
 
         // Assert
         assertThat(aktivtGrunnlag).isEmpty();
-        assertThat(kalkulatorInputEntitet).isEmpty();
         assertThat(aktiveRegelsporinger.isEmpty()).isTrue();
 
         Optional<AvklaringsbehovEntitet> avklaringsbehovEntitet = avklaringsbehovTjeneste.hentAvklaringsbehov(koblingId, avklaringsbehovDefinisjon);

@@ -6,9 +6,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.glassfish.jersey.server.ServerProperties;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
 
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import org.glassfish.jersey.server.ServerProperties;
 
 import io.swagger.v3.core.jackson.ModelResolver;
 import io.swagger.v3.core.jackson.TypeNameResolver;
@@ -20,8 +21,6 @@ import io.swagger.v3.oas.integration.api.OpenApiContext;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
-import jakarta.ws.rs.ApplicationPath;
-import jakarta.ws.rs.core.Application;
 import no.nav.folketrygdloven.kalkulus.app.exceptions.ConstraintViolationMapper;
 import no.nav.folketrygdloven.kalkulus.app.exceptions.GeneralRestExceptionMapper;
 import no.nav.folketrygdloven.kalkulus.app.exceptions.JsonMappingExceptionMapper;
@@ -30,11 +29,6 @@ import no.nav.folketrygdloven.kalkulus.app.jackson.JacksonJsonConfig;
 import no.nav.folketrygdloven.kalkulus.rest.GrunnbeløpRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.HentKalkulusRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.OperereKalkulusRestTjeneste;
-import no.nav.folketrygdloven.kalkulus.rest.SimulerTilkommetInntektRestTjeneste;
-import no.nav.folketrygdloven.kalkulus.rest.TilkommetAktivitetRestTjeneste;
-import no.nav.folketrygdloven.kalkulus.rest.forvaltning.DiagnostikkBeregningRestTjeneste;
-import no.nav.folketrygdloven.kalkulus.rest.forvaltning.ForvaltningFrisinnRestTjeneste;
-import no.nav.folketrygdloven.kalkulus.rest.forvaltning.KopierOgResetRestTjeneste;
 
 @ApplicationPath(ApplicationConfig.API_URI)
 public class ApplicationConfig extends Application {
@@ -91,14 +85,6 @@ public class ApplicationConfig extends Application {
         classes.add(JsonParseExceptionMapper.class);
         classes.add(GeneralRestExceptionMapper.class);
         classes.add(JacksonJsonConfig.class);
-
-        // forvaltning
-        classes.add(ForvaltningFrisinnRestTjeneste.class);
-        classes.add(DiagnostikkBeregningRestTjeneste.class);
-        classes.add(KopierOgResetRestTjeneste.class);
-        classes.add(SimulerTilkommetInntektRestTjeneste.class);
-        classes.add(TilkommetAktivitetRestTjeneste.class);
-
         return Collections.unmodifiableSet(classes);
     }
 
@@ -109,10 +95,5 @@ public class ApplicationConfig extends Application {
         properties.put(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
         properties.put(ServerProperties.PROCESSING_RESPONSE_ERRORS_ENABLED, true);
         return properties;
-    }
-
-    String getOpenApiSpec() throws Exception {
-        return this.openApiContext.getOutputYamlMapper().writer(new DefaultPrettyPrinter())
-                .writeValueAsString(this.openApi);
     }
 }

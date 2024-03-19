@@ -29,11 +29,10 @@ public class MapBrevBeregningsgrunnlag {
 
     public static BeregningsgrunnlagGrunnlagDto mapGrunnlag(KoblingReferanse koblingReferanse,
                                                             no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagEntitet,
-                                                            YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
-                                                            boolean erForlengelse) {
+                                                            YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlagEntitet.getBeregningsgrunnlagHvisFinnes()
                 .map(gr -> MapBrevBeregningsgrunnlag.map(gr, ytelsespesifiktGrunnlag)).orElse(null);
-        return new BeregningsgrunnlagGrunnlagDto(koblingReferanse.getKoblingUuid(), beregningsgrunnlag, erForlengelse);
+        return new BeregningsgrunnlagGrunnlagDto(koblingReferanse.getKoblingUuid(), beregningsgrunnlag, false);
     }
 
     public static BeregningsgrunnlagDto map(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlagEntitet, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {

@@ -1,7 +1,7 @@
-CREATE DATABASE ftkalkulus_unit;
-CREATE USER ftkalkulus_unit WITH PASSWORD 'ftkalkulus_unit';
-GRANT ALL PRIVILEGES ON DATABASE ftkalkulus_unit TO ftkalkulus_unit;
+CREATE DATABASE fpkalkulus_unit;
+CREATE USER fpkalkulus_unit WITH PASSWORD 'fpkalkulus_unit';
+GRANT ALL PRIVILEGES ON DATABASE fpkalkulus_unit TO fpkalkulus_unit;
 
-CREATE DATABASE ftkalkulus;
-CREATE USER ftkalkulus WITH PASSWORD 'ftkalkulus';
-GRANT ALL PRIVILEGES ON DATABASE ftkalkulus TO ftkalkulus;
+CREATE DATABASE fpkalkulus;
+CREATE USER fpkalkulus WITH PASSWORD 'fpkalkulus';
+GRANT ALL PRIVILEGES ON DATABASE fpkalkulus TO fpkalkulus;

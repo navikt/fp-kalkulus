@@ -65,7 +65,7 @@ class MapFraKalkulatorTest {
         KoblingEntitet koblingEntitet = new KoblingEntitet(new KoblingReferanse(randomUUID), FagsakYtelseType.FORELDREPENGER, saksnummer1, AktørId.dummy());
         KalkulatorInputDto kalkulatorInputDto = byggKalkulatorInput();
 
-        BeregningsgrunnlagInput input = mapFraKalkulatorInputTilBeregningsgrunnlagInput(koblingEntitet, kalkulatorInputDto, Optional.empty(), Collections.emptyList());
+        BeregningsgrunnlagInput input = mapFraKalkulatorInputTilBeregningsgrunnlagInput(koblingEntitet, kalkulatorInputDto, Optional.empty());
 
         assertThat(input.getKoblingReferanse().getKoblingId()).isEqualTo(koblingEntitet.getId());
     }

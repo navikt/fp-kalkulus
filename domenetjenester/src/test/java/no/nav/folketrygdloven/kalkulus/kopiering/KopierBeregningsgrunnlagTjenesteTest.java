@@ -12,11 +12,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetGraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AndelGraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag;
@@ -36,7 +37,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingRef
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Årsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
@@ -97,7 +97,6 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
     public static final LocalDate STP = LocalDate.now();
     private BeregningsgrunnlagRepository repository;
     private KoblingRepository koblingRepository;
-    private KalkulatorInputTjeneste kalkulatorInputTjeneste;
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
     private AvklaringsbehovRepository avklaringsbehovRepository;
 
@@ -113,8 +112,7 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         AvklaringsbehovKontrollTjeneste avklaringsbehovKontrollTjeneste = new AvklaringsbehovKontrollTjeneste();
         avklaringsbehovTjeneste = new AvklaringsbehovTjeneste(avklaringsbehovRepository, koblingRepository, avklaringsbehovKontrollTjeneste);
         var koblingTjeneste = new KoblingTjeneste(koblingRepository, new LåsRepository(getEntityManager()));
-        kalkulatorInputTjeneste = new KalkulatorInputTjeneste(repository, koblingTjeneste);
-        tjeneste = new KopierBeregningsgrunnlagTjeneste(koblingTjeneste, repository, avklaringsbehovTjeneste, kalkulatorInputTjeneste);
+        tjeneste = new KopierBeregningsgrunnlagTjeneste(koblingTjeneste, repository, avklaringsbehovTjeneste);
         SubjectHandlerUtils.useSubjectHandler(StaticSubjectHandler.class);
     }
 
@@ -126,7 +124,6 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         var originalKoblingReferanse = UUID.randomUUID();
         var originalKobling = new KoblingEntitet(new KoblingReferanse(originalKoblingReferanse), FagsakYtelseType.PLEIEPENGER_SYKT_BARN, SAK, AKTØR_ID);
         koblingRepository.lagre(originalKobling);
-        kalkulatorInputTjeneste.lagreKalkulatorInput(originalKobling.getId(), byggKalkulatorInput());
 
         avklaringsbehovTjeneste.opprettEllerGjennopprettAvklaringsbehov(originalKobling.getId(), AvklaringsbehovDefinisjon.AVKLAR_AKTIVITETER);
         avklaringsbehovTjeneste.løsAvklaringsbehov(originalKobling.getId(), AvklaringsbehovDefinisjon.AVKLAR_AKTIVITETER, "ok");
@@ -173,7 +170,6 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
 
         koblingRepository.lagre(new KoblingRelasjon(originalKobling.getId(), forrigeOriginalKobling.getId()));
 
-        kalkulatorInputTjeneste.lagreKalkulatorInput(originalKobling.getId(), byggKalkulatorInput());
 
         var gr1 = repository.lagre(forrigeOriginalKobling.getId(), byggGrunnlag(200000), BeregningsgrunnlagTilstand.FASTSATT);
 
