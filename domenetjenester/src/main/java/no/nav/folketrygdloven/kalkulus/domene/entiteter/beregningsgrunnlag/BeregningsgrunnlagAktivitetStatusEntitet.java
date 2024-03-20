@@ -22,9 +22,9 @@ import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 
-@Entity(name = "BeregningsgrunnlagAktivitetStatus")
+@Entity(name = "BeregningsgrunnlagAktivitetStatusEntitet")
 @Table(name = "BG_AKTIVITET_STATUS")
-public class BeregningsgrunnlagAktivitetStatus extends BaseEntitet {
+public class BeregningsgrunnlagAktivitetStatusEntitet extends BaseEntitet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_BG_AKTIVITET_STATUS")
@@ -48,12 +48,12 @@ public class BeregningsgrunnlagAktivitetStatus extends BaseEntitet {
     private Hjemmel hjemmel;
 
 
-    public BeregningsgrunnlagAktivitetStatus(BeregningsgrunnlagAktivitetStatus beregningsgrunnlagAktivitetStatus) {
+    public BeregningsgrunnlagAktivitetStatusEntitet(BeregningsgrunnlagAktivitetStatusEntitet beregningsgrunnlagAktivitetStatus) {
         this.aktivitetStatus = beregningsgrunnlagAktivitetStatus.getAktivitetStatus();
         this.hjemmel = beregningsgrunnlagAktivitetStatus.getHjemmel();
     }
 
-    protected BeregningsgrunnlagAktivitetStatus() {
+    protected BeregningsgrunnlagAktivitetStatusEntitet() {
     }
 
 
@@ -81,10 +81,10 @@ public class BeregningsgrunnlagAktivitetStatus extends BaseEntitet {
     public boolean equals(Object obj) {
         if (obj == this) {
             return true;
-        } else if (!(obj instanceof BeregningsgrunnlagAktivitetStatus)) {
+        } else if (!(obj instanceof BeregningsgrunnlagAktivitetStatusEntitet)) {
             return false;
         }
-        BeregningsgrunnlagAktivitetStatus other = (BeregningsgrunnlagAktivitetStatus) obj;
+        BeregningsgrunnlagAktivitetStatusEntitet other = (BeregningsgrunnlagAktivitetStatusEntitet) obj;
         return Objects.equals(this.getAktivitetStatus(), other.getAktivitetStatus())
                 && Objects.equals(this.getBeregningsgrunnlag(), other.getBeregningsgrunnlag());
     }
@@ -109,10 +109,10 @@ public class BeregningsgrunnlagAktivitetStatus extends BaseEntitet {
     }
 
     public static class Builder {
-        private BeregningsgrunnlagAktivitetStatus beregningsgrunnlagAktivitetStatusMal;
+        private BeregningsgrunnlagAktivitetStatusEntitet beregningsgrunnlagAktivitetStatusMal;
 
         public Builder() {
-            beregningsgrunnlagAktivitetStatusMal = new BeregningsgrunnlagAktivitetStatus();
+            beregningsgrunnlagAktivitetStatusMal = new BeregningsgrunnlagAktivitetStatusEntitet();
             beregningsgrunnlagAktivitetStatusMal.hjemmel = Hjemmel.UDEFINERT;
         }
 
@@ -126,7 +126,7 @@ public class BeregningsgrunnlagAktivitetStatus extends BaseEntitet {
             return this;
         }
 
-        public BeregningsgrunnlagAktivitetStatus build(BeregningsgrunnlagEntitet beregningsgrunnlag) {
+        public BeregningsgrunnlagAktivitetStatusEntitet build(BeregningsgrunnlagEntitet beregningsgrunnlag) {
             verifyStateForBuild();
             beregningsgrunnlag.leggTilBeregningsgrunnlagAktivitetStatus(beregningsgrunnlagAktivitetStatusMal);
             return beregningsgrunnlagAktivitetStatusMal;

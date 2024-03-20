@@ -4,9 +4,9 @@ import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessurs
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.READ;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -51,7 +51,6 @@ import no.nav.folketrygdloven.kalkulus.request.v1.HentForSakRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.AktiveReferanser;
 import no.nav.folketrygdloven.kalkulus.response.v1.EksternReferanseDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.BeregningsgrunnlagPrReferanse;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagListe;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
@@ -103,13 +102,10 @@ public class HentKalkulusRestTjeneste {
         var ytelseType = ytelseTyper.iterator().next();
         var koblingReferanser = spesifikasjon.getRequestPrReferanse().stream().map(v -> new KoblingReferanse(v.getKoblingReferanse()))
                 .collect(Collectors.toList());
-        List<BeregningsgrunnlagGrunnlagDto> dtoer;
-
-        // TODO Fjern dette, lag egen tjeneste for brev
-        var koblinger = koblingTjeneste.hentKoblinger(koblingReferanser, ytelseType);
-        var input = guiInputTjeneste.lagInputForKoblinger(koblinger.stream().map(KoblingEntitet::getId).toList(), List.of());
-        dtoer = input.values().stream().map(v -> MapDetaljertBeregningsgrunnlag.mapGrunnlag(v.getBeregningsgrunnlagGrunnlag())).toList();
-        return dtoer.isEmpty() ? Response.noContent().build() : Response.ok(dtoer).build();
+        var kobling = koblingTjeneste.hentKoblinger(koblingReferanser, ytelseType).stream().findFirst();
+        var beregningsgrunnlagGrunnlagDto = kobling.flatMap(k -> beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(k.getId()))
+            .map(MapDetaljertBeregningsgrunnlag::map);
+        return beregningsgrunnlagGrunnlagDto.isEmpty() ? Response.noContent().build() : Response.ok(Collections.singletonList(beregningsgrunnlagGrunnlagDto)).build();
     }
 
     @POST

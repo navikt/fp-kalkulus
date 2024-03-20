@@ -29,11 +29,11 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Refusjon;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 
-@Entity(name = "BGAndelArbeidsforhold")
+@Entity(name = "BGAndelArbeidsforholdEntitet")
 @Table(name = "BG_ANDEL_ARBEIDSFORHOLD")
 @DynamicInsert
 @DynamicUpdate
-public class BGAndelArbeidsforhold extends BaseEntitet {
+public class BGAndelArbeidsforholdEntitet extends BaseEntitet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_BG_ANDEL_ARBEIDSFORHOLD")
@@ -46,7 +46,7 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
     @JsonBackReference
     @OneToOne(optional = false)
     @JoinColumn(name = "bg_andel_id", nullable = false, updatable = false)
-    private BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel;
+    private BeregningsgrunnlagPrStatusOgAndelEntitet beregningsgrunnlagPrStatusOgAndel;
 
     @Embedded
     private Arbeidsgiver arbeidsgiver;
@@ -71,7 +71,7 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
     @Column(name = "arbeidsperiode_tom")
     private LocalDate arbeidsperiodeTom;
 
-    public BGAndelArbeidsforhold(BGAndelArbeidsforhold bgAndelArbeidsforhold) {
+    public BGAndelArbeidsforholdEntitet(BGAndelArbeidsforholdEntitet bgAndelArbeidsforhold) {
         this.arbeidsforholdRef = bgAndelArbeidsforhold.arbeidsforholdRef;
         this.arbeidsgiver = bgAndelArbeidsforhold.arbeidsgiver;
         this.arbeidsperiodeFom = bgAndelArbeidsforhold.arbeidsperiodeFom;
@@ -81,7 +81,7 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
         this.naturalytelseTilkommetPrÅr = bgAndelArbeidsforhold.naturalytelseTilkommetPrÅr;
     }
 
-    public BGAndelArbeidsforhold() {
+    public BGAndelArbeidsforholdEntitet() {
     }
 
     public Long getId() {
@@ -140,7 +140,7 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
         return refusjon == null ? null : refusjon.getGjeldendeRefusjonPrÅr();
     }
 
-    void setBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel) {
+    void setBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelEntitet beregningsgrunnlagPrStatusOgAndel) {
         this.beregningsgrunnlagPrStatusOgAndel = beregningsgrunnlagPrStatusOgAndel;
     }
 
@@ -148,10 +148,10 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
     public boolean equals(Object obj) {
         if (obj == this) {
             return true;
-        } else if (!(obj instanceof BGAndelArbeidsforhold)) {
+        } else if (!(obj instanceof BGAndelArbeidsforholdEntitet)) {
             return false;
         }
-        BGAndelArbeidsforhold other = (BGAndelArbeidsforhold) obj;
+        BGAndelArbeidsforholdEntitet other = (BGAndelArbeidsforholdEntitet) obj;
         return Objects.equals(this.getArbeidsgiver(), other.getArbeidsgiver())
                 && Objects.equals(this.arbeidsforholdRef, other.arbeidsforholdRef);
     }
@@ -180,18 +180,18 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
         return new Builder();
     }
 
-    public static Builder builder(BGAndelArbeidsforhold bgAndelArbeidsforhold) {
+    public static Builder builder(BGAndelArbeidsforholdEntitet bgAndelArbeidsforhold) {
         return bgAndelArbeidsforhold == null ? new Builder() : new Builder(bgAndelArbeidsforhold);
     }
 
     public static class Builder {
-        private BGAndelArbeidsforhold bgAndelArbeidsforhold;
+        private BGAndelArbeidsforholdEntitet bgAndelArbeidsforhold;
 
         private Builder() {
-            bgAndelArbeidsforhold = new BGAndelArbeidsforhold();
+            bgAndelArbeidsforhold = new BGAndelArbeidsforholdEntitet();
         }
 
-        private Builder(BGAndelArbeidsforhold eksisterendeBGAndelArbeidsforhold) {
+        private Builder(BGAndelArbeidsforholdEntitet eksisterendeBGAndelArbeidsforhold) {
             bgAndelArbeidsforhold = eksisterendeBGAndelArbeidsforhold;
         }
 
@@ -234,7 +234,7 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
             return this;
         }
 
-        BGAndelArbeidsforhold build(BeregningsgrunnlagPrStatusOgAndel andel) {
+        BGAndelArbeidsforholdEntitet build(BeregningsgrunnlagPrStatusOgAndelEntitet andel) {
             Objects.requireNonNull(bgAndelArbeidsforhold.arbeidsgiver, "arbeidsgiver");
             andel.setBgAndelArbeidsforhold(bgAndelArbeidsforhold);
             return bgAndelArbeidsforhold;

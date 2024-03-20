@@ -45,11 +45,11 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
 
-@Entity(name = "BeregningsgrunnlagPrStatusOgAndel")
+@Entity(name = "BeregningsgrunnlagPrStatusOgAndelEntitet")
 @Table(name = "BG_PR_STATUS_OG_ANDEL")
 @DynamicInsert
 @DynamicUpdate
-public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
+public class BeregningsgrunnlagPrStatusOgAndelEntitet extends BaseEntitet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_BG_PR_STATUS_OG_ANDEL")
@@ -65,7 +65,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     @JsonBackReference
     @ManyToOne(optional = false)
     @JoinColumn(name = "bg_periode_id", nullable = false, updatable = false)
-    private BeregningsgrunnlagPeriode beregningsgrunnlagPeriode;
+    private BeregningsgrunnlagPeriodeEntitet beregningsgrunnlagPeriode;
 
     @Convert(converter= AktivitetStatusKodeverdiConverter.class)
     @Column(name="aktivitet_status", nullable = false)
@@ -154,12 +154,12 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     private AndelKilde kilde = AndelKilde.PROSESS_START;
 
     @OneToOne(mappedBy = "beregningsgrunnlagPrStatusOgAndel", cascade = CascadeType.PERSIST)
-    private BGAndelArbeidsforhold bgAndelArbeidsforhold;
+    private BGAndelArbeidsforholdEntitet bgAndelArbeidsforhold;
 
     @Column(name = "dagsats_tilstoetende_ytelse")
     private Long orginalDagsatsFraTilstøtendeYtelse;
 
-    public BeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel) {
+    public BeregningsgrunnlagPrStatusOgAndelEntitet(BeregningsgrunnlagPrStatusOgAndelEntitet beregningsgrunnlagPrStatusOgAndel) {
         this.aktivitetStatus = beregningsgrunnlagPrStatusOgAndel.getAktivitetStatus();
         this.andelsnr = beregningsgrunnlagPrStatusOgAndel.getAndelsnr();
         this.arbeidsforholdType = beregningsgrunnlagPrStatusOgAndel.getArbeidsforholdType();
@@ -184,11 +184,11 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
         this.redusertPrÅr = beregningsgrunnlagPrStatusOgAndel.getRedusertPrÅr();
         this.redusertRefusjonPrÅr = beregningsgrunnlagPrStatusOgAndel.getRedusertRefusjonPrÅr();
         this.årsbeløpFraTilstøtendeYtelse = beregningsgrunnlagPrStatusOgAndel.getÅrsbeløpFraTilstøtendeYtelse();
-        beregningsgrunnlagPrStatusOgAndel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforhold::new)
+        beregningsgrunnlagPrStatusOgAndel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdEntitet::new)
                 .ifPresent(this::setBgAndelArbeidsforhold);
     }
 
-    public BeregningsgrunnlagPrStatusOgAndel() {
+    public BeregningsgrunnlagPrStatusOgAndelEntitet() {
     }
 
 
@@ -196,7 +196,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
         return id;
     }
 
-    public BeregningsgrunnlagPeriode getBeregningsgrunnlagPeriode() {
+    public BeregningsgrunnlagPeriodeEntitet getBeregningsgrunnlagPeriode() {
         return beregningsgrunnlagPeriode;
     }
 
@@ -332,7 +332,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
         return kilde;
     }
 
-    public Optional<BGAndelArbeidsforhold> getBgAndelArbeidsforhold() {
+    public Optional<BGAndelArbeidsforholdEntitet> getBgAndelArbeidsforhold() {
         return Optional.ofNullable(bgAndelArbeidsforhold);
     }
 
@@ -341,21 +341,21 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     }
 
     public Optional<Arbeidsgiver> getArbeidsgiver() {
-        Optional<BGAndelArbeidsforhold> beregningArbeidsforhold = getBgAndelArbeidsforhold();
-        return beregningArbeidsforhold.map(BGAndelArbeidsforhold::getArbeidsgiver);
+        Optional<BGAndelArbeidsforholdEntitet> beregningArbeidsforhold = getBgAndelArbeidsforhold();
+        return beregningArbeidsforhold.map(BGAndelArbeidsforholdEntitet::getArbeidsgiver);
     }
 
     public Optional<InternArbeidsforholdRef> getArbeidsforholdRef() {
-        Optional<BGAndelArbeidsforhold> beregningArbeidsforhold = getBgAndelArbeidsforhold();
-        return beregningArbeidsforhold.map(BGAndelArbeidsforhold::getArbeidsforholdRef);
+        Optional<BGAndelArbeidsforholdEntitet> beregningArbeidsforhold = getBgAndelArbeidsforhold();
+        return beregningArbeidsforhold.map(BGAndelArbeidsforholdEntitet::getArbeidsforholdRef);
     }
 
-    void setBgAndelArbeidsforhold(BGAndelArbeidsforhold bgAndelArbeidsforhold) {
+    void setBgAndelArbeidsforhold(BGAndelArbeidsforholdEntitet bgAndelArbeidsforhold) {
         bgAndelArbeidsforhold.setBeregningsgrunnlagPrStatusOgAndel(this);
         this.bgAndelArbeidsforhold = bgAndelArbeidsforhold;
     }
 
-    void setBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode) {
+    void setBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeEntitet beregningsgrunnlagPeriode) {
         this.beregningsgrunnlagPeriode = beregningsgrunnlagPeriode;
     }
 
@@ -363,18 +363,18 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     public boolean equals(Object obj) {
         if (obj == this) {
             return true;
-        } else if (!(obj instanceof BeregningsgrunnlagPrStatusOgAndel)) {
+        } else if (!(obj instanceof BeregningsgrunnlagPrStatusOgAndelEntitet)) {
             return false;
         }
         // Endring av denne har store konsekvenser for matching av andeler
         // Resultat av endringer må testes manuelt
-        BeregningsgrunnlagPrStatusOgAndel other = (BeregningsgrunnlagPrStatusOgAndel) obj;
+        BeregningsgrunnlagPrStatusOgAndelEntitet other = (BeregningsgrunnlagPrStatusOgAndelEntitet) obj;
         return Objects.equals(this.getAktivitetStatus(), other.getAktivitetStatus())
                 && Objects.equals(this.getFastsattInntektskategori(), other.getFastsattInntektskategori())
-                && Objects.equals(this.getBgAndelArbeidsforhold().map(BGAndelArbeidsforhold::getArbeidsgiver),
-                    other.getBgAndelArbeidsforhold().map(BGAndelArbeidsforhold::getArbeidsgiver))
-                && Objects.equals(this.getBgAndelArbeidsforhold().map(BGAndelArbeidsforhold::getArbeidsforholdRef),
-                    other.getBgAndelArbeidsforhold().map(BGAndelArbeidsforhold::getArbeidsforholdRef))
+                && Objects.equals(this.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdEntitet::getArbeidsgiver),
+                    other.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdEntitet::getArbeidsgiver))
+                && Objects.equals(this.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdEntitet::getArbeidsforholdRef),
+                    other.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdEntitet::getArbeidsforholdRef))
                 && Objects.equals(this.getArbeidsforholdType(), other.getArbeidsforholdType());
     }
 
@@ -383,8 +383,8 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     public int hashCode() {
         return Objects.hash(aktivitetStatus,
             getFastsattInntektskategori(),
-            getBgAndelArbeidsforhold().map(BGAndelArbeidsforhold::getArbeidsgiver),
-            getBgAndelArbeidsforhold().map(BGAndelArbeidsforhold::getArbeidsforholdRef),
+            getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdEntitet::getArbeidsgiver),
+            getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdEntitet::getArbeidsforholdRef),
             arbeidsforholdType);
     }
 
@@ -418,7 +418,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
         return new Builder();
     }
 
-    public static Builder builder(BeregningsgrunnlagPrStatusOgAndel eksisterendeBGPrStatusOgAndel) {
+    public static Builder builder(BeregningsgrunnlagPrStatusOgAndelEntitet eksisterendeBGPrStatusOgAndel) {
         if (eksisterendeBGPrStatusOgAndel.getId() != null) {
             throw new IllegalArgumentException("Utviklerfeil: Kan ikke bygge på en allerede lagret andel.");
         }
@@ -429,14 +429,14 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
         /** Når det er built kan ikke denne builderen brukes til annet enn å returnere samme objekt. */
         private boolean built;
 
-        private BeregningsgrunnlagPrStatusOgAndel kladd;
+        private BeregningsgrunnlagPrStatusOgAndelEntitet kladd;
 
         private Builder() {
-            kladd = new BeregningsgrunnlagPrStatusOgAndel();
+            kladd = new BeregningsgrunnlagPrStatusOgAndelEntitet();
             kladd.arbeidsforholdType = OpptjeningAktivitetType.UDEFINERT;
         }
 
-        private Builder(BeregningsgrunnlagPrStatusOgAndel eksisterendeBGPrStatusOgAndelMal) {
+        private Builder(BeregningsgrunnlagPrStatusOgAndelEntitet eksisterendeBGPrStatusOgAndelMal) {
             kladd = eksisterendeBGPrStatusOgAndelMal;
         }
 
@@ -563,7 +563,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
             return this;
         }
 
-        public Builder medBGAndelArbeidsforhold(BGAndelArbeidsforhold.Builder bgAndelArbeidsforholdBuilder) {
+        public Builder medBGAndelArbeidsforhold(BGAndelArbeidsforholdEntitet.Builder bgAndelArbeidsforholdBuilder) {
             verifiserKanModifisere();
             kladd.bgAndelArbeidsforhold = bgAndelArbeidsforholdBuilder.build(kladd);
             return this;
@@ -582,7 +582,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
             return this;
         }
 
-        public BeregningsgrunnlagPrStatusOgAndel build(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode) {
+        public BeregningsgrunnlagPrStatusOgAndelEntitet build(BeregningsgrunnlagPeriodeEntitet beregningsgrunnlagPeriode) {
             if(built) {
                 return kladd;
             }
@@ -597,10 +597,10 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
             return kladd;
         }
 
-        private void finnOgSettAndelsnr(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode) {
+        private void finnOgSettAndelsnr(BeregningsgrunnlagPeriodeEntitet beregningsgrunnlagPeriode) {
             verifiserKanModifisere();
             Long forrigeAndelsnr = beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
-                    .mapToLong(BeregningsgrunnlagPrStatusOgAndel::getAndelsnr)
+                    .mapToLong(BeregningsgrunnlagPrStatusOgAndelEntitet::getAndelsnr)
                     .max()
                     .orElse(0L);
             kladd.andelsnr = forrigeAndelsnr + 1L;
@@ -609,7 +609,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
         private void verifiserAndelsnr() {
             Set<Long> andelsnrIBruk = new HashSet<>();
             kladd.beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
-            .map(BeregningsgrunnlagPrStatusOgAndel::getAndelsnr)
+            .map(BeregningsgrunnlagPrStatusOgAndelEntitet::getAndelsnr)
             .forEach(andelsnr -> {
                 if (andelsnrIBruk.contains(andelsnr)) {
                     throw new IllegalStateException("Utviklerfeil: Kan ikke bygge andel. Andelsnr eksisterer allerede på en annen andel i samme bgPeriode.");

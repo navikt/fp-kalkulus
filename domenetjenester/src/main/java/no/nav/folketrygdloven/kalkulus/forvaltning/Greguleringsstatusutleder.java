@@ -7,10 +7,10 @@ import java.util.Set;
 
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.konfig.Konfigverdier;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriodeEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
@@ -62,7 +62,7 @@ public class Greguleringsstatusutleder {
 
     private static boolean harGrunnlagSomBleAvkortet(BeregningsgrunnlagEntitet bg, BigDecimal grunnbeløpBenyttetIBeregningen) {
         Beløp størsteBrutto = bg.getBeregningsgrunnlagPerioder().stream()
-                .map(BeregningsgrunnlagPeriode::getBruttoPrÅr)
+                .map(BeregningsgrunnlagPeriodeEntitet::getBruttoPrÅr)
                 .max(Comparator.naturalOrder())
                 .orElse(Beløp.ZERO);
         BigDecimal antallGØvreGrenseverdi = KonfigTjeneste.getAntallGØvreGrenseverdi();
@@ -81,7 +81,7 @@ public class Greguleringsstatusutleder {
 
     private static boolean erBeregnetSomNæringsdrivende(BeregningsgrunnlagEntitet bg) {
         return bg.getAktivitetStatuser().stream()
-                .map(BeregningsgrunnlagAktivitetStatus::getAktivitetStatus)
+                .map(BeregningsgrunnlagAktivitetStatusEntitet::getAktivitetStatus)
                 .anyMatch(SN_REGULERING::contains);
     }
 

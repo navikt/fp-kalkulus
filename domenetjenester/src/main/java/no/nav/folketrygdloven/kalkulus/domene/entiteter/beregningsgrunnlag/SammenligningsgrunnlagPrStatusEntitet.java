@@ -25,9 +25,9 @@ import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 
-@Entity(name = "SammenligningsgrunnlagPrStatus")
+@Entity(name = "SammenligningsgrunnlagPrStatusEntitet")
 @Table(name = "BG_SG_PR_STATUS")
-public class SammenligningsgrunnlagPrStatus extends BaseEntitet {
+public class SammenligningsgrunnlagPrStatusEntitet extends BaseEntitet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_BG_SG_PR_STATUS")
@@ -66,11 +66,11 @@ public class SammenligningsgrunnlagPrStatus extends BaseEntitet {
     @JoinColumn(name = "beregningsgrunnlag_id", nullable = false, updatable = false, unique = true)
     private BeregningsgrunnlagEntitet beregningsgrunnlag;
 
-    public SammenligningsgrunnlagPrStatus() {
+    public SammenligningsgrunnlagPrStatusEntitet() {
         // Hibernate
     }
 
-    public SammenligningsgrunnlagPrStatus(SammenligningsgrunnlagPrStatus sammenligningsgrunnlagPrStatus) {
+    public SammenligningsgrunnlagPrStatusEntitet(SammenligningsgrunnlagPrStatusEntitet sammenligningsgrunnlagPrStatus) {
         this.avvikPromilleNy = sammenligningsgrunnlagPrStatus.getAvvikPromilleNy();
         this.avvikPromille = sammenligningsgrunnlagPrStatus.getAvvikPromille();
         this.rapportertPrÅr = sammenligningsgrunnlagPrStatus.getRapportertPrÅr();
@@ -126,10 +126,10 @@ public class SammenligningsgrunnlagPrStatus extends BaseEntitet {
     public boolean equals(Object obj) {
         if (obj == this) {
             return true;
-        } else if (!(obj instanceof SammenligningsgrunnlagPrStatus)) {
+        } else if (!(obj instanceof SammenligningsgrunnlagPrStatusEntitet)) {
             return false;
         }
-        SammenligningsgrunnlagPrStatus other = (SammenligningsgrunnlagPrStatus) obj;
+        SammenligningsgrunnlagPrStatusEntitet other = (SammenligningsgrunnlagPrStatusEntitet) obj;
         return Objects.equals(this.getBeregningsgrunnlag(), other.getBeregningsgrunnlag())
                 && Objects.equals(this.getSammenligningsgrunnlagType(), other.getSammenligningsgrunnlagType())
                 && Objects.equals(this.getSammenligningsperiodeFom(), other.getSammenligningsperiodeFom())
@@ -160,10 +160,10 @@ public class SammenligningsgrunnlagPrStatus extends BaseEntitet {
     }
 
     public static class Builder {
-        private SammenligningsgrunnlagPrStatus sammenligningsgrunnlagMal;
+        private SammenligningsgrunnlagPrStatusEntitet sammenligningsgrunnlagMal;
 
         public Builder() {
-            sammenligningsgrunnlagMal = new SammenligningsgrunnlagPrStatus();
+            sammenligningsgrunnlagMal = new SammenligningsgrunnlagPrStatusEntitet();
         }
 
         public Builder medSammenligningsgrunnlagType(SammenligningsgrunnlagType sammenligningsgrunnlagType) {
@@ -194,7 +194,7 @@ public class SammenligningsgrunnlagPrStatus extends BaseEntitet {
             return this;
         }
 
-        public SammenligningsgrunnlagPrStatus build() {
+        public SammenligningsgrunnlagPrStatusEntitet build() {
             verifyStateForBuild();
             return sammenligningsgrunnlagMal;
         }

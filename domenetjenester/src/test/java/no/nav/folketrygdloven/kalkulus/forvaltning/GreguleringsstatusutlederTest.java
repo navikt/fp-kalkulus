@@ -9,14 +9,14 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforhold;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforholdEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriodeEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Årsgrunnlag;
@@ -36,9 +36,9 @@ class GreguleringsstatusutlederTest {
                 .medSkjæringstidspunkt(STP)
                 .medGrunnbeløp(GAMMEL_G)
                 .build();
-        BeregningsgrunnlagPeriode.builder()
+        BeregningsgrunnlagPeriodeEntitet.builder()
                 .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
-                .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel.builder()
+                .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelEntitet.builder()
                         .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
                         .medAndelsnr(1L)
                         .medGrunnlagPrÅr(lagBeregnet(800000)))
@@ -65,12 +65,12 @@ class GreguleringsstatusutlederTest {
                 .medSkjæringstidspunkt(STP)
                 .medGrunnbeløp(GAMMEL_G)
                 .build();
-        BeregningsgrunnlagPeriode.builder()
+        BeregningsgrunnlagPeriodeEntitet.builder()
                 .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
-                .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel.builder()
+                .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelEntitet.builder()
                         .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                         .medAndelsnr(1L)
-                        .medBGAndelArbeidsforhold(BGAndelArbeidsforhold.builder().medArbeidsgiver(Arbeidsgiver.virksomhet("999999999")))
+                        .medBGAndelArbeidsforhold(BGAndelArbeidsforholdEntitet.builder().medArbeidsgiver(Arbeidsgiver.virksomhet("999999999")))
                         .medGrunnlagPrÅr(lagBeregnet(400000)))
                 .build(bg);
         Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
@@ -90,11 +90,11 @@ class GreguleringsstatusutlederTest {
         BeregningsgrunnlagEntitet bg = BeregningsgrunnlagEntitet.builder()
                 .medSkjæringstidspunkt(STP)
                 .medGrunnbeløp(GAMMEL_G)
-                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatus.builder().medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE))
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusEntitet.builder().medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE))
                 .build();
-        BeregningsgrunnlagPeriode.builder()
+        BeregningsgrunnlagPeriodeEntitet.builder()
                 .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
-                .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel.builder()
+                .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelEntitet.builder()
                         .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
                         .medAndelsnr(1L)
                         .medGrunnlagPrÅr(lagBeregnet(200000)))
@@ -116,11 +116,11 @@ class GreguleringsstatusutlederTest {
         BeregningsgrunnlagEntitet bg = BeregningsgrunnlagEntitet.builder()
                 .medSkjæringstidspunkt(STP)
                 .medGrunnbeløp(GAMMEL_G)
-                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatus.builder().medAktivitetStatus(AktivitetStatus.MILITÆR_ELLER_SIVIL))
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusEntitet.builder().medAktivitetStatus(AktivitetStatus.MILITÆR_ELLER_SIVIL))
                 .build();
-        BeregningsgrunnlagPeriode.builder()
+        BeregningsgrunnlagPeriodeEntitet.builder()
                 .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
-                .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel.builder()
+                .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelEntitet.builder()
                         .medAktivitetStatus(AktivitetStatus.MILITÆR_ELLER_SIVIL)
                         .medAndelsnr(1L)
                         .medGrunnlagPrÅr(lagBeregnet(200000)))
@@ -143,12 +143,12 @@ class GreguleringsstatusutlederTest {
                 .medSkjæringstidspunkt(STP)
                 .medGrunnbeløp(GAMMEL_G)
                 .build();
-        BeregningsgrunnlagPeriode.builder()
+        BeregningsgrunnlagPeriodeEntitet.builder()
                 .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
-                .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel.builder()
+                .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelEntitet.builder()
                         .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                         .medAndelsnr(1L)
-                        .medBGAndelArbeidsforhold(BGAndelArbeidsforhold.builder().medArbeidsgiver(Arbeidsgiver.virksomhet("999999999")))
+                        .medBGAndelArbeidsforhold(BGAndelArbeidsforholdEntitet.builder().medArbeidsgiver(Arbeidsgiver.virksomhet("999999999")))
                         .medGrunnlagPrÅr(lagBeregnet(610000)))
                 .build(bg);
         Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())

@@ -10,11 +10,11 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforhold;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatus;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforholdEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriodeEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatusEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.FastsattInntektskategori;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Promille;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Prosent;
@@ -24,16 +24,16 @@ import no.nav.folketrygdloven.kalkulus.mappers.VerdityperMapper;
 
 
 public class KalkulatorTilBGMapper {
-    public static BeregningsgrunnlagAktivitetStatus.Builder mapAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto fraKalkulus) {
-        BeregningsgrunnlagAktivitetStatus.Builder builder = new BeregningsgrunnlagAktivitetStatus.Builder();
+    public static BeregningsgrunnlagAktivitetStatusEntitet.Builder mapAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto fraKalkulus) {
+        BeregningsgrunnlagAktivitetStatusEntitet.Builder builder = new BeregningsgrunnlagAktivitetStatusEntitet.Builder();
         builder.medAktivitetStatus(fraKalkulus.getAktivitetStatus());
         builder.medHjemmel(fraKalkulus.getHjemmel());
 
         return builder;
     }
 
-    public static BeregningsgrunnlagPeriode.Builder mapBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeDto fraKalkulus) {
-        BeregningsgrunnlagPeriode.Builder builder = new BeregningsgrunnlagPeriode.Builder();
+    public static BeregningsgrunnlagPeriodeEntitet.Builder mapBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeDto fraKalkulus) {
+        BeregningsgrunnlagPeriodeEntitet.Builder builder = new BeregningsgrunnlagPeriodeEntitet.Builder();
 
         //med
         builder.medAvkortetPrÅr(VerdityperMapper.beløpTilDao(fraKalkulus.getAvkortetPrÅr()));
@@ -52,8 +52,8 @@ public class KalkulatorTilBGMapper {
         return builder;
     }
 
-    public static SammenligningsgrunnlagPrStatus mapSammenligningsgrunnlagMedStatus(SammenligningsgrunnlagPrStatusDto fraKalkulus) {
-        SammenligningsgrunnlagPrStatus.Builder builder = new SammenligningsgrunnlagPrStatus.Builder();
+    public static SammenligningsgrunnlagPrStatusEntitet mapSammenligningsgrunnlagMedStatus(SammenligningsgrunnlagPrStatusDto fraKalkulus) {
+        SammenligningsgrunnlagPrStatusEntitet.Builder builder = new SammenligningsgrunnlagPrStatusEntitet.Builder();
         builder.medAvvikPromilleNy(mapTilPromille(fraKalkulus.getAvvikPromilleNy()));
         builder.medAvvikPromille(mapTilPromille(fraKalkulus.getAvvikPromilleNy()));
         builder.medRapportertPrÅr(VerdityperMapper.beløpTilDao(fraKalkulus.getRapportertPrÅr()));
@@ -63,8 +63,8 @@ public class KalkulatorTilBGMapper {
         return builder.build();
     }
 
-    private static BeregningsgrunnlagPrStatusOgAndel.Builder mapStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelDto fraKalkulus) {
-        BeregningsgrunnlagPrStatusOgAndel.Builder builder = BeregningsgrunnlagPrStatusOgAndel.builder()
+    private static BeregningsgrunnlagPrStatusOgAndelEntitet.Builder mapStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelDto fraKalkulus) {
+        BeregningsgrunnlagPrStatusOgAndelEntitet.Builder builder = BeregningsgrunnlagPrStatusOgAndelEntitet.builder()
                 .medAktivitetStatus(fraKalkulus.getAktivitetStatus())
                 .medAndelsnr(fraKalkulus.getAndelsnr())
                 .medArbforholdType(fraKalkulus.getArbeidsforholdType())
@@ -122,8 +122,8 @@ public class KalkulatorTilBGMapper {
         return verdi == null ? null : new Promille(verdi);
     }
 
-    private static BGAndelArbeidsforhold.Builder mapBGAndelArbeidsforhold(BGAndelArbeidsforholdDto fraKalkulus) {
-        BGAndelArbeidsforhold.Builder builder = BGAndelArbeidsforhold.builder();
+    private static BGAndelArbeidsforholdEntitet.Builder mapBGAndelArbeidsforhold(BGAndelArbeidsforholdDto fraKalkulus) {
+        BGAndelArbeidsforholdEntitet.Builder builder = BGAndelArbeidsforholdEntitet.builder();
         builder.medArbeidsforholdRef(KalkulatorTilIAYMapper.mapArbeidsforholdRef(fraKalkulus.getArbeidsforholdRef()));
         builder.medArbeidsgiver(KalkulatorTilIAYMapper.mapArbeidsgiver(fraKalkulus.getArbeidsgiver()));
         builder.medArbeidsperiodeFom(fraKalkulus.getArbeidsperiodeFom());

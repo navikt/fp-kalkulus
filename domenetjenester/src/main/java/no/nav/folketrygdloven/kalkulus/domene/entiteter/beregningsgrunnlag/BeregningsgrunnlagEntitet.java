@@ -45,15 +45,15 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlag", cascade = CascadeType.PERSIST)
     @BatchSize(size = 20)
-    private final List<BeregningsgrunnlagAktivitetStatus> aktivitetStatuser = new ArrayList<>();
+    private final List<BeregningsgrunnlagAktivitetStatusEntitet> aktivitetStatuser = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlag", cascade = CascadeType.PERSIST)
     @BatchSize(size = 20)
-    private final List<BeregningsgrunnlagPeriode> beregningsgrunnlagPerioder = new ArrayList<>();
+    private final List<BeregningsgrunnlagPeriodeEntitet> beregningsgrunnlagPerioder = new ArrayList<>();
 
     @OneToMany(mappedBy = "beregningsgrunnlag")
     @BatchSize(size = 20)
-    private final List<SammenligningsgrunnlagPrStatus> sammenligningsgrunnlagPrStatusListe = new ArrayList<>();
+    private final List<SammenligningsgrunnlagPrStatusEntitet> sammenligningsgrunnlagPrStatusListe = new ArrayList<>();
 
     @Embedded
     @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "grunnbeloep")))
@@ -71,10 +71,10 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
         this.grunnbeløp = kopi.getGrunnbeløp();
         this.overstyrt = kopi.isOverstyrt();
         this.skjæringstidspunkt = kopi.getSkjæringstidspunkt();
-        kopi.getSammenligningsgrunnlagPrStatusListe().stream().map(SammenligningsgrunnlagPrStatus::new).forEach(this::leggTilSammenligningsgrunnlagPrStatus);
+        kopi.getSammenligningsgrunnlagPrStatusListe().stream().map(SammenligningsgrunnlagPrStatusEntitet::new).forEach(this::leggTilSammenligningsgrunnlagPrStatus);
         kopi.getFaktaOmBeregningTilfeller().stream().map(BeregningsgrunnlagFaktaOmBeregningTilfelle::new).forEach(this::leggTilFaktaOmBeregningTilfelle);
-        kopi.getAktivitetStatuser().stream().map(BeregningsgrunnlagAktivitetStatus::new).forEach(this::leggTilBeregningsgrunnlagAktivitetStatus);
-        kopi.getBeregningsgrunnlagPerioder().stream().map(BeregningsgrunnlagPeriode::new)
+        kopi.getAktivitetStatuser().stream().map(BeregningsgrunnlagAktivitetStatusEntitet::new).forEach(this::leggTilBeregningsgrunnlagAktivitetStatus);
+        kopi.getBeregningsgrunnlagPerioder().stream().map(BeregningsgrunnlagPeriodeEntitet::new)
                 .forEach(this::leggTilBeregningsgrunnlagPeriode);
     }
 
@@ -90,16 +90,16 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
         return skjæringstidspunkt;
     }
 
-    public List<BeregningsgrunnlagAktivitetStatus> getAktivitetStatuser() {
+    public List<BeregningsgrunnlagAktivitetStatusEntitet> getAktivitetStatuser() {
         return aktivitetStatuser.stream()
-                .sorted(Comparator.comparing(BeregningsgrunnlagAktivitetStatus::getAktivitetStatus))
+                .sorted(Comparator.comparing(BeregningsgrunnlagAktivitetStatusEntitet::getAktivitetStatus))
                 .toList();
     }
 
-    public List<BeregningsgrunnlagPeriode> getBeregningsgrunnlagPerioder() {
+    public List<BeregningsgrunnlagPeriodeEntitet> getBeregningsgrunnlagPerioder() {
         return beregningsgrunnlagPerioder
                 .stream()
-                .sorted(Comparator.comparing(BeregningsgrunnlagPeriode::getBeregningsgrunnlagPeriodeFom))
+                .sorted(Comparator.comparing(BeregningsgrunnlagPeriodeEntitet::getBeregningsgrunnlagPeriodeFom))
                 .toList();
     }
 
@@ -107,7 +107,7 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
         return grunnbeløp;
     }
 
-    void leggTilBeregningsgrunnlagAktivitetStatus(BeregningsgrunnlagAktivitetStatus bgAktivitetStatus) {
+    void leggTilBeregningsgrunnlagAktivitetStatus(BeregningsgrunnlagAktivitetStatusEntitet bgAktivitetStatus) {
         Objects.requireNonNull(bgAktivitetStatus, "beregningsgrunnlagAktivitetStatus");
         bgAktivitetStatus.setBeregningsgrunnlag(this);
         // Aktivitetstatuser burde implementeres som eit Set
@@ -116,7 +116,7 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
         }
     }
 
-    void leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriode bgPeriode) {
+    void leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeEntitet bgPeriode) {
         Objects.requireNonNull(bgPeriode, "beregningsgrunnlagPeriode");
         if (!beregningsgrunnlagPerioder.contains(bgPeriode)) { // NOSONAR
             bgPeriode.setBeregningsgrunnlag(this);
@@ -142,13 +142,13 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
         }
     }
 
-    public List<SammenligningsgrunnlagPrStatus> getSammenligningsgrunnlagPrStatusListe() {
+    public List<SammenligningsgrunnlagPrStatusEntitet> getSammenligningsgrunnlagPrStatusListe() {
         return sammenligningsgrunnlagPrStatusListe.stream()
-                .sorted(Comparator.comparing(SammenligningsgrunnlagPrStatus::getSammenligningsgrunnlagType))
+                .sorted(Comparator.comparing(SammenligningsgrunnlagPrStatusEntitet::getSammenligningsgrunnlagType))
                 .toList();
     }
 
-    void leggTilSammenligningsgrunnlagPrStatus(SammenligningsgrunnlagPrStatus sammenligningsgrunnlagPrStatus) {
+    void leggTilSammenligningsgrunnlagPrStatus(SammenligningsgrunnlagPrStatusEntitet sammenligningsgrunnlagPrStatus) {
         Objects.requireNonNull(sammenligningsgrunnlagPrStatus, "sammenligningsgrunnlagPrStatus");
         var finnesFraFør = sammenligningsgrunnlagPrStatusListe.stream()
                 .anyMatch(sg -> sg.getSammenligningsgrunnlagType().equals(sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType()));
@@ -219,13 +219,13 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
             return this;
         }
 
-        public Builder leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatus.Builder aktivitetStatusBuilder) {
+        public Builder leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusEntitet.Builder aktivitetStatusBuilder) {
             verifiserKanModifisere();
             aktivitetStatusBuilder.build(kladd);
             return this;
         }
 
-        public Builder leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriode.Builder beregningsgrunnlagPeriodeBuilder) {
+        public Builder leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeEntitet.Builder beregningsgrunnlagPeriodeBuilder) {
             verifiserKanModifisere();
             beregningsgrunnlagPeriodeBuilder.build(kladd);
             return this;
@@ -237,7 +237,7 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
             return this;
         }
 
-        public Builder leggTilSammenligningsgrunnlag(SammenligningsgrunnlagPrStatus sammenligningsgrunnlagPrStatus) {
+        public Builder leggTilSammenligningsgrunnlag(SammenligningsgrunnlagPrStatusEntitet sammenligningsgrunnlagPrStatus) {
             kladd.leggTilSammenligningsgrunnlagPrStatus(sammenligningsgrunnlagPrStatus);
             return this;
         }

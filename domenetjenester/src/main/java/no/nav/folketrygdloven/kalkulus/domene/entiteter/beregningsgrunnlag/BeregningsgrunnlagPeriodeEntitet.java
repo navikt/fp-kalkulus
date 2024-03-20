@@ -35,9 +35,9 @@ import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 
-@Entity(name = "BeregningsgrunnlagPeriode")
+@Entity(name = "BeregningsgrunnlagPeriodeEntitet")
 @Table(name = "BEREGNINGSGRUNNLAG_PERIODE")
-public class BeregningsgrunnlagPeriode extends BaseEntitet {
+public class BeregningsgrunnlagPeriodeEntitet extends BaseEntitet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_BG_PERIODE")
@@ -54,7 +54,7 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlagPeriode", cascade = CascadeType.PERSIST, orphanRemoval = true)
     @BatchSize(size = 20)
-    private final List<BeregningsgrunnlagPrStatusOgAndel> beregningsgrunnlagPrStatusOgAndelList = new ArrayList<>();
+    private final List<BeregningsgrunnlagPrStatusOgAndelEntitet> beregningsgrunnlagPrStatusOgAndelList = new ArrayList<>();
 
     @Embedded
     @AttributeOverrides({
@@ -95,7 +95,7 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
     @BatchSize(size = 20)
     private final List<BeregningsgrunnlagPeriodeÅrsak> beregningsgrunnlagPeriodeÅrsaker = new ArrayList<>();
 
-    public BeregningsgrunnlagPeriode(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode) {
+    public BeregningsgrunnlagPeriodeEntitet(BeregningsgrunnlagPeriodeEntitet beregningsgrunnlagPeriode) {
         this.avkortetPrÅr = beregningsgrunnlagPeriode.getAvkortetPrÅr();
         this.bruttoPrÅr = beregningsgrunnlagPeriode.getBruttoPrÅr();
         this.dagsats = beregningsgrunnlagPeriode.getDagsats();
@@ -107,11 +107,11 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
         this.reduksjonsfaktorInaktivTypeA = beregningsgrunnlagPeriode.getReduksjonsfaktorInaktivTypeA();
         beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeÅrsaker().stream().map(BeregningsgrunnlagPeriodeÅrsak::new)
                 .forEach(this::addBeregningsgrunnlagPeriodeÅrsak);
-        beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream().map(BeregningsgrunnlagPrStatusOgAndel::new)
+        beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream().map(BeregningsgrunnlagPrStatusOgAndelEntitet::new)
                 .forEach(this::addBeregningsgrunnlagPrStatusOgAndel);
     }
 
-    public BeregningsgrunnlagPeriode() {
+    public BeregningsgrunnlagPeriodeEntitet() {
         // Hibernate
     }
 
@@ -123,9 +123,9 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
         return beregningsgrunnlag;
     }
 
-    public List<BeregningsgrunnlagPrStatusOgAndel> getBeregningsgrunnlagPrStatusOgAndelList() {
+    public List<BeregningsgrunnlagPrStatusOgAndelEntitet> getBeregningsgrunnlagPrStatusOgAndelList() {
         return beregningsgrunnlagPrStatusOgAndelList.stream()
-                .sorted(Comparator.comparing(BeregningsgrunnlagPrStatusOgAndel::getAndelsnr))
+                .sorted(Comparator.comparing(BeregningsgrunnlagPrStatusOgAndelEntitet::getAndelsnr))
                 .collect(Collectors.toUnmodifiableList());
     }
 
@@ -147,7 +147,7 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
     void updateBruttoPrÅr() {
         bruttoPrÅr = beregningsgrunnlagPrStatusOgAndelList.stream()
                 .filter(bgpsa -> bgpsa.getBruttoPrÅr() != null)
-                .map(BeregningsgrunnlagPrStatusOgAndel::getBruttoPrÅr)
+                .map(BeregningsgrunnlagPrStatusOgAndelEntitet::getBruttoPrÅr)
                 .reduce(Beløp::adder)
                 .orElse(Beløp.ZERO);
     }
@@ -196,7 +196,7 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    void addBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel bgPrStatusOgAndel) {
+    void addBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelEntitet bgPrStatusOgAndel) {
         Objects.requireNonNull(bgPrStatusOgAndel, "beregningsgrunnlagPrStatusOgAndel");
         if (!beregningsgrunnlagPrStatusOgAndelList.contains(bgPrStatusOgAndel)) { // NOSONAR Class defines List based fields but uses them like Sets: Ingening å tjene på å bytte til Set ettersom det er små lister
             bgPrStatusOgAndel.setBeregningsgrunnlagPeriode(this);
@@ -220,10 +220,10 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
     public boolean equals(Object obj) {
         if (obj == this) {
             return true;
-        } else if (!(obj instanceof BeregningsgrunnlagPeriode)) {
+        } else if (!(obj instanceof BeregningsgrunnlagPeriodeEntitet)) {
             return false;
         }
-        BeregningsgrunnlagPeriode other = (BeregningsgrunnlagPeriode) obj;
+        BeregningsgrunnlagPeriodeEntitet other = (BeregningsgrunnlagPeriodeEntitet) obj;
         return Objects.equals(this.periode.getFomDato(), other.periode.getFomDato())
                 && Objects.equals(this.periode.getTomDato(), other.periode.getTomDato())
                 && Objects.equals(this.getBruttoPrÅr(), other.getBruttoPrÅr())
@@ -253,27 +253,27 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
         return new Builder();
     }
 
-    public static Builder builder(BeregningsgrunnlagPeriode eksisterendeBeregningsgrunnlagPeriode) {
+    public static Builder builder(BeregningsgrunnlagPeriodeEntitet eksisterendeBeregningsgrunnlagPeriode) {
         return new Builder(eksisterendeBeregningsgrunnlagPeriode);
     }
 
 
     public static class Builder {
-        private final BeregningsgrunnlagPeriode kladd;
+        private final BeregningsgrunnlagPeriodeEntitet kladd;
         private boolean built;
 
         public Builder() {
-            kladd = new BeregningsgrunnlagPeriode();
+            kladd = new BeregningsgrunnlagPeriodeEntitet();
         }
 
-        public Builder(BeregningsgrunnlagPeriode eksisterendeBeregningsgrunnlagPeriod) {
+        public Builder(BeregningsgrunnlagPeriodeEntitet eksisterendeBeregningsgrunnlagPeriod) {
             if (Objects.nonNull(eksisterendeBeregningsgrunnlagPeriod.getId())) {
                 throw new IllegalArgumentException("Kan ikke bygge på et lagret grunnlag");
             }
             kladd = eksisterendeBeregningsgrunnlagPeriod;
         }
 
-        public Builder leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel.Builder prStatusOgAndelBuilder) {
+        public Builder leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelEntitet.Builder prStatusOgAndelBuilder) {
             verifiserKanModifisere();
             prStatusOgAndelBuilder.build(kladd);
             return this;
@@ -360,12 +360,12 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
             return this;
         }
 
-        public BeregningsgrunnlagPeriode build(BeregningsgrunnlagEntitet beregningsgrunnlag) {
+        public BeregningsgrunnlagPeriodeEntitet build(BeregningsgrunnlagEntitet beregningsgrunnlag) {
             verifyStateForBuild();
             beregningsgrunnlag.leggTilBeregningsgrunnlagPeriode(kladd);
 
             Long dagsatsSum = kladd.beregningsgrunnlagPrStatusOgAndelList.stream()
-                    .map(BeregningsgrunnlagPrStatusOgAndel::getDagsats)
+                    .map(BeregningsgrunnlagPrStatusOgAndelEntitet::getDagsats)
                     .filter(Objects::nonNull)
                     .reduce(Long::sum)
                     .orElse(null);

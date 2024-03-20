@@ -35,7 +35,7 @@ public class BeregningsgrunnlagPeriodeÅrsak extends BaseEntitet {
     @JsonBackReference
     @ManyToOne(optional = false)
     @JoinColumn(name = "bg_periode_id", nullable = false, updatable = false)
-    private BeregningsgrunnlagPeriode beregningsgrunnlagPeriode;
+    private BeregningsgrunnlagPeriodeEntitet beregningsgrunnlagPeriode;
 
     @Convert(converter = PeriodeÅrsakKodeverdiConverter.class)
     @Column(name="periode_aarsak", nullable = false)
@@ -52,7 +52,7 @@ public class BeregningsgrunnlagPeriodeÅrsak extends BaseEntitet {
         return id;
     }
 
-    public BeregningsgrunnlagPeriode getBeregningsgrunnlagPeriode() {
+    public BeregningsgrunnlagPeriodeEntitet getBeregningsgrunnlagPeriode() {
         return beregningsgrunnlagPeriode;
     }
 
@@ -61,7 +61,7 @@ public class BeregningsgrunnlagPeriodeÅrsak extends BaseEntitet {
     }
 
 
-    void setBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode) {
+    void setBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeEntitet beregningsgrunnlagPeriode) {
         this.beregningsgrunnlagPeriode = beregningsgrunnlagPeriode;
     }
 
@@ -94,7 +94,7 @@ public class BeregningsgrunnlagPeriodeÅrsak extends BaseEntitet {
             return this;
         }
 
-        public BeregningsgrunnlagPeriodeÅrsak build(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode) {
+        public BeregningsgrunnlagPeriodeÅrsak build(BeregningsgrunnlagPeriodeEntitet beregningsgrunnlagPeriode) {
             beregningsgrunnlagPeriode.addBeregningsgrunnlagPeriodeÅrsak(beregningsgrunnlagPeriodeÅrsakMal);
             return beregningsgrunnlagPeriodeÅrsakMal;
         }
