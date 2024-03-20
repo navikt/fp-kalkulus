@@ -1,11 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.mappers;
 
 import static no.nav.folketrygdloven.kalkulus.mappers.ForeldrepengerGrunnlagMapper.mapForeldrepengerGrunnlag;
-import static no.nav.folketrygdloven.kalkulus.mappers.FrisinnGrunnlagMapper.mapFrisinnGrunnlag;
 import static no.nav.folketrygdloven.kalkulus.mappers.MapIAYTilKalulator.mapArbeidsforholdRef;
-import static no.nav.folketrygdloven.kalkulus.mappers.OmsorgspengeGrunnlagMapper.mapOmsorgspengegrunnlag;
-import static no.nav.folketrygdloven.kalkulus.mappers.PleiepengerNærståendeGrunnlagMapper.mapPleiepengerNærståendeGrunnlag;
-import static no.nav.folketrygdloven.kalkulus.mappers.PleiepengerSyktBarnGrunnlagMapper.mapPleiepengerSyktBarnGrunnlag;
 import static no.nav.folketrygdloven.kalkulus.mappers.SvangerskapspengerGrunnlagMapper.mapSvangerskapspengerGrunnlag;
 
 import java.time.LocalDate;
@@ -30,7 +26,6 @@ import no.nav.folketrygdloven.kalkulus.beregning.v1.RefusjonskravDatoDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.Refusjonsperiode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
@@ -76,9 +71,7 @@ public class MapFraKalkulator {
                 mapFraDto(opptjeningAktiviteter),
                 mapFraDto(kravPrArbeidsforhold, input.getRefusjonskravDatoer(), iayGrunnlag, input.getSkjæringstidspunkt()),
                 mapFraDto(kobling.getYtelseType(),
-                        input,
-                        iayGrunnlagMappet,
-                        beregningsgrunnlagGrunnlagEntitet));
+                        input));
 
         utenGrunnbeløp.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
         return beregningsgrunnlagGrunnlagEntitet.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag)
@@ -118,18 +111,11 @@ public class MapFraKalkulator {
     }
 
     public static YtelsespesifiktGrunnlag mapFraDto(FagsakYtelseType ytelseType,
-                                                    KalkulatorInputDto input,
-                                                    no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                                    Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
+                                                    KalkulatorInputDto input) {
         var ytelsespesifiktGrunnlag = input.getYtelsespesifiktGrunnlag();
         return switch (ytelseType) {
             case FORELDREPENGER -> mapForeldrepengerGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag)ytelsespesifiktGrunnlag);
             case SVANGERSKAPSPENGER -> mapSvangerskapspengerGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.SvangerskapspengerGrunnlag) ytelsespesifiktGrunnlag);
-            case PLEIEPENGER_SYKT_BARN -> mapPleiepengerSyktBarnGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.PleiepengerSyktBarnGrunnlag) ytelsespesifiktGrunnlag);
-            case OPPLÆRINGSPENGER -> OpplæringspengerGrunnlagMapper.mapGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.OpplæringspengerGrunnlag) ytelsespesifiktGrunnlag);
-            case PLEIEPENGER_NÆRSTÅENDE -> mapPleiepengerNærståendeGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.PleiepengerNærståendeGrunnlag) ytelsespesifiktGrunnlag);
-            case FRISINN -> mapFrisinnGrunnlag(iayGrunnlag, beregningsgrunnlagGrunnlagEntitet, (no.nav.folketrygdloven.kalkulus.beregning.v1.FrisinnGrunnlag) ytelsespesifiktGrunnlag);
-            case OMSORGSPENGER -> mapOmsorgspengegrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.OmsorgspengerGrunnlag) ytelsespesifiktGrunnlag);
             default -> throw new IllegalStateException("Det er ikke definert ytelsespesifikt grunnlag for ytelse " + ytelseType);
         };
     }

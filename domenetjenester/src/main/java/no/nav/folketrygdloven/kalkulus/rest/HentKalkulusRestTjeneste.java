@@ -41,9 +41,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingRef
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
-import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapBeregningsgrunnlagFRISINN;
-import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapBrevBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapDetaljertBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.mappers.MapIAYTilKalulator;
 import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagDtoForGUIRequest;
@@ -111,43 +108,9 @@ public class HentKalkulusRestTjeneste {
         // TODO Fjern dette, lag egen tjeneste for brev
         var koblinger = koblingTjeneste.hentKoblinger(koblingReferanser, ytelseType);
         var input = guiInputTjeneste.lagInputForKoblinger(koblinger.stream().map(KoblingEntitet::getId).toList(), List.of());
-        if (FagsakYtelseType.OMSORGSPENGER.equals(ytelseType) || FagsakYtelseType.PLEIEPENGER_SYKT_BARN.equals(ytelseType)) {
-            dtoer = input.values().stream().map(v -> MapDetaljertBeregningsgrunnlag.mapMedBrevfelt(v.getBeregningsgrunnlagGrunnlag(), v)).toList();
-        } else {
-            dtoer = input.values().stream().map(v -> MapDetaljertBeregningsgrunnlag.mapGrunnlag(v.getBeregningsgrunnlagGrunnlag())).toList();
-        }
+        dtoer = input.values().stream().map(v -> MapDetaljertBeregningsgrunnlag.mapGrunnlag(v.getBeregningsgrunnlagGrunnlag())).toList();
         return dtoer.isEmpty() ? Response.noContent().build() : Response.ok(dtoer).build();
     }
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(description = "Hent forenklet BeregningsgrunnlagGrunnlag for angitte referanser", summary = ("Returnerer forenklet BeregningsgrunnlagGrunnlag for angitte kobling referanser."), tags = "beregningsgrunnlag")
-    @BeskyttetRessurs(action = READ, property = FAGSAK)
-    @Path("/forenklet-grunnlag/bolk")
-    @SuppressWarnings({"findsecbugs:JAXRS_ENDPOINT", "resource"})
-    public Response hentForenkletBeregningsgrunnlag(@NotNull @Valid HentBeregningsgrunnlagListeRequestAbacDto spesifikasjon) {
-        if (spesifikasjon.getRequestPrReferanse().isEmpty()) {
-            return Response.noContent().build();
-        }
-        var ytelseTyper = spesifikasjon.getRequestPrReferanse().stream()
-                .map(HentBeregningsgrunnlagRequest::getYtelseSomSkalBeregnes).collect(Collectors.toSet());
-        if (ytelseTyper.size() != 1) {
-            return Response.status(Status.BAD_REQUEST).entity("Feil input, alle requests må ha samme ytelsetype. Fikk: " + ytelseTyper).build();
-        }
-        var ytelseType = ytelseTyper.iterator().next();
-        var koblingReferanser = spesifikasjon.getRequestPrReferanse().stream().map(v -> new KoblingReferanse(v.getKoblingReferanse()))
-                .collect(Collectors.toList());
-        var koblinger = koblingTjeneste.hentKoblinger(koblingReferanser, ytelseType);
-        var input = guiInputTjeneste.lagInputForKoblinger(koblinger.stream().map(KoblingEntitet::getId).toList(), List.of());
-        var dtoer = input.values().stream()
-                .map(v -> MapBrevBeregningsgrunnlag.mapGrunnlag(
-                        v.getKoblingReferanse(),
-                        v.getBeregningsgrunnlagGrunnlag(),
-                        v.getYtelsespesifiktGrunnlag()))
-                .collect(Collectors.toList());
-        return dtoer.isEmpty() ? Response.noContent().build() : Response.ok(dtoer).build();
-    }
-
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -191,38 +154,6 @@ public class HentKalkulusRestTjeneste {
                 .map(KoblingEntitet::getKoblingReferanse).map(KoblingReferanse::getReferanse)
                 .map(EksternReferanseDto::new).toList())).build();
     }
-
-
-    /**
-     * @deprecated fjernes når frisinn ikke er mer.
-     */
-    @Deprecated(forRemoval = true, since = "1.1")
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(description = "Hent grunnlag for frisinn", summary = ("Returnerer frisinngrunnlag for behandling."), tags = "beregningsgrunnlag")
-    @BeskyttetRessurs(action = READ, property = FAGSAK)
-    @Path("/frisinnGrunnlag")
-    @SuppressWarnings({"findsecbugs:JAXRS_ENDPOINT", "resource"})
-    public Response hentFrisinnGrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
-        var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
-        koblingTjeneste.hentFor(koblingReferanse).map(KoblingEntitet::getSaksnummer)
-                .ifPresent(saksnummer -> MDC.put("prosess_saksnummer", saksnummer.getVerdi()));
-        Optional<Long> koblingId = koblingTjeneste.hentKoblingHvisFinnes(koblingReferanse, spesifikasjon.getYtelseSomSkalBeregnes());
-        if (koblingId.isEmpty()) {
-            return Response.noContent().build();
-        }
-        Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository
-                .hentBeregningsgrunnlagGrunnlagEntitet(koblingId.get());
-        BeregningsgrunnlagGUIInput input = guiInputTjeneste.lagInputForKoblinger(List.of(koblingId.get()), List.of()).values().iterator().next();
-        final Response response = beregningsgrunnlagGrunnlagEntitet.stream()
-                .flatMap(gr -> gr.getBeregningsgrunnlag().stream())
-                .map(bg -> MapBeregningsgrunnlagFRISINN.map(bg, input.getIayGrunnlag().getOppgittOpptjening(), input.getYtelsespesifiktGrunnlag()))
-                .map(bgDto -> Response.ok(bgDto).build())
-                .findFirst()
-                .orElse(Response.noContent().build());
-        return response;
-    }
-
 
     private Map<UUID, BeregningsgrunnlagDto> hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(Map<Long, BeregningsgrunnlagGUIInput> inputPrKobling, List<HentBeregningsgrunnlagDtoForGUIRequest> spesifikasjoner) {
         return inputPrKobling.values()

@@ -30,12 +30,6 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.
 
 public class MapDetaljertBeregningsgrunnlag {
 
-    public static BeregningsgrunnlagGrunnlagDto mapMedBrevfelt(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto grunnlag, BeregningsgrunnlagGUIInput input) {
-        BeregningsgrunnlagGrunnlagDto dto = mapGrunnlag(grunnlag);
-        BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto = MapFormidlingsdataBeregningsgrunnlag.mapMedBrevfelt(dto, input);
-        return beregningsgrunnlagGrunnlagDto;
-    }
-
     public static BeregningsgrunnlagGrunnlagDto mapGrunnlag(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagEntitet) {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlagEntitet.getBeregningsgrunnlagHvisFinnes()
                 .map(MapDetaljertBeregningsgrunnlag::map).orElse(null);

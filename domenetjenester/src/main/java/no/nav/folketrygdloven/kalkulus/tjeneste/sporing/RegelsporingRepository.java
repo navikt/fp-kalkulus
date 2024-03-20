@@ -52,11 +52,9 @@ public class RegelsporingRepository {
         int størrelseRegelEvaluering = 0;
 
         for (var entry : perioderPrRegelInputHash.entrySet()) {
-            String hash = entry.getKey();
             for (RegelSporingPeriode sporing : entry.getValue()) {
                 RegelSporingPeriodeEntitet entitet = RegelSporingPeriodeEntitet.ny()
                         .medRegelEvaluering(sporing.regelEvaluering())
-                        .medRegelInputHash(hash)
                         .medRegelVersjon(sporing.regelVersjon())
                         .medPeriode(IntervallEntitet.fraOgMedTilOgMed(sporing.periode().getFomDato(), sporing.periode().getTomDato()))
                         .build(koblingId, sporing.regelType());
@@ -69,49 +67,6 @@ public class RegelsporingRepository {
         entityManager.flush();
 
         log.info("Lagret {} regelsporingperioder med {} kb regelevaluering", antall, (størrelseRegelEvaluering + 512) / 1024);
-    }
-
-    private void lagreRegelInputKomprimert(String regelInputHash, String regelInput) {
-        var insertQuery = entityManager.createNativeQuery(
-                        "INSERT INTO REGEL_INPUT_KOMPRIMERING (REGEL_INPUT_HASH, REGEL_INPUT_JSON) " +
-                                "VALUES (:md5_hash, :sporing_json) " +
-                                "ON CONFLICT DO NOTHING")
-                .setParameter("sporing_json", regelInput)
-                .setParameter("md5_hash", regelInputHash);
-        insertQuery.executeUpdate();
-    }
-
-    public void lagreRegelInputKomprimert(Map<String, String> regelInputPrHash) {
-        List<String> eksisterendeHasher = entityManager.createNativeQuery("select regel_input_hash from REGEL_INPUT_KOMPRIMERING where regel_input_hash in (:hashene)")
-                .setParameter("hashene", regelInputPrHash.keySet())
-                .getResultList();
-
-        log.info("Fant {} overlappende hasher fra {} i input", eksisterendeHasher.size(), regelInputPrHash.size());
-
-        Map<String, String> regelInputPrHashFiltrert = regelInputPrHash.entrySet().stream()
-                .filter(e -> !eksisterendeHasher.contains(e.getKey()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-
-        SortedMap<String, String> sortert = new TreeMap<>(regelInputPrHashFiltrert);
-        sortert.forEach(this::lagreRegelInputKomprimert);
-        entityManager.flush();
-
-        log.info("Lagret {} ({} kb) av {} ({} kb) regelinput etter hash-sjekk", regelInputPrHashFiltrert.size(), kbSizeOfValues(regelInputPrHashFiltrert), regelInputPrHash.size(), kbSizeOfValues(regelInputPrHash));
-    }
-
-    private static int kbSizeOfValues(Map<String, String> verdier) {
-        return (verdier.values().stream().map(String::length).reduce(Integer::sum).orElse(0) + 512) / 1024;
-    }
-
-    private String lagMD5Hash(String regelInput) {
-        byte[] md5Hash;
-        try {
-            md5Hash = MessageDigest.getInstance("MD5").digest(regelInput.getBytes());
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(e.getMessage());
-        }
-        return toHexString(md5Hash);
     }
 
     /**

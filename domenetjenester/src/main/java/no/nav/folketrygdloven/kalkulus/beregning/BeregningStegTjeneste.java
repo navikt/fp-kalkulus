@@ -8,8 +8,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Any;
-import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
@@ -28,7 +26,6 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingPeriode;
-import no.nav.folketrygdloven.kalkulator.steg.BeregningsgrunnlagFRISINNTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.BeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.KalkulatorInterface;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AvklaringsbehovMedTilstandDto;
@@ -38,13 +35,12 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.KalkulusResultatKode;
 import no.nav.folketrygdloven.kalkulus.kopiering.SpolFramoverTjeneste;
 import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
-import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.VidereførOverstyring;
+import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.VidereførOverstyringTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelSporingTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
@@ -53,11 +49,10 @@ import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
 public class BeregningStegTjeneste {
     private static final boolean GRADERING_MOT_INNTEKT_ENABLED = KonfigurasjonVerdi.instance().get("GRADERING_MOT_INNTEKT", false);
     private final KalkulatorInterface beregningsgrunnlagTjeneste = new BeregningsgrunnlagTjeneste();
-    private final KalkulatorInterface beregningsgrunnlagFrisinnTjeneste = new BeregningsgrunnlagFRISINNTjeneste();
     private BeregningsgrunnlagRepository repository;
     private RegelsporingRepository regelsporingRepository;
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
-    private Instance<VidereførOverstyring> videreførOverstyring;
+    private VidereførOverstyringTjeneste videreførOverstyring;
     private RegelSporingTjeneste regelSporingTjeneste;
 
 
@@ -69,7 +64,7 @@ public class BeregningStegTjeneste {
     public BeregningStegTjeneste(BeregningsgrunnlagRepository repository,
                                  RegelsporingRepository regelsporingRepository,
                                  AvklaringsbehovTjeneste avklaringsbehovTjeneste,
-                                 @Any Instance<VidereførOverstyring> videreførOverstyring,
+                                 VidereførOverstyringTjeneste videreførOverstyring,
                                  RegelSporingTjeneste regelSporingTjeneste) {
         this.repository = repository;
         this.regelsporingRepository = regelsporingRepository;
@@ -111,9 +106,9 @@ public class BeregningStegTjeneste {
      */
     public TilstandResponse fastsettBeregningsaktiviteter(FastsettBeregningsaktiviteterInput input) {
         validerIngenÅpneAvklaringsbehov(input.getKoblingId());
-        var resultat = velgKalkulatorImplementasjon(input).fastsettBeregningsaktiviteter(input);
+        var resultat = beregningsgrunnlagTjeneste.fastsettBeregningsaktiviteter(input);
         lagreOgKopier(input, resultat);
-        leggTilOverstyringHvisFinnes(BeregningSteg.FASTSETT_STP_BER, input.getFagsakYtelseType(), input.getKoblingId(), resultat);
+        leggTilOverstyringHvisFinnes(BeregningSteg.FASTSETT_STP_BER, input.getKoblingId(), resultat);
         lagreAvklaringsbehov(input, resultat);
         return mapTilstandResponse(input.getKoblingReferanse(), resultat);
     }
@@ -126,9 +121,9 @@ public class BeregningStegTjeneste {
      * @return {@link BeregningAvklaringsbehovResultat}
      */
     private TilstandResponse kontrollerFaktaBeregningsgrunnlag(FaktaOmBeregningInput input) {
-        var beregningResultatAggregat = velgKalkulatorImplementasjon(input).kontrollerFaktaBeregningsgrunnlag(input);
+        var beregningResultatAggregat = beregningsgrunnlagTjeneste.kontrollerFaktaBeregningsgrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
-        leggTilOverstyringHvisFinnes(BeregningSteg.KOFAKBER, input.getFagsakYtelseType(), input.getKoblingId(), beregningResultatAggregat);
+        leggTilOverstyringHvisFinnes(BeregningSteg.KOFAKBER, input.getKoblingId(), beregningResultatAggregat);
         lagreAvklaringsbehov(input, beregningResultatAggregat);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
@@ -141,7 +136,7 @@ public class BeregningStegTjeneste {
      * @return {@link BeregningAvklaringsbehovResultat}
      */
     private TilstandResponse foreslåBeregningsgrunnlag(ForeslåBeregningsgrunnlagInput input) {
-        var beregningResultatAggregat = velgKalkulatorImplementasjon(input).foreslåBeregningsgrunnlag(input);
+        var beregningResultatAggregat = beregningsgrunnlagTjeneste.foreslåBeregningsgrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
         lagreAvklaringsbehov(input, beregningResultatAggregat);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
@@ -155,7 +150,7 @@ public class BeregningStegTjeneste {
      * @return {@link BeregningAvklaringsbehovResultat}
      */
     private TilstandResponse fortsettForeslåBeregningsgrunnlag(FortsettForeslåBeregningsgrunnlagInput input) {
-        var beregningResultatAggregat = velgKalkulatorImplementasjon(input).fortsettForeslåBeregningsgrunnlag(input);
+        var beregningResultatAggregat = beregningsgrunnlagTjeneste.fortsettForeslåBeregningsgrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
         lagreAvklaringsbehov(input, beregningResultatAggregat);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
@@ -173,7 +168,7 @@ public class BeregningStegTjeneste {
     private TilstandResponse foreslåBesteberegning(ForeslåBesteberegningInput input) {
         if (input.getYtelsespesifiktGrunnlag() instanceof ForeldrepengerGrunnlag foreldrepengerGrunnlag) {
             if (foreldrepengerGrunnlag.isKvalifisererTilBesteberegning()) {
-                var beregningResultatAggregat = velgKalkulatorImplementasjon(input).foreslåBesteberegning(input);
+                var beregningResultatAggregat = beregningsgrunnlagTjeneste.foreslåBesteberegning(input);
                 repository.lagre(input.getKoblingId(), mapGrunnlag(beregningResultatAggregat.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
                 lagreRegelsporing(input.getKoblingId(), beregningResultatAggregat.getRegelSporingAggregat(), input.getStegTilstand());
                 return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
@@ -191,7 +186,7 @@ public class BeregningStegTjeneste {
      * @return {@link BeregningAvklaringsbehovResultat}
      */
     private TilstandResponse vurderBeregningsgrunnlagsvilkår(VurderBeregningsgrunnlagvilkårInput input) {
-        var beregningResultatAggregat = velgKalkulatorImplementasjon(input).vurderBeregningsgrunnlagvilkår(input);
+        var beregningResultatAggregat = beregningsgrunnlagTjeneste.vurderBeregningsgrunnlagvilkår(input);
         lagreOgKopier(input, beregningResultatAggregat);
         if (beregningResultatAggregat.getBeregningVilkårResultat() == null) {
             throw new IllegalStateException("Hadde ikke vilkårsresultat for input med ref " + input.getKoblingReferanse());
@@ -211,7 +206,7 @@ public class BeregningStegTjeneste {
         if (!GRADERING_MOT_INNTEKT_ENABLED) {
             return new TilstandResponse(input.getKoblingReferanse().getKoblingUuid(), KalkulusResultatKode.BEREGNET);
         }
-        var beregningResultatAggregat = velgKalkulatorImplementasjon(input).vurderTilkommetInntekt(input);
+        var beregningResultatAggregat = beregningsgrunnlagTjeneste.vurderTilkommetInntekt(input);
         lagreOgKopier(input, beregningResultatAggregat);
         lagreAvklaringsbehov(input, beregningResultatAggregat);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
@@ -226,7 +221,7 @@ public class BeregningStegTjeneste {
      * @return {@link BeregningAvklaringsbehovResultat}
      */
     private TilstandResponse vurderRefusjonForBeregningsgrunnlaget(VurderRefusjonBeregningsgrunnlagInput input) {
-        var beregningResultatAggregat = velgKalkulatorImplementasjon(input).vurderRefusjonskravForBeregninggrunnlag(input);
+        var beregningResultatAggregat = beregningsgrunnlagTjeneste.vurderRefusjonskravForBeregninggrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
         lagreAvklaringsbehov(input, beregningResultatAggregat);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
@@ -241,7 +236,7 @@ public class BeregningStegTjeneste {
      * @return {@link BeregningAvklaringsbehovResultat}
      */
     private TilstandResponse fordelBeregningsgrunnlag(FordelBeregningsgrunnlagInput input) {
-        var beregningResultatAggregat = velgKalkulatorImplementasjon(input).fordelBeregningsgrunnlag(input);
+        var beregningResultatAggregat = beregningsgrunnlagTjeneste.fordelBeregningsgrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
         lagreAvklaringsbehov(input, beregningResultatAggregat);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
@@ -254,7 +249,7 @@ public class BeregningStegTjeneste {
      * @param input {@link BeregningsgrunnlagInput}
      */
     public TilstandResponse fastsettBeregningsgrunnlag(StegProsesseringInput input) {
-        var beregningResultatAggregat = velgKalkulatorImplementasjon(input).fastsettBeregningsgrunnlag(input);
+        var beregningResultatAggregat = beregningsgrunnlagTjeneste.fastsettBeregningsgrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
         regelsporingRepository.slettAlleInaktiveRegelsporinger(input.getKoblingId());
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
@@ -373,14 +368,9 @@ public class BeregningStegTjeneste {
         avklaringsbehovTjeneste.validerIngenÅpneAvklaringsbehovPåKobling(koblingId);
     }
 
-    private void leggTilOverstyringHvisFinnes(BeregningSteg steg, FagsakYtelseType fagsakYtelseType, Long koblingId, BeregningResultatAggregat beregningResultatAggregat) {
-        VidereførOverstyring.finnTjeneste(videreførOverstyring, fagsakYtelseType)
-                .videreførOverstyringForSteg(koblingId, steg)
+    private void leggTilOverstyringHvisFinnes(BeregningSteg steg, Long koblingId, BeregningResultatAggregat beregningResultatAggregat) {
+        videreførOverstyring.videreførOverstyringForSteg(koblingId, steg)
                 .map(it -> BeregningAvklaringsbehovResultat.opprettFor(it.getDefinisjon()))
                 .ifPresent(beregningResultatAggregat::leggTilAvklaringsbehov);
-    }
-
-    private KalkulatorInterface velgKalkulatorImplementasjon(StegProsesseringInput input) {
-        return FagsakYtelseType.FRISINN.equals(input.getFagsakYtelseType()) ? beregningsgrunnlagFrisinnTjeneste : beregningsgrunnlagTjeneste;
     }
 }

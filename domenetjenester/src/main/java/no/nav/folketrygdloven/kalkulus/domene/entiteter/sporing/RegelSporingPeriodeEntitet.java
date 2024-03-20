@@ -33,9 +33,6 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
     @Column(name = "kobling_id", nullable = false, updatable = false)
     private Long koblingId;
 
-    @Column(name = "regel_input_hash", nullable = true, updatable = true)
-    private String regelInputHash;
-
     @Column(name = "regel_evaluering_json", columnDefinition="TEXT")
     private String regelEvaluering;
 
@@ -95,10 +92,6 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
         this.aktiv = aktiv;
     }
 
-    public void setRegelInputHash(String regelInputHash) {
-        this.regelInputHash = regelInputHash;
-    }
-
     public void setRegelInput(String regelInput) {
         this.regelInput = regelInput;
     }
@@ -125,12 +118,6 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
             return this;
         }
 
-        public Builder medRegelInputHash(String hash) {
-            Objects.requireNonNull(hash, "hash");
-            kladd.regelInputHash = hash;
-            return this;
-        }
-
         public Builder medRegelVersjon(String regelVersjon) {
             kladd.regelVersjon = regelVersjon;
             return this;
@@ -146,7 +133,6 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
             Objects.requireNonNull(koblingId, "koblingId");
             Objects.requireNonNull(regelType, "regelType");
             Objects.requireNonNull(kladd.regelEvaluering, "regelEvaluering");
-            Objects.requireNonNull(kladd.regelInputHash, "regelInputHash");
             Objects.requireNonNull(kladd.periode, "periode");
             kladd.koblingId = koblingId;
             kladd.regelType = regelType;

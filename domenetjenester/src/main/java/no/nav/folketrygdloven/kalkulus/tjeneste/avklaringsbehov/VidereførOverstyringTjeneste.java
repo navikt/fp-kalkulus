@@ -7,27 +7,25 @@ import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import no.nav.folketrygdloven.kalkulus.FagsakYtelseTypeRef;
+
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef(FagsakYtelseType.FORELDREPENGER)
-@FagsakYtelseTypeRef(FagsakYtelseType.SVANGERSKAPSPENGER)
-public class VidereførOverstyringK14 implements VidereførOverstyring {
+public class VidereførOverstyringTjeneste {
 
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
     private KoblingTjeneste koblingTjeneste;
 
-    public VidereførOverstyringK14() {
+    VidereførOverstyringTjeneste() {
+        // CDI
     }
 
     @Inject
-    public VidereførOverstyringK14(AvklaringsbehovTjeneste avklaringsbehovTjeneste, KoblingTjeneste koblingTjeneste) {
+    public VidereførOverstyringTjeneste(AvklaringsbehovTjeneste avklaringsbehovTjeneste, KoblingTjeneste koblingTjeneste) {
         this.avklaringsbehovTjeneste = avklaringsbehovTjeneste;
         this.koblingTjeneste = koblingTjeneste;
     }

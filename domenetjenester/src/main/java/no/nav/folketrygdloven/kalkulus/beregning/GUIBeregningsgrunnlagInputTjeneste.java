@@ -69,7 +69,7 @@ public class GUIBeregningsgrunnlagInputTjeneste {
                     var kobling = Optional.ofNullable(koblinger.get(koblingId))
                             .orElseThrow(() -> new TekniskException("FP-KALKULUS-INPUT-1000003", String.format("Kalkulus finner ikke kobling: %s", koblingId)));
                     var avklaringsbehov = avklaringsbehovPrKobling.getOrDefault(koblingId, Collections.emptyList());
-                    BeregningsgrunnlagGUIInput input = lagInput(kobling, kalkulatorInput, Optional.of(grunnlagEntitet));
+                    BeregningsgrunnlagGUIInput input = lagInput(kobling, kalkulatorInput);
                     return input.medBeregningsgrunnlagGrunnlag(mapGrunnlag(grunnlagEntitet))
                             .medBeregningsgrunnlagGrunnlagFraForrigeBehandling(mapOriginaleGrunnlag(originaleGrunnlagMap, koblingId))
                             .medAvklaringsbehov(mapAvklaringsbehov(avklaringsbehov));
@@ -81,13 +81,10 @@ public class GUIBeregningsgrunnlagInputTjeneste {
     }
 
     private static BeregningsgrunnlagGUIInput lagInput(KoblingEntitet koblingEntitet,
-                                                       KalkulatorInputDto kalkulatorInput,
-                                                       Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
+                                                       KalkulatorInputDto kalkulatorInput) {
         return MapTilGUIInputFraKalkulator.mapFraKalkulatorInput(
                 koblingEntitet,
-                kalkulatorInput,
-                beregningsgrunnlagGrunnlagEntitet
-        );
+                kalkulatorInput);
     }
 
     /**

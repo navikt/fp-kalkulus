@@ -236,7 +236,6 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
         var arbeidOpptjening = OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.ARBEID, Intervall.fraOgMedTilOgMed(STP.minusMonths(12), STP.plusMonths(1)), ORGNR, null, ref);
         var opptjening = new OpptjeningAktiviteterDto(Arrays.asList(arbeidOpptjening));
 
-
         var input = new BeregningsgrunnlagInput(lagKoblingRefDto(kobling), iay, opptjening, Collections.emptyList(), new ForeldrepengerGrunnlag(Dekningsgrad.DEKNINGSGRAD_100, false));
         input.leggTilKonfigverdi("inntekt.rapportering.frist.dato", 5);
         var inputMedBG = input.medBeregningsgrunnlagGrunnlag(bg);
