@@ -181,7 +181,7 @@ public class AvklaringsbehovTjeneste {
         }
     }
 
-    private List<AvklaringsbehovEntitet> hentAlleAvklaringsbehovForKobling(Long koblingId) {
+    public List<AvklaringsbehovEntitet> hentAlleAvklaringsbehovForKobling(Long koblingId) {
         KoblingEntitet koblingEntitet = koblingRepository.hentKoblingMedId(koblingId).orElseThrow();
         return avklaringsbehovRepository.hentAvklaringsbehovForKobling(koblingEntitet);
     }

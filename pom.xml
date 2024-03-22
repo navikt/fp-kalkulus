@@ -18,6 +18,7 @@
 
     <modules>
         <module>web</module>
+        <module>kontrakt</module>
         <module>domenetjenester</module>
         <module>migreringer</module>
     </modules>
@@ -32,6 +33,7 @@
 
         <ftberegning.version>5.0.2</ftberegning.version>
         <felles.version>7.0.8</felles.version>
+        <kontrakt.java.version>21</kontrakt.java.version>
 
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
@@ -73,7 +75,11 @@
                 <artifactId>migreringer</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+                <artifactId>kontrakt</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>no.nav.folketrygdloven.kalkulus</groupId>
                 <artifactId>domenetjenester</artifactId>

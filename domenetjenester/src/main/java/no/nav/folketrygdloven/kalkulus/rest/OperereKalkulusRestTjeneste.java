@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -32,6 +33,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import no.nav.folketrygdloven.fpkalkulus.kontrakt.BeregnRequestDto;
+import no.nav.folketrygdloven.fpkalkulus.kontrakt.FpkalkulusYtelser;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
@@ -63,6 +66,7 @@ import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
 import no.nav.vedtak.sikkerhet.abac.AbacDto;
 import no.nav.vedtak.sikkerhet.abac.BeskyttetRessurs;
 import no.nav.vedtak.sikkerhet.abac.StandardAbacAttributtType;
+import no.nav.vedtak.sikkerhet.abac.TilpassetAbacAttributt;
 import no.nav.vedtak.sikkerhet.abac.beskyttet.ActionType;
 import no.nav.vedtak.sikkerhet.abac.beskyttet.ResourceType;
 
@@ -97,29 +101,22 @@ public class OperereKalkulusRestTjeneste {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/beregn/bolk")
+    @Path("/beregn")
     @Operation(description = "Utfører beregning basert på reqest", tags = "beregn", summary = ("Starter en beregning basert på gitt input."), responses = {
             @ApiResponse(description = "Liste med avklaringsbehov som har oppstått per angitt eksternReferanse", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = TilstandResponse.class)))
     })
     @BeskyttetRessurs(actionType = ActionType.CREATE, resourceType = ResourceType.FAGSAK)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
-    public Response beregn(@NotNull @Valid BeregnListeRequestAbacDto spesifikasjon) {
-        var saksnummerEntitet = new Saksnummer(spesifikasjon.getSaksnummer().verdi());
-        MDC.put("prosess_saksnummer", saksnummerEntitet.getVerdi());
-        Map<Long, KalkulusRespons> respons;
-        try {
-            respons = orkestrerer.beregn(
-                    spesifikasjon.getStegType(),
-                    saksnummerEntitet,
-                    new AktørId(spesifikasjon.getAktør().getIdent()),
-                    spesifikasjon.getYtelseSomSkalBeregnes(),
-                    spesifikasjon.getBeregnForListe()
-            );
-        } catch (UgyldigInputException e) {
-            LOG.warn("Konvertering av input feilet: " + e.getMessage());
-            return Response.ok(new OppdateringListeRespons(true)).build();
-        }
-        return Response.ok(new TilstandListeResponse(respons.values().stream().map(r -> (TilstandResponse) r).toList())).build();
+    public Response beregn(@TilpassetAbacAttributt(supplierClass = BeregnRequestAbacSupplier.class) @NotNull @Valid BeregnRequestDto request) {
+        var saksnummer = new Saksnummer(request.saksnummer().verdi());
+        MDC.put("prosess_saksnummer", saksnummer.getVerdi());
+//        var kobling = koblingTjeneste.finnEllerOpprett(new KoblingReferanse(request.behandlingUuid()),
+//            mapTilYtelseKodeverk(request.ytelseSomSkalBeregnes()), new AktørId(request.aktør().getIdent()), saksnummer);
+//        Map<Long, KalkulusRespons> respons;
+//        respons = orkestrerer.beregn(request.stegType(), kobling, request.kalkulatorInput())
+//        );
+//        return Response.ok(new TilstandListeResponse(respons.values().stream().map(r -> (TilstandResponse) r).toList())).build();
+        return Response.ok().build();
     }
 
     @POST
@@ -202,6 +199,13 @@ public class OperereKalkulusRestTjeneste {
         }
 
         return Response.ok().build();
+    }
+
+    private FagsakYtelseType mapTilYtelseKodeverk(FpkalkulusYtelser ytelse) {
+        return switch (ytelse) {
+            case FORELDREPENGER -> FagsakYtelseType.FORELDREPENGER;
+            case SVANGERSKAPSPENGER -> FagsakYtelseType.SVANGERSKAPSPENGER;
+        };
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -307,6 +311,14 @@ public class OperereKalkulusRestTjeneste {
                     .collect(Collectors.toList());
         }
 
+    }
+
+    public static class BeregnRequestAbacSupplier implements Function<Object, AbacDataAttributter> {
+        @Override
+        public AbacDataAttributter apply(Object o) {
+            var req = (BeregnRequestDto) o;
+            return AbacDataAttributter.opprett().leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid());
+        }
     }
 
 }

@@ -18,7 +18,7 @@
         <!-- Interne avhengigheter  -->
         <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>beregning-kontrakt</artifactId>
+            <artifactId>kontrakt</artifactId>
         </dependency>
         <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
