@@ -8,10 +8,10 @@ import jakarta.ws.rs.core.Application;
 import no.nav.folketrygdloven.kalkulus.app.metrics.PrometheusRestService;
 import no.nav.folketrygdloven.kalkulus.app.selftest.NaisRestTjeneste;
 
-@ApplicationPath(InternalApplication.API_URL)
+@ApplicationPath(InternalApplication.API_URI)
 public class InternalApplication extends Application {
 
-    public static final String API_URL = "internal";
+    public static final String API_URI = "/internal";
 
     public InternalApplication() {
 

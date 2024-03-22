@@ -10,10 +10,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.hibernate.annotations.BatchSize;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.CascadeType;
@@ -29,6 +25,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+
+import org.hibernate.annotations.BatchSize;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Prosent;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
@@ -239,14 +240,14 @@ public class BeregningsgrunnlagPeriodeEntitet extends BaseEntitet {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "<" + //$NON-NLS-1$
+        return getClass().getSimpleName() + "<" +
                 "id=" + id + ", " //$NON-NLS-2$
                 + "periode=" + periode + ", " // $NON-NLS-1$ //$NON-NLS-2$
-                + "bruttoPrÅr=" + bruttoPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "avkortetPrÅr=" + avkortetPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "redusertPrÅr=" + redusertPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "dagsats=" + dagsats + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + ">"; //$NON-NLS-1$
+                + "bruttoPrÅr=" + bruttoPrÅr + ", " //$NON-NLS-2$
+                + "avkortetPrÅr=" + avkortetPrÅr + ", " //$NON-NLS-2$
+                + "redusertPrÅr=" + redusertPrÅr + ", " //$NON-NLS-2$
+                + "dagsats=" + dagsats + ", " //$NON-NLS-2$
+                + ">";
     }
 
     public static Builder builder() {

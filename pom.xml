@@ -4,9 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>no.nav.foreldrepenger.felles</groupId>
+        <artifactId>fp-bom</artifactId>
+        <version>3.1.2</version>
+    </parent>
+
     <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-    <artifactId>ftkalkulus</artifactId>
-    <version>${revision}${sha1}${changelist}</version>
+    <artifactId>fpkalkulus</artifactId>
+    <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Kalkulus :: Root</name>
 
@@ -18,74 +24,40 @@
 
 
     <properties>
+        <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
+        <sonar.projectName>fp-kalkulus</sonar.projectName>
+        <sonar.projectKey>navikt_fp-kalkulus</sonar.projectKey>
+
         <java.version>21</java.version>
-        <argLine>-Xms256m -Dfile.encoding=UTF-8 -Dlog.level.no.nav=WARN</argLine>
-        <jacoco.skip>true</jacoco.skip> <!-- default skip coverage -->
-
-        <revision>2.6</revision>
-        <sha1/>
-        <changelist>-SNAPSHOT</changelist>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
-        <maven.deploy.skip>true</maven.deploy.skip>
-
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <ftberegning.version>5.0.2</ftberegning.version>
+        <felles.version>7.0.8</felles.version>
 
-
-        <felles.version>2.5.1</felles.version>
-
-
-        <prometheus.version>0.16.0</prometheus.version>
-        <junit.version>5.10.2</junit.version>
-        <swagger.version>2.2.20</swagger.version>
-
+        <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <!-- Importer først for å sikre samme avhengigheter gjennom hele. -->
-                <groupId>no.nav.k9.felles</groupId>
-                <artifactId>k9-felles-root</artifactId>
+                <groupId>no.nav.foreldrepenger.felles</groupId>
+                <artifactId>fp-bom</artifactId>
+                <version>3.1.2</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.foreldrepenger.felles</groupId>
+                <artifactId>felles</artifactId>
                 <version>${felles.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
             <dependency>
-                <groupId>no.nav.k9.felles.integrasjon</groupId>
-                <artifactId>k9-felles-integrasjon-pom</artifactId>
+                <groupId>no.nav.foreldrepenger.felles.integrasjon</groupId>
+                <artifactId>felles-integrasjon-pom</artifactId>
                 <version>${felles.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>no.nav.k9.felles.sikkerhet</groupId>
-                <artifactId>k9-felles-sikkerhet</artifactId>
-                <version>${felles.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson</groupId>
-                <artifactId>jackson-bom</artifactId>
-                <version>2.17.0</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-
-
-            <dependency>
-                <groupId>org.flywaydb</groupId>
-                <artifactId>flyway-database-postgresql</artifactId>
-                <version>10.9.1</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.glassfish</groupId>
-                <artifactId>jakarta.el</artifactId>
-                <version>4.0.1</version>
             </dependency>
 
             <!-- Felles biblioteker - Importerte avhengigheter. -->
@@ -93,18 +65,6 @@
                 <groupId>no.nav.fpsak.tidsserie</groupId>
                 <artifactId>fpsak-tidsserie</artifactId>
                 <version>2.7.1</version>
-            </dependency>
-
-            <dependency>
-                <groupId>no.nav.k9.felles.oidc-token</groupId>
-                <artifactId>k9-sikkerhet-azure-cc</artifactId>
-                <version>${felles.version}</version>
-            </dependency>
-            <dependency>
-                <!-- Importer først for å sikre samme avhengigheter gjennom hele. -->
-                <groupId>no.nav.k9.felles</groupId>
-                <artifactId>k9-felles-db</artifactId>
-                <version>${felles.version}</version>
             </dependency>
 
             <!-- Interne avhengigheter -->
@@ -127,19 +87,6 @@
                 <type>test-jar</type>
             </dependency>
 
-            <!-- Eksterne avhengigheter til andre NAV-prosjekter -->
-            <dependency>
-                <groupId>jakarta.validation</groupId>
-                <artifactId>jakarta.validation-api</artifactId>
-                <version>3.0.2</version>
-            </dependency>
-            <dependency>
-                <!-- kan fjernes ved Jakarta EE 9/ oppgradering av jakarta.platform -->
-                <groupId>jakarta.persistence</groupId>
-                <artifactId>jakarta.persistence-api</artifactId>
-                <version>3.1.0</version>
-            </dependency>
-
             <!-- Avhengigheter til ft-beregning -->
             <dependency>
                 <groupId>no.nav.folketrygdloven.kalkulus</groupId>
@@ -160,134 +107,6 @@
                 <groupId>no.nav.folketrygdloven.kalkulus</groupId>
                 <artifactId>beregning-regler</artifactId>
                 <version>${ftberegning.version}</version>
-            </dependency>
-
-            <!-- Eksterne avhengigheter til andre prosjekter -->
-            <dependency>
-                <groupId>org.javassist</groupId>
-                <artifactId>javassist</artifactId>
-                <version>3.30.2-GA</version>
-            </dependency>
-            <dependency>
-                <!-- for Bean validation -->
-                <groupId>org.hibernate.validator</groupId>
-                <artifactId>hibernate-validator</artifactId>
-                <version>8.0.1.Final</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-junit-jupiter</artifactId>
-                <version>5.11.0</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-api</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-engine</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-params</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.postgresql</groupId>
-                <artifactId>postgresql</artifactId>
-                <version>42.7.2</version>
-            </dependency>
-            <dependency>
-                <groupId>no.nav</groupId>
-                <artifactId>vault-jdbc</artifactId>
-                <version>1.3.10</version>
-            </dependency>
-
-            <dependency>
-                <groupId>net.logstash.logback</groupId>
-                <artifactId>logstash-logback-encoder</artifactId>
-                <version>7.4</version>
-            </dependency>
-            <dependency>
-                <groupId>com.papertrailapp</groupId>
-                <artifactId>logback-syslog4j</artifactId>
-                <version>1.0.0</version>
-            </dependency>
-
-            <dependency>
-                <!-- Transitive avhengighet resolution for å sikre bestemt
-                    versjon -->
-                <groupId>org.owasp.encoder</groupId>
-                <artifactId>encoder</artifactId>
-                <version>1.2.3</version>
-            </dependency>
-            <dependency>
-                <groupId>io.prometheus</groupId>
-                <artifactId>simpleclient_dropwizard</artifactId>
-                <version>${prometheus.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.prometheus</groupId>
-                <artifactId>simpleclient_servlet</artifactId>
-                <version>${prometheus.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.prometheus</groupId>
-                <artifactId>simpleclient</artifactId>
-                <version>${prometheus.version}</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/io.prometheus/simpleclient_hotspot -->
-            <dependency>
-                <groupId>io.prometheus</groupId>
-                <artifactId>simpleclient_hotspot</artifactId>
-                <version>${prometheus.version}</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/io.prometheus/simpleclient_common -->
-            <dependency>
-                <groupId>io.prometheus</groupId>
-                <artifactId>simpleclient_common</artifactId>
-                <version>${prometheus.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.weld</groupId>
-                <artifactId>weld-junit5</artifactId>
-                <version>4.0.2.Final</version>
-                <scope>test</scope>
-            </dependency>
-
-            <!--Swagger -->
-            <dependency>
-                <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-jaxrs2-jakarta</artifactId>
-                <version>${swagger.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.module</groupId>
-                        <artifactId>jackson-module-jaxb-annotations</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-core-jakarta</artifactId>
-                <version>${swagger.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-annotations</artifactId>
-                <version>${swagger.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.assertj</groupId>
-                <artifactId>assertj-core</artifactId>
-                <version>3.25.3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -335,220 +154,26 @@
 
     </dependencies>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>io.smallrye</groupId>
-                    <artifactId>jandex-maven-plugin</artifactId>
-                    <version>3.1.6</version>
-                    <executions>
-                        <execution>
-                            <id>make-index</id>
-                            <goals>
-                                <goal>jandex</goal>
-                            </goals>
-                            <configuration>
-                                <indexVersion>10</indexVersion>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.jacoco</groupId>
-                    <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.11</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>prepare-agent</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-deploy-plugin</artifactId>
-                    <version>3.1.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.12.1</version>
-                    <configuration>
-                        <source>${java.version}</source>
-                        <target>${java.version}</target>
-                        <encoding>UTF-8</encoding>
-                        <release>${java.version}</release>
-                        <parameters>true</parameters>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-install-plugin</artifactId>
-                    <version>3.1.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.3.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.6.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <version>3.2.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-remote-resources-plugin</artifactId>
-                    <version>3.1.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>flatten-maven-plugin</artifactId>
-                    <version>1.6.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>3.2.5</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.sonarsource.scanner.maven</groupId>
-                    <artifactId>sonar-maven-plugin</artifactId>
-                    <version>3.10.0.2594</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.2.5</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>3.3.0</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-
-        <plugins>
-            <plugin>
-                <groupId>io.smallrye</groupId>
-                <artifactId>jandex-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>make-index</id>
-                        <goals>
-                            <goal>jandex</goal>
-                        </goals>
-                        <configuration>
-                            <indexVersion>10</indexVersion>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>flatten-maven-plugin</artifactId>
-                <configuration>
-                    <flattenMode>bom</flattenMode>
-                    <flattenedPomFilename>.flattened</flattenedPomFilename>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>flatten</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>flatten</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>flatten.clean</id>
-                        <phase>clean</phase>
-                        <goals>
-                            <goal>clean</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>failsafe-integration-test</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>failsafe-verify</id>
-                        <goals>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <reuseForks>true</reuseForks>
-                    <useFile>true</useFile>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-            </plugin>
-
-
-        </plugins>
-    </build>
-
     <repositories>
         <repository>
             <id>github</id>
             <name>GitHub Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/navikt/k9-felles</url>
-        </repository>
-        <repository>
-            <!-- bruker SNAPSHOT versjon av eclipse-transformer (0.3.0-SNAPSHOT) -->
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-            <layout>default</layout>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
+            <url>https://maven.pkg.github.com/navikt/fp-kalkulus/</url>
         </repository>
     </repositories>
 
     <scm>
-        <connection>scm:git:https://github.com/navikt/ft-kalkulus.git</connection>
-        <developerConnection>scm:git:https://github.com/navikt/ft-kalkulus.git</developerConnection>
-        <url>https://github.com/navikt/ft-kalkulus</url>
+        <connection>scm:git:https://github.com/navikt/fp-kalkulus.git</connection>
+        <developerConnection>scm:git:https://github.com/navikt/fp-kalkulus.git</developerConnection>
+        <url>https://github.com/navikt/fp-kalkulus</url>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
         <repository>
             <id>github</id>
-            <name>Github Maven Packages - NAV IT - ft-kalkulus</name>
-            <url>https://maven.pkg.github.com/navikt/ft-kalkulus</url>
+            <name>Github Maven Packages - NAV IT - fp-kalkulus</name>
+            <url>https://maven.pkg.github.com/navikt/fp-kalkulus</url>
         </repository>
     </distributionManagement>
 </project>

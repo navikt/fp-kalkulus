@@ -36,7 +36,7 @@ import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelSporingTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
-import no.nav.k9.felles.testutilities.db.EntityManagerAwareTest;
+import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
 
 @ExtendWith({JpaExtension.class})
 public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {

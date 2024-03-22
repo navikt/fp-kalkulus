@@ -182,11 +182,11 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "<" + //$NON-NLS-1$
+        return getClass().getSimpleName() + "<" +
                 "id=" + id + ", " //$NON-NLS-2$
-                + "skjæringstidspunkt=" + skjæringstidspunkt + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "grunnbeløp=" + grunnbeløp + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + ">"; //$NON-NLS-1$
+                + "skjæringstidspunkt=" + skjæringstidspunkt + ", " //$NON-NLS-2$
+                + "grunnbeløp=" + grunnbeløp + ", " //$NON-NLS-2$
+                + ">";
     }
 
     public static Builder builder() {

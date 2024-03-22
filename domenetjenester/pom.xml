@@ -6,26 +6,13 @@
 
     <parent>
         <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-        <artifactId>ftkalkulus</artifactId>
-        <version>${revision}${sha1}${changelist}</version>
+        <artifactId>fpkalkulus</artifactId>
+        <version>1.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>domenetjenester</artifactId>
     <packaging>jar</packaging>
     <name>Kalkulus :: Domenetjenester</name>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.glassfish.jersey</groupId>
-                <artifactId>jersey-bom</artifactId>
-                <version>3.0.8</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
 
     <dependencies>
         <!-- Interne avhengigheter  -->
@@ -37,21 +24,28 @@
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
             <artifactId>beregning-kalkulator</artifactId>
         </dependency>
-        <dependency>
-            <groupId>no.nav.k9.felles</groupId>
-            <artifactId>k9-felles-konfigurasjon</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>no.nav.k9.felles.sikkerhet</groupId>
-            <artifactId>k9-felles-sikkerhet</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>no.nav.k9.felles</groupId>
-            <artifactId>k9-felles-db</artifactId>
-        </dependency>
 
-        <!-- Eksterne avhengigheter til andre biblioteker, prosjekter-->
-         <dependency>
+        <dependency>
+            <groupId>no.nav.foreldrepenger.felles</groupId>
+            <artifactId>felles-db</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.foreldrepenger.felles</groupId>
+            <artifactId>felles-kontekst</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.foreldrepenger.felles</groupId>
+            <artifactId>felles-abac-kontekst</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.foreldrepenger.felles</groupId>
+            <artifactId>felles-log</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
         </dependency>
@@ -68,13 +62,12 @@
             <artifactId>jakarta.ws.rs-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>jakarta.persistence</groupId>
-            <artifactId>jakarta.persistence-api</artifactId>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations-jakarta</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations</artifactId>
-            <scope>provided</scope>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jboss.weld.servlet</groupId>
@@ -93,16 +86,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- For Zipping i diagnostikk/dump  -->
-        <dependency>
-            <groupId>org.glassfish.jersey.media</groupId>
-            <artifactId>jersey-media-json-jackson</artifactId>
-        </dependency>
+
 
         <!-- test avhengigheter-->
         <dependency>
-            <groupId>no.nav.k9.felles</groupId>
-            <artifactId>k9-felles-testutilities</artifactId>
+            <groupId>no.nav.foreldrepenger.felles</groupId>
+            <artifactId>felles-testutilities</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -112,10 +101,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.jboss.weld</groupId>
-            <artifactId>weld-junit5</artifactId>
+            <groupId>org.jboss.weld.se</groupId>
+            <artifactId>weld-se-core</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-database-postgresql</artifactId>
@@ -123,28 +113,6 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <skip>false</skip>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+
 
 </project>

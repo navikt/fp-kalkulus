@@ -74,11 +74,11 @@ public class DiffResult {
         Set rhsSet = new HashSet<>(rhsList);
 
         if (lhsSet.size() != lhsList.size()) {
-            throw new IllegalArgumentException("Bad Equals eller duplikater i List.  lhsList har forskjellig størrelse fra lhsSet. Key=\"" + key //$NON-NLS-1$
-                + "\"\n,\"lhsList\"=" + lhsList + "\n,\"rhsList\"=" + rhsList); //$NON-NLS-1$ //$NON-NLS-2$
+            throw new IllegalArgumentException("Bad Equals eller duplikater i List.  lhsList har forskjellig størrelse fra lhsSet. Key=\"" + key
+                + "\"\n,\"lhsList\"=" + lhsList + "\n,\"rhsList\"=" + rhsList); //$NON-NLS-2$
         } else if (rhsSet.size() != rhsList.size()) {
-            throw new IllegalArgumentException("Bad Equals eller duplikater i List.  rhsList har forskjellig størrelse fra rhsSet. Key=\"" + key //$NON-NLS-1$
-                + "\"\n,\"lhsList\"=" + lhsList + "\n,\"rhsList\"=" + rhsList); //$NON-NLS-1$ //$NON-NLS-2$
+            throw new IllegalArgumentException("Bad Equals eller duplikater i List.  rhsList har forskjellig størrelse fra rhsSet. Key=\"" + key
+                + "\"\n,\"lhsList\"=" + lhsList + "\n,\"rhsList\"=" + rhsList); //$NON-NLS-2$
         }
 
         return Objects.equals(lhsSet, rhsSet);

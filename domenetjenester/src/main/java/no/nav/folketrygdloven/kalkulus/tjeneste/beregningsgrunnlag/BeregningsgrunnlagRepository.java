@@ -15,15 +15,15 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.hibernate.jpa.QueryHints;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetOverstyringerEntitet;
@@ -36,9 +36,10 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Fakta
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatusEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.GrunnlagReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSatsType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.k9.felles.jpa.HibernateVerktøy;
+
 
 @ApplicationScoped
 public class BeregningsgrunnlagRepository {
@@ -55,7 +56,7 @@ public class BeregningsgrunnlagRepository {
 
     @Inject
     public BeregningsgrunnlagRepository(EntityManager entityManager) {
-        Objects.requireNonNull(entityManager, "entityManager"); //$NON-NLS-1$
+        Objects.requireNonNull(entityManager, "entityManager");
         this.entityManager = entityManager;
     }
 
@@ -92,10 +93,10 @@ public class BeregningsgrunnlagRepository {
         TypedQuery<BeregningsgrunnlagGrunnlagEntitet> query = entityManager.createQuery(
                 "select grunnlag from BeregningsgrunnlagGrunnlagEntitet grunnlag " +
                         "where grunnlag.koblingId in :koblingId " +
-                        "and grunnlag.aktiv = :aktivt", //$NON-NLS-1$
+                        "and grunnlag.aktiv = :aktivt",
                 BeregningsgrunnlagGrunnlagEntitet.class);
         query.setParameter(KOBLING_ID, koblingIds); // $NON-NLS-1$
-        query.setParameter("aktivt", true); //$NON-NLS-1$
+        query.setParameter("aktivt", true);
         return query.getResultList();
     }
 
@@ -109,10 +110,10 @@ public class BeregningsgrunnlagRepository {
         TypedQuery<BeregningsgrunnlagGrunnlagEntitet> query = entityManager.createQuery(
                 "from BeregningsgrunnlagGrunnlagEntitet grunnlag " +
                         "where grunnlag.koblingId=:koblingId " +
-                        "and grunnlag.aktiv = :aktivt", //$NON-NLS-1$
+                        "and grunnlag.aktiv = :aktivt",
                 BeregningsgrunnlagGrunnlagEntitet.class);
         query.setParameter(KOBLING_ID, koblingId); // $NON-NLS-1$
-        query.setParameter("aktivt", true); //$NON-NLS-1$
+        query.setParameter("aktivt", true);
         return hentUniktResultat(query);
     }
 
@@ -127,10 +128,10 @@ public class BeregningsgrunnlagRepository {
         TypedQuery<BeregningsgrunnlagGrunnlagEntitet> query = entityManager.createQuery(
                 "from BeregningsgrunnlagGrunnlagEntitet grunnlag " +
                         "where grunnlag.koblingId=:koblingId " +
-                        "and grunnlag.grunnlagReferanse.referanse = :referanse", //$NON-NLS-1$
+                        "and grunnlag.grunnlagReferanse.referanse = :referanse",
                 BeregningsgrunnlagGrunnlagEntitet.class);
         query.setParameter(KOBLING_ID, koblingId); // $NON-NLS-1$
-        query.setParameter("referanse", grunnlagReferanse); //$NON-NLS-1$
+        query.setParameter("referanse", grunnlagReferanse);
         return hentUniktResultat(query);
     }
 
@@ -162,7 +163,7 @@ public class BeregningsgrunnlagRepository {
                         ")) " +
                         "AND STEG_OPPRETTET = :beregningsgrunnlagTilstand " +
                         "AND AKT.skjaringstidspunkt_opptjening = :stp " +
-                        "order by GR.OPPRETTET_TID desc, GR.ID desc", //$NON-NLS-1$
+                        "order by GR.OPPRETTET_TID desc, GR.ID desc",
                 BeregningsgrunnlagGrunnlagEntitet.class);
         query.setParameter("koblingId", koblingId); // $NON-NLS-1$
         query.setParameter("beregningsgrunnlagTilstand", tilstand.getKode()); // $NON-NLS-1$
@@ -191,7 +192,7 @@ public class BeregningsgrunnlagRepository {
                 "select b from BeregningsgrunnlagGrunnlagEntitet b " +
                         "where b.koblingId=:koblingId " +
                         "and b.beregningsgrunnlagTilstand = :beregningsgrunnlagTilstand " +
-                        "order by b.opprettetTidspunkt desc, b.id desc", //$NON-NLS-1$
+                        "order by b.opprettetTidspunkt desc, b.id desc",
                 BeregningsgrunnlagGrunnlagEntitet.class);
         query.setParameter(KOBLING_ID, koblingId); // $NON-NLS-1$
         query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, beregningsgrunnlagTilstand); // $NON-NLS-1$
@@ -220,7 +221,7 @@ public class BeregningsgrunnlagRepository {
                         "where koblingId=:koblingId " +
                         "and beregningsgrunnlagTilstand = :beregningsgrunnlagTilstand " +
                         "and opprettetTidspunkt > :opprettetTidspunktMin " +
-                        "order by opprettetTidspunkt desc, id desc", //$NON-NLS-1$
+                        "order by opprettetTidspunkt desc, id desc",
                 BeregningsgrunnlagGrunnlagEntitet.class);
         query.setParameter(KOBLING_ID, koblingId); // $NON-NLS-1$
         query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, beregningsgrunnlagTilstand); // $NON-NLS-1$
@@ -250,7 +251,7 @@ public class BeregningsgrunnlagRepository {
                             "GR2.STEG_OPPRETTET = :beregningsgrunnlagTilstand AND " +
                             "GR2.OPPRETTET_TID <= :opprettetTidMax) AND " +
                             "GR.KOBLING_ID IN :koblingId AND " +
-                            "GR.STEG_OPPRETTET = :beregningsgrunnlagTilstand", //$NON-NLS-1$
+                            "GR.STEG_OPPRETTET = :beregningsgrunnlagTilstand",
                     BeregningsgrunnlagGrunnlagEntitet.class);
             query.setParameter(KOBLING_ID, koblingIds); // $NON-NLS-1$
             query.setParameter("opprettetTidMax", opprettetTidMax);
@@ -263,7 +264,7 @@ public class BeregningsgrunnlagRepository {
                             "WHERE GR2.KOBLING_ID = GR.KOBLING_ID AND " +
                             "GR2.STEG_OPPRETTET = :beregningsgrunnlagTilstand) AND " +
                             "GR.KOBLING_ID IN :koblingId AND " +
-                            "GR.STEG_OPPRETTET = :beregningsgrunnlagTilstand", //$NON-NLS-1$
+                            "GR.STEG_OPPRETTET = :beregningsgrunnlagTilstand",
                     BeregningsgrunnlagGrunnlagEntitet.class);
             query.setParameter(KOBLING_ID, koblingIds); // $NON-NLS-1$
             query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, beregningsgrunnlagTilstand.getKode()); // $NON-NLS-1$
@@ -289,7 +290,7 @@ public class BeregningsgrunnlagRepository {
                         "where koblingId=:koblingId " +
                         "and beregningsgrunnlagTilstand = :beregningsgrunnlagTilstand " +
                         "and opprettetTidspunkt < :opprettetTidspunktMax " +
-                        "order by opprettetTidspunkt desc, id desc", //$NON-NLS-1$
+                        "order by opprettetTidspunkt desc, id desc",
                 BeregningsgrunnlagGrunnlagEntitet.class);
         query.setParameter(KOBLING_ID, koblingId); // $NON-NLS-1$
         query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, beregningsgrunnlagTilstand); // $NON-NLS-1$
@@ -300,20 +301,18 @@ public class BeregningsgrunnlagRepository {
 
 
     public BeregningSats finnGrunnbeløp(LocalDate dato) {
-        TypedQuery<BeregningSats> query = entityManager.createQuery("from BeregningSats where satsType=:satsType" + //$NON-NLS-1$
-                " and periode.fomDato<=:dato" + //$NON-NLS-1$
-                " and periode.tomDato>=:dato", BeregningSats.class); //$NON-NLS-1$
+        TypedQuery<BeregningSats> query = entityManager.createQuery("from BeregningSats where satsType=:satsType" +
+                " and periode.fomDato<=:dato" +
+                " and periode.tomDato>=:dato", BeregningSats.class);
 
-        query.setParameter("satsType", BeregningSatsType.GRUNNBELØP); //$NON-NLS-1$
-        query.setParameter("dato", dato); //$NON-NLS-1$
-        query.setHint(QueryHints.HINT_READONLY, "true");//$NON-NLS-1$
+        query.setParameter("satsType", BeregningSatsType.GRUNNBELØP);
+        query.setParameter("dato", dato);
         query.getResultList();
         return hentEksaktResultat(query);
     }
 
     public List<BeregningSats> finnAlleSatser() {
-        TypedQuery<BeregningSats> query = entityManager.createQuery("from BeregningSats", BeregningSats.class); //$NON-NLS-1$
-        query.setHint(QueryHints.HINT_READONLY, "true");//$NON-NLS-1$
+        TypedQuery<BeregningSats> query = entityManager.createQuery("from BeregningSats", BeregningSats.class);
         query.getResultList();
         return query.getResultList();
     }

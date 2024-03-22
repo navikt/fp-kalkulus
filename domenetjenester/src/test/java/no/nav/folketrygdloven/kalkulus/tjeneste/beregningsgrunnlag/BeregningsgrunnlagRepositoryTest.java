@@ -26,7 +26,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.tjeneste.extensions.JpaExtension;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
-import no.nav.k9.felles.testutilities.db.EntityManagerAwareTest;
+import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
 
 @ExtendWith(JpaExtension.class)
 public class BeregningsgrunnlagRepositoryTest extends EntityManagerAwareTest {

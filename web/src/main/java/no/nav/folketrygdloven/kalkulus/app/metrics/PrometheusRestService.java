@@ -11,6 +11,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
 
 import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.exporter.common.TextFormat;
 import io.swagger.v3.oas.annotations.Operation;
 
 @Path("/metrics")
@@ -22,8 +23,8 @@ public class PrometheusRestService {
     @Path("/prometheus")
     public Response prometheus() {
         try (final Writer writer = new StringWriter()) {
-            TextFormater.write004(writer, CollectorRegistry.defaultRegistry.metricFamilySamples());
-            return Response.ok().encoding("UTF-8").entity(writer.toString()).header("content-type", TextFormater.CONTENT_TYPE_004).build();
+            TextFormat.writeFormat(TextFormat.CONTENT_TYPE_004, writer, CollectorRegistry.defaultRegistry.metricFamilySamples());
+            return Response.ok().encoding("UTF-8").entity(writer.toString()).header("content-type", TextFormat.CONTENT_TYPE_004).build();
         } catch (IOException e) {
             //TODO logg?
         }

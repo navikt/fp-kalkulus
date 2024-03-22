@@ -96,12 +96,12 @@ public class BeregningsgrunnlagAktivitetStatusEntitet extends BaseEntitet {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "<" + //$NON-NLS-1$
+        return getClass().getSimpleName() + "<" +
                 "id=" + id + ", " //$NON-NLS-2$
-                + "beregningsgrunnlag=" + beregningsgrunnlag + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "aktivitetStatus=" + aktivitetStatus + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "hjemmel=" + hjemmel + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + ">"; //$NON-NLS-1$
+                + "beregningsgrunnlag=" + beregningsgrunnlag + ", " //$NON-NLS-2$
+                + "aktivitetStatus=" + aktivitetStatus + ", " //$NON-NLS-2$
+                + "hjemmel=" + hjemmel + ", " //$NON-NLS-2$
+                + ">";
     }
 
     public static Builder builder() {

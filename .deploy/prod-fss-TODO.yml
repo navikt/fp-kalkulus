@@ -70,30 +70,8 @@ spec:
       value: k9-kalkulus
     - name: DEFAULTDS_URL
       value: jdbc:postgresql://A01DBVL034.adeo.no:5432/k9-kalkulus
-    - name: LOADBALANCER_URL
-      value: https://ftkalkulus.intern.nav.no
     - name: ABAC_PDP_ENDPOINT_URL
       value: http://abac-k9.k9saksbehandling/application/authorize
-    - name: SECURITYTOKENSERVICE_URL
-      value: https://sts.adeo.no/SecurityTokenServiceProvider/
-    # Sikkerhet
-    - name: OIDC_STS_HOST_URL
-      value: https://security-token-service.nais.adeo.no
-
-    - name: ABAC_DOMAIN
-      value: "k9"
-    - name: ABAC_ATTRIBUTT_DRIFT
-      value: "no.nav.abac.attributter.k9.drift"
-    - name: ABAC_ATTRIBUTT_BEREGNINGSGRUNNLAG
-      value: "no.nav.abac.attributter.k9.beregningsgrunnlag"
-    - name: ABAC_ATTRIBUTT_FAGSAK
-      value: "no.nav.abac.attributter.k9.fagsak"
-    - name: ABAC_ATTRIBUTT_AKSJONSPUNKTTYPE
-      value: "no.nav.abac.attributter.resource.k9.sak.aksjonspunkt_type"
-    - name: ABAC_ATTRIBUTT_BEHANDLINGSTATUS
-      value: "no.nav.abac.attributter.resource.k9.sak.behandlingsstatus"
-    - name: ABAC_ATTRIBUTT_SAKSTATUS
-      value: "no.nav.abac.attributter.resource.k9.sak.saksstatus"
 
     # Feature-flag
     - name: BEREGNE_DAGPENGER_FRA_SYKEPENGER

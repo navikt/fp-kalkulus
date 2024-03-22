@@ -67,7 +67,7 @@ public class TraverseGraph {
         } catch (TraverseEntityGraphException t) {
             throw t;
         } catch (RuntimeException e) {
-            throw new TraverseEntityGraphException("Kunne ikke lese grafen [" + currentPath + "]", e); //$NON-NLS-1$ //$NON-NLS-2$
+            throw new TraverseEntityGraphException("Kunne ikke lese grafen [" + currentPath + "]", e); //$NON-NLS-2$
         }
 
         if (obj instanceof Collection) { // NOSONAR
@@ -133,7 +133,7 @@ public class TraverseGraph {
 
     private void traverseMap(Node newPath, Map<?, ?> map, TraverseResult result) {
         for (Map.Entry<?, ?> entry : map.entrySet()) {
-            Node collNode = new Node("{" + (entry.getKey()) + "}", newPath, map); //$NON-NLS-1$ //$NON-NLS-2$
+            Node collNode = new Node("{" + (entry.getKey()) + "}", newPath, map); //$NON-NLS-2$
             traverseRecursiveInternal(entry.getValue(), collNode, result);
         }
     }
@@ -147,7 +147,7 @@ public class TraverseGraph {
                 collectionKey = String.valueOf(listPositionEq.getKey(newPath, v));
             }
 
-            Node collNode = new Node("[" + (collectionKey) + "]", newPath, v); //$NON-NLS-1$ //$NON-NLS-2$
+            Node collNode = new Node("[" + (collectionKey) + "]", newPath, v); //$NON-NLS-2$
             traverseRecursiveInternal(v, collNode, result);
         }
     }

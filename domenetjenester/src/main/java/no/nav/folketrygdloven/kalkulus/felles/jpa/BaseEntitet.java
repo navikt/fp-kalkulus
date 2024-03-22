@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulus.felles.jpa;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
@@ -9,7 +10,8 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 
 import no.nav.folketrygdloven.kalkulus.felles.diff.DiffIgnore;
-import no.nav.k9.sikkerhet.context.SubjectHandler;
+import no.nav.vedtak.sikkerhet.kontekst.Kontekst;
+import no.nav.vedtak.sikkerhet.kontekst.KontekstHolder;
 
 /**
  * En basis entitetklasse som håndtere felles standarder for utformign av tabeller (eks. sporing av hvem som har
@@ -37,8 +39,8 @@ public class BaseEntitet implements Serializable {
     private LocalDateTime endretTidspunkt; // NOSONAR
 
     private static String finnBrukernavn() {
-        String brukerident = SubjectHandler.getSubjectHandler().getUid();
-        return brukerident != null ? brukerident : BRUKERNAVN_NÅR_SIKKERHETSKONTEKST_IKKE_FINNES;
+        return Optional.ofNullable(KontekstHolder.getKontekst()).map(Kontekst::getKompaktUid)
+            .orElse(BRUKERNAVN_NÅR_SIKKERHETSKONTEKST_IKKE_FINNES);
     }
 
     @PrePersist

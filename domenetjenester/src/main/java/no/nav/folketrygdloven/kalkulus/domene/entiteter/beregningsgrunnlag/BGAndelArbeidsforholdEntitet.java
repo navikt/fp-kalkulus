@@ -163,17 +163,17 @@ public class BGAndelArbeidsforholdEntitet extends BaseEntitet {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "<" + //$NON-NLS-1$
+        return getClass().getSimpleName() + "<" +
                 "id=" + id + ", " //$NON-NLS-2$
-                + "orgnr=" + getArbeidsforholdOrgnr() + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "arbeidsgiver=" + arbeidsgiver + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "arbeidsforholdRef=" + arbeidsforholdRef + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "naturalytelseBortfaltPrÅr=" + naturalytelseBortfaltPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "naturalytelseTilkommetPrÅr=" + naturalytelseTilkommetPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "refusjon=" + refusjon + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "arbeidsperiodeFom=" + arbeidsperiodeFom //$NON-NLS-1$
-                + "arbeidsperiodeTom=" + arbeidsperiodeTom //$NON-NLS-1$
-                + ">"; //$NON-NLS-1$
+                + "orgnr=" + getArbeidsforholdOrgnr() + ", " //$NON-NLS-2$
+                + "arbeidsgiver=" + arbeidsgiver + ", " //$NON-NLS-2$
+                + "arbeidsforholdRef=" + arbeidsforholdRef + ", " //$NON-NLS-2$
+                + "naturalytelseBortfaltPrÅr=" + naturalytelseBortfaltPrÅr + ", " //$NON-NLS-2$
+                + "naturalytelseTilkommetPrÅr=" + naturalytelseTilkommetPrÅr + ", " //$NON-NLS-2$
+                + "refusjon=" + refusjon + ", " //$NON-NLS-2$
+                + "arbeidsperiodeFom=" + arbeidsperiodeFom
+                + "arbeidsperiodeTom=" + arbeidsperiodeTom
+                + ">";
     }
 
     public static Builder builder() {

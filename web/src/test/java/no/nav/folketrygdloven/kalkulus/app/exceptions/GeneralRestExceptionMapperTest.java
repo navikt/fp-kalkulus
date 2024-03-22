@@ -7,8 +7,8 @@ import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.k9.felles.exception.ManglerTilgangException;
-import no.nav.k9.felles.exception.TekniskException;
+import no.nav.folketrygdloven.kalkulus.felles.feil.TekniskException;
+import no.nav.vedtak.exception.ManglerTilgangException;
 
 @SuppressWarnings("resource")
 public class GeneralRestExceptionMapperTest {

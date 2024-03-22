@@ -8,11 +8,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.CascadeType;
@@ -28,6 +23,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
@@ -390,28 +391,28 @@ public class BeregningsgrunnlagPrStatusOgAndelEntitet extends BaseEntitet {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "<" + //$NON-NLS-1$
+        return getClass().getSimpleName() + "<" +
                 "id=" + id + ", " //$NON-NLS-2$
-                + "beregningsgrunnlagPeriode=" + beregningsgrunnlagPeriode + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "aktivitetStatus=" + aktivitetStatus + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "beregningsperiode=" + beregningsperiode + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "arbeidsforholdType=" + arbeidsforholdType + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "maksimalRefusjonPrÅr=" + maksimalRefusjonPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "avkortetRefusjonPrÅr=" + avkortetRefusjonPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "redusertRefusjonPrÅr=" + redusertRefusjonPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "avkortetBrukersAndelPrÅr=" + avkortetBrukersAndelPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "redusertBrukersAndelPrÅr=" + redusertBrukersAndelPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "avkortetPrÅr=" + avkortetPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "redusertPrÅr=" + redusertPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "dagsatsBruker=" + dagsatsBruker + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "dagsatsArbeidsgiver=" + dagsatsArbeidsgiver + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "pgiSnitt=" + pgiSnitt + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "pgi1=" + pgi1 + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "pgi2=" + pgi2 + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "pgi3=" + pgi3 + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "årsbeløpFraTilstøtendeYtelse=" + årsbeløpFraTilstøtendeYtelse //$NON-NLS-1$
-                + "grunnlagPrÅr=" + grunnlagPrÅr //$NON-NLS-1$
-                + ">"; //$NON-NLS-1$
+                + "beregningsgrunnlagPeriode=" + beregningsgrunnlagPeriode + ", " //$NON-NLS-2$
+                + "aktivitetStatus=" + aktivitetStatus + ", " //$NON-NLS-2$
+                + "beregningsperiode=" + beregningsperiode + ", " //$NON-NLS-2$
+                + "arbeidsforholdType=" + arbeidsforholdType + ", " //$NON-NLS-2$
+                + "maksimalRefusjonPrÅr=" + maksimalRefusjonPrÅr + ", " //$NON-NLS-2$
+                + "avkortetRefusjonPrÅr=" + avkortetRefusjonPrÅr + ", " //$NON-NLS-2$
+                + "redusertRefusjonPrÅr=" + redusertRefusjonPrÅr + ", " //$NON-NLS-2$
+                + "avkortetBrukersAndelPrÅr=" + avkortetBrukersAndelPrÅr + ", " //$NON-NLS-2$
+                + "redusertBrukersAndelPrÅr=" + redusertBrukersAndelPrÅr + ", " //$NON-NLS-2$
+                + "avkortetPrÅr=" + avkortetPrÅr + ", " //$NON-NLS-2$
+                + "redusertPrÅr=" + redusertPrÅr + ", " //$NON-NLS-2$
+                + "dagsatsBruker=" + dagsatsBruker + ", " //$NON-NLS-2$
+                + "dagsatsArbeidsgiver=" + dagsatsArbeidsgiver + ", " //$NON-NLS-2$
+                + "pgiSnitt=" + pgiSnitt + ", " //$NON-NLS-2$
+                + "pgi1=" + pgi1 + ", " //$NON-NLS-2$
+                + "pgi2=" + pgi2 + ", " //$NON-NLS-2$
+                + "pgi3=" + pgi3 + ", " //$NON-NLS-2$
+                + "årsbeløpFraTilstøtendeYtelse=" + årsbeløpFraTilstøtendeYtelse
+                + "grunnlagPrÅr=" + grunnlagPrÅr
+                + ">";
     }
 
     public static Builder builder() {

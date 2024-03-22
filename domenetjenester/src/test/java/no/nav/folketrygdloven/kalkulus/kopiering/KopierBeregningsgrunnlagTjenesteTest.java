@@ -12,8 +12,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +35,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingRef
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Årsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
@@ -79,9 +78,7 @@ import no.nav.folketrygdloven.kalkulus.tjeneste.extensions.JpaExtension;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.LåsRepository;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
-import no.nav.k9.felles.testutilities.db.EntityManagerAwareTest;
-import no.nav.k9.felles.testutilities.sikkerhet.StaticSubjectHandler;
-import no.nav.k9.felles.testutilities.sikkerhet.SubjectHandlerUtils;
+import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
 
 @ExtendWith({JpaExtension.class})
 class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
@@ -113,13 +110,11 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         avklaringsbehovTjeneste = new AvklaringsbehovTjeneste(avklaringsbehovRepository, koblingRepository, avklaringsbehovKontrollTjeneste);
         var koblingTjeneste = new KoblingTjeneste(koblingRepository, new LåsRepository(getEntityManager()));
         tjeneste = new KopierBeregningsgrunnlagTjeneste(koblingTjeneste, repository, avklaringsbehovTjeneste);
-        SubjectHandlerUtils.useSubjectHandler(StaticSubjectHandler.class);
     }
 
 
     @Test
     void skal_kopiere_grunnlag_til_ny_kobling() {
-        SubjectHandlerUtils.setInternBruker("noen");
 
         var originalKoblingReferanse = UUID.randomUUID();
         var originalKobling = new KoblingEntitet(new KoblingReferanse(originalKoblingReferanse), FagsakYtelseType.PLEIEPENGER_SYKT_BARN, SAK, AKTØR_ID);
@@ -130,7 +125,6 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
 
         var gr1 = repository.lagre(originalKobling.getId(), byggGrunnlag(200000), BeregningsgrunnlagTilstand.FASTSATT);
 
-        SubjectHandlerUtils.setInternBruker("noen andre");
         LocalDateTime førKopiering = LocalDateTime.now();
         var nyReferanse2 = UUID.randomUUID();
         tjeneste.kopierGrunnlagOgOpprettKoblinger(

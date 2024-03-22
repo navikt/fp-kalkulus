@@ -3,8 +3,6 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
@@ -18,6 +16,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Promille;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.SammenligningsgrunnlagTypeKodeverdiConverter;
@@ -145,14 +146,14 @@ public class SammenligningsgrunnlagPrStatusEntitet extends BaseEntitet {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "<" + //$NON-NLS-1$
+        return getClass().getSimpleName() + "<" +
                 "id=" + id + ", " //$NON-NLS-2$
-                + "sammenligningsgrunnlagType=" + sammenligningsgrunnlagType + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "sammenligningsperiodeFom=" + sammenligningsperiode.getFomDato() + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "sammenligningsperiodeTom=" + sammenligningsperiode.getTomDato() + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "rapportertPrÅr=" + rapportertPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "avvikPromille=" + avvikPromilleNy + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + ">"; //$NON-NLS-1$
+                + "sammenligningsgrunnlagType=" + sammenligningsgrunnlagType + ", " //$NON-NLS-2$
+                + "sammenligningsperiodeFom=" + sammenligningsperiode.getFomDato() + ", " //$NON-NLS-2$
+                + "sammenligningsperiodeTom=" + sammenligningsperiode.getTomDato() + ", " //$NON-NLS-2$
+                + "rapportertPrÅr=" + rapportertPrÅr + ", " //$NON-NLS-2$
+                + "avvikPromille=" + avvikPromilleNy + ", " //$NON-NLS-2$
+                + ">";
     }
 
     public static Builder builder() {

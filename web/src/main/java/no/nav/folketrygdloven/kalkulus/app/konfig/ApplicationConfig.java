@@ -79,6 +79,7 @@ public class ApplicationConfig extends Application {
         classes.add(GrunnbeløpRestTjeneste.class);
 
         //andre tjenester
+        classes.add(AuthenticationFilter.class);
         classes.add(OpenApiResource.class);
         classes.add(ConstraintViolationMapper.class);
         classes.add(JsonMappingExceptionMapper.class);

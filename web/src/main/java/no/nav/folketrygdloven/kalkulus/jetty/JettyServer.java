@@ -1,70 +1,54 @@
 package no.nav.folketrygdloven.kalkulus.jetty;
 
-import static no.nav.k9.felles.konfigurasjon.env.Cluster.LOCAL;
-import static no.nav.k9.felles.konfigurasjon.env.Cluster.NAIS_CLUSTER_NAME;
+import static org.eclipse.jetty.ee10.webapp.MetaInfConfiguration.CONTAINER_JAR_PATTERN;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.eclipse.jetty.jaas.JAASLoginService;
+import javax.naming.NamingException;
+
+import org.eclipse.jetty.ee10.cdi.CdiDecoratingListener;
+import org.eclipse.jetty.ee10.cdi.CdiServletContainerInitializer;
+import org.eclipse.jetty.ee10.servlet.ErrorPageErrorHandler;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.servlet.security.ConstraintMapping;
+import org.eclipse.jetty.ee10.servlet.security.ConstraintSecurityHandler;
+import org.eclipse.jetty.ee10.webapp.WebAppContext;
 import org.eclipse.jetty.plus.jndi.EnvEntry;
-import org.eclipse.jetty.security.ConstraintSecurityHandler;
-import org.eclipse.jetty.security.DefaultIdentityService;
-import org.eclipse.jetty.security.SecurityHandler;
-import org.eclipse.jetty.security.jaspi.DefaultAuthConfigFactory;
-import org.eclipse.jetty.security.jaspi.JaspiAuthenticatorFactory;
-import org.eclipse.jetty.security.jaspi.provider.JaspiAuthConfigProvider;
+import org.eclipse.jetty.security.Constraint;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
-import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.util.resource.Resource;
-import org.eclipse.jetty.util.resource.ResourceCollection;
-import org.eclipse.jetty.webapp.MetaData;
-import org.eclipse.jetty.webapp.WebAppContext;
-import org.slf4j.MDC;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.util.resource.ResourceFactory;
+import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.FlywayException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import jakarta.security.auth.message.config.AuthConfigFactory;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulus.app.konfig.ApplicationConfig;
-import no.nav.folketrygdloven.kalkulus.felles.verktøy.KalkulusKonfigurasjonVerdiProvider;
-import no.nav.folketrygdloven.kalkulus.jetty.db.DatabaseScript;
-import no.nav.folketrygdloven.kalkulus.jetty.db.DatasourceRole;
-import no.nav.folketrygdloven.kalkulus.jetty.db.DatasourceUtil;
-import no.nav.k9.felles.konfigurasjon.env.Environment;
-import no.nav.k9.felles.oidc.OidcApplication;
-import no.nav.k9.felles.sikkerhet.jaspic.OidcAuthModule;
+import no.nav.folketrygdloven.kalkulus.app.konfig.InternalApplication;
+import no.nav.foreldrepenger.konfig.Environment;
 
 public class JettyServer {
 
     private static final Environment ENV = Environment.current();
-    private AppKonfigurasjon appKonfigurasjon;
+    private static final Logger LOG = LoggerFactory.getLogger(JettyServer.class);
 
-    public JettyServer() {
-        this(new JettyWebKonfigurasjon());
-    }
+    private static final String CONTEXT_PATH = ENV.getProperty("context.path", "/fpkalkulus");
+    private static final String JETTY_SCAN_LOCATIONS = "^.*jersey-.*\\.jar$|^.*felles-.*\\.jar$|^.*/app\\.jar$";
+    private static final String JETTY_LOCAL_CLASSES = "^.*/target/classes/|";
+    private final Integer serverPort;
 
-    public JettyServer(int serverPort) {
-        this(new JettyWebKonfigurasjon(serverPort));
-    }
-
-    JettyServer(AppKonfigurasjon appKonfigurasjon) {
-        this.appKonfigurasjon = appKonfigurasjon;
+    JettyServer(int serverPort) {
+        this.serverPort = serverPort;
     }
 
     public static void main(String[] args) throws Exception {
-        // for logback import to work
-        System.setProperty(NAIS_CLUSTER_NAME, ENV.clusterName());
         jettyServer(args).bootStrap();
     }
 
@@ -72,156 +56,132 @@ public class JettyServer {
         if (args.length > 0) {
             return new JettyServer(Integer.parseUnsignedInt(args[0]));
         }
-        return new JettyServer();
+        return new JettyServer(ENV.getProperty("server.port", Integer.class, 8080));
     }
 
-    protected void start(AppKonfigurasjon appKonfigurasjon) throws Exception {
-        Server server = new Server(appKonfigurasjon.getServerPort());
-        server.setConnectors(createConnectors(appKonfigurasjon, server).toArray(new Connector[]{}));
+    private static void initTrustStore() {
+        final var trustStorePathProp = "javax.net.ssl.trustStore";
+        final var trustStorePasswordProp = "javax.net.ssl.trustStorePassword";
 
-        var handlers = new HandlerList(new ResetLogContextHandler(), createContext(appKonfigurasjon));
-        server.setHandler(handlers);
+        var defaultLocation = ENV.getProperty("user.home", ".") + "/.modig/truststore.jks";
+        var storePath = ENV.getProperty(trustStorePathProp, defaultLocation);
+        var storeFile = new File(storePath);
+        if (!storeFile.exists()) {
+            throw new IllegalStateException(
+                "Finner ikke truststore i " + storePath + "\n\tKonfrigurer enten som System property '" + trustStorePathProp
+                    + "' eller environment variabel '" + trustStorePathProp.toUpperCase().replace('.', '_') + "'");
+        }
+        var password = ENV.getProperty(trustStorePasswordProp, "changeit");
+        System.setProperty(trustStorePathProp, storeFile.getAbsolutePath());
+        System.setProperty(trustStorePasswordProp, password);
+    }
+
+    private ContextHandler createContext() throws IOException {
+        var ctx = new WebAppContext(CONTEXT_PATH, null, simpleConstraints(), null,
+            new ErrorPageErrorHandler(), ServletContextHandler.NO_SESSIONS);
+
+        ctx.setParentLoaderPriority(true);
+
+        // må hoppe litt bukk for å hente web.xml fra classpath i stedet for fra filsystem.
+        String baseResource;
+        try (var factory = ResourceFactory.closeable()) {
+            baseResource = factory.newResource(".").getRealURI().toURL().toExternalForm();
+        }
+
+        ctx.setBaseResourceAsString(baseResource);
+        ctx.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false"); // Default servlet convention
+        ctx.setInitParameter("pathInfoOnly", "true");
+
+        // Scanns the CLASSPATH for classes and jars.
+        ctx.setAttribute(CONTAINER_JAR_PATTERN, String.format("%s%s", ENV.isLocal() ? JETTY_LOCAL_CLASSES : "", JETTY_SCAN_LOCATIONS));
+
+        // Enable Weld + CDI
+        ctx.setInitParameter(CdiServletContainerInitializer.CDI_INTEGRATION_ATTRIBUTE, CdiDecoratingListener.MODE);
+        ctx.addServletContainerInitializer(new CdiServletContainerInitializer());
+        ctx.addServletContainerInitializer(new org.jboss.weld.environment.servlet.EnhancedListener());
+
+        ctx.setThrowUnavailableOnStartupException(true);
+
+        return ctx;
+    }
+
+    private static HttpConfiguration createHttpConfiguration() {
+        // Create HTTP Config
+        var httpConfig = new HttpConfiguration();
+        // Add support for X-Forwarded headers
+        httpConfig.addCustomizer(new org.eclipse.jetty.server.ForwardedRequestCustomizer());
+        return httpConfig;
+
+    }
+
+    void bootStrap() throws Exception {
+        konfigurerSikkerhet();
+        konfigurerJndi();
+        migrerDatabaser();
+        start();
+    }
+
+    private void konfigurerSikkerhet() {
+        if (ENV.isLocal()) {
+            initTrustStore();
+        }
+    }
+
+    protected void konfigurerJndi() throws NamingException {
+        // Balanser så CP-size = TaskThreads+1 + Antall Connections man ønsker
+        System.setProperty("task.manager.runner.threads", "6");
+        new EnvEntry("jdbc/defaultDS", DatasourceUtil.createDatasource(DatasourceRole.USER, 12));
+    }
+
+    void migrerDatabaser() {
+        try (var dataSource = DatasourceUtil.createDatasource(DatasourceRole.ADMIN, 2)) {
+            var flyway = Flyway.configure().dataSource(dataSource).locations("classpath:/db/migration/defaultDS").baselineOnMigrate(true);
+            if (ENV.isProd() || ENV.isDev()) {
+                flyway.initSql(String.format("SET ROLE \"%s\"", DatasourceUtil.getRole(DatasourceRole.ADMIN)));
+            }
+            flyway.load().migrate();
+        } catch (FlywayException e) {
+            LOG.error("Feil under migrering av databasen.");
+            throw e;
+        }
+    }
+
+    private void start() throws Exception {
+        var server = new Server(getServerPort());
+        server.setConnectors(createConnectors(server).toArray(new Connector[]{}));
+        server.setHandler(createContext());
         server.start();
         server.join();
     }
 
-    protected void bootStrap() throws Exception {
-        konfigurer();
-        migrerDatabaser();
-        start(appKonfigurasjon);
-    }
-
-    protected void konfigurer() throws Exception {
-        konfigurerMiljø();
-        konfigurerSikkerhet();
-        konfigurerJndi();
-    }
-
-    protected void konfigurerMiljø() throws Exception {
-        // template method
-        KonfigurasjonVerdi.configure(new KalkulusKonfigurasjonVerdiProvider()); // Sett opp SPI for KonfigurasjonsVerdi
-    }
-
-    protected void konfigurerJndi() throws Exception {
-        new EnvEntry("jdbc/defaultDS",
-                DatasourceUtil.createDatasource("defaultDS", DatasourceRole.USER, ENV.getCluster(), 4));
-    }
-
-    protected void konfigurerSikkerhet() {
-        var factory = new DefaultAuthConfigFactory();
-
-        factory.registerConfigProvider(new JaspiAuthConfigProvider(new OidcAuthModule()),
-                "HttpServlet",
-                "server /ftkalkulus",
-                "OIDC Authentication");
-
-        AuthConfigFactory.setFactory(factory);
-    }
-
-    protected void migrerDatabaser() throws IOException {
-        String initSql = String.format("SET ROLE \"%s\"", DatasourceUtil.getDbRole("defaultDS", DatasourceRole.ADMIN));
-        if (LOCAL.equals(ENV.getCluster())) {
-            // TODO: Ønsker egentlig ikke dette, men har ikke satt opp skjema lokalt
-            // til å ha en admin bruker som gjør migrering og en annen som gjør CRUD
-            // operasjoner
-            initSql = null;
-        }
-        try (var migreringDs = DatasourceUtil.createDatasource("defaultDS", DatasourceRole.ADMIN, ENV.getCluster(),
-                2)) {
-            DatabaseScript.migrate(migreringDs, initSql);
-        }
-    }
-
-    @SuppressWarnings("resource")
-    protected WebAppContext createContext(AppKonfigurasjon appKonfigurasjon) throws IOException {
-        var webAppContext = new WebAppContext();
-        webAppContext.setParentLoaderPriority(true);
-
-        // må hoppe litt bukk for å hente web.xml fra classpath i stedet for fra
-        // filsystem.
-        String descriptor;
-        try (var resource = Resource.newClassPathResource("/WEB-INF/web.xml")) {
-            descriptor = resource.getURI().toURL().toExternalForm();
-        }
-        webAppContext.setDescriptor(descriptor);
-        webAppContext.setBaseResource(createResourceCollection());
-        webAppContext.setContextPath(appKonfigurasjon.getContextPath());
-        webAppContext.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
-
-        webAppContext.setAttribute("org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern",
-                "^.*jersey-.*.jar$|^.*felles-.*.jar$");
-        webAppContext.setSecurityHandler(createSecurityHandler());
-        updateMetaData(webAppContext.getMetaData());
-        return webAppContext;
-    }
-
-    protected HttpConfiguration createHttpConfiguration() {
-        // Create HTTP Config
-        HttpConfiguration httpConfig = new HttpConfiguration();
-
-        // Add support for X-Forwarded headers
-        httpConfig.addCustomizer(new org.eclipse.jetty.server.ForwardedRequestCustomizer());
-
-        return httpConfig;
-    }
-
-    private SecurityHandler createSecurityHandler() {
-        ConstraintSecurityHandler securityHandler = new ConstraintSecurityHandler();
-        securityHandler.setAuthenticatorFactory(new JaspiAuthenticatorFactory());
-
-        JAASLoginService loginService = new JAASLoginService();
-        loginService.setName("jetty-login");
-        loginService.setLoginModuleName("jetty-login");
-        loginService.setIdentityService(new DefaultIdentityService());
-        securityHandler.setLoginService(loginService);
-
-        return securityHandler;
-    }
-
-    private void updateMetaData(MetaData metaData) {
-        // Find path to class-files while starting jetty from development environment.
-        List<Class<?>> appClasses = getWebInfClasses();
-
-        List<Resource> resources = appClasses.stream()
-                .map(c -> Resource.newResource(c.getProtectionDomain().getCodeSource().getLocation()))
-                .distinct()
-                .collect(Collectors.toList());
-
-        metaData.setWebInfClassesResources(resources);
-    }
-
-    protected List<Class<?>> getWebInfClasses() {
-        return Arrays.asList(ApplicationConfig.class, OidcApplication.class);
-    }
-
-    @SuppressWarnings("resource")
-    protected List<Connector> createConnectors(AppKonfigurasjon appKonfigurasjon, Server server) {
+    private List<Connector> createConnectors(Server server) {
         List<Connector> connectors = new ArrayList<>();
-        ServerConnector httpConnector = new ServerConnector(server,
-                new HttpConnectionFactory(createHttpConfiguration()));
-        httpConnector.setPort(appKonfigurasjon.getServerPort());
+        var httpConnector = new ServerConnector(server, new HttpConnectionFactory(createHttpConfiguration()));
+        httpConnector.setPort(getServerPort());
         connectors.add(httpConnector);
-
         return connectors;
     }
 
-    @SuppressWarnings("resource")
-    protected ResourceCollection createResourceCollection() throws IOException {
-        return new ResourceCollection(
-                Resource.newClassPathResource("META-INF/resources/webjars/"),
-                Resource.newClassPathResource("/web"));
+    private static ConstraintSecurityHandler simpleConstraints() {
+        var handler = new ConstraintSecurityHandler();
+        // Slipp gjennom kall fra plattform til JaxRs. Foreløpig kun behov for GET
+        handler.addConstraintMapping(pathConstraint(Constraint.ALLOWED, InternalApplication.API_URI + "/*"));
+        // Slipp gjennom til autentisering i JaxRs / auth-filter
+        handler.addConstraintMapping(pathConstraint(Constraint.ALLOWED, ApplicationConfig.API_URI + "/*"));
+        // Alt annet av paths og metoder forbudt - 403
+        handler.addConstraintMapping(pathConstraint(Constraint.FORBIDDEN, "/*"));
+        return handler;
     }
 
-    /**
-     * Legges først slik at alltid resetter context før prosesserer nye requests.
-     * Kjøres først så ikke risikerer andre har satt Request#setHandled(true).
-     */
-    static final class ResetLogContextHandler extends AbstractHandler {
-        @Override
-        public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
-                throws IOException, ServletException {
-            MDC.clear();
-        }
+    private static ConstraintMapping pathConstraint(Constraint constraint, String path) {
+        var mapping = new ConstraintMapping();
+        mapping.setConstraint(constraint);
+        mapping.setPathSpec(path);
+        return mapping;
+    }
+
+    private Integer getServerPort() {
+        return this.serverPort;
     }
 
 }

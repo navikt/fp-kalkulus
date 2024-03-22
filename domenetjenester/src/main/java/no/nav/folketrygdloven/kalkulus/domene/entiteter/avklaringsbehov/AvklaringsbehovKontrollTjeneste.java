@@ -4,10 +4,11 @@ import java.time.LocalDateTime;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovStatus;
-import no.nav.k9.sikkerhet.context.SubjectHandler;
+import no.nav.vedtak.sikkerhet.kontekst.KontekstHolder;
 
 /**
  * Tjeneste som skal håndtere all opprettelse og endring av AvklaringsbehovEntitet
@@ -67,7 +68,7 @@ public class AvklaringsbehovKontrollTjeneste {
     }
 
     private void setVurdert(AvklaringsbehovEntitet avklaringsbehovEntitet) {
-        avklaringsbehovEntitet.setVurdertAv(SubjectHandler.getSubjectHandler().getUid());
+        avklaringsbehovEntitet.setVurdertAv(KontekstHolder.getKontekst().getKompaktUid());
         avklaringsbehovEntitet.setVurdertTidspunkt(LocalDateTime.now());
     }
 }

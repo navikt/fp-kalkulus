@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.felles.diff;
 
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -58,7 +58,7 @@ public class TraverseJpaEntityGraphConfig extends TraverseGraphConfig {
             || targetClass.isAnnotationPresent(Embeddable.class);
         if (!ok) {
             throw new IllegalArgumentException(
-                "target [" + targetClass + "] er ikke en Entity eller Embeddable (mangler annotation):" + currentPath); //$NON-NLS-1$ //$NON-NLS-2$
+                "target [" + targetClass + "] er ikke en Entity eller Embeddable (mangler annotation):" + currentPath); //$NON-NLS-2$
         }
 
     }

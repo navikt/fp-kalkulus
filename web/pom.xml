@@ -6,89 +6,45 @@
 
     <parent>
         <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-        <artifactId>ftkalkulus</artifactId>
-        <version>${revision}${sha1}${changelist}</version>
+        <artifactId>fpkalkulus</artifactId>
+        <version>1.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>web</artifactId>
     <packaging>jar</packaging>
     <name>Kalkulus :: Web :: Applikasjon</name>
-    <properties>
-        <swagger-ui.version>5.11.10</swagger-ui.version>
-
-        <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
-
-        <jersey.version>3.0.8</jersey.version>
-    </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-bom</artifactId>
-                <version>11.0.20</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey</groupId>
-                <artifactId>jersey-bom</artifactId>
-                <version>${jersey.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.zaxxer</groupId>
-                <artifactId>HikariCP</artifactId>
-                <version>5.1.0</version>
-            </dependency>
-
-            <!-- Swagger og Swagger-UI -->
-            <dependency>
-                <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-jaxrs2-jakarta</artifactId>
-                <version>${swagger.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-core-jakarta</artifactId>
-                <version>${swagger.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.webjars</groupId>
-                <artifactId>swagger-ui</artifactId>
-                <version>${swagger-ui.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
             <artifactId>migreringer</artifactId>
         </dependency>
-
         <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
             <artifactId>domenetjenester</artifactId>
         </dependency>
-
         <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
             <artifactId>beregning-kalkulator</artifactId>
         </dependency>
-
         <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
             <artifactId>beregning-kontrakt</artifactId>
         </dependency>
-        <!-- Test avhengigheter -->
+
         <dependency>
-            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>migreringer</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
+            <groupId>no.nav.foreldrepenger.felles</groupId>
+            <artifactId>felles-abac-kontekst</artifactId>
         </dependency>
+        <dependency>
+            <groupId>no.nav.foreldrepenger.felles</groupId>
+            <artifactId>felles-auth-filter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.foreldrepenger.felles</groupId>
+            <artifactId>felles-util</artifactId>
+        </dependency>
+
 
         <!-- REST + WebService -->
         <dependency>
@@ -96,13 +52,12 @@
             <artifactId>jersey-container-servlet</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.jersey.ext.cdi</groupId>
-            <artifactId>jersey-cdi1x-servlet</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.ext.cdi</groupId>
+            <artifactId>jersey-cdi1x-servlet</artifactId>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.ext</groupId>
@@ -114,23 +69,6 @@
         </dependency>
 
         <!-- NAV -->
-
-        <!-- Server Provided Libraries. Transitive avhengigheter som ikke
-            burde vært her da de trekkes inn av server. -->
-        <dependency>
-            <groupId>no.nav.k9.felles.sikkerhet</groupId>
-            <artifactId>k9-felles-sikkerhet</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.codehaus.woodstox</groupId>
-                    <artifactId>woodstox-core-asl</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>no.nav.k9.felles.oidc-token</groupId>
-            <artifactId>k9-sikkerhet-azure-cc</artifactId>
-        </dependency>
 
         <!-- Database håndtering -->
         <dependency>
@@ -156,12 +94,6 @@
             <artifactId>postgresql</artifactId>
         </dependency>
 
-        <!-- For Status side -->
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-        </dependency>
-
         <!-- CDI -->
         <dependency>
             <groupId>jakarta.servlet</groupId>
@@ -170,21 +102,9 @@
         <dependency>
             <groupId>org.jboss.weld.servlet</groupId>
             <artifactId>weld-servlet-core</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jboss.spec.javax.annotation</groupId>
-                    <artifactId>
-                        jboss-annotations-api_1.3_spec
-                    </artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.spec.javax.el</groupId>
-                    <artifactId>jboss-el-api_3.0_spec</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.jboss</groupId>
+            <groupId>io.smallrye</groupId>
             <artifactId>jandex</artifactId>
         </dependency>
 
@@ -201,41 +121,22 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jdk8</artifactId>
-        </dependency>
+
         <!-- Server -->
         <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-plus</artifactId>
+            <groupId>org.eclipse.jetty.ee10</groupId>
+            <artifactId>jetty-ee10-plus</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-annotations</artifactId>
+            <groupId>org.eclipse.jetty.ee10</groupId>
+            <artifactId>jetty-ee10-cdi</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-servlets</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-jaas</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-jaspi</artifactId>
+            <groupId>org.eclipse.jetty.ee10</groupId>
+            <artifactId>jetty-ee10-webapp</artifactId>
         </dependency>
 
         <!-- Metrics, logging, helse- og selftest -->
-        <dependency>
-            <groupId>io.prometheus</groupId>
-            <artifactId>simpleclient_dropwizard</artifactId>
-        </dependency>
         <dependency>
             <groupId>io.prometheus</groupId>
             <artifactId>simpleclient_servlet</artifactId>
@@ -253,6 +154,10 @@
             <artifactId>simpleclient_common</artifactId>
         </dependency>
         <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+        <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
         </dependency>
@@ -261,20 +166,6 @@
             <artifactId>logback-syslog4j</artifactId>
         </dependency>
 
-        <!-- Annet -->
-        <dependency>
-            <groupId>org.owasp.encoder</groupId>
-            <artifactId>encoder</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>swagger-ui</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.validation</groupId>
-            <artifactId>jakarta.validation-api</artifactId>
-        </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-core-jakarta</artifactId>
@@ -282,17 +173,18 @@
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-jaxrs2-jakarta</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.module</groupId>
-                    <artifactId>jackson-module-jaxb-annotations</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
-            <groupId>org.jboss.weld</groupId>
-            <artifactId>weld-junit5</artifactId>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
+
+        <!-- Test avhengigheter -->
+        <dependency>
+            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+            <artifactId>migreringer</artifactId>
+            <type>test-jar</type>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -300,24 +192,6 @@
     <build>
         <!-- setter til app da det er default for jar som kjøres i nais baseimages -->
         <finalName>app</finalName>
-
-        <resources>
-            <!-- filtrerer for å sette opp swagger versjon korrekt -->
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>**/*.html</include>
-                </includes>
-            </resource>
-            <resource>
-                <!-- ikke filtrer resten -->
-                <directory>src/main/resources</directory>
-                <excludes>
-                    <exclude>**/*.html</exclude>
-                </excludes>
-            </resource>
-        </resources>
 
         <plugins>
             <plugin>
@@ -327,6 +201,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
                             <mainClass>no.nav.folketrygdloven.kalkulus.jetty.JettyServer</mainClass>
                         </manifest>
                     </archive>

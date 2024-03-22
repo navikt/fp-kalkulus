@@ -38,7 +38,7 @@ import no.nav.folketrygdloven.kalkulus.mappers.VerdityperMapper;
 
 
 /**
- * Skal etterhvert benytte seg av kontrakten som skal lages i ft-Kalkulus, benytter foreløping en, en-til-en mapping på klassenivå...
+ * Skal etterhvert benytte seg av kontrakten som skal lages i fp-kalkulus, benytter foreløping en, en-til-en mapping på klassenivå...
  */
 public class KalkulatorTilEntitetMapper {
 

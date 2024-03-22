@@ -1,8 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.rest;
 
-import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributtMiljøvariabel.BEREGNINGSGRUNNLAG;
-import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.READ;
-
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +30,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.forvaltning.GrunnbeløpreguleringTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.GrunnbeløpReguleringStatus;
 import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapBeregningSats;
@@ -40,9 +38,11 @@ import no.nav.folketrygdloven.kalkulus.request.v1.HentGrunnbeløpRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.KontrollerGrunnbeløpRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.GrunnbeløpReguleringRespons;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer;
-import no.nav.k9.felles.sikkerhet.abac.AbacDataAttributter;
-import no.nav.k9.felles.sikkerhet.abac.BeskyttetRessurs;
+import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
+import no.nav.vedtak.sikkerhet.abac.AbacDto;
+import no.nav.vedtak.sikkerhet.abac.BeskyttetRessurs;
+import no.nav.vedtak.sikkerhet.abac.beskyttet.ActionType;
+import no.nav.vedtak.sikkerhet.abac.beskyttet.ResourceType;
 
 @Produces(MediaType.APPLICATION_JSON)
 @OpenAPIDefinition(tags = @Tag(name = "grunnbelop"))
@@ -68,7 +68,7 @@ public class GrunnbeløpRestTjeneste {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent grunnbeløp for angitt dato", summary = ("Returnerer grunnbeløp for dato."), tags = "grunnbelop")
-    @BeskyttetRessurs(action = READ, property = BEREGNINGSGRUNNLAG)
+    @BeskyttetRessurs(actionType = ActionType.READ, resourceType = ResourceType.FAGSAK)
     @Path("/grunnbelop")
     public Response hentGrunnbeløp(@NotNull @Valid HentGrunnbeløpRequestAbacDto spesifikasjon) {
         BeregningSats grunnbeløp = beregningsgrunnlagRepository.finnGrunnbeløp(spesifikasjon.getDato());
@@ -80,7 +80,7 @@ public class GrunnbeløpRestTjeneste {
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Verifiserer grunnbeløpet på et grunnlag, og kontrollerer at grunnbeløpet som er brukt fortsatt er korrekt.",
             summary = ("Returnerer en liste over koblinger og status for gregulering for hver kobling."), tags = "grunnbelop")
-    @BeskyttetRessurs(action = READ, property = BEREGNINGSGRUNNLAG)
+    @BeskyttetRessurs(actionType = ActionType.READ, resourceType = ResourceType.FAGSAK)
     @Path("/kontrollerGregulering")
     public Response hentGrunnbeløp(@NotNull @Valid KontrollerGrunnbeløpRequestAbacDto spesifikasjon) {
         List<UUID> referanser = spesifikasjon.getKoblinger();
@@ -100,7 +100,7 @@ public class GrunnbeløpRestTjeneste {
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-    public static class HentGrunnbeløpRequestAbacDto extends HentGrunnbeløpRequest implements no.nav.k9.felles.sikkerhet.abac.AbacDto {
+    public static class HentGrunnbeløpRequestAbacDto extends HentGrunnbeløpRequest implements AbacDto {
 
 
         @JsonCreator
@@ -119,7 +119,7 @@ public class GrunnbeløpRestTjeneste {
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-    public static class KontrollerGrunnbeløpRequestAbacDto extends KontrollerGrunnbeløpRequest implements no.nav.k9.felles.sikkerhet.abac.AbacDto {
+    public static class KontrollerGrunnbeløpRequestAbacDto extends KontrollerGrunnbeløpRequest implements AbacDto {
 
 
         @JsonCreator

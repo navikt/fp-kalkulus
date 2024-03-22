@@ -1,8 +1,9 @@
 package no.nav.folketrygdloven.kalkulus.sikkerhet;
 
+
 import java.util.function.Function;
 
-import no.nav.k9.felles.sikkerhet.abac.AbacDataAttributter;
+import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
 
 /**
  * Erklærer at dto ikke har noen egne custom abac attributter.

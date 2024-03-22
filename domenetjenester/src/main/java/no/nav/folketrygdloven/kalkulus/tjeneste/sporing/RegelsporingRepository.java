@@ -1,25 +1,20 @@
 package no.nav.folketrygdloven.kalkulus.tjeneste.sporing;
 
-import static ch.qos.logback.core.encoder.ByteArrayUtil.toHexString;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet;
@@ -42,7 +37,7 @@ public class RegelsporingRepository {
 
     @Inject
     public RegelsporingRepository(EntityManager entityManager) {
-        Objects.requireNonNull(entityManager, "entityManager"); //$NON-NLS-1$
+        Objects.requireNonNull(entityManager, "entityManager");
         entityManager.setProperty("hibernate.jdbc.batch_size", 50);
         this.entityManager = entityManager;
     }
@@ -176,9 +171,9 @@ public class RegelsporingRepository {
                 "from RegelSporingPeriodeEntitet sporing " +
                         "where sporing.koblingId=:koblingId " +
                         "and sporing.aktiv = :aktiv " +
-                        "and sporing.regelType in :regeltype", RegelSporingPeriodeEntitet.class); //$NON-NLS-1$
-        query.setParameter(KOBLING_ID, koblingId); //$NON-NLS-1$
-        query.setParameter("aktiv", true); //$NON-NLS-1$
+                        "and sporing.regelType in :regeltype", RegelSporingPeriodeEntitet.class);
+        query.setParameter(KOBLING_ID, koblingId);
+        query.setParameter("aktiv", true);
         query.setParameter("regeltype", regelTyper);
         return query.getResultList();
     }
@@ -194,9 +189,9 @@ public class RegelsporingRepository {
                 "from RegelSporingGrunnlagEntitet sporing " +
                         "where sporing.koblingId=:koblingId " +
                         "and sporing.aktiv = :aktiv " +
-                        "and sporing.regelType in :regeltype", RegelSporingGrunnlagEntitet.class); //$NON-NLS-1$
-        query.setParameter(KOBLING_ID, koblingId); //$NON-NLS-1$
-        query.setParameter("aktiv", true); //$NON-NLS-1$
+                        "and sporing.regelType in :regeltype", RegelSporingGrunnlagEntitet.class);
+        query.setParameter(KOBLING_ID, koblingId);
+        query.setParameter("aktiv", true);
         query.setParameter("regeltype", regelTyper);
         return query.getResultList();
     }
