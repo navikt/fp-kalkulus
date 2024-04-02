@@ -113,7 +113,6 @@ public class HentKalkulusRestTjeneste {
 
     private BeregningsgrunnlagDto mapTilDto(BeregningsgrunnlagGUIInput input) {
         MDC.put("prosess_koblingId", input.getKoblingReferanse().getKoblingId().toString());
-        // input.oppdaterArbeidsgiverinformasjon(MapIAYTilKalulator.mapArbeidsgiverReferanser(spesifikasjon.getReferanser())); TODO tfp-5742 trengs denne?
         BeregningsgrunnlagDto beregningsgrunnlagDto = dtoTjeneste.lagBeregningsgrunnlagDto(input);
         MDC.remove("prosess_koblingId");
         return beregningsgrunnlagDto;

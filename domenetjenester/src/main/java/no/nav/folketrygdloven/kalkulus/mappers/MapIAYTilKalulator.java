@@ -66,7 +66,7 @@ public class MapIAYTilKalulator {
         return InternArbeidsforholdRefDto.ref(arbeidsforholdRef.getAbakusReferanse());
     }
 
-    public static Set<ArbeidsforholdReferanseDto> mapArbeidsgiverReferanser(Set<no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsforholdReferanseDto> referanser) {
+    private static Set<ArbeidsforholdReferanseDto> mapArbeidsgiverReferanser(Set<no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsforholdReferanseDto> referanser) {
 
         return referanser.stream().map(ref -> new ArbeidsforholdReferanseDto(MapFraKalkulator.mapArbeidsgiver(ref.getArbeidsgiver()),
                         mapArbeidsforholdRef(ref.getInternReferanse()),
@@ -112,7 +112,10 @@ public class MapIAYTilKalulator {
             ny.medArbeidsforholdRef(mapArbeidsforholdRef(arbeidsforholdOverstyringDto.getArbeidsforholdRefDto()));
             builder.leggTil(ny);
         });
-
+        Set<no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsforholdReferanseDto> referanser = arbeidsforholdInformasjon.getReferanser() == null
+            ? Collections.emptySet()
+            : arbeidsforholdInformasjon.getReferanser();
+        mapArbeidsgiverReferanser(referanser).forEach(builder::leggTilNyReferanse);
         return builder.build();
     }
 
