@@ -10,7 +10,7 @@
         <version>3.1.2</version>
     </parent>
 
-    <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+    <groupId>no.nav.foreldrepenger.kalkulus</groupId>
     <artifactId>fpkalkulus</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -71,23 +71,23 @@
 
             <!-- Interne avhengigheter -->
             <dependency>
-                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+                <groupId>no.nav.foreldrepenger.kalkulus</groupId>
                 <artifactId>migreringer</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+                <groupId>no.nav.foreldrepenger.kalkulus</groupId>
                 <artifactId>kontrakt</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+                <groupId>no.nav.foreldrepenger.kalkulus</groupId>
                 <artifactId>domenetjenester</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+                <groupId>no.nav.foreldrepenger.kalkulus</groupId>
                 <artifactId>migreringer</artifactId>
                 <version>${project.version}</version>
                 <type>test-jar</type>

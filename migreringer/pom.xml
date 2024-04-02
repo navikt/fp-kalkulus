@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+        <groupId>no.nav.foreldrepenger.kalkulus</groupId>
         <artifactId>fpkalkulus</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
