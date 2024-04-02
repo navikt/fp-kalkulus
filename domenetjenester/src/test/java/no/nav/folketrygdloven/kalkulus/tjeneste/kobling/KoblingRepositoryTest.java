@@ -15,7 +15,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingRef
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
-import no.nav.folketrygdloven.kalkulus.tjeneste.extensions.JpaExtension;
+import no.nav.folketrygdloven.kalkulus.dbstoette.JpaExtension;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
 

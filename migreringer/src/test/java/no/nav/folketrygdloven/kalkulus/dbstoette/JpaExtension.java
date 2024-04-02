@@ -1,9 +1,8 @@
-package no.nav.folketrygdloven.kalkulus.tjeneste.extensions;
+package no.nav.folketrygdloven.kalkulus.dbstoette;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import no.nav.folketrygdloven.kalkulus.dbstoette.Databaseskjemainitialisering;
 import no.nav.foreldrepenger.konfig.Environment;
 import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareExtension;
 
@@ -18,7 +17,7 @@ public class JpaExtension extends EntityManagerAwareExtension {
             // prøver alltid migrering hvis endring, ellers funker det dårlig i IDE.
             Databaseskjemainitialisering.migrerUnittestSkjemaer();
         }
-        Databaseskjemainitialisering.settJdniOppslag();
+        Databaseskjemainitialisering.initUnitTestDataSource();
     }
 
 }

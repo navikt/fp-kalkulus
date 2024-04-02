@@ -12,6 +12,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import no.nav.vedtak.sikkerhet.kontekst.BasisKontekst;
+import no.nav.vedtak.sikkerhet.kontekst.KontekstHolder;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +24,7 @@ import no.nav.folketrygdloven.kalkulus.beregning.v1.AndelGraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.GraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.RefusjonskravDatoDto;
+import no.nav.folketrygdloven.kalkulus.dbstoette.JpaExtension;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovKontrollTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforholdEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
@@ -74,7 +78,6 @@ import no.nav.folketrygdloven.kalkulus.request.v1.KopierBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
-import no.nav.folketrygdloven.kalkulus.tjeneste.extensions.JpaExtension;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.LåsRepository;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
@@ -115,7 +118,7 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
 
     @Test
     void skal_kopiere_grunnlag_til_ny_kobling() {
-
+        KontekstHolder.setKontekst(BasisKontekst.forProsesstaskUtenSystembruker());
         var originalKoblingReferanse = UUID.randomUUID();
         var originalKobling = new KoblingEntitet(new KoblingReferanse(originalKoblingReferanse), FagsakYtelseType.PLEIEPENGER_SYKT_BARN, SAK, AKTØR_ID);
         koblingRepository.lagre(originalKobling);
@@ -149,7 +152,7 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         assertThat(nyAvklaringsbehov.getBegrunnelse()).isEqualTo("ok");
         assertThat(nyAvklaringsbehov.getDefinisjon()).isEqualTo(AvklaringsbehovDefinisjon.AVKLAR_AKTIVITETER);
         assertThat(nyAvklaringsbehov.getStatus()).isEqualTo(AvklaringsbehovStatus.UTFØRT);
-        assertThat(nyAvklaringsbehov.getVurdertAv()).isEqualTo("noen");
+        assertThat(nyAvklaringsbehov.getVurdertAv()).isEqualTo("srvvtp");
         assertThat(nyAvklaringsbehov.getVurdertTidspunkt()).isBefore(førKopiering);
     }
 

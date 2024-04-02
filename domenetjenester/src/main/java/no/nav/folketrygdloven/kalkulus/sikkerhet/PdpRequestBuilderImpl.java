@@ -1,9 +1,11 @@
-package no.nav.folketrygdloven.kalkulus.app.sikkerhet;
+package no.nav.folketrygdloven.kalkulus.sikkerhet;
 
 import static no.nav.vedtak.sikkerhet.abac.pdp.ForeldrepengerDataKeys.BEHANDLING_STATUS;
 import static no.nav.vedtak.sikkerhet.abac.pdp.ForeldrepengerDataKeys.FAGSAK_STATUS;
 
 import jakarta.enterprise.context.ApplicationScoped;
+
+import jakarta.inject.Inject;
 
 import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
 import no.nav.vedtak.sikkerhet.abac.PdpRequestBuilder;

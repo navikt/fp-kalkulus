@@ -28,8 +28,10 @@ jobs:
     with:
       postgres-user: fpkalkulus_unit # TODO: endre til fpkalkulus_unit + resten av kodebasen
       build-image: ${{ github.ref_name == 'master' }} # default: true
-      push-image: ${{ github.ref_name == 'master' }} # default: false
+      push-image: false # TODO: push-image: ${{ github.ref_name == 'master' }} # default: false
+      sonar-scan: false # TODO: Fjern denne linjen (default er true) etter public
     secrets: inherit
+
   release-drafter:
     name: Update
     if: github.ref_name == 'master'

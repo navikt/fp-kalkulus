@@ -9,7 +9,6 @@ import javax.sql.DataSource;
 import org.eclipse.jetty.plus.jndi.EnvEntry;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.FlywayException;
-import org.flywaydb.core.api.configuration.ClassicConfiguration;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -20,7 +19,8 @@ import com.zaxxer.hikari.HikariDataSource;
 public final class Databaseskjemainitialisering {
     private static final AtomicBoolean GUARD_UNIT_TEST_SKJEMAER = new AtomicBoolean();
 
-    static final String USER = "fpkalkulus_unit";
+    private static final String USER = "fpkalkulus_unit";
+    private static final String DB_SCRIPT_LOCATION = "/db/migration/";
 
     private static final DataSource DS = settJdniOppslag(USER);
 
@@ -31,13 +31,12 @@ public final class Databaseskjemainitialisering {
     @SuppressWarnings("resource")
     public static void migrerUnittestSkjemaer() {
         if (GUARD_UNIT_TEST_SKJEMAER.compareAndSet(false, true)) {
-            var location = "/db/migration/";
-
-            ClassicConfiguration conf = new ClassicConfiguration();
-            conf.setDataSource(createDs(USER));
-            conf.setLocationsAsStrings(location);
-            conf.setBaselineOnMigrate(true);
-            Flyway flyway = new Flyway(conf);
+            var flyway = Flyway.configure()
+                .dataSource(createDs(USER))
+                .locations(DB_SCRIPT_LOCATION)
+                .baselineOnMigrate(true)
+                .cleanDisabled(false)
+                .load();
             try {
                 flyway.migrate();
             } catch (FlywayException fwe) {
@@ -74,16 +73,11 @@ public final class Databaseskjemainitialisering {
         cfg.setAutoCommit(false);
 
         var ds = new HikariDataSource(cfg);
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                ds.close();
-            }
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(ds::close));
         return ds;
     }
 
-    public static void settJdniOppslag() {
+    public static void initUnitTestDataSource() {
         if (DS != null) {
             return;
         }
