@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.mappers;
 
-import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
+import static no.nav.folketrygdloven.kalkulus.felles.jpa.AbstractIntervall.TIDENES_ENDE;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

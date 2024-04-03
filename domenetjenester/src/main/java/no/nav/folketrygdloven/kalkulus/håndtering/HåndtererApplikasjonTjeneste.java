@@ -8,10 +8,8 @@ import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
 
-import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulus.beregning.MapStegTilTilstand;
-import no.nav.folketrygdloven.kalkulus.felles.feil.TekniskException;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
@@ -19,6 +17,7 @@ import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
+import no.nav.vedtak.exception.TekniskException;
 
 @ApplicationScoped
 public class HåndtererApplikasjonTjeneste {
@@ -67,12 +66,7 @@ public class HåndtererApplikasjonTjeneste {
     }
 
     private void opprettOverstyringAvklaringsbehov(Long koblingId, AvklaringsbehovDefinisjon avklaringsbehovdefinisjon, String begrunnelse) {
-        if (!KonfigurasjonVerdi.instance().get("TREKKE_OVERSTYRING_ENABLED", false)) {
-            avklaringsbehovTjeneste.avbrytAndreAvklaringsbehovISammeSteg(koblingId, avklaringsbehovdefinisjon);
-        } else {
-            avklaringsbehovTjeneste.løsAndreAvklaringsbehovISammeSteg(koblingId, avklaringsbehovdefinisjon, begrunnelse);
-
-        }
+        avklaringsbehovTjeneste.løsAndreAvklaringsbehovISammeSteg(koblingId, avklaringsbehovdefinisjon, begrunnelse);
         avklaringsbehovTjeneste.opprettEllerGjennopprettAvklaringsbehov(koblingId, avklaringsbehovdefinisjon);
     }
 

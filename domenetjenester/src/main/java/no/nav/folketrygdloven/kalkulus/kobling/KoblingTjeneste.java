@@ -10,29 +10,26 @@ import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingLås;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
-import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.LåsRepository;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 @ApplicationScoped
 public class KoblingTjeneste {
 
     private KoblingRepository repository;
-    private LåsRepository låsRepository;
 
-    public KoblingTjeneste() {
+    KoblingTjeneste() {
     }
 
     @Inject
-    public KoblingTjeneste(KoblingRepository repository, LåsRepository låsRepository) {
+    public KoblingTjeneste(KoblingRepository repository) {
         this.repository = repository;
-        this.låsRepository = låsRepository;
     }
 
     public List<KoblingEntitet> finnEllerOpprett(List<KoblingReferanse> referanser, FagsakYtelseType ytelseType, AktørId aktørId, Saksnummer saksnummer) {
@@ -80,10 +77,6 @@ public class KoblingTjeneste {
         return repository.hentForKoblingReferanse(referanse);
     }
 
-    public Optional<Long> hentKoblingHvisFinnes(KoblingReferanse referanse, FagsakYtelseType ytelseType) {
-        return repository.hentFor(referanse, ytelseType);
-    }
-
     public List<KoblingEntitet> hentKoblinger(Collection<KoblingReferanse> koblingReferanser, FagsakYtelseType ytelseType) {
         return repository.hentKoblingerFor(koblingReferanser, ytelseType);
     }
@@ -95,23 +88,5 @@ public class KoblingTjeneste {
     public List<KoblingRelasjon> hentKoblingRelasjoner(Collection<Long> koblingIder) {
         return repository.hentRelasjonerFor(koblingIder);
     }
-
-    public Optional<AktørId> hentAktørIdForSak(Saksnummer saksnummer) {
-        return repository.hentSisteKoblingForSaksnummer(saksnummer).map(KoblingEntitet::getAktørId);
-    }
-
-    public List<KoblingEntitet> hentKoblingerForSak(Saksnummer saksnummer) {
-        return repository.hentAlleKoblingerForSaksnummer(saksnummer);
-    }
-
-    // Burde ta i bruk skrivelås?
-    public KoblingLås taSkrivesLås(KoblingReferanse referanse) {
-        return taSkrivesLås(repository.hentKoblingIdForKoblingReferanse(referanse));
-    }
-
-    public KoblingLås taSkrivesLås(Long koblingId) {
-        return låsRepository.taLås(koblingId);
-    }
-
 
 }

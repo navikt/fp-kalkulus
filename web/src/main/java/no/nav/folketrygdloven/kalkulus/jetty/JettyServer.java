@@ -30,8 +30,8 @@ import org.flywaydb.core.api.FlywayException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import no.nav.folketrygdloven.kalkulus.app.konfig.ApplicationConfig;
-import no.nav.folketrygdloven.kalkulus.app.konfig.InternalApplication;
+import no.nav.folketrygdloven.kalkulus.app.konfig.ApiConfig;
+import no.nav.folketrygdloven.kalkulus.app.konfig.InternalApiConfig;
 import no.nav.foreldrepenger.konfig.Environment;
 
 public class JettyServer {
@@ -165,9 +165,9 @@ public class JettyServer {
     private static ConstraintSecurityHandler simpleConstraints() {
         var handler = new ConstraintSecurityHandler();
         // Slipp gjennom kall fra plattform til JaxRs. Foreløpig kun behov for GET
-        handler.addConstraintMapping(pathConstraint(Constraint.ALLOWED, InternalApplication.API_URI + "/*"));
+        handler.addConstraintMapping(pathConstraint(Constraint.ALLOWED, InternalApiConfig.API_URI + "/*"));
         // Slipp gjennom til autentisering i JaxRs / auth-filter
-        handler.addConstraintMapping(pathConstraint(Constraint.ALLOWED, ApplicationConfig.API_URI + "/*"));
+        handler.addConstraintMapping(pathConstraint(Constraint.ALLOWED, ApiConfig.API_URI + "/*"));
         // Alt annet av paths og metoder forbudt - 403
         handler.addConstraintMapping(pathConstraint(Constraint.FORBIDDEN, "/*"));
         return handler;

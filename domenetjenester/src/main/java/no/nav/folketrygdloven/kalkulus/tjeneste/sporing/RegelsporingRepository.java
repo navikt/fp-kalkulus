@@ -31,7 +31,7 @@ public class RegelsporingRepository {
     private static final String KOBLING_ID = "koblingId";
     private EntityManager entityManager;
 
-    protected RegelsporingRepository() {
+    RegelsporingRepository() {
         // for CDI proxy
     }
 

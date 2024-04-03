@@ -1,15 +1,16 @@
-package no.nav.folketrygdloven.kalkulus.app.konfig;
+package no.nav.folketrygdloven.kalkulus.app.tjenester;
 
-import io.prometheus.client.hotspot.DefaultExports;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
+
+import io.prometheus.client.hotspot.DefaultExports;
 
 /**
  * Starter interne applikasjontjenester
  */
 @WebListener
-public class ApplicationContextListener implements ServletContextListener {
+public class ServiceStarterListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {

@@ -1,34 +1,24 @@
 package no.nav.folketrygdloven.kalkulus.app.metrics;
 
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
+import io.swagger.v3.oas.annotations.Operation;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
-import io.prometheus.client.CollectorRegistry;
-import io.prometheus.client.exporter.common.TextFormat;
-import io.swagger.v3.oas.annotations.Operation;
+import no.nav.vedtak.log.metrics.MetricsUtil;
 
 @Path("/metrics")
+@Produces(MediaType.TEXT_PLAIN)
 @ApplicationScoped
 public class PrometheusRestService {
 
     @GET
     @Operation(tags = "metrics", hidden = true)
     @Path("/prometheus")
-    public Response prometheus() {
-        try (final Writer writer = new StringWriter()) {
-            TextFormat.writeFormat(TextFormat.CONTENT_TYPE_004, writer, CollectorRegistry.defaultRegistry.metricFamilySamples());
-            return Response.ok().encoding("UTF-8").entity(writer.toString()).header("content-type", TextFormat.CONTENT_TYPE_004).build();
-        } catch (IOException e) {
-            //TODO logg?
-        }
-
-        return null;
+    public String prometheus() {
+        return MetricsUtil.scrape();
     }
 }

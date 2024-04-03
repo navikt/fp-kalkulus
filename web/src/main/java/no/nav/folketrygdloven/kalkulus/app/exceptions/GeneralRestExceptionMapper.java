@@ -5,11 +5,12 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
+import no.nav.vedtak.felles.jpa.TomtResultatException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import no.nav.folketrygdloven.kalkulus.felles.verktøy.TomtResultatException;
 import no.nav.vedtak.exception.ManglerTilgangException;
 import no.nav.vedtak.log.mdc.MDCOperations;
 import no.nav.vedtak.log.util.LoggerUtils;

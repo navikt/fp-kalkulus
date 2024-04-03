@@ -5,19 +5,20 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;
 
+import no.nav.vedtak.exception.TekniskException;
+
 import org.glassfish.jersey.server.ServerProperties;
 
 import io.swagger.v3.core.jackson.ModelResolver;
-import io.swagger.v3.core.jackson.TypeNameResolver;
 import io.swagger.v3.jaxrs2.integration.JaxrsOpenApiContextBuilder;
 import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
 import io.swagger.v3.oas.integration.OpenApiConfigurationException;
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
-import io.swagger.v3.oas.integration.api.OpenApiContext;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
@@ -29,43 +30,38 @@ import no.nav.folketrygdloven.kalkulus.app.jackson.JacksonJsonConfig;
 import no.nav.folketrygdloven.kalkulus.rest.GrunnbeløpRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.HentKalkulusRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.OperereKalkulusRestTjeneste;
+import no.nav.foreldrepenger.konfig.Environment;
 
-@ApplicationPath(ApplicationConfig.API_URI)
-public class ApplicationConfig extends Application {
+@ApplicationPath(ApiConfig.API_URI)
+public class ApiConfig extends Application {
 
     public static final String API_URI = "/api";
 
+    private static final Environment ENV = Environment.current();
+
     static {
         // config for OpenAPI
-        TypeNameResolver.std.setUseFqn(true);  // use fully-qualified names as schema names
         ModelResolver.enumsAsRef = true; // use reusable enums (do not inline per api)
     }
 
-    private final OpenApiContext openApiContext;
-    private final OpenAPI openApi;
-
-    public ApplicationConfig() {
+    public ApiConfig() {
         var oas = new OpenAPI();
-        Info info = new Info()
-                .title("Kalkulus")
-                .version("1.0")
-                .description("REST grensesnitt for Kalkulus.");
+        var info = new Info().title("Vedtaksløsningen - Kalkulus").version("1.0").description("REST grensesnitt for fp-kalkulus.");
 
-        oas.info(info)
-                .addServersItem(new Server()
-                        .url("/ftkalkulus"));
-        SwaggerConfiguration oasConfig = new SwaggerConfiguration()
+        oas.info(info).addServersItem(new Server().url(ENV.getProperty("context.path", "/fpkalkulus")));
+
+        var oasConfig = new SwaggerConfiguration()
                 .openAPI(oas)
                 .prettyPrint(true)
-                .scannerClass("io.swagger.v3.jaxrs2.integration.JaxrsAnnotationScanner")
-                .resourcePackages(Set.of("no.nav.folketrygdloven"));
+                .resourceClasses(getClasses().stream().map(Class::getName).collect(Collectors.toSet()));
         try {
-            this.openApiContext = new JaxrsOpenApiContextBuilder<>()
-                    .openApiConfiguration(oasConfig)
-                    .buildContext(true);
-            this.openApi = this.openApiContext.read();
+            new JaxrsOpenApiContextBuilder<>()
+                .application(this)
+                .openApiConfiguration(oasConfig)
+                .buildContext(true)
+                .read();
         } catch (OpenApiConfigurationException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new TekniskException("OPEN-API", e.getMessage(), e);
         }
     }
 

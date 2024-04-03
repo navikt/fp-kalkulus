@@ -13,7 +13,7 @@ public class RegelSporingTjeneste {
 
     private RegelsporingRepository regelsporingRepository;
 
-    public RegelSporingTjeneste() {
+    RegelSporingTjeneste() {
     }
 
     @Inject

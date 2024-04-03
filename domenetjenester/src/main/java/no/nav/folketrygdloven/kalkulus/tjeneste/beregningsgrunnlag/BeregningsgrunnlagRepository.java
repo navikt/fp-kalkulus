@@ -1,7 +1,8 @@
 package no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag;
 
-import static no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy.hentEksaktResultat;
-import static no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy.hentUniktResultat;
+
+import static no.nav.vedtak.felles.jpa.HibernateVerktøy.hentEksaktResultat;
+import static no.nav.vedtak.felles.jpa.HibernateVerktøy.hentUniktResultat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,7 +37,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Fakta
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatusEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.GrunnlagReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSatsType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 
@@ -227,7 +227,7 @@ public class BeregningsgrunnlagRepository {
         query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, beregningsgrunnlagTilstand); // $NON-NLS-1$
         query.setParameter("opprettetTidspunktMin", opprettetTidspunktMin); // $NON-NLS-1$
         query.setMaxResults(1);
-        return HibernateVerktøy.hentUniktResultat(query);
+        return hentUniktResultat(query);
     }
 
     /**
@@ -296,7 +296,7 @@ public class BeregningsgrunnlagRepository {
         query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, beregningsgrunnlagTilstand); // $NON-NLS-1$
         query.setParameter("opprettetTidspunktMax", opprettetTidspunktMax); // $NON-NLS-1$
         query.setMaxResults(1);
-        return HibernateVerktøy.hentUniktResultat(query);
+        return hentUniktResultat(query);
     }
 
 

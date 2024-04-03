@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov;
 
-import static no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy.hentUniktResultat;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -19,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
+
+import static no.nav.vedtak.felles.jpa.HibernateVerktøy.hentUniktResultat;
 
 @ApplicationScoped
 public class AvklaringsbehovRepository {

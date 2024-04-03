@@ -5,8 +5,6 @@ import java.time.LocalDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
-import no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall;
-
 @Embeddable
 public class IntervallEntitet extends AbstractIntervall {
 

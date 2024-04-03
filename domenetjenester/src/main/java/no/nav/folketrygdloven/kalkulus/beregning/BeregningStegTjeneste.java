@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
+
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
@@ -44,10 +44,11 @@ import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.VidereførOverst
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelSporingTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
+import no.nav.foreldrepenger.konfig.Environment;
 
 @ApplicationScoped
 public class BeregningStegTjeneste {
-    private static final boolean GRADERING_MOT_INNTEKT_ENABLED = KonfigurasjonVerdi.instance().get("GRADERING_MOT_INNTEKT", false);
+    private static final boolean GRADERING_MOT_INNTEKT_ENABLED = Environment.current().getProperty("gradering.mot.inntekt", boolean.class, false);
     private final KalkulatorInterface beregningsgrunnlagTjeneste = new BeregningsgrunnlagTjeneste();
     private BeregningsgrunnlagRepository repository;
     private RegelsporingRepository regelsporingRepository;

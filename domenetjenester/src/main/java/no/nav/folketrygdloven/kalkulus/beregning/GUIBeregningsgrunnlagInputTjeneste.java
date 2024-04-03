@@ -4,7 +4,6 @@ import static no.nav.folketrygdloven.kalkulus.mapFraEntitet.BehandlingslagerTilK
 import static no.nav.folketrygdloven.kalkulus.mapFraEntitet.BehandlingslagerTilKalkulusMapper.mapGrunnlag;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import jakarta.enterprise.context.Dependent;
@@ -15,28 +14,21 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
-import no.nav.folketrygdloven.kalkulus.felles.feil.TekniskException;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.mapFraEntitet.BehandlingslagerTilKalkulusMapper;
 import no.nav.folketrygdloven.kalkulus.mappers.MapTilGUIInputFraKalkulator;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
-import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 
 @Dependent
 public class GUIBeregningsgrunnlagInputTjeneste {
 
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
-    private KoblingRepository koblingRepository;
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
 
     @Inject
-    public GUIBeregningsgrunnlagInputTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository,
-                                              KoblingRepository koblingRepository,
-                                              AvklaringsbehovTjeneste avklaringsbehovTjeneste) {
+    public GUIBeregningsgrunnlagInputTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository, AvklaringsbehovTjeneste avklaringsbehovTjeneste) {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
-        this.koblingRepository = koblingRepository;
         this.avklaringsbehovTjeneste = avklaringsbehovTjeneste;
     }
 

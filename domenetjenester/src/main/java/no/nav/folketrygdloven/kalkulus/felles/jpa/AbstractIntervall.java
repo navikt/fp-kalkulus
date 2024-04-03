@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulus.felles.tid;
+package no.nav.folketrygdloven.kalkulus.felles.jpa;
 
 import java.io.Serializable;
 import java.time.LocalDate;

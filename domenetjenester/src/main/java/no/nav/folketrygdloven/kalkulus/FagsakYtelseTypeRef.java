@@ -27,7 +27,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
  * NB: Settes kun dersom det er flere implementasjoner med samme {@link BehandlingStegRef}.
  */
 @Repeatable(FagsakYtelseTypeRef.ContainerOfFagsakYtelseTypeRef.class)
-@Qualifier
 @Stereotype
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)

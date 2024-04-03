@@ -24,11 +24,10 @@ import no.nav.folketrygdloven.kalkulus.felles.diff.DiffEntity;
 import no.nav.folketrygdloven.kalkulus.felles.diff.DiffResult;
 import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseGraph;
 import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseJpaEntityGraphConfig;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
-import no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
+import no.nav.vedtak.felles.jpa.HibernateVerktøy;
 
 @ApplicationScoped
 public class KoblingRepository {
@@ -57,25 +56,11 @@ public class KoblingRepository {
         return HibernateVerktøy.hentUniktResultat(query);
     }
 
-    public Long hentKoblingIdForKoblingReferanse(KoblingReferanse referanse) {
-        TypedQuery<Long> query = entityManager.createQuery("SELECT k.id FROM Kobling k WHERE k.koblingReferanse = :referanse", Long.class);
-        query.setParameter("referanse", referanse);
-        return HibernateVerktøy.hentUniktResultat(query).orElse(null);
-    }
-
     public List<KoblingEntitet> hentKoblingIdForKoblingReferanser(Collection<KoblingReferanse> referanser) {
         TypedQuery<KoblingEntitet> query = entityManager.createQuery(
                 "SELECT k FROM Kobling k WHERE k.koblingReferanse IN(:referanser)", KoblingEntitet.class);
         query.setParameter("referanser", referanser);
         return query.getResultList();
-    }
-
-    public Optional<Long> hentFor(KoblingReferanse referanse, FagsakYtelseType ytelseType) {
-        TypedQuery<Long> query = entityManager
-                .createQuery("SELECT k.id FROM Kobling k WHERE k.koblingReferanse = :referanse AND k.ytelseType = :ytelse", Long.class);
-        query.setParameter("referanse", referanse);
-        query.setParameter("ytelse", ytelseType);
-        return HibernateVerktøy.hentUniktResultat(query);
     }
 
     public List<KoblingEntitet> hentKoblingerFor(Collection<KoblingReferanse> referanser, FagsakYtelseType ytelseType) {
@@ -90,45 +75,6 @@ public class KoblingRepository {
         TypedQuery<KoblingEntitet> query = entityManager.createQuery(
                 "SELECT k FROM Kobling k WHERE k.saksnummer = :saksnummer order by k.opprettetTidspunkt desc", KoblingEntitet.class);
         query.setParameter("saksnummer", saksnummer);
-        return query.getResultList();
-    }
-
-    public List<KoblingEntitet> hentKoblingerOpprettetIPeriode(Periode periode, FagsakYtelseType ytelseType) {
-        TypedQuery<KoblingEntitet> query = entityManager.createQuery(
-                "SELECT k FROM Kobling k WHERE k.opprettetTidspunkt >= :fom " +
-                        "and k.opprettetTidspunkt < :tom " +
-                        "and k.ytelseType = :ytelsetype order by k.opprettetTidspunkt desc", KoblingEntitet.class);
-        query.setParameter("fom", periode.getFom().atStartOfDay());
-        query.setParameter("tom", periode.getTom().plusDays(1).atStartOfDay());
-        query.setParameter("ytelsetype", ytelseType);
-        return query.getResultList();
-    }
-
-    public Optional<KoblingEntitet> hentSisteKoblingForSaksnummer(Saksnummer saksnummer) {
-        TypedQuery<KoblingEntitet> query = entityManager.createQuery(
-                "SELECT k FROM Kobling k WHERE k.saksnummer = :saksnummer order by k.opprettetTidspunkt desc", KoblingEntitet.class);
-        query.setParameter("saksnummer", saksnummer);
-        query.setMaxResults(1);
-        return HibernateVerktøy.hentUniktResultat(query);
-    }
-
-    public void fjernUgyldigKoblingrelasjonForId(Long koblingId) {
-        var query = entityManager.createNativeQuery(
-                "DELETE FROM KOBLING_RELASJON k " +
-                        "WHERE k.kobling_id = :koblingId " +
-                        "AND k.original_kobling_id = :koblingId"
-        );
-        query.setParameter("koblingId", koblingId);
-        var slettedeRader = query.executeUpdate();
-        if (slettedeRader > 1) {
-            throw new IllegalStateException("Skal kun slette en ugyldig koblingrelasjon");
-        }
-    }
-
-    public List<KoblingRelasjon> hentRelasjonerForId(Long koblingId) {
-        TypedQuery<KoblingRelasjon> query = entityManager.createQuery(
-                "SELECT k FROM KoblingRelasjon k WHERE k.koblingId = :koblingId", KoblingRelasjon.class);
-        query.setParameter("koblingId", koblingId);
         return query.getResultList();
     }
 

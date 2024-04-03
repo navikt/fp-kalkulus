@@ -19,8 +19,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -55,13 +53,11 @@ import no.nav.folketrygdloven.kalkulus.request.v1.KopierBeregningListeRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.KopierBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.KalkulusRespons;
 import no.nav.folketrygdloven.kalkulus.response.v1.KopiResponse;
-import no.nav.folketrygdloven.kalkulus.response.v1.TilstandListeResponse;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringListeRespons;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringPrRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
-import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
 import no.nav.vedtak.sikkerhet.abac.AbacDto;
 import no.nav.vedtak.sikkerhet.abac.BeskyttetRessurs;
@@ -76,8 +72,6 @@ import no.nav.vedtak.sikkerhet.abac.beskyttet.ResourceType;
 @ApplicationScoped
 @Transactional
 public class OperereKalkulusRestTjeneste {
-
-    private static final Logger LOG = LoggerFactory.getLogger(OperereKalkulusRestTjeneste.class);
 
     private KoblingTjeneste koblingTjeneste;
     private RullTilbakeTjeneste rullTilbakeTjeneste;
@@ -199,13 +193,6 @@ public class OperereKalkulusRestTjeneste {
         }
 
         return Response.ok().build();
-    }
-
-    private FagsakYtelseType mapTilYtelseKodeverk(FpkalkulusYtelser ytelse) {
-        return switch (ytelse) {
-            case FORELDREPENGER -> FagsakYtelseType.FORELDREPENGER;
-            case SVANGERSKAPSPENGER -> FagsakYtelseType.SVANGERSKAPSPENGER;
-        };
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
