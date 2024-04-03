@@ -26,9 +26,9 @@ jobs:
       pull-requests: read
     uses: navikt/fp-gha-workflows/.github/workflows/build-app-postgres.yml@main
     with:
-      postgres-user: fpkalkulus_unit # TODO: endre til fpkalkulus_unit + resten av kodebasen
+      postgres-user: fpkalkulus_unit
       build-image: ${{ github.ref_name == 'master' }} # default: true
-      push-image: false # TODO: push-image: ${{ github.ref_name == 'master' }} # default: false
+      push-image: ${{ github.ref_name == 'master' }} # default: false
       sonar-scan: false # TODO: Fjern denne linjen (default er true) etter public
     secrets: inherit
 
