@@ -61,8 +61,7 @@ jobs:
     needs: [build-app, kalkulus-tester]
     uses: navikt/fp-autotest/.github/workflows/report-and-notify.yml@TFP-5748/fpkalkulus-verdikjede
     with:
-      fpsak: ${{ needs.fpsak-tester.outputs.resultat }}
-      verdikjede: ${{ needs.verdikjede-tester.outputs.resultat }}
+      fpkalkulus: ${{ needs.kalkulus-tester.outputs.resultat }}
       build-version: ${{ needs.build-app.outputs.build-version }}
     secrets: inherit
 
