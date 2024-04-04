@@ -52,7 +52,7 @@ jobs:
     uses: navikt/fp-autotest/.github/workflows/autotest.yml@TFP-5748/fpkalkulus-verdikjede
     with:
       build-version: ${{ needs.build-app.outputs.build-version }}
-      test-suite: kalkulus
+      test-suite: fpkalkulus
     secrets: inherit
 
   notify:
