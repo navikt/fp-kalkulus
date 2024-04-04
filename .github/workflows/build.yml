@@ -49,7 +49,7 @@ jobs:
       id-token: write
     if: github.ref_name == 'master'
     needs: build-app
-    uses: navikt/fp-autotest/.github/workflows/autotest.yml@TFP-5748/fpkalkulus-verdikjede
+    uses: navikt/fp-autotest/.github/workflows/autotest.yml@master
     with:
       build-version: ${{ needs.build-app.outputs.build-version }}
       test-suite: fpkalkulus
@@ -59,7 +59,7 @@ jobs:
     name: Notify
     if: github.ref_name == 'master' && (success() || failure()) && !contains(needs.*.result, 'skipped')
     needs: [build-app, kalkulus-tester]
-    uses: navikt/fp-autotest/.github/workflows/report-and-notify.yml@TFP-5748/fpkalkulus-verdikjede
+    uses: navikt/fp-autotest/.github/workflows/report-and-notify.yml@master
     with:
       fpkalkulus: ${{ needs.kalkulus-tester.outputs.resultat }}
       build-version: ${{ needs.build-app.outputs.build-version }}
