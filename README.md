@@ -17,61 +17,39 @@ Dette er repository for kildkode som dekker applikasjonen som beregner potensiel
 Dette er en kalkulator for å beregne et *beregningsgrunnlag* for følgende ytelser
  * foreldrepenger [ftrl 14-7](https://lovdata.no/nav/folketrygdloven/kap14/%C2%A714-7)
  * svangerskapspenger [ftrl 14-4](https://lovdata.no/nav/folketrygdloven/kap14/%C2%A714-4)
- * pleiepenger for sykt barn [ftrl 9-10](https://lovdata.no/nav/folketrygdloven/kap9/%C2%A79-10)
- * pleiepenger for pleie av nærstående [ftrl 9-13](https://lovdata.no/nav/folketrygdloven/kap9/%C2%A79-13)
- * omsorgspenger [ftrl 9-5](https://lovdata.no/nav/folketrygdloven/kap9/%C2%A79-5)
- * opplæringspenger [ftrl 9-14](https://lovdata.no/nav/folketrygdloven/kap9/%C2%A79-14)
 
-Reglene baserer seg i hovedsak på beregningsregler fra Sykepenger [ftrl 8](https://lovdata.no/nav/folketrygdloven/kap8/%C2%A78), med noen få særbestemmelser videre angitt under kapitler [ftrl 14](https://lovdata.no/nav/folketrygdloven/kap14) og [ftrl 9](https://lovdata.no/nav/folketrygdloven/kap9)
+Reglene baserer seg i hovedsak på beregningsregler fra Sykepenger [ftrl 8](https://lovdata.no/nav/folketrygdloven/kap8/%C2%A78), med noen få særbestemmelser videre angitt under kapitler [ftrl 14](https://lovdata.no/nav/folketrygdloven/kap14)
 
 Beregningsgrunnlaget er utgangspunktet for en maksimal dagsats som kan utbetales bruker i en angitt periode.
 Beregningsgrunnlaget består av andeler per aktivitet (arbeidstype, selvstendig næringsdrivende, frilanser) og arbeidsgiver (både privatperson og virksomheter).
 
 ## Lokal utvikling
-* Team Foreldrepenger
-* Team K9Saksbehandling
-
+Bruk Docker Compose oppsett i https://github.com/navikt/fp-autotest til å sette opp audit, vtp og postgres.
 
 ### Spørsmål
 * Slack for oppsett og utvikling på laptop: \#fp-kalkulus
-* Hjelpeside med oppskrifter for utvikling på laptop på [Confluence - NAV intern](https://confluence.adeo.no/pages/viewpage.action?pageId=329047065)
+* Hjelpeside med oppskrifter for utvikling på laptop på [Lokal utvikling autotest](https://github.com/navikt/fp-autotest/blob/master/docs/utvikleroppsett/README.md)
 
-
-### Utviklingshåndbok
-[Utviklingoppsett](https://confluence.adeo.no/display/LVF/60+Utviklingsoppsett)
-[Utviklerhåndbok, Kodestandard, osv](https://confluence.adeo.no/pages/viewpage.action?pageId=190254327)
 
 ## How To
-* Starte opp lokal database
-```
-docker-compose up -d
-```
-* Stanse lokal database
-```
-docker-compose down
-```
+* Starte opp postgres database fra [Fp-autotest](https://github.com/navikt/fp-autotest) og eventuelt vtp/audit
 * Bygge lokalt
 
 ```
-./mvnw clean install
+mvn clean install
 ```
 
-## Github Codespaces
-
-* Generer en PAT med tilgang til å lese repo. Sett opp for SSO med Navikt.
-* Legg denne inn som en [Github Codespace secret](https://docs.github.com/en/codespaces/managing-your-codespaces/managing-encrypted-secrets-for-your-codespaces) under <din konto>/settings. Gi den navn "GH_ACCESS_TOKEN". Dette er påkrevd for å hente pakker fra andre private repoer i Nav.
-
 ## Teknologistakk
-* Java 21 (kontrakter publiseres med Java17 bytecode i en kort overgangsfase)
-* Postgres 12
+* Java 21
+* Postgres 15
 * Hibernate
 * Weld SE
 * Jetty
-* Junit 5
-* Maven 3.6.3
+* Junit
+* Maven
 
 ## Folketrygdloven
-Beregningen av foreldrepenger, svangerskapspenger, omsorgspenger og pleiepenger er definert i folketrygdloven. Som hovedregel bruker disse ytelsene samme beregningsregler som sykepenger.
+Beregningen av foreldrepenger og svangerskapspenger er definert i folketrygdloven. Som hovedregel bruker disse ytelsene samme beregningsregler som sykepenger.
 Kode for implementasjon av beregningsreglene fordeler seg mellom dette repoet (fp-kalkulus) og [folketrygdloven-beregningsgrunnlag-regelmodell](https://github.com/navikt/folketrygdloven-beregningsgrunnlag-regelmodell/)
 En oversikt over de mest relevante reglene for beregning finnes i tabellen under, men for fullstendig oversikt bør man se [kapittel 8 av folketrygdloven](https://lovdata.no/dokument/NL/lov/1997-02-28-19/kap8#kap8)
 
@@ -85,7 +63,6 @@ En oversikt over de mest relevante reglene for beregning finnes i tabellen under
 | [§8-41 og §8-42](https://lovdata.no/lov/1997-02-28-19/§8-41)                                  | Beregning av kombinasjonen frilans og selvstendig næringsdrivende                     | Beregnes hver for seg, frilans beregnes som arbeidstaker, men avviksvurdering følger næringsreglene                                                                  | [RegelFastsetteBeregningsgrunnlagForKombinasjonATFLSN](https://github.com/navikt/folketrygdloven-beregningsgrunnlag-regelmodell/blob/master/src/main/java/no/nav/folketrygdloven/beregningsgrunnlag/kombinasjon/RegelFastsetteBeregningsgrunnlagForKombinasjonATFLSN.java)                                                                                                                                                                 |
 | [§8-43](https://lovdata.no/lov/1997-02-28-19/§8-43)                                           | Beregning av kombinasjonen arbeidstaker, frilans og selvstendig næringsdrivende       | Beregnes hver for seg, arbeid og frilans beregnes som arbeidstaker, men avviksvurdering følger næringsreglene                                                        | [RegelFastsetteBeregningsgrunnlagForKombinasjonATFLSN](https://github.com/navikt/folketrygdloven-beregningsgrunnlag-regelmodell/blob/master/src/main/java/no/nav/folketrygdloven/beregningsgrunnlag/kombinasjon/RegelFastsetteBeregningsgrunnlagForKombinasjonATFLSN.java)                                                                                                                                                                 |
 | [§8-47](https://lovdata.no/lov/1997-02-28-19/§8-47)                                           | Midlertidig utenfor arbeid                                                            | Deles i to bokstaver, A og B. A beregnes etter skattegrunnlag siste 3 år. B beregnes etter normales beregningsregler, men refusjon til arbeidsgivere innvilges ikke. | [RegelBeregningsgrunnlagInaktiv](https://github.com/navikt/folketrygdloven-beregningsgrunnlag-regelmodell/blob/master/src/main/java/no/nav/folketrygdloven/beregningsgrunnlag/inaktiv/RegelBeregningsgrunnlagInaktiv.java)                                                                                                                                                                                                                 |
-| [§9-8 2. ledd](https://lovdata.no/lov/1997-02-28-19/§9-8)                                     | Beregning av omsorgspenger                                                            | Beskriver beregning omsorgspenger, inkludert spesialregel om at perioder med full refusjon ikke avviksvurderes                                                       | [ForeslåBeregningsgrunnlag(beregne)](https://github.com/navikt/fp-kalkulus/blob/master/kalkulator/src/main/java/no/nav/folketrygdloven/kalkulator/steg/foresl%C3%A5/Foresl%C3%A5Beregningsgrunnlag.java) [VurderBeregningsgrunnlagTjeneste(vurdere vilkår)](https://github.com/navikt/fp-kalkulus/blob/master/kalkulator/src/main/java/no/nav/folketrygdloven/kalkulator/steg/fordeling/vilk%C3%A5r/VurderBeregningsgrunnlagTjeneste.java) |
 | [§14-4 5.ledd](https://lovdata.no/lov/1997-02-28-19/§14-4)                                    | Generell beregning av svangerskapspenger                                              | Beskriver beregning av svangerskapspenger og krav for oppfylling av beregningsgrunnlagsvilkåret                                                                      | [ForeslåBeregningsgrunnlag(beregne)](https://github.com/navikt/fp-kalkulus/blob/master/kalkulator/src/main/java/no/nav/folketrygdloven/kalkulator/steg/foresl%C3%A5/Foresl%C3%A5Beregningsgrunnlag.java) [VurderBeregningsgrunnlagTjeneste(vurdere vilkår)](https://github.com/navikt/fp-kalkulus/blob/master/kalkulator/src/main/java/no/nav/folketrygdloven/kalkulator/steg/fordeling/vilk%C3%A5r/VurderBeregningsgrunnlagTjeneste.java) |
 | [§14-7 1.ledd](https://lovdata.no/lov/1997-02-28-19/§14-7)                                    | Generell beregning av foreldrepenger                                                  | Beskriver beregning av foreldrepenger og krav for oppfylling av beregningsgrunnlagsvilkåret                                                                          | [ForeslåBeregningsgrunnlag(beregne)](https://github.com/navikt/fp-kalkulus/blob/master/kalkulator/src/main/java/no/nav/folketrygdloven/kalkulator/steg/foresl%C3%A5/Foresl%C3%A5Beregningsgrunnlag.java) [VurderBeregningsgrunnlagTjeneste(vurdere vilkår)](https://github.com/navikt/fp-kalkulus/blob/master/kalkulator/src/main/java/no/nav/folketrygdloven/kalkulator/steg/fordeling/vilk%C3%A5r/VurderBeregningsgrunnlagTjeneste.java) |
 | [§14-7 3.ledd](https://lovdata.no/lov/1997-02-28-19/§14-7)                                    | Besteberegning av foreldrepenger                                                      | Beskriver besteberegning av foreldrepenger for fødende kvinner på dagpenger                                                                                          | [ForeslåBesteberegning](https://github.com/navikt/fp-kalkulus/blob/master/kalkulator/src/main/java/no/nav/folketrygdloven/kalkulator/steg/besteberegning/Foresl%C3%A5Besteberegning.java) |

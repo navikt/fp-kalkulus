@@ -1,4 +1,5 @@
 # API
+TODO: Oppdater etter ny kontrakt er oppdatert
 
 ### Request
 POST /start
