@@ -35,7 +35,7 @@ public class FaktaArbeidsforholdEntitet extends BaseEntitet implements IndexKey 
 
     @Version
     @Column(name = "versjon", nullable = false)
-    private long versjon;
+    private int versjon;
 
     @JsonBackReference
     @ManyToOne(optional = false, fetch = FetchType.EAGER)

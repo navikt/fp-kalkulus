@@ -36,7 +36,7 @@ public class SammenligningsgrunnlagPrStatusEntitet extends BaseEntitet {
 
     @Version
     @Column(name = "versjon", nullable = false)
-    private long versjon;
+    private int versjon;
 
     @Embedded
     @AttributeOverrides({

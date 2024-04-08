@@ -31,7 +31,7 @@ public class BeregningAktivitetAggregatEntitet extends BaseEntitet {
 
     @Version
     @Column(name = "versjon", nullable = false)
-    private long versjon;
+    private int versjon;
 
     @OneToMany
     @JoinColumn(name = "bg_aktiviteter_id", nullable = false, updatable = false)

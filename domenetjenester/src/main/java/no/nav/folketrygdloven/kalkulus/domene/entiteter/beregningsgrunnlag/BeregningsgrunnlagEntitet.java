@@ -38,7 +38,7 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
 
     @Version
     @Column(name = "versjon", nullable = false)
-    private long versjon;
+    private int versjon;
 
     @Column(name = "skjaringstidspunkt", nullable = false)
     private LocalDate skjæringstidspunkt;

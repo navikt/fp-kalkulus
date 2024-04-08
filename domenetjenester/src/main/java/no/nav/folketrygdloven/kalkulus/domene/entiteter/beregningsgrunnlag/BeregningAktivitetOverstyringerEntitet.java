@@ -28,7 +28,7 @@ public class BeregningAktivitetOverstyringerEntitet extends BaseEntitet {
 
     @Version
     @Column(name = "versjon", nullable = false)
-    private long versjon;
+    private int versjon;
 
     @OneToMany(mappedBy = "overstyringerEntitet")
     @BatchSize(size=20)

@@ -34,7 +34,7 @@ public class BeregningRefusjonOverstyringEntitet extends BaseEntitet {
 
     @Version
     @Column(name = "versjon", nullable = false)
-    private long versjon;
+    private int versjon;
 
     @Embedded
     private Arbeidsgiver arbeidsgiver;

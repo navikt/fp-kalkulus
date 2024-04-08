@@ -59,7 +59,7 @@ public class AvklaringsbehovEntitet extends BaseEntitet implements Comparable<Av
 
     @Version
     @Column(name = "versjon", nullable = false)
-    private long versjon;
+    private int versjon;
 
     private AvklaringsbehovEntitet(AvklaringsbehovDefinisjon avklaringsbehovDefinisjon) {
         Objects.requireNonNull(avklaringsbehovDefinisjon, "avklaringsbehovDefinisjon");

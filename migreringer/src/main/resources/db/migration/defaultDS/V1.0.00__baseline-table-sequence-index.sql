@@ -104,13 +104,13 @@ create table beregningsgrunnlag
         constraint pk_beregningsgrunnlag
             primary key,
     skjaringstidspunkt timestamp(0)                                 not null,
-    versjon            bigint       default 0                       not null,
+    grunnbeloep        numeric(12, 2),
+    overstyrt          boolean      default false                   not null,
     opprettet_av       varchar(20)  default 'VL'::character varying not null,
     opprettet_tid      timestamp(3) default CURRENT_TIMESTAMP       not null,
+    versjon            int          default 0                       not null,
     endret_av          varchar(20),
-    endret_tid         timestamp(3),
-    grunnbeloep        numeric(12, 2),
-    overstyrt          boolean      default false                   not null
+    endret_tid         timestamp(3)
 );
 
 comment on table beregningsgrunnlag is 'Aggregat for beregningsgrunnlag';
@@ -139,16 +139,16 @@ create table beregningsgrunnlag_periode
     brutto_pr_aar                                               numeric(19, 2),
     avkortet_pr_aar                                             numeric(19, 2),
     redusert_pr_aar                                             numeric(19, 2),
-    versjon                                                     bigint       default 0                       not null,
-    opprettet_av                                                varchar(20)  default 'VL'::character varying not null,
-    opprettet_tid                                               timestamp(3) default CURRENT_TIMESTAMP       not null,
-    endret_av                                                   varchar(20),
-    endret_tid                                                  timestamp(3),
     dagsats                                                     bigint,
     inntekt_graderingsprosent_brutto                            numeric(19, 2),
     total_utbetalingsgrad_fra_uttak                             numeric(19, 4),
     total_utbetalingsgrad_etter_reduksjon_ved_tilkommet_inntekt numeric(19, 4),
-    reduksjonsfaktor_inaktiv_type_a                             numeric(19, 4)
+    reduksjonsfaktor_inaktiv_type_a                             numeric(19, 4),
+    opprettet_av                                                varchar(20)  default 'VL'::character varying not null,
+    opprettet_tid                                               timestamp(3) default CURRENT_TIMESTAMP       not null,
+    versjon                                                     int          default 0                       not null,
+    endret_av                                                   varchar(20),
+    endret_tid                                                  timestamp(3)
 );
 
 comment on table beregningsgrunnlag_periode is 'Beregningsgrunnlagsperiode';
@@ -191,9 +191,9 @@ create table bg_aktivitet_overstyringer
     id            bigint                                       not null
         constraint pk_bg_aktivitet_overstyringer
             primary key,
-    versjon       bigint       default 0                       not null,
     opprettet_av  varchar(20)  default 'VL'::character varying not null,
     opprettet_tid timestamp(3) default CURRENT_TIMESTAMP       not null,
+    versjon       int          default 0                       not null,
     endret_av     varchar(20),
     endret_tid    timestamp(3)
 );
@@ -214,12 +214,12 @@ create table bg_aktivitet_overstyring
     tom                       timestamp(0)                                 not null,
     arbeidsgiver_orgnr        varchar(100),
     arbeidsgiver_aktor_id     varchar(100),
-    versjon                   bigint       default 0                       not null,
+    arbeidsforhold_intern_id  uuid,
     opprettet_av              varchar(20)  default 'VL'::character varying not null,
     opprettet_tid             timestamp(3) default CURRENT_TIMESTAMP       not null,
+    versjon                   int          default 0                       not null,
     endret_av                 varchar(20),
-    endret_tid                timestamp(3),
-    arbeidsforhold_intern_id  uuid
+    endret_tid                timestamp(3)
 );
 
 comment on table bg_aktivitet_overstyring is 'Overstyringer av aktiviteter som er relevant for beregning';
@@ -251,12 +251,12 @@ create table bg_aktivitet_status
         constraint fk_bg_aktivitet_status_1
             references beregningsgrunnlag,
     aktivitet_status      varchar(100)                                 not null,
-    versjon               bigint       default 0                       not null,
+    hjemmel               varchar(100) default '-'::character varying  not null,
     opprettet_av          varchar(20)  default 'VL'::character varying not null,
     opprettet_tid         timestamp(3) default CURRENT_TIMESTAMP       not null,
+    versjon               int          default 0                       not null,
     endret_av             varchar(20),
-    endret_tid            timestamp(3),
-    hjemmel               varchar(100) default '-'::character varying  not null
+    endret_tid            timestamp(3)
 );
 
 comment on table bg_aktivitet_status is 'Aktivitetsstatus i beregningsgrunnlag';
@@ -281,12 +281,12 @@ create table bg_aktiviteter
     id                            bigint                                       not null
         constraint pk_bg_aktiviteter
             primary key,
-    versjon                       bigint       default 0 not null,
+    skjaringstidspunkt_opptjening timestamp(0)                                 not null,
     opprettet_av                  varchar(20)  default 'VL'::character varying not null,
     opprettet_tid                 timestamp(3) default CURRENT_TIMESTAMP       not null,
+    versjon                       int          default 0                       not null,
     endret_av                     varchar(20),
-    endret_tid                    timestamp(3),
-    skjaringstidspunkt_opptjening timestamp(0)                                 not null
+    endret_tid                    timestamp(3)
 );
 
 comment on table bg_aktiviteter is 'Tabell som knytter BG_AKTIVITET til GR_BEREGNINGSGRUNNLAG';
@@ -305,13 +305,13 @@ create table bg_aktivitet
             references bg_aktiviteter,
     opptjening_aktivitet_type varchar(100)                                 not null,
     arbeidsgiver_aktor_id     varchar(100),
-    versjon                   bigint       default 0                       not null,
+    arbeidsgiver_orgnr        varchar(100),
+    arbeidsforhold_intern_id  uuid,
     opprettet_av              varchar(20)  default 'VL'::character varying not null,
     opprettet_tid             timestamp(3) default CURRENT_TIMESTAMP       not null,
+    versjon                   int          default 0                       not null,
     endret_av                 varchar(20),
-    endret_tid                timestamp(3),
-    arbeidsgiver_orgnr        varchar(100),
-    arbeidsforhold_intern_id  uuid
+    endret_tid                timestamp(3)
 );
 
 comment on table bg_aktivitet is 'Aktivitet som er relevant for beregning';
@@ -346,7 +346,7 @@ create table bg_fakta_ber_tilfelle
     beregningsgrunnlag_id    bigint                                       not null
         constraint fk_bg_fakta_ber_tilfelle_1
             references beregningsgrunnlag,
-    versjon                  bigint       default 0                       not null,
+    versjon                  int          default 0                       not null,
     opprettet_av             varchar(20)  default 'VL'::character varying not null,
     opprettet_tid            timestamp(3) default CURRENT_TIMESTAMP       not null,
     endret_av                varchar(20),
@@ -371,7 +371,7 @@ create table bg_periode_aarsak
     bg_periode_id  bigint                                       not null
         constraint fk_bg_periode_aarsak_1
             references beregningsgrunnlag_periode,
-    versjon        bigint       default 0                       not null,
+    versjon        int          default 0                       not null,
     opprettet_av   varchar(20)  default 'VL'::character varying not null,
     opprettet_tid  timestamp(3) default CURRENT_TIMESTAMP       not null,
     endret_av      varchar(20),
@@ -403,11 +403,6 @@ create table bg_pr_status_og_andel
     avkortet_pr_aar                    numeric(19, 2),
     redusert_pr_aar                    numeric(19, 2),
     beregnet_pr_aar                    numeric(19, 2),
-    versjon                            bigint       default 0                                  not null,
-    opprettet_av                       varchar(20)  default 'VL'::character varying            not null,
-    opprettet_tid                      timestamp(3) default CURRENT_TIMESTAMP                  not null,
-    endret_av                          varchar(20),
-    endret_tid                         timestamp(3),
     maksimal_refusjon_pr_aar           numeric(19, 2),
     avkortet_refusjon_pr_aar           numeric(19, 2),
     redusert_refusjon_pr_aar           numeric(19, 2),
@@ -433,7 +428,12 @@ create table bg_pr_status_og_andel
     avkortet_foer_gradering_pr_aar     numeric(19, 2),
     manuelt_fordelt_pr_aar             numeric(19, 2),
     inntektskategori_manuell_fordeling varchar(100),
-    inntektskategori_fordeling         varchar(100)
+    inntektskategori_fordeling         varchar(100),
+    opprettet_av                       varchar(20)  default 'VL'::character varying            not null,
+    opprettet_tid                      timestamp(3) default CURRENT_TIMESTAMP                  not null,
+    versjon                            int          default 0                                  not null,
+    endret_av                          varchar(20),
+    endret_tid                         timestamp(3)
 );
 
 comment on table bg_pr_status_og_andel is 'Beregningsgrunnlag pr status og andel';
@@ -519,11 +519,6 @@ create table bg_andel_arbeidsforhold
     naturalytelse_tilkommet_pr_aar  numeric(19, 2),
     arbeidsperiode_fom              timestamp(0),
     arbeidsperiode_tom              timestamp(0),
-    versjon                         bigint       default 0                       not null,
-    opprettet_av                    varchar(20)  default 'VL'::character varying not null,
-    opprettet_tid                   timestamp(3) default CURRENT_TIMESTAMP       not null,
-    endret_av                       varchar(20),
-    endret_tid                      timestamp(3),
     arbeidsgiver_aktor_id           varchar(100),
     arbeidsgiver_orgnr              varchar(100),
     arbeidsforhold_intern_id        uuid,
@@ -533,7 +528,12 @@ create table bg_andel_arbeidsforhold
     saksbehandlet_refusjon_pr_aar   numeric(19, 2),
     fordelt_refusjon_pr_aar         numeric(19, 2),
     refusjonskrav_frist_utfall      varchar(20),
-    manuelt_fordelt_refusjon_pr_aar numeric(19, 2)
+    manuelt_fordelt_refusjon_pr_aar numeric(19, 2),
+    opprettet_av                    varchar(20)  default 'VL'::character varying not null,
+    opprettet_tid                   timestamp(3) default CURRENT_TIMESTAMP       not null,
+    versjon                         int          default 0                       not null,
+    endret_av                       varchar(20),
+    endret_tid                      timestamp(3)
 );
 
 comment on table bg_andel_arbeidsforhold is 'Informasjon om arbeidsforholdet knyttet til beregningsgrunnlagandelen';
@@ -584,7 +584,7 @@ create table bg_refusjon_overstyringer
     id            bigint                                       not null
         constraint pk_bg_refusjon_overstyringer
             primary key,
-    versjon       bigint       default 0                       not null,
+    versjon       int          default 0                       not null,
     opprettet_av  varchar(20)  default 'VL'::character varying not null,
     opprettet_tid timestamp(3) default CURRENT_TIMESTAMP       not null,
     endret_av     varchar(20),
@@ -604,12 +604,12 @@ create table bg_refusjon_overstyring
     arbeidsgiver_orgnr    varchar(100),
     arbeidsgiver_aktor_id varchar(100),
     fom                   timestamp(0),
-    versjon               bigint       default 0                       not null,
+    er_frist_utvidet      boolean,
     opprettet_av          varchar(20)  default 'VL'::character varying not null,
     opprettet_tid         timestamp(3) default CURRENT_TIMESTAMP       not null,
+    versjon               int          default 0                       not null,
     endret_av             varchar(20),
-    endret_tid            timestamp(3),
-    er_frist_utvidet      boolean
+    endret_tid            timestamp(3)
 );
 
 comment on table bg_refusjon_overstyring is 'Overstyringer av aktiviteter som er relevant for beregning';
@@ -640,12 +640,12 @@ create table bg_sg_pr_status
     sammenligningsperiode_tom   timestamp(0)                                 not null,
     rapportert_pr_aar           numeric(19, 2)                               not null,
     avvik_promille              numeric(27, 10),
-    versjon                     bigint       default 0                       not null,
+    avvik_promille_ny           numeric(27, 10)                              not null,
     opprettet_av                varchar(20)  default 'VL'::character varying not null,
     opprettet_tid               timestamp(3) default CURRENT_TIMESTAMP       not null,
+    versjon                     int          default 0                       not null,
     endret_av                   varchar(20),
-    endret_tid                  timestamp(3),
-    avvik_promille_ny           numeric(27, 10)                              not null
+    endret_tid                  timestamp(3)
 );
 
 comment on table bg_sg_pr_status is 'Sammenligningsgrunnlag pr status';
@@ -679,7 +679,7 @@ create table kobling
     kl_ytelse_type    varchar(100) default 'FAGSAK_YTELSE_TYPE'::character varying,
     bruker_aktoer_id  varchar(50)                                  not null,
     saksnummer        varchar(19)                                  not null,
-    versjon           bigint       default 0                       not null,
+    versjon           int          default 0                       not null,
     opprettet_av      varchar(20)  default 'VL'::character varying not null,
     opprettet_tid     timestamp(3) default LOCALTIMESTAMP          not null,
     endret_av         varchar(20),
@@ -716,7 +716,7 @@ create table br_sats
     fom           timestamp(0)                                 not null,
     tom           timestamp(0)                                 not null,
     verdi         numeric(10)                                  not null,
-    versjon       bigint       default 0                       not null,
+    versjon       int          default 0                       not null,
     opprettet_av  varchar(20)  default 'VL'::character varying not null,
     opprettet_tid timestamp(3) default CURRENT_TIMESTAMP       not null,
     endret_av     varchar(20),
@@ -743,7 +743,7 @@ create table bg_refusjon_periode
         references bg_refusjon_overstyring,
     arbeidsforhold_intern_id   uuid,
     fom                        timestamp(0)                                 not null,
-    versjon                    bigint       default 0                       not null,
+    versjon                    int          default 0                       not null,
     opprettet_av               varchar(20)  default 'VL'::character varying not null,
     opprettet_tid              timestamp(3) default CURRENT_TIMESTAMP       not null,
     endret_av                  varchar(20),
@@ -771,14 +771,14 @@ create table regel_sporing_grunnlag
             references kobling,
     regel_type            varchar(100)                                 not null,
     aktiv                 boolean      default false                   not null,
-    versjon               bigint       default 0                       not null,
-    opprettet_av          varchar(20)  default 'VL'::character varying not null,
-    opprettet_tid         timestamp(3) default CURRENT_TIMESTAMP       not null,
-    endret_av             varchar(20),
-    endret_tid            timestamp(3),
     regel_evaluering_json text,
     regel_input_json      text,
-    regel_versjon         varchar(100)
+    regel_versjon         varchar(100),
+    opprettet_av          varchar(20)  default 'VL'::character varying not null,
+    opprettet_tid         timestamp(3) default CURRENT_TIMESTAMP       not null,
+    versjon               int          default 0                       not null,
+    endret_av             varchar(20),
+    endret_tid            timestamp(3)
 );
 
 comment on table regel_sporing_grunnlag is 'Tabell som lagrer regelsporinger for beregningsgrunnlag';
@@ -808,7 +808,7 @@ create table fakta_aggregat
     id            bigint                                       not null
         constraint pk_fakta_aggregat
             primary key,
-    versjon       bigint       default 0                       not null,
+    versjon       int          default 0                       not null,
     opprettet_av  varchar(20)  default 'VL'::character varying not null,
     opprettet_tid timestamp(3) default CURRENT_TIMESTAMP       not null,
     endret_av     varchar(20),
@@ -830,11 +830,6 @@ create table gr_beregningsgrunnlag
     beregningsgrunnlag_id        bigint
         constraint fk_gr_beregningsgrunnlag_2
             references beregningsgrunnlag,
-    versjon                      bigint       default 0                       not null,
-    opprettet_av                 varchar(20)  default 'VL'::character varying not null,
-    opprettet_tid                timestamp(3) default CURRENT_TIMESTAMP       not null,
-    endret_av                    varchar(20),
-    endret_tid                   timestamp(3),
     steg_opprettet               varchar(100) default '-'::character varying  not null,
     aktiv                        boolean      default false                   not null,
     register_aktiviteter_id      bigint                                       not null
@@ -852,7 +847,12 @@ create table gr_beregningsgrunnlag
     grunnlag_referanse           uuid                                         not null,
     fakta_aggregat_id            bigint
         constraint fk_gr_beregningsgrunnlag_08
-            references fakta_aggregat
+            references fakta_aggregat,
+    opprettet_av                 varchar(20)  default 'VL'::character varying not null,
+    opprettet_tid                timestamp(3) default CURRENT_TIMESTAMP       not null,
+    versjon                      int          default 0                       not null,
+    endret_av                    varchar(20),
+    endret_tid                   timestamp(3)
 );
 
 comment on table gr_beregningsgrunnlag is 'Tabell som kobler et beregningsgrunnlag til koblingen';
@@ -916,18 +916,18 @@ create table fakta_arbeidsforhold
             references fakta_aggregat,
     er_tidsbegrenset                            boolean,
     har_mottatt_ytelse                          boolean,
-    versjon                                     bigint       default 0                       not null,
-    opprettet_av                                varchar(20)  default 'VL'::character varying not null,
-    opprettet_tid                               timestamp(3) default CURRENT_TIMESTAMP       not null,
-    endret_av                                   varchar(20),
-    endret_tid                                  timestamp(3),
     arbeidsforhold_intern_id                    uuid,
     arbeidsgiver_orgnr                          varchar(100),
     arbeidsgiver_aktor_id                       varchar(100),
     har_lonnsendring_i_beregningsperioden       boolean,
     er_tidsbegrenset_kilde                      varchar(100),
     har_mottatt_ytelse_kilde                    varchar(100),
-    har_lonnsendring_i_beregningsperioden_kilde varchar(100)
+    har_lonnsendring_i_beregningsperioden_kilde varchar(100),
+    opprettet_av                                varchar(20)  default 'VL'::character varying not null,
+    opprettet_tid                               timestamp(3) default CURRENT_TIMESTAMP       not null,
+    versjon                                     int          default 0                       not null,
+    endret_av                                   varchar(20),
+    endret_tid                                  timestamp(3)
 );
 
 comment on table fakta_arbeidsforhold is 'Tabell som lagrer faktaavklaringer for arbeidsforhold';
@@ -964,18 +964,18 @@ create table fakta_aktoer
     har_fl_mottatt_ytelse             boolean,
     skal_besteberegnes                boolean,
     mottar_etterlonn_sluttpakke       boolean,
-    versjon                           bigint       default 0                       not null,
-    opprettet_av                      varchar(20)  default 'VL'::character varying not null,
-    opprettet_tid                     timestamp(3) default CURRENT_TIMESTAMP       not null,
-    endret_av                         varchar(20),
-    endret_tid                        timestamp(3),
     skal_beregnes_som_militaer        boolean,
     er_ny_i_arbeidslivet_sn_kilde     varchar(100),
     er_nyoppstartet_fl_kilde          varchar(100),
     har_fl_mottatt_ytelse_kilde       varchar(100),
     mottar_etterlonn_sluttpakke_kilde varchar(100),
     skal_beregnes_som_militaer_kilde  varchar(100),
-    skal_besteberegnes_kilde          varchar(100)
+    skal_besteberegnes_kilde          varchar(100),
+    opprettet_av                      varchar(20)  default 'VL'::character varying not null,
+    opprettet_tid                     timestamp(3) default CURRENT_TIMESTAMP       not null,
+    versjon                           int          default 0                       not null,
+    endret_av                         varchar(20),
+    endret_tid                        timestamp(3)
 );
 
 comment on table fakta_aktoer is 'Tabell som lagrer faktaavklaringer for arbeidsforhold';
@@ -1019,14 +1019,14 @@ create table avklaringsbehov
     avklaringsbehov_def    varchar(50)                                  not null,
     avklaringsbehov_status varchar(20)                                  not null,
     begrunnelse            varchar(4000),
-    versjon                bigint       default 0                       not null,
-    opprettet_av           varchar(20)  default 'VL'::character varying not null,
-    opprettet_tid          timestamp(3) default CURRENT_TIMESTAMP       not null,
-    endret_av              varchar(20),
-    endret_tid             timestamp(3),
     er_trukket             boolean,
     vurdert_av             varchar(20),
-    vurdert_tid            timestamp(3)
+    vurdert_tid            timestamp(3),
+    opprettet_av           varchar(20)  default 'VL'::character varying not null,
+    opprettet_tid          timestamp(3) default CURRENT_TIMESTAMP       not null,
+    versjon                int          default 0                       not null,
+    endret_av              varchar(20),
+    endret_tid             timestamp(3)
 );
 
 comment on table avklaringsbehov is 'Tabell som holder på avklaringsbehov knyttet til en kobling';
@@ -1063,7 +1063,7 @@ create table kobling_relasjon
     original_kobling_id bigint                                       not null
         constraint fk_kobling_relasjon_2
             references kobling,
-    versjon             bigint       default 0                       not null,
+    versjon             int          default 0                       not null,
     opprettet_av        varchar(20)  default 'VL'::character varying not null,
     opprettet_tid       timestamp(3) default LOCALTIMESTAMP          not null,
     endret_av           varchar(20),
@@ -1096,14 +1096,14 @@ create table regel_sporing_periode
     tom                   timestamp(0)                                 not null,
     regel_type            varchar(100)                                 not null,
     aktiv                 boolean      default false                   not null,
-    versjon               bigint       default 0                       not null,
-    opprettet_av          varchar(20)  default 'VL'::character varying not null,
-    opprettet_tid         timestamp(3) default CURRENT_TIMESTAMP       not null,
-    endret_av             varchar(20),
-    endret_tid            timestamp(3),
     regel_evaluering_json text,
     regel_input_json      text,
-    regel_versjon         varchar(100)
+    regel_versjon         varchar(100),
+    opprettet_av          varchar(20)  default 'VL'::character varying not null,
+    opprettet_tid         timestamp(3) default CURRENT_TIMESTAMP       not null,
+    versjon               int          default 0                       not null,
+    endret_av             varchar(20),
+    endret_tid            timestamp(3)
 );
 
 comment on table regel_sporing_periode is 'Tabell som lagrer regelsporinger for beregningsgrunnlagperioder';

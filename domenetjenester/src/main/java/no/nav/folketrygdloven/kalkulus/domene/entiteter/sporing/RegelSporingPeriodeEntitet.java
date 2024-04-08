@@ -28,7 +28,7 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
 
     @Version
     @Column(name = "versjon", nullable = false)
-    private long versjon;
+    private int versjon;
 
     @Column(name = "kobling_id", nullable = false, updatable = false)
     private Long koblingId;

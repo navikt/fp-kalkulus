@@ -30,7 +30,7 @@ public class BeregningRefusjonPeriodeEntitet extends BaseEntitet {
 
     @Version
     @Column(name = "versjon", nullable = false)
-    private long versjon;
+    private int versjon;
 
     @Embedded
     private InternArbeidsforholdRef arbeidsforholdRef;

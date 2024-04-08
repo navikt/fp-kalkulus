@@ -36,7 +36,7 @@ public class BeregningAktivitetOverstyringEntitet extends BaseEntitet {
 
     @Version
     @Column(name = "versjon", nullable = false)
-    private long versjon;
+    private int versjon;
 
     @Embedded
     @AttributeOverride(name = "fomDato", column = @Column(name = "fom"))

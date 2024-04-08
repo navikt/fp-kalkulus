@@ -32,7 +32,7 @@ public class BeregningsgrunnlagAktivitetStatusEntitet extends BaseEntitet {
 
     @Version
     @Column(name = "versjon", nullable = false)
-    private long versjon;
+    private int versjon;
 
     @JsonBackReference
     @ManyToOne(cascade = {CascadeType.PERSIST}, optional = false)

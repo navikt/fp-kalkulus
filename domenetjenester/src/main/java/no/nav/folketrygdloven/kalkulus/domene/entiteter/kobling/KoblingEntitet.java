@@ -62,7 +62,7 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
 
     @Version
     @Column(name = "versjon", nullable = false)
-    private long versjon;
+    private int versjon;
 
     public KoblingEntitet() {
     }

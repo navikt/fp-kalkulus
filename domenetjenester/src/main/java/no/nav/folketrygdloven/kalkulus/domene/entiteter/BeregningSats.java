@@ -26,7 +26,7 @@ public class BeregningSats extends BaseEntitet {
 
     @Version
     @Column(name = "versjon", nullable = false)
-    private long versjon;
+    private int versjon;
 
     @Column(name = "verdi", nullable = false)
     private long verdi;
