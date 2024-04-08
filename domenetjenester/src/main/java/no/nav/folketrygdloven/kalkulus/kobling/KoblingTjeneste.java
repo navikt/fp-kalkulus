@@ -32,20 +32,14 @@ public class KoblingTjeneste {
         this.repository = repository;
     }
 
-    public List<KoblingEntitet> finnEllerOpprett(List<KoblingReferanse> referanser, FagsakYtelseType ytelseType, AktørId aktørId, Saksnummer saksnummer) {
-        var eksisterendeKoblinger = hentKoblinger(referanser, ytelseType);
-        var alleKoblinger = new ArrayList<>(eksisterendeKoblinger);
-        if (eksisterendeKoblinger.size() != referanser.size()) {
-            List<KoblingEntitet> nyeKoblinger = referanser.stream()
-                    .filter(ref -> eksisterendeKoblinger.stream().map(KoblingEntitet::getKoblingReferanse)
-                            .map(KoblingReferanse::getReferanse)
-                            .noneMatch(koblingRef -> koblingRef.equals(ref.getReferanse())))
-                    .map(ref -> new KoblingEntitet(ref, ytelseType, saksnummer, aktørId))
-                    .collect(Collectors.toList());
-            nyeKoblinger.forEach(kobling -> repository.lagre(kobling));
-            alleKoblinger.addAll(nyeKoblinger);
+    public KoblingEntitet finnEllerOpprett(KoblingReferanse referanse, FagsakYtelseType ytelseType, AktørId aktørId, Saksnummer saksnummer) {
+        var eksisterendeKobling = repository.hentKoblingFor(referanse);
+        if (eksisterendeKobling.isPresent()) {
+            return eksisterendeKobling.get();
         }
-        return alleKoblinger;
+        var nyKobling = new KoblingEntitet(referanse, ytelseType, saksnummer, aktørId);
+        repository.lagre(nyKobling);
+        return nyKobling;
     }
 
     public List<KoblingRelasjon> finnOgOpprettKoblingRelasjoner(Map<UUID, List<UUID>> koblingrelasjoner) {

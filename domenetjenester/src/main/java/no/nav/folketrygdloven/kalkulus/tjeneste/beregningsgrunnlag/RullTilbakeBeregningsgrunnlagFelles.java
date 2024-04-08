@@ -1,7 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag;
 
-import java.util.Set;
-
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 
 class RullTilbakeBeregningsgrunnlagFelles implements RullTilbakeBeregningsgrunnlag {
@@ -13,9 +11,9 @@ class RullTilbakeBeregningsgrunnlagFelles implements RullTilbakeBeregningsgrunnl
     }
 
     @Override
-    public void rullTilbakeGrunnlag(BeregningsgrunnlagTilstand tilstand, Set<Long> rullTilbakeKoblinger) {
+    public void rullTilbakeGrunnlag(BeregningsgrunnlagTilstand tilstand, Long rullTilbakeKobling) {
         if (BeregningsgrunnlagTilstand.finnFørste().erFør(tilstand)) {
-                beregningsgrunnlagRepository.reaktiverForrigeGrunnlagForKoblinger(rullTilbakeKoblinger, tilstand);
+                beregningsgrunnlagRepository.reaktiverForrigeGrunnlagForKoblinger(rullTilbakeKobling, tilstand);
         }
     }
 }

@@ -34,35 +34,28 @@ public class HåndteringInputTjeneste {
     }
 
     @Inject
-    public HåndteringInputTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository,
-                                   KoblingRepository koblingRepository) {
+    public HåndteringInputTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository, KoblingRepository koblingRepository) {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.koblingRepository = koblingRepository;
     }
 
-    public Map<Long, BeregningsgrunnlagInput> lagBeregningsgrunnlagInput(Set<Long> koblingId,
-                                                                         Map<Long, KalkulatorInputDto> inputPrKobling,
-                                                                         BeregningsgrunnlagTilstand tilstand) {
+    public BeregningsgrunnlagInput lagBeregningsgrunnlagInput(Long koblingId, KalkulatorInputDto inputDto, BeregningsgrunnlagTilstand tilstand) {
         Objects.requireNonNull(koblingId, "koblingId");
-        var koblingEntiteter = koblingRepository.hentKoblingerFor(koblingId);
-        var grunnlagEntiteter = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingId)
-                .stream().collect(Collectors.toMap(BeregningsgrunnlagGrunnlagEntitet::getKoblingId, Function.identity()));
-        validerKoblingMotGrunnlag(koblingId, tilstand, grunnlagEntiteter);
-        var grunnlagFraForrigeOppdatering = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingId, tilstand, null)
-                .stream().collect(Collectors.toMap(BeregningsgrunnlagGrunnlagEntitet::getKoblingId, Function.identity()));
-        return koblingEntiteter.stream()
-                .collect(Collectors.toMap(KoblingEntitet::getId, kobling ->
-                        lagHåndteringBeregningsgrunnlagInput(kobling,
-                                inputPrKobling.get(kobling.getId()),
-                                grunnlagEntiteter.get(kobling.getId()),
-                                tilstand,
-                                Optional.ofNullable(grunnlagFraForrigeOppdatering.get(kobling.getId())))
-                ));
+        var koblingEntitet = koblingRepository.hentKoblingMedId(koblingId)
+            .orElseThrow(() -> new IllegalStateException("Skal ha kobling for id" + koblingId));
+        var grunnlagEntitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId)
+            .orElseThrow(() -> new IllegalStateException("Skal ha grunnlag for kobling " + koblingId));
+        var grunnlagFraForrigeOppdatering = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingId, tilstand,
+            null);
+        return lagHåndteringBeregningsgrunnlagInput(koblingEntitet, inputDto, grunnlagEntitet, tilstand, grunnlagFraForrigeOppdatering);
     }
 
-    private void validerKoblingMotGrunnlag(Collection<Long> koblingId, BeregningsgrunnlagTilstand tilstand, Map<Long, BeregningsgrunnlagGrunnlagEntitet> grunnlagEntiteter) {
-        List<Long> koblingUtenGrunnlag = koblingId.stream().filter(id -> grunnlagEntiteter.keySet().stream().noneMatch(k -> k.equals(id)))
-                .collect(Collectors.toList());
+    private void validerKoblingMotGrunnlag(Collection<Long> koblingId,
+                                           BeregningsgrunnlagTilstand tilstand,
+                                           Map<Long, BeregningsgrunnlagGrunnlagEntitet> grunnlagEntiteter) {
+        List<Long> koblingUtenGrunnlag = koblingId.stream()
+            .filter(id -> grunnlagEntiteter.keySet().stream().noneMatch(k -> k.equals(id)))
+            .collect(Collectors.toList());
         if (!koblingUtenGrunnlag.isEmpty()) {
             throw new IllegalStateException("Skal ha grunnlag for tilstand" + tilstand.getKode() + ". Fant ikke grunnlag for " + koblingUtenGrunnlag);
         }
@@ -73,9 +66,10 @@ public class HåndteringInputTjeneste {
                                                                                 BeregningsgrunnlagGrunnlagEntitet aktivGrunnlagEntitet,
                                                                                 BeregningsgrunnlagTilstand tilstand,
                                                                                 Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagFraHåndteringTilstand) {
-        BeregningsgrunnlagInput beregningsgrunnlagInput = MapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input, Optional.of(aktivGrunnlagEntitet));
-        return new HåndterBeregningsgrunnlagInput(beregningsgrunnlagInput, tilstand)
-                .medForrigeGrunnlagFraHåndtering(grunnlagFraHåndteringTilstand.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).orElse(null));
+        BeregningsgrunnlagInput beregningsgrunnlagInput = MapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input,
+            Optional.of(aktivGrunnlagEntitet));
+        return new HåndterBeregningsgrunnlagInput(beregningsgrunnlagInput, tilstand).medForrigeGrunnlagFraHåndtering(
+            grunnlagFraHåndteringTilstand.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).orElse(null));
     }
 
 

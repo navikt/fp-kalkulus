@@ -8,6 +8,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -19,6 +20,12 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import no.nav.folketrygdloven.fpkalkulus.kontrakt.HåndterBeregningRequestDto;
+
+import no.nav.folketrygdloven.kalkulus.typer.AktørId;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -96,73 +103,54 @@ public class OperereKalkulusRestTjeneste {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/beregn")
-    @Operation(description = "Utfører beregning basert på reqest", tags = "beregn", summary = ("Starter en beregning basert på gitt input."), responses = {
-            @ApiResponse(description = "Liste med avklaringsbehov som har oppstått per angitt eksternReferanse", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = TilstandResponse.class)))
-    })
+    @Operation(description = "Utfører beregning basert på reqest", tags = "beregn", summary = ("Starter en beregning basert på gitt input."), responses = {@ApiResponse(description = "Liste med avklaringsbehov som har oppstått per angitt eksternReferanse", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = TilstandResponse.class)))})
     @BeskyttetRessurs(actionType = ActionType.CREATE, resourceType = ResourceType.FAGSAK)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response beregn(@TilpassetAbacAttributt(supplierClass = BeregnRequestAbacSupplier.class) @NotNull @Valid BeregnRequestDto request) {
         var saksnummer = new Saksnummer(request.saksnummer().verdi());
         MDC.put("prosess_saksnummer", saksnummer.getVerdi());
-//        var kobling = koblingTjeneste.finnEllerOpprett(new KoblingReferanse(request.behandlingUuid()),
-//            mapTilYtelseKodeverk(request.ytelseSomSkalBeregnes()), new AktørId(request.aktør().getIdent()), saksnummer);
-//        Map<Long, KalkulusRespons> respons;
-//        respons = orkestrerer.beregn(request.stegType(), kobling, request.kalkulatorInput())
-//        );
-//        return Response.ok(new TilstandListeResponse(respons.values().stream().map(r -> (TilstandResponse) r).toList())).build();
-        return Response.ok().build();
+        var kobling = koblingTjeneste.finnEllerOpprett(new KoblingReferanse(request.behandlingUuid()),
+            mapTilYtelseKodeverk(request.ytelseSomSkalBeregnes()), new AktørId(request.aktør().getIdent()), saksnummer);
+        TilstandResponse respons = (TilstandResponse) orkestrerer.beregn(request.stegType(), kobling, request.kalkulatorInput());
+        return Response.ok(respons).build();
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/kopier/bolk")
-    @Operation(description = "Kopierer beregning fra eksisterende referanse til ny referanse. Kopien som opprettes er fra steget som vurderer vilkår for beregning.",
-            tags = "beregn",
-            summary = ("Kopierer en beregning."), responses = {
-            @ApiResponse(description = "Liste med kopierte referanser dersom alle koblinger er kopiert", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = KopiResponse.class)))
-    })
+    @Operation(description = "Kopierer beregning fra eksisterende referanse til ny referanse. Kopien som opprettes er fra steget som vurderer vilkår for beregning.", tags = "beregn", summary = ("Kopierer en beregning."), responses = {@ApiResponse(description = "Liste med kopierte referanser dersom alle koblinger er kopiert", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = KopiResponse.class)))})
     @BeskyttetRessurs(actionType = ActionType.UPDATE, resourceType = ResourceType.FAGSAK)
     public Response kopierBeregning(@NotNull @Valid KopierBeregningListeRequestAbacDto spesifikasjon) {
         MDC.put("prosess_saksnummer", spesifikasjon.getSaksnummer().verdi());
         var saksnummerEntitet = new Saksnummer(spesifikasjon.getSaksnummer().verdi());
-        kopierTjeneste.kopierGrunnlagOgOpprettKoblinger(
-                spesifikasjon.getKopierBeregningListe(),
-                spesifikasjon.getYtelseSomSkalBeregnes(),
-                saksnummerEntitet,
-                spesifikasjon.getStegType() == null ? BeregningSteg.VURDER_VILKAR_BERGRUNN : spesifikasjon.getStegType(),
-                null);
+        kopierTjeneste.kopierGrunnlagOgOpprettKoblinger(spesifikasjon.getKopierBeregningListe(), spesifikasjon.getYtelseSomSkalBeregnes(),
+            saksnummerEntitet, spesifikasjon.getStegType() == null ? BeregningSteg.VURDER_VILKAR_BERGRUNN : spesifikasjon.getStegType(), null);
         return Response.ok(spesifikasjon.getKopierBeregningListe()
-                .stream()
-                .map(KopierBeregningRequest::getEksternReferanse)
-                .map(KopiResponse::new).collect(Collectors.toList())).build();
+            .stream()
+            .map(KopierBeregningRequest::getEksternReferanse)
+            .map(KopiResponse::new)
+            .collect(Collectors.toList())).build();
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/oppdaterListe")
-    @Operation(description = "Oppdaterer beregningsgrunnlag for oppgitt liste", tags = "beregn", summary = ("Oppdaterer beregningsgrunnlag basert på løsning av avklaringsbehov for oppgitt liste."), responses = {
-            @ApiResponse(description = "Liste med endringer som ble gjort under oppdatering", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = OppdateringListeRespons.class)))
-    })
+    @Path("/avklaringsbehov")
+    @Operation(description = "Oppdaterer beregningsgrunnlag for oppgitt liste", tags = "beregn", summary = ("Oppdaterer beregningsgrunnlag basert på løsning av avklaringsbehov for oppgitt liste."), responses = {@ApiResponse(description = "Liste med endringer som ble gjort under oppdatering", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = OppdateringListeRespons.class)))})
     @BeskyttetRessurs(actionType = ActionType.UPDATE, resourceType = ResourceType.FAGSAK)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
-    public Response oppdaterListe(@NotNull @Valid HåndterBeregningListeRequestAbacDto spesifikasjon) {
-        MDC.put("prosess_saksnummer", spesifikasjon.getSaksnummer().verdi());
-        Map<Long, KalkulusRespons> respons;
+    public Response oppdaterListe(@TilpassetAbacAttributt(supplierClass = HåndterBeregningRequestAbacSupplier.class) @NotNull @Valid HåndterBeregningRequestDto spesifikasjon) {
+        var kobling = koblingTjeneste.hentFor(new KoblingReferanse(spesifikasjon.behandlingUuid()))
+            .orElseThrow(() -> new IllegalStateException(
+                "Kan ikke løse avklaringsbehov i beregning uten en eksisterende kobling. Gjelder behandlingUuid " + spesifikasjon.behandlingUuid()));
+        MDC.put("prosess_saksnummer", kobling.getSaksnummer().getVerdi());
+        KalkulusRespons respons;
         try {
-            var saksnummerEntitet = new Saksnummer(spesifikasjon.getSaksnummer().verdi());
-            respons = orkestrerer.håndter(
-                    spesifikasjon.getKalkulatorInputPerKoblingReferanse(),
-                    spesifikasjon.getYtelseSomSkalBeregnes(),
-                    saksnummerEntitet,
-                    spesifikasjon.getHåndterBeregningListe());
+            respons = orkestrerer.håndter(kobling, spesifikasjon.kalkulatorInput(), spesifikasjon.håndterBeregningDtoList());
         } catch (UgyldigInputException e) {
             return Response.ok(new OppdateringListeRespons(true)).build();
         }
-
-        List<OppdateringPrRequest> oppdateringer = respons.values().stream()
-                .map(kalkulusRespons -> new OppdateringPrRequest((OppdateringRespons) kalkulusRespons, kalkulusRespons.getEksternReferanse()))
-                .collect(Collectors.toList());
-        return Response.ok(Objects.requireNonNullElseGet(new OppdateringListeRespons(oppdateringer), OppdateringRespons::TOM_RESPONS)).build();
+        var test = (OppdateringRespons) respons;
+        return Response.ok(Objects.requireNonNull(test)).build();
     }
 
     @POST
@@ -194,6 +182,14 @@ public class OperereKalkulusRestTjeneste {
 
         return Response.ok().build();
     }
+
+    private FagsakYtelseType mapTilYtelseKodeverk(FpkalkulusYtelser ytelse) {
+        return switch (ytelse) {
+            case FORELDREPENGER -> FagsakYtelseType.FORELDREPENGER;
+            case SVANGERSKAPSPENGER -> FagsakYtelseType.SVANGERSKAPSPENGER;
+        };
+    }
+
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -234,7 +230,8 @@ public class OperereKalkulusRestTjeneste {
         public KopierBeregningListeRequestAbacDto(no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer saksnummer,
                                                   UUID behandlingUuid,
                                                   FagsakYtelseType ytelseSomSkalBeregnes,
-                                                  List<KopierBeregningRequest> kopierBeregningListe, BeregningSteg stegType) {
+                                                  List<KopierBeregningRequest> kopierBeregningListe,
+                                                  BeregningSteg stegType) {
             super(saksnummer, behandlingUuid, ytelseSomSkalBeregnes, stegType, kopierBeregningListe);
         }
 
@@ -258,7 +255,9 @@ public class OperereKalkulusRestTjeneste {
         public DeaktiverBeregningsgrunnlagRequestAbacDto() {
         }
 
-        public DeaktiverBeregningsgrunnlagRequestAbacDto(no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer saksnummer, List<BeregningsgrunnlagRequest> requestPrReferanse, UUID behandlingUuid) {
+        public DeaktiverBeregningsgrunnlagRequestAbacDto(no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer saksnummer,
+                                                         List<BeregningsgrunnlagRequest> requestPrReferanse,
+                                                         UUID behandlingUuid) {
             super(saksnummer, requestPrReferanse, behandlingUuid);
         }
 
@@ -293,9 +292,10 @@ public class OperereKalkulusRestTjeneste {
         }
 
         private List<AvklaringsbehovDefinisjon> getAksjonspunktKoder() {
-            return getHåndterBeregningListe().stream().map(HåndterBeregningRequest::getHåndterBeregning)
-                    .map(HåndterBeregningDto::getAvklaringsbehovDefinisjon)
-                    .collect(Collectors.toList());
+            return getHåndterBeregningListe().stream()
+                .map(HåndterBeregningRequest::getHåndterBeregning)
+                .map(HåndterBeregningDto::getAvklaringsbehovDefinisjon)
+                .collect(Collectors.toList());
         }
 
     }
@@ -304,6 +304,14 @@ public class OperereKalkulusRestTjeneste {
         @Override
         public AbacDataAttributter apply(Object o) {
             var req = (BeregnRequestDto) o;
+            return AbacDataAttributter.opprett().leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid());
+        }
+    }
+
+    public static class HåndterBeregningRequestAbacSupplier implements Function<Object, AbacDataAttributter> {
+        @Override
+        public AbacDataAttributter apply(Object o) {
+            var req = (HåndterBeregningRequestDto) o;
             return AbacDataAttributter.opprett().leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid());
         }
     }

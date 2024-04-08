@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag;
 
-import java.util.List;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,21 +33,19 @@ public class RullTilbakeTjeneste {
         this.avklaringsbehovTjeneste = avklaringsbehovTjeneste;
     }
 
-    public void rullTilbakeTilForrigeTilstandVedBehov(Set<Long> koblingIder, BeregningsgrunnlagTilstand tilstand, boolean skalKjøreSteget) {
-        List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntiteter = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingIder);
-        var rullTilbakeListe = finnGrunnlagSomSkalRullesTilbake(beregningsgrunnlagGrunnlagEntiteter, tilstand, skalKjøreSteget);
-        if (!rullTilbakeListe.isEmpty()) {
-            rullTilbakeGrunnlag(tilstand, rullTilbakeListe);
-        }
-        avklaringsbehovTjeneste.avbrytAlleAvklaringsbehovEtterEllerISteg(koblingIder, MapTilstandTilSteg.mapTilSteg(tilstand), skalKjøreSteget);
+    public void rullTilbakeTilForrigeTilstandVedBehov(Long koblingId, BeregningsgrunnlagTilstand tilstand, boolean skalKjøreSteget) {
+        Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntiteter = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
+        var grunnlagSomMåTilbakestilles = finnGrunnlagSomSkalRullesTilbake(beregningsgrunnlagGrunnlagEntiteter, tilstand, skalKjøreSteget);
+        grunnlagSomMåTilbakestilles.ifPresent(beregningsgrunnlagGrunnlagEntitet -> rullTilbakeGrunnlag(tilstand, beregningsgrunnlagGrunnlagEntitet));
+        avklaringsbehovTjeneste.avbrytAlleAvklaringsbehovEtterEllerISteg(koblingId, MapTilstandTilSteg.mapTilSteg(tilstand), skalKjøreSteget);
     }
 
-    private void rullTilbakeGrunnlag(BeregningsgrunnlagTilstand tilstand, List<BeregningsgrunnlagGrunnlagEntitet> rullTilbakeListe) {
-        Set<Long> rullTilbakeKoblinger = rullTilbakeListe.stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId).collect(Collectors.toSet());
-        beregningsgrunnlagRepository.deaktiverBeregningsgrunnlagGrunnlagEntiteter(rullTilbakeListe);
-        regelsporingRepository.ryddRegelsporingForTilstand(rullTilbakeKoblinger, tilstand);
+    private void rullTilbakeGrunnlag(BeregningsgrunnlagTilstand tilstand, BeregningsgrunnlagGrunnlagEntitet grunnlagSomTilbakestilles) {
+        var koblingId = grunnlagSomTilbakestilles.getKoblingId();
+        beregningsgrunnlagRepository.deaktiverBeregningsgrunnlagGrunnlagEntiteter(Collections.singletonList(grunnlagSomTilbakestilles));
+        regelsporingRepository.ryddRegelsporingForTilstand(koblingId, tilstand);
         var rullTilbake = finnRullTilbakeBeregningsgrunnlagTjeneste(tilstand);
-        rullTilbake.rullTilbakeGrunnlag(tilstand, rullTilbakeKoblinger);
+        rullTilbake.rullTilbakeGrunnlag(tilstand, koblingId);
     }
 
     private RullTilbakeBeregningsgrunnlag finnRullTilbakeBeregningsgrunnlagTjeneste(BeregningsgrunnlagTilstand tilstand) {
@@ -57,18 +56,17 @@ public class RullTilbakeTjeneste {
         }
     }
 
-    private List<BeregningsgrunnlagGrunnlagEntitet> finnGrunnlagSomSkalRullesTilbake(List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet,
+    private Optional<BeregningsgrunnlagGrunnlagEntitet> finnGrunnlagSomSkalRullesTilbake(Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet,
                                                                                      BeregningsgrunnlagTilstand tilstand,
                                                                                      boolean skalKjøreSteget) {
-        return beregningsgrunnlagGrunnlagEntitet.stream()
+        return beregningsgrunnlagGrunnlagEntitet
                 .filter(gr -> {
                     if (skalKjøreSteget) {
                         return !gr.getBeregningsgrunnlagTilstand().erFør(tilstand);
                     } else {
                         return gr.getBeregningsgrunnlagTilstand().erEtter(tilstand);
                     }
-                })
-                .collect(Collectors.toList());
+                });
     }
 
     public void deaktiverAllKoblingdata(Long koblingId) {

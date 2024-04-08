@@ -48,11 +48,14 @@ public class GUIBeregningsgrunnlagInputTjeneste {
                                                                        BeregningsgrunnlagGrunnlagEntitet beregningsgrunnlagGrunnlagEntitet,
                                                                        List<AvklaringsbehovEntitet> avklaringsbehov,
                                                                        KalkulatorInputDto kalkulatorInput,
-                                                                       Optional<BeregningsgrunnlagGrunnlagEntitet> originaltGrunnlag) {
+                                                                       Optional<BeregningsgrunnlagGrunnlagEntitet> originaltGrunnlagEntitet) {
         BeregningsgrunnlagGUIInput input = lagInput(kobling, kalkulatorInput);
-        return input.medBeregningsgrunnlagGrunnlag(mapGrunnlag(beregningsgrunnlagGrunnlagEntitet))
-            .medBeregningsgrunnlagGrunnlagFraForrigeBehandling(mapOriginaleGrunnlag(originaltGrunnlag).orElse(null))
+        var originaltGrunnlag = mapOriginaleGrunnlag(originaltGrunnlagEntitet);
+        var oppdatertInput = input.medBeregningsgrunnlagGrunnlag(mapGrunnlag(beregningsgrunnlagGrunnlagEntitet))
             .medAvklaringsbehov(mapAvklaringsbehov(avklaringsbehov));
+        if (originaltGrunnlag.isPresent()) {
+            return oppdatertInput.medBeregningsgrunnlagGrunnlagFraForrigeBehandling(originaltGrunnlag.get());
+        } else return oppdatertInput;
     }
 
     private static Optional<BeregningsgrunnlagGrunnlagDto> mapOriginaleGrunnlag(Optional<BeregningsgrunnlagGrunnlagEntitet> originaltGrunnlag) {

@@ -6,6 +6,7 @@ import static no.nav.vedtak.felles.jpa.HibernateVerktøy.hentUniktResultat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -16,12 +17,15 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.sun.source.tree.ArrayAccessTree;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 
+import org.jboss.jdeparser.FormatPreferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -234,15 +238,16 @@ public class BeregningsgrunnlagRepository {
      * Henter siste {@link BeregningsgrunnlagGrunnlagEntitet} opprettet i et bestemt steg for alle koblinger. Ignorerer om grunnlaget er aktivt
      * eller ikke.
      *
-     * @param koblingIds                 en liste med koblingId
+     * @param koblingId                 en liste med koblingId
      * @param beregningsgrunnlagTilstand steget {@link BeregningsgrunnlagGrunnlagEntitet} er opprettet i
      * @param opprettetTidMax
      * @return Liste med grunnlag fra gitt {@link BeregningsgrunnlagTilstand} som ble opprettet sist pr kobling
      */
     @SuppressWarnings("unchecked")
-    public List<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(Collection<Long> koblingIds,
-                                                                                                          BeregningsgrunnlagTilstand beregningsgrunnlagTilstand,
-                                                                                                          LocalDateTime opprettetTidMax) {
+    public Optional<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(Long koblingId,
+                                                                                                                           BeregningsgrunnlagTilstand beregningsgrunnlagTilstand,
+                                                                                                                           LocalDateTime opprettetTidMax) {
+        List<BeregningsgrunnlagGrunnlagEntitet> resultatListe;
         if (opprettetTidMax != null) {
             Query query = entityManager.createNativeQuery(
                     "SELECT GR.* FROM GR_BEREGNINGSGRUNNLAG GR " +
@@ -250,26 +255,30 @@ public class BeregningsgrunnlagRepository {
                             "WHERE GR2.KOBLING_ID = GR.KOBLING_ID AND " +
                             "GR2.STEG_OPPRETTET = :beregningsgrunnlagTilstand AND " +
                             "GR2.OPPRETTET_TID <= :opprettetTidMax) AND " +
-                            "GR.KOBLING_ID IN :koblingId AND " +
+                            "GR.KOBLING_ID = :koblingId AND " +
                             "GR.STEG_OPPRETTET = :beregningsgrunnlagTilstand",
                     BeregningsgrunnlagGrunnlagEntitet.class);
-            query.setParameter(KOBLING_ID, koblingIds); // $NON-NLS-1$
+            query.setParameter(KOBLING_ID, koblingId); // $NON-NLS-1$
             query.setParameter("opprettetTidMax", opprettetTidMax);
             query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, beregningsgrunnlagTilstand.getKode()); // $NON-NLS-1$
-            return query.getResultList();
+            resultatListe = query.getResultList();
         } else {
             Query query = entityManager.createNativeQuery(
                     "SELECT GR.* FROM GR_BEREGNINGSGRUNNLAG GR " +
                             "WHERE GR.OPPRETTET_TID = (SELECT max(GR2.OPPRETTET_TID) FROM GR_BEREGNINGSGRUNNLAG GR2 " +
                             "WHERE GR2.KOBLING_ID = GR.KOBLING_ID AND " +
                             "GR2.STEG_OPPRETTET = :beregningsgrunnlagTilstand) AND " +
-                            "GR.KOBLING_ID IN :koblingId AND " +
+                            "GR.KOBLING_ID = :koblingId AND " +
                             "GR.STEG_OPPRETTET = :beregningsgrunnlagTilstand",
                     BeregningsgrunnlagGrunnlagEntitet.class);
-            query.setParameter(KOBLING_ID, koblingIds); // $NON-NLS-1$
+            query.setParameter(KOBLING_ID, koblingId); // $NON-NLS-1$
             query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, beregningsgrunnlagTilstand.getKode()); // $NON-NLS-1$
-            return query.getResultList();
+            resultatListe = query.getResultList();
         }
+        if (resultatListe.size() > 1) {
+            throw new IllegalArgumentException("Fant mer enn en rad");
+        }
+        return resultatListe.size() == 1 ? Optional.of(resultatListe.get(0)) : Optional.empty();
     }
 
 
@@ -468,10 +477,12 @@ public class BeregningsgrunnlagRepository {
         entityManager.flush();
     }
 
-    public void reaktiverSisteMedTilstand(BeregningsgrunnlagTilstand tilstand, Collection<Long> koblingId) {
+    public void reaktiverSisteMedTilstand(BeregningsgrunnlagTilstand tilstand, Long koblingId) {
         var grunnlagForKobling = hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingId, tilstand, null);
-        endreAktivOgLagre(grunnlagForKobling, true);
-        entityManager.flush();
+        grunnlagForKobling.ifPresent(g -> {
+            endreAktivOgLagre(g, true);
+            entityManager.flush();
+        });
     }
 
     /**
@@ -485,12 +496,12 @@ public class BeregningsgrunnlagRepository {
      * Dersom en kobling ikke har et tidligere grunnlag med gjeldende tilstand
      * benyttes opprettet tid fra grunnlag med tilstand lik neste tilstand i samsvar med tilstandrekkefølgen
      *
-     * @param koblinger         Koblinger med grunnlag som skal reaktiveres
+     * @param kobling         Koblinger med grunnlag som skal reaktiveres
      * @param gjeldendeTilstand Gjeldende tilstand
      */
-    public void reaktiverForrigeGrunnlagForKoblinger(Set<Long> koblinger, BeregningsgrunnlagTilstand gjeldendeTilstand) {
-        var maksOppretteTidPrKobling = finnMaksOpprettetTidForGrunnlagPrKobling(koblinger, gjeldendeTilstand);
-        maksOppretteTidPrKobling.forEach((koblingId, maksOpprettetTid) -> reaktiverSisteLagredeMedTilstandFør(gjeldendeTilstand, koblingId, maksOpprettetTid));
+    public void reaktiverForrigeGrunnlagForKoblinger(Long kobling, BeregningsgrunnlagTilstand gjeldendeTilstand) {
+        var maksOppretteTidPrKobling = finnMaksOpprettetTidForGrunnlagPrKobling(kobling, gjeldendeTilstand);
+        reaktiverSisteLagredeMedTilstandFør(gjeldendeTilstand, kobling, maksOppretteTidPrKobling);
     }
 
     private void reaktiverSisteLagredeMedTilstandFør(BeregningsgrunnlagTilstand tilstand, Long koblingId, LocalDateTime maksOpprettetTid) {
@@ -504,34 +515,21 @@ public class BeregningsgrunnlagRepository {
         entityManager.flush();
     }
 
-    private Map<Long, LocalDateTime> finnMaksOpprettetTidForGrunnlagPrKobling(Set<Long> koblinger, BeregningsgrunnlagTilstand tilstand) {
+    private LocalDateTime finnMaksOpprettetTidForGrunnlagPrKobling(Long kobling, BeregningsgrunnlagTilstand tilstand) {
         var sisteGrunnlagFraTilstand = hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(
-                koblinger,
+                kobling,
                 tilstand,
                 null);
-
-        Map<Long, LocalDateTime> maksOppretteTidPrKobling = new HashMap<>();
-
-        sisteGrunnlagFraTilstand.forEach(gr -> maksOppretteTidPrKobling.put(gr.getKoblingId(), gr.getOpprettetTidspunkt()));
-
-        var manglendeKoblinger = koblinger.stream()
-                .filter(k -> !maksOppretteTidPrKobling.containsKey(k))
-                .collect(Collectors.toSet());
 
         // Koblinger kan mangle grunnlag med gitt tilstand dersom steget er opprettet etter at koblingen ble behandlet forrige gang
         // Dersom dette skjer ser vi på neste tilstand i loop til alle koblingene er dekket
         var nesteTilstand = tilstand;
-        while (!manglendeKoblinger.isEmpty()) {
+        while (sisteGrunnlagFraTilstand.isEmpty()) {
             nesteTilstand = BeregningsgrunnlagTilstand.finnNesteTilstand(nesteTilstand).orElseThrow(() -> new IllegalStateException("Kunne ikke finne neste tilstand fordi siste tilstand er nådd"));
-            sisteGrunnlagFraTilstand = hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(manglendeKoblinger,
+            sisteGrunnlagFraTilstand = hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(kobling,
                     nesteTilstand,
                     null);
-
-            sisteGrunnlagFraTilstand.forEach(gr -> maksOppretteTidPrKobling.put(gr.getKoblingId(), gr.getOpprettetTidspunkt()));
-            manglendeKoblinger = koblinger.stream()
-                    .filter(k -> !maksOppretteTidPrKobling.containsKey(k))
-                    .collect(Collectors.toSet());
         }
-        return maksOppretteTidPrKobling;
+        return sisteGrunnlagFraTilstand.get().getOpprettetTidspunkt();
     }
 }

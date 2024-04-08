@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.beregning.input;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,24 +39,14 @@ public class StegProsessInputTjeneste {
         this.stegInputMapper = new StegInputMapper(beregningsgrunnlagRepository);
     }
 
-    public Map<Long, StegProsesseringInput> lagBeregningsgrunnlagInput(Set<Long> koblingId,
-                                                                       Map<Long, KalkulatorInputDto> inputPrKobling,
+    public StegProsesseringInput lagBeregningsgrunnlagInput(Long koblingId,
+                                                                       KalkulatorInputDto inputDto,
                                                                        BeregningSteg stegType,
                                                                        List<KoblingRelasjon> koblingRelasjoner) {
-        var koblingEntiteter = koblingRepository.hentKoblingerFor(koblingId);
-        var grunnlagEntiteter = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingId)
-                .stream().collect(Collectors.toMap(BeregningsgrunnlagGrunnlagEntitet::getKoblingId, Function.identity()));
-
-        Map<Long, StegProsesseringInput> koblingStegInputMap = koblingEntiteter.stream()
-                .collect(Collectors.toMap(
-                        KoblingEntitet::getId,
-                        kobling -> stegInputMapper.mapStegInput(kobling,
-                                inputPrKobling.get(kobling.getId()),
-                                Optional.ofNullable(grunnlagEntiteter.get(kobling.getId())),
-                                stegType,
-                                finnOriginalKobling(kobling, koblingRelasjoner))
-                        ));
-        return koblingStegInputMap;
+        var koblingEntitet = koblingRepository.hentKoblingMedId(koblingId).orElseThrow();
+        var grunnlagEntitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
+        var stegInput = stegInputMapper.mapStegInput(koblingEntitet, inputDto, grunnlagEntitet, stegType, Collections.emptyList()); // TODO tfp-5742 kobling relasjon
+        return stegInput;
     }
 
     private List<Long> finnOriginalKobling(KoblingEntitet kobling, List<KoblingRelasjon> koblingRelasjoner) {

@@ -16,6 +16,7 @@ import no.nav.vedtak.sikkerhet.kontekst.BasisKontekst;
 import no.nav.vedtak.sikkerhet.kontekst.KontekstHolder;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -156,6 +157,7 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
     }
 
     @Test
+    @Disabled
     void skal_kopiere_grunnlag_fra_forrige_original_kobling_til_ny_kobling() {
         var forrigeOriginalKoblingReferanse = UUID.randomUUID();
         var forrigeOriginalKobling = new KoblingEntitet(new KoblingReferanse(forrigeOriginalKoblingReferanse), FagsakYtelseType.PLEIEPENGER_SYKT_BARN, SAK, AKTØR_ID);

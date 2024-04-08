@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulus.kopiering;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -105,7 +106,7 @@ public class KopierBeregningsgrunnlagTjeneste {
         var nyeKoblingReferanser = kopiRequests.stream().map(KopierBeregningRequest::getEksternReferanse)
                 .map(KoblingReferanse::new)
                 .collect(Collectors.toList());
-        return koblingTjeneste.finnEllerOpprett(nyeKoblingReferanser, ytelseType, aktørId, saksnummer);
+        return Collections.singletonList(koblingTjeneste.finnEllerOpprett(nyeKoblingReferanser.getFirst(), ytelseType, aktørId, saksnummer));
     }
 
     private List<KoblingEntitet> finnEksisterendeKoblinger(List<KopierBeregningRequest> kopiRequests, FagsakYtelseType ytelseType) {
@@ -165,21 +166,22 @@ public class KopierBeregningsgrunnlagTjeneste {
         if (steg.equals(BeregningSteg.VURDER_VILKAR_BERGRUNN)) {
             return finnGrunnlagForKopiAvVilkårsvurdering(opprettetTidMax, koblingIder);
         }
-        return beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingIder, MapStegTilTilstand.mapTilStegTilstand(steg), opprettetTidMax);
+        return Collections.singletonList(beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingIder.stream().findFirst().get(), MapStegTilTilstand.mapTilStegTilstand(steg), opprettetTidMax).get());
     }
 
     private List<BeregningsgrunnlagGrunnlagEntitet> finnGrunnlagForKopiAvVilkårsvurdering(LocalDateTime opprettetTidMax, Set<Long> koblingIder) {
+        // TODO tfp-5742 hvor mye av dette trenger vi egentlig?
         // Fordi det finnes grunnlag uten tilstand VURDER_VILKÅR må vi sjekke andre tilstander
-        var vurdertVilkårGrunnlag = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingIder, BeregningsgrunnlagTilstand.VURDERT_VILKÅR, opprettetTidMax);
-        var koblingIdUtenVurdertVilkårGrunnlag = finnKoblingIdIkkeInkludertIListeMedGrunnlag(koblingIder, vurdertVilkårGrunnlag);
-        var foreslåttUtGrunnlag = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingIdUtenVurdertVilkårGrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT_UT, opprettetTidMax);
-        var koblingIdUtenForeslåttUtGrunnlag = finnKoblingIdIkkeInkludertIListeMedGrunnlag(koblingIdUtenVurdertVilkårGrunnlag, foreslåttUtGrunnlag);
-        var foreslåttGrunnlag = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingIdUtenForeslåttUtGrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT, opprettetTidMax);
+//        var vurdertVilkårGrunnlag = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingIder, BeregningsgrunnlagTilstand.VURDERT_VILKÅR, opprettetTidMax);
+//        var koblingIdUtenVurdertVilkårGrunnlag = finnKoblingIdIkkeInkludertIListeMedGrunnlag(koblingIder, vurdertVilkårGrunnlag);
+//        var foreslåttUtGrunnlag = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingIdUtenVurdertVilkårGrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT_UT, opprettetTidMax);
+//        var koblingIdUtenForeslåttUtGrunnlag = finnKoblingIdIkkeInkludertIListeMedGrunnlag(koblingIdUtenVurdertVilkårGrunnlag, foreslåttUtGrunnlag);
+//        var foreslåttGrunnlag = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingIdUtenForeslåttUtGrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT, opprettetTidMax);
 
         List<BeregningsgrunnlagGrunnlagEntitet> grunnlagSomSkalKopieres = new ArrayList<>();
-        grunnlagSomSkalKopieres.addAll(vurdertVilkårGrunnlag);
-        grunnlagSomSkalKopieres.addAll(foreslåttUtGrunnlag);
-        grunnlagSomSkalKopieres.addAll(foreslåttGrunnlag);
+//        grunnlagSomSkalKopieres.addAll(vurdertVilkårGrunnlag);
+//        grunnlagSomSkalKopieres.addAll(foreslåttUtGrunnlag);
+//        grunnlagSomSkalKopieres.addAll(foreslåttGrunnlag);
         return grunnlagSomSkalKopieres;
     }
 

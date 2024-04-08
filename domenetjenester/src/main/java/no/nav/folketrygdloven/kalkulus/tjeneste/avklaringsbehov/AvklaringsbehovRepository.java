@@ -51,6 +51,14 @@ public class AvklaringsbehovRepository {
                 .sorted(Comparator.naturalOrder())
                 .collect(Collectors.toList());
     }
+    public List<AvklaringsbehovEntitet> hentAvklaringsbehovforKobling(Long koblingId) {
+        TypedQuery<AvklaringsbehovEntitet> query = entityManager.createQuery("FROM AvklaringsbehovEntitet ab " +
+            "WHERE ab.kobling.id = :kobling", AvklaringsbehovEntitet.class);
+        query.setParameter("kobling", koblingId);
+        return query.getResultList().stream()
+            .sorted(Comparator.naturalOrder())
+            .collect(Collectors.toList());
+    }
 
     public List<AvklaringsbehovEntitet> hentAvklaringsbehovForKobling(KoblingEntitet kobling) {
         TypedQuery<AvklaringsbehovEntitet> query = entityManager.createQuery("FROM AvklaringsbehovEntitet ab WHERE kobling = :kobling", AvklaringsbehovEntitet.class);

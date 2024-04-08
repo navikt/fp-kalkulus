@@ -90,7 +90,7 @@ public class HentKalkulusRestTjeneste {
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent beregningsgrunnlagDto for angitt behandling som brukes frontend", summary = ("Returnerer beregningsgrunnlagDto for behandling."), tags = "beregningsgrunnlag")
     @BeskyttetRessurs(actionType = ActionType.READ, resourceType = ResourceType.FAGSAK)
-    @Path("/grunnlagGui")
+    @Path("/grunnlag/gui")
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response hentBeregningsgrunnlagDtoListe(@TilpassetAbacAttributt(supplierClass = HentBeregningsgrunnlagGUIRequestAbacSupplier.class) @NotNull @Valid HentBeregningsgrunnlagGUIRequest request) {
         var koblingEntitet = koblingTjeneste.hentFor(new KoblingReferanse(request.behandlingUuid()));
@@ -99,8 +99,7 @@ public class HentKalkulusRestTjeneste {
             return Response.noContent().build();
         }
         var guiDto = hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(guiInput.get());
-        List<BeregningsgrunnlagPrReferanse<BeregningsgrunnlagDto>> respons = Collections.singletonList(new BeregningsgrunnlagPrReferanse<>(guiInput.get().getKoblingReferanse().getKoblingUuid(), guiDto));
-        return Response.ok(new BeregningsgrunnlagListe(respons)).build();
+        return Response.ok(guiDto).build();
     }
 
     private BeregningsgrunnlagDto hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(BeregningsgrunnlagGUIInput guiInput) {

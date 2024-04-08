@@ -1,10 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import no.nav.folketrygdloven.kalkulus.beregning.MapStegTilTilstand;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 
@@ -21,20 +17,19 @@ class RullTilbakeTilFastsattInn implements RullTilbakeBeregningsgrunnlag {
     }
 
     @Override
-    public void rullTilbakeGrunnlag(BeregningsgrunnlagTilstand tilstand, Set<Long> rullTilbakeKoblinger) {
-            var koblingerMedAvklaringsbehovIStegUt = finnKoblingerMedAvklaringsbehovIStegUt(tilstand, rullTilbakeKoblinger);
-            beregningsgrunnlagRepository.reaktiverSisteMedTilstand(tilstand, koblingerMedAvklaringsbehovIStegUt);
+    public void rullTilbakeGrunnlag(BeregningsgrunnlagTilstand tilstand, Long rullTilbakeKobling) {
+            var harAvklaringsbehovIStegUt = harKoblingAvklaringsbehovIStegUt(tilstand, rullTilbakeKobling);
+            beregningsgrunnlagRepository.reaktiverSisteMedTilstand(tilstand, rullTilbakeKobling);
 
-            var koblingerUtenAvklaringsbehovIStegUt = rullTilbakeKoblinger.stream().filter(k -> !koblingerMedAvklaringsbehovIStegUt.contains(k)).collect(Collectors.toSet());
-            beregningsgrunnlagRepository.reaktiverForrigeGrunnlagForKoblinger(koblingerUtenAvklaringsbehovIStegUt, tilstand);
+            if (!harAvklaringsbehovIStegUt) {
+                beregningsgrunnlagRepository.reaktiverForrigeGrunnlagForKoblinger(rullTilbakeKobling, tilstand);
+            }
     }
 
 
-    private Set<Long> finnKoblingerMedAvklaringsbehovIStegUt(BeregningsgrunnlagTilstand tilstand, Set<Long> rullTilbakeKoblinger) {
-        return avklaringsbehovTjeneste.hentAlleAvklaringsbehovForKoblinger(rullTilbakeKoblinger).stream()
-                .filter(a -> MapStegTilTilstand.mapTilStegUtTilstand(a.getStegFunnet()).map(tilstand::equals).orElse(false))
-                .map(AvklaringsbehovEntitet::getKoblingId)
-                .collect(Collectors.toSet());
+    private boolean harKoblingAvklaringsbehovIStegUt(BeregningsgrunnlagTilstand tilstand, Long rullTilbakeKobling) {
+        return avklaringsbehovTjeneste.hentAlleAvklaringsbehovForKobling(rullTilbakeKobling).stream()
+                .anyMatch(a -> MapStegTilTilstand.mapTilStegUtTilstand(a.getStegFunnet()).map(tilstand::equals).orElse(false));
     }
 
 

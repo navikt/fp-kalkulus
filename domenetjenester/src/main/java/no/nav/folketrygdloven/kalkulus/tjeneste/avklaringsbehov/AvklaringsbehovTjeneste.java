@@ -186,8 +186,8 @@ public class AvklaringsbehovTjeneste {
         return avklaringsbehovRepository.hentAvklaringsbehovForKobling(koblingEntitet);
     }
 
-    public void avbrytAlleAvklaringsbehovEtterEllerISteg(Set<Long> koblingIder, BeregningSteg steg, boolean skalKjøreSteget) {
-        List<AvklaringsbehovEntitet> alleApPåKobling = avklaringsbehovRepository.hentAvklaringsbehovforKoblinger(koblingIder);
+    public void avbrytAlleAvklaringsbehovEtterEllerISteg(Long koblingId, BeregningSteg steg, boolean skalKjøreSteget) {
+        List<AvklaringsbehovEntitet> alleApPåKobling = avklaringsbehovRepository.hentAvklaringsbehovforKobling(koblingId);
         alleApPåKobling.forEach(ap -> {
                     if (skalKjøreSteget && !ap.getStegFunnet().erFør(steg)) {
                         avbrytAvklaringsbehov(ap.getKoblingId(), ap);
