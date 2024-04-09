@@ -15,13 +15,14 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import no.nav.folketrygdloven.fpkalkulus.kontrakt.EnkelFpkalkulusRequestDto;
+
 import org.slf4j.MDC;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import no.nav.folketrygdloven.fpkalkulus.kontrakt.HentBeregningsgrunnlagGUIRequest;
-import no.nav.folketrygdloven.fpkalkulus.kontrakt.HentBeregningsgrunnlagRequestDto;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagGuiTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.KalkulatorGuiInterface;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
@@ -72,7 +73,7 @@ public class HentKalkulusRestTjeneste {
     @BeskyttetRessurs(actionType = ActionType.READ, resourceType = ResourceType.FAGSAK)
     @Path("/grunnlag")
     @SuppressWarnings({"findsecbugs:JAXRS_ENDPOINT", "resource"})
-    public Response hentAktiveBeregningsgrunnlagGrunnlag(@TilpassetAbacAttributt(supplierClass = HentBeregningsgrunnlagRequestAbacSupplier.class) @NotNull @Valid HentBeregningsgrunnlagRequestDto request) {
+    public Response hentAktiveBeregningsgrunnlagGrunnlag(@TilpassetAbacAttributt(supplierClass = EnkelFpkalkulusRequestAbacSupplier.class) @NotNull @Valid EnkelFpkalkulusRequestDto request) {
         var koblingReferanse = new KoblingReferanse(request.behandlingUuid());
         var kobling = koblingTjeneste.hentFor(koblingReferanse);
         var beregningsgrunnlagGrunnlagDto = kobling.flatMap(k -> beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(k.getId()))
@@ -111,14 +112,6 @@ public class HentKalkulusRestTjeneste {
         return beregningsgrunnlagDto;
     }
 
-    public static class HentBeregningsgrunnlagRequestAbacSupplier implements Function<Object, AbacDataAttributter> {
-        @Override
-        public AbacDataAttributter apply(Object o) {
-            var req = (HentBeregningsgrunnlagRequestDto) o;
-            return AbacDataAttributter.opprett().leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid());
-        }
-    }
-
     public static class HentBeregningsgrunnlagGUIRequestAbacSupplier implements Function<Object, AbacDataAttributter> {
         @Override
         public AbacDataAttributter apply(Object o) {
@@ -126,4 +119,13 @@ public class HentKalkulusRestTjeneste {
             return AbacDataAttributter.opprett().leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid());
         }
     }
+
+    public static class EnkelFpkalkulusRequestAbacSupplier implements Function<Object, AbacDataAttributter> {
+        @Override
+        public AbacDataAttributter apply(Object o) {
+            var req = (EnkelFpkalkulusRequestDto) o;
+            return AbacDataAttributter.opprett().leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid());
+        }
+    }
+
 }
