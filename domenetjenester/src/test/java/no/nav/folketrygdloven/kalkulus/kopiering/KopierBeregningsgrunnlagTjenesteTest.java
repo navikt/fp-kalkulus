@@ -6,25 +6,13 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
-import no.nav.vedtak.sikkerhet.kontekst.BasisKontekst;
-import no.nav.vedtak.sikkerhet.kontekst.KontekstHolder;
-
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetGraderingDto;
-import no.nav.folketrygdloven.kalkulus.beregning.v1.AndelGraderingDto;
-import no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag;
-import no.nav.folketrygdloven.kalkulus.beregning.v1.GraderingDto;
-import no.nav.folketrygdloven.kalkulus.beregning.v1.RefusjonskravDatoDto;
 import no.nav.folketrygdloven.kalkulus.dbstoette.JpaExtension;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovKontrollTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforholdEntitet;
@@ -41,58 +29,27 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Årsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Aktivitetsgrad;
-import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
-import no.nav.folketrygdloven.kalkulus.iay.IayProsent;
-import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.AktivitetsAvtaleDto;
-import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidDto;
-import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.YrkesaktivitetDto;
-import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.InntekterDto;
-import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.InntektsmeldingDto;
-import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.InntektsmeldingerDto;
-import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.UtbetalingDto;
-import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.UtbetalingsPostDto;
-import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
-import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.AnvistAndel;
-import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseAnvistDto;
-import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseDto;
-import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelserDto;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
-import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
-import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
-import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningPeriodeDto;
-import no.nav.folketrygdloven.kalkulus.request.v1.KopierBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
+import no.nav.vedtak.sikkerhet.kontekst.BasisKontekst;
+import no.nav.vedtak.sikkerhet.kontekst.KontekstHolder;
 
 @ExtendWith({JpaExtension.class})
 class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
 
     public static final Saksnummer SAK = new Saksnummer("SAK");
     public static final AktørId AKTØR_ID = new AktørId("9999999999999");
-    private final InternArbeidsforholdRefDto ref = new InternArbeidsforholdRefDto(UUID.randomUUID().toString());
-    private final Periode periode = new Periode(LocalDate.now(), LocalDate.now().plusMonths(2));
-    private final Organisasjon organisasjon = new Organisasjon("974652269");
-    private final no.nav.folketrygdloven.kalkulus.felles.v1.Beløp beløpDto = no.nav.folketrygdloven.kalkulus.felles.v1.Beløp.fra(BigDecimal.TEN);
-
 
     public static final LocalDate STP = LocalDate.now();
     private BeregningsgrunnlagRepository repository;
@@ -119,8 +76,8 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
     @Test
     void skal_kopiere_grunnlag_til_ny_kobling() {
         KontekstHolder.setKontekst(BasisKontekst.forProsesstaskUtenSystembruker());
-        var originalKoblingReferanse = UUID.randomUUID();
-        var originalKobling = new KoblingEntitet(new KoblingReferanse(originalKoblingReferanse), FagsakYtelseType.PLEIEPENGER_SYKT_BARN, SAK, AKTØR_ID);
+        var originalKoblingReferanse = new KoblingReferanse(UUID.randomUUID());
+        var originalKobling = new KoblingEntitet(originalKoblingReferanse, FagsakYtelseType.PLEIEPENGER_SYKT_BARN, SAK, AKTØR_ID);
         koblingRepository.lagre(originalKobling);
 
         avklaringsbehovTjeneste.opprettEllerGjennopprettAvklaringsbehov(originalKobling.getId(), AvklaringsbehovDefinisjon.AVKLAR_AKTIVITETER);
@@ -129,18 +86,12 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         var gr1 = repository.lagre(originalKobling.getId(), byggGrunnlag(200000), BeregningsgrunnlagTilstand.FASTSATT);
 
         LocalDateTime førKopiering = LocalDateTime.now();
-        var nyReferanse2 = UUID.randomUUID();
-        tjeneste.kopierGrunnlagOgOpprettKoblinger(
-                List.of(new KopierBeregningRequest(nyReferanse2, originalKoblingReferanse)),
-                FagsakYtelseType.PLEIEPENGER_SYKT_BARN,
-                SAK,
-                BeregningSteg.FAST_BERGRUNN,
-                null
-        );
+        var nyReferanse = new KoblingReferanse(UUID.randomUUID());
+        tjeneste.kopierGrunnlagOgOpprettKoblinger(nyReferanse, originalKoblingReferanse, SAK, BeregningSteg.FAST_BERGRUNN);
 
         var alleKoblinger = koblingRepository.hentAlleKoblingerForSaksnummer(SAK);
         assertThat(alleKoblinger.size()).isEqualTo(2);
-        var nyKobling = alleKoblinger.stream().filter(k -> k.getKoblingReferanse().getReferanse().equals(nyReferanse2)).findFirst();
+        var nyKobling = alleKoblinger.stream().filter(k -> k.getKoblingReferanse().equals(nyReferanse)).findFirst();
         assertThat(nyKobling).isPresent();
 
         var grNyKobling = repository.hentBeregningsgrunnlagGrunnlagEntitet(nyKobling.get().getId());
@@ -157,131 +108,52 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
     }
 
     @Test
-    @Disabled
     void skal_kopiere_grunnlag_fra_forrige_original_kobling_til_ny_kobling() {
-        var forrigeOriginalKoblingReferanse = UUID.randomUUID();
-        var forrigeOriginalKobling = new KoblingEntitet(new KoblingReferanse(forrigeOriginalKoblingReferanse), FagsakYtelseType.PLEIEPENGER_SYKT_BARN, SAK, AKTØR_ID);
+        var forrigeOriginalKoblingReferanse = new KoblingReferanse(UUID.randomUUID());
+        var forrigeOriginalKobling = new KoblingEntitet(forrigeOriginalKoblingReferanse, FagsakYtelseType.PLEIEPENGER_SYKT_BARN, SAK, AKTØR_ID);
         koblingRepository.lagre(forrigeOriginalKobling);
         var originalKoblingReferanse = UUID.randomUUID();
-        var originalKobling = new KoblingEntitet(new KoblingReferanse(originalKoblingReferanse), FagsakYtelseType.PLEIEPENGER_SYKT_BARN, SAK, AKTØR_ID);
+        var originalKobling = new KoblingEntitet(new KoblingReferanse(originalKoblingReferanse), FagsakYtelseType.PLEIEPENGER_SYKT_BARN, SAK,
+            AKTØR_ID);
         koblingRepository.lagre(originalKobling);
 
         koblingRepository.lagre(new KoblingRelasjon(originalKobling.getId(), forrigeOriginalKobling.getId()));
 
-
         var gr1 = repository.lagre(forrigeOriginalKobling.getId(), byggGrunnlag(200000), BeregningsgrunnlagTilstand.FASTSATT);
 
-        var nyReferanse2 = UUID.randomUUID();
-        tjeneste.kopierGrunnlagOgOpprettKoblinger(
-                List.of(new KopierBeregningRequest(nyReferanse2, originalKoblingReferanse)),
-                FagsakYtelseType.PLEIEPENGER_SYKT_BARN,
-                SAK,
-                BeregningSteg.FAST_BERGRUNN,
-                null
-        );
+        var nyReferanse = new KoblingReferanse(UUID.randomUUID());
+        tjeneste.kopierGrunnlagOgOpprettKoblinger(nyReferanse, forrigeOriginalKoblingReferanse, SAK, BeregningSteg.FAST_BERGRUNN);
 
         var alleKoblinger = koblingRepository.hentAlleKoblingerForSaksnummer(SAK);
         assertThat(alleKoblinger.size()).isEqualTo(3);
-        var nyKobling = alleKoblinger.stream().filter(k -> k.getKoblingReferanse().getReferanse().equals(nyReferanse2)).findFirst();
+        var nyKobling = alleKoblinger.stream().filter(k -> k.getKoblingReferanse().equals(nyReferanse)).findFirst();
         assertThat(nyKobling).isPresent();
 
         var grNyKobling = repository.hentBeregningsgrunnlagGrunnlagEntitet(nyKobling.get().getId());
         assertThat(finnBrutto(grNyKobling.get())).isEqualTo(finnBrutto(gr1));
-
     }
-
 
     private BigDecimal finnBrutto(BeregningsgrunnlagGrunnlagEntitet grNyKobling1) {
         return grNyKobling1.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBruttoPrÅr().getVerdi();
     }
 
-
-    private KalkulatorInputDto byggKalkulatorInput() {
-        GraderingDto graderingDto = new GraderingDto(periode, Aktivitetsgrad.fra(100));
-        AndelGraderingDto andelGraderingDto = new AndelGraderingDto(AktivitetStatus.ARBEIDSTAKER, organisasjon,
-                null,
-                List.of(graderingDto));
-        AktivitetGraderingDto aktivitetGraderingDto = new AktivitetGraderingDto(List.of(andelGraderingDto));
-
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = byggIAY();
-        OpptjeningAktiviteterDto opptjeningAktiviteter = new OpptjeningAktiviteterDto(
-                List.of(new OpptjeningPeriodeDto(OpptjeningAktivitetType.ARBEID, periode, organisasjon,
-                        null)));
-        LocalDate skjæringstidspunkt = periode.getFom();
-
-        KalkulatorInputDto kalkulatorInputDto = new KalkulatorInputDto(iayGrunnlag, opptjeningAktiviteter,
-                skjæringstidspunkt);
-        kalkulatorInputDto.medYtelsespesifiktGrunnlag(
-                new ForeldrepengerGrunnlag(BigDecimal.valueOf(100), false, aktivitetGraderingDto,
-                        Collections.emptyList()));
-        kalkulatorInputDto.medRefusjonskravDatoer(List
-                .of(new RefusjonskravDatoDto(organisasjon, periode.getFom(),
-                        periode.getFom().minusMonths(1), true)));
-        kalkulatorInputDto.medRefusjonskravDatoer(List
-                .of(new RefusjonskravDatoDto(organisasjon, periode.getFom(),
-                        periode.getFom().minusMonths(1), true)));
-
-        return kalkulatorInputDto;
-    }
-
-
     private BeregningsgrunnlagGrunnlagBuilder byggGrunnlag(int verdi) {
-        BeregningsgrunnlagEntitet bg = BeregningsgrunnlagEntitet.builder()
-                .medSkjæringstidspunkt(STP)
-                .medGrunnbeløp(new Beløp(100000))
-                .build();
+        BeregningsgrunnlagEntitet bg = BeregningsgrunnlagEntitet.builder().medSkjæringstidspunkt(STP).medGrunnbeløp(new Beløp(100000)).build();
         BeregningsgrunnlagPeriodeEntitet.builder()
-                .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
-                .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelEntitet.builder()
-                        .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-                        .medAndelsnr(1L)
-                        .medBGAndelArbeidsforhold(BGAndelArbeidsforholdEntitet.builder().medArbeidsgiver(Arbeidsgiver.virksomhet("999999999")))
-                        .medGrunnlagPrÅr(lagBeregnet(verdi)))
-                .build(bg);
+            .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
+            .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelEntitet.builder()
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medAndelsnr(1L)
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdEntitet.builder().medArbeidsgiver(Arbeidsgiver.virksomhet("999999999")))
+                .medGrunnlagPrÅr(lagBeregnet(verdi)))
+            .build(bg);
         var gr = BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
-                .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
-                        .medSkjæringstidspunktOpptjening(STP)
-                        .build())
-                .medBeregningsgrunnlag(bg);
+            .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder().medSkjæringstidspunktOpptjening(STP).build())
+            .medBeregningsgrunnlag(bg);
         return gr;
     }
 
     private Årsgrunnlag lagBeregnet(int verdi) {
         return new Årsgrunnlag(new Beløp(verdi), null, null, null, null, new Beløp(verdi));
     }
-
-
-    private InntektArbeidYtelseGrunnlagDto byggIAY() {
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = new InntektArbeidYtelseGrunnlagDto();
-        iayGrunnlag.medArbeidDto(
-                new ArbeidDto(List.of(new YrkesaktivitetDto(organisasjon, ref,
-                        ArbeidType.ORDINÆRT_ARBEIDSFORHOLD,
-                        List.of(new AktivitetsAvtaleDto(periode, null, IayProsent.fra(100)),
-                                new AktivitetsAvtaleDto(periode, null, null))))));
-        iayGrunnlag.medYtelserDto(new YtelserDto(byggYtelseDto()));
-        iayGrunnlag.medInntekterDto(
-                new InntekterDto(List.of(new UtbetalingDto(InntektskildeType.INNTEKT_BEREGNING,
-                        List.of(new UtbetalingsPostDto(periode, InntektspostType.LØNN,
-                                no.nav.folketrygdloven.kalkulus.felles.v1.Beløp.fra(1000)))))));
-        iayGrunnlag.medInntektsmeldingerDto(
-                new InntektsmeldingerDto(List.of(new InntektsmeldingDto(organisasjon,
-                        no.nav.folketrygdloven.kalkulus.felles.v1.Beløp.fra(100), List.of(), List.of(), null, null,
-                        null, null, null))));
-        return iayGrunnlag;
-    }
-
-    private List<YtelseDto> byggYtelseDto() {
-        YtelseAnvistDto ytelseAnvistDto = new YtelseAnvistDto(periode, beløpDto, beløpDto, IayProsent.fra(10),
-                List.of(new AnvistAndel(new Organisasjon("974652269"),
-                        new InternArbeidsforholdRefDto("r8j3wr8w3"),
-                        beløpDto,
-                        IayProsent.fra(100),
-                        IayProsent.fra(100),
-                        Inntektskategori.ARBEIDSTAKER)));
-        return List.of(new YtelseDto(beløpDto, Set.of(ytelseAnvistDto), YtelseType.FORELDREPENGER,
-                periode,
-                null));
-    }
-
-
 }

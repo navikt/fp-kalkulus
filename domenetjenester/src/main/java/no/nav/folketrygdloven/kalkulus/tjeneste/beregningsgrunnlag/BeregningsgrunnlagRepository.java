@@ -236,9 +236,9 @@ public class BeregningsgrunnlagRepository {
      * @return Liste med grunnlag fra gitt {@link BeregningsgrunnlagTilstand} som ble opprettet sist pr kobling
      */
     @SuppressWarnings("unchecked")
-    public Optional<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(Long koblingId,
-                                                                                                                           BeregningsgrunnlagTilstand beregningsgrunnlagTilstand,
-                                                                                                                           LocalDateTime opprettetTidMax) {
+    public Optional<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitetForKobling(Long koblingId,
+                                                                                                            BeregningsgrunnlagTilstand beregningsgrunnlagTilstand,
+                                                                                                            LocalDateTime opprettetTidMax) {
         List<BeregningsgrunnlagGrunnlagEntitet> resultatListe;
         if (opprettetTidMax != null) {
             Query query = entityManager.createNativeQuery(
@@ -470,7 +470,7 @@ public class BeregningsgrunnlagRepository {
     }
 
     public void reaktiverSisteMedTilstand(BeregningsgrunnlagTilstand tilstand, Long koblingId) {
-        var grunnlagForKobling = hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingId, tilstand, null);
+        var grunnlagForKobling = hentSisteBeregningsgrunnlagGrunnlagEntitetForKobling(koblingId, tilstand, null);
         grunnlagForKobling.ifPresent(g -> {
             endreAktivOgLagre(g, true);
             entityManager.flush();
@@ -508,7 +508,7 @@ public class BeregningsgrunnlagRepository {
     }
 
     private LocalDateTime finnMaksOpprettetTidForGrunnlagPrKobling(Long kobling, BeregningsgrunnlagTilstand tilstand) {
-        var sisteGrunnlagFraTilstand = hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(
+        var sisteGrunnlagFraTilstand = hentSisteBeregningsgrunnlagGrunnlagEntitetForKobling(
                 kobling,
                 tilstand,
                 null);
@@ -518,7 +518,7 @@ public class BeregningsgrunnlagRepository {
         var nesteTilstand = tilstand;
         while (sisteGrunnlagFraTilstand.isEmpty()) {
             nesteTilstand = BeregningsgrunnlagTilstand.finnNesteTilstand(nesteTilstand).orElseThrow(() -> new IllegalStateException("Kunne ikke finne neste tilstand fordi siste tilstand er nådd"));
-            sisteGrunnlagFraTilstand = hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(kobling,
+            sisteGrunnlagFraTilstand = hentSisteBeregningsgrunnlagGrunnlagEntitetForKobling(kobling,
                     nesteTilstand,
                     null);
         }
