@@ -98,6 +98,18 @@ create sequence seq_kobling_relasjon
     minvalue 1000000
     increment by 50;
 
+create sequence seq_bg_besteberegning_grunnlag
+    minvalue 1000000
+    increment by 50;
+
+create sequence seq_besteberegning_maaned
+    minvalue 1000000
+    increment by 50;
+
+create sequence seq_besteberegning_inntekt
+    minvalue 1000000
+    increment by 50;
+
 create table beregningsgrunnlag
 (
     id                 bigint                                       not null
@@ -1129,3 +1141,104 @@ create index idx_rs_periode_01
 
 create index idx_rs_periode_02
     on regel_sporing_periode (regel_type);
+
+create table bg_besteberegning_grunnlag
+(
+    ID                    bigint                                       not null
+        constraint pk_bg_besteberegning_grunnlag
+            primary key,
+    beregningsgrunnlag_id bigint                                       not null
+        constraint fk_bg_besteberegning_grunnlag
+            references beregningsgrunnlag,
+    avvik_belop           numeric(19, 2),
+    opprettet_av          varchar(20)  default 'VL'::character varying not null,
+    opprettet_tid         timestamp(3) default CURRENT_TIMESTAMP       not null,
+    versjon               int          default 0                       not null,
+    endret_av             varchar(20),
+    endret_tid            timestamp(3)
+);
+
+comment on table bg_besteberegning_grunnlag is 'Grunnlag for vurdering av besteberegning';
+
+comment on column bg_besteberegning_grunnlag.id is 'PK';
+
+comment on column bg_besteberegning_grunnlag.beregningsgrunnlag_id is 'FK til beregningsgrunnlag';
+
+comment on column bg_besteberegning_grunnlag.avvik_belop is 'Hvor mye avviker beregningen mellom første og tredje ledd';
+
+create index idx_bg_besteberegning_1
+    on bg_besteberegning_grunnlag (beregningsgrunnlag_id)
+;
+
+create table bg_besteberegning_maaned
+(
+    id                        bigint                                       not null
+        constraint PK_BG_BESTEBEREGNING_MAANED
+            primary key,
+    besteberegninggrunnlag_id bigint                                       not null
+        constraint fk_bg_besteberegning_maaned
+            references bg_besteberegning_grunnlag,
+    fom                       DATE                                         not null,
+    tom                       DATE                                         not null,
+    opprettet_av              varchar(20)  default 'VL'::character varying not null,
+    opprettet_tid             timestamp(3) default CURRENT_TIMESTAMP       not null,
+    versjon                   int          default 0                       not null,
+    endret_av                 varchar(20),
+    endret_tid                timestamp(3)
+)
+;
+
+comment on table bg_besteberegning_maaned is 'Aggregat for inntekter pr måned for månedene brukt til beregning av besteberegning';
+
+comment on column bg_besteberegning_maaned.id is 'PK';
+
+comment on column bg_besteberegning_maaned.besteberegninggrunnlag_id is 'FK til besteberegninggrunnlag';
+
+comment on column bg_besteberegning_maaned.fom is 'Første dato i måned';
+
+comment on column bg_besteberegning_maaned.tom is 'Siste dato i måned';
+
+create index idx_bg_besteberegning_maaned_1
+    on bg_besteberegning_maaned (besteberegninggrunnlag_id)
+;
+
+create table bg_besteberegning_inntekt
+(
+    id                        bigint                                       not null
+        constraint pk_bg_besteberegning_inntekt
+            primary key,
+    besteberegning_maaned_id  bigint                                       not null
+        constraint fk_bg_besteberegning_inntekt
+            references bg_besteberegning_maaned,
+    arbeidsgiver_aktor_id     varchar(100),
+    arbeidsgiver_orgnr        varchar(100),
+    arbeidsforhold_intern_id  uuid,
+    opptjening_aktivitet_type varchar(100) default '-'                     not null,
+    inntekt                   numeric(19, 2)                               not null,
+    opprettet_av              varchar(20)  default 'VL'::character varying not null,
+    opprettet_tid             timestamp(3) default CURRENT_TIMESTAMP       not null,
+    versjon                   int          default 0                       not null,
+    endret_av                 varchar(20),
+    endret_tid                timestamp(3)
+)
+;
+
+comment on table bg_besteberegning_inntekt is 'Inntekt for en aktivitet i en måned.';
+
+comment on column bg_besteberegning_inntekt.id is 'PK';
+
+comment on column bg_besteberegning_inntekt.besteberegning_maaned_id is 'FK til månedsaggregat';
+
+comment on column bg_besteberegning_inntekt.arbeidsgiver_aktor_id is 'Arbeidsgiver aktør id';
+
+comment on column bg_besteberegning_inntekt.arbeidsgiver_orgnr is 'Arbeidsgiver organisasjonsnummer';
+
+comment on column bg_besteberegning_inntekt.arbeidsforhold_intern_id is 'Arbeidsforhold intern-id';
+
+comment on column bg_besteberegning_inntekt.opptjening_aktivitet_type is 'Opptjeningaktivitettype';
+
+comment on column bg_besteberegning_inntekt.inntekt is 'Inntekt i måned';
+
+create index idx_besteberegning_inntekt_1
+    on bg_besteberegning_inntekt (besteberegning_maaned_id)
+;
