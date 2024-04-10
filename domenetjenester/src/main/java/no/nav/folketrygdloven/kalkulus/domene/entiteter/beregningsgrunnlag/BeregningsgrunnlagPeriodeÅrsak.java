@@ -94,8 +94,7 @@ public class BeregningsgrunnlagPeriodeÅrsak extends BaseEntitet {
             return this;
         }
 
-        public BeregningsgrunnlagPeriodeÅrsak build(BeregningsgrunnlagPeriodeEntitet beregningsgrunnlagPeriode) {
-            beregningsgrunnlagPeriode.addBeregningsgrunnlagPeriodeÅrsak(beregningsgrunnlagPeriodeÅrsakMal);
+        public BeregningsgrunnlagPeriodeÅrsak build() {
             return beregningsgrunnlagPeriodeÅrsakMal;
         }
     }

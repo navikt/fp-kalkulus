@@ -68,9 +68,9 @@ public class KalkulatorTilEntitetMapper {
         builder.medSkjæringstidspunkt(beregningsgrunnlagFraKalkulus.getSkjæringstidspunkt());
 
         //lister
-        beregningsgrunnlagFraKalkulus.getAktivitetStatuser().forEach(beregningsgrunnlagAktivitetStatus -> builder.leggTilAktivitetStatus(KalkulatorTilBGMapper.mapAktivitetStatus(beregningsgrunnlagAktivitetStatus)));
+        beregningsgrunnlagFraKalkulus.getAktivitetStatuser().forEach(beregningsgrunnlagAktivitetStatus -> builder.leggTilAktivitetstatus(KalkulatorTilBGMapper.mapAktivitetStatus(beregningsgrunnlagAktivitetStatus)));
         beregningsgrunnlagFraKalkulus.getBeregningsgrunnlagPerioder().forEach(beregningsgrunnlagPeriode -> builder.leggTilBeregningsgrunnlagPeriode(KalkulatorTilBGMapper.mapBeregningsgrunnlagPeriode(beregningsgrunnlagPeriode)));
-        builder.leggTilFaktaOmBeregningTilfeller(new ArrayList<>(beregningsgrunnlagFraKalkulus.getFaktaOmBeregningTilfeller()));
+        beregningsgrunnlagFraKalkulus.getFaktaOmBeregningTilfeller().forEach(builder::leggTilFaktaTilfelle);
         beregningsgrunnlagFraKalkulus.getSammenligningsgrunnlagPrStatusListe().forEach(sammenligningsgrunnlagPrStatus -> builder.leggTilSammenligningsgrunnlag(KalkulatorTilBGMapper.mapSammenligningsgrunnlagMedStatus(sammenligningsgrunnlagPrStatus)));
 
         return builder.build();

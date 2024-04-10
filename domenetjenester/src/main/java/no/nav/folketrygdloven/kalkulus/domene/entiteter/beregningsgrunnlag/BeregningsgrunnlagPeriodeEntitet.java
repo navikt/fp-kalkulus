@@ -6,8 +6,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import jakarta.persistence.AttributeOverride;
@@ -250,6 +252,11 @@ public class BeregningsgrunnlagPeriodeEntitet extends BaseEntitet {
                 + ">";
     }
 
+    private long finnNesteAndelsnr() {
+        var forrigeAndelsnr = beregningsgrunnlagPrStatusOgAndelList.stream().mapToLong(BeregningsgrunnlagPrStatusOgAndelEntitet::getAndelsnr).max().orElse(0L);
+        return forrigeAndelsnr + 1L;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -276,7 +283,11 @@ public class BeregningsgrunnlagPeriodeEntitet extends BaseEntitet {
 
         public Builder leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelEntitet.Builder prStatusOgAndelBuilder) {
             verifiserKanModifisere();
-            prStatusOgAndelBuilder.build(kladd);
+            var andelsnr = kladd.finnNesteAndelsnr();
+            var andel = prStatusOgAndelBuilder.medAndelsnr(andelsnr).build();
+            andel.setBeregningsgrunnlagPeriode(kladd);
+            kladd.addBeregningsgrunnlagPrStatusOgAndel(andel);
+            kladd.updateBruttoPrÅr();
             return this;
         }
 
@@ -356,15 +367,13 @@ public class BeregningsgrunnlagPeriodeEntitet extends BaseEntitet {
             if (!kladd.getPeriodeÅrsaker().contains(periodeÅrsak)) {
                 BeregningsgrunnlagPeriodeÅrsak.Builder bgPeriodeÅrsakBuilder = new BeregningsgrunnlagPeriodeÅrsak.Builder();
                 bgPeriodeÅrsakBuilder.medPeriodeÅrsak(periodeÅrsak);
-                bgPeriodeÅrsakBuilder.build(kladd);
+                kladd.addBeregningsgrunnlagPeriodeÅrsak(bgPeriodeÅrsakBuilder.build());
             }
             return this;
         }
 
-        public BeregningsgrunnlagPeriodeEntitet build(BeregningsgrunnlagEntitet beregningsgrunnlag) {
+        public BeregningsgrunnlagPeriodeEntitet build() {
             verifyStateForBuild();
-            beregningsgrunnlag.leggTilBeregningsgrunnlagPeriode(kladd);
-
             Long dagsatsSum = kladd.beregningsgrunnlagPrStatusOgAndelList.stream()
                     .map(BeregningsgrunnlagPrStatusOgAndelEntitet::getDagsats)
                     .filter(Objects::nonNull)
@@ -382,8 +391,23 @@ public class BeregningsgrunnlagPeriodeEntitet extends BaseEntitet {
         }
 
         private void verifyStateForBuild() {
+            verifiserAndelsnr();
             Objects.requireNonNull(kladd.beregningsgrunnlagPrStatusOgAndelList, "beregningsgrunnlagPrStatusOgAndelList");
             Objects.requireNonNull(kladd.periode, "beregningsgrunnlagPeriodeFom");
         }
+
+        private void verifiserAndelsnr() {
+            Set<Long> andelsnrIBruk = new HashSet<>();
+            kladd.beregningsgrunnlagPrStatusOgAndelList.stream()
+                .map(BeregningsgrunnlagPrStatusOgAndelEntitet::getAndelsnr)
+                .forEach(andelsnr -> {
+                    if (andelsnrIBruk.contains(andelsnr)) {
+                        throw new IllegalStateException("Utviklerfeil: Kan ikke bygge andel. Andelsnr eksisterer allerede på en annen andel i samme bgPeriode.");
+                    }
+                    andelsnrIBruk.add(andelsnr);
+                });
+        }
+
+
     }
 }

@@ -126,9 +126,8 @@ public class BeregningsgrunnlagAktivitetStatusEntitet extends BaseEntitet {
             return this;
         }
 
-        public BeregningsgrunnlagAktivitetStatusEntitet build(BeregningsgrunnlagEntitet beregningsgrunnlag) {
+        public BeregningsgrunnlagAktivitetStatusEntitet build() {
             verifyStateForBuild();
-            beregningsgrunnlag.leggTilBeregningsgrunnlagAktivitetStatus(beregningsgrunnlagAktivitetStatusMal);
             return beregningsgrunnlagAktivitetStatusMal;
         }
 

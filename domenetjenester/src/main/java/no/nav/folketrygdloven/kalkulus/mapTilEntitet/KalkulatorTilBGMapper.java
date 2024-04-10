@@ -24,15 +24,15 @@ import no.nav.folketrygdloven.kalkulus.mappers.VerdityperMapper;
 
 
 public class KalkulatorTilBGMapper {
-    public static BeregningsgrunnlagAktivitetStatusEntitet.Builder mapAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto fraKalkulus) {
+    public static BeregningsgrunnlagAktivitetStatusEntitet mapAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto fraKalkulus) {
         BeregningsgrunnlagAktivitetStatusEntitet.Builder builder = new BeregningsgrunnlagAktivitetStatusEntitet.Builder();
         builder.medAktivitetStatus(fraKalkulus.getAktivitetStatus());
         builder.medHjemmel(fraKalkulus.getHjemmel());
 
-        return builder;
+        return builder.build();
     }
 
-    public static BeregningsgrunnlagPeriodeEntitet.Builder mapBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeDto fraKalkulus) {
+    public static BeregningsgrunnlagPeriodeEntitet mapBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeDto fraKalkulus) {
         BeregningsgrunnlagPeriodeEntitet.Builder builder = new BeregningsgrunnlagPeriodeEntitet.Builder();
 
         //med
@@ -49,7 +49,7 @@ public class KalkulatorTilBGMapper {
         fraKalkulus.getPeriodeÅrsaker().forEach(builder::leggTilPeriodeÅrsak);
         fraKalkulus.getBeregningsgrunnlagPrStatusOgAndelList().forEach(statusOgAndel -> builder.leggTilBeregningsgrunnlagPrStatusOgAndel(mapStatusOgAndel(statusOgAndel)));
 
-        return builder;
+        return builder.build();
     }
 
     public static SammenligningsgrunnlagPrStatusEntitet mapSammenligningsgrunnlagMedStatus(SammenligningsgrunnlagPrStatusDto fraKalkulus) {
@@ -122,7 +122,7 @@ public class KalkulatorTilBGMapper {
         return verdi == null ? null : new Promille(verdi);
     }
 
-    private static BGAndelArbeidsforholdEntitet.Builder mapBGAndelArbeidsforhold(BGAndelArbeidsforholdDto fraKalkulus) {
+    private static BGAndelArbeidsforholdEntitet mapBGAndelArbeidsforhold(BGAndelArbeidsforholdDto fraKalkulus) {
         BGAndelArbeidsforholdEntitet.Builder builder = BGAndelArbeidsforholdEntitet.builder();
         builder.medArbeidsforholdRef(KalkulatorTilIAYMapper.mapArbeidsforholdRef(fraKalkulus.getArbeidsforholdRef()));
         builder.medArbeidsgiver(KalkulatorTilIAYMapper.mapArbeidsgiver(fraKalkulus.getArbeidsgiver()));
@@ -131,7 +131,7 @@ public class KalkulatorTilBGMapper {
         fraKalkulus.getArbeidsperiodeTom().ifPresent(builder::medArbeidsperiodeTom);
         fraKalkulus.getNaturalytelseBortfaltPrÅr().map(VerdityperMapper::beløpTilDao).ifPresent(builder::medNaturalytelseBortfaltPrÅr);
         fraKalkulus.getNaturalytelseTilkommetPrÅr().map(VerdityperMapper::beløpTilDao).ifPresent(builder::medNaturalytelseTilkommetPrÅr);
-        return builder;
+        return builder.build();
     }
 
     private static Refusjon mapRefusjon(no.nav.folketrygdloven.kalkulator.modell.typer.Refusjon refusjon) {

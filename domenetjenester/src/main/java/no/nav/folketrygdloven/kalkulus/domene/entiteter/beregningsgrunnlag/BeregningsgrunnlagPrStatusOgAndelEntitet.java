@@ -564,9 +564,10 @@ public class BeregningsgrunnlagPrStatusOgAndelEntitet extends BaseEntitet {
             return this;
         }
 
-        public Builder medBGAndelArbeidsforhold(BGAndelArbeidsforholdEntitet.Builder bgAndelArbeidsforholdBuilder) {
+        public Builder medBGAndelArbeidsforhold(BGAndelArbeidsforholdEntitet bgAndelArbeidsforhold) {
             verifiserKanModifisere();
-            kladd.bgAndelArbeidsforhold = bgAndelArbeidsforholdBuilder.build(kladd);
+            bgAndelArbeidsforhold.setBeregningsgrunnlagPrStatusOgAndel(kladd);
+            kladd.bgAndelArbeidsforhold = bgAndelArbeidsforhold;
             return this;
         }
 
@@ -583,40 +584,13 @@ public class BeregningsgrunnlagPrStatusOgAndelEntitet extends BaseEntitet {
             return this;
         }
 
-        public BeregningsgrunnlagPrStatusOgAndelEntitet build(BeregningsgrunnlagPeriodeEntitet beregningsgrunnlagPeriode) {
+        public BeregningsgrunnlagPrStatusOgAndelEntitet build() {
             if(built) {
                 return kladd;
             }
             verifyStateForBuild();
-            if (kladd.andelsnr == null) {
-                finnOgSettAndelsnr(beregningsgrunnlagPeriode);
-            }
-            beregningsgrunnlagPeriode.addBeregningsgrunnlagPrStatusOgAndel(kladd);
-            beregningsgrunnlagPeriode.updateBruttoPrÅr();
-            verifiserAndelsnr();
             built = true;
             return kladd;
-        }
-
-        private void finnOgSettAndelsnr(BeregningsgrunnlagPeriodeEntitet beregningsgrunnlagPeriode) {
-            verifiserKanModifisere();
-            Long forrigeAndelsnr = beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
-                    .mapToLong(BeregningsgrunnlagPrStatusOgAndelEntitet::getAndelsnr)
-                    .max()
-                    .orElse(0L);
-            kladd.andelsnr = forrigeAndelsnr + 1L;
-        }
-
-        private void verifiserAndelsnr() {
-            Set<Long> andelsnrIBruk = new HashSet<>();
-            kladd.beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
-            .map(BeregningsgrunnlagPrStatusOgAndelEntitet::getAndelsnr)
-            .forEach(andelsnr -> {
-                if (andelsnrIBruk.contains(andelsnr)) {
-                    throw new IllegalStateException("Utviklerfeil: Kan ikke bygge andel. Andelsnr eksisterer allerede på en annen andel i samme bgPeriode.");
-                }
-                andelsnrIBruk.add(andelsnr);
-            });
         }
 
         private void verifiserKanModifisere() {

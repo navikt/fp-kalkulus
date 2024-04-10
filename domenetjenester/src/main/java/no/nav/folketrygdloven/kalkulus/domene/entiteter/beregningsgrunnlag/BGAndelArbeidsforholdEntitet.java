@@ -234,9 +234,8 @@ public class BGAndelArbeidsforholdEntitet extends BaseEntitet {
             return this;
         }
 
-        BGAndelArbeidsforholdEntitet build(BeregningsgrunnlagPrStatusOgAndelEntitet andel) {
+        public BGAndelArbeidsforholdEntitet build() {
             Objects.requireNonNull(bgAndelArbeidsforhold.arbeidsgiver, "arbeidsgiver");
-            andel.setBgAndelArbeidsforhold(bgAndelArbeidsforhold);
             return bgAndelArbeidsforhold;
         }
     }

@@ -219,24 +219,6 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
             return this;
         }
 
-        public Builder leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusEntitet.Builder aktivitetStatusBuilder) {
-            verifiserKanModifisere();
-            aktivitetStatusBuilder.build(kladd);
-            return this;
-        }
-
-        public Builder leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeEntitet.Builder beregningsgrunnlagPeriodeBuilder) {
-            verifiserKanModifisere();
-            beregningsgrunnlagPeriodeBuilder.build(kladd);
-            return this;
-        }
-
-        public Builder leggTilFaktaOmBeregningTilfeller(List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller) {
-            verifiserKanModifisere();
-            faktaOmBeregningTilfeller.forEach(tilfelle -> BeregningsgrunnlagFaktaOmBeregningTilfelle.builder().medFaktaOmBeregningTilfelle(tilfelle).build(kladd));
-            return this;
-        }
-
         public Builder leggTilSammenligningsgrunnlag(SammenligningsgrunnlagPrStatusEntitet sammenligningsgrunnlagPrStatus) {
             kladd.leggTilSammenligningsgrunnlagPrStatus(sammenligningsgrunnlagPrStatus);
             return this;
@@ -247,6 +229,26 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
             kladd.overstyrt = overstyrt;
             return this;
         }
+
+        public Builder leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeEntitet beregningsgrunnlagperiode) {
+            verifiserKanModifisere();
+            kladd.leggTilBeregningsgrunnlagPeriode(beregningsgrunnlagperiode);
+            return this;
+        }
+
+        public Builder leggTilAktivitetstatus(BeregningsgrunnlagAktivitetStatusEntitet aktivitetStatusEntitet) {
+            verifiserKanModifisere();
+            kladd.leggTilBeregningsgrunnlagAktivitetStatus(aktivitetStatusEntitet);
+            return this;
+        }
+
+        public Builder leggTilFaktaTilfelle(FaktaOmBeregningTilfelle tilfelle) {
+            verifiserKanModifisere();
+            var tilfelleEnt = BeregningsgrunnlagFaktaOmBeregningTilfelle.builder().medFaktaOmBeregningTilfelle(tilfelle).build();
+            kladd.leggTilFaktaOmBeregningTilfelle(tilfelleEnt);
+            return this;
+        }
+
 
         public BeregningsgrunnlagEntitet build() {
             verifyStateForBuild();

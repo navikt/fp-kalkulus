@@ -32,17 +32,18 @@ class GreguleringsstatusutlederTest {
 
     @Test
     public void skal_ikke_regulere_grunnbeløp_når_ikke_foreslått_grunnlag() {
+        var periode = BeregningsgrunnlagPeriodeEntitet.builder()
+            .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
+            .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelEntitet.builder()
+                .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
+                .medAndelsnr(1L)
+                .medGrunnlagPrÅr(lagBeregnet(800000)))
+            .build();
         BeregningsgrunnlagEntitet bg = BeregningsgrunnlagEntitet.builder()
-                .medSkjæringstidspunkt(STP)
-                .medGrunnbeløp(GAMMEL_G)
-                .build();
-        BeregningsgrunnlagPeriodeEntitet.builder()
-                .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
-                .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelEntitet.builder()
-                        .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
-                        .medAndelsnr(1L)
-                        .medGrunnlagPrÅr(lagBeregnet(800000)))
-                .build(bg);
+            .medSkjæringstidspunkt(STP)
+            .medGrunnbeløp(GAMMEL_G)
+            .leggTilBeregningsgrunnlagPeriode(periode)
+            .build();
         Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(STP)
@@ -61,18 +62,19 @@ class GreguleringsstatusutlederTest {
 
     @Test
     public void skal_ikke_regulere_grunnbeløp_når_arbeidstaker_med_inntekt_under_grenseverdi() {
+        var periode = BeregningsgrunnlagPeriodeEntitet.builder()
+            .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
+            .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelEntitet.builder()
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medAndelsnr(1L)
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdEntitet.builder().medArbeidsgiver(Arbeidsgiver.virksomhet("999999999")).build())
+                .medGrunnlagPrÅr(lagBeregnet(400000)))
+            .build();
         BeregningsgrunnlagEntitet bg = BeregningsgrunnlagEntitet.builder()
-                .medSkjæringstidspunkt(STP)
-                .medGrunnbeløp(GAMMEL_G)
-                .build();
-        BeregningsgrunnlagPeriodeEntitet.builder()
-                .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
-                .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelEntitet.builder()
-                        .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-                        .medAndelsnr(1L)
-                        .medBGAndelArbeidsforhold(BGAndelArbeidsforholdEntitet.builder().medArbeidsgiver(Arbeidsgiver.virksomhet("999999999")))
-                        .medGrunnlagPrÅr(lagBeregnet(400000)))
-                .build(bg);
+            .medSkjæringstidspunkt(STP)
+            .leggTilBeregningsgrunnlagPeriode(periode)
+            .medGrunnbeløp(GAMMEL_G)
+            .build();
         Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(STP)
@@ -87,18 +89,19 @@ class GreguleringsstatusutlederTest {
 
     @Test
     public void skal_regulere_grunnbeløp_når_beregnet_som_næringsdrivende() {
+        var periode = BeregningsgrunnlagPeriodeEntitet.builder()
+            .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
+            .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelEntitet.builder()
+                .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
+                .medAndelsnr(1L)
+                .medGrunnlagPrÅr(lagBeregnet(200000)))
+            .build();
         BeregningsgrunnlagEntitet bg = BeregningsgrunnlagEntitet.builder()
-                .medSkjæringstidspunkt(STP)
-                .medGrunnbeløp(GAMMEL_G)
-                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusEntitet.builder().medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE))
-                .build();
-        BeregningsgrunnlagPeriodeEntitet.builder()
-                .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
-                .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelEntitet.builder()
-                        .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
-                        .medAndelsnr(1L)
-                        .medGrunnlagPrÅr(lagBeregnet(200000)))
-                .build(bg);
+            .medSkjæringstidspunkt(STP)
+            .medGrunnbeløp(GAMMEL_G)
+            .leggTilBeregningsgrunnlagPeriode(periode)
+            .leggTilAktivitetstatus(BeregningsgrunnlagAktivitetStatusEntitet.builder().medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE).build())
+            .build();
         Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(STP)
@@ -113,18 +116,20 @@ class GreguleringsstatusutlederTest {
 
     @Test
     public void skal_regulere_grunnbeløp_når_beregnet_som_militær_med_inntekt_under_minstegrense() {
+        var periode = BeregningsgrunnlagPeriodeEntitet.builder()
+            .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
+            .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelEntitet.builder()
+                .medAktivitetStatus(AktivitetStatus.MILITÆR_ELLER_SIVIL)
+                .medAndelsnr(1L)
+                .medGrunnlagPrÅr(lagBeregnet(200000)))
+            .build();
         BeregningsgrunnlagEntitet bg = BeregningsgrunnlagEntitet.builder()
-                .medSkjæringstidspunkt(STP)
-                .medGrunnbeløp(GAMMEL_G)
-                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusEntitet.builder().medAktivitetStatus(AktivitetStatus.MILITÆR_ELLER_SIVIL))
-                .build();
-        BeregningsgrunnlagPeriodeEntitet.builder()
-                .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
-                .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelEntitet.builder()
-                        .medAktivitetStatus(AktivitetStatus.MILITÆR_ELLER_SIVIL)
-                        .medAndelsnr(1L)
-                        .medGrunnlagPrÅr(lagBeregnet(200000)))
-                .build(bg);
+            .medSkjæringstidspunkt(STP)
+            .medGrunnbeløp(GAMMEL_G)
+            .leggTilBeregningsgrunnlagPeriode(periode)
+            .leggTilAktivitetstatus(BeregningsgrunnlagAktivitetStatusEntitet.builder().medAktivitetStatus(AktivitetStatus.MILITÆR_ELLER_SIVIL).build())
+            .build();
+
         Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(STP)
@@ -139,18 +144,19 @@ class GreguleringsstatusutlederTest {
 
     @Test
     public void skal_regulere_grunnbeløp_når_beregnet_som_arbeid_som_blir_avkortet() {
+        var periode = BeregningsgrunnlagPeriodeEntitet.builder()
+            .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
+            .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelEntitet.builder()
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medAndelsnr(1L)
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdEntitet.builder().medArbeidsgiver(Arbeidsgiver.virksomhet("999999999")).build())
+                .medGrunnlagPrÅr(lagBeregnet(610000)))
+            .build();
         BeregningsgrunnlagEntitet bg = BeregningsgrunnlagEntitet.builder()
-                .medSkjæringstidspunkt(STP)
-                .medGrunnbeløp(GAMMEL_G)
-                .build();
-        BeregningsgrunnlagPeriodeEntitet.builder()
-                .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
-                .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelEntitet.builder()
-                        .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-                        .medAndelsnr(1L)
-                        .medBGAndelArbeidsforhold(BGAndelArbeidsforholdEntitet.builder().medArbeidsgiver(Arbeidsgiver.virksomhet("999999999")))
-                        .medGrunnlagPrÅr(lagBeregnet(610000)))
-                .build(bg);
+            .medSkjæringstidspunkt(STP)
+            .leggTilBeregningsgrunnlagPeriode(periode)
+            .medGrunnbeløp(GAMMEL_G)
+            .build();
         Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(STP)
@@ -159,7 +165,6 @@ class GreguleringsstatusutlederTest {
                 .build(1L, BeregningsgrunnlagTilstand.FASTSATT));
 
         GrunnbeløpReguleringStatus resultat = Greguleringsstatusutleder.utledStatus(gr, NY_G, FagsakYtelseType.OMSORGSPENGER);
-
         assertThat(resultat).isEqualTo(GrunnbeløpReguleringStatus.NØDVENDIG);
     }
 

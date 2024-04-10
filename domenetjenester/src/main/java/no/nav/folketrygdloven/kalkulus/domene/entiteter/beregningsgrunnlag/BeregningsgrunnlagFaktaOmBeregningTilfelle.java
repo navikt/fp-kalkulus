@@ -89,8 +89,7 @@ public class BeregningsgrunnlagFaktaOmBeregningTilfelle extends BaseEntitet {
             return this;
         }
 
-        public BeregningsgrunnlagFaktaOmBeregningTilfelle build(BeregningsgrunnlagEntitet beregningsgrunnlag) {
-            beregningsgrunnlag.leggTilFaktaOmBeregningTilfelle(beregningsgrunnlagFaktaOmBeregningTilfelle);
+        public BeregningsgrunnlagFaktaOmBeregningTilfelle build() {
             return beregningsgrunnlagFaktaOmBeregningTilfelle;
         }
     }

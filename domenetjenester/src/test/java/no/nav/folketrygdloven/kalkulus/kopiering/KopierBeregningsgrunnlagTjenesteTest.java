@@ -138,20 +138,21 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
     }
 
     private BeregningsgrunnlagGrunnlagBuilder byggGrunnlag(int verdi) {
-        BeregningsgrunnlagEntitet bg = BeregningsgrunnlagEntitet.builder().medSkjæringstidspunkt(STP).medGrunnbeløp(new Beløp(100000)).build();
-        BeregningsgrunnlagPeriodeEntitet.builder()
+        var bgp = BeregningsgrunnlagPeriodeEntitet.builder()
             .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
             .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelEntitet.builder()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medAndelsnr(1L)
-                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdEntitet.builder().medArbeidsgiver(Arbeidsgiver.virksomhet("999999999")))
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdEntitet.builder().medArbeidsgiver(Arbeidsgiver.virksomhet("999999999")).build())
                 .medGrunnlagPrÅr(lagBeregnet(verdi)))
-            .build(bg);
+            .build();
+        BeregningsgrunnlagEntitet bg = BeregningsgrunnlagEntitet.builder().medSkjæringstidspunkt(STP).medGrunnbeløp(new Beløp(100000)).leggTilBeregningsgrunnlagPeriode(bgp).build();
         var gr = BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
             .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder().medSkjæringstidspunktOpptjening(STP).build())
             .medBeregningsgrunnlag(bg);
         return gr;
     }
+
 
     private Årsgrunnlag lagBeregnet(int verdi) {
         return new Årsgrunnlag(new Beløp(verdi), null, null, null, null, new Beløp(verdi));
