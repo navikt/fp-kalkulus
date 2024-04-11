@@ -7,7 +7,7 @@
     <parent>
         <groupId>no.nav.foreldrepenger.felles</groupId>
         <artifactId>fp-bom</artifactId>
-        <version>3.1.3</version>
+        <version>3.2.0</version>
     </parent>
 
     <groupId>no.nav.foreldrepenger.kalkulus</groupId>
@@ -23,17 +23,16 @@
         <module>migreringer</module>
     </modules>
 
-
     <properties>
         <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
         <sonar.projectName>fp-kalkulus</sonar.projectName>
         <sonar.projectKey>navikt_fp-kalkulus</sonar.projectKey>
 
         <java.version>21</java.version>
+        <kontrakt.java.version>21</kontrakt.java.version>
 
         <ftberegning.version>5.0.3</ftberegning.version>
-        <felles.version>7.0.10</felles.version>
-        <kontrakt.java.version>21</kontrakt.java.version>
+        <felles.version>7.1.2</felles.version>
 
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
@@ -43,7 +42,7 @@
             <dependency>
                 <groupId>no.nav.foreldrepenger.felles</groupId>
                 <artifactId>fp-bom</artifactId>
-                <version>3.1.3</version>
+                <version>3.2.0</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
