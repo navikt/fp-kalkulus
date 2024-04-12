@@ -1,12 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.kobling;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -14,10 +9,10 @@ import jakarta.inject.Inject;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
+import no.nav.vedtak.exception.TekniskException;
 
 @ApplicationScoped
 public class KoblingTjeneste {
@@ -32,55 +27,45 @@ public class KoblingTjeneste {
         this.repository = repository;
     }
 
-    public KoblingEntitet finnEllerOpprett(KoblingReferanse referanse, FagsakYtelseType ytelseType, AktørId aktørId, Saksnummer saksnummer) {
+    public KoblingEntitet finnEllerOpprett(KoblingReferanse referanse, FagsakYtelseType ytelseType, AktørId aktørId, Saksnummer saksnummer,
+                                           Optional<KoblingReferanse> originalKoblingRef) {
         var eksisterendeKobling = repository.hentKoblingFor(referanse);
         if (eksisterendeKobling.isPresent()) {
             return eksisterendeKobling.get();
         }
-        var nyKobling = new KoblingEntitet(referanse, ytelseType, saksnummer, aktørId);
+        originalKoblingRef.ifPresent(koblingReferanse -> validerOriginalKoblingRef(koblingReferanse, ytelseType, aktørId, saksnummer));
+        var nyKobling = new KoblingEntitet(referanse, ytelseType, saksnummer, aktørId, originalKoblingRef);
         repository.lagre(nyKobling);
         return nyKobling;
     }
 
-    public List<KoblingRelasjon> finnOgOpprettKoblingRelasjoner(Map<UUID, List<UUID>> koblingrelasjoner) {
-        var referanser = koblingrelasjoner.keySet().stream().map(KoblingReferanse::new)
-                .collect(Collectors.toCollection(ArrayList::new));
-        referanser.addAll(koblingrelasjoner.values().stream().flatMap(Collection::stream).map(KoblingReferanse::new).collect(Collectors.toList()));
-        var alleKoblinger = hentKoblinger(referanser);
-        var koblingRelasjonEniteter = koblingrelasjoner.entrySet().stream()
-                .filter(e -> !e.getValue().isEmpty())
-                .flatMap(e -> {
-                    var koblingId = finnIdFraListe(e.getKey(), alleKoblinger);
-                    return e.getValue().stream().map(v -> new KoblingRelasjon(koblingId, finnIdFraListe(v, alleKoblinger)));
-                })
-                .filter(r -> !r.getKoblingId().equals(r.getOriginalKoblingId())) // Filtrere ut koblinger mot seg selv
-                .collect(Collectors.toList());
-        koblingRelasjonEniteter.forEach(repository::lagre);
-        return repository.hentRelasjonerFor(alleKoblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet()));
+    public KoblingEntitet hentKobling(Long koblingId) {
+        return repository.hentKoblingMedId(koblingId).orElseThrow(() -> new IllegalStateException("Fant ikke kobling med id" + koblingId));
     }
 
-    private Long finnIdFraListe(UUID referanse, List<KoblingEntitet> alleKoblinger) {
-        return alleKoblinger.stream()
-                .filter(k -> k.getKoblingReferanse().getReferanse().equals(referanse))
-                .map(KoblingEntitet::getId)
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Forventer å finne kobling"));
+    public KoblingEntitet hentKobling(KoblingReferanse referanse) {
+        return repository.hentForKoblingReferanse(referanse).orElseThrow(() -> new IllegalStateException("Fant ikke kobling med referanse" + referanse));
     }
 
-    public Optional<KoblingEntitet> hentFor(KoblingReferanse referanse) {
+    public KoblingEntitet hentKoblingOptional(Long koblingId) {
+        return repository.hentKoblingMedId(koblingId).orElseThrow(() -> new IllegalStateException("Fant ikke kobling med id" + koblingId));
+    }
+
+    public Optional<KoblingEntitet> hentKoblingOptional(KoblingReferanse referanse) {
         return repository.hentForKoblingReferanse(referanse);
     }
 
-    public List<KoblingEntitet> hentKoblinger(Collection<KoblingReferanse> koblingReferanser, FagsakYtelseType ytelseType) {
-        return repository.hentKoblingerFor(koblingReferanser, ytelseType);
+    private void validerOriginalKoblingRef(KoblingReferanse koblingReferanse, FagsakYtelseType ytelseType, AktørId aktørId, Saksnummer saksnummer) {
+        var koblingEntitet = hentKoblingOptional(koblingReferanse).orElseThrow(
+            () -> new IllegalStateException("Forventet å finne kobling med referanse " + koblingReferanse));
+        if (!koblingEntitet.getSaksnummer().equals(saksnummer) || !koblingEntitet.getYtelseType().equals(ytelseType) || !koblingEntitet.getAktørId().equals(aktørId)) {
+            throw new TekniskException("FT-47712", String.format(
+                "Prøver å sette en koblingrelasjon uten at alle felter matcher. Kobling som skulle brukes %s hadde ikke korrekte data for ytelse %s, aktørId %s eller saksnummer %s",
+                koblingEntitet, ytelseType, aktørId, saksnummer));
+        }
     }
 
-    public List<KoblingEntitet> hentKoblinger(Collection<KoblingReferanse> koblingReferanser) {
-        return repository.hentKoblingIdForKoblingReferanser(koblingReferanser);
+    public List<KoblingEntitet> hentAlleKoblingerForSaksnummer(Saksnummer saksnummer) {
+        return repository.hentAlleKoblingerForSaksnummer(saksnummer);
     }
-
-    public List<KoblingRelasjon> hentKoblingRelasjoner(Collection<Long> koblingIder) {
-        return repository.hentRelasjonerFor(koblingIder);
-    }
-
 }

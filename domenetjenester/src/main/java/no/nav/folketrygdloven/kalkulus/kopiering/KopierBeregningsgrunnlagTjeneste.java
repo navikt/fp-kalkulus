@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.kopiering;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,7 +17,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
-import no.nav.folketrygdloven.kalkulus.request.v1.KopierBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.vedtak.exception.TekniskException;
@@ -44,30 +43,24 @@ public class KopierBeregningsgrunnlagTjeneste {
 
     /**
      * Oppretter ny kobling og kopierer data fra eksisterende kobling
-     * @param nyReferanse     Ny referanse som skal opprettes
-     * @param saksnummer      Saksnummer
-     * @param steg            Definerer steget som vi kopierer beregningsgrunnlag fra
+     *
+     * @param nyReferanse       Ny referanse som skal opprettes
+     * @param saksnummer        Saksnummer
+     * @param steg              Definerer steget som vi kopierer beregningsgrunnlag fra
      * @param originalReferanse Referanse vi skal kopiere fra
      */
     public void kopierGrunnlagOgOpprettKoblinger(KoblingReferanse nyReferanse,
                                                  KoblingReferanse originalReferanse,
                                                  Saksnummer saksnummer,
                                                  BeregningSteg steg) {
-        var eksisterendeKobling = koblingTjeneste.hentFor(originalReferanse)
+        var eksisterendeKobling = koblingTjeneste.hentKoblingOptional(originalReferanse)
             .orElseThrow(() -> new TekniskException("FT-47034", String.format(
                 "Pøver å opprette ny kobling %s basert på data fra en referanse som ikke finnes. Kobling med referanse kobling %s finnes ikke.",
                 nyReferanse, originalReferanse)));
         var grunnlagSomSkalKopieres = validerOgHentGrunnlag(eksisterendeKobling, saksnummer, steg);
         var nyKobling = opprettNyKobling(eksisterendeKobling, nyReferanse);
-        // opprettKoblingrelasjoner(kopiRequests); TODO tsf-5742 koblingrelasjon
         kopierBeregningsgrunnlag(grunnlagSomSkalKopieres, nyKobling, steg);
         kopierAvklaringsbehov(nyKobling, eksisterendeKobling, steg);
-    }
-
-    private void opprettKoblingrelasjoner(List<KopierBeregningRequest> kopiRequests) {
-        var koblingrelasjoner = kopiRequests.stream()
-            .collect(Collectors.toMap(KopierBeregningRequest::getEksternReferanse, f -> List.of(f.getKopierFraReferanse())));
-        koblingTjeneste.finnOgOpprettKoblingRelasjoner(koblingrelasjoner);
     }
 
     private BeregningsgrunnlagGrunnlagEntitet validerOgHentGrunnlag(KoblingEntitet eksisterendeKobling, Saksnummer saksnummer, BeregningSteg steg) {
@@ -84,7 +77,8 @@ public class KopierBeregningsgrunnlagTjeneste {
     }
 
     private KoblingEntitet opprettNyKobling(KoblingEntitet eksisterendeKobling, KoblingReferanse nyReferanse) {
-        return koblingTjeneste.finnEllerOpprett(nyReferanse, eksisterendeKobling.getYtelseType(), eksisterendeKobling.getAktørId(), eksisterendeKobling.getSaksnummer());
+        return koblingTjeneste.finnEllerOpprett(nyReferanse, eksisterendeKobling.getYtelseType(), eksisterendeKobling.getAktørId(),
+            eksisterendeKobling.getSaksnummer(), Optional.of(eksisterendeKobling.getKoblingReferanse()));
     }
 
     private void kopierBeregningsgrunnlag(BeregningsgrunnlagGrunnlagEntitet grunnlag, KoblingEntitet nyKoblingEntitet, BeregningSteg steg) {
@@ -92,9 +86,7 @@ public class KopierBeregningsgrunnlagTjeneste {
         beregningsgrunnlagRepository.lagre(nyKoblingEntitet.getId(), kopi, MapStegTilTilstand.mapTilStegTilstand(steg));
     }
 
-    private void kopierAvklaringsbehov(KoblingEntitet nyKobling,
-                                       KoblingEntitet eksisterendeKobling,
-                                       BeregningSteg steg) {
+    private void kopierAvklaringsbehov(KoblingEntitet nyKobling, KoblingEntitet eksisterendeKobling, BeregningSteg steg) {
         var avklaringsbehovSomMåKopieres = finnAvklaringsbehovSomSkalKopieres(eksisterendeKobling.getId(), steg);
 
         avklaringsbehovTjeneste.avbrytAlleAvklaringsbehov(nyKobling.getId());

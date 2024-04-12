@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.forvaltning;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -36,7 +35,7 @@ public class GrunnbeløpreguleringTjeneste {
     }
 
     public GrunnbeløpReguleringStatus undersøkBehovForGregulering(KoblingReferanse referanse, String saksnummer) {
-        Optional<KoblingEntitet> koblingEntitetOpt = koblingTjeneste.hentFor(referanse);
+        Optional<KoblingEntitet> koblingEntitetOpt = koblingTjeneste.hentKoblingOptional(referanse);
         if (!koblingErGyldig(koblingEntitetOpt, saksnummer)) {
             return GrunnbeløpReguleringStatus.IKKE_VURDERT;
         }

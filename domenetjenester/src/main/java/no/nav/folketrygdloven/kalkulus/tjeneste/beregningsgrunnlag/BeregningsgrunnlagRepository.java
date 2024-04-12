@@ -18,15 +18,11 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetOverstyringerEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningRefusjonOverstyringEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningRefusjonOverstyringerEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAggregatEntitet;
@@ -41,9 +37,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 public class BeregningsgrunnlagRepository {
     private static final String KOBLING_ID = "koblingId";
     private static final String BEREGNINGSGRUNNLAG_TILSTAND = "beregningsgrunnlagTilstand";
-    private static final String BEREGNINGSGRUNNLAG = "beregningsgrunnlag";
     private static final String BUILDER = "beregningsgrunnlagGrunnlagBuilder";
-    private static final Logger LOG = LoggerFactory.getLogger(BeregningsgrunnlagRepository.class);
     private EntityManager entityManager;
 
     protected BeregningsgrunnlagRepository() {
@@ -63,17 +57,17 @@ public class BeregningsgrunnlagRepository {
      *
      * @param kobling                    en kobling
      * @param beregningsgrunnlagTilstand steget {@link BeregningsgrunnlagGrunnlagEntitet} er opprettet i
-     * @param skjæringstidspunkt
+     * @param originalKoblingEntitet
      * @return Hvis det finnes et eller fler BeregningsgrunnlagGrunnlagEntitet som har blitt opprettet i {@code stegOpprettet} returneres den
      * som ble opprettet sist
      */
     public Optional<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(KoblingEntitet kobling,
                                                                                                                  BeregningsgrunnlagTilstand beregningsgrunnlagTilstand,
-                                                                                                                 LocalDate skjæringstidspunkt) {
+                                                                                                                 Optional<KoblingEntitet> originalKoblingEntitet) {
         Optional<BeregningsgrunnlagGrunnlagEntitet> sisteBg = hentSisteBeregningsgrunnlagGrunnlagEntitet(kobling.getId(), beregningsgrunnlagTilstand);
-        if (!sisteBg.isPresent()) {
+        if (sisteBg.isEmpty() && originalKoblingEntitet.isPresent()) {
             // Henter siste grunnlaget som ble lagret med samme skjæringstidspunkt (tilsvarer original kobling)
-            var originalGrunnlag = hentOriginalGrunnlagForTilstand(kobling.getId(), beregningsgrunnlagTilstand, skjæringstidspunkt);
+            var originalGrunnlag = hentSisteBeregningsgrunnlagGrunnlagEntitet(originalKoblingEntitet.get().getId(), beregningsgrunnlagTilstand);
             return originalGrunnlag;
         }
         return sisteBg;
@@ -131,47 +125,22 @@ public class BeregningsgrunnlagRepository {
         return hentUniktResultat(query);
     }
 
-
-    /**
-     * Henter originalt grunnlag for kobling med gitt tilstand og skjæringstidspunkt
-     *
-     * @param koblingId koblingId
-     * @param tilstand  Tilstand for grunnlag
-     * @return Originalt grunnlag med gitt tilstand
-     */
-    @SuppressWarnings("unchecked")
-    public Optional<BeregningsgrunnlagGrunnlagEntitet> hentOriginalGrunnlagForTilstand(Long koblingId,
-                                                                                       BeregningsgrunnlagTilstand tilstand,
-                                                                                       LocalDate skjæringstidspunktOpptjening) {
-        var query = entityManager.createNativeQuery(
-                "SELECT GR.* FROM  GR_BEREGNINGSGRUNNLAG GR " +
-                        "INNER JOIN BG_AKTIVITETER AKT ON GR.register_aktiviteter_id = AKT.ID " +
-                        "WHERE (GR.KOBLING_ID IN (" +
-                        "with recursive originalkoblinger as (" +
-                        "    select original_kobling_id" +
-                        "    from kobling_relasjon" +
-                        "    where kobling_id = :koblingId" +
-                        "  union" +
-                        "    select kr.original_kobling_id" +
-                        "    from kobling_relasjon kr" +
-                        "         inner join originalkoblinger o on o.original_kobling_id = kr.kobling_id" +
-                        ") select * from originalkoblinger" +
-                        ")) " +
-                        "AND STEG_OPPRETTET = :beregningsgrunnlagTilstand " +
-                        "AND AKT.skjaringstidspunkt_opptjening = :stp " +
-                        "order by GR.OPPRETTET_TID desc, GR.ID desc",
-                BeregningsgrunnlagGrunnlagEntitet.class);
-        query.setParameter("koblingId", koblingId); // $NON-NLS-1$
-        query.setParameter("beregningsgrunnlagTilstand", tilstand.getKode()); // $NON-NLS-1$
-        query.setParameter("stp", skjæringstidspunktOpptjening); // $NON-NLS-1$
+    public Optional<BeregningsgrunnlagGrunnlagEntitet> hentFørsteFastsatteGrunnlagForSak(List<Long> alleKoblingIderForSaksnummer) {
+        TypedQuery<BeregningsgrunnlagGrunnlagEntitet> query = entityManager.createQuery(
+            "from BeregningsgrunnlagGrunnlagEntitet grunnlag " +
+                "where grunnlag.koblingId in :koblingListe " +
+                "and grunnlag.beregningsgrunnlagTilstand = :beregningsgrunnlagTilstand " +
+                "order by grunnlag.opprettetTidspunkt asc",
+            BeregningsgrunnlagGrunnlagEntitet.class);
+        query.setParameter("koblingListe", alleKoblingIderForSaksnummer); // $NON-NLS-1$
+        query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, BeregningsgrunnlagTilstand.FASTSATT);
         query.setMaxResults(1);
         List<BeregningsgrunnlagGrunnlagEntitet> resultatListe = query.getResultList();
         if (resultatListe.size() > 1) {
             throw new IllegalArgumentException("Flere enn en rader");
         }
-        return resultatListe.size() == 1 ? Optional.of(resultatListe.get(0)) : Optional.empty();
+        return resultatListe.size() == 1 ? Optional.of(resultatListe.getFirst()) : Optional.empty();
     }
-
 
 
     /**
@@ -318,18 +287,6 @@ public class BeregningsgrunnlagRepository {
         return query.getResultList();
     }
 
-    public BeregningsgrunnlagGrunnlagEntitet lagre(Long koblingId, BeregningsgrunnlagEntitet beregningsgrunnlag,
-                                                   BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
-        Objects.requireNonNull(koblingId, KOBLING_ID);
-        Objects.requireNonNull(beregningsgrunnlag, BEREGNINGSGRUNNLAG);
-        Objects.requireNonNull(beregningsgrunnlagTilstand, BEREGNINGSGRUNNLAG_TILSTAND);
-
-        BeregningsgrunnlagGrunnlagBuilder builder = opprettGrunnlagBuilderFor(koblingId);
-        builder.medBeregningsgrunnlag(beregningsgrunnlag);
-        BeregningsgrunnlagGrunnlagEntitet grunnlagEntitet = builder.build(koblingId, beregningsgrunnlagTilstand);
-        return lagreOgFlush(koblingId, grunnlagEntitet);
-    }
-
     public BeregningsgrunnlagGrunnlagEntitet lagre(Long koblingId, BeregningsgrunnlagGrunnlagBuilder builder,
                                                    BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
         Objects.requireNonNull(koblingId, KOBLING_ID);
@@ -433,15 +390,6 @@ public class BeregningsgrunnlagRepository {
         entityManager.persist(sammenligningsgrunnlagPrStatus);
     }
 
-    private BeregningsgrunnlagGrunnlagBuilder opprettGrunnlagBuilderFor(Long koblingId) {
-        Optional<BeregningsgrunnlagGrunnlagEntitet> entitetOpt = hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
-        if (entitetOpt.isEmpty()) {
-            LOG.info("Fant ingen aktiv grunnlag for kobling " + koblingId + ". Oppretter ny grunnlagbuilder.");
-        }
-        Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlag = entitetOpt.isPresent() ? Optional.of(entitetOpt.get()) : Optional.empty();
-        return BeregningsgrunnlagGrunnlagBuilder.kopiere(grunnlag);
-    }
-
     public void deaktiverBeregningsgrunnlagGrunnlagEntitet(Long koblingId) {
         Optional<BeregningsgrunnlagGrunnlagEntitet> entitetOpt = hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
         entitetOpt.ifPresent(this::deaktiverBeregningsgrunnlagGrunnlagEntitet);
@@ -524,4 +472,5 @@ public class BeregningsgrunnlagRepository {
         }
         return sisteGrunnlagFraTilstand.get().getOpprettetTidspunkt();
     }
+
 }

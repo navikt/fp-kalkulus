@@ -1,15 +1,12 @@
 package no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
@@ -35,9 +32,10 @@ public class VidereførOverstyringTjeneste {
 
         if (aktuellDefinisjonSomSkalVidereføres.isPresent()) {
             var definisjon = aktuellDefinisjonSomSkalVidereføres.get();
-            var overstyringerFraGjeldendeKobling = avklaringsbehovTjeneste.hentAvklaringsbehov(koblingId, definisjon).stream()
-                    .filter(ab -> !ab.getErTrukket())
-                    .findFirst();
+            var overstyringerFraGjeldendeKobling = avklaringsbehovTjeneste.hentAvklaringsbehov(koblingId, definisjon)
+                .stream()
+                .filter(ab -> !ab.getErTrukket())
+                .findFirst();
 
             if (overstyringerFraGjeldendeKobling.isPresent()) {
                 return overstyringerFraGjeldendeKobling;
@@ -51,17 +49,16 @@ public class VidereførOverstyringTjeneste {
 
     private Optional<AvklaringsbehovDefinisjon> finnAktuellOverstyring(BeregningSteg beregningSteg) {
         return Arrays.stream(AvklaringsbehovDefinisjon.values())
-                .filter(it -> it.erOverstyring() && it.getStegFunnet().equals(beregningSteg))
-                .findFirst();
+            .filter(it -> it.erOverstyring() && it.getStegFunnet().equals(beregningSteg))
+            .findFirst();
     }
 
     private Optional<AvklaringsbehovEntitet> finnOverstyringFraOriginalKobling(Long koblingId, AvklaringsbehovDefinisjon definisjon) {
-        var originalKoblinger = koblingTjeneste.hentKoblingRelasjoner(List.of(koblingId))
-                .stream().map(KoblingRelasjon::getOriginalKoblingId).collect(Collectors.toList());
-
-        return originalKoblinger.stream().flatMap(it -> avklaringsbehovTjeneste.hentAvklaringsbehov(it, definisjon).stream())
-                .filter(ab -> !ab.getErTrukket())
-                .findFirst();
+        var originalKobling = koblingTjeneste.hentKobling(koblingId)
+            .getOriginalKoblingReferanse()
+            .flatMap(ref -> koblingTjeneste.hentKoblingOptional(ref));
+        return originalKobling.flatMap(
+            k -> avklaringsbehovTjeneste.hentAvklaringsbehov(k.getId(), definisjon).stream().filter(ab -> !ab.getErTrukket()).findFirst());
     }
 
 

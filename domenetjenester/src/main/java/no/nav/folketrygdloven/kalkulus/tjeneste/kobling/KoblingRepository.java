@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.tjeneste.kobling;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -19,12 +18,10 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbe
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
 import no.nav.folketrygdloven.kalkulus.felles.diff.DiffEntity;
 import no.nav.folketrygdloven.kalkulus.felles.diff.DiffResult;
 import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseGraph;
 import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseJpaEntityGraphConfig;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
 import no.nav.vedtak.felles.jpa.HibernateVerktøy;
@@ -56,34 +53,11 @@ public class KoblingRepository {
         return HibernateVerktøy.hentUniktResultat(query);
     }
 
-    public List<KoblingEntitet> hentKoblingIdForKoblingReferanser(Collection<KoblingReferanse> referanser) {
-        TypedQuery<KoblingEntitet> query = entityManager.createQuery(
-                "SELECT k FROM Kobling k WHERE k.koblingReferanse IN(:referanser)", KoblingEntitet.class);
-        query.setParameter("referanser", referanser);
-        return query.getResultList();
-    }
-
-    public Optional<Long> hentFor(KoblingReferanse referanse, FagsakYtelseType ytelseType) {
-        TypedQuery<Long> query = entityManager
-                .createQuery("SELECT k.id FROM Kobling k WHERE k.koblingReferanse = :referanse AND k.ytelseType = :ytelse", Long.class);
-        query.setParameter("referanse", referanse);
-        query.setParameter("ytelse", ytelseType);
-        return HibernateVerktøy.hentUniktResultat(query);
-    }
-
     public Optional<KoblingEntitet> hentKoblingFor(KoblingReferanse referanse) {
         TypedQuery<KoblingEntitet> query = entityManager.createQuery(
             "SELECT k FROM Kobling k WHERE k.koblingReferanse = :referanse", KoblingEntitet.class);
         query.setParameter("referanse", referanse);
         return HibernateVerktøy.hentUniktResultat(query);
-    }
-
-    public List<KoblingEntitet> hentKoblingerFor(Collection<KoblingReferanse> referanser, FagsakYtelseType ytelseType) {
-        TypedQuery<KoblingEntitet> query = entityManager.createQuery(
-                "SELECT k FROM Kobling k WHERE k.koblingReferanse IN(:referanser) AND k.ytelseType = :ytelseType", KoblingEntitet.class);
-        query.setParameter("referanser", referanser);
-        query.setParameter("ytelseType", ytelseType);
-        return query.getResultList();
     }
 
     public List<KoblingEntitet> hentAlleKoblingerForSaksnummer(Saksnummer saksnummer) {
@@ -93,22 +67,6 @@ public class KoblingRepository {
         return query.getResultList();
     }
 
-    public List<KoblingRelasjon> hentRelasjonerFor(Collection<Long> ider) {
-        TypedQuery<KoblingRelasjon> query = entityManager.createQuery(
-                "SELECT k FROM KoblingRelasjon k WHERE k.koblingId IN (:ider)", KoblingRelasjon.class);
-        query.setParameter("ider", ider);
-        return query.getResultList();
-    }
-
-    public Optional<KoblingRelasjon> hentRelasjon(Long koblingId, Long originalKoblingId) {
-        TypedQuery<KoblingRelasjon> query = entityManager.createQuery(
-                "SELECT k FROM KoblingRelasjon k WHERE k.koblingId = :koblingId and k.originalKoblingId = :originalKoblingId", KoblingRelasjon.class);
-        query.setParameter("koblingId", koblingId);
-        query.setParameter("originalKoblingId", originalKoblingId);
-        return HibernateVerktøy.hentUniktResultat(query);
-    }
-
-
     public void lagre(KoblingEntitet nyKobling) {
         Optional<KoblingEntitet> eksisterendeKobling = hentForKoblingReferanse(nyKobling.getKoblingReferanse());
 
@@ -117,14 +75,6 @@ public class KoblingRepository {
         if (!diff.isEmpty()) {
             log.info("Detekterte endringer på kobling med referanse={}, endringer={}", nyKobling.getId(), diff.getLeafDifferences());
             entityManager.persist(nyKobling);
-            entityManager.flush();
-        }
-    }
-
-    public void lagre(KoblingRelasjon koblingRelasjon) {
-        var eksisterendeRelasjon = hentRelasjon(koblingRelasjon.getKoblingId(), koblingRelasjon.getOriginalKoblingId());
-        if (eksisterendeRelasjon.isEmpty()) {
-            entityManager.persist(koblingRelasjon);
             entityManager.flush();
         }
     }
@@ -145,12 +95,4 @@ public class KoblingRepository {
 
         return diffEntity.diff(eksisterendeKobling, nyKobling);
     }
-
-
-    public List<KoblingEntitet> hentKoblingerFor(Collection<Long> koblingIder) {
-        return entityManager.createQuery("SELECT k FROM Kobling k WHERE k.id IN (:koblingIder)", KoblingEntitet.class)
-                .setParameter("koblingIder", koblingIder)
-                .getResultList();
-    }
-
 }

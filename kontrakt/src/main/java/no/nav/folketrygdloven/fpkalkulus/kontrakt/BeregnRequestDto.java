@@ -18,4 +18,5 @@ public record BeregnRequestDto(@Valid @NotNull Saksnummer saksnummer,
                                  @Valid @NotNull PersonIdent aktør,
                                  @Valid @NotNull FpkalkulusYtelser ytelseSomSkalBeregnes,
                                  @Valid @NotNull BeregningSteg stegType,
-                                 @Valid @NotNull KalkulatorInputDto kalkulatorInput) {}
+                                 @Valid @NotNull KalkulatorInputDto kalkulatorInput,
+                                 @Valid UUID originalBehandlingUuid) {}

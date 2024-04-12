@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.rest;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -84,8 +85,10 @@ public class OperereKalkulusRestTjeneste {
     public Response beregn(@TilpassetAbacAttributt(supplierClass = BeregnRequestAbacSupplier.class) @NotNull @Valid BeregnRequestDto request) {
         var saksnummer = new Saksnummer(request.saksnummer().verdi());
         MDC.put("prosess_saksnummer", saksnummer.getVerdi());
+        Optional<KoblingReferanse> originalKoblingRef =
+            request.originalBehandlingUuid() == null ? Optional.empty() : Optional.of(new KoblingReferanse(request.originalBehandlingUuid()));
         var kobling = koblingTjeneste.finnEllerOpprett(new KoblingReferanse(request.behandlingUuid()),
-            mapTilYtelseKodeverk(request.ytelseSomSkalBeregnes()), new AktørId(request.aktør().getIdent()), saksnummer);
+            mapTilYtelseKodeverk(request.ytelseSomSkalBeregnes()), new AktørId(request.aktør().getIdent()), saksnummer, originalKoblingRef);
         TilstandResponse respons = (TilstandResponse) orkestrerer.beregn(request.stegType(), kobling, request.kalkulatorInput());
         return Response.ok(respons).build();
     }
@@ -109,7 +112,7 @@ public class OperereKalkulusRestTjeneste {
     @BeskyttetRessurs(actionType = ActionType.UPDATE, resourceType = ResourceType.FAGSAK)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response oppdaterListe(@TilpassetAbacAttributt(supplierClass = HåndterBeregningRequestAbacSupplier.class) @NotNull @Valid HåndterBeregningRequestDto spesifikasjon) {
-        var kobling = koblingTjeneste.hentFor(new KoblingReferanse(spesifikasjon.behandlingUuid()))
+        var kobling = koblingTjeneste.hentKoblingOptional(new KoblingReferanse(spesifikasjon.behandlingUuid()))
             .orElseThrow(() -> new IllegalStateException(
                 "Kan ikke løse avklaringsbehov i beregning uten en eksisterende kobling. Gjelder behandlingUuid " + spesifikasjon.behandlingUuid()));
         MDC.put("prosess_saksnummer", kobling.getSaksnummer().getVerdi());
@@ -134,7 +137,7 @@ public class OperereKalkulusRestTjeneste {
         MDC.put("prosess_saksnummer", saksnummer.getVerdi());
         var koblingReferanse = new KoblingReferanse(request.behandlingUuid());
         MDC.put("prosess_koblingreferanse", koblingReferanse.getReferanse().toString());
-        var kopt = koblingTjeneste.hentFor(koblingReferanse)
+        var kopt = koblingTjeneste.hentKoblingOptional(koblingReferanse)
             .orElseThrow(() -> new TekniskException("FT-47197",
                 String.format("Pøver å deaktivere data på en kobling som ikke finnes, koblingRef %s", koblingReferanse)));
         if (!kopt.getSaksnummer().equals(saksnummer)) {

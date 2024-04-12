@@ -94,10 +94,6 @@ create sequence seq_avklaringsbehov
     minvalue 1000000
     increment by 50;
 
-create sequence seq_kobling_relasjon
-    minvalue 1000000
-    increment by 50;
-
 create sequence seq_bg_besteberegning_grunnlag
     minvalue 1000000
     increment by 50;
@@ -687,6 +683,7 @@ create table kobling
     kobling_referanse uuid                                         not null
         constraint uidx_kobling_1
             unique,
+    original_kobling_referanse       uuid,
     ytelse_type       varchar(100)                                 not null,
     kl_ytelse_type    varchar(100) default 'FAGSAK_YTELSE_TYPE'::character varying,
     bruker_aktoer_id  varchar(50)                                  not null,
@@ -709,6 +706,8 @@ comment on column kobling.ytelse_type is 'Hvilken ytelse komplekset henger under
 comment on column kobling.bruker_aktoer_id is 'Aktøren koblingen gjelder for';
 
 comment on column kobling.saksnummer is 'Saksnummer til saken koblingen gjelder for';
+
+comment on column kobling.original_kobling_referanse is 'Saksnummer til saken koblingen gjelder for';
 
 create index idx_kobling_1
     on kobling (kobling_referanse);
@@ -1063,38 +1062,6 @@ create index idx_avklaringsbehov_12
 
 create index idx_avklaringsbehov_11
     on avklaringsbehov (avklaringsbehov_def);
-
-create table kobling_relasjon
-(
-    id                  bigint                                       not null
-        constraint pk_kobling_relasjon
-            primary key,
-    kobling_id          bigint                                       not null
-        constraint fk_kobling_relasjon_1
-            references kobling,
-    original_kobling_id bigint                                       not null
-        constraint fk_kobling_relasjon_2
-            references kobling,
-    versjon             int          default 0                       not null,
-    opprettet_av        varchar(20)  default 'VL'::character varying not null,
-    opprettet_tid       timestamp(3) default LOCALTIMESTAMP          not null,
-    endret_av           varchar(20),
-    endret_tid          timestamp(3)
-);
-
-comment on table kobling_relasjon is 'Definerer relasjon mellom to koblinger';
-
-comment on column kobling_relasjon.id is 'Primærnøkkel';
-
-comment on column kobling_relasjon.kobling_id is 'FK: Id for Kobling som revurderer perioden til original kobling';
-
-comment on column kobling_relasjon.original_kobling_id is 'FK: Id for original kobling';
-
-create index idx_kobling_relasjon_1
-    on kobling_relasjon (kobling_id, original_kobling_id);
-
-create index idx_kobling_relasjon_2
-    on kobling_relasjon (kobling_id);
 
 create table regel_sporing_periode
 (

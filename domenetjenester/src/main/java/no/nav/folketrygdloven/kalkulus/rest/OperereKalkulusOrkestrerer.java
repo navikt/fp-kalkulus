@@ -3,20 +3,12 @@ package no.nav.folketrygdloven.kalkulus.rest;
 import static no.nav.folketrygdloven.kalkulus.beregning.MapStegTilTilstand.mapTilStegTilstand;
 import static no.nav.folketrygdloven.kalkulus.beregning.MapStegTilTilstand.mapTilStegUtTilstand;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
-
-import org.slf4j.MDC;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+
+import org.slf4j.MDC;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
@@ -24,8 +16,6 @@ import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulus.beregning.BeregningStegTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.input.HåndteringInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.input.StegProsessInputTjeneste;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.HåndtererApplikasjonTjeneste;
@@ -33,12 +23,9 @@ import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
-import no.nav.folketrygdloven.kalkulus.request.v1.BeregnForRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.HåndterBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.KalkulusRespons;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
-import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 @ApplicationScoped
 public class OperereKalkulusOrkestrerer {
@@ -70,9 +57,7 @@ public class OperereKalkulusOrkestrerer {
     }
 
     public KalkulusRespons beregn(BeregningSteg steg, KoblingEntitet koblingEntitet, KalkulatorInputDto input) {
-        List<KoblingRelasjon> koblingRelasjonEntiteter = Collections.emptyList(); // TODO tfp-5742 legg inn skikkelig relasjoner
-
-        var stegInput = lagInputOgRullTilbakeVedBehov(koblingEntitet.getId(), input, new InputForSteg(steg, koblingRelasjonEntiteter), true);
+        var stegInput = lagInputOgRullTilbakeVedBehov(koblingEntitet.getId(), input, new InputForSteg(steg), true);
 
         // Operer
         return opererAlle(stegInput, new Beregner(steg));
@@ -121,17 +106,14 @@ public class OperereKalkulusOrkestrerer {
     private class InputForSteg implements LagInputTjeneste {
 
         private final BeregningSteg steg;
-        private final List<KoblingRelasjon> koblingRelasjoner;
 
-
-        private InputForSteg(BeregningSteg steg, List<KoblingRelasjon> koblingRelasjoner) {
+        private InputForSteg(BeregningSteg steg) {
             this.steg = steg;
-            this.koblingRelasjoner = koblingRelasjoner;
         }
 
         @Override
         public BeregningsgrunnlagInput utfør(Long koblingId, KalkulatorInputDto inputPrKobling) {
-            return stegInputTjeneste.lagBeregningsgrunnlagInput(koblingId, inputPrKobling, steg, koblingRelasjoner);
+            return stegInputTjeneste.lagBeregningsgrunnlagInput(koblingId, inputPrKobling, steg);
         }
 
         @Override

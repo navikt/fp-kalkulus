@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import org.hibernate.annotations.NaturalId;
 
@@ -57,6 +58,12 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
     private FagsakYtelseType ytelseType;
 
     @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "referanse", column = @Column(name = "original_kobling_referanse", updatable = false))
+    })
+    private KoblingReferanse originalKoblingReferanse;
+
+    @Embedded
     @AttributeOverrides(@AttributeOverride(name = "aktørId", column = @Column(name = "bruker_aktoer_id", nullable = false, updatable = false)))
     private AktørId aktørId;
 
@@ -64,10 +71,15 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
     @Column(name = "versjon", nullable = false)
     private int versjon;
 
-    public KoblingEntitet() {
+    KoblingEntitet() {
+        // CDI
     }
 
     public KoblingEntitet(KoblingReferanse koblingReferanse, FagsakYtelseType ytelseType, Saksnummer saksnummer, AktørId aktørId) {
+        this(koblingReferanse, ytelseType, saksnummer, aktørId, Optional.empty());
+    }
+
+    public KoblingEntitet(KoblingReferanse koblingReferanse, FagsakYtelseType ytelseType, Saksnummer saksnummer, AktørId aktørId, Optional<KoblingReferanse> originalKoblingReferanse) {
         Objects.requireNonNull(saksnummer, "saksnummer");
         Objects.requireNonNull(koblingReferanse, "koblingReferanse");
         Objects.requireNonNull(aktørId, "aktørId");
@@ -79,6 +91,7 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
         this.saksnummer = saksnummer;
         this.koblingReferanse = koblingReferanse;
         this.aktørId = aktørId;
+        originalKoblingReferanse.ifPresent(kr -> this.originalKoblingReferanse = kr);
     }
 
     @Override
@@ -106,8 +119,8 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
         return saksnummer;
     }
 
-    public void setYtelseType(FagsakYtelseType ytelseType) {
-        this.ytelseType = ytelseType;
+    public Optional<KoblingReferanse> getOriginalKoblingReferanse() {
+        return Optional.ofNullable(originalKoblingReferanse);
     }
 
     @Override

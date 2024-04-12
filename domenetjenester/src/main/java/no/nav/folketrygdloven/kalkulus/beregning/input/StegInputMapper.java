@@ -24,6 +24,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
+import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.mapFraEntitet.BehandlingslagerTilKalkulusMapper;
@@ -38,16 +39,18 @@ class StegInputMapper {
 
 
     private final BeregningsgrunnlagRepository beregningsgrunnlagRepository;
+    private final KoblingTjeneste koblingTjeneste;
 
-    StegInputMapper(BeregningsgrunnlagRepository beregningsgrunnlagRepository) {
+    StegInputMapper(BeregningsgrunnlagRepository beregningsgrunnlagRepository, KoblingTjeneste koblingTjeneste) {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
+        this.koblingTjeneste = koblingTjeneste;
     }
 
     protected StegProsesseringInput mapStegInput(KoblingEntitet kobling,
                                                  KalkulatorInputDto input,
                                                  Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagEntitet,
                                                  BeregningSteg stegType,
-                                                 List<Long> originaleKoblinger) {
+                                                 Optional<BeregningsgrunnlagGrunnlagEntitet> originaltGrunnlag) {
         StegProsesseringInput stegProsesseringInput = lagStegProsesseringInput(kobling, input, grunnlagEntitet, stegType);
         if (stegType.equals(BeregningSteg.FASTSETT_STP_BER)) {
             return new FastsettBeregningsaktiviteterInput(stegProsesseringInput).medGrunnbeløpInput(finnInputSatser());
@@ -60,16 +63,16 @@ class StegInputMapper {
         } else if (stegType.equals(BeregningSteg.FORS_BERGRUNN_2)) {
             return lagInputFortsettForeslå(stegProsesseringInput);
         } else if (stegType.equals(BeregningSteg.VURDER_VILKAR_BERGRUNN)) {
-            Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning());
+            Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløp(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning());
             return lagInputVurderVilkår(stegProsesseringInput, førsteFastsatteGrunnlagEntitet);
         } else if (stegType.equals(BeregningSteg.VURDER_REF_BERGRUNN)) {
-            Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning());
-            return lagInputVurderRefusjon(stegProsesseringInput, førsteFastsatteGrunnlagEntitet, originaleKoblinger);
+            Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløp(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning());
+            return lagInputVurderRefusjon(stegProsesseringInput, førsteFastsatteGrunnlagEntitet, originaltGrunnlag);
         } else if (stegType.equals(BeregningSteg.FORDEL_BERGRUNN)) {
-            Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning());
+            Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløp(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning());
             return lagInputFordel(stegProsesseringInput, førsteFastsatteGrunnlagEntitet);
         } else if (stegType.equals(BeregningSteg.FAST_BERGRUNN)) {
-            Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning());
+            Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløp(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning());
             return lagInputFullføre(stegProsesseringInput, førsteFastsatteGrunnlagEntitet);
         }
         return stegProsesseringInput;
@@ -91,10 +94,12 @@ class StegInputMapper {
 
     private StegProsesseringInput lagInputVurderRefusjon(StegProsesseringInput stegProsesseringInput,
                                                          Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet,
-                                                         List<Long> originaleKoblinger) {
+                                                         Optional<BeregningsgrunnlagGrunnlagEntitet> originaltGrunnlag) {
         var vurderVilkårOgRefusjonBeregningsgrunnlag = new VurderRefusjonBeregningsgrunnlagInput(stegProsesseringInput);
-        List<BeregningsgrunnlagGrunnlagDto> originaltGrunnlag = finnOriginaltGrunnlag(originaleKoblinger);
-        vurderVilkårOgRefusjonBeregningsgrunnlag = vurderVilkårOgRefusjonBeregningsgrunnlag.medBeregningsgrunnlagGrunnlagFraForrigeBehandling(originaltGrunnlag);
+        if (originaltGrunnlag.isPresent()) {
+            vurderVilkårOgRefusjonBeregningsgrunnlag = vurderVilkårOgRefusjonBeregningsgrunnlag
+                .medBeregningsgrunnlagGrunnlagFraForrigeBehandling(BehandlingslagerTilKalkulusMapper.mapGrunnlag(originaltGrunnlag.get()));
+        }
         if (førsteFastsatteGrunnlagEntitet.isPresent()) {
             vurderVilkårOgRefusjonBeregningsgrunnlag = førsteFastsatteGrunnlagEntitet.get().getBeregningsgrunnlag()
                     .map(BeregningsgrunnlagEntitet::getGrunnbeløp)
@@ -114,16 +119,15 @@ class StegInputMapper {
                                                            Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagEntitet,
                                                            BeregningSteg stegType) {
         var beregningsgrunnlagInput = MapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input, grunnlagEntitet);
+        var originalKoblingEntitet = kobling.getOriginalKoblingReferanse().map(oref -> koblingTjeneste.hentKobling(oref));
         var grunnlagFraSteg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(
                 kobling,
-                mapTilStegTilstand(stegType), input.getSkjæringstidspunkt());
+                mapTilStegTilstand(stegType),
+                originalKoblingEntitet);
         var grunnlagFraStegUt = finnForrigeAvklartGrunnlagHvisFinnes(grunnlagFraSteg, stegType);
         return new StegProsesseringInput(beregningsgrunnlagInput, mapTilStegTilstand(stegType))
                 .medForrigeGrunnlagFraStegUt(grunnlagFraStegUt.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).orElse(null))
                 .medForrigeGrunnlagFraSteg(grunnlagFraSteg.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).orElse(null))
-                .medOriginalGrunnlagFraSteg(beregningsgrunnlagRepository.hentOriginalGrunnlagForTilstand(kobling.getId(), mapTilStegTilstand(stegType), input.getSkjæringstidspunkt())
-                        .map(BehandlingslagerTilKalkulusMapper::mapGrunnlag)
-                        .orElse(null))
                 .medStegUtTilstand(mapTilStegUtTilstand(stegType).orElse(null));
     }
 
@@ -173,12 +177,13 @@ class StegInputMapper {
         return GrunnbeløpMapper.mapGrunnbeløpInput(beregningsgrunnlagRepository.finnAlleSatser());
     }
 
-    private Optional<BeregningsgrunnlagGrunnlagEntitet> finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(KoblingEntitet koblingEntitet,
-                                                                                                                             LocalDate skjæringstidspunktBeregning) {
+    private Optional<BeregningsgrunnlagGrunnlagEntitet> finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløp(KoblingEntitet koblingEntitet,
+                                                                                                            LocalDate skjæringstidspunktBeregning) {
         if (MonthDay.from(skjæringstidspunktBeregning).isBefore(ENDRING_AV_GRUNNBELØP)) {
             return Optional.empty();
         }
-        return beregningsgrunnlagRepository.hentOriginalGrunnlagForTilstand(koblingEntitet.getId(), BeregningsgrunnlagTilstand.FASTSATT, skjæringstidspunktBeregning);
+        var alleKoblingIderForSaksnummer = koblingTjeneste.hentAlleKoblingerForSaksnummer(koblingEntitet.getSaksnummer()).stream().map(KoblingEntitet::getId).toList();
+        return beregningsgrunnlagRepository.hentFørsteFastsatteGrunnlagForSak(alleKoblingIderForSaksnummer);
     }
 
     private Optional<BeregningsgrunnlagGrunnlagEntitet> finnForrigeAvklartGrunnlagHvisFinnes(Optional<BeregningsgrunnlagGrunnlagEntitet> forrigeGrunnlagFraSteg,

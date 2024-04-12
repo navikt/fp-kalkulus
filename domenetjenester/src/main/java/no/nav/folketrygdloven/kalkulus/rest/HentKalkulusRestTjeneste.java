@@ -75,7 +75,7 @@ public class HentKalkulusRestTjeneste {
     @SuppressWarnings({"findsecbugs:JAXRS_ENDPOINT", "resource"})
     public Response hentAktiveBeregningsgrunnlagGrunnlag(@TilpassetAbacAttributt(supplierClass = EnkelFpkalkulusRequestAbacSupplier.class) @NotNull @Valid EnkelFpkalkulusRequestDto request) {
         var koblingReferanse = new KoblingReferanse(request.behandlingUuid());
-        var kobling = koblingTjeneste.hentFor(koblingReferanse);
+        var kobling = koblingTjeneste.hentKoblingOptional(koblingReferanse);
         var beregningsgrunnlagGrunnlagDto = kobling.flatMap(k -> beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(k.getId()))
             .map(MapDetaljertBeregningsgrunnlag::map);
         return beregningsgrunnlagGrunnlagDto.map(Response::ok).orElseGet(Response::noContent).build();
@@ -87,8 +87,8 @@ public class HentKalkulusRestTjeneste {
     @BeskyttetRessurs(actionType = ActionType.READ, resourceType = ResourceType.FAGSAK)
     @Path("/grunnlag/gui")
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
-    public Response hentBeregningsgrunnlagDtoListe(@TilpassetAbacAttributt(supplierClass = HentBeregningsgrunnlagGUIRequestAbacSupplier.class) @NotNull @Valid HentBeregningsgrunnlagGUIRequest request) {
-        var koblingEntitet = koblingTjeneste.hentFor(new KoblingReferanse(request.behandlingUuid()));
+    public Response hentBeregningsgrunnlagDto(@TilpassetAbacAttributt(supplierClass = HentBeregningsgrunnlagGUIRequestAbacSupplier.class) @NotNull @Valid HentBeregningsgrunnlagGUIRequest request) {
+        var koblingEntitet = koblingTjeneste.hentKoblingOptional(new KoblingReferanse(request.behandlingUuid()));
         var guiInput = koblingEntitet.flatMap(k -> finnInputForGenereringAvDtoTilGUI(k, request.kalkulatorInput()));
         if (guiInput.isEmpty()) {
             return Response.noContent().build();
@@ -102,7 +102,8 @@ public class HentKalkulusRestTjeneste {
     }
 
     private Optional<BeregningsgrunnlagGUIInput> finnInputForGenereringAvDtoTilGUI(KoblingEntitet kobling, KalkulatorInputDto input) {
-        return guiInputTjeneste.lagInputForKoblinger(kobling, Optional.empty(), input); // TODO tfp-5742 hent original kobling
+        var originalKoblingEntitet = kobling.getOriginalKoblingReferanse().map(kr -> koblingTjeneste.hentKobling(kr));
+        return guiInputTjeneste.lagInputForKoblinger(kobling, originalKoblingEntitet, input);
     }
 
     private BeregningsgrunnlagDto mapTilDto(BeregningsgrunnlagGUIInput input) {
