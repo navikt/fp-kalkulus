@@ -27,7 +27,9 @@
     <sequence-generator name="SEQ_FAKTA_ARBEIDSFORHOLD" allocation-size="50" sequence-name="SEQ_FAKTA_ARBEIDSFORHOLD"/>
     <sequence-generator name="SEQ_FAKTA_AKTOER" allocation-size="50" sequence-name="SEQ_FAKTA_AKTOER"/>
     <sequence-generator name="SEQ_AVKLARINGSBEHOV" allocation-size="50" sequence-name="SEQ_AVKLARINGSBEHOV"/>
-
+    <sequence-generator name="SEQ_BG_BESTEBEREGNING_GRUNNLAG" allocation-size="50" sequence-name="SEQ_BG_BESTEBEREGNING_GRUNNLAG"/>
+    <sequence-generator name="SEQ_BESTEBEREGNING_INNTEKT" allocation-size="50" sequence-name="SEQ_BESTEBEREGNING_INNTEKT"/>
+    <sequence-generator name="SEQ_BESTEBEREGNING_MAANED" allocation-size="50" sequence-name="SEQ_BESTEBEREGNING_MAANED"/>
 
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats"/>
@@ -49,11 +51,13 @@
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAggregatEntitet" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAktørEntitet" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaArbeidsforholdEntitet" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BesteberegninggrunnlagEntitet" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BesteberegningInntektEntitet" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BesteberegningMånedsgrunnlagEntitet" />
 
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet" />
 
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrunnlagEntitet" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet" />
-
 
 </entity-mappings>
