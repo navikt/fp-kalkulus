@@ -79,6 +79,12 @@ public class KoblingRepository {
         }
     }
 
+    public void markerKoblingSomAvsluttet(KoblingEntitet koblingEntitet) {
+        koblingEntitet.setErAvsluttet(true);
+        entityManager.persist(koblingEntitet);
+        entityManager.flush();
+    }
+
     private DiffResult getDiff(KoblingEntitet eksisterendeKobling, KoblingEntitet nyKobling) {
         var config = new TraverseJpaEntityGraphConfig();
         config.setIgnoreNulls(true);

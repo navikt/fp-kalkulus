@@ -67,6 +67,9 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
     @AttributeOverrides(@AttributeOverride(name = "aktørId", column = @Column(name = "bruker_aktoer_id", nullable = false, updatable = false)))
     private AktørId aktørId;
 
+    @Column(name = "er_avsluttet", nullable = false)
+    private boolean erAvsluttet = false;
+
     @Version
     @Column(name = "versjon", nullable = false)
     private int versjon;
@@ -121,6 +124,14 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
 
     public Optional<KoblingReferanse> getOriginalKoblingReferanse() {
         return Optional.ofNullable(originalKoblingReferanse);
+    }
+
+    public boolean getErAvsluttet() {
+        return erAvsluttet;
+    }
+
+    public void setErAvsluttet(boolean erAvsluttet) {
+        this.erAvsluttet = erAvsluttet;
     }
 
     @Override

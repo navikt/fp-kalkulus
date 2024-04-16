@@ -31,6 +31,7 @@ import no.nav.folketrygdloven.fpkalkulus.kontrakt.HåndterBeregningRequestDto;
 import no.nav.folketrygdloven.fpkalkulus.kontrakt.KopierBeregningsgrunnlagRequestDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kopiering.KopierBeregningsgrunnlagTjeneste;
@@ -89,6 +90,7 @@ public class OperereKalkulusRestTjeneste {
             request.originalBehandlingUuid() == null ? Optional.empty() : Optional.of(new KoblingReferanse(request.originalBehandlingUuid()));
         var kobling = koblingTjeneste.finnEllerOpprett(new KoblingReferanse(request.behandlingUuid()),
             mapTilYtelseKodeverk(request.ytelseSomSkalBeregnes()), new AktørId(request.aktør().getIdent()), saksnummer, originalKoblingRef);
+        validerIkkeAvsluttet(kobling);
         TilstandResponse respons = (TilstandResponse) orkestrerer.beregn(request.stegType(), kobling, request.kalkulatorInput());
         return Response.ok(respons).build();
     }
@@ -111,14 +113,15 @@ public class OperereKalkulusRestTjeneste {
     @Operation(description = "Oppdaterer beregningsgrunnlag for oppgitt liste", tags = "beregn", summary = ("Oppdaterer beregningsgrunnlag basert på løsning av avklaringsbehov for oppgitt liste."), responses = {@ApiResponse(description = "Liste med endringer som ble gjort under oppdatering", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = OppdateringListeRespons.class)))})
     @BeskyttetRessurs(actionType = ActionType.UPDATE, resourceType = ResourceType.FAGSAK)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
-    public Response oppdaterListe(@TilpassetAbacAttributt(supplierClass = HåndterBeregningRequestAbacSupplier.class) @NotNull @Valid HåndterBeregningRequestDto spesifikasjon) {
-        var kobling = koblingTjeneste.hentKoblingOptional(new KoblingReferanse(spesifikasjon.behandlingUuid()))
+    public Response oppdaterListe(@TilpassetAbacAttributt(supplierClass = HåndterBeregningRequestAbacSupplier.class) @NotNull @Valid HåndterBeregningRequestDto request) {
+        var kobling = koblingTjeneste.hentKoblingOptional(new KoblingReferanse(request.behandlingUuid()))
             .orElseThrow(() -> new IllegalStateException(
-                "Kan ikke løse avklaringsbehov i beregning uten en eksisterende kobling. Gjelder behandlingUuid " + spesifikasjon.behandlingUuid()));
+                "Kan ikke løse avklaringsbehov i beregning uten en eksisterende kobling. Gjelder behandlingUuid " + request.behandlingUuid()));
         MDC.put("prosess_saksnummer", kobling.getSaksnummer().getVerdi());
+        validerIkkeAvsluttet(kobling);
         KalkulusRespons respons;
         try {
-            respons = orkestrerer.håndter(kobling, spesifikasjon.kalkulatorInput(), spesifikasjon.håndterBeregningDtoList());
+            respons = orkestrerer.håndter(kobling, request.kalkulatorInput(), request.håndterBeregningDtoList());
         } catch (UgyldigInputException e) {
             return Response.ok(new OppdateringListeRespons(true)).build();
         }
@@ -140,13 +143,46 @@ public class OperereKalkulusRestTjeneste {
         var kopt = koblingTjeneste.hentKoblingOptional(koblingReferanse)
             .orElseThrow(() -> new TekniskException("FT-47197",
                 String.format("Pøver å deaktivere data på en kobling som ikke finnes, koblingRef %s", koblingReferanse)));
-        if (!kopt.getSaksnummer().equals(saksnummer)) {
-            throw new TekniskException("FT-47198", String.format(
-                "Missmatch mellom forventet saksnummer og faktisk saksnummer for koblingRef %s. Forventet saksnummer var %s, faktisk saksnummer var %s",
-                koblingReferanse, saksnummer, kopt.getSaksnummer()));
-        }
+        validerIkkeAvsluttet(kopt);
+        validerKoblingOgSaksnummer(kopt, saksnummer);
         rullTilbakeTjeneste.deaktiverAllKoblingdata(kopt.getId());
         return Response.ok().build();
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/avslutt")
+    @Operation(description = "Markerer en kobling som avsluttet. Hindrer fremtidige endringer å koblingen.", tags = "avslutt", summary = ("Markerer en kobling som avsluttet."))
+    @BeskyttetRessurs(actionType = ActionType.UPDATE, resourceType = ResourceType.FAGSAK)
+    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
+    public Response avslutt(@TilpassetAbacAttributt(supplierClass = EnkelFpkalkulusRequestAbacSupplier.class) @NotNull @Valid EnkelFpkalkulusRequestDto request) {
+        var saksnummer = new Saksnummer(request.saksnummer().verdi());
+        MDC.put("prosess_saksnummer", saksnummer.getVerdi());
+        var koblingReferanse = new KoblingReferanse(request.behandlingUuid());
+        MDC.put("prosess_koblingreferanse", koblingReferanse.getReferanse().toString());
+        var kopt = koblingTjeneste.hentKoblingOptional(koblingReferanse)
+            .orElseThrow(() -> new TekniskException("FT-47197",
+                String.format("Prøver å markere en kobling som ikke finnes som avsluttet, koblingRef %s", koblingReferanse)));
+        validerIkkeAvsluttet(kopt);
+        validerKoblingOgSaksnummer(kopt, saksnummer);
+        koblingTjeneste.markerKoblingSomAvsluttet(kopt);
+        return Response.ok().build();
+    }
+
+    private void validerKoblingOgSaksnummer(KoblingEntitet kobling, Saksnummer saksnummer) {
+        if (!kobling.getSaksnummer().equals(saksnummer)) {
+            throw new TekniskException("FT-47198", String.format(
+                "Missmatch mellom forventet saksnummer og faktisk saksnummer for koblingRef %s. Forventet saksnummer var %s, faktisk saksnummer var %s",
+                kobling.getKoblingReferanse(), saksnummer, kobling.getSaksnummer()));
+        }
+    }
+
+    private void validerIkkeAvsluttet(KoblingEntitet kobling) {
+        if (kobling.getErAvsluttet()) {
+            throw new TekniskException("FT-49000", String.format(
+                "Ikke tillatt å gjøre endringer på en avsluttet kobling. Gjelder kobling med referanse %s",
+                kobling.getKoblingReferanse()));
+        }
     }
 
     private FagsakYtelseType mapTilYtelseKodeverk(FpkalkulusYtelser ytelse) {

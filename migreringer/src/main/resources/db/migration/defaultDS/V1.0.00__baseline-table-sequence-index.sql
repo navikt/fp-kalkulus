@@ -688,6 +688,7 @@ create table kobling
     kl_ytelse_type    varchar(100) default 'FAGSAK_YTELSE_TYPE'::character varying,
     bruker_aktoer_id  varchar(50)                                  not null,
     saksnummer        varchar(19)                                  not null,
+    er_avsluttet      boolean      default false                   not null,
     versjon           int          default 0                       not null,
     opprettet_av      varchar(20)  default 'VL'::character varying not null,
     opprettet_tid     timestamp(3) default LOCALTIMESTAMP          not null,
@@ -707,7 +708,9 @@ comment on column kobling.bruker_aktoer_id is 'Aktøren koblingen gjelder for';
 
 comment on column kobling.saksnummer is 'Saksnummer til saken koblingen gjelder for';
 
-comment on column kobling.original_kobling_referanse is 'Saksnummer til saken koblingen gjelder for';
+comment on column kobling.original_kobling_referanse is 'Referanse til original kobling hvis koblingen er basert på en annen';
+
+comment on column kobling.er_avsluttet is 'Markerer om koblingen tilhører en behandling der vedtak er fattet og derfor ikke skal kunne endres';
 
 create index idx_kobling_1
     on kobling (kobling_referanse);
