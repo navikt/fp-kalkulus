@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
-import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
@@ -25,7 +24,6 @@ import jakarta.persistence.Version;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
-import no.nav.folketrygdloven.kalkulus.felles.diff.ChangeTracked;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 
 
@@ -136,12 +134,5 @@ public class BesteberegninggrunnlagEntitet extends BaseEntitet {
         public BesteberegninggrunnlagEntitet build() {
             return kladd;
         }
-
     }
-
-
-
-
-
-
 }

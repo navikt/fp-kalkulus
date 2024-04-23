@@ -95,7 +95,7 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
     }
 
     @Test
-    public void skal_gi_aksjonspunkt_ventelønn_vartpenger_fastsett_aktiviteter() {
+    void skal_gi_aksjonspunkt_ventelønn_vartpenger_fastsett_aktiviteter() {
         // Arrange
         var kobling = lagKoblingRefEntitet();
         var ref = InternArbeidsforholdRefDto.nyRef();
@@ -122,7 +122,7 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
      * Tester at vi kopierer gammelt bekreftet grunnlag når dette er mulig å gjøre basert på gammelt steg grunnlag og nytt steg grunnlag
      */
     @Test
-    public void skal_kopiere_gammelt_grunnlag_når_dette_er_mulig_fastsett_aktiviteter() {
+    void skal_kopiere_gammelt_grunnlag_når_dette_er_mulig_fastsett_aktiviteter() {
         // Arrange
         var kobling = lagKoblingRefEntitet();
         var ref = InternArbeidsforholdRefDto.nyRef();
@@ -187,7 +187,7 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
     }
 
     @Test
-    public void skal_ikke_kopiere_grunnlag_ved_endringer_i_input_fastsett_aktiviteter() {
+    void skal_ikke_kopiere_grunnlag_ved_endringer_i_input_fastsett_aktiviteter() {
         // Arrange
         var kobling = lagKoblingRefEntitet();
         var ref = InternArbeidsforholdRefDto.nyRef();
@@ -227,7 +227,7 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
     }
 
     @Test
-    public void skal_gi_aksjonspunkt_om_lønnsendring_vurder_fakta() {
+    void skal_gi_aksjonspunkt_om_lønnsendring_vurder_fakta() {
         // Arrange
         var kobling = lagKoblingRefEntitet();
         var ref = InternArbeidsforholdRefDto.nyRef();
@@ -258,7 +258,7 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
     }
 
     @Test
-    public void skal_kopiere_gammelt_grunnlag_ved_tilbakerulling() {
+    void skal_kopiere_gammelt_grunnlag_ved_tilbakerulling() {
         // Arrange
         var kobling = lagKoblingRefEntitet();
         var ref = InternArbeidsforholdRefDto.nyRef();

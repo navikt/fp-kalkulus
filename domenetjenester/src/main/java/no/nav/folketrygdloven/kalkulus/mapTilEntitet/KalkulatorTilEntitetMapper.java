@@ -2,10 +2,12 @@ package no.nav.folketrygdloven.kalkulus.mapTilEntitet;
 
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.KOFAKBER_UT;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER;
+import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilBGMapper.mapAktivitetStatus;
+import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilBGMapper.mapBeregningsgrunnlagPeriode;
+import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilBGMapper.mapSammenligningsgrunnlagMedStatus;
 import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilIAYMapper.mapArbeidsforholdRef;
 import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilIAYMapper.mapArbeidsgiver;
 
-import java.util.ArrayList;
 import java.util.function.Consumer;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -18,6 +20,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningVurderingGrunnlag;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetEntitet;
@@ -43,7 +46,7 @@ import no.nav.folketrygdloven.kalkulus.mappers.VerdityperMapper;
 public class KalkulatorTilEntitetMapper {
 
     public static BeregningsgrunnlagGrunnlagBuilder mapGrunnlag(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagFraKalkulus) {
-        BeregningsgrunnlagGrunnlagBuilder oppdatere = BeregningsgrunnlagGrunnlagBuilder.nytt();
+        var oppdatere = BeregningsgrunnlagGrunnlagBuilder.nytt();
 
         beregningsgrunnlagFraKalkulus.getBeregningsgrunnlagHvisFinnes().ifPresent(beregningsgrunnlagDto -> oppdatere.medBeregningsgrunnlag(mapBeregningsgrunnlag(beregningsgrunnlagDto)));
         beregningsgrunnlagFraKalkulus.getOverstyring().ifPresent(beregningAktivitetOverstyringerDto -> oppdatere.medOverstyring(mapAktivitetOverstyring(beregningAktivitetOverstyringerDto)));
@@ -59,8 +62,18 @@ public class KalkulatorTilEntitetMapper {
         return oppdatere;
     }
 
+    public static BeregningsgrunnlagEntitet mapBeregningsgrunnlagMedBesteberegning(BeregningsgrunnlagDto beregningsgrunnlagFraKalkulus, BesteberegningVurderingGrunnlag besteberegningVurderingGrunnlag) {
+        var builder = opprettBuilderMedBeregningsgrunnlag(beregningsgrunnlagFraKalkulus);
+        builder.medBesteberegninggrunnlag(BesteberegningMapper.mapBestebergninggrunnlag(besteberegningVurderingGrunnlag));
+        return builder.build();
+    }
+
     private static BeregningsgrunnlagEntitet mapBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlagFraKalkulus) {
-        BeregningsgrunnlagEntitet.Builder builder = BeregningsgrunnlagEntitet.builder();
+        return opprettBuilderMedBeregningsgrunnlag(beregningsgrunnlagFraKalkulus).build();
+    }
+
+    private static BeregningsgrunnlagEntitet.Builder opprettBuilderMedBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlagFraKalkulus) {
+        var builder = BeregningsgrunnlagEntitet.builder();
 
         //med
         builder.medGrunnbeløp(VerdityperMapper.beløpTilDao(beregningsgrunnlagFraKalkulus.getGrunnbeløp()));
@@ -68,12 +81,15 @@ public class KalkulatorTilEntitetMapper {
         builder.medSkjæringstidspunkt(beregningsgrunnlagFraKalkulus.getSkjæringstidspunkt());
 
         //lister
-        beregningsgrunnlagFraKalkulus.getAktivitetStatuser().forEach(beregningsgrunnlagAktivitetStatus -> builder.leggTilAktivitetstatus(KalkulatorTilBGMapper.mapAktivitetStatus(beregningsgrunnlagAktivitetStatus)));
-        beregningsgrunnlagFraKalkulus.getBeregningsgrunnlagPerioder().forEach(beregningsgrunnlagPeriode -> builder.leggTilBeregningsgrunnlagPeriode(KalkulatorTilBGMapper.mapBeregningsgrunnlagPeriode(beregningsgrunnlagPeriode)));
+        beregningsgrunnlagFraKalkulus.getAktivitetStatuser().forEach(beregningsgrunnlagAktivitetStatus -> builder.leggTilAktivitetstatus(
+            mapAktivitetStatus(beregningsgrunnlagAktivitetStatus)));
+        beregningsgrunnlagFraKalkulus.getBeregningsgrunnlagPerioder().forEach(beregningsgrunnlagPeriode -> builder.leggTilBeregningsgrunnlagPeriode(
+            mapBeregningsgrunnlagPeriode(beregningsgrunnlagPeriode)));
         beregningsgrunnlagFraKalkulus.getFaktaOmBeregningTilfeller().forEach(builder::leggTilFaktaTilfelle);
-        beregningsgrunnlagFraKalkulus.getSammenligningsgrunnlagPrStatusListe().forEach(sammenligningsgrunnlagPrStatus -> builder.leggTilSammenligningsgrunnlag(KalkulatorTilBGMapper.mapSammenligningsgrunnlagMedStatus(sammenligningsgrunnlagPrStatus)));
+        beregningsgrunnlagFraKalkulus.getSammenligningsgrunnlagPrStatusListe().forEach(sammenligningsgrunnlagPrStatus -> builder.leggTilSammenligningsgrunnlag(
+            mapSammenligningsgrunnlagMedStatus(sammenligningsgrunnlagPrStatus)));
 
-        return builder.build();
+        return builder;
     }
 
     private static BeregningRefusjonOverstyringerEntitet mapRefusjonOverstyring(BeregningRefusjonOverstyringerDto refusjonOverstyringerFraKalkulus) {

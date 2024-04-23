@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.beregning;
 
+import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper.mapBeregningsgrunnlagMedBesteberegning;
 import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper.mapGrunnlag;
 
 import java.util.List;
@@ -28,9 +29,9 @@ import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingPeriode;
 import no.nav.folketrygdloven.kalkulator.steg.BeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.KalkulatorInterface;
+import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningResultat;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AvklaringsbehovMedTilstandDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrunnlagEntitet;
-import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
@@ -167,17 +168,19 @@ public class BeregningStegTjeneste {
      * @return {@link BeregningAvklaringsbehovResultat}
      */
     private TilstandResponse foreslåBesteberegning(ForeslåBesteberegningInput input) {
-        if (input.getYtelsespesifiktGrunnlag() instanceof ForeldrepengerGrunnlag foreldrepengerGrunnlag) {
-            if (foreldrepengerGrunnlag.isKvalifisererTilBesteberegning()) {
-                var beregningResultatAggregat = beregningsgrunnlagTjeneste.foreslåBesteberegning(input);
-                repository.lagre(input.getKoblingId(), mapGrunnlag(beregningResultatAggregat.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
+        if (input.getYtelsespesifiktGrunnlag() instanceof ForeldrepengerGrunnlag foreldrepengerGrunnlag && foreldrepengerGrunnlag.isKvalifisererTilBesteberegning()) {
+                var beregningResultatAggregat = (BesteberegningResultat) beregningsgrunnlagTjeneste.foreslåBesteberegning(input);
+                var grunnlagBuilder = mapGrunnlag(beregningResultatAggregat.getBeregningsgrunnlagGrunnlag());
+
+                beregningResultatAggregat.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlagHvisFinnes().ifPresent(beregningsgrunnlagDto ->
+                    grunnlagBuilder.medBeregningsgrunnlag(mapBeregningsgrunnlagMedBesteberegning(beregningsgrunnlagDto, beregningResultatAggregat.getBesteberegningVurderingGrunnlag())));
+
+                repository.lagre(input.getKoblingId(), grunnlagBuilder, input.getStegTilstand());
                 lagreRegelsporing(input.getKoblingId(), beregningResultatAggregat.getRegelSporingAggregat(), input.getStegTilstand());
                 return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
-            }
         }
         return new TilstandResponse(input.getKoblingReferanse().getKoblingUuid(), KalkulusResultatKode.BEREGNET, List.of());
     }
-
 
     /**
      * VurderRefusjonBeregningsgrunnlag
@@ -278,7 +281,7 @@ public class BeregningStegTjeneste {
                         res.getBeregningAvklaringsbehovDefinisjon(),
                         res.getVenteårsak(),
                         res.getVentefrist()))
-                .collect(Collectors.toList());
+                .toList();
         if (resultat.getBeregningVilkårResultat() != null) {
             return new TilstandResponse(koblingReferanse.getKoblingUuid(),
                     avklaringsbehov,
@@ -354,10 +357,10 @@ public class BeregningStegTjeneste {
     private void lagreAvklaringsbehov(StegProsesseringInput input, BeregningResultatAggregat
             beregningResultatAggregat) {
         // Lagrer ikke ventepunkter i kalkulus da det ikke finnes en mekanisme i k9-sak som samspiller med dette
-        List<AvklaringsbehovDefinisjon> avklaringsbehovSomLagresIKalkulus = beregningResultatAggregat.getBeregningAvklaringsbehovResultater().stream()
+        var avklaringsbehovSomLagresIKalkulus = beregningResultatAggregat.getBeregningAvklaringsbehovResultater().stream()
                 .map(BeregningAvklaringsbehovResultat::getBeregningAvklaringsbehovDefinisjon)
                 .filter(ap -> !ap.erVentepunkt())
-                .collect(Collectors.toList());
+                .toList();
         avklaringsbehovTjeneste.lagreAvklaringsresultater(input.getKoblingId(), avklaringsbehovSomLagresIKalkulus);
     }
 

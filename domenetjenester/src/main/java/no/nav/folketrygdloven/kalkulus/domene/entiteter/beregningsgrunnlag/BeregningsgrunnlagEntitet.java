@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
@@ -18,6 +19,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 
@@ -51,6 +53,9 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
     @BatchSize(size = 20)
     private final List<BeregningsgrunnlagPeriodeEntitet> beregningsgrunnlagPerioder = new ArrayList<>();
 
+    @OneToOne(mappedBy = "beregningsgrunnlag", cascade = CascadeType.PERSIST)
+    private BesteberegninggrunnlagEntitet besteberegninggrunnlag;
+
     @OneToMany(mappedBy = "beregningsgrunnlag")
     @BatchSize(size = 20)
     private final List<SammenligningsgrunnlagPrStatusEntitet> sammenligningsgrunnlagPrStatusListe = new ArrayList<>();
@@ -72,6 +77,7 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
         this.overstyrt = kopi.isOverstyrt();
         this.skjæringstidspunkt = kopi.getSkjæringstidspunkt();
         kopi.getSammenligningsgrunnlagPrStatusListe().stream().map(SammenligningsgrunnlagPrStatusEntitet::new).forEach(this::leggTilSammenligningsgrunnlagPrStatus);
+        kopi.getBesteberegninggrunnlag().map(BesteberegninggrunnlagEntitet::new).ifPresent(this::setBesteberegninggrunnlag);
         kopi.getFaktaOmBeregningTilfeller().stream().map(BeregningsgrunnlagFaktaOmBeregningTilfelle::new).forEach(this::leggTilFaktaOmBeregningTilfelle);
         kopi.getAktivitetStatuser().stream().map(BeregningsgrunnlagAktivitetStatusEntitet::new).forEach(this::leggTilBeregningsgrunnlagAktivitetStatus);
         kopi.getBeregningsgrunnlagPerioder().stream().map(BeregningsgrunnlagPeriodeEntitet::new)
@@ -102,6 +108,11 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
                 .sorted(Comparator.comparing(BeregningsgrunnlagPeriodeEntitet::getBeregningsgrunnlagPeriodeFom))
                 .toList();
     }
+
+    public Optional<BesteberegninggrunnlagEntitet> getBesteberegninggrunnlag() {
+        return Optional.ofNullable(besteberegninggrunnlag);
+    }
+
 
     public Beløp getGrunnbeløp() {
         return grunnbeløp;
@@ -158,6 +169,11 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
         }
         sammenligningsgrunnlagPrStatusListe.add(sammenligningsgrunnlagPrStatus);
         sammenligningsgrunnlagPrStatus.setBeregningsgrunnlag(this);
+    }
+
+    void setBesteberegninggrunnlag(BesteberegninggrunnlagEntitet besteberegninggrunnlag) {
+        besteberegninggrunnlag.setBeregningsgrunnlag(this);
+        this.besteberegninggrunnlag = besteberegninggrunnlag;
     }
 
     public boolean isOverstyrt() {
@@ -249,6 +265,14 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
             return this;
         }
 
+        public Builder medBesteberegninggrunnlag(BesteberegninggrunnlagEntitet besteberegninggrunnlag) {
+            verifiserKanModifisere();
+            if (besteberegninggrunnlag == null) {
+                return this;
+            }
+            kladd.setBesteberegninggrunnlag(besteberegninggrunnlag);
+            return this;
+        }
 
         public BeregningsgrunnlagEntitet build() {
             verifyStateForBuild();

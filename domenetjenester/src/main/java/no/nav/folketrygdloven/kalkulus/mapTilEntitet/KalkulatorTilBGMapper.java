@@ -24,7 +24,7 @@ import no.nav.folketrygdloven.kalkulus.mappers.VerdityperMapper;
 
 
 public class KalkulatorTilBGMapper {
-    public static BeregningsgrunnlagAktivitetStatusEntitet mapAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto fraKalkulus) {
+    static BeregningsgrunnlagAktivitetStatusEntitet mapAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto fraKalkulus) {
         BeregningsgrunnlagAktivitetStatusEntitet.Builder builder = new BeregningsgrunnlagAktivitetStatusEntitet.Builder();
         builder.medAktivitetStatus(fraKalkulus.getAktivitetStatus());
         builder.medHjemmel(fraKalkulus.getHjemmel());
@@ -32,7 +32,7 @@ public class KalkulatorTilBGMapper {
         return builder.build();
     }
 
-    public static BeregningsgrunnlagPeriodeEntitet mapBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeDto fraKalkulus) {
+    static BeregningsgrunnlagPeriodeEntitet mapBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeDto fraKalkulus) {
         BeregningsgrunnlagPeriodeEntitet.Builder builder = new BeregningsgrunnlagPeriodeEntitet.Builder();
 
         //med
@@ -52,7 +52,7 @@ public class KalkulatorTilBGMapper {
         return builder.build();
     }
 
-    public static SammenligningsgrunnlagPrStatusEntitet mapSammenligningsgrunnlagMedStatus(SammenligningsgrunnlagPrStatusDto fraKalkulus) {
+    static SammenligningsgrunnlagPrStatusEntitet mapSammenligningsgrunnlagMedStatus(SammenligningsgrunnlagPrStatusDto fraKalkulus) {
         SammenligningsgrunnlagPrStatusEntitet.Builder builder = new SammenligningsgrunnlagPrStatusEntitet.Builder();
         builder.medAvvikPromilleNy(mapTilPromille(fraKalkulus.getAvvikPromilleNy()));
         builder.medAvvikPromille(mapTilPromille(fraKalkulus.getAvvikPromilleNy()));
