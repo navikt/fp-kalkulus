@@ -6,12 +6,12 @@ import java.util.Optional;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
-import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.vedtak.exception.TekniskException;
 
 @ApplicationScoped

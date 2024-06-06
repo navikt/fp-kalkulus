@@ -3,6 +3,8 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling;
 import java.util.Objects;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
+
 import org.hibernate.annotations.NaturalId;
 
 import jakarta.persistence.AttributeOverride;
@@ -22,7 +24,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.FagsakYtelseType
 import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
-import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 @Entity(name = "Kobling")
 @Table(name = "KOBLING")
@@ -74,7 +75,7 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
     @Column(name = "versjon", nullable = false)
     private int versjon;
 
-    KoblingEntitet() {
+    protected KoblingEntitet() {
         // CDI
     }
 

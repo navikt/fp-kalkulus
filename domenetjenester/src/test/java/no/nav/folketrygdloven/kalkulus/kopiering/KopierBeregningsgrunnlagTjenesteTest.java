@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,7 +41,6 @@ import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovR
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
-import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
 import no.nav.vedtak.sikkerhet.kontekst.BasisKontekst;
 import no.nav.vedtak.sikkerhet.kontekst.KontekstHolder;

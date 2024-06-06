@@ -14,6 +14,8 @@ import jakarta.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulus.dbstoette.JpaExtension;
 
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -67,7 +69,6 @@ import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovR
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
-import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.vedtak.felles.testutilities.cdi.CdiAwareExtension;
 import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
 import no.nav.vedtak.konfig.Tid;
@@ -363,7 +364,7 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
 
     private KoblingReferanse lagKoblingRefDto(KoblingEntitet koblingEntitet) {
         var skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktOpptjening(STP).medFørsteUttaksdato(STP).build();
-        return KoblingReferanse.fra(FagsakYtelseType.FORELDREPENGER, new AktørId("999999999999"), koblingEntitet.getId(), koblingEntitet.getKoblingReferanse().getReferanse(), Optional.empty(), skjæringstidspunkt);
+        return KoblingReferanse.fra(FagsakYtelseType.FORELDREPENGER, new no.nav.folketrygdloven.kalkulus.typer.AktørId("999999999999"), koblingEntitet.getId(), koblingEntitet.getKoblingReferanse().getReferanse(), Optional.empty(), skjæringstidspunkt);
     }
 
     private YrkesaktivitetDto lagYA(String orgnr, InternArbeidsforholdRefDto ref) {

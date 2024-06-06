@@ -11,6 +11,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
+
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
@@ -48,7 +50,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningPeriodeDto;
-import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 class MapFraKalkulatorTest {
 
@@ -62,7 +63,7 @@ class MapFraKalkulatorTest {
         String saksnummer = "1234";
         UUID randomUUID = UUID.randomUUID();
         Saksnummer saksnummer1 = new Saksnummer(saksnummer);
-        KoblingEntitet koblingEntitet = new KoblingEntitet(new KoblingReferanse(randomUUID), FagsakYtelseType.FORELDREPENGER, saksnummer1, AktørId.dummy());
+        KoblingEntitet koblingEntitet = new KoblingEntitet(new KoblingReferanse(randomUUID), FagsakYtelseType.FORELDREPENGER, saksnummer1, new AktørId("9999999999999"));
         KalkulatorInputDto kalkulatorInputDto = byggKalkulatorInput();
 
         BeregningsgrunnlagInput input = mapFraKalkulatorInputTilBeregningsgrunnlagInput(koblingEntitet, kalkulatorInputDto, Optional.empty());

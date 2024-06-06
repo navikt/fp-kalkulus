@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +36,6 @@ import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovT
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelSporingTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
-import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
 
 @ExtendWith({JpaExtension.class})

@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +24,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
-import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.vedtak.exception.TekniskException;
 import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
 

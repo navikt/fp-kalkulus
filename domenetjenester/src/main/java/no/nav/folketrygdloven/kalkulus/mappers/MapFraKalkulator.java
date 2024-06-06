@@ -54,7 +54,7 @@ public class MapFraKalkulator {
         var skjæringstidspunkt = input.getSkjæringstidspunkt();
 
         var ytelseType = kobling.getYtelseType();
-        var aktørId = new AktørId(kobling.getAktørId().getId());
+        var aktørId = new no.nav.folketrygdloven.kalkulus.typer.AktørId(kobling.getAktørId().getId());
         var build = Skjæringstidspunkt.builder()
                 .medFørsteUttaksdato(skjæringstidspunkt)
                 .medSkjæringstidspunktOpptjening(skjæringstidspunkt).build();
