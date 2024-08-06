@@ -7,7 +7,7 @@
     <parent>
         <groupId>no.nav.foreldrepenger.felles</groupId>
         <artifactId>fp-bom</artifactId>
-        <version>3.4.0</version>
+        <version>3.4.1</version>
     </parent>
 
     <groupId>no.nav.foreldrepenger.kalkulus</groupId>
@@ -32,7 +32,7 @@
         <kontrakt.java.version>21</kontrakt.java.version>
 
         <ftberegning.version>5.1.5</ftberegning.version>
-        <felles.version>7.2.1</felles.version>
+        <felles.version>7.2.5</felles.version>
 
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
@@ -42,7 +42,7 @@
             <dependency>
                 <groupId>no.nav.foreldrepenger.felles</groupId>
                 <artifactId>fp-bom</artifactId>
-                <version>3.4.0</version>
+                <version>3.4.1</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
