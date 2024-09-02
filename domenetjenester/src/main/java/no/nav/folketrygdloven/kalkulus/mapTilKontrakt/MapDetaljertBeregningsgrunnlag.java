@@ -209,6 +209,7 @@ public class MapDetaljertBeregningsgrunnlag {
             .medPgi1(mapBeløp(beregningsgrunnlagPrStatusOgAndel.getPgi1()))
             .medPgi2(mapBeløp(beregningsgrunnlagPrStatusOgAndel.getPgi2()))
             .medPgi3(mapBeløp(beregningsgrunnlagPrStatusOgAndel.getPgi3()))
+            .medAndelKilde(beregningsgrunnlagPrStatusOgAndel.getKilde())
             .medÅrsbeløpFraTilstøtendeYtelse(mapBeløp(beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr()))
             .medFastsattAvSaksbehandler(beregningsgrunnlagPrStatusOgAndel.getFastsattAvSaksbehandler())
             .medLagtTilAvSaksbehandler(
