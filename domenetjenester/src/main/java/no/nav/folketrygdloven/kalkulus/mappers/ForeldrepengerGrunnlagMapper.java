@@ -27,7 +27,7 @@ class ForeldrepengerGrunnlagMapper {
         ForeldrepengerGrunnlag foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(mapDekningsgrad(fpKontraktGrunnlag.getDekningsgrad().intValue()),
                 fpKontraktGrunnlag.getKvalifisererTilBesteberegning());
         var aktivitetGradering = fpKontraktGrunnlag.getAktivitetGradering();
-        foreldrepengerGrunnlag.setAktivitetGradering(aktivitetGradering == null ? AktivitetGradering.INGEN_GRADERING : mapFraDto(aktivitetGradering));
+        foreldrepengerGrunnlag.setAktivitetGradering(aktivitetGradering == null || aktivitetGradering.getAndelGraderingDto() == null ? AktivitetGradering.INGEN_GRADERING : mapFraDto(aktivitetGradering));
         foreldrepengerGrunnlag.setBesteberegningYtelsegrunnlag(mapYtelsegrunnlag(fpKontraktGrunnlag.getYtelsegrunnlagForBesteberegning()));
         return foreldrepengerGrunnlag;
     }

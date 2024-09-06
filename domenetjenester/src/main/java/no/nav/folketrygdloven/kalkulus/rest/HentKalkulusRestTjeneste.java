@@ -15,6 +15,9 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
+
 import org.slf4j.MDC;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -94,6 +97,22 @@ public class HentKalkulusRestTjeneste {
         }
         var guiDto = hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(guiInput.get());
         return Response.ok(guiDto).build();
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(description = "Hent beteberegningsgrunnlag for angitt referanse", summary = ("Returnerer aktive besteberegningsgrunnlag for angitt kobling referanse."), tags = "beregningsgrunnlag")
+    @BeskyttetRessurs(actionType = ActionType.READ, resourceType = ResourceType.FAGSAK)
+    @Path("/grunnlag/besteberegning")
+    @SuppressWarnings({"findsecbugs:JAXRS_ENDPOINT", "resource"})
+    public Response hentBesteberegnetGrunnlag(@TilpassetAbacAttributt(supplierClass = EnkelFpkalkulusRequestAbacSupplier.class) @NotNull @Valid EnkelFpkalkulusRequestDto request) {
+        var koblingReferanse = new KoblingReferanse(request.behandlingUuid());
+        var kobling = koblingTjeneste.hentKoblingOptional(koblingReferanse);
+        var besteberegnetGrunnlagDto = kobling.flatMap(k -> beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(k.getId()))
+            .flatMap(BeregningsgrunnlagGrunnlagEntitet::getBeregningsgrunnlag)
+            .flatMap(BeregningsgrunnlagEntitet::getBesteberegninggrunnlag)
+            .map(MapDetaljertBeregningsgrunnlag::mapBesteberegningsgrunlag);
+        return besteberegnetGrunnlagDto.map(Response::ok).orElseGet(Response::noContent).build();
     }
 
     private BeregningsgrunnlagDto hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(BeregningsgrunnlagGUIInput guiInput) {

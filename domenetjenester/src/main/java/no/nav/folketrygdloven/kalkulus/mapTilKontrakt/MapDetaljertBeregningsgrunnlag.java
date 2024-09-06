@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.fpkalkulus.kontrakt.besteberegning.BesteberegningGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforholdEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetEntitet;
@@ -16,6 +17,9 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriodeEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BesteberegningInntektEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BesteberegningMånedsgrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BesteberegninggrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAktørEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaArbeidsforholdEntitet;
@@ -62,6 +66,22 @@ public class MapDetaljertBeregningsgrunnlag {
         BeregningsgrunnlagTilstand beregningsgrunnlagTilstand = gr.getBeregningsgrunnlagTilstand();
         return new BeregningsgrunnlagGrunnlagDto(beregningsgrunnlag, faktaAggregat, registerAktiviteter, saksbehandletAktiviteter, overstyringer,
             refusjonOverstyringer, beregningsgrunnlagTilstand);
+    }
+
+    public static BesteberegningGrunnlagDto mapBesteberegningsgrunlag(BesteberegninggrunnlagEntitet bbg) {
+        var måneder = bbg.getSeksBesteMåneder().stream().map(MapDetaljertBeregningsgrunnlag::mapBBMåned).toList();
+        return new BesteberegningGrunnlagDto(måneder, mapBeløp(bbg.getAvvik().orElse(null)));
+    }
+
+    private static BesteberegningGrunnlagDto.BesteberegningMånedDto mapBBMåned(BesteberegningMånedsgrunnlagEntitet måned) {
+        var inntekter = måned.getInntekter().stream().map(MapDetaljertBeregningsgrunnlag::mapBBInntekt).toList();
+        var periode = new Periode(måned.getPeriode().getFomDato(), måned.getPeriode().getTomDato());
+        return new BesteberegningGrunnlagDto.BesteberegningMånedDto(periode, inntekter);
+    }
+
+    private static BesteberegningGrunnlagDto.BesteberegningInntektDto mapBBInntekt(BesteberegningInntektEntitet i) {
+        return new BesteberegningGrunnlagDto.BesteberegningInntektDto(i.getOpptjeningAktivitetType(), mapBeløp(i.getInntekt()),
+            mapArbeidsgiver(i.getArbeidsgiver()), i.getArbeidsforholdRef() == null ? null : new InternArbeidsforholdRefDto(i.getArbeidsforholdRef().getReferanse()));
     }
 
     private static FaktaAggregatDto mapFaktaAggregat(FaktaAggregatEntitet faktaAggregatEntitet) {
