@@ -99,6 +99,11 @@ public class BesteberegninggrunnlagEntitet extends BaseEntitet {
         this.seksBesteMåneder.add(månedsgrunnlagEntitet);
     }
 
+    // Lager en dyp kopi, uten ID og beregningsgrunnlag
+    public static Builder kopier(BesteberegninggrunnlagEntitet besteberegninggrunnlagEntitet) {
+        return new Builder(besteberegninggrunnlagEntitet);
+    }
+
     public static Builder ny() {
         return new Builder();
     }
@@ -110,15 +115,9 @@ public class BesteberegninggrunnlagEntitet extends BaseEntitet {
             kladd = new BesteberegninggrunnlagEntitet();
         }
 
-        public Builder(BesteberegninggrunnlagEntitet besteberegninggrunnlagEntitet, boolean erOppdatering) {
-            if (Objects.nonNull(besteberegninggrunnlagEntitet.getId())) {
-                throw new IllegalArgumentException("Kan ikke bygge på et lagret grunnlag");
-            }
-            if (erOppdatering) {
-                kladd = besteberegninggrunnlagEntitet;
-            } else {
-                kladd = new BesteberegninggrunnlagEntitet(besteberegninggrunnlagEntitet);
-            }
+        public Builder(BesteberegninggrunnlagEntitet besteberegninggrunnlagEntitet) {
+            Objects.requireNonNull(besteberegninggrunnlagEntitet, "Kan ikke kopiere null");
+            kladd = new BesteberegninggrunnlagEntitet(besteberegninggrunnlagEntitet);
         }
 
         public Builder leggTilMånedsgrunnlag(BesteberegningMånedsgrunnlagEntitet månedsgrunnlagEntitet) {

@@ -81,7 +81,7 @@ public class MapDetaljertBeregningsgrunnlag {
 
     private static BesteberegningGrunnlagDto.BesteberegningInntektDto mapBBInntekt(BesteberegningInntektEntitet i) {
         return new BesteberegningGrunnlagDto.BesteberegningInntektDto(i.getOpptjeningAktivitetType(), mapBeløp(i.getInntekt()),
-            mapArbeidsgiver(i.getArbeidsgiver()), i.getArbeidsforholdRef() == null ? null : new InternArbeidsforholdRefDto(i.getArbeidsforholdRef().getReferanse()));
+            i.getArbeidsgiver() == null ? null : mapArbeidsgiver(i.getArbeidsgiver()), i.getArbeidsforholdRef() == null ? null : new InternArbeidsforholdRefDto(i.getArbeidsforholdRef().getReferanse()));
     }
 
     private static FaktaAggregatDto mapFaktaAggregat(FaktaAggregatEntitet faktaAggregatEntitet) {

@@ -23,8 +23,10 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetOverstyringerEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningRefusjonOverstyringEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningRefusjonOverstyringerEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BesteberegninggrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatusEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.GrunnlagReferanse;
@@ -302,6 +304,7 @@ public class BeregningsgrunnlagRepository {
         Optional<BeregningsgrunnlagGrunnlagEntitet> tidligereAggregat = hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
         if (tidligereAggregat.isPresent()) {
             nyttGrunnlag = settFaktaFraTidligere(koblingId, nyttGrunnlag, tidligereAggregat);
+            nyttGrunnlag = settBesteberegningFraTidligere(koblingId, nyttGrunnlag, tidligereAggregat);
             tidligereAggregat.get().setAktiv(false);
             entityManager.persist(tidligereAggregat.get());
         }
@@ -311,6 +314,25 @@ public class BeregningsgrunnlagRepository {
         }
         lagreGrunnlag(nyttGrunnlag);
         entityManager.flush();
+        return nyttGrunnlag;
+    }
+
+    private BeregningsgrunnlagGrunnlagEntitet settBesteberegningFraTidligere(Long koblingId,
+                                                                             BeregningsgrunnlagGrunnlagEntitet nyttGrunnlag,
+                                                                             Optional<BeregningsgrunnlagGrunnlagEntitet> tidligereAggregat) {
+        var nyttBg = nyttGrunnlag.getBeregningsgrunnlag();
+        var nyBesteberegning = nyttBg.flatMap(BeregningsgrunnlagEntitet::getBesteberegninggrunnlag);
+        var tidligereBesteberegning = tidligereAggregat.flatMap(BeregningsgrunnlagGrunnlagEntitet::getBeregningsgrunnlag)
+            .flatMap(BeregningsgrunnlagEntitet::getBesteberegninggrunnlag);
+        var kanKopiereBesteberegning = nyBesteberegning.isEmpty() && tidligereBesteberegning.isPresent();
+        if (kanKopiereBesteberegning && nyttBg.isPresent()) {
+            var nyttBGMedBesteberegning = BeregningsgrunnlagEntitet.kopiere(nyttBg.get())
+                .medBesteberegninggrunnlag(BesteberegninggrunnlagEntitet.kopier(tidligereBesteberegning.get()).build())
+                .build();
+            nyttGrunnlag = BeregningsgrunnlagGrunnlagBuilder.kopiere(nyttGrunnlag)
+                .medBeregningsgrunnlag(nyttBGMedBesteberegning)
+                .build(koblingId, nyttGrunnlag.getBeregningsgrunnlagTilstand());
+        }
         return nyttGrunnlag;
     }
 

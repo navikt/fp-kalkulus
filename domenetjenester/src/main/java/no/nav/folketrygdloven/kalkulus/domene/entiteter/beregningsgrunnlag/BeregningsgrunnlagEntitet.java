@@ -209,12 +209,20 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
         return new Builder();
     }
 
+    public static Builder kopiere(BeregningsgrunnlagEntitet mal) {
+        return new Builder(mal);
+    }
+
     public static class Builder {
         private boolean built;
         private BeregningsgrunnlagEntitet kladd;
 
         private Builder() {
             kladd = new BeregningsgrunnlagEntitet();
+        }
+
+        private Builder(BeregningsgrunnlagEntitet mal) {
+            kladd = new BeregningsgrunnlagEntitet(mal);
         }
 
         public Builder medSkjæringstidspunkt(LocalDate skjæringstidspunkt) {

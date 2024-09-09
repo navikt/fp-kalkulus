@@ -49,7 +49,7 @@ public class GUIBeregningsgrunnlagInputTjeneste {
                                                                        List<AvklaringsbehovEntitet> avklaringsbehov,
                                                                        KalkulatorInputDto kalkulatorInput,
                                                                        Optional<BeregningsgrunnlagGrunnlagEntitet> originaltGrunnlagEntitet) {
-        BeregningsgrunnlagGUIInput input = lagInput(kobling, kalkulatorInput);
+        BeregningsgrunnlagGUIInput input = lagInput(kobling, kalkulatorInput, beregningsgrunnlagGrunnlagEntitet);
         var originaltGrunnlag = mapOriginaleGrunnlag(originaltGrunnlagEntitet);
         var oppdatertInput = input.medBeregningsgrunnlagGrunnlag(mapGrunnlag(beregningsgrunnlagGrunnlagEntitet));
         if (originaltGrunnlag.isPresent()) {
@@ -61,8 +61,9 @@ public class GUIBeregningsgrunnlagInputTjeneste {
         return originaltGrunnlag.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag);
     }
 
-    private static BeregningsgrunnlagGUIInput lagInput(KoblingEntitet koblingEntitet, KalkulatorInputDto kalkulatorInput) {
-        return MapTilGUIInputFraKalkulator.mapFraKalkulatorInput(koblingEntitet, kalkulatorInput);
+    private static BeregningsgrunnlagGUIInput lagInput(KoblingEntitet koblingEntitet, KalkulatorInputDto kalkulatorInput,
+                                                       BeregningsgrunnlagGrunnlagEntitet beregningsgrunnlagGrunnlagEntitet) {
+        return MapTilGUIInputFraKalkulator.mapFraKalkulatorInput(koblingEntitet, kalkulatorInput, beregningsgrunnlagGrunnlagEntitet);
     }
 
     /**

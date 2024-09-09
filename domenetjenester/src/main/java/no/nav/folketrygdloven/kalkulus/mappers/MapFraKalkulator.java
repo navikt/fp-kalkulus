@@ -71,7 +71,7 @@ public class MapFraKalkulator {
                 mapFraDto(opptjeningAktiviteter),
                 mapFraDto(kravPrArbeidsforhold, input.getRefusjonskravDatoer(), iayGrunnlag, input.getSkjæringstidspunkt()),
                 mapFraDto(kobling.getYtelseType(),
-                        input));
+                        input, beregningsgrunnlagGrunnlagEntitet));
 
         utenGrunnbeløp.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
         return beregningsgrunnlagGrunnlagEntitet.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag)
@@ -111,10 +111,11 @@ public class MapFraKalkulator {
     }
 
     public static YtelsespesifiktGrunnlag mapFraDto(FagsakYtelseType ytelseType,
-                                                    KalkulatorInputDto input) {
+                                                    KalkulatorInputDto input,
+                                                    Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
         var ytelsespesifiktGrunnlag = input.getYtelsespesifiktGrunnlag();
         return switch (ytelseType) {
-            case FORELDREPENGER -> mapForeldrepengerGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag)ytelsespesifiktGrunnlag);
+            case FORELDREPENGER -> mapForeldrepengerGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag)ytelsespesifiktGrunnlag, beregningsgrunnlagGrunnlagEntitet);
             case SVANGERSKAPSPENGER -> mapSvangerskapspengerGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.SvangerskapspengerGrunnlag) ytelsespesifiktGrunnlag);
             default -> throw new IllegalStateException("Det er ikke definert ytelsespesifikt grunnlag for ytelse " + ytelseType);
         };
