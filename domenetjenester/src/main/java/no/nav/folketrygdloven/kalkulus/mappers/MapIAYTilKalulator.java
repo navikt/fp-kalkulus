@@ -110,6 +110,10 @@ public class MapIAYTilKalulator {
             ny.medHandling(arbeidsforholdOverstyringDto.getHandling());
             ny.medArbeidsgiver(MapFraKalkulator.mapArbeidsgiver(arbeidsforholdOverstyringDto.getArbeidsgiver()));
             ny.medArbeidsforholdRef(mapArbeidsforholdRef(arbeidsforholdOverstyringDto.getArbeidsforholdRefDto()));
+            ny.medAngittStillingsprosent(Stillingsprosent.fra(arbeidsforholdOverstyringDto.getStillingsprosent()));
+            if (arbeidsforholdOverstyringDto.getArbeidsforholdOverstyrtePerioder() != null) {
+                arbeidsforholdOverstyringDto.getArbeidsforholdOverstyrtePerioder().forEach(p -> ny.leggTilOverstyrtPeriode(p.getFom(), p.getTom()));
+            }
             builder.leggTil(ny);
         });
         Set<no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsforholdReferanseDto> referanser = arbeidsforholdInformasjon.getReferanser() == null
