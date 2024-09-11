@@ -51,6 +51,7 @@ public class RegelsporingRepository {
                 RegelSporingPeriodeEntitet entitet = RegelSporingPeriodeEntitet.ny()
                         .medRegelEvaluering(sporing.regelEvaluering())
                         .medRegelVersjon(sporing.regelVersjon())
+                        .medRegelInput(sporing.regelInput())
                         .medPeriode(IntervallEntitet.fraOgMedTilOgMed(sporing.periode().getFomDato(), sporing.periode().getTomDato()))
                         .build(koblingId, sporing.regelType());
                 entityManager.persist(entitet);

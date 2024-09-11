@@ -123,6 +123,12 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
             return this;
         }
 
+        public Builder medRegelInput(String regelInput) {
+            Objects.requireNonNull(regelInput, "regelInput");
+            kladd.regelInput = regelInput;
+            return this;
+        }
+
         public Builder medPeriode(IntervallEntitet intervall) {
             Objects.requireNonNull(intervall, "intervall");
             kladd.periode = intervall;
