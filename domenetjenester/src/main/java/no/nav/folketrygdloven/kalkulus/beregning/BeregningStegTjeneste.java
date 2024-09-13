@@ -40,6 +40,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.KalkulusResultatKode;
 import no.nav.folketrygdloven.kalkulus.kopiering.SpolFramoverTjeneste;
 import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
+import no.nav.folketrygdloven.kalkulus.response.v1.VilkårResponse;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.VidereførOverstyringTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
@@ -283,11 +284,19 @@ public class BeregningStegTjeneste {
                         res.getVentefrist()))
                 .toList();
         if (resultat.getBeregningVilkårResultat() != null) {
+            var regelsporingVilkårsVurdering = resultat.getRegelSporingAggregat().map(RegelSporingAggregat::regelsporingPerioder).orElse(List.of()).stream()
+                .filter(rs -> rs.regelType().equals(BeregningsgrunnlagPeriodeRegelType.VILKÅR_VURDERING))
+                .findFirst()
+                .orElseThrow();
+            var avslagsårsak = resultat.getBeregningVilkårResultat().getErVilkårOppfylt() ? null : resultat.getBeregningVilkårResultat().getVilkårsavslagsårsak();
+            var vilkårRespons = new VilkårResponse(resultat.getBeregningVilkårResultat().getErVilkårOppfylt(),
+                regelsporingVilkårsVurdering.regelEvaluering(), regelsporingVilkårsVurdering.regelInput(),
+                regelsporingVilkårsVurdering.regelVersjon(), avslagsårsak);
             return new TilstandResponse(koblingReferanse.getKoblingUuid(),
                     avklaringsbehov,
                     avklaringsbehov.isEmpty() ? KalkulusResultatKode.BEREGNET : KalkulusResultatKode.BEREGNET_MED_AVKLARINGSBEHOV,
                     resultat.getBeregningVilkårResultat().getErVilkårOppfylt(),
-                    resultat.getBeregningVilkårResultat().getErVilkårOppfylt() ? null : resultat.getBeregningVilkårResultat().getVilkårsavslagsårsak());
+                    resultat.getBeregningVilkårResultat().getErVilkårOppfylt() ? null : resultat.getBeregningVilkårResultat().getVilkårsavslagsårsak(), vilkårRespons);
         } else {
             return new TilstandResponse(koblingReferanse.getKoblingUuid(), avklaringsbehov.isEmpty() ? KalkulusResultatKode.BEREGNET : KalkulusResultatKode.BEREGNET_MED_AVKLARINGSBEHOV, avklaringsbehov);
         }
