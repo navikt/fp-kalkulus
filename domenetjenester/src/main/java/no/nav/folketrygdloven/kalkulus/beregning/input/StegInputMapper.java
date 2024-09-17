@@ -19,7 +19,6 @@ import no.nav.folketrygdloven.kalkulator.input.GrunnbeløpInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.input.VurderBeregningsgrunnlagvilkårInput;
 import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
@@ -108,10 +107,6 @@ class StegInputMapper {
                     .orElse(vurderVilkårOgRefusjonBeregningsgrunnlag);
         }
         return vurderVilkårOgRefusjonBeregningsgrunnlag;
-    }
-
-    private List<BeregningsgrunnlagGrunnlagDto> finnOriginaltGrunnlag(List<Long> originaleKoblinger) {
-        return beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(originaleKoblinger).stream().map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).toList();
     }
 
     private StegProsesseringInput lagStegProsesseringInput(KoblingEntitet kobling,

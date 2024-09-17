@@ -47,10 +47,6 @@ public class KoblingTjeneste {
         return repository.hentForKoblingReferanse(referanse).orElseThrow(() -> new IllegalStateException("Fant ikke kobling med referanse" + referanse));
     }
 
-    public KoblingEntitet hentKoblingOptional(Long koblingId) {
-        return repository.hentKoblingMedId(koblingId).orElseThrow(() -> new IllegalStateException("Fant ikke kobling med id" + koblingId));
-    }
-
     public void markerKoblingSomAvsluttet(KoblingEntitet koblingEntitet) {
         repository.markerKoblingSomAvsluttet(koblingEntitet);
     }

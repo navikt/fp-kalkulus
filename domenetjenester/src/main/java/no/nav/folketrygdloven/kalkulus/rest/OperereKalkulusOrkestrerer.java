@@ -23,7 +23,6 @@ import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.request.v1.HåndterBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.KalkulusRespons;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
 
@@ -87,15 +86,6 @@ public class OperereKalkulusOrkestrerer {
     private BeregningsgrunnlagInput lagInput(Long koblingId, LagInputTjeneste lagInputTjeneste, KalkulatorInputDto kalkulatorInput) {
         return lagInputTjeneste.utfør(koblingId, kalkulatorInput);
     }
-
-    private Long finnKoblingId(List<KoblingEntitet> koblinger, HåndterBeregningRequest s) {
-        return koblinger.stream()
-            .filter(kobling -> kobling.getKoblingReferanse().getReferanse().equals(s.getEksternReferanse()))
-            .findFirst()
-            .map(KoblingEntitet::getId)
-            .orElse(null);
-    }
-
 
     private interface LagInputTjeneste {
         BeregningsgrunnlagInput utfør(Long koblingId, KalkulatorInputDto inputDto);

@@ -1,11 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.beregning.input;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -46,17 +42,6 @@ public class HåndteringInputTjeneste {
         var grunnlagFraForrigeOppdatering = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKobling(koblingId, tilstand,
             null);
         return lagHåndteringBeregningsgrunnlagInput(koblingEntitet, inputDto, grunnlagEntitet, tilstand, grunnlagFraForrigeOppdatering);
-    }
-
-    private void validerKoblingMotGrunnlag(Collection<Long> koblingId,
-                                           BeregningsgrunnlagTilstand tilstand,
-                                           Map<Long, BeregningsgrunnlagGrunnlagEntitet> grunnlagEntiteter) {
-        List<Long> koblingUtenGrunnlag = koblingId.stream()
-            .filter(id -> grunnlagEntiteter.keySet().stream().noneMatch(k -> k.equals(id)))
-            .collect(Collectors.toList());
-        if (!koblingUtenGrunnlag.isEmpty()) {
-            throw new IllegalStateException("Skal ha grunnlag for tilstand" + tilstand.getKode() + ". Fant ikke grunnlag for " + koblingUtenGrunnlag);
-        }
     }
 
     private HåndterBeregningsgrunnlagInput lagHåndteringBeregningsgrunnlagInput(KoblingEntitet kobling,
