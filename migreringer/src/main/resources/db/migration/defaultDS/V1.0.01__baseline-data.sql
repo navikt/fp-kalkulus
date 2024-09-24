@@ -124,4 +124,6 @@ INSERT INTO br_sats (id, sats_type, fom, tom, verdi, versjon) VALUES (nextval('S
 INSERT INTO br_sats (id, sats_type, fom, tom, verdi, versjon) VALUES (nextval('SEQ_BR_SATS'), 'GSNITT', '2022-01-01 00:00:00', '2022-12-31 00:00:00', 109784, 0);
 INSERT INTO br_sats (id, sats_type, fom, tom, verdi, versjon) VALUES (nextval('SEQ_BR_SATS'), 'GRUNNBELØP', '2022-05-01 00:00:00', '2023-04-30 00:00:00', 111477, 0);
 INSERT INTO br_sats (id, sats_type, fom, tom, verdi, versjon) VALUES (nextval('SEQ_BR_SATS'), 'GSNITT', '2023-01-01 00:00:00', '2023-12-31 00:00:00', 116239, 0);
-INSERT INTO br_sats (id, sats_type, fom, tom, verdi, versjon) VALUES (nextval('SEQ_BR_SATS'), 'GRUNNBELØP', '2023-05-01 00:00:00', '2099-12-31 00:00:00', 118620, 0);
+INSERT INTO br_sats (id, sats_type, fom, tom, verdi, versjon) VALUES (nextval('SEQ_BR_SATS'), 'GRUNNBELØP', '2023-05-01 00:00:00', '2024-04-30 00:00:00', 118620, 0);
+INSERT INTO br_sats (id, sats_type, fom, tom, verdi, versjon) VALUES (nextval('SEQ_BR_SATS'), 'GSNITT', '2024-01-01 00:00:00', '2024-12-31 00:00:00', 122225, 0);
+INSERT INTO br_sats (id, sats_type, fom, tom, verdi, versjon) VALUES (nextval('SEQ_BR_SATS'), 'GRUNNBELØP', '2024-05-01 00:00:00', '2099-12-31 00:00:00', 124028, 0);
