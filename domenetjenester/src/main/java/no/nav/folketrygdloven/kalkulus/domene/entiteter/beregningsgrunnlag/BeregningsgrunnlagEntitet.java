@@ -67,7 +67,7 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlag", cascade = CascadeType.PERSIST)
     @BatchSize(size = 20)
-    private final List<BeregningsgrunnlagFaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = new ArrayList<>();
+    private final List<BeregningsgrunnlagFaktaOmBeregningTilfelleEntitet> faktaOmBeregningTilfeller = new ArrayList<>();
 
     @Column(name = "overstyrt", nullable = false)
     private boolean overstyrt = false;
@@ -78,7 +78,7 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
         this.skjæringstidspunkt = kopi.getSkjæringstidspunkt();
         kopi.getSammenligningsgrunnlagPrStatusListe().stream().map(SammenligningsgrunnlagPrStatusEntitet::new).forEach(this::leggTilSammenligningsgrunnlagPrStatus);
         kopi.getBesteberegninggrunnlag().map(BesteberegninggrunnlagEntitet::new).ifPresent(this::setBesteberegninggrunnlag);
-        kopi.getFaktaOmBeregningTilfeller().stream().map(BeregningsgrunnlagFaktaOmBeregningTilfelle::new).forEach(this::leggTilFaktaOmBeregningTilfelle);
+        kopi.getFaktaOmBeregningTilfeller().stream().map(BeregningsgrunnlagFaktaOmBeregningTilfelleEntitet::new).forEach(this::leggTilFaktaOmBeregningTilfelle);
         kopi.getAktivitetStatuser().stream().map(BeregningsgrunnlagAktivitetStatusEntitet::new).forEach(this::leggTilBeregningsgrunnlagAktivitetStatus);
         kopi.getBeregningsgrunnlagPerioder().stream().map(BeregningsgrunnlagPeriodeEntitet::new)
                 .forEach(this::leggTilBeregningsgrunnlagPeriode);
@@ -138,13 +138,13 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
     public List<FaktaOmBeregningTilfelle> getFaktaOmBeregningTilfeller() {
         return faktaOmBeregningTilfeller
                 .stream()
-                .sorted(Comparator.comparing(BeregningsgrunnlagFaktaOmBeregningTilfelle::getFaktaOmBeregningTilfelle))
-                .map(BeregningsgrunnlagFaktaOmBeregningTilfelle::getFaktaOmBeregningTilfelle)
+                .sorted(Comparator.comparing(BeregningsgrunnlagFaktaOmBeregningTilfelleEntitet::getFaktaOmBeregningTilfelle))
+                .map(BeregningsgrunnlagFaktaOmBeregningTilfelleEntitet::getFaktaOmBeregningTilfelle)
                 .toList();
     }
 
 
-    void leggTilFaktaOmBeregningTilfelle(BeregningsgrunnlagFaktaOmBeregningTilfelle beregningsgrunnlagFaktaOmBeregningTilfelle) {
+    void leggTilFaktaOmBeregningTilfelle(BeregningsgrunnlagFaktaOmBeregningTilfelleEntitet beregningsgrunnlagFaktaOmBeregningTilfelle) {
         Objects.requireNonNull(beregningsgrunnlagFaktaOmBeregningTilfelle, "beregningsgrunnlagFaktaOmBeregningTilfelle");
         // Aktivitetstatuser burde implementeres som eit Set
         if (!faktaOmBeregningTilfeller.contains(beregningsgrunnlagFaktaOmBeregningTilfelle)) {
@@ -268,7 +268,7 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
 
         public Builder leggTilFaktaTilfelle(FaktaOmBeregningTilfelle tilfelle) {
             verifiserKanModifisere();
-            var tilfelleEnt = BeregningsgrunnlagFaktaOmBeregningTilfelle.builder().medFaktaOmBeregningTilfelle(tilfelle).build();
+            var tilfelleEnt = BeregningsgrunnlagFaktaOmBeregningTilfelleEntitet.builder().medFaktaOmBeregningTilfelle(tilfelle).build();
             kladd.leggTilFaktaOmBeregningTilfelle(tilfelleEnt);
             return this;
         }

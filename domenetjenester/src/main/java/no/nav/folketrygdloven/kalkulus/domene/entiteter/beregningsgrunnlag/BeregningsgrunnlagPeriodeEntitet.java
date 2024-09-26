@@ -96,7 +96,7 @@ public class BeregningsgrunnlagPeriodeEntitet extends BaseEntitet {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlagPeriode", cascade = CascadeType.PERSIST, orphanRemoval = true)
     @BatchSize(size = 20)
-    private final List<BeregningsgrunnlagPeriodeÅrsak> beregningsgrunnlagPeriodeÅrsaker = new ArrayList<>();
+    private final List<BeregningsgrunnlagPeriodeÅrsakEntitet> beregningsgrunnlagPeriodeÅrsaker = new ArrayList<>();
 
     public BeregningsgrunnlagPeriodeEntitet(BeregningsgrunnlagPeriodeEntitet beregningsgrunnlagPeriode) {
         this.avkortetPrÅr = beregningsgrunnlagPeriode.getAvkortetPrÅr();
@@ -108,7 +108,7 @@ public class BeregningsgrunnlagPeriodeEntitet extends BaseEntitet {
         this.totalUtbetalingsgradFraUttak = beregningsgrunnlagPeriode.getTotalUtbetalingsgradFraUttak();
         this.totalUtbetalingsgradEtterReduksjonVedTilkommetInntekt = beregningsgrunnlagPeriode.getTotalUtbetalingsgradEtterReduksjonVedTilkommetInntekt();
         this.reduksjonsfaktorInaktivTypeA = beregningsgrunnlagPeriode.getReduksjonsfaktorInaktivTypeA();
-        beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeÅrsaker().stream().map(BeregningsgrunnlagPeriodeÅrsak::new)
+        beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeÅrsaker().stream().map(BeregningsgrunnlagPeriodeÅrsakEntitet::new)
                 .forEach(this::addBeregningsgrunnlagPeriodeÅrsak);
         beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream().map(BeregningsgrunnlagPrStatusOgAndelEntitet::new)
                 .forEach(this::addBeregningsgrunnlagPrStatusOgAndel);
@@ -187,15 +187,15 @@ public class BeregningsgrunnlagPeriodeEntitet extends BaseEntitet {
         return reduksjonsfaktorInaktivTypeA;
     }
 
-    public List<BeregningsgrunnlagPeriodeÅrsak> getBeregningsgrunnlagPeriodeÅrsaker() {
+    public List<BeregningsgrunnlagPeriodeÅrsakEntitet> getBeregningsgrunnlagPeriodeÅrsaker() {
         return beregningsgrunnlagPeriodeÅrsaker.stream()
-                .sorted(Comparator.comparing(BeregningsgrunnlagPeriodeÅrsak::getPeriodeÅrsak))
+                .sorted(Comparator.comparing(BeregningsgrunnlagPeriodeÅrsakEntitet::getPeriodeÅrsak))
                 .collect(Collectors.toUnmodifiableList());
     }
 
     public List<PeriodeÅrsak> getPeriodeÅrsaker() {
         return getBeregningsgrunnlagPeriodeÅrsaker().stream()
-                .map(BeregningsgrunnlagPeriodeÅrsak::getPeriodeÅrsak)
+                .map(BeregningsgrunnlagPeriodeÅrsakEntitet::getPeriodeÅrsak)
                 .collect(Collectors.toUnmodifiableList());
     }
 
@@ -207,7 +207,7 @@ public class BeregningsgrunnlagPeriodeEntitet extends BaseEntitet {
         }
     }
 
-    void addBeregningsgrunnlagPeriodeÅrsak(BeregningsgrunnlagPeriodeÅrsak bgPeriodeÅrsak) {
+    void addBeregningsgrunnlagPeriodeÅrsak(BeregningsgrunnlagPeriodeÅrsakEntitet bgPeriodeÅrsak) {
         Objects.requireNonNull(bgPeriodeÅrsak, "beregningsgrunnlagPeriodeÅrsak");
         if (!beregningsgrunnlagPeriodeÅrsaker.contains(bgPeriodeÅrsak)) { // NOSONAR Class defines List based fields but uses them like Sets: Ingening å tjene på å bytte til Set ettersom det er små lister
             bgPeriodeÅrsak.setBeregningsgrunnlagPeriode(this);
@@ -365,7 +365,7 @@ public class BeregningsgrunnlagPeriodeEntitet extends BaseEntitet {
         public Builder leggTilPeriodeÅrsak(PeriodeÅrsak periodeÅrsak) {
             verifiserKanModifisere();
             if (!kladd.getPeriodeÅrsaker().contains(periodeÅrsak)) {
-                BeregningsgrunnlagPeriodeÅrsak.Builder bgPeriodeÅrsakBuilder = new BeregningsgrunnlagPeriodeÅrsak.Builder();
+                BeregningsgrunnlagPeriodeÅrsakEntitet.Builder bgPeriodeÅrsakBuilder = new BeregningsgrunnlagPeriodeÅrsakEntitet.Builder();
                 bgPeriodeÅrsakBuilder.medPeriodeÅrsak(periodeÅrsak);
                 kladd.addBeregningsgrunnlagPeriodeÅrsak(bgPeriodeÅrsakBuilder.build());
             }

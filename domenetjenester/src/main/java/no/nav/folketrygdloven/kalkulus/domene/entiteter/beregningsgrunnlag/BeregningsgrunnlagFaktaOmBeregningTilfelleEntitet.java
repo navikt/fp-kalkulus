@@ -20,9 +20,9 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.FaktaOmBeregning
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 
-@Entity(name = "BeregningsgrunnlagFaktaOmBeregningTilfelle")
+@Entity(name = "BeregningsgrunnlagFaktaOmBeregningTilfelleEntitet")
 @Table(name = "BG_FAKTA_BER_TILFELLE")
-public class BeregningsgrunnlagFaktaOmBeregningTilfelle extends BaseEntitet {
+public class BeregningsgrunnlagFaktaOmBeregningTilfelleEntitet extends BaseEntitet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_BG_FAKTA_BER_TILFELLE")
@@ -43,11 +43,11 @@ public class BeregningsgrunnlagFaktaOmBeregningTilfelle extends BaseEntitet {
 
 
     // kun til bruk for kopiering (bruk Builder ved opprettelse)
-    BeregningsgrunnlagFaktaOmBeregningTilfelle(FaktaOmBeregningTilfelle faktaOmBeregningTilfelle) {
+    BeregningsgrunnlagFaktaOmBeregningTilfelleEntitet(FaktaOmBeregningTilfelle faktaOmBeregningTilfelle) {
         this.faktaOmBeregningTilfelle = faktaOmBeregningTilfelle;
     }
 
-    protected BeregningsgrunnlagFaktaOmBeregningTilfelle() {
+    protected BeregningsgrunnlagFaktaOmBeregningTilfelleEntitet() {
     }
 
     public FaktaOmBeregningTilfelle getFaktaOmBeregningTilfelle() {
@@ -60,10 +60,10 @@ public class BeregningsgrunnlagFaktaOmBeregningTilfelle extends BaseEntitet {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof BeregningsgrunnlagFaktaOmBeregningTilfelle)) {
+        if (!(o instanceof BeregningsgrunnlagFaktaOmBeregningTilfelleEntitet)) {
             return false;
         }
-        BeregningsgrunnlagFaktaOmBeregningTilfelle that = (BeregningsgrunnlagFaktaOmBeregningTilfelle) o;
+        BeregningsgrunnlagFaktaOmBeregningTilfelleEntitet that = (BeregningsgrunnlagFaktaOmBeregningTilfelleEntitet) o;
         return Objects.equals(beregningsgrunnlag, that.beregningsgrunnlag) &&
                 Objects.equals(faktaOmBeregningTilfelle, that.faktaOmBeregningTilfelle);
     }
@@ -78,18 +78,18 @@ public class BeregningsgrunnlagFaktaOmBeregningTilfelle extends BaseEntitet {
     }
 
     public static class Builder {
-        private BeregningsgrunnlagFaktaOmBeregningTilfelle beregningsgrunnlagFaktaOmBeregningTilfelle;
+        private BeregningsgrunnlagFaktaOmBeregningTilfelleEntitet beregningsgrunnlagFaktaOmBeregningTilfelle;
 
         public Builder() {
-            beregningsgrunnlagFaktaOmBeregningTilfelle = new BeregningsgrunnlagFaktaOmBeregningTilfelle();
+            beregningsgrunnlagFaktaOmBeregningTilfelle = new BeregningsgrunnlagFaktaOmBeregningTilfelleEntitet();
         }
 
-        BeregningsgrunnlagFaktaOmBeregningTilfelle.Builder medFaktaOmBeregningTilfelle(FaktaOmBeregningTilfelle tilfelle) {
+        BeregningsgrunnlagFaktaOmBeregningTilfelleEntitet.Builder medFaktaOmBeregningTilfelle(FaktaOmBeregningTilfelle tilfelle) {
             beregningsgrunnlagFaktaOmBeregningTilfelle.faktaOmBeregningTilfelle = tilfelle;
             return this;
         }
 
-        public BeregningsgrunnlagFaktaOmBeregningTilfelle build() {
+        public BeregningsgrunnlagFaktaOmBeregningTilfelleEntitet build() {
             return beregningsgrunnlagFaktaOmBeregningTilfelle;
         }
     }

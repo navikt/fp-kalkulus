@@ -20,9 +20,9 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.PeriodeÅrsakKod
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 
-@Entity(name = "BeregningsgrunnlagPeriodeÅrsak")
+@Entity(name = "BeregningsgrunnlagPeriodeÅrsakEntitet")
 @Table(name = "BG_PERIODE_AARSAK")
-public class BeregningsgrunnlagPeriodeÅrsak extends BaseEntitet {
+public class BeregningsgrunnlagPeriodeÅrsakEntitet extends BaseEntitet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_BG_PERIODE_AARSAK")
@@ -41,11 +41,11 @@ public class BeregningsgrunnlagPeriodeÅrsak extends BaseEntitet {
     @Column(name="periode_aarsak", nullable = false)
     private PeriodeÅrsak periodeÅrsak = PeriodeÅrsak.UDEFINERT;
 
-    public BeregningsgrunnlagPeriodeÅrsak(BeregningsgrunnlagPeriodeÅrsak beregningsgrunnlagPeriodeÅrsak) {
+    public BeregningsgrunnlagPeriodeÅrsakEntitet(BeregningsgrunnlagPeriodeÅrsakEntitet beregningsgrunnlagPeriodeÅrsak) {
         this.periodeÅrsak = beregningsgrunnlagPeriodeÅrsak.periodeÅrsak;
     }
 
-    public BeregningsgrunnlagPeriodeÅrsak() {
+    public BeregningsgrunnlagPeriodeÅrsakEntitet() {
     }
 
     public Long getId() {
@@ -74,19 +74,19 @@ public class BeregningsgrunnlagPeriodeÅrsak extends BaseEntitet {
     public boolean equals(Object obj) {
         if (obj == this) {
             return true;
-        } else if (!(obj instanceof BeregningsgrunnlagPeriodeÅrsak)) {
+        } else if (!(obj instanceof BeregningsgrunnlagPeriodeÅrsakEntitet)) {
             return false;
         }
-        BeregningsgrunnlagPeriodeÅrsak other = (BeregningsgrunnlagPeriodeÅrsak) obj;
+        BeregningsgrunnlagPeriodeÅrsakEntitet other = (BeregningsgrunnlagPeriodeÅrsakEntitet) obj;
         return Objects.equals(this.getBeregningsgrunnlagPeriode(), other.getBeregningsgrunnlagPeriode())
                 && Objects.equals(this.getPeriodeÅrsak(), other.getPeriodeÅrsak());
     }
 
     public static class Builder {
-        private BeregningsgrunnlagPeriodeÅrsak beregningsgrunnlagPeriodeÅrsakMal;
+        private BeregningsgrunnlagPeriodeÅrsakEntitet beregningsgrunnlagPeriodeÅrsakMal;
 
         public Builder() {
-            beregningsgrunnlagPeriodeÅrsakMal = new BeregningsgrunnlagPeriodeÅrsak();
+            beregningsgrunnlagPeriodeÅrsakMal = new BeregningsgrunnlagPeriodeÅrsakEntitet();
         }
 
         public Builder medPeriodeÅrsak(PeriodeÅrsak periodeÅrsak) {
@@ -94,7 +94,7 @@ public class BeregningsgrunnlagPeriodeÅrsak extends BaseEntitet {
             return this;
         }
 
-        public BeregningsgrunnlagPeriodeÅrsak build() {
+        public BeregningsgrunnlagPeriodeÅrsakEntitet build() {
             return beregningsgrunnlagPeriodeÅrsakMal;
         }
     }

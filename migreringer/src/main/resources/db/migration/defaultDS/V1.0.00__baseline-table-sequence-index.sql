@@ -647,8 +647,7 @@ create table bg_sg_pr_status
     sammenligningsperiode_fom   timestamp(0)                                 not null,
     sammenligningsperiode_tom   timestamp(0)                                 not null,
     rapportert_pr_aar           numeric(19, 2)                               not null,
-    avvik_promille              numeric(27, 10),
-    avvik_promille_ny           numeric(27, 10)                              not null,
+    avvik_promille              numeric(27, 10)                              not null,
     opprettet_av                varchar(20)  default 'VL'::character varying not null,
     opprettet_tid               timestamp(3) default CURRENT_TIMESTAMP       not null,
     versjon                     int          default 0                       not null,
@@ -669,8 +668,6 @@ comment on column bg_sg_pr_status.sammenligningsperiode_tom is 'Tom-dato for sam
 comment on column bg_sg_pr_status.rapportert_pr_aar is 'Rapportert inntekt pr aar i for gitt status';
 
 comment on column bg_sg_pr_status.avvik_promille is 'Avvik promille';
-
-comment on column bg_sg_pr_status.avvik_promille_ny is 'Midlertidig kolonne som skal erstatte AVVIK_PROMILLE da denne støtter høyere nøyaktighet';
 
 create index idx_bg_sg_pr_status_01
     on bg_sg_pr_status (beregningsgrunnlag_id);

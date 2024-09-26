@@ -54,7 +54,6 @@ public class KalkulatorTilBGMapper {
 
     static SammenligningsgrunnlagPrStatusEntitet mapSammenligningsgrunnlagMedStatus(SammenligningsgrunnlagPrStatusDto fraKalkulus) {
         SammenligningsgrunnlagPrStatusEntitet.Builder builder = new SammenligningsgrunnlagPrStatusEntitet.Builder();
-        builder.medAvvikPromilleNy(mapTilPromille(fraKalkulus.getAvvikPromilleNy()));
         builder.medAvvikPromille(mapTilPromille(fraKalkulus.getAvvikPromilleNy()));
         builder.medRapportertPrÅr(VerdityperMapper.beløpTilDao(fraKalkulus.getRapportertPrÅr()));
         builder.medSammenligningsgrunnlagType(fraKalkulus.getSammenligningsgrunnlagType());

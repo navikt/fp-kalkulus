@@ -174,7 +174,7 @@ public class MapDetaljertBeregningsgrunnlag {
         return new SammenligningsgrunnlagPrStatusDto(
             new Periode(sammenligningsgrunnlagPrStatus.getSammenligningsperiodeFom(), sammenligningsgrunnlagPrStatus.getSammenligningsperiodeTom()),
             sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType(), mapBeløp(sammenligningsgrunnlagPrStatus.getRapportertPrÅr()),
-            mapPromille(sammenligningsgrunnlagPrStatus.getGjeldendeAvvik()));
+            mapPromille(sammenligningsgrunnlagPrStatus.getAvvikPromille()));
     }
 
     private static BigDecimal mapPromille(Promille promille) {

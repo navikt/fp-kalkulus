@@ -49,7 +49,7 @@ public class BGMapperTilKalkulus {
 
     public static SammenligningsgrunnlagPrStatusDto mapSammenligningsgrunnlagMedStatus(SammenligningsgrunnlagPrStatusEntitet fraFagsystem) {
         SammenligningsgrunnlagPrStatusDto.Builder builder = new SammenligningsgrunnlagPrStatusDto.Builder();
-        builder.medAvvikPromilleNy(mapFraPromille(fraFagsystem.getGjeldendeAvvik()));
+        builder.medAvvikPromilleNy(mapFraPromille(fraFagsystem.getAvvikPromille()));
         builder.medRapportertPrÅr(mapFraBeløp(fraFagsystem.getRapportertPrÅr()));
         builder.medSammenligningsgrunnlagType(fraFagsystem.getSammenligningsgrunnlagType());
         builder.medSammenligningsperiode(fraFagsystem.getSammenligningsperiodeFom(), fraFagsystem.getSammenligningsperiodeTom());
