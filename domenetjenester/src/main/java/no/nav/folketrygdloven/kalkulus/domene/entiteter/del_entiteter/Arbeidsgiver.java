@@ -12,7 +12,6 @@ import jakarta.persistence.Embedded;
 import no.nav.folketrygdloven.kalkulus.felles.diff.ChangeTracked;
 import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseValue;
-import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 /** En arbeidsgiver (enten virksomhet eller personlig arbeidsgiver). */
 @Embeddable
@@ -79,7 +78,7 @@ public class Arbeidsgiver implements Serializable, TraverseValue, IndexKey, Comp
      */
     public String getIdentifikator() {
         if (arbeidsgiverAktørId != null) {
-            return getAktørId().getAktørId();
+            return getAktørId().getId();
         }
         return getOrgnr();
     }
