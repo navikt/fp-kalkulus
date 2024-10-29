@@ -27,6 +27,7 @@ jobs:
     uses: navikt/fp-gha-workflows/.github/workflows/build-app-postgres.yml@main
     with:
       postgres-user: fpkalkulus_unit
+      postgres-port: 5999
       build-image: ${{ github.ref_name == 'master' }} # default: true
       push-image: ${{ github.ref_name == 'master' }} # default: false
       sonar-scan: false # TODO: Fjern denne linjen (default er true) etter public
