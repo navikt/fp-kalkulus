@@ -104,7 +104,7 @@ public class BesteberegninggrunnlagEntitet extends BaseEntitet {
         return new Builder(besteberegninggrunnlagEntitet);
     }
 
-    public static Builder ny() {
+    public static Builder builder() {
         return new Builder();
     }
 

@@ -16,6 +16,8 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import no.nav.folketrygdloven.fpkalkulus.kontrakt.migrering.MigrerBeregningsgrunnlagRequest;
+import no.nav.folketrygdloven.kalkulus.beregning.MigreringTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
 
 import org.slf4j.MDC;
@@ -62,6 +64,7 @@ public class OperereKalkulusRestTjeneste {
     private RullTilbakeTjeneste rullTilbakeTjeneste;
     private OperereKalkulusOrkestrerer orkestrerer;
     private KopierBeregningsgrunnlagTjeneste kopierTjeneste;
+    private MigreringTjeneste migreringTjeneste;
 
     public OperereKalkulusRestTjeneste() {
         // for CDI
@@ -71,11 +74,13 @@ public class OperereKalkulusRestTjeneste {
     public OperereKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste,
                                        RullTilbakeTjeneste rullTilbakeTjeneste,
                                        OperereKalkulusOrkestrerer orkestrerer,
-                                       KopierBeregningsgrunnlagTjeneste kopierTjeneste) {
+                                       KopierBeregningsgrunnlagTjeneste kopierTjeneste,
+                                       MigreringTjeneste migreringTjeneste) {
         this.koblingTjeneste = koblingTjeneste;
         this.rullTilbakeTjeneste = rullTilbakeTjeneste;
         this.orkestrerer = orkestrerer;
         this.kopierTjeneste = kopierTjeneste;
+        this.migreringTjeneste = migreringTjeneste;
     }
 
     @POST
@@ -170,6 +175,30 @@ public class OperereKalkulusRestTjeneste {
         return Response.ok().build();
     }
 
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/migrer")
+    @Operation(description = "Migrer et grunnlag på en kobling.", tags = "migrer", summary = ("Migrer et grunnlag på en kobling."))
+    @BeskyttetRessurs(actionType = ActionType.UPDATE, resourceType = ResourceType.FAGSAK)
+    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
+    public Response migrer(@TilpassetAbacAttributt(supplierClass = MigrerBeregningsgrunnlagRequestAbacSupplier.class) @NotNull @Valid MigrerBeregningsgrunnlagRequest request) {
+        var saksnummer = new Saksnummer(request.koblingData().saksnummer().verdi());
+        MDC.put("prosess_saksnummer", saksnummer.getVerdi());
+        var koblingReferanse = new KoblingReferanse(request.koblingData().behandlingUuid());
+        MDC.put("prosess_koblingreferanse", koblingReferanse.getReferanse().toString());
+        var kopt = koblingTjeneste.hentKoblingOptional(koblingReferanse);
+        if (kopt.isPresent()) {
+            throw new IllegalStateException("Prøver å migrere en kobling som allerede finnes");
+        }
+        Optional<KoblingReferanse> originalKoblingRef =
+            request.koblingData().originalBehandlingUuid() == null ? Optional.empty() : Optional.of(new KoblingReferanse(request.koblingData().originalBehandlingUuid()));
+        var kobling = koblingTjeneste.finnEllerOpprett(new KoblingReferanse(request.koblingData().behandlingUuid()),
+            mapTilYtelseKodeverk(request.koblingData().ytelseSomSkalBeregnes()), new AktørId(request.koblingData().aktør().getIdent()), saksnummer, originalKoblingRef);
+        migreringTjeneste.mapOgLagreGrunnlag(kobling, request.grunnlag());
+        koblingTjeneste.markerKoblingSomAvsluttet(kobling);
+        return Response.ok().build();
+    }
+
     private void validerKoblingOgSaksnummer(KoblingEntitet kobling, Saksnummer saksnummer) {
         if (!kobling.getSaksnummer().equals(saksnummer)) {
             throw new TekniskException("FT-47198", String.format(
@@ -222,6 +251,14 @@ public class OperereKalkulusRestTjeneste {
         public AbacDataAttributter apply(Object o) {
             var req = (no.nav.folketrygdloven.fpkalkulus.kontrakt.EnkelFpkalkulusRequestDto) o;
             return AbacDataAttributter.opprett().leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid());
+        }
+    }
+
+    public static class MigrerBeregningsgrunnlagRequestAbacSupplier implements Function<Object, AbacDataAttributter> {
+        @Override
+        public AbacDataAttributter apply(Object o) {
+            var req = (no.nav.folketrygdloven.fpkalkulus.kontrakt.migrering.MigrerBeregningsgrunnlagRequest) o;
+            return AbacDataAttributter.opprett().leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.koblingData().behandlingUuid());
         }
     }
 

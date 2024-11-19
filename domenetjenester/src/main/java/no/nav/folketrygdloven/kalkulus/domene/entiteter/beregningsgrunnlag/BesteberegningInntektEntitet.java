@@ -44,7 +44,7 @@ public class BesteberegningInntektEntitet extends BaseEntitet {
     private InternArbeidsforholdRef arbeidsforholdRef;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "inntekt")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "inntekt"))
     private Beløp inntekt;
 
     @OneToOne
@@ -90,7 +90,7 @@ public class BesteberegningInntektEntitet extends BaseEntitet {
         this.besteberegningMåned = besteberegningMåned;
     }
 
-    public static Builder ny() {
+    public static Builder builder() {
         return new Builder();
     }
 

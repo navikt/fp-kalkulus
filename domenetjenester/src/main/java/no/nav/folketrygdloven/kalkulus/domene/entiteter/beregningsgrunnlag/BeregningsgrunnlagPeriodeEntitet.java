@@ -291,6 +291,13 @@ public class BeregningsgrunnlagPeriodeEntitet extends BaseEntitet {
             return this;
         }
 
+        public Builder leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelEntitet andel) {
+            verifiserKanModifisere();
+            andel.setBeregningsgrunnlagPeriode(kladd);
+            kladd.addBeregningsgrunnlagPrStatusOgAndel(andel);
+            return this;
+        }
+
         public Builder medBeregningsgrunnlagPeriode(LocalDate fraOgMed, LocalDate tilOgMed) {
             verifiserKanModifisere();
             kladd.periode = IntervallEntitet.fraOgMedTilOgMed(fraOgMed, tilOgMed);

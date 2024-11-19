@@ -16,7 +16,7 @@ public final class BesteberegningMapper {
     }
 
     public static BesteberegninggrunnlagEntitet mapBestebergninggrunnlag(BesteberegningVurderingGrunnlag besteberegningVurderingGrunnlag) {
-        var builder = BesteberegninggrunnlagEntitet.ny();
+        var builder = BesteberegninggrunnlagEntitet.builder();
         besteberegningVurderingGrunnlag.getSeksBesteMåneder()
             .stream()
             .map(BesteberegningMapper::mapBesteberegningMåned)
@@ -27,7 +27,7 @@ public final class BesteberegningMapper {
 
     private static BesteberegningMånedsgrunnlagEntitet mapBesteberegningMåned(BesteberegningMånedGrunnlag besteberegningMånedGrunnlag) {
         var måned = besteberegningMånedGrunnlag.getMåned();
-        var månedBuilder = BesteberegningMånedsgrunnlagEntitet.ny()
+        var månedBuilder = BesteberegningMånedsgrunnlagEntitet.builder()
             .medPeriode(måned.atDay(1), måned.atEndOfMonth());
         besteberegningMånedGrunnlag.getInntekter()
             .stream()
@@ -38,14 +38,14 @@ public final class BesteberegningMapper {
 
     private static BesteberegningInntektEntitet mapBesteberegningInntekt(Inntekt inntekt) {
         if (inntekt.getArbeidsgiver() != null) {
-            return BesteberegningInntektEntitet.ny()
+            return BesteberegningInntektEntitet.builder()
                 .medArbeidsgiver(KalkulatorTilIAYMapper.mapArbeidsgiver(inntekt.getArbeidsgiver()))
                 .medOpptjeningAktivitetType(safeMapOpptjeningAktivitet(inntekt.getOpptjeningAktivitetType(), OpptjeningAktivitetType.ARBEID))
                 .medArbeidsforholdRef(KalkulatorTilIAYMapper.mapArbeidsforholdRef(inntekt.getArbeidsforholdRef()))
                 .medInntekt(beløpTilDao(inntekt.getInntekt()))
                 .build();
         }
-        return BesteberegningInntektEntitet.ny()
+        return BesteberegningInntektEntitet.builder()
             .medOpptjeningAktivitetType(safeMapOpptjeningAktivitet(inntekt.getOpptjeningAktivitetType(), OpptjeningAktivitetType.DAGPENGER))
             .medInntekt(beløpTilDao(inntekt.getInntekt()))
             .build();

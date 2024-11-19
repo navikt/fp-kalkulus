@@ -84,7 +84,7 @@ public class BesteberegningMånedsgrunnlagEntitet extends BaseEntitet {
         this.inntekter.add(besteberegningInntektEntitet);
     }
 
-    public static Builder ny() {
+    public static Builder builder() {
         return new Builder();
     }
 

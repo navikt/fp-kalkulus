@@ -67,8 +67,20 @@ public class BaseEntitet implements Serializable {
      * Kan brukes til å eksplisitt sette opprettet tidspunkt, f.eks. ved migrering av data fra et annet system. Ivaretar da opprinnelig
      * tidspunkt istdf å sette likt now().
      */
-    protected void setOpprettetTidspunkt(LocalDateTime opprettetTidspunkt) {
+    public void setOpprettetTidspunkt(LocalDateTime opprettetTidspunkt) {
         this.opprettetTidspunkt = opprettetTidspunkt;
+    }
+
+    public void setOpprettetAv(String opprettetAv) {
+        this.opprettetAv = opprettetAv;
+    }
+
+    public void setEndretTidspunkt(LocalDateTime endretTidspunkt) {
+        this.setEndretTidspunkt(endretTidspunkt);
+    }
+
+    public void setEndretAv(String endretAv) {
+        this.endretAv = endretAv;
     }
 
     public String getEndretAv() {
