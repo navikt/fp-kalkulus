@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.dbstoette;
 
-import java.util.Objects;
+import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.naming.NamingException;
@@ -13,30 +13,25 @@ import org.flywaydb.core.api.FlywayException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import no.nav.foreldrepenger.konfig.Environment;
+
 /**
  * Initielt skjemaoppsett + migrering av unittest-skjemaer
  */
-public final class Databaseskjemainitialisering {
+public final class TestDatabaseInit {
     private static final AtomicBoolean GUARD_UNIT_TEST_SKJEMAER = new AtomicBoolean();
-
-    private static final String USER = "fpkalkulus_unit";
     private static final String DB_SCRIPT_LOCATION = "/db/migration/";
 
-    private static final DataSource DS = settJdniOppslag(USER);
-
-    public static void main(String[] args) {
-        migrerUnittestSkjemaer();
-    }
-
-    @SuppressWarnings("resource")
-    public static void migrerUnittestSkjemaer() {
+    public static void settOppDatasourceOgMigrer(String jdbcUrl, String username, String password) {
+        var ds = createDatasource(jdbcUrl, username, password);
+        settJdniOppslag(ds);
         if (GUARD_UNIT_TEST_SKJEMAER.compareAndSet(false, true)) {
             var flyway = Flyway.configure()
-                .dataSource(createDs(USER))
-                .locations(DB_SCRIPT_LOCATION)
-                .baselineOnMigrate(true)
-                .cleanDisabled(false)
-                .load();
+                    .dataSource(ds)
+                    .locations(getScriptLocation())
+                    .baselineOnMigrate(true)
+                    .cleanDisabled(false)
+                    .load();
             try {
                 flyway.migrate();
             } catch (FlywayException fwe) {
@@ -51,22 +46,37 @@ public final class Databaseskjemainitialisering {
         }
     }
 
-    private static synchronized DataSource settJdniOppslag(String user) {
-        var ds = createDs(user);
+    private static String getScriptLocation() {
+        return fileScriptLocation();
+    }
+
+    private static String fileScriptLocation() {
+        var relativePath = "migreringer/src/main/resources" + DB_SCRIPT_LOCATION;
+        var baseDir = new File(".").getAbsoluteFile();
+        var location = new File(baseDir, relativePath);
+        while (!location.exists()) {
+            baseDir = baseDir.getParentFile();
+            if (baseDir == null || !baseDir.isDirectory()) {
+                throw new IllegalArgumentException("Klarte ikke finne : " + baseDir);
+            }
+            location = new File(baseDir, relativePath);
+        }
+        return "filesystem:" + location.getPath();
+    }
+
+    private static void settJdniOppslag(DataSource dataSource) {
         try {
-            new EnvEntry("jdbc/defaultDS", ds); // NOSONAR
-            return ds;
+            new EnvEntry("jdbc/defaultDS", dataSource); // NOSONAR
         } catch (NamingException e) {
             throw new IllegalStateException("Feil under registrering av JDNI-entry for default datasource", e); // NOSONAR
         }
     }
 
-    private static HikariDataSource createDs(String user) {
-        Objects.requireNonNull(user, "user");
+    private static HikariDataSource createDatasource(String jdbcUrl, String username, String password) {
         var cfg = new HikariConfig();
-        cfg.setJdbcUrl(System.getProperty("datasource.defaultDS.url", String.format("jdbc:postgresql://127.0.0.1:5999/%s?reWriteBatchedInserts=true", USER)));
-        cfg.setUsername(USER);
-        cfg.setPassword(USER);
+        cfg.setJdbcUrl(jdbcUrl);
+        cfg.setUsername(username);
+        cfg.setPassword(password);
         cfg.setConnectionTimeout(1500);
         cfg.setValidationTimeout(120L * 1000L);
         cfg.setMaximumPoolSize(4);
@@ -76,12 +86,4 @@ public final class Databaseskjemainitialisering {
         Runtime.getRuntime().addShutdownHook(new Thread(ds::close));
         return ds;
     }
-
-    public static void initUnitTestDataSource() {
-        if (DS != null) {
-            return;
-        }
-        settJdniOppslag(USER);
-    }
-
 }

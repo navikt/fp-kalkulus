@@ -514,6 +514,10 @@ comment on column bg_pr_status_og_andel.inntektskategori_manuell_fordeling is 'I
 
 comment on column bg_pr_status_og_andel.inntektskategori_fordeling is 'Inntektskategori satt ved automatisk fordeling.';
 
+comment on column bg_pr_status_og_andel.fastsatt_av_saksbehandler is 'Er andel fastsatt av saksbehandler.';
+
+comment on column bg_pr_status_og_andel.ny_i_arbeidslivet is 'Er brukeren ny i arbeidslivet?';
+
 create table bg_andel_arbeidsforhold
 (
     id                              bigint                                       not null
@@ -530,8 +534,6 @@ create table bg_andel_arbeidsforhold
     arbeidsgiver_aktor_id           varchar(100),
     arbeidsgiver_orgnr              varchar(100),
     arbeidsforhold_intern_id        uuid,
-    tidsbegrenset_arbeidsforhold    boolean,
-    loennsendring_i_perioden        boolean,
     hjemmel_for_refusjonskravfrist  varchar(100),
     saksbehandlet_refusjon_pr_aar   numeric(19, 2),
     fordelt_refusjon_pr_aar         numeric(19, 2),
@@ -563,6 +565,8 @@ comment on column bg_andel_arbeidsforhold.arbeidsgiver_aktor_id is 'Arbeidsgiver
 comment on column bg_andel_arbeidsforhold.arbeidsgiver_orgnr is 'Organisasjonsnummer for arbeidsgivere som er virksomheter';
 
 comment on column bg_andel_arbeidsforhold.arbeidsforhold_intern_id is 'Globalt unikt arbeidsforhold id generert for arbeidsgiver/arbeidsforhold. I motsetning til arbeidsforhold_ekstern_id som holder arbeidsgivers referanse';
+
+comment on column bg_andel_arbeidsforhold.hjemmel_for_refusjonskravfrist is 'Hjemmel for refusjonskrav frist.';
 
 comment on column bg_andel_arbeidsforhold.saksbehandlet_refusjon_pr_aar is 'Refusjonsbeløp satt som følge av å ha vurdert refusjonskravet og refusjonsbeløpet';
 
@@ -682,7 +686,6 @@ create table kobling
             unique,
     original_kobling_referanse       uuid,
     ytelse_type       varchar(100)                                 not null,
-    kl_ytelse_type    varchar(100) default 'FAGSAK_YTELSE_TYPE'::character varying,
     bruker_aktoer_id  varchar(50)                                  not null,
     saksnummer        varchar(19)                                  not null,
     er_avsluttet      boolean      default false                   not null,
@@ -716,7 +719,7 @@ create index idx_kobling_2
     on kobling (saksnummer);
 
 create index idx_kobling_3
-    on kobling (ytelse_type, kl_ytelse_type);
+    on kobling (ytelse_type);
 
 create table br_sats
 (
@@ -749,8 +752,10 @@ comment on column br_sats.verdi is 'Sats verdi.';
 create table bg_refusjon_periode
 (
     id                         bigint                                       not null
+        constraint pk_bg_refusjon_periode
         primary key,
     bg_refusjon_overstyring_id bigint                                       not null
+        constraint fk_bg_refusjon_periode_bg_refusjon_overstyring_id
         references bg_refusjon_overstyring,
     arbeidsforhold_intern_id   uuid,
     fom                        timestamp(0)                                 not null,
@@ -884,6 +889,8 @@ comment on column gr_beregningsgrunnlag.br_overstyringer_id is 'Overstyringer av
 
 comment on column gr_beregningsgrunnlag.fakta_aggregat_id is 'Foreign Key til faktaavklaringer';
 
+comment on column gr_beregningsgrunnlag.grunnlag_referanse is 'UUID: referansen til grunnlaget.';
+
 create index idx_gr_beregningsgrunnlag_02
     on gr_beregningsgrunnlag (register_aktiviteter_id);
 
@@ -951,6 +958,12 @@ comment on column fakta_arbeidsforhold.er_tidsbegrenset is 'Er arbeidsforhold ti
 
 comment on column fakta_arbeidsforhold.har_mottatt_ytelse is 'Er det tidligere mottatt ytelse for arbeidsforholdet';
 
+comment on column fakta_arbeidsforhold.arbeidsforhold_intern_id is 'Intern id til arbeidsforholdet';
+
+comment on column fakta_arbeidsforhold.arbeidsgiver_aktor_id is 'Aktør id til arbeidsgiveren.';
+
+comment on column fakta_arbeidsforhold.arbeidsgiver_orgnr is 'Organisasjonsnummer til arbeidsgiveren.';
+
 comment on column fakta_arbeidsforhold.har_lonnsendring_i_beregningsperioden is 'Sier om arbeidsforholdet har hatt lønnsendring i beregningsperioden';
 
 comment on column fakta_arbeidsforhold.er_tidsbegrenset_kilde is 'Kilde til vurdering av om arbeidsforhold er tidsbegrenset';
@@ -988,6 +1001,10 @@ create table fakta_aktoer
     endret_av                         varchar(20),
     endret_tid                        timestamp(3)
 );
+
+create index idx_fakta_aktoer_fakta_aggregat_id
+    on fakta_aktoer (fakta_aggregat_id);
+
 
 comment on table fakta_aktoer is 'Tabell som lagrer faktaavklaringer for arbeidsforhold';
 
@@ -1053,6 +1070,10 @@ comment on column avklaringsbehov.avklaringsbehov_status is 'Status på avklarin
 comment on column avklaringsbehov.begrunnelse is 'Saksbehandlers begrunnelse for løsningen av avklaringsbehovet';
 
 comment on column avklaringsbehov.er_trukket is 'Kun relevant for overstyring. Spesifiserer om handling for overstyring er trukket/avbrutt.';
+
+comment on column avklaringsbehov.vurdert_av is 'Hvem har vurdert';
+
+comment on column avklaringsbehov.vurdert_tid is 'Når ble det vurdert';
 
 create index idx_avklaringsbehov_10
     on avklaringsbehov (kobling_id);

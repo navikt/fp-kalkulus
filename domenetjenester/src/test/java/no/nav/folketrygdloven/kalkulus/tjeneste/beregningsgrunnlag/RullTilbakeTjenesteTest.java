@@ -38,8 +38,8 @@ import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelSporingTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
 import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
 
-@ExtendWith({JpaExtension.class})
-public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
+@ExtendWith(JpaExtension.class)
+class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
 
     private BeregningsgrunnlagRepository repository;
     private RegelsporingRepository regelsporingRepository;
