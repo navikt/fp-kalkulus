@@ -182,18 +182,18 @@ public class OperereKalkulusRestTjeneste {
     @BeskyttetRessurs(actionType = ActionType.UPDATE, resourceType = ResourceType.FAGSAK)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response migrer(@TilpassetAbacAttributt(supplierClass = MigrerBeregningsgrunnlagRequestAbacSupplier.class) @NotNull @Valid MigrerBeregningsgrunnlagRequest request) {
-        var saksnummer = new Saksnummer(request.koblingData().saksnummer().verdi());
+        var saksnummer = new Saksnummer(request.saksnummer().verdi());
         MDC.put("prosess_saksnummer", saksnummer.getVerdi());
-        var koblingReferanse = new KoblingReferanse(request.koblingData().behandlingUuid());
+        var koblingReferanse = new KoblingReferanse(request.behandlingUuid());
         MDC.put("prosess_koblingreferanse", koblingReferanse.getReferanse().toString());
         var kopt = koblingTjeneste.hentKoblingOptional(koblingReferanse);
         if (kopt.isPresent()) {
             throw new IllegalStateException("Prøver å migrere en kobling som allerede finnes");
         }
         Optional<KoblingReferanse> originalKoblingRef =
-            request.koblingData().originalBehandlingUuid() == null ? Optional.empty() : Optional.of(new KoblingReferanse(request.koblingData().originalBehandlingUuid()));
-        var kobling = koblingTjeneste.finnEllerOpprett(new KoblingReferanse(request.koblingData().behandlingUuid()),
-            mapTilYtelseKodeverk(request.koblingData().ytelseSomSkalBeregnes()), new AktørId(request.koblingData().aktør().getIdent()), saksnummer, originalKoblingRef);
+            request.originalBehandlingUuid() == null ? Optional.empty() : Optional.of(new KoblingReferanse(request.originalBehandlingUuid()));
+        var kobling = koblingTjeneste.finnEllerOpprett(new KoblingReferanse(request.behandlingUuid()),
+            mapTilYtelseKodeverk(request.ytelseSomSkalBeregnes()), new AktørId(request.aktør().getIdent()), saksnummer, originalKoblingRef);
         migreringTjeneste.mapOgLagreGrunnlag(kobling, request.grunnlag());
         koblingTjeneste.markerKoblingSomAvsluttet(kobling);
         return Response.ok().build();
@@ -258,7 +258,7 @@ public class OperereKalkulusRestTjeneste {
         @Override
         public AbacDataAttributter apply(Object o) {
             var req = (no.nav.folketrygdloven.fpkalkulus.kontrakt.migrering.MigrerBeregningsgrunnlagRequest) o;
-            return AbacDataAttributter.opprett().leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.koblingData().behandlingUuid());
+            return AbacDataAttributter.opprett().leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid());
         }
     }
 

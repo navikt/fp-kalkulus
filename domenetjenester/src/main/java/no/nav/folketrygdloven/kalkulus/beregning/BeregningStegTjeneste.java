@@ -45,7 +45,7 @@ import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovT
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.VidereførOverstyringTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelSporingTjeneste;
-import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelsporingRepository;
 import no.nav.foreldrepenger.konfig.Environment;
 
 @ApplicationScoped

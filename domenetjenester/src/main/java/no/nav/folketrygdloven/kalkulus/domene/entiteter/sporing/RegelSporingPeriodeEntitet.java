@@ -88,14 +88,6 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
         return aktiv;
     }
 
-    public void setAktiv(boolean aktiv) {
-        this.aktiv = aktiv;
-    }
-
-    public void setRegelInput(String regelInput) {
-        this.regelInput = regelInput;
-    }
-
     public String getRegelVersjon() {
         return regelVersjon;
     }

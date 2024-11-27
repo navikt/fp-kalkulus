@@ -2,8 +2,6 @@ package no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag;
 
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -11,7 +9,7 @@ import no.nav.folketrygdloven.kalkulus.beregning.MapTilstandTilSteg;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
-import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelsporingRepository;
 
 @ApplicationScoped
 public class RullTilbakeTjeneste {

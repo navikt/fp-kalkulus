@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 
+import java.util.List;
+
 public class BeregningsgrunnlagGrunnlagMigreringDto extends BaseMigreringDto {
     @Valid
     private BeregningsgrunnlagMigreringDto beregningsgrunnlag;
@@ -29,13 +31,23 @@ public class BeregningsgrunnlagGrunnlagMigreringDto extends BaseMigreringDto {
     @NotNull
     private BeregningsgrunnlagTilstand beregningsgrunnlagTilstand;
 
+    @Valid
+    @NotNull
+    private List<RegelSporingGrunnlagMigreringDto> grunnlagsporinger;
+
+    @Valid
+    @NotNull
+    private List<RegelSporingPeriodeMigreringDto> periodesporinger;
+
     public BeregningsgrunnlagGrunnlagMigreringDto(BeregningsgrunnlagMigreringDto beregningsgrunnlag,
                                                   BeregningAktivitetAggregatMigreringDto registerAktiviteter,
                                                   BeregningAktivitetAggregatMigreringDto saksbehandletAktiviteter,
                                                   BeregningAktivitetOverstyringerMigreringDto overstyringer,
                                                   BeregningRefusjonOverstyringerMigreringDto refusjonOverstyringer,
                                                   FaktaAggregatMigreringDto faktaAggregat,
-                                                  BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
+                                                  BeregningsgrunnlagTilstand beregningsgrunnlagTilstand,
+                                                  List<RegelSporingGrunnlagMigreringDto> grunnlagsporinger,
+                                                  List<RegelSporingPeriodeMigreringDto> periodesporinger) {
         this.beregningsgrunnlag = beregningsgrunnlag;
         this.registerAktiviteter = registerAktiviteter;
         this.saksbehandletAktiviteter = saksbehandletAktiviteter;
@@ -43,33 +55,43 @@ public class BeregningsgrunnlagGrunnlagMigreringDto extends BaseMigreringDto {
         this.refusjonOverstyringer = refusjonOverstyringer;
         this.faktaAggregat = faktaAggregat;
         this.beregningsgrunnlagTilstand = beregningsgrunnlagTilstand;
+        this.grunnlagsporinger = grunnlagsporinger;
+        this.periodesporinger = periodesporinger;
     }
 
-    public @Valid BeregningsgrunnlagMigreringDto getBeregningsgrunnlag() {
+    public BeregningsgrunnlagMigreringDto getBeregningsgrunnlag() {
         return beregningsgrunnlag;
     }
 
-    public @Valid @NotNull BeregningAktivitetAggregatMigreringDto getRegisterAktiviteter() {
+    public BeregningAktivitetAggregatMigreringDto getRegisterAktiviteter() {
         return registerAktiviteter;
     }
 
-    public @Valid BeregningAktivitetAggregatMigreringDto getSaksbehandletAktiviteter() {
+    public BeregningAktivitetAggregatMigreringDto getSaksbehandletAktiviteter() {
         return saksbehandletAktiviteter;
     }
 
-    public @Valid BeregningAktivitetOverstyringerMigreringDto getOverstyringer() {
+    public BeregningAktivitetOverstyringerMigreringDto getOverstyringer() {
         return overstyringer;
     }
 
-    public @Valid BeregningRefusjonOverstyringerMigreringDto getRefusjonOverstyringer() {
+    public BeregningRefusjonOverstyringerMigreringDto getRefusjonOverstyringer() {
         return refusjonOverstyringer;
     }
 
-    public @Valid FaktaAggregatMigreringDto getFaktaAggregat() {
+    public FaktaAggregatMigreringDto getFaktaAggregat() {
         return faktaAggregat;
     }
 
-    public @Valid @NotNull BeregningsgrunnlagTilstand getBeregningsgrunnlagTilstand() {
+    public BeregningsgrunnlagTilstand getBeregningsgrunnlagTilstand() {
         return beregningsgrunnlagTilstand;
+    }
+
+    public List<RegelSporingGrunnlagMigreringDto> getGrunnlagsporinger() {
+        return grunnlagsporinger;
+    }
+
+    public List<RegelSporingPeriodeMigreringDto> getPeriodesporinger() {
+        return periodesporinger;
     }
 }

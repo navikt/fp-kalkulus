@@ -59,6 +59,7 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelsporingRepository;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -68,20 +69,24 @@ import java.util.Optional;
 
 @ApplicationScoped
 public class MigreringTjeneste {
-    private BeregningsgrunnlagRepository repository;
+    private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
+    private RegelsporingRepository regelsporingRepository;
 
     public MigreringTjeneste() {
         // CDI
     }
 
     @Inject
-    public MigreringTjeneste(BeregningsgrunnlagRepository repository) {
-        this.repository = repository;
+    public MigreringTjeneste(BeregningsgrunnlagRepository repository,
+                             RegelsporingRepository regelsporingRepository) {
+        this.beregningsgrunnlagRepository = repository;
+        this.regelsporingRepository = regelsporingRepository;
     }
 
     public void mapOgLagreGrunnlag(KoblingEntitet koblingEntitet, BeregningsgrunnlagGrunnlagMigreringDto dto) {
         var grunnlag = mapGrunnlag(koblingEntitet, dto);
-        repository.lagreMigrering(koblingEntitet.getId(), grunnlag);
+        beregningsgrunnlagRepository.lagreMigrering(koblingEntitet.getId(), grunnlag);
+        regelsporingRepository.migrerSporinger(dto.getGrunnlagsporinger(), dto.getPeriodesporinger(), koblingEntitet.getId());
     }
 
     private BeregningsgrunnlagGrunnlagEntitet mapGrunnlag(KoblingEntitet koblingEntitet, BeregningsgrunnlagGrunnlagMigreringDto dto) {

@@ -1,12 +1,11 @@
 package no.nav.folketrygdloven.kalkulus.tjeneste.sporing;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingPeriode;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelsporingRepository;
 
 @ApplicationScoped
 public class RegelSporingTjeneste {

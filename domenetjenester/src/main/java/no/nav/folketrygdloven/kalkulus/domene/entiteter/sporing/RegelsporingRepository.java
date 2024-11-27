@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulus.tjeneste.sporing;
+package no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -12,12 +12,14 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
+import no.nav.folketrygdloven.fpkalkulus.kontrakt.migrering.RegelSporingGrunnlagMigreringDto;
+
+import no.nav.folketrygdloven.fpkalkulus.kontrakt.migrering.RegelSporingPeriodeMigreringDto;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingPeriode;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrunnlagEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
@@ -42,6 +44,48 @@ public class RegelsporingRepository {
         this.entityManager = entityManager;
     }
 
+    public void migrerSporinger(List<RegelSporingGrunnlagMigreringDto> grunnlagsporinger, List<RegelSporingPeriodeMigreringDto> periodesporinger, Long koblingId) {
+        // Sletter alle eksisterende regelsporinger på koblingen før vi migrerer over de nye, i tilfelle migrering blir kjørt flere ganger
+        slettAlleSporingerPåKobling(koblingId);
+        for (RegelSporingPeriodeMigreringDto sporing : periodesporinger) {
+            RegelSporingPeriodeEntitet entitet = RegelSporingPeriodeEntitet.ny()
+                .medRegelEvaluering(sporing.getRegelEvaluering())
+                .medRegelVersjon(sporing.getRegelVersjon())
+                .medRegelInput(sporing.getRegelInput())
+                .medPeriode(IntervallEntitet.fraOgMedTilOgMed(sporing.getPeriode().getFom(), sporing.getPeriode().getTom()))
+                .build(koblingId, sporing.getRegelType());
+            entityManager.persist(entitet);
+        }
+        for (RegelSporingGrunnlagMigreringDto sporing : grunnlagsporinger) {
+            RegelSporingGrunnlagEntitet entitet = RegelSporingGrunnlagEntitet.ny()
+                .medRegelEvaluering(sporing.getRegelEvaluering())
+                .medRegelVersjon(sporing.getRegelVersjon())
+                .medRegelInput(sporing.getRegelInput())
+                .build(koblingId, sporing.getRegelType());
+            entityManager.persist(entitet);
+        }
+        entityManager.flush();
+    }
+
+    private void slettAlleSporingerPåKobling(Long koblingId) {
+        // Sletter grunnlag-sproring
+        var grunnlagQuery = entityManager.createNativeQuery("delete from REGEL_SPORING_GRUNNLAG " +
+                "where kobling_id = :koblingId")
+            .setParameter("koblingId", koblingId);
+        var oppdaterteRader = grunnlagQuery.executeUpdate();
+        log.info("Slettet {} regelsporringsgrunnlag for koblingId={}", oppdaterteRader, koblingId);
+
+        // Sletter periode-sporing
+        var perioderQuery = entityManager.createNativeQuery("delete from REGEL_SPORING_PERIODE " +
+                "where kobling_id = :koblingId")
+            .setParameter("koblingId", koblingId);
+
+        var perioderOppdaterteRader = perioderQuery.executeUpdate();
+        log.info("Slettet {} regelsporringsperioder for koblingId={}", perioderOppdaterteRader, koblingId);
+
+        entityManager.flush();
+    }
+
     public void lagreSporinger(Map<String, List<RegelSporingPeriode>> perioderPrRegelInputHash, Long koblingId) {
         int antall = 0;
         int størrelseRegelEvaluering = 0;
@@ -49,11 +93,11 @@ public class RegelsporingRepository {
         for (var entry : perioderPrRegelInputHash.entrySet()) {
             for (RegelSporingPeriode sporing : entry.getValue()) {
                 RegelSporingPeriodeEntitet entitet = RegelSporingPeriodeEntitet.ny()
-                        .medRegelEvaluering(sporing.regelEvaluering())
-                        .medRegelVersjon(sporing.regelVersjon())
-                        .medRegelInput(sporing.regelInput())
-                        .medPeriode(IntervallEntitet.fraOgMedTilOgMed(sporing.periode().getFomDato(), sporing.periode().getTomDato()))
-                        .build(koblingId, sporing.regelType());
+                    .medRegelEvaluering(sporing.regelEvaluering())
+                    .medRegelVersjon(sporing.regelVersjon())
+                    .medRegelInput(sporing.regelInput())
+                    .medPeriode(IntervallEntitet.fraOgMedTilOgMed(sporing.periode().getFomDato(), sporing.periode().getTomDato()))
+                    .build(koblingId, sporing.regelType());
                 entityManager.persist(entitet);
 
                 antall++;
@@ -97,34 +141,34 @@ public class RegelsporingRepository {
 
         // Rydd grunnlag-sporing
         var typerSomSkalRyddes = EnumSet.allOf(BeregningsgrunnlagRegelType.class)
-                .stream()
-                .filter(t -> !t.getLagretTilstand().erFør(tilstand))
-                .collect(Collectors.toList());
+            .stream()
+            .filter(t -> !t.getLagretTilstand().erFør(tilstand))
+            .collect(Collectors.toList());
 
         var grunnlagQuery = entityManager.createQuery("Update RegelSporingGrunnlagEntitet " +
-                        "set aktiv = false " +
-                        "where koblingId in :koblingId " +
-                        "and aktiv = true " +
-                        "and regelType in (:tilstander)")
-                .setParameter(KOBLING_ID, koblingIder)
-                .setParameter("tilstander", typerSomSkalRyddes);
+                "set aktiv = false " +
+                "where koblingId in :koblingId " +
+                "and aktiv = true " +
+                "and regelType in (:tilstander)")
+            .setParameter(KOBLING_ID, koblingIder)
+            .setParameter("tilstander", typerSomSkalRyddes);
 
         var oppdaterteRader = grunnlagQuery.executeUpdate();
         log.info("Deaktivert {} regelsporringsgrunnlag for koblingId={}", oppdaterteRader, koblingIder);
 
         // Rydd periode-sporing
         var periodetyperSomSkalRyddes = EnumSet.allOf(BeregningsgrunnlagPeriodeRegelType.class)
-                .stream()
-                .filter(t -> !t.getLagretTilstand().erFør(tilstand))
-                .collect(Collectors.toList());
+            .stream()
+            .filter(t -> !t.getLagretTilstand().erFør(tilstand))
+            .collect(Collectors.toList());
 
         var perioderQuery = entityManager.createQuery("Update RegelSporingPeriodeEntitet " +
-                        "set aktiv = false " +
-                        "where koblingId in :koblingId " +
-                        "and aktiv = true " +
-                        "and regelType in (:tilstander)")
-                .setParameter(KOBLING_ID, koblingIder)
-                .setParameter("tilstander", periodetyperSomSkalRyddes);
+                "set aktiv = false " +
+                "where koblingId in :koblingId " +
+                "and aktiv = true " +
+                "and regelType in (:tilstander)")
+            .setParameter(KOBLING_ID, koblingIder)
+            .setParameter("tilstander", periodetyperSomSkalRyddes);
 
         var perioderOppdaterteRader = perioderQuery.executeUpdate();
         log.info("Deaktivert {} regelsporringsperioder for koblingId={}", perioderOppdaterteRader, koblingIder);
@@ -141,9 +185,9 @@ public class RegelsporingRepository {
 
         // Sletter grunnlag-sproring
         var grunnlagQuery = entityManager.createNativeQuery("delete from REGEL_SPORING_GRUNNLAG " +
-                        "where kobling_id = :koblingId " +
-                        "and aktiv = false")
-                .setParameter("koblingId", koblingId);
+                "where kobling_id = :koblingId " +
+                "and aktiv = false")
+            .setParameter("koblingId", koblingId);
 
         var oppdaterteRader = grunnlagQuery.executeUpdate();
         log.info("Slettet {} regelsporringsgrunnlag for koblingId={}", oppdaterteRader, koblingId);
@@ -151,9 +195,9 @@ public class RegelsporingRepository {
 
         // Sletter periode-sporing
         var perioderQuery = entityManager.createNativeQuery("delete from REGEL_SPORING_PERIODE " +
-                        "where kobling_id = :koblingId " +
-                        "and aktiv = false")
-                .setParameter("koblingId", koblingId);
+                "where kobling_id = :koblingId " +
+                "and aktiv = false")
+            .setParameter("koblingId", koblingId);
 
         var perioderOppdaterteRader = perioderQuery.executeUpdate();
         log.info("Slettet {} regelsporringsperioder for koblingId={}", perioderOppdaterteRader, koblingId);
@@ -169,10 +213,10 @@ public class RegelsporingRepository {
      */
     public List<RegelSporingPeriodeEntitet> hentRegelSporingPeriodeMedGittType(Long koblingId, List<BeregningsgrunnlagPeriodeRegelType> regelTyper) {
         TypedQuery<RegelSporingPeriodeEntitet> query = entityManager.createQuery(
-                "from RegelSporingPeriodeEntitet sporing " +
-                        "where sporing.koblingId=:koblingId " +
-                        "and sporing.aktiv = :aktiv " +
-                        "and sporing.regelType in :regeltype", RegelSporingPeriodeEntitet.class);
+            "from RegelSporingPeriodeEntitet sporing " +
+                "where sporing.koblingId=:koblingId " +
+                "and sporing.aktiv = :aktiv " +
+                "and sporing.regelType in :regeltype", RegelSporingPeriodeEntitet.class);
         query.setParameter(KOBLING_ID, koblingId);
         query.setParameter("aktiv", true);
         query.setParameter("regeltype", regelTyper);
@@ -187,10 +231,10 @@ public class RegelsporingRepository {
      */
     public List<RegelSporingGrunnlagEntitet> hentRegelSporingGrunnlagMedGittType(Long koblingId, List<BeregningsgrunnlagRegelType> regelTyper) {
         TypedQuery<RegelSporingGrunnlagEntitet> query = entityManager.createQuery(
-                "from RegelSporingGrunnlagEntitet sporing " +
-                        "where sporing.koblingId=:koblingId " +
-                        "and sporing.aktiv = :aktiv " +
-                        "and sporing.regelType in :regeltype", RegelSporingGrunnlagEntitet.class);
+            "from RegelSporingGrunnlagEntitet sporing " +
+                "where sporing.koblingId=:koblingId " +
+                "and sporing.aktiv = :aktiv " +
+                "and sporing.regelType in :regeltype", RegelSporingGrunnlagEntitet.class);
         query.setParameter(KOBLING_ID, koblingId);
         query.setParameter("aktiv", true);
         query.setParameter("regeltype", regelTyper);
