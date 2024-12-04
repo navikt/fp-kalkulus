@@ -240,5 +240,24 @@ public class RegelsporingRepository {
         query.setParameter("regeltype", regelTyper);
         return query.getResultList();
     }
+    public List<RegelSporingGrunnlagEntitet> hentAlleRegelSporingGrunnlag(Long koblingId) {
+        TypedQuery<RegelSporingGrunnlagEntitet> query = entityManager.createQuery(
+            "from RegelSporingGrunnlagEntitet sporing " +
+                "where sporing.koblingId=:koblingId " +
+                "and sporing.aktiv = :aktiv ", RegelSporingGrunnlagEntitet.class);
+        query.setParameter(KOBLING_ID, koblingId);
+        query.setParameter("aktiv", true);
+        return query.getResultList();
+    }
+
+    public List<RegelSporingPeriodeEntitet> hentAlleRegelSporingPeriode(Long koblingId) {
+        TypedQuery<RegelSporingPeriodeEntitet> query = entityManager.createQuery(
+            "from RegelSporingPeriodeEntitet sporing "+
+                "where sporing.koblingId=:koblingId " +
+                "and sporing.aktiv = :aktiv ", RegelSporingPeriodeEntitet.class);
+        query.setParameter(KOBLING_ID, koblingId);
+        query.setParameter("aktiv", true);
+        return query.getResultList();
+    }
 
 }

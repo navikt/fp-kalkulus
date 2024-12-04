@@ -53,6 +53,8 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Promille;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Refusjon;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Årsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
@@ -83,10 +85,13 @@ public class MigreringTjeneste {
         this.regelsporingRepository = regelsporingRepository;
     }
 
-    public void mapOgLagreGrunnlag(KoblingEntitet koblingEntitet, BeregningsgrunnlagGrunnlagMigreringDto dto) {
+    public Migreringsresultat mapOgLagreGrunnlag(KoblingEntitet koblingEntitet, BeregningsgrunnlagGrunnlagMigreringDto dto) {
         var grunnlag = mapGrunnlag(koblingEntitet, dto);
-        beregningsgrunnlagRepository.lagreMigrering(koblingEntitet.getId(), grunnlag);
+        var entitet = beregningsgrunnlagRepository.lagreMigrering(koblingEntitet.getId(), grunnlag);
         regelsporingRepository.migrerSporinger(dto.getGrunnlagsporinger(), dto.getPeriodesporinger(), koblingEntitet.getId());
+        var grunnlagSporinger = regelsporingRepository.hentAlleRegelSporingGrunnlag(koblingEntitet.getId());
+        var periodeSporinger = regelsporingRepository.hentAlleRegelSporingPeriode(koblingEntitet.getId());
+        return new Migreringsresultat(entitet, grunnlagSporinger, periodeSporinger);
     }
 
     private BeregningsgrunnlagGrunnlagEntitet mapGrunnlag(KoblingEntitet koblingEntitet, BeregningsgrunnlagGrunnlagMigreringDto dto) {
@@ -435,4 +440,6 @@ public class MigreringTjeneste {
         entitet.setEndretTidspunkt(dto.getEndretTidspunkt());
         entitet.setEndretAv(dto.getEndretAv());
     }
+
+    public record Migreringsresultat(BeregningsgrunnlagGrunnlagEntitet grunnlag, List<RegelSporingGrunnlagEntitet> grunnlagSporinger, List<RegelSporingPeriodeEntitet> periodeSporinger){}
 }

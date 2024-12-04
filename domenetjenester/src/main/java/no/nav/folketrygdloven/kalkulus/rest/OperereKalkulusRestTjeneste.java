@@ -17,8 +17,13 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import no.nav.folketrygdloven.fpkalkulus.kontrakt.migrering.MigrerBeregningsgrunnlagRequest;
+import no.nav.folketrygdloven.fpkalkulus.kontrakt.migrering.MigrerBeregningsgrunnlagResponse;
 import no.nav.folketrygdloven.kalkulus.beregning.MigreringTjeneste;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
+
+import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapDetaljertBeregningsgrunnlag;
 
 import org.slf4j.MDC;
 
@@ -194,9 +199,29 @@ public class OperereKalkulusRestTjeneste {
             request.originalBehandlingUuid() == null ? Optional.empty() : Optional.of(new KoblingReferanse(request.originalBehandlingUuid()));
         var kobling = koblingTjeneste.finnEllerOpprett(new KoblingReferanse(request.behandlingUuid()),
             mapTilYtelseKodeverk(request.ytelseSomSkalBeregnes()), new AktørId(request.aktør().getIdent()), saksnummer, originalKoblingRef);
-        migreringTjeneste.mapOgLagreGrunnlag(kobling, request.grunnlag());
         koblingTjeneste.markerKoblingSomAvsluttet(kobling);
-        return Response.ok().build();
+        var migreringsresultat = migreringTjeneste.mapOgLagreGrunnlag(kobling, request.grunnlag());
+        var respons = mapMigreringRespons(migreringsresultat);
+        return Response.ok(respons).build();
+    }
+
+    private static MigrerBeregningsgrunnlagResponse mapMigreringRespons(MigreringTjeneste.Migreringsresultat migreringsresultat) {
+        var entitet = migreringsresultat.grunnlag();
+        var mappetGrunnlag = MapDetaljertBeregningsgrunnlag.map(entitet);
+        var bbGrunnlag = entitet.getBeregningsgrunnlag()
+            .flatMap(BeregningsgrunnlagEntitet::getBesteberegninggrunnlag)
+            .map(MapDetaljertBeregningsgrunnlag::mapBesteberegningsgrunlag);
+        var sporingerPeriode = migreringsresultat.periodeSporinger()
+            .stream()
+            .map(p -> new MigrerBeregningsgrunnlagResponse.RegelsporingPeriode(p.getRegelType(), p.getRegelEvaluering(), p.getRegelInput(),
+                p.getRegelVersjon(), new Periode(p.getPeriode().getFomDato(), p.getPeriode().getTomDato())))
+            .toList();
+        var sporingerGrunnlag= migreringsresultat.grunnlagSporinger()
+            .stream()
+            .map(p -> new MigrerBeregningsgrunnlagResponse.RegelsporingGrunnlag(p.getRegelType(), p.getRegelEvaluering(), p.getRegelInput(),
+                p.getRegelVersjon()))
+            .toList();
+        return new MigrerBeregningsgrunnlagResponse(mappetGrunnlag, bbGrunnlag.orElse(null), sporingerPeriode, sporingerGrunnlag);
     }
 
     private void validerKoblingOgSaksnummer(KoblingEntitet kobling, Saksnummer saksnummer) {
