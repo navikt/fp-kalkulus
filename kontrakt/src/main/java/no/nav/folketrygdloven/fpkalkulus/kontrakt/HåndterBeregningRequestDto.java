@@ -15,6 +15,6 @@ import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
  * Spesifikasjon for å løse avklaringsbehov for en behandling.
  */
 public record HåndterBeregningRequestDto(@Valid @NotNull UUID behandlingUuid,
-                                         @Valid @NotNull Saksnummer saksnummer,
+                                         @Valid Saksnummer saksnummer,
                                          @Valid @NotNull KalkulatorInputDto kalkulatorInput,
                                          @Valid @NotNull @Size(min = 1) List<HåndterBeregningDto> håndterBeregningDtoList) {}
