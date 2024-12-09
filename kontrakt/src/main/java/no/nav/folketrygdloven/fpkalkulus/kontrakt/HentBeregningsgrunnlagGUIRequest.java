@@ -12,5 +12,5 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.Saksnummer;
  * Spesifikasjon for å hente beregningsgrunnlag GUI dto for en behandling.
  */
 public record HentBeregningsgrunnlagGUIRequest(@Valid @NotNull UUID behandlingUuid,
-                                               @Valid Saksnummer saksnummer,
+                                               @Valid @NotNull Saksnummer saksnummer,
                                                @Valid @NotNull KalkulatorInputDto kalkulatorInput) {}
