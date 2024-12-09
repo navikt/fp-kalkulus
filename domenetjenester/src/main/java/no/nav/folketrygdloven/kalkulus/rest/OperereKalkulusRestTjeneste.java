@@ -259,9 +259,12 @@ public class OperereKalkulusRestTjeneste {
         @Override
         public AbacDataAttributter apply(Object o) {
             var req = (HåndterBeregningRequestDto) o;
-            return AbacDataAttributter.opprett()
-                .leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid())
-                .leggTil(StandardAbacAttributtType.SAKSNUMMER, req.saksnummer().verdi());
+            var attributt = AbacDataAttributter.opprett()
+                .leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid());
+            if (req.saksnummer() != null) {
+                attributt.leggTil(StandardAbacAttributtType.SAKSNUMMER, req.saksnummer().verdi());
+            }
+            return attributt;
         }
     }
 
