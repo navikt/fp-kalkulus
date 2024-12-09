@@ -39,6 +39,9 @@ public class BeregningsgrunnlagGrunnlagMigreringDto extends BaseMigreringDto {
     @NotNull
     private List<RegelSporingPeriodeMigreringDto> periodesporinger;
 
+    BeregningsgrunnlagGrunnlagMigreringDto() {
+    }
+
     public BeregningsgrunnlagGrunnlagMigreringDto(BeregningsgrunnlagMigreringDto beregningsgrunnlag,
                                                   BeregningAktivitetAggregatMigreringDto registerAktiviteter,
                                                   BeregningAktivitetAggregatMigreringDto saksbehandletAktiviteter,

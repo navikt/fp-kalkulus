@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.fpkalkulus.kontrakt.migrering;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.validation.Valid;
@@ -17,6 +16,9 @@ public class BesteberegningMånedsgrunnlagMigreringDto extends BaseMigreringDto 
     @Valid
     @NotNull
     private Periode periode;
+
+    public BesteberegningMånedsgrunnlagMigreringDto() {
+    }
 
     public BesteberegningMånedsgrunnlagMigreringDto(List<BesteberegningInntektMigreringDto> inntekter, Periode periode) {
         this.inntekter = inntekter;

@@ -22,6 +22,9 @@ public class BeregningRefusjonOverstyringMigreringDto extends BaseMigreringDto {
     @Valid
     private List<BeregningRefusjonPeriodeMigreringDto> refusjonPerioder = new ArrayList<>();
 
+    public BeregningRefusjonOverstyringMigreringDto() {
+    }
+
     public BeregningRefusjonOverstyringMigreringDto(Arbeidsgiver arbeidsgiver,
                                                     LocalDate førsteMuligeRefusjonFom,
                                                     Boolean erFristUtvidet,

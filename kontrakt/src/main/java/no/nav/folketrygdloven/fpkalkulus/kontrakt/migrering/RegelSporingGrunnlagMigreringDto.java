@@ -19,6 +19,9 @@ public class RegelSporingGrunnlagMigreringDto {
     @Valid
     private String regelVersjon;
 
+    public RegelSporingGrunnlagMigreringDto() {
+    }
+
     public RegelSporingGrunnlagMigreringDto(String regelEvaluering, String regelInput, BeregningsgrunnlagRegelType regelType, String regelVersjon) {
         this.regelEvaluering = regelEvaluering;
         this.regelInput = regelInput;

@@ -27,6 +27,9 @@ public class SammenligningsgrunnlagPrStatusMigreringDto extends BaseMigreringDto
     @Valid
     private BigDecimal avvikPromille = BigDecimal.ZERO;
 
+    public SammenligningsgrunnlagPrStatusMigreringDto() {
+    }
+
     public SammenligningsgrunnlagPrStatusMigreringDto(Periode sammenligningsperiode,
                                                       SammenligningsgrunnlagType sammenligningsgrunnlagType,
                                                       Beløp rapportertPrÅr,

@@ -40,6 +40,9 @@ public class BeregningsgrunnlagMigreringDto extends BaseMigreringDto {
     @NotNull
     private boolean overstyrt = false;
 
+    BeregningsgrunnlagMigreringDto() {
+    }
+
     public BeregningsgrunnlagMigreringDto(LocalDate skjæringstidspunkt,
                                           List<BeregningsgrunnlagAktivitetStatusMigreringDto> aktivitetStatuser,
                                           List<BeregningsgrunnlagPeriodeMigreringDto> beregningsgrunnlagPerioder,

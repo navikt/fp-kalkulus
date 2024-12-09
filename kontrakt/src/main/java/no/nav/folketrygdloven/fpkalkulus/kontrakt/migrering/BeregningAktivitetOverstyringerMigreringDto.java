@@ -6,6 +6,9 @@ public class BeregningAktivitetOverstyringerMigreringDto extends BaseMigreringDt
 
     private List<BeregningAktivitetOverstyringMigreringDto> overstyringer;
 
+    public BeregningAktivitetOverstyringerMigreringDto() {
+    }
+
     public BeregningAktivitetOverstyringerMigreringDto(List<BeregningAktivitetOverstyringMigreringDto> overstyringer) {
         this.overstyringer = overstyringer;
     }

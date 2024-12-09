@@ -25,6 +25,9 @@ public class BesteberegningInntektMigreringDto extends BaseMigreringDto {
     @NotNull
     private Beløp inntekt;
 
+    public BesteberegningInntektMigreringDto() {
+    }
+
     public BesteberegningInntektMigreringDto(OpptjeningAktivitetType opptjeningAktivitetType,
                                              Arbeidsgiver arbeidsgiver,
                                              InternArbeidsforholdRefDto arbeidsforholdRef,

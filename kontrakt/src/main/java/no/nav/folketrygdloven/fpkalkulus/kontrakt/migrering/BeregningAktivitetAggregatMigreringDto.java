@@ -17,6 +17,9 @@ public class BeregningAktivitetAggregatMigreringDto extends BaseMigreringDto {
     @NotNull
     private LocalDate skjæringstidspunktOpptjening;
 
+    public BeregningAktivitetAggregatMigreringDto() {
+    }
+
     public BeregningAktivitetAggregatMigreringDto(List<BeregningAktivitetMigreringDto> aktiviteter, LocalDate skjæringstidspunktOpptjening) {
         this.aktiviteter = aktiviteter;
         this.skjæringstidspunktOpptjening = skjæringstidspunktOpptjening;

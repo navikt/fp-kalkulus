@@ -33,6 +33,10 @@ public class BeregningsgrunnlagPeriodeMigreringDto extends BaseMigreringDto {
 
     private List<PeriodeÅrsak> beregningsgrunnlagPeriodeÅrsaker = new ArrayList<>();
 
+
+    public BeregningsgrunnlagPeriodeMigreringDto() {
+    }
+
     public BeregningsgrunnlagPeriodeMigreringDto(List<BeregningsgrunnlagPrStatusOgAndelMigreringDto> beregningsgrunnlagPrStatusOgAndelList,
                                                  Periode periode,
                                                  Beløp bruttoPrÅr,

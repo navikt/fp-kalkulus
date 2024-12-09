@@ -22,6 +22,9 @@ public class RegelSporingPeriodeMigreringDto {
     @Valid
     private String regelVersjon;
 
+    public RegelSporingPeriodeMigreringDto() {
+    }
+
     public RegelSporingPeriodeMigreringDto(String regelEvaluering,
                                            String regelInput,
                                            Periode periode,

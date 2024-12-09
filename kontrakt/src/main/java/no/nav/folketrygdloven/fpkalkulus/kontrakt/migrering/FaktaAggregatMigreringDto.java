@@ -14,6 +14,9 @@ public class FaktaAggregatMigreringDto extends BaseMigreringDto {
     @Valid
     private FaktaAktørMigreringDto faktaAktør;
 
+    public FaktaAggregatMigreringDto() {
+    }
+
     public FaktaAggregatMigreringDto(List<FaktaArbeidsforholdMigreringDto> faktaArbeidsforholdListe, FaktaAktørMigreringDto faktaAktør) {
         this.faktaArbeidsforholdListe = faktaArbeidsforholdListe;
         this.faktaAktør = faktaAktør;

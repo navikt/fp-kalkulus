@@ -18,6 +18,9 @@ public class BesteberegninggrunnlagMigreringDto extends BaseMigreringDto {
     @Valid
     private Beløp avvik;
 
+    public BesteberegninggrunnlagMigreringDto() {
+    }
+
     public BesteberegninggrunnlagMigreringDto(Set<BesteberegningMånedsgrunnlagMigreringDto> seksBesteMåneder, Beløp avvik) {
         this.seksBesteMåneder = seksBesteMåneder;
         this.avvik = avvik;

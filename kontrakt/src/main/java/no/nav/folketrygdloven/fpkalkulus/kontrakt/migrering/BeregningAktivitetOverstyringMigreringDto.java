@@ -29,6 +29,9 @@ public class BeregningAktivitetOverstyringMigreringDto extends BaseMigreringDto 
     @NotNull
     private OpptjeningAktivitetType opptjeningAktivitetType;
 
+    public BeregningAktivitetOverstyringMigreringDto() {
+    }
+
     public BeregningAktivitetOverstyringMigreringDto(Periode periode,
                                                      Arbeidsgiver arbeidsgiver,
                                                      InternArbeidsforholdRefDto arbeidsforholdRef,

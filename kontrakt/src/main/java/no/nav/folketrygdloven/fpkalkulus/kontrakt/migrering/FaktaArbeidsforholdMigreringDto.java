@@ -24,6 +24,9 @@ public class FaktaArbeidsforholdMigreringDto extends BaseMigreringDto {
     @Valid
     private FaktaVurderingMigreringDto harLønnsendringIBeregningsperioden;
 
+    public FaktaArbeidsforholdMigreringDto() {
+    }
+
     public FaktaArbeidsforholdMigreringDto(Arbeidsgiver arbeidsgiver,
                                            InternArbeidsforholdRefDto arbeidsforholdRef,
                                            FaktaVurderingMigreringDto erTidsbegrenset,

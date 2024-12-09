@@ -16,6 +16,9 @@ public class BeregningsgrunnlagAktivitetStatusMigreringDto extends BaseMigrering
     @NotNull
     private Hjemmel hjemmel;
 
+    public BeregningsgrunnlagAktivitetStatusMigreringDto() {
+    }
+
     public BeregningsgrunnlagAktivitetStatusMigreringDto(AktivitetStatus aktivitetStatus, Hjemmel hjemmel) {
         this.aktivitetStatus = aktivitetStatus;
         this.hjemmel = hjemmel;

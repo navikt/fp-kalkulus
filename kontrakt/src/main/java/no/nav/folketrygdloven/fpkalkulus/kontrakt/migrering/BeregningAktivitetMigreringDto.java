@@ -21,6 +21,9 @@ public class BeregningAktivitetMigreringDto extends BaseMigreringDto {
     @Valid @NotNull
     private OpptjeningAktivitetType opptjeningAktivitetType;
 
+    public BeregningAktivitetMigreringDto() {
+    }
+
     public BeregningAktivitetMigreringDto(Periode periode,
                                           Arbeidsgiver arbeidsgiver,
                                           InternArbeidsforholdRefDto arbeidsforholdRef,

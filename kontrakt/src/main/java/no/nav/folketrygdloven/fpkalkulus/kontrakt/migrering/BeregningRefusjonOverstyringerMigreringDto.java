@@ -11,6 +11,9 @@ public class BeregningRefusjonOverstyringerMigreringDto extends BaseMigreringDto
     @NotNull
     private List<BeregningRefusjonOverstyringMigreringDto> overstyringer;
 
+    public BeregningRefusjonOverstyringerMigreringDto() {
+    }
+
     public BeregningRefusjonOverstyringerMigreringDto(List<BeregningRefusjonOverstyringMigreringDto> overstyringer) {
         this.overstyringer = overstyringer;
     }

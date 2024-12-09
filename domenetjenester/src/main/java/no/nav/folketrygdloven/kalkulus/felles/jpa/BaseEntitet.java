@@ -76,7 +76,7 @@ public class BaseEntitet implements Serializable {
     }
 
     public void setEndretTidspunkt(LocalDateTime endretTidspunkt) {
-        this.setEndretTidspunkt(endretTidspunkt);
+        this.endretTidspunkt = endretTidspunkt;
     }
 
     public void setEndretAv(String endretAv) {
