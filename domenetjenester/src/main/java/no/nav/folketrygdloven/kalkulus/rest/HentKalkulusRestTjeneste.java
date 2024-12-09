@@ -15,9 +15,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
-
 import org.slf4j.MDC;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -29,6 +26,8 @@ import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagGuiTjene
 import no.nav.folketrygdloven.kalkulator.guitjenester.KalkulatorGuiInterface;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulus.beregning.GUIBeregningsgrunnlagInputTjeneste;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
@@ -135,7 +134,9 @@ public class HentKalkulusRestTjeneste {
         @Override
         public AbacDataAttributter apply(Object o) {
             var req = (HentBeregningsgrunnlagGUIRequest) o;
-            return AbacDataAttributter.opprett().leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid());
+            return AbacDataAttributter.opprett()
+                .leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid())
+                .leggTil(StandardAbacAttributtType.SAKSNUMMER, req.saksnummer().verdi());
         }
     }
 
@@ -143,7 +144,9 @@ public class HentKalkulusRestTjeneste {
         @Override
         public AbacDataAttributter apply(Object o) {
             var req = (EnkelFpkalkulusRequestDto) o;
-            return AbacDataAttributter.opprett().leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid());
+            return AbacDataAttributter.opprett()
+                .leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid())
+                .leggTil(StandardAbacAttributtType.SAKSNUMMER, req.saksnummer().verdi());
         }
     }
 

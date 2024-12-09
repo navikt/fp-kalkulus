@@ -29,7 +29,7 @@ public class KoblingTjeneste {
 
     public KoblingEntitet finnEllerOpprett(KoblingReferanse referanse, FagsakYtelseType ytelseType, AktørId aktørId, Saksnummer saksnummer,
                                            Optional<KoblingReferanse> originalKoblingRef) {
-        var eksisterendeKobling = repository.hentKoblingFor(referanse);
+        var eksisterendeKobling = repository.hentForKoblingReferanse(referanse);
         if (eksisterendeKobling.isPresent()) {
             return eksisterendeKobling.get();
         }

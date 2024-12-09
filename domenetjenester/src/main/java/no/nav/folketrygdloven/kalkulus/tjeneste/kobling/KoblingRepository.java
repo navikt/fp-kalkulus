@@ -42,7 +42,7 @@ public class KoblingRepository {
     }
 
     public Optional<KoblingEntitet> hentForKoblingReferanse(KoblingReferanse referanse) {
-        TypedQuery<KoblingEntitet> query = entityManager.createQuery("FROM Kobling k WHERE koblingReferanse = :referanse", KoblingEntitet.class);
+        TypedQuery<KoblingEntitet> query = entityManager.createQuery("FROM Kobling k WHERE k.koblingReferanse = :referanse", KoblingEntitet.class);
         query.setParameter("referanse", referanse);
         return HibernateVerktøy.hentUniktResultat(query);
     }
@@ -54,8 +54,7 @@ public class KoblingRepository {
     }
 
     public Optional<KoblingEntitet> hentKoblingFor(KoblingReferanse referanse) {
-        TypedQuery<KoblingEntitet> query = entityManager.createQuery(
-            "SELECT k FROM Kobling k WHERE k.koblingReferanse = :referanse", KoblingEntitet.class);
+        TypedQuery<KoblingEntitet> query = entityManager.createQuery("FROM Kobling k WHERE k.koblingReferanse = :referanse", KoblingEntitet.class);
         query.setParameter("referanse", referanse);
         return HibernateVerktøy.hentUniktResultat(query);
     }

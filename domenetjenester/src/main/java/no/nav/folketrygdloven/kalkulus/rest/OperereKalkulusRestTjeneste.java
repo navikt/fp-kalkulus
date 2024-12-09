@@ -16,15 +16,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import no.nav.folketrygdloven.fpkalkulus.kontrakt.migrering.MigrerBeregningsgrunnlagRequest;
-import no.nav.folketrygdloven.fpkalkulus.kontrakt.migrering.MigrerBeregningsgrunnlagResponse;
-import no.nav.folketrygdloven.kalkulus.beregning.MigreringTjeneste;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
-
-import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
-import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapDetaljertBeregningsgrunnlag;
-
 import org.slf4j.MDC;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -38,12 +29,19 @@ import no.nav.folketrygdloven.fpkalkulus.kontrakt.EnkelFpkalkulusRequestDto;
 import no.nav.folketrygdloven.fpkalkulus.kontrakt.FpkalkulusYtelser;
 import no.nav.folketrygdloven.fpkalkulus.kontrakt.HåndterBeregningRequestDto;
 import no.nav.folketrygdloven.fpkalkulus.kontrakt.KopierBeregningsgrunnlagRequestDto;
+import no.nav.folketrygdloven.fpkalkulus.kontrakt.migrering.MigrerBeregningsgrunnlagRequest;
+import no.nav.folketrygdloven.fpkalkulus.kontrakt.migrering.MigrerBeregningsgrunnlagResponse;
+import no.nav.folketrygdloven.kalkulus.beregning.MigreringTjeneste;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kopiering.KopierBeregningsgrunnlagTjeneste;
+import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapDetaljertBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.response.v1.KalkulusRespons;
 import no.nav.folketrygdloven.kalkulus.response.v1.KopiResponse;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
@@ -251,7 +249,9 @@ public class OperereKalkulusRestTjeneste {
         @Override
         public AbacDataAttributter apply(Object o) {
             var req = (BeregnRequestDto) o;
-            return AbacDataAttributter.opprett().leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid());
+            return AbacDataAttributter.opprett()
+                .leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid())
+                .leggTil(StandardAbacAttributtType.SAKSNUMMER, req.saksnummer().verdi());
         }
     }
 
@@ -259,7 +259,9 @@ public class OperereKalkulusRestTjeneste {
         @Override
         public AbacDataAttributter apply(Object o) {
             var req = (HåndterBeregningRequestDto) o;
-            return AbacDataAttributter.opprett().leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid());
+            return AbacDataAttributter.opprett()
+                .leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid())
+                .leggTil(StandardAbacAttributtType.SAKSNUMMER, req.saksnummer().verdi());
         }
     }
 
@@ -267,7 +269,9 @@ public class OperereKalkulusRestTjeneste {
         @Override
         public AbacDataAttributter apply(Object o) {
             var req = (KopierBeregningsgrunnlagRequestDto) o;
-            return AbacDataAttributter.opprett().leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid());
+            return AbacDataAttributter.opprett()
+                .leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid())
+                .leggTil(StandardAbacAttributtType.SAKSNUMMER, req.saksnummer().verdi());
         }
     }
 
@@ -275,7 +279,9 @@ public class OperereKalkulusRestTjeneste {
         @Override
         public AbacDataAttributter apply(Object o) {
             var req = (no.nav.folketrygdloven.fpkalkulus.kontrakt.EnkelFpkalkulusRequestDto) o;
-            return AbacDataAttributter.opprett().leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid());
+            return AbacDataAttributter.opprett()
+                .leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid())
+                .leggTil(StandardAbacAttributtType.SAKSNUMMER, req.saksnummer().verdi());
         }
     }
 
@@ -283,7 +289,9 @@ public class OperereKalkulusRestTjeneste {
         @Override
         public AbacDataAttributter apply(Object o) {
             var req = (no.nav.folketrygdloven.fpkalkulus.kontrakt.migrering.MigrerBeregningsgrunnlagRequest) o;
-            return AbacDataAttributter.opprett().leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid());
+            return AbacDataAttributter.opprett()
+                .leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid())
+                .leggTil(StandardAbacAttributtType.SAKSNUMMER, req.saksnummer().verdi());
         }
     }
 

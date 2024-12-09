@@ -41,6 +41,7 @@ import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.Beregningsgru
 import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
 import no.nav.vedtak.sikkerhet.abac.AbacDto;
 import no.nav.vedtak.sikkerhet.abac.BeskyttetRessurs;
+import no.nav.vedtak.sikkerhet.abac.StandardAbacAttributtType;
 import no.nav.vedtak.sikkerhet.abac.beskyttet.ActionType;
 import no.nav.vedtak.sikkerhet.abac.beskyttet.ResourceType;
 
@@ -130,7 +131,7 @@ public class GrunnbeløpRestTjeneste {
 
         @Override
         public AbacDataAttributter abacAttributter() {
-            final var abacDataAttributter = AbacDataAttributter.opprett();
+            final var abacDataAttributter = AbacDataAttributter.opprett().leggTil(StandardAbacAttributtType.SAKSNUMMER, getSaksnummer());
             return abacDataAttributter;
         }
     }
