@@ -48,6 +48,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Samme
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.FastsattInntektskategori;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Promille;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Refusjon;
@@ -137,7 +138,7 @@ public class MigreringTjeneste {
             .medBruttoPrÅr(mapBeløp(dto.getBruttoPrÅr()))
             .medAvkortetPrÅr(mapBeløp(dto.getAvkortetPrÅr()))
             .medRedusertPrÅr(mapBeløp(dto.getRedusertPrÅr()))
-            .medBeregningsgrunnlagPeriode(dto.getPeriode().getFom(), dto.getPeriode().getFom());
+            .medBeregningsgrunnlagPeriode(dto.getPeriode().getFom(), dto.getPeriode().getTom());
         dto.getBeregningsgrunnlagPeriodeÅrsaker().forEach(builder::leggTilPeriodeÅrsak);
         dto.getBeregningsgrunnlagPrStatusOgAndelList().stream()
             .map(this::mapBeregningsgrunnlagAndel)
@@ -163,7 +164,11 @@ public class MigreringTjeneste {
             .medOrginalDagsatsFraTilstøtendeYtelse(dto.getOrginalDagsatsFraTilstøtendeYtelse())
             .medMaksimalRefusjonPrÅr(mapBeløp(dto.getMaksimalRefusjonPrÅr()))
             .medPgi(mapBeløp(dto.getPgiSnitt()), mapBeløp(dto.getPgi1(), dto.getPgi2(), dto.getPgi3()))
+            .medFastsattInntektskategori(new FastsattInntektskategori(dto.getInntektskategori(), dto.getInntektskategoriAutomatiskFordeling(), dto.getInntektskategoriManuellFordeling()))
             .medÅrsbeløpFraTilstøtendeYtelse(mapBeløp(dto.getÅrsbeløpFraTilstøtendeYtelse()));
+        if (dto.getBeregningsperiode() != null) {
+            builder.medBeregningsperiode(dto.getBeregningsperiode().getFom(), dto.getBeregningsperiode().getTom());
+        }
         mapArbeidsforhold(dto.getBgAndelArbeidsforhold()).ifPresent(builder::medBGAndelArbeidsforhold);
         var entitet = builder.build();
         settOpprettetOgEndretFelter(entitet, dto);

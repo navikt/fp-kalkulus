@@ -213,7 +213,7 @@ public class MapDetaljertBeregningsgrunnlag {
             .medRedusertBrukersAndelPrÅr(mapBeløp(beregningsgrunnlagPrStatusOgAndel.getRedusertBrukersAndelPrÅr()))
             .medDagsatsBruker(beregningsgrunnlagPrStatusOgAndel.getDagsatsBruker())
             .medDagsatsArbeidsgiver(beregningsgrunnlagPrStatusOgAndel.getDagsatsArbeidsgiver())
-            .medInntektskategori(beregningsgrunnlagPrStatusOgAndel.getFastsattInntektskategori().getGjeldendeInntektskategori())
+            .medInntektskategori(beregningsgrunnlagPrStatusOgAndel.getInntektskategori())
             .medBgAndelArbeidsforhold(mapBgAndelArbeidsforhold(beregningsgrunnlagPrStatusOgAndel))
             .medOverstyrtPrÅr(mapBeløp(beregningsgrunnlagPrStatusOgAndel.getOverstyrtPrÅr()))
             .medAvkortetPrÅr(mapBeløp(beregningsgrunnlagPrStatusOgAndel.getAvkortetPrÅr()))
@@ -230,7 +230,7 @@ public class MapDetaljertBeregningsgrunnlag {
             .medPgi2(mapBeløp(beregningsgrunnlagPrStatusOgAndel.getPgi2()))
             .medPgi3(mapBeløp(beregningsgrunnlagPrStatusOgAndel.getPgi3()))
             .medAndelKilde(beregningsgrunnlagPrStatusOgAndel.getKilde())
-            .medÅrsbeløpFraTilstøtendeYtelse(mapBeløp(beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr()))
+            .medÅrsbeløpFraTilstøtendeYtelse(mapBeløp(beregningsgrunnlagPrStatusOgAndel.getÅrsbeløpFraTilstøtendeYtelse()))
             .medFastsattAvSaksbehandler(beregningsgrunnlagPrStatusOgAndel.getFastsattAvSaksbehandler())
             .medLagtTilAvSaksbehandler(
                 beregningsgrunnlagPrStatusOgAndel.getKilde().equals(AndelKilde.SAKSBEHANDLER_KOFAKBER) || beregningsgrunnlagPrStatusOgAndel.getKilde()
