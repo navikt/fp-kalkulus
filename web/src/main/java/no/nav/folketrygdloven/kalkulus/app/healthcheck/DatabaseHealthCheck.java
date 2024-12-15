@@ -1,16 +1,16 @@
 package no.nav.folketrygdloven.kalkulus.app.healthcheck;
 
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
+
 import jakarta.annotation.Resource;
 import jakarta.enterprise.context.ApplicationScoped;
-
-import no.nav.vedtak.log.metrics.LiveAndReadinessAware;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sql.DataSource;
-
-import java.sql.SQLException;
+import no.nav.vedtak.server.LiveAndReadinessAware;
 
 @ApplicationScoped
 public class DatabaseHealthCheck implements LiveAndReadinessAware {

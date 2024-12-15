@@ -15,7 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import no.nav.folketrygdloven.kalkulus.app.healthcheck.HealthCheckRestService;
-import no.nav.vedtak.log.metrics.LiveAndReadinessAware;
+import no.nav.vedtak.server.LiveAndReadinessAware;
 
 @ExtendWith(MockitoExtension.class)
 public class NaisRestTjenesteTest {
