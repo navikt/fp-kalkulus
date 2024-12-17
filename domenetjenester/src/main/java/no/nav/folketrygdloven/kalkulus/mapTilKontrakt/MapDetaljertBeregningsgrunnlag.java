@@ -39,6 +39,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningAktivitetOverstyringerDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningRefusjonOverstyringDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningRefusjonOverstyringerDto;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagPeriodeDto;
@@ -157,10 +158,10 @@ public class MapDetaljertBeregningsgrunnlag {
     }
 
     private static BeregningsgrunnlagDto mapGrunnlag(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
-        return new BeregningsgrunnlagDto(beregningsgrunnlagEntitet.getSkjæringstidspunkt(), mapAktivitetstatuser(beregningsgrunnlagEntitet),
+        return new BeregningsgrunnlagDto(beregningsgrunnlagEntitet.getSkjæringstidspunkt(), null,
             mapBeregningsgrunnlagPerioder(beregningsgrunnlagEntitet), mapSammenligningsgrunnlagPrStatusListe(beregningsgrunnlagEntitet),
             beregningsgrunnlagEntitet.getFaktaOmBeregningTilfeller(), beregningsgrunnlagEntitet.isOverstyrt(),
-            beregningsgrunnlagEntitet.getGrunnbeløp() == null ? null : mapBeløp(beregningsgrunnlagEntitet.getGrunnbeløp()));
+            beregningsgrunnlagEntitet.getGrunnbeløp() == null ? null : mapBeløp(beregningsgrunnlagEntitet.getGrunnbeløp()), mapAktivitetstatuserMedHjemler(beregningsgrunnlagEntitet));
     }
 
     private static List<SammenligningsgrunnlagPrStatusDto> mapSammenligningsgrunnlagPrStatusListe(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
@@ -256,10 +257,10 @@ public class MapDetaljertBeregningsgrunnlag {
             bgAndelArbeidsforhold.getArbeidsperiodeFom(), bgAndelArbeidsforhold.getArbeidsperiodeTom().orElse(null));
     }
 
-    private static List<AktivitetStatus> mapAktivitetstatuser(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
+    private static List<BeregningsgrunnlagAktivitetStatusDto> mapAktivitetstatuserMedHjemler(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
         return beregningsgrunnlagEntitet.getAktivitetStatuser()
             .stream()
-            .map(BeregningsgrunnlagAktivitetStatusEntitet::getAktivitetStatus)
+            .map(as -> new BeregningsgrunnlagAktivitetStatusDto(as.getAktivitetStatus(), as.getHjemmel()))
             .collect(Collectors.toList());
     }
 
