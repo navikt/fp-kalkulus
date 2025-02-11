@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>no.nav.foreldrepenger.felles</groupId>
+        <artifactId>fp-bom</artifactId>
+        <version>3.6.3</version>
+    </parent>
+
+    <groupId>no.nav.foreldrepenger.kalkulus</groupId>
+    <artifactId>fpkalkulus</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Kalkulus :: Root</name>
+
+    <modules>
+        <module>web</module>
+        <module>domenetjenester</module>
+        <module>migreringer</module>
+    </modules>
+
+    <properties>
+        <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
+        <sonar.projectName>fp-kalkulus</sonar.projectName>
+        <sonar.projectKey>navikt_fp-kalkulus</sonar.projectKey>
+
+        <java.version>21</java.version>
+        <kontrakt.java.version>21</kontrakt.java.version>
+        <ftberegning.version>5.6.0</ftberegning.version>
+        <felles.version>7.4.9</felles.version>
+
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>no.nav.foreldrepenger.felles</groupId>
+                <artifactId>fp-bom</artifactId>
+                <version>3.6.3</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.foreldrepenger.felles</groupId>
+                <artifactId>felles</artifactId>
+                <version>${felles.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+
+            <!-- Interne avhengigheter -->
+            <dependency>
+                <groupId>no.nav.foreldrepenger.kalkulus</groupId>
+                <artifactId>migreringer</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.foreldrepenger.kalkulus</groupId>
+                <artifactId>kontrakt</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.foreldrepenger.kalkulus</groupId>
+                <artifactId>domenetjenester</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>no.nav.foreldrepenger.kalkulus</groupId>
+                <artifactId>migreringer</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
+            </dependency>
+
+            <!-- Avhengigheter til ft-beregning -->
+            <dependency>
+                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+                <artifactId>beregning-kontrakt</artifactId>
+                <version>${ftberegning.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+                <artifactId>beregning-kodeverk</artifactId>
+                <version>${ftberegning.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+                <artifactId>beregning-kalkulator</artifactId>
+                <version>${ftberegning.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+                <artifactId>beregning-regler</artifactId>
+                <version>${ftberegning.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- Testcontainer og sec update -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <scope>test</scope>
+            <version>[1.26.0,)</version>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- /Testcontainer og sec update -->
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>github</id>
+            <name>GitHub Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/navikt/fp-kalkulus/</url>
+        </repository>
+    </repositories>
+
+    <scm>
+        <connection>scm:git:https://github.com/navikt/fp-kalkulus.git</connection>
+        <developerConnection>scm:git:https://github.com/navikt/fp-kalkulus.git</developerConnection>
+        <url>https://github.com/navikt/fp-kalkulus</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>Github Maven Packages - NAV IT - fp-kalkulus</name>
+            <url>https://maven.pkg.github.com/navikt/fp-kalkulus</url>
+        </repository>
+    </distributionManagement>
+</project>
