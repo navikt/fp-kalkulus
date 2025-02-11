@@ -1,4 +1,9 @@
 ![Bygg og deploy](https://github.com/navikt/fp-kalkulus/workflows/Bygg%20og%20deploy/badge.svg)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=navikt_fp-kalkulus&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=navikt_fp-kalkulus)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=navikt_fp-kalkulus&metric=bugs)](https://sonarcloud.io/summary/new_code?id=navikt_fp-kalkulus)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=navikt_fp-kalkulus&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=navikt_fp-kalkulus)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=navikt_fp-kalkulus&metric=coverage)](https://sonarcloud.io/summary/new_code?id=navikt_fp-kalkulus)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=navikt_fp-kalkulus&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=navikt_fp-kalkulus)
 <!--
 [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=navikt_fp-kalkulus&metric=alert_status)](https://sonarcloud.io/dashboard?id=navikt_fp-kalkulus)
 [![SonarCloud Coverage](https://sonarcloud.io/api/project_badges/measure?project=navikt_fp-kalkulus&metric=coverage)](https://sonarcloud.io/component_measures/metric/coverage/list?id=navikt_fp-kalkulus)
