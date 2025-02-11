@@ -28,7 +28,6 @@ jobs:
     with:
       build-image: ${{ github.ref_name == 'master' }} # default: true
       push-image: ${{ github.ref_name == 'master' }} # default: false
-      sonar-scan: false # TODO: Fjern denne linjen (default er true) etter public
     secrets: inherit
 
   kalkulus-tester:
