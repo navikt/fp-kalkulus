@@ -67,7 +67,7 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         koblingRepository = new KoblingRepository(getEntityManager());
         avklaringsbehovRepository = new AvklaringsbehovRepository(getEntityManager());
         AvklaringsbehovKontrollTjeneste avklaringsbehovKontrollTjeneste = new AvklaringsbehovKontrollTjeneste();
-        avklaringsbehovTjeneste = new AvklaringsbehovTjeneste(avklaringsbehovRepository, koblingRepository, avklaringsbehovKontrollTjeneste);
+        avklaringsbehovTjeneste = new AvklaringsbehovTjeneste(avklaringsbehovRepository, koblingRepository);
         var koblingTjeneste = new KoblingTjeneste(koblingRepository);
         tjeneste = new KopierBeregningsgrunnlagTjeneste(koblingTjeneste, repository, avklaringsbehovTjeneste);
     }

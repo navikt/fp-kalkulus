@@ -28,6 +28,7 @@ import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstan
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.VURDERT_TILKOMMET_INNTEKT_UT;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.VURDERT_VILKÅR;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,7 +37,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 
 public class MapTilstandTilSteg {
 
-    private static final Map<BeregningsgrunnlagTilstand, BeregningSteg> MAP_TILSTAND_STEG = new HashMap<>();
+    private static final Map<BeregningsgrunnlagTilstand, BeregningSteg> MAP_TILSTAND_STEG = new EnumMap<>(BeregningsgrunnlagTilstand.class);
 
     static {
         MAP_TILSTAND_STEG.put(OPPRETTET, FASTSETT_STP_BER);
@@ -58,6 +59,9 @@ public class MapTilstandTilSteg {
         MAP_TILSTAND_STEG.put(FASTSATT, FAST_BERGRUNN);
     }
 
+    private MapTilstandTilSteg() {
+        // Skjuler default konstruktør
+    }
 
     public static BeregningSteg mapTilSteg(BeregningsgrunnlagTilstand kode) {
         if (MAP_TILSTAND_STEG.containsKey(kode)) {

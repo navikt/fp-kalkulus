@@ -58,13 +58,13 @@ public class UtledEndring {
                         beregningsgrunnlagGrunnlagDto.getGjeldendeAktiviteter(),
                         forrigeGrunnlag.map(BeregningsgrunnlagGrunnlagDto::getRegisterAktiviteter),
                         forrigeGrunnlag.map(BeregningsgrunnlagGrunnlagDto::getGjeldendeAktiviteter))
-                .map(endringBuilder::medBeregningAktiviteterEndring);
+                .ifPresent(endringBuilder::medBeregningAktiviteterEndring);
         mapFaktaOmBeregningEndring(beregningsgrunnlagGrunnlagDto, forrigeGrunnlag, dto, endringBuilder)
-                .map(endringBuilder::medFaktaOmBeregningVurderinger);
+                .ifPresent(endringBuilder::medFaktaOmBeregningVurderinger);
         mapVarigEndretNæringEndring(forrigeGrunnlag, dto, endringBuilder, beregningsgrunnlagDto, iayGrunnlag)
-                .map(endringBuilder::medVarigEndretNæringEndring);
+                .ifPresent(endringBuilder::medVarigEndretNæringEndring);
         mapVarigEndretArbeidssituasjonEndring(forrigeGrunnlag, dto, endringBuilder, beregningsgrunnlagDto, iayGrunnlag)
-                .map(endringBuilder::medVarigEndretArbeidssituasjonEndring);
+                .ifPresent(endringBuilder::medVarigEndretArbeidssituasjonEndring);
         return endringBuilder.build();
     }
 

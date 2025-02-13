@@ -17,7 +17,6 @@ import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.Stereotype;
 import jakarta.enterprise.util.AnnotationLiteral;
-import jakarta.inject.Qualifier;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 /**

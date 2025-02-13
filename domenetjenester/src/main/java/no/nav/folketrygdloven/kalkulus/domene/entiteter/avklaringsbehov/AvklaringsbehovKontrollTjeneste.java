@@ -2,9 +2,6 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov;
 
 import java.time.LocalDateTime;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovStatus;
@@ -13,12 +10,7 @@ import no.nav.vedtak.sikkerhet.kontekst.KontekstHolder;
 /**
  * Tjeneste som skal håndtere all opprettelse og endring av AvklaringsbehovEntitet
  */
-@ApplicationScoped
 public class AvklaringsbehovKontrollTjeneste {
-
-    @Inject
-    public AvklaringsbehovKontrollTjeneste() {
-    }
 
     public AvklaringsbehovEntitet opprettForKobling(KoblingEntitet koblingId, AvklaringsbehovDefinisjon definisjon) {
         no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet.Builder apBuilder = new no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet.Builder(definisjon);

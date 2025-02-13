@@ -36,6 +36,10 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 
 public class MapStegTilTilstand {
 
+    private MapStegTilTilstand() {
+        // Skjuler default konstruktør
+    }
+
     private static final Map<BeregningSteg, BeregningsgrunnlagTilstand> MAP_STEG_TILSTAND = Map.of(
             FASTSETT_STP_BER, OPPRETTET,
             KOFAKBER, OPPDATERT_MED_ANDELER,

@@ -36,11 +36,10 @@ public class AvklaringsbehovTjeneste {
 
     @Inject
     public AvklaringsbehovTjeneste(AvklaringsbehovRepository avklaringsbehovRepository,
-                                   KoblingRepository koblingRepository,
-                                   AvklaringsbehovKontrollTjeneste avklaringsbehovKontrollTjeneste) {
+                                   KoblingRepository koblingRepository) {
         this.avklaringsbehovRepository = avklaringsbehovRepository;
         this.koblingRepository = koblingRepository;
-        this.avklaringsbehovKontrollTjeneste = avklaringsbehovKontrollTjeneste;
+        this.avklaringsbehovKontrollTjeneste = new AvklaringsbehovKontrollTjeneste();
     }
 
     public void lagreAvklaringsresultater(Long koblingid, List<AvklaringsbehovDefinisjon> avklaringsbehov) {
