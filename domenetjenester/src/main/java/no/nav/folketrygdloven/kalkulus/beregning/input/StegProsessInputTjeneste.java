@@ -37,8 +37,7 @@ public class StegProsessInputTjeneste {
         var koblingEntitet = koblingTjeneste.hentKobling(koblingId);
         var originaltGrunnlag = finnOriginalgrunnlag(koblingEntitet);
         var grunnlagEntitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
-        var stegInput = stegInputMapper.mapStegInput(koblingEntitet, inputDto, grunnlagEntitet, stegType, originaltGrunnlag);
-        return stegInput;
+        return stegInputMapper.mapStegInput(koblingEntitet, inputDto, grunnlagEntitet, stegType, originaltGrunnlag);
     }
 
     private Optional<BeregningsgrunnlagGrunnlagEntitet> finnOriginalgrunnlag(KoblingEntitet koblingEntitet) {

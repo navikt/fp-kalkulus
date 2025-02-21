@@ -114,7 +114,7 @@ class StegInputMapper {
                                                            Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagEntitet,
                                                            BeregningSteg stegType) {
         var beregningsgrunnlagInput = MapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input, grunnlagEntitet);
-        var originalKoblingEntitet = kobling.getOriginalKoblingReferanse().map(oref -> koblingTjeneste.hentKobling(oref));
+        var originalKoblingEntitet = kobling.getOriginalKoblingReferanse().map(koblingTjeneste::hentKobling);
         var grunnlagFraSteg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(
                 kobling,
                 mapTilStegTilstand(stegType),

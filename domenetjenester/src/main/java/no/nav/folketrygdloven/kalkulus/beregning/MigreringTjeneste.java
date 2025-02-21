@@ -9,6 +9,46 @@ import java.util.Optional;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.AktivitetAggregatEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.AktivitetEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.AndelArbeidsforholdEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagAndelEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriodeEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BesteberegningInntektEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BesteberegningMånedsgrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BesteberegninggrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAggregatEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAktørEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaArbeidsforholdEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.RefusjonOverstyringEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.RefusjonOverstyringerEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.RefusjonPeriodeEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatusEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.FastsattInntektskategori;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Promille;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Refusjon;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Årsgrunnlag;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelsporingRepository;
+import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
+import no.nav.folketrygdloven.kalkulus.migrering.BGAndelArbeidsforholdMigreringDto;
 import no.nav.folketrygdloven.kalkulus.migrering.BaseMigreringDto;
 import no.nav.folketrygdloven.kalkulus.migrering.BeregningAktivitetAggregatMigreringDto;
 import no.nav.folketrygdloven.kalkulus.migrering.BeregningAktivitetMigreringDto;
@@ -29,51 +69,11 @@ import no.nav.folketrygdloven.kalkulus.migrering.FaktaAggregatMigreringDto;
 import no.nav.folketrygdloven.kalkulus.migrering.FaktaAktørMigreringDto;
 import no.nav.folketrygdloven.kalkulus.migrering.FaktaArbeidsforholdMigreringDto;
 import no.nav.folketrygdloven.kalkulus.migrering.SammenligningsgrunnlagPrStatusMigreringDto;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.AndelArbeidsforholdEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.AktivitetAggregatEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.AktivitetEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.RefusjonOverstyringEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.RefusjonOverstyringerEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.RefusjonPeriodeEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriodeEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagAndelEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BesteberegningInntektEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BesteberegningMånedsgrunnlagEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BesteberegninggrunnlagEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAggregatEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAktørEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaArbeidsforholdEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatusEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.FastsattInntektskategori;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Promille;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Refusjon;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Årsgrunnlag;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrunnlagEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelsporingRepository;
-import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
-import no.nav.folketrygdloven.kalkulus.migrering.BGAndelArbeidsforholdMigreringDto;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
 public class MigreringTjeneste {
-    private static final Logger LOG = LoggerFactory.getLogger(RegelsporingRepository.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MigreringTjeneste.class);
 
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private RegelsporingRepository regelsporingRepository;
@@ -125,7 +125,7 @@ public class MigreringTjeneste {
             .medOverstyring(dto.isOverstyrt())
             .medGrunnbeløp(mapBeløp(dto.getGrunnbeløp()))
             .medSkjæringstidspunkt(dto.getSkjæringstidspunkt());
-        mapAktivitetstatuser(dto.getAktivitetStatuser()).forEach(builder::leggTilAktivitetstatus);;
+        mapAktivitetstatuser(dto.getAktivitetStatuser()).forEach(builder::leggTilAktivitetstatus);
         mapBesteberegningGrunnlag(dto.getBesteberegninggrunnlag()).ifPresent(builder::medBesteberegninggrunnlag);
         mapSammenligningsgrunnlagListe(dto.getSammenligningsgrunnlagPrStatusListe()).forEach(builder::leggTilSammenligningsgrunnlag);
         mapFaktaTilfeller(dto.getFaktaOmBeregningTilfeller()).forEach(builder::leggTilFaktaTilfelle);

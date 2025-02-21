@@ -30,7 +30,7 @@ public class Greguleringsstatusutleder {
                                                          BigDecimal nyttGrunnbeløp,
                                                          FagsakYtelseType ytelse) {
         Optional<BeregningsgrunnlagEntitet> bgOpt = beregningsgrunnlagGrunnlagEntitet.flatMap(BeregningsgrunnlagGrunnlagEntitet::getBeregningsgrunnlag);
-        if (bgOpt.isEmpty() || beregningsgrunnlagGrunnlagEntitet.get().getBeregningsgrunnlagTilstand().erFør(BeregningsgrunnlagTilstand.FORESLÅTT)) {
+        if (bgOpt.isEmpty() || beregningsgrunnlagGrunnlagEntitet.map(gr -> gr.getBeregningsgrunnlagTilstand().erFør(BeregningsgrunnlagTilstand.FORESLÅTT)).orElse(false)) {
             return GrunnbeløpReguleringStatus.IKKE_VURDERT;
         }
         BigDecimal grunnbeløpBenyttetIBeregningen = bgOpt.map(BeregningsgrunnlagEntitet::getGrunnbeløp).map(Beløp::getVerdi).orElse(BigDecimal.ZERO);
