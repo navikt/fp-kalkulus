@@ -71,7 +71,7 @@ public class HentKalkulusRestTjeneste {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent aktive BeregningsgrunnlagGrunnlag for angitte referanser", summary = ("Returnerer aktive BeregningsgrunnlagGrunnlag for angitte kobling referanser."), tags = "beregningsgrunnlag")
-    @BeskyttetRessurs(actionType = ActionType.READ, resourceType = ResourceType.FAGSAK)
+    @BeskyttetRessurs(actionType = ActionType.READ, resourceType = ResourceType.FAGSAK, sporingslogg = false)
     @Path("/grunnlag")
     @SuppressWarnings({"findsecbugs:JAXRS_ENDPOINT", "resource"})
     public Response hentAktiveBeregningsgrunnlagGrunnlag(@TilpassetAbacAttributt(supplierClass = EnkelFpkalkulusRequestAbacSupplier.class) @NotNull @Valid EnkelFpkalkulusRequestDto request) {
@@ -85,7 +85,7 @@ public class HentKalkulusRestTjeneste {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent beregningsgrunnlagDto for angitt behandling som brukes frontend", summary = ("Returnerer beregningsgrunnlagDto for behandling."), tags = "beregningsgrunnlag")
-    @BeskyttetRessurs(actionType = ActionType.READ, resourceType = ResourceType.FAGSAK)
+    @BeskyttetRessurs(actionType = ActionType.READ, resourceType = ResourceType.FAGSAK, sporingslogg = false)
     @Path("/grunnlag/gui")
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response hentBeregningsgrunnlagDto(@TilpassetAbacAttributt(supplierClass = HentBeregningsgrunnlagGUIRequestAbacSupplier.class) @NotNull @Valid EnkelHentBeregningsgrunnlagGUIRequest request) {
@@ -101,7 +101,7 @@ public class HentKalkulusRestTjeneste {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent beteberegningsgrunnlag for angitt referanse", summary = ("Returnerer aktive besteberegningsgrunnlag for angitt kobling referanse."), tags = "beregningsgrunnlag")
-    @BeskyttetRessurs(actionType = ActionType.READ, resourceType = ResourceType.FAGSAK)
+    @BeskyttetRessurs(actionType = ActionType.READ, resourceType = ResourceType.FAGSAK, sporingslogg = false)
     @Path("/grunnlag/besteberegning")
     @SuppressWarnings({"findsecbugs:JAXRS_ENDPOINT", "resource"})
     public Response hentBesteberegnetGrunnlag(@TilpassetAbacAttributt(supplierClass = EnkelFpkalkulusRequestAbacSupplier.class) @NotNull @Valid EnkelFpkalkulusRequestDto request) {

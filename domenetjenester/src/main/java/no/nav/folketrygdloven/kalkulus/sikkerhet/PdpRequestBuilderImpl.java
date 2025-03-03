@@ -64,7 +64,10 @@ public class PdpRequestBuilderImpl implements PdpRequestBuilder {
             .map(AktørId::getId)
             .collect(Collectors.toSet());
 
+        var auditIdent = aktørerFraBehandlinger.stream().findFirst().or(() -> aktørerFraSaker.stream().findFirst()).orElse(null);
+
         return AppRessursData.builder()
+            .medAuditAktørId(auditIdent)
             .leggTilAktørIdSet(aktørerFraBehandlinger)
             .leggTilAktørIdSet(aktørerFraSaker)
             .leggTilAktørIdSet(dataAttributter.getVerdier(StandardAbacAttributtType.AKTØR_ID)) // Attributt ikke i bruk men for ordens skyld
