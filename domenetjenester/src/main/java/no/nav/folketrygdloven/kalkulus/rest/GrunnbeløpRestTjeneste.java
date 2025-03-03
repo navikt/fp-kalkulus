@@ -69,7 +69,7 @@ public class GrunnbeløpRestTjeneste {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent grunnbeløp for angitt dato", summary = ("Returnerer grunnbeløp for dato."), tags = "grunnbelop")
-    @BeskyttetRessurs(actionType = ActionType.READ, resourceType = ResourceType.FAGSAK)
+    @BeskyttetRessurs(actionType = ActionType.READ, resourceType = ResourceType.FAGSAK, sporingslogg = false)
     @Path("/grunnbelop")
     public Response hentGrunnbeløp(@NotNull @Valid HentGrunnbeløpRequestAbacDto spesifikasjon) {
         BeregningSats grunnbeløp = beregningsgrunnlagRepository.finnGrunnbeløp(spesifikasjon.getDato());
@@ -81,7 +81,7 @@ public class GrunnbeløpRestTjeneste {
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Verifiserer grunnbeløpet på et grunnlag, og kontrollerer at grunnbeløpet som er brukt fortsatt er korrekt.",
             summary = ("Returnerer en liste over koblinger og status for gregulering for hver kobling."), tags = "grunnbelop")
-    @BeskyttetRessurs(actionType = ActionType.READ, resourceType = ResourceType.FAGSAK)
+    @BeskyttetRessurs(actionType = ActionType.READ, resourceType = ResourceType.FAGSAK, sporingslogg = false)
     @Path("/kontrollerGregulering")
     public Response hentGrunnbeløp(@NotNull @Valid KontrollerGrunnbeløpRequestAbacDto spesifikasjon) {
         List<UUID> referanser = spesifikasjon.getKoblinger();

@@ -163,7 +163,7 @@ public class OperereKalkulusRestTjeneste {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/avslutt")
     @Operation(description = "Markerer en kobling som avsluttet. Hindrer fremtidige endringer å koblingen.", tags = "avslutt", summary = ("Markerer en kobling som avsluttet."))
-    @BeskyttetRessurs(actionType = ActionType.UPDATE, resourceType = ResourceType.FAGSAK)
+    @BeskyttetRessurs(actionType = ActionType.UPDATE, resourceType = ResourceType.FAGSAK, sporingslogg = true)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response avslutt(@TilpassetAbacAttributt(supplierClass = EnkelFpkalkulusRequestAbacSupplier.class) @NotNull @Valid EnkelFpkalkulusRequestDto request) {
         var saksnummer = new Saksnummer(request.saksnummer().verdi());
@@ -183,7 +183,7 @@ public class OperereKalkulusRestTjeneste {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/migrer")
     @Operation(description = "Migrer et grunnlag på en kobling.", tags = "migrer", summary = ("Migrer et grunnlag på en kobling."))
-    @BeskyttetRessurs(actionType = ActionType.CREATE, resourceType = ResourceType.FAGSAK)
+    @BeskyttetRessurs(actionType = ActionType.CREATE, resourceType = ResourceType.FAGSAK, sporingslogg = false)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response migrer(@TilpassetAbacAttributt(supplierClass = MigrerBeregningsgrunnlagRequestAbacSupplier.class) @NotNull @Valid MigrerBeregningsgrunnlagRequest request) {
         validerYtelse(request.ytelseSomSkalBeregnes());
