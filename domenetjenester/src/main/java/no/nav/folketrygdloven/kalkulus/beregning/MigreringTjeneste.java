@@ -9,6 +9,10 @@ import java.util.Optional;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
+import no.nav.folketrygdloven.kalkulus.migrering.AvklaringsbehovMigreringDto;
+import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovRepository;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,6 +81,7 @@ public class MigreringTjeneste {
 
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private RegelsporingRepository regelsporingRepository;
+    private AvklaringsbehovRepository avklaringsbehovRepository;
 
     public MigreringTjeneste() {
         // CDI
@@ -84,24 +89,46 @@ public class MigreringTjeneste {
 
     @Inject
     public MigreringTjeneste(BeregningsgrunnlagRepository repository,
-                             RegelsporingRepository regelsporingRepository) {
+                             RegelsporingRepository regelsporingRepository,
+                             AvklaringsbehovRepository avklaringsbehovRepository) {
         this.beregningsgrunnlagRepository = repository;
         this.regelsporingRepository = regelsporingRepository;
+        this.avklaringsbehovRepository = avklaringsbehovRepository;
     }
 
-    public void ryddGrunnlagOgRegelsporing(KoblingEntitet koblingEntitet) {
+    public void ryddGrunnlagAvklaringsbehovOgRegelsporing(KoblingEntitet koblingEntitet) {
         LOG.info("Rydder aktivt grunnlag og regelsporinger på kobling {} med referanse {} pga ny migrering", koblingEntitet.getId(), koblingEntitet.getKoblingReferanse());
         beregningsgrunnlagRepository.deaktiverBeregningsgrunnlagGrunnlagEntitet(koblingEntitet.getId());
         regelsporingRepository.slettAlleRegelsporinger(koblingEntitet.getId());
+        avklaringsbehovRepository.slettAlleAvklaringsbehovForKobling(koblingEntitet.getId());
     }
 
     public Migreringsresultat mapOgLagreGrunnlag(KoblingEntitet koblingEntitet, BeregningsgrunnlagGrunnlagMigreringDto dto) {
+        // Beregningsgrunnlag
         var grunnlag = mapGrunnlag(koblingEntitet, dto);
         var entitet = beregningsgrunnlagRepository.lagreMigrering(koblingEntitet.getId(), grunnlag);
+
+        // Regelsporinger
         regelsporingRepository.migrerSporinger(dto.getGrunnlagsporinger(), dto.getPeriodesporinger(), koblingEntitet.getId());
+
+        // Avklaringsbeov
+        var avklaringsbehov = dto.getAvklaringsbehov().stream().map(a -> mapAvklaringsbehov(a, koblingEntitet)).toList();
+        LOG.info("Lagrer {} avklaringsbehov på koblingId {}, koblingReferanse {} under migrering", avklaringsbehov.size(), koblingEntitet.getId(), koblingEntitet.getKoblingReferanse());
+        avklaringsbehov.forEach(a -> avklaringsbehovRepository.lagre(a));
+
         var grunnlagSporinger = regelsporingRepository.hentAlleRegelSporingGrunnlag(koblingEntitet.getId());
         var periodeSporinger = regelsporingRepository.hentAlleRegelSporingPeriode(koblingEntitet.getId());
-        return new Migreringsresultat(entitet, grunnlagSporinger, periodeSporinger);
+        return new Migreringsresultat(entitet, grunnlagSporinger, periodeSporinger, avklaringsbehov);
+    }
+
+    private AvklaringsbehovEntitet mapAvklaringsbehov(AvklaringsbehovMigreringDto avklaringsbehovMigreringDto, KoblingEntitet kobling) {
+        return new AvklaringsbehovEntitet(kobling,
+            avklaringsbehovMigreringDto.getDefinisjon(),
+            avklaringsbehovMigreringDto.getStatus(),
+            avklaringsbehovMigreringDto.getBegrunnelse(),
+            avklaringsbehovMigreringDto.getErTrukket(),
+            avklaringsbehovMigreringDto.getVurdertAv(),
+            avklaringsbehovMigreringDto.getVurdertTidspunkt());
     }
 
     private BeregningsgrunnlagGrunnlagEntitet mapGrunnlag(KoblingEntitet koblingEntitet, BeregningsgrunnlagGrunnlagMigreringDto dto) {
@@ -463,5 +490,5 @@ public class MigreringTjeneste {
         entitet.setEndretAv(dto.getEndretAv());
     }
 
-    public record Migreringsresultat(BeregningsgrunnlagGrunnlagEntitet grunnlag, List<RegelSporingGrunnlagEntitet> grunnlagSporinger, List<RegelSporingPeriodeEntitet> periodeSporinger){}
+    public record Migreringsresultat(BeregningsgrunnlagGrunnlagEntitet grunnlag, List<RegelSporingGrunnlagEntitet> grunnlagSporinger, List<RegelSporingPeriodeEntitet> periodeSporinger, List<AvklaringsbehovEntitet> avklaringsbehov){}
 }

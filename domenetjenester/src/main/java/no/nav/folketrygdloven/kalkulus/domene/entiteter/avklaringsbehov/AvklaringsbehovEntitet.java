@@ -71,6 +71,23 @@ public class AvklaringsbehovEntitet extends BaseEntitet implements Comparable<Av
         // Hibernate
     }
 
+    // OBS: Kun for bruk under migrering
+    public AvklaringsbehovEntitet(KoblingEntitet kobling,
+                                  AvklaringsbehovDefinisjon definisjon,
+                                  AvklaringsbehovStatus status,
+                                  String begrunnelse,
+                                  Boolean erTrukket,
+                                  String vurdertAv,
+                                  LocalDateTime vurdertTidspunkt) {
+        this.kobling = kobling;
+        this.definisjon = definisjon;
+        this.status = status;
+        this.begrunnelse = begrunnelse;
+        this.erTrukket = erTrukket;
+        this.vurdertAv = vurdertAv;
+        this.vurdertTidspunkt = vurdertTidspunkt;
+    }
+
     public KoblingEntitet getKobling() {
         return kobling;
     }
