@@ -74,4 +74,13 @@ public class AvklaringsbehovRepository {
         entityManager.persist(avklaringsbehov);
         entityManager.flush();
     }
+
+    public void slettAlleAvklaringsbehovForKobling(Long koblingId) {
+        var grunnlagQuery = entityManager.createNativeQuery("delete from AVKLARINGSBEHOV " +
+                "where kobling_id = :koblingId ")
+            .setParameter("koblingId", koblingId);
+
+        var slettedeRader = grunnlagQuery.executeUpdate();
+        LOG.info("Slettet {} avklaringsbehov for koblingId={}", slettedeRader, koblingId);
+    }
 }

@@ -194,7 +194,7 @@ public class OperereKalkulusRestTjeneste {
         var kopt = koblingTjeneste.hentKoblingOptional(koblingReferanse);
 
         // Hvis koblingen finnes er den allerede migrert. Sletter lagret data for å kunne migrere på nytt
-        kopt.ifPresent(koblingEntitet -> migreringTjeneste.ryddGrunnlagOgRegelsporing(koblingEntitet));
+        kopt.ifPresent(koblingEntitet -> migreringTjeneste.ryddGrunnlagAvklaringsbehovOgRegelsporing(koblingEntitet));
 
         Optional<KoblingReferanse> originalKoblingRef =
             request.originalBehandlingUuid() == null ? Optional.empty() : Optional.of(new KoblingReferanse(request.originalBehandlingUuid()));
@@ -222,7 +222,13 @@ public class OperereKalkulusRestTjeneste {
             .map(p -> new MigrerBeregningsgrunnlagResponse.RegelsporingGrunnlag(p.getRegelType(), p.getRegelEvaluering(), p.getRegelInput(),
                 p.getRegelVersjon()))
             .toList();
-        return new MigrerBeregningsgrunnlagResponse(mappetGrunnlag, bbGrunnlag.orElse(null), sporingerPeriode, sporingerGrunnlag);
+        var migrerteAvklarigsbehov = migreringsresultat.avklaringsbehov().stream().map(a -> new MigrerBeregningsgrunnlagResponse.Avklaringsbehov(a.getDefinisjon(),
+                a.getStatus(),
+                a.getBegrunnelse(),
+                a.getVurdertAv(),
+                a.getVurdertTidspunkt()))
+            .toList();
+        return new MigrerBeregningsgrunnlagResponse(mappetGrunnlag, bbGrunnlag.orElse(null), sporingerPeriode, sporingerGrunnlag, migrerteAvklarigsbehov);
     }
 
     private void validerYtelse(FagsakYtelseType fagsakYtelseType) {
