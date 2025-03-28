@@ -100,7 +100,7 @@ public class RegelSporingGrunnlagEntitet extends BaseEntitet {
         }
 
         public Builder medRegelEvaluering(String regelEvaluering) {
-            Objects.requireNonNull(regelEvaluering, "regelInput");
+            Objects.requireNonNull(regelEvaluering, "regelEvaluering");
             kladd.regelEvaluering = regelEvaluering;
             return this;
         }
@@ -112,8 +112,11 @@ public class RegelSporingGrunnlagEntitet extends BaseEntitet {
 
         public RegelSporingGrunnlagEntitet build(Long koblingId, BeregningsgrunnlagRegelType regelType) {
             Objects.requireNonNull(koblingId, "koblingId");
+            // Gamle grunnlag med denne regeltypen har ikke regelevaluering tilknyttet seg
+            if (!regelType.equals(BeregningsgrunnlagRegelType.PERIODISERING)) {
+                Objects.requireNonNull(kladd.regelEvaluering, "regelEvaluering");
+            }
             Objects.requireNonNull(regelType, "regelType");
-            Objects.requireNonNull(kladd.regelEvaluering, "regelEvaluering");
             Objects.requireNonNull(kladd.regelInput, "regelInput");
             kladd.koblingId = koblingId;
             kladd.regelType = regelType;
