@@ -57,10 +57,13 @@ public class RegelsporingRepository {
             entityManager.persist(entitet);
         }
         for (RegelSporingGrunnlagMigreringDto sporing : grunnlagsporinger) {
-            RegelSporingGrunnlagEntitet entitet = RegelSporingGrunnlagEntitet.ny()
-                .medRegelEvaluering(sporing.getRegelEvaluering())
+            var builder = RegelSporingGrunnlagEntitet.ny()
                 .medRegelVersjon(sporing.getRegelVersjon())
-                .medRegelInput(sporing.getRegelInput())
+                .medRegelInput(sporing.getRegelInput());
+            if (!sporing.getRegelType().equals(BeregningsgrunnlagRegelType.PERIODISERING)) {
+                builder.medRegelEvaluering(sporing.getRegelEvaluering());
+            }
+            RegelSporingGrunnlagEntitet entitet = builder
                 .build(koblingId, sporing.getRegelType());
             entityManager.persist(entitet);
         }
