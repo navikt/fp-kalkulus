@@ -59,8 +59,8 @@ public class BeregningsgrunnlagPeriodeEntitet extends BaseEntitet {
     private final List<BeregningsgrunnlagAndelEntitet> beregningsgrunnlagAndelList = new ArrayList<>();
 
     @Embedded
-    @AttributeOverride(name = "fomDato", column = @Column(name = "periode_fom"))
-    @AttributeOverride(name = "tomDato", column = @Column(name = "periode_tom"))
+    @AttributeOverride(name = "fomDato", column = @Column(name = "periode_fom", nullable = false))
+    @AttributeOverride(name = "tomDato", column = @Column(name = "periode_tom", nullable = false))
     private IntervallEntitet periode;
 
     @Embedded
