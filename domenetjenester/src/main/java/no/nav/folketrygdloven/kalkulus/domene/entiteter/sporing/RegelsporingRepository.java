@@ -54,6 +54,10 @@ public class RegelsporingRepository {
                 .medRegelInput(sporing.getRegelInput())
                 .medPeriode(IntervallEntitet.fraOgMedTilOgMed(sporing.getPeriode().getFom(), sporing.getPeriode().getTom()))
                 .build(koblingId, sporing.getRegelType());
+            entitet.setOpprettetAv(sporing.getOpprettetAv());
+            entitet.setOpprettetTidspunkt(sporing.getOpprettetTidspunkt());
+            entitet.setEndretAv(sporing.getEndretAv());
+            entitet.setEndretTidspunkt(sporing.getEndretTidspunkt());
             entityManager.persist(entitet);
         }
         for (RegelSporingGrunnlagMigreringDto sporing : grunnlagsporinger) {
@@ -65,6 +69,10 @@ public class RegelsporingRepository {
             }
             RegelSporingGrunnlagEntitet entitet = builder
                 .build(koblingId, sporing.getRegelType());
+            entitet.setOpprettetAv(sporing.getOpprettetAv());
+            entitet.setOpprettetTidspunkt(sporing.getOpprettetTidspunkt());
+            entitet.setEndretAv(sporing.getEndretAv());
+            entitet.setEndretTidspunkt(sporing.getEndretTidspunkt());
             entityManager.persist(entitet);
         }
         entityManager.flush();
