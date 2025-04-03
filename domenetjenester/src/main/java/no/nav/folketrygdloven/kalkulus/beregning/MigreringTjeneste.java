@@ -122,13 +122,11 @@ public class MigreringTjeneste {
     }
 
     private AvklaringsbehovEntitet mapAvklaringsbehov(AvklaringsbehovMigreringDto avklaringsbehovMigreringDto, KoblingEntitet kobling) {
-        return new AvklaringsbehovEntitet(kobling,
-            avklaringsbehovMigreringDto.getDefinisjon(),
-            avklaringsbehovMigreringDto.getStatus(),
-            avklaringsbehovMigreringDto.getBegrunnelse(),
-            avklaringsbehovMigreringDto.getErTrukket(),
-            avklaringsbehovMigreringDto.getVurdertAv(),
-            avklaringsbehovMigreringDto.getVurdertTidspunkt());
+        var avklaringsbehovEntitet = new AvklaringsbehovEntitet(kobling, avklaringsbehovMigreringDto.getDefinisjon(),
+            avklaringsbehovMigreringDto.getStatus(), avklaringsbehovMigreringDto.getBegrunnelse(), avklaringsbehovMigreringDto.getErTrukket(),
+            avklaringsbehovMigreringDto.getVurdertAv(), avklaringsbehovMigreringDto.getVurdertTidspunkt());
+        settOpprettetOgEndretFelter(avklaringsbehovEntitet, avklaringsbehovMigreringDto);
+        return avklaringsbehovEntitet;
     }
 
     private BeregningsgrunnlagGrunnlagEntitet mapGrunnlag(KoblingEntitet koblingEntitet, BeregningsgrunnlagGrunnlagMigreringDto dto) {
