@@ -383,11 +383,13 @@ public class MigreringTjeneste {
 
     private Optional<AktivitetAggregatEntitet> mapAktivitetOverstyringer(BeregningAktivitetOverstyringerMigreringDto dto,
                                                                          BeregningAktivitetAggregatMigreringDto registerAktiviteter) {
-        if (dto == null || dto.getOverstyringer().isEmpty() || registerAktiviteter == null) {
+        if (dto == null || registerAktiviteter == null) {
             return Optional.empty();
         }
         var builder = AktivitetAggregatEntitet.builder().medSkjæringstidspunktOpptjening(registerAktiviteter.getSkjæringstidspunktOpptjening());
-        dto.getOverstyringer().stream().map(this::mapAktivitetOverstyring).forEach(builder::leggTilAktivitet);
+        if (dto.getOverstyringer() != null) {
+            dto.getOverstyringer().stream().map(this::mapAktivitetOverstyring).forEach(builder::leggTilAktivitet);
+        }
         var entitet = builder.build();
         settOpprettetOgEndretFelter(entitet, dto);
         return Optional.of(entitet);
