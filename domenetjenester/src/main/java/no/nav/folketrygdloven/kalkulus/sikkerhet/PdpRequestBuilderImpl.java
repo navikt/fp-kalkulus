@@ -78,7 +78,7 @@ public class PdpRequestBuilderImpl implements PdpRequestBuilder {
 
     private void setLogContext(Set<String> saksnumre, Set<UUID> behandlinger) {
         saksnumre.stream().findFirst().ifPresent(s -> LOG_CONTEXT.add("fagsak", s));
-        behandlinger.stream().findFirst().ifPresent(b -> LOG_CONTEXT.add("behandling", b));
+        behandlinger.stream().findFirst().map(UUID::toString).ifPresent(b -> LOG_CONTEXT.add("behandling", b));
     }
 
 
