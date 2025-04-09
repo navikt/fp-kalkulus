@@ -1,8 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.sikkerhet;
 
-import static no.nav.vedtak.sikkerhet.abac.pdp.ForeldrepengerDataKeys.BEHANDLING_STATUS;
-import static no.nav.vedtak.sikkerhet.abac.pdp.ForeldrepengerDataKeys.FAGSAK_STATUS;
-
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -44,10 +41,8 @@ public class PdpRequestBuilderImpl implements PdpRequestBuilder {
     @Override
     public AppRessursData lagAppRessursData(AbacDataAttributter dataAttributter) {
         Set<String> saksnumre = dataAttributter.getVerdier(StandardAbacAttributtType.SAKSNUMMER);
-        saksnumre.stream().findFirst().ifPresent(s -> LOG_CONTEXT.add("fagsak", s));
         Set<UUID> behandlinger = dataAttributter.getVerdier(StandardAbacAttributtType.BEHANDLING_UUID);
-        behandlinger.stream().findFirst().ifPresent(b -> LOG_CONTEXT.add("behandling", b));
-
+        setLogContext(saksnumre, behandlinger);
         var aktørerFraBehandlinger = behandlinger.stream()
             .map(KoblingReferanse::new)
             .map(koblingRepository::hentForKoblingReferanse)
@@ -66,15 +61,30 @@ public class PdpRequestBuilderImpl implements PdpRequestBuilder {
 
         var auditIdent = aktørerFraBehandlinger.stream().findFirst().or(() -> aktørerFraSaker.stream().findFirst()).orElse(null);
 
-        return AppRessursData.builder()
-            .medAuditAktørId(auditIdent)
+        return minimalbuilder()
+            .medAuditIdent(auditIdent)
             .leggTilAktørIdSet(aktørerFraBehandlinger)
             .leggTilAktørIdSet(aktørerFraSaker)
-            .leggTilAktørIdSet(dataAttributter.getVerdier(StandardAbacAttributtType.AKTØR_ID)) // Attributt ikke i bruk men for ordens skyld
-            .leggTilFødselsnumre(dataAttributter.getVerdier(StandardAbacAttributtType.FNR)) // Attributt ikke i bruk men for ordens skyld
-            // TODO: Hente fra pip-tjenesten? arv fra tidligere... men nå er 2 pips aktuelle ....
-            .leggTilRessurs(FAGSAK_STATUS, PipFagsakStatus.UNDER_BEHANDLING)
-            .leggTilRessurs(BEHANDLING_STATUS, PipBehandlingStatus.UTREDES)
             .build();
+    }
+
+    @Override
+    public AppRessursData lagAppRessursDataForSystembruker(AbacDataAttributter dataAttributter) {
+        Set<String> saksnumre = dataAttributter.getVerdier(StandardAbacAttributtType.SAKSNUMMER);
+        Set<UUID> behandlinger = dataAttributter.getVerdier(StandardAbacAttributtType.BEHANDLING_UUID);
+        setLogContext(saksnumre, behandlinger);
+        return minimalbuilder().build();
+    }
+
+    private void setLogContext(Set<String> saksnumre, Set<UUID> behandlinger) {
+        saksnumre.stream().findFirst().ifPresent(s -> LOG_CONTEXT.add("fagsak", s));
+        behandlinger.stream().findFirst().ifPresent(b -> LOG_CONTEXT.add("behandling", b));
+    }
+
+
+    private AppRessursData.Builder minimalbuilder() {
+        return AppRessursData.builder()
+            .medFagsakStatus(PipFagsakStatus.UNDER_BEHANDLING)
+            .medBehandlingStatus(PipBehandlingStatus.UTREDES);
     }
 }
