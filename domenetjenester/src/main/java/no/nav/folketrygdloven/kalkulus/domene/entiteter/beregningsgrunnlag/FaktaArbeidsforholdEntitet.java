@@ -88,7 +88,7 @@ public class FaktaArbeidsforholdEntitet extends BaseEntitet implements IndexKey 
 
 
     public boolean gjelderFor(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRef arbeidsforholdRef) {
-        return Objects.equals(this.getArbeidsgiver(), arbeidsgiver) && this.getArbeidsforholdRef().gjelderFor(arbeidsforholdRef);
+        return Objects.equals(this.getArbeidsgiver(), arbeidsgiver) && Objects.equals(this.getArbeidsforholdRef().getReferanse(), arbeidsforholdRef.getReferanse());
     }
 
     public Boolean getErTidsbegrensetVurdering() {
