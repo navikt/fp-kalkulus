@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.sikkerhet;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -10,8 +11,10 @@ import jakarta.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
+import no.nav.foreldrepenger.konfig.Environment;
 import no.nav.vedtak.log.mdc.MdcExtendedLogContext;
 import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
 import no.nav.vedtak.sikkerhet.abac.PdpRequestBuilder;
@@ -28,6 +31,7 @@ import no.nav.vedtak.sikkerhet.abac.pipdata.PipFagsakStatus;
 public class PdpRequestBuilderImpl implements PdpRequestBuilder {
 
     private static final MdcExtendedLogContext LOG_CONTEXT = MdcExtendedLogContext.getContext("prosess");
+    private static final boolean LOCAL = Environment.current().isLocal();
 
     private final KoblingRepository koblingRepository;
 
@@ -42,22 +46,17 @@ public class PdpRequestBuilderImpl implements PdpRequestBuilder {
         Set<UUID> behandlinger = dataAttributter.getVerdier(StandardAbacAttributtType.BEHANDLING_UUID);
         setLogContext(saksnumre, behandlinger);
 
-        var saksnummer = saksnumre.stream().findFirst();
-        if (saksnummer.isPresent()) {
-            return minimalbuilder().medSaksnummer(saksnummer.get()).build();
+        // Tester kjører uten FPSAK, kun mot VTP
+        if (LOCAL) {
+            return minimalbuilder()
+                .leggTilIdenter(identerFraFagsak(saksnumre))
+                .leggTilIdenter(identerFraBehandlinger(behandlinger))
+                .build();
+        } else if (saksnumre.stream().findFirst().isPresent()) {
+            return minimalbuilder().medSaksnummer(saksnumre.stream().findFirst().orElseThrow()).build();
         } else {
             // Bør ikke være nødvendig
-            var aktørerFraBehandlinger = behandlinger.stream()
-                .map(KoblingReferanse::new)
-                .map(koblingRepository::hentForKoblingReferanse)
-                .flatMap(Optional::stream)
-                .map(KoblingEntitet::getAktørId)
-                .map(AktørId::getId)
-                .collect(Collectors.toSet());
-
-            return minimalbuilder()
-                .leggTilIdenter(aktørerFraBehandlinger)
-                .build();
+            return minimalbuilder().leggTilIdenter(identerFraBehandlinger(behandlinger)).build();
         }
     }
 
@@ -79,5 +78,25 @@ public class PdpRequestBuilderImpl implements PdpRequestBuilder {
         return AppRessursData.builder()
             .medFagsakStatus(PipFagsakStatus.UNDER_BEHANDLING)
             .medBehandlingStatus(PipBehandlingStatus.UTREDES);
+    }
+
+    private Set<String> identerFraFagsak(Set<String> saksnumre) {
+        return saksnumre.stream()
+            .map(Saksnummer::new)
+            .map(koblingRepository::hentAlleKoblingerForSaksnummer)
+            .flatMap(Collection::stream)
+            .map(KoblingEntitet::getAktørId)
+            .map(AktørId::getId)
+            .collect(Collectors.toSet());
+    }
+
+    private Set<String> identerFraBehandlinger(Set<UUID> behandlinger) {
+        return behandlinger.stream()
+            .map(KoblingReferanse::new)
+            .map(koblingRepository::hentForKoblingReferanse)
+            .flatMap(Optional::stream)
+            .map(KoblingEntitet::getAktørId)
+            .map(AktørId::getId)
+            .collect(Collectors.toSet());
     }
 }
