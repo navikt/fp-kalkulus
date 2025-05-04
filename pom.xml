@@ -30,7 +30,7 @@
         <java.version>21</java.version>
         <kontrakt.java.version>21</kontrakt.java.version>
         <ftberegning.version>5.6.21</ftberegning.version>
-        <felles.version>7.5.3</felles.version>
+        <felles.version>7.5.4</felles.version>
 
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
