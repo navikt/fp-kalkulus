@@ -305,6 +305,7 @@ public class MapIAYTilKalulator {
         }
         builder.medPeriode(mapDatoIntervall(ytelse.getPeriode()));
         builder.medYtelseType(ytelse.getRelatertYtelseType());
+        builder.medYtelseKilde(ytelse.getYtelseKilde());
         builder.medYtelseGrunnlag(mapYtelseGrunnlag(ytelse.getYtelseGrunnlag()));
         return builder;
     }
