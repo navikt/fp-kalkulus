@@ -98,7 +98,7 @@ public final class SpolFramoverTjeneste {
         List<BeregningsgrunnlagPeriodeDto> eksisterendePerioder = eksisterende.getBeregningsgrunnlagHvisFinnes()
                 .stream()
                 .flatMap(bg -> bg.getBeregningsgrunnlagPerioder().stream())
-                .collect(Collectors.toList());
+                .toList();
         LocalDateTimeline<BeregningsgrunnlagPeriodeDto> tidslinjeFraStegUt = lagTidslinjeFraPerioder(eksisterendePerioder)
                 .intersection(tidslinjeFra(intervallerSomKanKopieres));
         SplittPeriodeConfig<BeregningsgrunnlagPeriodeDto> splittConfig = new SplittPeriodeConfig<>(kopiCombinator(intervallerSomKanKopieres));

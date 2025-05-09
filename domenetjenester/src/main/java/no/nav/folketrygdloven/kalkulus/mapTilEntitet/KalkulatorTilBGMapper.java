@@ -85,7 +85,7 @@ public class KalkulatorTilBGMapper {
         }
 
         if (fraKalkulus.getPgiSnitt() != null) {
-            builder.medPgi(VerdityperMapper.beløpTilDao(fraKalkulus.getPgiSnitt()), Stream.of(fraKalkulus.getPgi1(), fraKalkulus.getPgi2(), fraKalkulus.getPgi3()).filter(Objects::nonNull).map(VerdityperMapper::beløpTilDao).collect(Collectors.toList()));
+            builder.medPgi(VerdityperMapper.beløpTilDao(fraKalkulus.getPgiSnitt()), Stream.of(fraKalkulus.getPgi1(), fraKalkulus.getPgi2(), fraKalkulus.getPgi3()).filter(Objects::nonNull).map(VerdityperMapper::beløpTilDao).toList());
         }
 
         fraKalkulus.getBgAndelArbeidsforhold().ifPresent(bgAndelArbeidsforhold -> builder.medAndelArbeidsforhold(KalkulatorTilBGMapper.mapBGAndelArbeidsforhold(bgAndelArbeidsforhold)));
