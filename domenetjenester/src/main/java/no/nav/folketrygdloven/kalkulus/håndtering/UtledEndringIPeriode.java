@@ -43,7 +43,7 @@ class UtledEndringIPeriode {
                 })
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private static Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnAndel(List<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndeler, BeregningsgrunnlagPrStatusOgAndelDto andel) {

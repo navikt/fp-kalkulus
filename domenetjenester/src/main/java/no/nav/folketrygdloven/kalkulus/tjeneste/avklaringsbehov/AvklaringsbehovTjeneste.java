@@ -119,7 +119,7 @@ public class AvklaringsbehovTjeneste {
         List<AvklaringsbehovEntitet> åpneAvklaringsbehovFørSteg = hentAlleAvklaringsbehovForKobling(koblingId).stream()
                 .filter(ap -> ap.getStatus().equals(AvklaringsbehovStatus.OPPRETTET))
                 .filter(ap -> ap.getStegFunnet().erFør(stegSomSkalBeregnes))
-                .collect(Collectors.toList());
+                .toList();
         if (!åpneAvklaringsbehovFørSteg.isEmpty()) {
             throw new TekniskException("FT-406874",
                     String.format("Det finnes avklaringsbehov for kobling %s som må løses før beregning kan fortsette til steg %s, listen med åpne avklaringsbehov er %s",
@@ -134,7 +134,7 @@ public class AvklaringsbehovTjeneste {
         List<AvklaringsbehovEntitet> alleAvklaringsbehovIkkeAvbrutt = hentAlleAvklaringsbehovForKobling(koblingId).stream()
                 .filter(ap -> !AvklaringsbehovStatus.AVBRUTT.equals(ap.getStatus()))
                 .filter(ap -> !ap.getDefinisjon().erOverstyring())
-                .collect(Collectors.toList());
+                .toList();
         if (!alleAvklaringsbehovIkkeAvbrutt.isEmpty()) {
             throw new TekniskException("FT-406875",
                     String.format("Det finnes avklaringsbehov for kobling %s som ikke er avbrutt, listen med avklaringsbehov i ugyldig tilstand er %s",

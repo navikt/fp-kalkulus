@@ -23,11 +23,11 @@ class UtledErTidsbegrensetArbeidsforholdEndringer {
 
         List<FaktaArbeidsforholdDto> arbeidMedTidsbegrensetAvklaring = fakta.getFaktaArbeidsforhold().stream()
                 .filter(fa -> fa.getErTidsbegrensetVurdering() != null)
-                .collect(Collectors.toList());
+                .toList();
         List<FaktaArbeidsforholdDto> forrigeArbeidFakta = forrigeFakta.map(FaktaAggregatDto::getFaktaArbeidsforhold).orElse(Collections.emptyList());
         return arbeidMedTidsbegrensetAvklaring.stream()
                 .map(fa -> utledErTidsbegrensetArbeidsforholdEndring(fa, forrigeArbeidFakta))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private static ErTidsbegrensetArbeidsforholdEndring utledErTidsbegrensetArbeidsforholdEndring(FaktaArbeidsforholdDto faktaArbeidsforhold, List<FaktaArbeidsforholdDto> forrigeFaktaListe) {

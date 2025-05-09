@@ -88,7 +88,7 @@ public class MapDetaljertBeregningsgrunnlag {
     }
 
     private static List<FaktaArbeidsforholdDto> mapFaktaArbeidsforholdListe(List<FaktaArbeidsforholdEntitet> faktaArbeidsforhold) {
-        return faktaArbeidsforhold.stream().map(MapDetaljertBeregningsgrunnlag::mapFaktaArbeidsforhold).collect(Collectors.toList());
+        return faktaArbeidsforhold.stream().map(MapDetaljertBeregningsgrunnlag::mapFaktaArbeidsforhold).toList();
     }
 
     private static FaktaArbeidsforholdDto mapFaktaArbeidsforhold(FaktaArbeidsforholdEntitet faktaArbeidsforholdEntitet) {
@@ -110,7 +110,7 @@ public class MapDetaljertBeregningsgrunnlag {
     }
 
     private static List<BeregningRefusjonOverstyringDto> mapRefusjonOverstyringer(List<RefusjonOverstyringEntitet> refusjonOverstyringer) {
-        return refusjonOverstyringer.stream().map(MapDetaljertBeregningsgrunnlag::mapRefusjonOverstyring).collect(Collectors.toList());
+        return refusjonOverstyringer.stream().map(MapDetaljertBeregningsgrunnlag::mapRefusjonOverstyring).toList();
     }
 
     private static BeregningRefusjonOverstyringDto mapRefusjonOverstyring(RefusjonOverstyringEntitet refusjonOverstyringEntitet) {
@@ -128,7 +128,7 @@ public class MapDetaljertBeregningsgrunnlag {
     }
 
     private static List<BeregningAktivitetOverstyringDto> mapOverstyringer(List<AktivitetEntitet> overstyringer) {
-        return overstyringer.stream().map(MapDetaljertBeregningsgrunnlag::mapOverstyrtAktivitet).collect(Collectors.toList());
+        return overstyringer.stream().map(MapDetaljertBeregningsgrunnlag::mapOverstyrtAktivitet).toList();
     }
 
     private static BeregningAktivitetOverstyringDto mapOverstyrtAktivitet(AktivitetEntitet aktivitetEntitet) {
@@ -148,7 +148,7 @@ public class MapDetaljertBeregningsgrunnlag {
     }
 
     private static List<BeregningAktivitetDto> mapBeregningAktiviteter(List<AktivitetEntitet> beregningAktiviteter) {
-        return beregningAktiviteter.stream().map(MapDetaljertBeregningsgrunnlag::mapBeregningAktivitet).collect(Collectors.toList());
+        return beregningAktiviteter.stream().map(MapDetaljertBeregningsgrunnlag::mapBeregningAktivitet).toList();
     }
 
     private static BeregningAktivitetDto mapBeregningAktivitet(AktivitetEntitet aktivitetEntitet) {
@@ -171,7 +171,7 @@ public class MapDetaljertBeregningsgrunnlag {
         return beregningsgrunnlagEntitet.getSammenligningsgrunnlagPrStatusListe()
             .stream()
             .map(MapDetaljertBeregningsgrunnlag::mapSammeligningsgrunnlagPrStatus)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private static SammenligningsgrunnlagPrStatusDto mapSammeligningsgrunnlagPrStatus(SammenligningsgrunnlagPrStatusEntitet sammenligningsgrunnlagPrStatus) {
@@ -190,7 +190,7 @@ public class MapDetaljertBeregningsgrunnlag {
         return beregningsgrunnlagEntitet.getBeregningsgrunnlagPerioder()
             .stream()
             .map(MapDetaljertBeregningsgrunnlag::mapPeriode)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private static BeregningsgrunnlagPeriodeDto mapPeriode(BeregningsgrunnlagPeriodeEntitet beregningsgrunnlagPeriode) {
@@ -204,7 +204,7 @@ public class MapDetaljertBeregningsgrunnlag {
     }
 
     private static List<BeregningsgrunnlagPrStatusOgAndelDto> mapAndeler(List<BeregningsgrunnlagAndelEntitet> beregningsgrunnlagAndelList) {
-        return beregningsgrunnlagAndelList.stream().map(MapDetaljertBeregningsgrunnlag::mapAndel).collect(Collectors.toList());
+        return beregningsgrunnlagAndelList.stream().map(MapDetaljertBeregningsgrunnlag::mapAndel).toList();
     }
 
     private static BeregningsgrunnlagPrStatusOgAndelDto mapAndel(BeregningsgrunnlagAndelEntitet beregningsgrunnlagPrStatusOgAndel) {
@@ -264,7 +264,7 @@ public class MapDetaljertBeregningsgrunnlag {
         return beregningsgrunnlagEntitet.getAktivitetStatuser()
             .stream()
             .map(as -> new BeregningsgrunnlagAktivitetStatusDto(as.getAktivitetStatus(), as.getHjemmel()))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private static Arbeidsgiver mapArbeidsgiver(no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver a) {

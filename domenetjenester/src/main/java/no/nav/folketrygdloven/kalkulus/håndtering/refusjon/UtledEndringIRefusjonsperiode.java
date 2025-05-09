@@ -39,7 +39,7 @@ public final class UtledEndringIRefusjonsperiode {
         List<BeregningRefusjonOverstyringDto> refusjonendringerMedOverstyrtPeriode = refusjonOverstyringaggregat.getRefusjonOverstyringer()
                 .stream()
                 .filter(ro -> !ro.getRefusjonPerioder().isEmpty())
-                .collect(Collectors.toList());
+                .toList();
         List<RefusjonoverstyringPeriodeEndring> endringer = new ArrayList<>();
         refusjonendringerMedOverstyrtPeriode.forEach(refusjonOverstyringHosAG -> {
             List<BeregningRefusjonPeriodeDto> nyeRefusjonperioderHosAG = refusjonOverstyringHosAG.getRefusjonPerioder();

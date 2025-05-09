@@ -101,7 +101,7 @@ public @interface FagsakYtelseTypeRef {
         }
 
         private static List<FagsakYtelseType> coalesce(FagsakYtelseType... vals) {
-            return Arrays.stream(vals).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+            return Arrays.stream(vals).filter(Objects::nonNull).distinct().toList();
         }
     }
 

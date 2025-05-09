@@ -111,7 +111,7 @@ public class BehandlingslagerTilKalkulusMapper {
                     ? Collections.emptyList()
                     : beregningRefusjonOverstyring.getRefusjonPerioder().stream()
                     .map(BehandlingslagerTilKalkulusMapper::mapRefusjonPeriode)
-                    .collect(Collectors.toList());
+                    .toList();
             BeregningRefusjonOverstyringDto dto = new BeregningRefusjonOverstyringDto(mapArbeidsgiver(beregningRefusjonOverstyring.getArbeidsgiver()),
                     beregningRefusjonOverstyring.getFørsteMuligeRefusjonFom().orElse(null), refusjonPerioder, beregningRefusjonOverstyring.getErFristUtvidet());
             dtoBuilder.leggTilOverstyring(dto);
@@ -160,7 +160,7 @@ public class BehandlingslagerTilKalkulusMapper {
     }
 
     public static List<AvklaringsbehovDto> mapAvklaringsbehov(List<AvklaringsbehovEntitet> avklaringsbehov) {
-        return avklaringsbehov.stream().map(BehandlingslagerTilKalkulusMapper::mapAvklaringsbehov).collect(Collectors.toList());
+        return avklaringsbehov.stream().map(BehandlingslagerTilKalkulusMapper::mapAvklaringsbehov).toList();
     }
 
     private static AvklaringsbehovDto mapAvklaringsbehov(AvklaringsbehovEntitet avklaringsbehovEntitet) {

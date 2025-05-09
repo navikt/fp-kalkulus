@@ -85,7 +85,7 @@ public class MapFraKalkulator {
             kravPrArbeidsforhold = LagKravperioder.lagKravperioderPrArbeidsforhold(refusjonskravDatoer, iayGrunnlag, stp);
         }
         ;
-        return kravPrArbeidsforhold.stream().map(MapFraKalkulator::mapKravPerioder).collect(Collectors.toList());
+        return kravPrArbeidsforhold.stream().map(MapFraKalkulator::mapKravPerioder).toList();
     }
 
     private static KravperioderPrArbeidsforholdDto mapKravPerioder(KravperioderPrArbeidsforhold kravperioderPrArbeidsforhold) {
@@ -93,17 +93,17 @@ public class MapFraKalkulator {
                 mapArbeidsforholdRef(kravperioderPrArbeidsforhold.getInternreferanse()),
                 kravperioderPrArbeidsforhold.getAlleSøktePerioder()
                         .stream().map(MapFraKalkulator::mapSøktPeriode)
-                        .collect(Collectors.toList()),
+                        .toList(),
                 kravperioderPrArbeidsforhold.getSisteSøktePerioder().getRefusjonsperioder().stream()
                         .map(Refusjonsperiode::getPeriode)
                         .map(MapFraKalkulator::mapPeriode)
-                        .collect(Collectors.toList()));
+                        .toList());
     }
 
     private static PerioderForKravDto mapSøktPeriode(PerioderForKrav p) {
         return new PerioderForKravDto(p.getInnsendingsdato(), p.getRefusjonsperioder()
                 .stream().map(MapFraKalkulator::mapRefusjonsperiode)
-                .collect(Collectors.toList()));
+                .toList());
     }
 
     private static RefusjonsperiodeDto mapRefusjonsperiode(Refusjonsperiode rp) {
@@ -136,7 +136,7 @@ public class MapFraKalkulator {
                                 opptjeningPeriodeDto.getAbakusReferanse() != null
                                         ? InternArbeidsforholdRefDto.ref(opptjeningPeriodeDto.getAbakusReferanse().getAbakusReferanse())
                                         : null))
-                        .collect(Collectors.toList()), opptjeningAktiviteter.getMidlertidigInaktivType() != null ? MidlertidigInaktivType.valueOf(opptjeningAktiviteter.getMidlertidigInaktivType().name()) : null);
+                        .toList(), opptjeningAktiviteter.getMidlertidigInaktivType() != null ? MidlertidigInaktivType.valueOf(opptjeningAktiviteter.getMidlertidigInaktivType().name()) : null);
     }
 
     private static no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto mapFraDto(InntektArbeidYtelseGrunnlagDto iayGrunnlag) {

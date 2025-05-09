@@ -110,13 +110,13 @@ class ForeldrepengerGrunnlagMapper {
         }
         return ytelsegrunnlagForBesteberegning.stream()
                 .map(yg -> new Ytelsegrunnlag(yg.getYtelse(), mapYtelseperioder(yg.getPerioder())))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private static List<Ytelseperiode> mapYtelseperioder(List<no.nav.folketrygdloven.kalkulus.beregning.v1.besteberegning.Ytelseperiode> perioder) {
         return perioder.stream()
                 .map(p -> new Ytelseperiode(mapPeriode(p.getPeriode()), mapYtelseandeler(p.getAndeler())))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private static Intervall mapPeriode(Periode periode) {
@@ -132,7 +132,7 @@ class ForeldrepengerGrunnlagMapper {
                         return new Ytelseandel(a.getArbeidskategori(), a.getDagsats());
                     }
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
 
