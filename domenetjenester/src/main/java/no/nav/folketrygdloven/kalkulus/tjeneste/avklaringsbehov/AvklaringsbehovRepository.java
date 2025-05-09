@@ -49,7 +49,7 @@ public class AvklaringsbehovRepository {
         query.setParameter("koblinger", koblingIder);
         return query.getResultList().stream()
                 .sorted(Comparator.naturalOrder())
-                .collect(Collectors.toList());
+                .toList();
     }
     public List<AvklaringsbehovEntitet> hentAvklaringsbehovforKobling(Long koblingId) {
         TypedQuery<AvklaringsbehovEntitet> query = entityManager.createQuery("FROM AvklaringsbehovEntitet ab " +
@@ -57,7 +57,7 @@ public class AvklaringsbehovRepository {
         query.setParameter("kobling", koblingId);
         return query.getResultList().stream()
             .sorted(Comparator.naturalOrder())
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public List<AvklaringsbehovEntitet> hentAvklaringsbehovForKobling(KoblingEntitet kobling) {
@@ -65,7 +65,7 @@ public class AvklaringsbehovRepository {
         query.setParameter("kobling", kobling);
         return query.getResultList().stream()
                 .sorted(Comparator.naturalOrder())
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public void lagre(AvklaringsbehovEntitet avklaringsbehov) {

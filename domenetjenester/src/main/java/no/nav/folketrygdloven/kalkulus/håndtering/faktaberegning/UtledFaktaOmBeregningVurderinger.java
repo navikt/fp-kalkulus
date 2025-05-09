@@ -43,7 +43,7 @@ public class UtledFaktaOmBeregningVurderinger {
             return Collections.emptyList();
         }
         return dto.getFakta().getRefusjonskravGyldighet().stream().map(UtledFaktaOmBeregningVurderinger::utledRefusjonskravGyldighetEndring)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private static RefusjonskravGyldighetEndring utledRefusjonskravGyldighetEndring(RefusjonskravPrArbeidsgiverVurderingDto dto) {

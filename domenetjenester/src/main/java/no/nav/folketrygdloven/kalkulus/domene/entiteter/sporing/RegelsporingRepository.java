@@ -153,7 +153,7 @@ public class RegelsporingRepository {
         var typerSomSkalRyddes = EnumSet.allOf(BeregningsgrunnlagRegelType.class)
             .stream()
             .filter(t -> !t.getLagretTilstand().erFør(tilstand))
-            .collect(Collectors.toList());
+            .toList();
 
         var grunnlagQuery = entityManager.createQuery("Update RegelSporingGrunnlagEntitet " +
                 "set aktiv = false " +
@@ -170,7 +170,7 @@ public class RegelsporingRepository {
         var periodetyperSomSkalRyddes = EnumSet.allOf(BeregningsgrunnlagPeriodeRegelType.class)
             .stream()
             .filter(t -> !t.getLagretTilstand().erFør(tilstand))
-            .collect(Collectors.toList());
+            .toList();
 
         var perioderQuery = entityManager.createQuery("Update RegelSporingPeriodeEntitet " +
                 "set aktiv = false " +

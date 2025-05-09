@@ -130,7 +130,7 @@ class LagKravperioder {
 
         alleSegmenter.addAll(im.getEndringerRefusjon().stream().map(e ->
                 new LocalDateSegment<>(e.getFom(), TIDENES_ENDE, ModellTyperMapper.beløpFraDto(e.getRefusjonsbeløpMnd()))
-        ).collect(Collectors.toList()));
+        ).toList());
 
         if (im.getRefusjonOpphører() != null && !im.getRefusjonOpphører().equals(TIDENES_ENDE)) {
             alleSegmenter.add(new LocalDateSegment<>(im.getRefusjonOpphører().plusDays(1), TIDENES_ENDE, Beløp.ZERO));
@@ -144,7 +144,7 @@ class LagKravperioder {
         });
         return refusjonTidslinje.stream()
                 .map(r -> new Refusjonsperiode(new Periode(r.getFom(), r.getTom()), ModellTyperMapper.beløpTilDto(r.getValue())))
-                .collect(Collectors.toList());
+                .toList();
 
     }
 

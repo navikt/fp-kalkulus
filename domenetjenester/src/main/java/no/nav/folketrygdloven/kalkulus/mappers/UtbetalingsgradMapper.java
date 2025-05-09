@@ -21,7 +21,7 @@ class UtbetalingsgradMapper {
                         new no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto(
                                 UtbetalingsgradMapper.mapArbeidsforhold(e.getKey()),
                                 UtbetalingsgradMapper.mapPerioderMedUtbetalingsgrad(e.getValue())))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private static List<Map.Entry<no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetDto, List<no.nav.folketrygdloven.kalkulus.beregning.v1.PeriodeMedUtbetalingsgradDto>>> samleArbeidsforhold(List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet) {
@@ -30,14 +30,14 @@ class UtbetalingsgradMapper {
                         UtbetalingsgradPrAktivitetDto::getUtbetalingsgradArbeidsforholdDto,
                         UtbetalingsgradPrAktivitetDto::getPeriodeMedUtbetalingsgrad,
                         (e1, e2) -> {
-                            e1.addAll(e2.stream().filter(p -> !e1.contains(p)).collect(Collectors.toList()));
+                            e1.addAll(e2.stream().filter(p -> !e1.contains(p)).toList());
                             return e1;
                         },
                         LinkedHashMap::new))
                 .entrySet());
     }
     private static List<PeriodeMedUtbetalingsgradDto> mapPerioderMedUtbetalingsgrad(List<no.nav.folketrygdloven.kalkulus.beregning.v1.PeriodeMedUtbetalingsgradDto> periodeMedUtbetalingsgrad) {
-        return periodeMedUtbetalingsgrad.stream().map(UtbetalingsgradMapper::mapPeriodeMedUtbetalingsgrad).collect(Collectors.toList());
+        return periodeMedUtbetalingsgrad.stream().map(UtbetalingsgradMapper::mapPeriodeMedUtbetalingsgrad).toList();
     }
 
     private static PeriodeMedUtbetalingsgradDto mapPeriodeMedUtbetalingsgrad(no.nav.folketrygdloven.kalkulus.beregning.v1.PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto) {
