@@ -30,7 +30,7 @@ updates:
         dependency-type: "development"
         exclude-patterns:
           - "no.nav.*"
-      interne-deps:
+      interne-deps-fix:
         patterns:
           - "no.nav.*"
         exclude-patterns:
