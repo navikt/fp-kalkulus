@@ -121,14 +121,6 @@
         <!-- /Testcontainer og sec update -->
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>github</id>
-            <name>GitHub Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/navikt/fp-kalkulus/</url>
-        </repository>
-    </repositories>
-
     <scm>
         <connection>scm:git:https://github.com/navikt/fp-kalkulus.git</connection>
         <developerConnection>scm:git:https://github.com/navikt/fp-kalkulus.git</developerConnection>
