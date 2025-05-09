@@ -33,5 +33,3 @@ updates:
       interne-deps:
         patterns:
           - "no.nav.*"
-        exclude-patterns:
-          - "no.nav.folketrygdloven.*"
