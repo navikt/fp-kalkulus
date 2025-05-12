@@ -121,6 +121,12 @@ public class MigreringTjeneste {
         return new Migreringsresultat(entitet, grunnlagSporinger, periodeSporinger, avklaringsbehov);
     }
 
+    public Migreringsresultat mapOgLagreInaktivtGrunnlag(KoblingEntitet koblingEntitet, BeregningsgrunnlagGrunnlagMigreringDto dto) {
+        var grunnlag = mapGrunnlag(koblingEntitet, dto);
+        var entitet = beregningsgrunnlagRepository.lagreInaktivMigrering(koblingEntitet.getId(), grunnlag);
+        return new Migreringsresultat(entitet, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+    }
+
     private AvklaringsbehovEntitet mapAvklaringsbehov(AvklaringsbehovMigreringDto avklaringsbehovMigreringDto, KoblingEntitet kobling) {
         var avklaringsbehovEntitet = new AvklaringsbehovEntitet(kobling, avklaringsbehovMigreringDto.getDefinisjon(),
             avklaringsbehovMigreringDto.getStatus(), avklaringsbehovMigreringDto.getBegrunnelse(), avklaringsbehovMigreringDto.getErTrukket(),
