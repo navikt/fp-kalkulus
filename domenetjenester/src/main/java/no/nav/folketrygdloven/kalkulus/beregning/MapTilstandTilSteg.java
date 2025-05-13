@@ -29,7 +29,6 @@ import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstan
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.VURDERT_VILKÅR;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;

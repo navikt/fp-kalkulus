@@ -7,7 +7,6 @@ import static no.nav.folketrygdloven.kalkulus.mappers.SvangerskapspengerGrunnlag
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
@@ -74,6 +73,7 @@ public class MapFraKalkulator {
                         input, beregningsgrunnlagGrunnlagEntitet));
 
         utenGrunnbeløp.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
+        utenGrunnbeløp.leggTilToggle("aap.praksisendring", false);
         return beregningsgrunnlagGrunnlagEntitet.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag)
                 .map(utenGrunnbeløp::medBeregningsgrunnlagGrunnlag)
                 .orElse(utenGrunnbeløp);

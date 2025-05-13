@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.håndtering.mapping;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.DagpengeAndelLagtTilBesteberegningDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.OverstyrBeregningsgrunnlagDto;

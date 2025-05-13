@@ -13,8 +13,6 @@ import org.flywaydb.core.api.FlywayException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import no.nav.foreldrepenger.konfig.Environment;
-
 /**
  * Initielt skjemaoppsett + migrering av unittest-skjemaer
  */
