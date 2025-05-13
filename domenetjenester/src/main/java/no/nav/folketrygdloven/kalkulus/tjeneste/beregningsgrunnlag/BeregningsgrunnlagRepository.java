@@ -490,16 +490,4 @@ public class BeregningsgrunnlagRepository {
         return sisteGrunnlagFraTilstand.get().getOpprettetTidspunkt();
     }
 
-    public BeregningsgrunnlagGrunnlagEntitet lagreInaktivMigrering(Long koblingId, BeregningsgrunnlagGrunnlagEntitet entitet) {
-        Objects.requireNonNull(koblingId, KOBLING_ID);
-        Objects.requireNonNull(entitet, "Entitet");
-        if (entitet.getGrunnlagReferanse() == null) {
-            // lag ny referanse
-            entitet.setGrunnlagReferanse(new GrunnlagReferanse(UUID.randomUUID()));
-        }
-        entitet.setAktiv(false);
-        lagreGrunnlag(entitet);
-        entityManager.flush();
-        return entitet;
-    }
 }
