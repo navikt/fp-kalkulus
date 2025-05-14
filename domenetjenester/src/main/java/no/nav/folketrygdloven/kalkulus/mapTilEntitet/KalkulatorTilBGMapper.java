@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulus.mapTilEntitet;
 
 import java.math.BigDecimal;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
