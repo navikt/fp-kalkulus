@@ -191,6 +191,14 @@ public class OperereKalkulusRestTjeneste {
         MDC.put("prosess_saksnummer", saksnummer.getVerdi());
         var koblingReferanse = new KoblingReferanse(request.behandlingUuid());
         MDC.put("prosess_koblingreferanse", koblingReferanse.getReferanse().toString());
+        if (!request.erAktivt()) {
+            // Vi har mulighet til å lagre inaktive grunlag på koblingen. I slike tilfeller sletter vi ingenting,
+            // og lagrer heller ikke regelsporinger / avklaringsbehov, da dette ligger på koblingsnivå
+            var kopt = koblingTjeneste.hentKobling(koblingReferanse);
+            var migreringsresultat = migreringTjeneste.mapOgLagreInaktivtGrunnlag(kopt, request.grunnlag());
+            var respons = mapMigreringRespons(migreringsresultat);
+            return Response.ok(respons).build();
+        }
         var kopt = koblingTjeneste.hentKoblingOptional(koblingReferanse);
 
         // Hvis koblingen finnes er den allerede migrert. Sletter lagret data for å kunne migrere på nytt
