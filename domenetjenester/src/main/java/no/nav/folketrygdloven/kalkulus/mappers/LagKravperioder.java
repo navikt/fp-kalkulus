@@ -40,7 +40,7 @@ class LagKravperioder {
             return Collections.emptyList();
         }
         if (iayGrunnlag.getArbeidDto() == null) {
-            LOG.warn("Fant inntektsmelding uten registrerte arbeidsforhold. Ignorerer inntektsmelding.");
+            LOG.info("Fant inntektsmelding uten registrerte arbeidsforhold. Ignorerer inntektsmelding.");
             return Collections.emptyList();
         }
         iayGrunnlag.getInntektsmeldingDto().getInntektsmeldinger()
