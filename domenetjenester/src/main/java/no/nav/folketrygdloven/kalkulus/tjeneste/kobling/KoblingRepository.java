@@ -9,6 +9,9 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
+import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Kodeverdi;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,14 +91,7 @@ public class KoblingRepository {
         var config = new TraverseJpaEntityGraphConfig();
         config.setIgnoreNulls(true);
         config.setOnlyCheckTrackedFields(false);
-
-        config.addLeafClasses(Beløp.class);
-        config.addLeafClasses(AktørId.class);
-        config.addLeafClasses(Saksnummer.class);
-        config.addLeafClasses(OrgNummer.class);
-        config.addLeafClasses(InternArbeidsforholdRef.class);
-        config.addLeafClasses(Arbeidsgiver.class);
-
+        config.addLeafClasses(Kodeverdi.class);
         var diffEntity = new DiffEntity(new TraverseGraph(config));
 
         return diffEntity.diff(eksisterendeKobling, nyKobling);
