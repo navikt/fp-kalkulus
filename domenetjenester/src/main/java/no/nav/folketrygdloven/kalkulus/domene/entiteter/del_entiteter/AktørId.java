@@ -55,8 +55,17 @@ public class AktørId {
 
     @Override
     public String toString() {
-        return getClass().getName() + "{" +
-            "aktørId=" + aktørId +
-            '}';
+        return getClass().getSimpleName() + "<" + maskerAktørId() + ">";
+    }
+
+    private String maskerAktørId() {
+        if (aktørId == null) {
+            return "";
+        }
+        var length = aktørId.length();
+        if (length <= 4) {
+            return "*".repeat(length);
+        }
+        return "*".repeat(length - 4) + aktørId.substring(length - 4);
     }
 }
