@@ -75,23 +75,6 @@ public class BeregningsgrunnlagRepository {
     }
 
     /**
-     * Henter alle aktive BeregningsgrunnlagGrunnlagEntiteter
-     *
-     * @param koblingIds en liste med koblingId
-     * @return Liste med alle aktive grunnlag som matcher koblingider {@link BeregningsgrunnlagGrunnlagEntitet}
-     */
-    public List<BeregningsgrunnlagGrunnlagEntitet> hentBeregningsgrunnlagGrunnlagEntiteter(Collection<Long> koblingIds) {
-        TypedQuery<BeregningsgrunnlagGrunnlagEntitet> query = entityManager.createQuery(
-                "select grunnlag from BeregningsgrunnlagGrunnlagEntitet grunnlag " +
-                        "where grunnlag.koblingId in :koblingId " +
-                        "and grunnlag.aktiv = :aktivt",
-                BeregningsgrunnlagGrunnlagEntitet.class);
-        query.setParameter(KOBLING_ID, koblingIds); // $NON-NLS-1$
-        query.setParameter("aktivt", true);
-        return query.getResultList();
-    }
-
-    /**
      * Henter aktivt BeregningsgrunnlagGrunnlagEntitet
      *
      * @param koblingId en koblingId
@@ -106,6 +89,15 @@ public class BeregningsgrunnlagRepository {
         query.setParameter(KOBLING_ID, koblingId); // $NON-NLS-1$
         query.setParameter("aktivt", true);
         return hentUniktResultat(query);
+    }
+
+    public List<BeregningsgrunnlagGrunnlagEntitet> hentAlleBeregningsgrunnlagInkludertInaktiveForKobling(Long koblingId) {
+        TypedQuery<BeregningsgrunnlagGrunnlagEntitet> query = entityManager.createQuery(
+            "from BeregningsgrunnlagGrunnlagEntitet grunnlag " +
+                "where grunnlag.koblingId=:koblingId",
+            BeregningsgrunnlagGrunnlagEntitet.class);
+        query.setParameter(KOBLING_ID, koblingId);
+        return query.getResultList();
     }
 
     /**
