@@ -1,7 +1,9 @@
 package no.nav.folketrygdloven.kalkulus.rest;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -15,6 +17,10 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import no.nav.folketrygdloven.kalkulus.request.v1.enkel.EnkelGrunnlagTilstanderRequestDto;
+
+import no.nav.folketrygdloven.kalkulus.response.v1.tilstander.TilgjengeligeTilstanderDto;
+
 import org.slf4j.MDC;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -24,6 +30,7 @@ import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagGuiTjene
 import no.nav.folketrygdloven.kalkulator.guitjenester.KalkulatorGuiInterface;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulus.beregning.GUIBeregningsgrunnlagInputTjeneste;
+import no.nav.folketrygdloven.kalkulus.beregning.MapTilstandTilSteg;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
@@ -114,6 +121,47 @@ public class HentKalkulusRestTjeneste {
         return besteberegnetGrunnlagDto.map(Response::ok).orElseGet(Response::noContent).build();
     }
 
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(description = "Hent alle stegtyper et beregningsgrunnlag (eller originalgrunnlaget) har vært innom", summary = ("Returnerer alle steg et grunnlag har vært innom."), tags = "beregningsgrunnlag")
+    @BeskyttetRessurs(actionType = ActionType.READ, resourceType = ResourceType.FAGSAK, sporingslogg = false)
+    @Path("/grunnlag/tilstander")
+    @SuppressWarnings({"findsecbugs:JAXRS_ENDPOINT", "resource"})
+    public Response hentTilstanderForKobling(@TilpassetAbacAttributt(supplierClass = EnkelGrunnlagTilstanderRequestDtoAbacSupplier.class) @NotNull @Valid EnkelGrunnlagTilstanderRequestDto request) {
+        var koblingReferanse = new KoblingReferanse(request.behandlingUuid());
+        var originalKoblingReferanse = new KoblingReferanse(request.originalBehandlingUuid());
+        var kobling = koblingTjeneste.hentKoblingOptional(koblingReferanse);
+        if (kobling.isEmpty()) {
+            return Response.noContent().build();
+        }
+        var tilstanderKobling = beregningsgrunnlagRepository.hentAlleBeregningsgrunnlagInkludertInaktiveForKobling(kobling.get().getId())
+            .stream()
+            .map(BeregningsgrunnlagGrunnlagEntitet::getBeregningsgrunnlagTilstand)
+            .map(MapTilstandTilSteg::mapTilSteg)
+            .collect(Collectors.toSet()); // Lager set først for å unngå duplikater
+        var koblingDto = new TilgjengeligeTilstanderDto.TilgjengeligeTilstandDto(kobling.get().getKoblingReferanse().getReferanse(),
+            tilstanderKobling.stream().toList());
+
+        var originalOpt = koblingTjeneste.hentKoblingOptional(originalKoblingReferanse);
+        var stegOriginal = originalOpt
+            .map(o -> beregningsgrunnlagRepository.hentAlleBeregningsgrunnlagInkludertInaktiveForKobling(o.getId()))
+            .orElse(List.of()).stream()
+            .map(BeregningsgrunnlagGrunnlagEntitet::getBeregningsgrunnlagTilstand)
+            .map(MapTilstandTilSteg::mapTilSteg)
+            .collect(Collectors.toSet()); // Lager set først for å unngå duplikater
+
+        if (stegOriginal.isEmpty()) {
+            return Response.ok(new TilgjengeligeTilstanderDto(koblingDto, null)).build();
+        }
+
+        var originalDto = new TilgjengeligeTilstanderDto.TilgjengeligeTilstandDto(
+            originalOpt.get().getKoblingReferanse().getReferanse(),
+            List.copyOf(stegOriginal)
+        );
+
+        return Response.ok(new TilgjengeligeTilstanderDto(koblingDto, originalDto)).build();
+    }
+
     private BeregningsgrunnlagDto hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(BeregningsgrunnlagGUIInput guiInput) {
         return mapTilDto(guiInput);
     }
@@ -149,5 +197,16 @@ public class HentKalkulusRestTjeneste {
                 .leggTil(StandardAbacAttributtType.SAKSNUMMER, req.saksnummer().verdi());
         }
     }
+
+    public static class EnkelGrunnlagTilstanderRequestDtoAbacSupplier implements Function<Object, AbacDataAttributter> {
+        @Override
+        public AbacDataAttributter apply(Object o) {
+            var req = (EnkelGrunnlagTilstanderRequestDto) o;
+            return AbacDataAttributter.opprett()
+                .leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid())
+                .leggTil(StandardAbacAttributtType.SAKSNUMMER, req.saksnummer().verdi());
+        }
+    }
+
 
 }
