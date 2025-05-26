@@ -42,9 +42,6 @@ spec:
       memory: "{{requests.mem}}"
   vault:
     enabled: true
-    paths:
-      - mountPath: /var/run/secrets/nais.io/serviceuser
-        kvPath: {{serviceuserkv}}
   envFrom:
     - secret: fpkalkulus
   secureLogs:
