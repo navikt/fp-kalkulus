@@ -149,10 +149,6 @@
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.papertrailapp</groupId>
-            <artifactId>logback-syslog4j</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
