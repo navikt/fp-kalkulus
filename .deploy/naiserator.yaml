@@ -42,13 +42,21 @@ spec:
       memory: "{{requests.mem}}"
   vault:
     enabled: true
-    paths:
-      - mountPath: /var/run/secrets/nais.io/serviceuser
-        kvPath: {{serviceuserkv}}
   envFrom:
     - secret: fpkalkulus
   secureLogs:
-    enabled: true
+    enabled: false
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+      destinations:
+        - id: "grafana-lgtm"
+        - id: "elastic-apm"
+    logging:
+      destinations:
+        - id: loki
+        - id: elastic
   azure:
     application:
       enabled: true
