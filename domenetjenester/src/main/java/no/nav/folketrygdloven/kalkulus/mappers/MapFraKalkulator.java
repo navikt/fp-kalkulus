@@ -19,6 +19,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonsperiodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.KravperioderPrArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.PerioderForKrav;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.RefusjonskravDatoDto;
@@ -50,13 +51,12 @@ public class MapFraKalkulator {
                                                                                           KalkulatorInputDto input,
                                                                                           Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
         var koblingId = kobling.getId();
-        var skjæringstidspunkt = input.getSkjæringstidspunkt();
 
         var ytelseType = kobling.getYtelseType();
         var aktørId = new no.nav.folketrygdloven.kalkulus.typer.AktørId(kobling.getAktørId().getId());
         var build = Skjæringstidspunkt.builder()
-                .medFørsteUttaksdato(skjæringstidspunkt)
-                .medSkjæringstidspunktOpptjening(skjæringstidspunkt).build();
+                .medFørsteUttaksdato(finnFørsteUttaksdato(input))
+                .medSkjæringstidspunktOpptjening(input.getSkjæringstidspunkt()).build();
 
         var ref = KoblingReferanse.fra(ytelseType, aktørId, koblingId, kobling.getKoblingReferanse().getReferanse(), Optional.empty(), build);
 
@@ -64,12 +64,12 @@ public class MapFraKalkulator {
         var opptjeningAktiviteter = input.getOpptjeningAktiviteter();
         var kravPrArbeidsforhold = input.getRefusjonskravPrArbeidsforhold();
 
-        var iayGrunnlagMappet = mapFraDto(iayGrunnlag);
+        var iayGrunnlagMappet = mapIAYGrunnlag(iayGrunnlag);
         BeregningsgrunnlagInput utenGrunnbeløp = new BeregningsgrunnlagInput(ref,
                 iayGrunnlagMappet,
-                mapFraDto(opptjeningAktiviteter),
-                mapFraDto(kravPrArbeidsforhold, input.getRefusjonskravDatoer(), iayGrunnlag, input.getSkjæringstidspunkt()),
-                mapFraDto(kobling.getYtelseType(),
+                mapOpptjeningsaktiviteter(opptjeningAktiviteter),
+                mapKravperioder(kravPrArbeidsforhold, input.getRefusjonskravDatoer(), iayGrunnlag, input.getSkjæringstidspunkt()),
+                mapYtelsespesifiktGrunnlag(kobling.getYtelseType(),
                         input, beregningsgrunnlagGrunnlagEntitet));
 
         utenGrunnbeløp.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
@@ -79,12 +79,18 @@ public class MapFraKalkulator {
                 .orElse(utenGrunnbeløp);
     }
 
-    public static List<KravperioderPrArbeidsforholdDto> mapFraDto(List<KravperioderPrArbeidsforhold> kravPrArbeidsforhold, List<RefusjonskravDatoDto> refusjonskravDatoer, InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDate stp) {
+    private static LocalDate finnFørsteUttaksdato(KalkulatorInputDto input) {
+        if (input.getYtelsespesifiktGrunnlag() instanceof ForeldrepengerGrunnlag fg) {
+            return fg.getFørsteUttaksdato() == null ? input.getSkjæringstidspunkt() : fg.getFørsteUttaksdato();
+        }
+        return input.getSkjæringstidspunkt();
+    }
+
+    public static List<KravperioderPrArbeidsforholdDto> mapKravperioder(List<KravperioderPrArbeidsforhold> kravPrArbeidsforhold, List<RefusjonskravDatoDto> refusjonskravDatoer, InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDate stp) {
         if (kravPrArbeidsforhold == null) {
             // For å kunne mappe kall for å hente gui-dto for gamle saker
             kravPrArbeidsforhold = LagKravperioder.lagKravperioderPrArbeidsforhold(refusjonskravDatoer, iayGrunnlag, stp);
         }
-        ;
         return kravPrArbeidsforhold.stream().map(MapFraKalkulator::mapKravPerioder).toList();
     }
 
@@ -110,9 +116,9 @@ public class MapFraKalkulator {
         return new RefusjonsperiodeDto(mapPeriode(rp.getPeriode()), ModellTyperMapper.beløpFraDto(rp.getBeløp()));
     }
 
-    public static YtelsespesifiktGrunnlag mapFraDto(FagsakYtelseType ytelseType,
-                                                    KalkulatorInputDto input,
-                                                    Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
+    public static YtelsespesifiktGrunnlag mapYtelsespesifiktGrunnlag(FagsakYtelseType ytelseType,
+                                                                     KalkulatorInputDto input,
+                                                                     Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
         var ytelsespesifiktGrunnlag = input.getYtelsespesifiktGrunnlag();
         return switch (ytelseType) {
             case FORELDREPENGER -> mapForeldrepengerGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag)ytelsespesifiktGrunnlag, beregningsgrunnlagGrunnlagEntitet);
@@ -121,7 +127,7 @@ public class MapFraKalkulator {
         };
     }
 
-    public static no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto mapFraDto(OpptjeningAktiviteterDto opptjeningAktiviteter) {
+    public static no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto mapOpptjeningsaktiviteter(OpptjeningAktiviteterDto opptjeningAktiviteter) {
         return new no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto(
                 opptjeningAktiviteter.getPerioder().stream()
                         .map(opptjeningPeriodeDto -> no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto.nyPeriode(
@@ -139,7 +145,7 @@ public class MapFraKalkulator {
                         .toList(), opptjeningAktiviteter.getMidlertidigInaktivType() != null ? MidlertidigInaktivType.valueOf(opptjeningAktiviteter.getMidlertidigInaktivType().name()) : null);
     }
 
-    private static no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto mapFraDto(InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+    private static no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto mapIAYGrunnlag(InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         return MapIAYTilKalulator.mapGrunnlag(iayGrunnlag);
     }
 
