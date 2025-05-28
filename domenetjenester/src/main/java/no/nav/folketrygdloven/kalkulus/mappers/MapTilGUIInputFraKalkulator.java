@@ -30,8 +30,8 @@ public class MapTilGUIInputFraKalkulator {
         return new BeregningsgrunnlagGUIInput(
                 ref,
                 iayGrunnlagMappet,
-                MapFraKalkulator.mapFraDto(input.getRefusjonskravPrArbeidsforhold(), input.getRefusjonskravDatoer(), input.getIayGrunnlag(), input.getSkjæringstidspunkt()),
-                MapFraKalkulator.mapFraDto(kobling.getYtelseType(), input, Optional.ofNullable(beregningsgrunnlagGrunnlagEntitet)));
+                MapFraKalkulator.mapKravperioder(input.getRefusjonskravPrArbeidsforhold(), input.getRefusjonskravDatoer(), input.getIayGrunnlag(), input.getSkjæringstidspunkt()),
+                MapFraKalkulator.mapYtelsespesifiktGrunnlag(kobling.getYtelseType(), input, Optional.ofNullable(beregningsgrunnlagGrunnlagEntitet)));
     }
 
 }
