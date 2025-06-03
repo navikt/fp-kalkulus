@@ -35,12 +35,12 @@ public class ConstraintViolationMapper implements ExceptionMapper<ConstraintViol
         }
         var feltNavn = feilene.stream().map(FeltFeilDto::navn).toList();
         var feilmelding = String.format(
-                "Det oppstod en valideringsfeil på felt %s. " + "Vennligst kontroller at alle feltverdier er korrekte.",
-                feltNavn);
+            "Det oppstod en valideringsfeil på felt %s. " + "Vennligst kontroller at alle feltverdier er korrekte.",
+            feltNavn);
         return Response.status(Response.Status.BAD_REQUEST)
-                .entity(new FeilDto(feilmelding, feilene))
-                .type(MediaType.APPLICATION_JSON)
-                .build();
+            .entity(new FeilDto(feilmelding, feilene))
+            .type(MediaType.APPLICATION_JSON)
+            .build();
     }
 
     private void log(ConstraintViolationException exception) {
@@ -49,10 +49,10 @@ public class ConstraintViolationMapper implements ExceptionMapper<ConstraintViol
 
     private static Set<String> constraints(ConstraintViolationException exception) {
         return exception.getConstraintViolations()
-                .stream()
-                .map(cv -> cv.getRootBeanClass().getSimpleName() + "." + cv.getLeafBean().getClass().getSimpleName()
-                        + "." + fieldName(cv) + " - " + cv.getMessage())
-                .collect(Collectors.toSet());
+            .stream()
+            .map(cv -> cv.getRootBeanClass().getSimpleName() + "." + cv.getLeafBean().getClass().getSimpleName()
+                + "." + fieldName(cv))
+            .collect(Collectors.toSet());
     }
 
     private static String fieldName(ConstraintViolation<?> cv) {
@@ -64,7 +64,7 @@ public class ConstraintViolationMapper implements ExceptionMapper<ConstraintViol
     }
 
     private static String getFeltNavn(Path propertyPath) {
-        return propertyPath instanceof PathImpl ? ((PathImpl) propertyPath).getLeafNode().toString() : null;
+        return propertyPath instanceof PathImpl pathImpl ? pathImpl.getLeafNode().toString() : null;
     }
 
 }
