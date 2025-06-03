@@ -35,6 +35,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.MidlertidigInaktivType;
 import no.nav.folketrygdloven.kalkulus.mapFraEntitet.BehandlingslagerTilKalkulusMapper;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
+import no.nav.foreldrepenger.konfig.Environment;
 
 public class MapFraKalkulator {
     public static final String INNTEKT_RAPPORTERING_FRIST_DATO = "inntekt.rapportering.frist.dato";
@@ -73,7 +74,7 @@ public class MapFraKalkulator {
                         input, beregningsgrunnlagGrunnlagEntitet));
 
         utenGrunnbeløp.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
-        utenGrunnbeløp.leggTilToggle("aap.praksisendring", false);
+        utenGrunnbeløp.leggTilToggle("aap.praksisendring", !Environment.current().isProd());
         return beregningsgrunnlagGrunnlagEntitet.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag)
                 .map(utenGrunnbeløp::medBeregningsgrunnlagGrunnlag)
                 .orElse(utenGrunnbeløp);
