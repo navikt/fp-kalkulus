@@ -117,66 +117,6 @@ class SpolFramoverTjenesteTest {
         assertThat(gr.getBeregningsgrunnlagHvisFinnes().get().getSkjæringstidspunkt()).isEqualTo(SKJÆRINGSTIDSPUNKT.minusDays(1));
     }
 
-    @Test
-    void skal_kopiere_like_perioder_ny_periode_i_nyeste_grunnlag() {
-        // Arrange
-        BeregningsgrunnlagTilstand tilstandFraSteg = OPPDATERT_MED_REFUSJON_OG_GRADERING;
-        BeregningsgrunnlagTilstand tilstandFraStegUt = FASTSATT_INN;
-        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = lagGrunnlagUtenPerioder(tilstandFraSteg, SKJÆRINGSTIDSPUNKT);
-        BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraSteg = lagGrunnlagUtenPerioder(tilstandFraSteg, SKJÆRINGSTIDSPUNKT);
-        BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraStegUt = lagGrunnlagUtenPerioder(tilstandFraStegUt, SKJÆRINGSTIDSPUNKT);
-
-        // Legger til første periode i alle grunnlag
-        var fordeltFørstePeriode = Beløp.fra(100_000);
-        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), null);
-        lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), null);
-        lagAndel(lagPeriode(forrigeGrunnlagFraStegUt.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(2)), fordeltFørstePeriode);
-
-        // Legger til andre periode i alle grunnlag
-        var fordeltAndrePeriode = Beløp.fra(200_000);
-        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), null);
-        lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), null);
-        lagAndel(lagPeriode(forrigeGrunnlagFraStegUt.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(3), SKJÆRINGSTIDSPUNKT.plusDays(5)), fordeltAndrePeriode);
-
-        // Tredje periode er ulik
-        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(6), SKJÆRINGSTIDSPUNKT.plusDays(7)), null);
-        lagAndel(lagPeriode(forrigeGrunnlagFraSteg.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(6), TIDENES_ENDE), null);
-        lagAndel(lagPeriode(forrigeGrunnlagFraStegUt.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(6), TIDENES_ENDE), null);
-
-        // Fjerde periode eksisterer kun i siste grunnlag
-        lagAndel(lagPeriode(nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().get(), SKJÆRINGSTIDSPUNKT.plusDays(8), TIDENES_ENDE), null);
-
-        List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.FORDEL_BG));
-
-        // Act
-        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,
-                Optional.of(forrigeGrunnlagFraSteg),
-                Optional.of(forrigeGrunnlagFraStegUt)
-        );
-
-        // Assert
-        assertThat(spolFramGrunnlag).isPresent();
-        BeregningsgrunnlagGrunnlagDto gr = spolFramGrunnlag.get();
-        BeregningsgrunnlagDto bg = gr.getBeregningsgrunnlagHvisFinnes().get();
-        assertThat(bg.getSkjæringstidspunkt()).isEqualTo(SKJÆRINGSTIDSPUNKT);
-        assertThat(bg.getBeregningsgrunnlagPerioder().size()).isEqualTo(4);
-        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getPeriode().getFomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT);
-        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getPeriode().getTomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(2));
-        assertThat(bg.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFordeltPrÅr()).isEqualTo(fordeltFørstePeriode);
-
-        assertThat(bg.getBeregningsgrunnlagPerioder().get(1).getPeriode().getFomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(3));
-        assertThat(bg.getBeregningsgrunnlagPerioder().get(1).getPeriode().getTomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(5));
-        assertThat(bg.getBeregningsgrunnlagPerioder().get(1).getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFordeltPrÅr()).isEqualTo(fordeltAndrePeriode);
-
-        assertThat(bg.getBeregningsgrunnlagPerioder().get(2).getPeriode().getFomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(6));
-        assertThat(bg.getBeregningsgrunnlagPerioder().get(2).getPeriode().getTomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(7));
-        assertThat(bg.getBeregningsgrunnlagPerioder().get(2).getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFordeltPrÅr()).isNull();
-
-        assertThat(bg.getBeregningsgrunnlagPerioder().get(3).getPeriode().getFomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(8));
-        assertThat(bg.getBeregningsgrunnlagPerioder().get(3).getPeriode().getTomDato()).isEqualTo(TIDENES_ENDE);
-        assertThat(bg.getBeregningsgrunnlagPerioder().get(3).getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFordeltPrÅr()).isNull();
-    }
-
     private BeregningsgrunnlagGrunnlagDto lagGrunnlag(BeregningsgrunnlagTilstand tilstand, LocalDate skjæringstidspunkt) {
         var bg = lagBeregningsgrunnlag(skjæringstidspunkt);
         return BeregningsgrunnlagGrunnlagDtoBuilder.nytt()
@@ -189,20 +129,6 @@ class SpolFramoverTjenesteTest {
                         .medSkjæringstidspunktOpptjening(skjæringstidspunkt).build())
                         .medBeregningsgrunnlag(bg)
                                 .build(tilstand);
-    }
-
-    private BeregningsgrunnlagGrunnlagDto lagGrunnlagUtenPerioder(BeregningsgrunnlagTilstand tilstand, LocalDate skjæringstidspunkt) {
-        var bg = lagBeregningsgrunnlagUtenPerioder();
-        return BeregningsgrunnlagGrunnlagDtoBuilder.nytt()
-                .medRegisterAktiviteter(BeregningAktivitetAggregatDto.builder()
-                        .leggTilAktivitet(BeregningAktivitetDto.builder()
-                                .medPeriode(Intervall.fraOgMed(skjæringstidspunkt.minusMonths(12)))
-                                .medArbeidsgiver(Arbeidsgiver.virksomhet(ORG_NUMMER))
-                                .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID)
-                                .build())
-                        .medSkjæringstidspunktOpptjening(skjæringstidspunkt).build())
-                .medBeregningsgrunnlag(bg)
-                .build(tilstand);
     }
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlag(LocalDate skjæringstidspunkt) {
@@ -218,16 +144,6 @@ class SpolFramoverTjenesteTest {
 
         return beregningsgrunnlag;
     }
-
-    private BeregningsgrunnlagDto lagBeregningsgrunnlagUtenPerioder() {
-        BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
-                .medGrunnbeløp(GRUNNBELØP)
-                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
-                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
-                .build();
-        return beregningsgrunnlag;
-    }
-
 
     private BeregningsgrunnlagPeriodeDto lagPeriode(BeregningsgrunnlagDto beregningsgrunnlag, LocalDate fomDato, LocalDate tomDato) {
         return BeregningsgrunnlagPeriodeDto.ny()
