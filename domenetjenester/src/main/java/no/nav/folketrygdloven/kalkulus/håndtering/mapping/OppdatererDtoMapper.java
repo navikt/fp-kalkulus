@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulus.håndtering.mapping;
 import java.util.List;
 
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.DagpengeAndelLagtTilBesteberegningDto;
-import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FastsettInntektForArbeidUnderAAPDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.OverstyrBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.avklaraktiviteter.AvklarteAktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.avklaraktiviteter.BeregningsaktivitetLagreDto;
@@ -109,13 +108,8 @@ public class OppdatererDtoMapper {
             fakta.getFastsettEtterlønnSluttpakke() == null ? null : mapFastsettEtterlønnSluttpakker(fakta.getFastsettEtterlønnSluttpakke()),
             fakta.getMottarYtelse() == null ? null : mapMottarYtelse(fakta.getMottarYtelse()),
             fakta.getVurderMilitaer() == null ? null : mapVurderMilitær(fakta.getVurderMilitaer()),
-            fakta.getRefusjonskravGyldighet() == null ? null : mapRefusjonskravPrArbeidsgiverVurderingDto(fakta.getRefusjonskravGyldighet()),
-            fakta.getFastsettInntektForArbeidUnderAAP() == null ? null : mapFastsattArbeidsinntektUnderAAP(fakta.getFastsettInntektForArbeidUnderAAP())
+            fakta.getRefusjonskravGyldighet() == null ? null : mapRefusjonskravPrArbeidsgiverVurderingDto(fakta.getRefusjonskravGyldighet())
         );
-    }
-
-    private static FastsettInntektForArbeidUnderAAPDto mapFastsattArbeidsinntektUnderAAP(no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsettInntektForArbeidUnderAAPDto fastsettInntektForArbeidUnderAAP) {
-        return new FastsettInntektForArbeidUnderAAPDto(fastsettInntektForArbeidUnderAAP.getFastsattPrMnd());
     }
 
     private static List<no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.RefusjonskravPrArbeidsgiverVurderingDto> mapRefusjonskravPrArbeidsgiverVurderingDto(List<RefusjonskravPrArbeidsgiverVurderingDto> refusjonskravGyldighet) {

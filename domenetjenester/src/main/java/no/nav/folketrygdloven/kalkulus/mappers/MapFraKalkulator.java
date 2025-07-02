@@ -74,7 +74,6 @@ public class MapFraKalkulator {
                         input, beregningsgrunnlagGrunnlagEntitet));
 
         utenGrunnbeløp.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
-        utenGrunnbeløp.leggTilToggle("aap.praksisendring", !Environment.current().isProd());
         return beregningsgrunnlagGrunnlagEntitet.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag)
                 .map(utenGrunnbeløp::medBeregningsgrunnlagGrunnlag)
                 .orElse(utenGrunnbeløp);
