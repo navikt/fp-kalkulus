@@ -2,6 +2,8 @@ package no.nav.folketrygdloven.kalkulus.kopiering;
 
 import static no.nav.folketrygdloven.kalkulus.felles.jpa.AbstractIntervall.TIDENES_ENDE;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FASTSATT_INN;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.KOFAKBER_UT;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -9,6 +11,8 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
 import java.util.Optional;
+
+import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 
 import org.junit.jupiter.api.Test;
 
@@ -87,12 +91,34 @@ class SpolFramoverTjenesteTest {
 
         // Act
         var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,
-                Optional.of(forrigeGrunnlagFraSteg),
-                Optional.of(forrigeGrunnlagFraStegUt)
+            Optional.of(forrigeGrunnlagFraSteg),
+            Optional.of(forrigeGrunnlagFraStegUt)
         );
 
         // Assert
         assertThat(spolFramGrunnlag).isEmpty();
+    }
+
+    @Test
+    void skal_ikke_spole_hvis_forrige_steg_ut_grunnlag_har_andre_fakta_tilfeller() {
+        // Arrange
+        BeregningsgrunnlagTilstand tilstandFraSteg = OPPDATERT_MED_ANDELER;
+        BeregningsgrunnlagTilstand tilstandFraStegUt = KOFAKBER_UT;
+        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = lagGrunnlag(tilstandFraSteg, SKJÆRINGSTIDSPUNKT);
+        BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraSteg = lagGrunnlag(tilstandFraSteg, SKJÆRINGSTIDSPUNKT);
+        BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraStegUt = lagGrunnlag(tilstandFraStegUt, SKJÆRINGSTIDSPUNKT.minusDays(1), FaktaOmBeregningTilfelle.VURDER_REFUSJONSKRAV_SOM_HAR_KOMMET_FOR_SENT);
+        List<BeregningAvklaringsbehovResultat> avklaringsbehov = List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.OVST_INNTEKT));
+
+        // Act
+        var spolFramGrunnlag = SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(avklaringsbehov, nyttGrunnlag,
+            Optional.of(forrigeGrunnlagFraSteg),
+            Optional.of(forrigeGrunnlagFraStegUt)
+        );
+
+        // Assert
+        assertThat(spolFramGrunnlag).isPresent();
+        BeregningsgrunnlagGrunnlagDto gr = spolFramGrunnlag.get();
+        assertThat(gr.getBeregningsgrunnlagHvisFinnes().get().getSkjæringstidspunkt()).isEqualTo(SKJÆRINGSTIDSPUNKT.minusDays(1));
     }
 
     @Test
@@ -117,8 +143,8 @@ class SpolFramoverTjenesteTest {
         assertThat(gr.getBeregningsgrunnlagHvisFinnes().get().getSkjæringstidspunkt()).isEqualTo(SKJÆRINGSTIDSPUNKT.minusDays(1));
     }
 
-    private BeregningsgrunnlagGrunnlagDto lagGrunnlag(BeregningsgrunnlagTilstand tilstand, LocalDate skjæringstidspunkt) {
-        var bg = lagBeregningsgrunnlag(skjæringstidspunkt);
+    private BeregningsgrunnlagGrunnlagDto lagGrunnlag(BeregningsgrunnlagTilstand tilstand, LocalDate skjæringstidspunkt, FaktaOmBeregningTilfelle... tilfeller) {
+        var bg = lagBeregningsgrunnlag(skjæringstidspunkt, tilfeller);
         return BeregningsgrunnlagGrunnlagDtoBuilder.nytt()
                 .medRegisterAktiviteter(BeregningAktivitetAggregatDto.builder()
                         .leggTilAktivitet(BeregningAktivitetDto.builder()
@@ -131,11 +157,13 @@ class SpolFramoverTjenesteTest {
                                 .build(tilstand);
     }
 
-    private BeregningsgrunnlagDto lagBeregningsgrunnlag(LocalDate skjæringstidspunkt) {
+    private BeregningsgrunnlagDto lagBeregningsgrunnlag(LocalDate skjæringstidspunkt, FaktaOmBeregningTilfelle... tilfeller) {
+        var tilfellerListe = List.of(tilfeller);
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
                 .medGrunnbeløp(GRUNNBELØP)
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
                 .medSkjæringstidspunkt(skjæringstidspunkt)
+                .leggTilFaktaOmBeregningTilfeller(tilfellerListe)
                 .build();
 
         BeregningsgrunnlagPeriodeDto periode = lagPeriode(beregningsgrunnlag, SKJÆRINGSTIDSPUNKT,TIDENES_ENDE);

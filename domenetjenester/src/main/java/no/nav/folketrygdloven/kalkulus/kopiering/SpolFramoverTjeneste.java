@@ -3,8 +3,10 @@ package no.nav.folketrygdloven.kalkulus.kopiering;
 import static no.nav.folketrygdloven.kalkulus.kopiering.KanKopierBeregningsgrunnlag.kanKopiereForrigeGrunnlagAvklartIStegUt;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 
@@ -30,6 +32,17 @@ public final class SpolFramoverTjeneste {
                                                                                        Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlagFraStegUt) {
 
         boolean kanSpoleFramHeleGrunnlaget = kanKopiereForrigeGrunnlagAvklartIStegUt(avklaringsbehov, nyttGrunnlag, forrigeGrunnlagFraSteg);
-        return kanSpoleFramHeleGrunnlaget ? forrigeGrunnlagFraStegUt : Optional.empty();
+
+        // Denne trengs intill vi får løst TFP-6324
+        var harSammeTilfeller = harSammeTilfeller(nyttGrunnlag, forrigeGrunnlagFraStegUt);
+
+        return harSammeTilfeller && kanSpoleFramHeleGrunnlaget ? forrigeGrunnlagFraStegUt : Optional.empty();
+    }
+
+    private static boolean harSammeTilfeller(BeregningsgrunnlagGrunnlagDto nyttGrunnlag, Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlagFraStegUt) {
+        var nyeTilfeller = nyttGrunnlag.getBeregningsgrunnlagHvisFinnes().map(BeregningsgrunnlagDto::getFaktaOmBeregningTilfeller).orElse(List.of());
+        var tilfellerFraForrigeGrunnlagFraStegUt = forrigeGrunnlagFraStegUt.map(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag).map(BeregningsgrunnlagDto::getFaktaOmBeregningTilfeller).orElse(
+            List.of());
+        return nyeTilfeller.size() == tilfellerFraForrigeGrunnlagFraStegUt.size() && nyeTilfeller.containsAll(tilfellerFraForrigeGrunnlagFraStegUt);
     }
 }
