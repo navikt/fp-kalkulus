@@ -46,7 +46,6 @@ public class MapFraKalkulator {
         }
         return arbeidsgiver.getErOrganisasjon() ? Arbeidsgiver.virksomhet(arbeidsgiver.getIdent()) : Arbeidsgiver.person(
             new AktørId(arbeidsgiver.getIdent()));
-
     }
 
     public static BeregningsgrunnlagInput mapFraKalkulatorInputTilBeregningsgrunnlagInput(KoblingEntitet kobling,
