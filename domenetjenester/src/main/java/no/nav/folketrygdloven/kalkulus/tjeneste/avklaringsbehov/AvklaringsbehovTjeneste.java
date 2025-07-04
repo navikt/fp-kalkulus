@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -73,10 +72,6 @@ public class AvklaringsbehovTjeneste {
         return avklaringsbehovRepository.hentAvklaringsbehovForKobling(kobling, definisjon);
     }
 
-    public List<AvklaringsbehovEntitet> hentAlleAvklaringsbehovForKoblinger(Collection<Long> koblingIder) {
-        return avklaringsbehovRepository.hentAvklaringsbehovforKoblinger(koblingIder);
-    }
-
     public void løsAvklaringsbehov(Long koblingId, AvklaringsbehovDefinisjon definisjon, String begrunnelse) {
         // Guard mot å løse avklaringsbehov i ugyldig state
         validerAtABKanLøses(definisjon, koblingId);
@@ -86,14 +81,6 @@ public class AvklaringsbehovTjeneste {
         AvklaringsbehovEntitet avklaringsbehovEntitet = avklaringsbehovRepository.hentAvklaringsbehovForKobling(kobling, definisjon).orElseThrow();
         avklaringsbehovKontrollTjeneste.løs(avklaringsbehovEntitet, begrunnelse);
         avklaringsbehovRepository.lagre(avklaringsbehovEntitet);
-    }
-
-    public void avbrytAndreAvklaringsbehovISammeSteg(Long koblingId, AvklaringsbehovDefinisjon definisjon) {
-        hentAlleAvklaringsbehovForKobling(koblingId).forEach(ap -> {
-            if (!definisjon.equals(ap.getDefinisjon()) && ap.getStegFunnet().equals(definisjon.getStegFunnet())) {
-                avbrytAvklaringsbehov(koblingId, ap);
-            }
-        });
     }
 
     public void løsAndreAvklaringsbehovISammeSteg(Long koblingId, AvklaringsbehovDefinisjon definisjon, String begrunnelse) {
