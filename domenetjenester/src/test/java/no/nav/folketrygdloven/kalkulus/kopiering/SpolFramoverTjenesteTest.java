@@ -116,9 +116,7 @@ class SpolFramoverTjenesteTest {
         );
 
         // Assert
-        assertThat(spolFramGrunnlag).isPresent();
-        BeregningsgrunnlagGrunnlagDto gr = spolFramGrunnlag.get();
-        assertThat(gr.getBeregningsgrunnlagHvisFinnes().get().getSkjæringstidspunkt()).isEqualTo(SKJÆRINGSTIDSPUNKT.minusDays(1));
+        assertThat(spolFramGrunnlag).isEmpty();
     }
 
     @Test
