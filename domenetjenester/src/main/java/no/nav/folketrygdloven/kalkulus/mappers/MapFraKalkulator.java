@@ -44,7 +44,8 @@ public class MapFraKalkulator {
         if (arbeidsgiver == null) {
             return null;
         }
-        return arbeidsgiver.getErOrganisasjon() ? Arbeidsgiver.virksomhet(arbeidsgiver.getIdent()) : Arbeidsgiver.person(new AktørId(arbeidsgiver.getIdent()));
+        return arbeidsgiver.getErOrganisasjon() ? Arbeidsgiver.virksomhet(arbeidsgiver.getIdent()) : Arbeidsgiver.person(
+            new AktørId(arbeidsgiver.getIdent()));
 
     }
 
@@ -56,8 +57,9 @@ public class MapFraKalkulator {
         var ytelseType = kobling.getYtelseType();
         var aktørId = new no.nav.folketrygdloven.kalkulus.typer.AktørId(kobling.getAktørId().getId());
         var build = Skjæringstidspunkt.builder()
-                .medFørsteUttaksdato(finnFørsteUttaksdato(input))
-                .medSkjæringstidspunktOpptjening(input.getSkjæringstidspunkt()).build();
+            .medFørsteUttaksdato(finnFørsteUttaksdato(input))
+            .medSkjæringstidspunktOpptjening(input.getSkjæringstidspunkt())
+            .build();
 
         var ref = KoblingReferanse.fra(ytelseType, aktørId, koblingId, kobling.getKoblingReferanse().getReferanse(), Optional.empty(), build);
 
@@ -66,17 +68,15 @@ public class MapFraKalkulator {
         var kravPrArbeidsforhold = input.getRefusjonskravPrArbeidsforhold();
 
         var iayGrunnlagMappet = mapIAYGrunnlag(iayGrunnlag);
-        BeregningsgrunnlagInput utenGrunnbeløp = new BeregningsgrunnlagInput(ref,
-                iayGrunnlagMappet,
-                mapOpptjeningsaktiviteter(opptjeningAktiviteter),
-                mapKravperioder(kravPrArbeidsforhold, input.getRefusjonskravDatoer(), iayGrunnlag, input.getSkjæringstidspunkt()),
-                mapYtelsespesifiktGrunnlag(kobling.getYtelseType(),
-                        input, beregningsgrunnlagGrunnlagEntitet));
+        BeregningsgrunnlagInput utenGrunnbeløp = new BeregningsgrunnlagInput(ref, iayGrunnlagMappet, mapOpptjeningsaktiviteter(opptjeningAktiviteter),
+            mapKravperioder(kravPrArbeidsforhold, input.getRefusjonskravDatoer(), iayGrunnlag, input.getSkjæringstidspunkt()),
+            mapYtelsespesifiktGrunnlag(kobling.getYtelseType(), input, beregningsgrunnlagGrunnlagEntitet));
 
         utenGrunnbeløp.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
+        utenGrunnbeløp.leggTilToggle("aap.praksisendring", erAAPPraksisendringAktiv());
         return beregningsgrunnlagGrunnlagEntitet.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag)
-                .map(utenGrunnbeløp::medBeregningsgrunnlagGrunnlag)
-                .orElse(utenGrunnbeløp);
+            .map(utenGrunnbeløp::medBeregningsgrunnlagGrunnlag)
+            .orElse(utenGrunnbeløp);
     }
 
     private static LocalDate finnFørsteUttaksdato(KalkulatorInputDto input) {
@@ -86,7 +86,10 @@ public class MapFraKalkulator {
         return input.getSkjæringstidspunkt();
     }
 
-    public static List<KravperioderPrArbeidsforholdDto> mapKravperioder(List<KravperioderPrArbeidsforhold> kravPrArbeidsforhold, List<RefusjonskravDatoDto> refusjonskravDatoer, InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDate stp) {
+    public static List<KravperioderPrArbeidsforholdDto> mapKravperioder(List<KravperioderPrArbeidsforhold> kravPrArbeidsforhold,
+                                                                        List<RefusjonskravDatoDto> refusjonskravDatoer,
+                                                                        InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                                                        LocalDate stp) {
         if (kravPrArbeidsforhold == null) {
             // For å kunne mappe kall for å hente gui-dto for gamle saker
             kravPrArbeidsforhold = LagKravperioder.lagKravperioderPrArbeidsforhold(refusjonskravDatoer, iayGrunnlag, stp);
@@ -96,20 +99,18 @@ public class MapFraKalkulator {
 
     private static KravperioderPrArbeidsforholdDto mapKravPerioder(KravperioderPrArbeidsforhold kravperioderPrArbeidsforhold) {
         return new KravperioderPrArbeidsforholdDto(mapArbeidsgiver(kravperioderPrArbeidsforhold.getArbeidsgiver()),
-                mapArbeidsforholdRef(kravperioderPrArbeidsforhold.getInternreferanse()),
-                kravperioderPrArbeidsforhold.getAlleSøktePerioder()
-                        .stream().map(MapFraKalkulator::mapSøktPeriode)
-                        .toList(),
-                kravperioderPrArbeidsforhold.getSisteSøktePerioder().getRefusjonsperioder().stream()
-                        .map(Refusjonsperiode::getPeriode)
-                        .map(MapFraKalkulator::mapPeriode)
-                        .toList());
+            mapArbeidsforholdRef(kravperioderPrArbeidsforhold.getInternreferanse()),
+            kravperioderPrArbeidsforhold.getAlleSøktePerioder().stream().map(MapFraKalkulator::mapSøktPeriode).toList(),
+            kravperioderPrArbeidsforhold.getSisteSøktePerioder()
+                .getRefusjonsperioder()
+                .stream()
+                .map(Refusjonsperiode::getPeriode)
+                .map(MapFraKalkulator::mapPeriode)
+                .toList());
     }
 
     private static PerioderForKravDto mapSøktPeriode(PerioderForKrav p) {
-        return new PerioderForKravDto(p.getInnsendingsdato(), p.getRefusjonsperioder()
-                .stream().map(MapFraKalkulator::mapRefusjonsperiode)
-                .toList());
+        return new PerioderForKravDto(p.getInnsendingsdato(), p.getRefusjonsperioder().stream().map(MapFraKalkulator::mapRefusjonsperiode).toList());
     }
 
     private static RefusjonsperiodeDto mapRefusjonsperiode(Refusjonsperiode rp) {
@@ -121,28 +122,28 @@ public class MapFraKalkulator {
                                                                      Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
         var ytelsespesifiktGrunnlag = input.getYtelsespesifiktGrunnlag();
         return switch (ytelseType) {
-            case FORELDREPENGER -> mapForeldrepengerGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag)ytelsespesifiktGrunnlag, beregningsgrunnlagGrunnlagEntitet);
-            case SVANGERSKAPSPENGER -> mapSvangerskapspengerGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.SvangerskapspengerGrunnlag) ytelsespesifiktGrunnlag);
+            case FORELDREPENGER ->
+                mapForeldrepengerGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag) ytelsespesifiktGrunnlag,
+                    beregningsgrunnlagGrunnlagEntitet);
+            case SVANGERSKAPSPENGER ->
+                mapSvangerskapspengerGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.SvangerskapspengerGrunnlag) ytelsespesifiktGrunnlag);
             default -> throw new IllegalStateException("Det er ikke definert ytelsespesifikt grunnlag for ytelse " + ytelseType);
         };
     }
 
     public static no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto mapOpptjeningsaktiviteter(OpptjeningAktiviteterDto opptjeningAktiviteter) {
-        return new no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto(
-                opptjeningAktiviteter.getPerioder().stream()
-                        .map(opptjeningPeriodeDto -> no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto.nyPeriode(
-                                opptjeningPeriodeDto.getOpptjeningAktivitetType(),
-                                mapPeriode(opptjeningPeriodeDto.getPeriode()),
-                                opptjeningPeriodeDto.getArbeidsgiver() != null && opptjeningPeriodeDto.getArbeidsgiver().getErOrganisasjon()
-                                        ? opptjeningPeriodeDto.getArbeidsgiver().getIdent()
-                                        : null,
-                                opptjeningPeriodeDto.getArbeidsgiver() != null && opptjeningPeriodeDto.getArbeidsgiver().getErPerson()
-                                        ? opptjeningPeriodeDto.getArbeidsgiver().getIdent()
-                                        : null,
-                                opptjeningPeriodeDto.getAbakusReferanse() != null
-                                        ? InternArbeidsforholdRefDto.ref(opptjeningPeriodeDto.getAbakusReferanse().getAbakusReferanse())
-                                        : null))
-                        .toList(), opptjeningAktiviteter.getMidlertidigInaktivType() != null ? MidlertidigInaktivType.valueOf(opptjeningAktiviteter.getMidlertidigInaktivType().name()) : null);
+        return new no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto(opptjeningAktiviteter.getPerioder()
+            .stream()
+            .map(opptjeningPeriodeDto -> no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto.nyPeriode(
+                opptjeningPeriodeDto.getOpptjeningAktivitetType(), mapPeriode(opptjeningPeriodeDto.getPeriode()),
+                opptjeningPeriodeDto.getArbeidsgiver() != null && opptjeningPeriodeDto.getArbeidsgiver()
+                    .getErOrganisasjon() ? opptjeningPeriodeDto.getArbeidsgiver().getIdent() : null,
+                opptjeningPeriodeDto.getArbeidsgiver() != null && opptjeningPeriodeDto.getArbeidsgiver()
+                    .getErPerson() ? opptjeningPeriodeDto.getArbeidsgiver().getIdent() : null,
+                opptjeningPeriodeDto.getAbakusReferanse() != null ? InternArbeidsforholdRefDto.ref(
+                    opptjeningPeriodeDto.getAbakusReferanse().getAbakusReferanse()) : null))
+            .toList(), opptjeningAktiviteter.getMidlertidigInaktivType() != null ? MidlertidigInaktivType.valueOf(
+            opptjeningAktiviteter.getMidlertidigInaktivType().name()) : null);
     }
 
     private static no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto mapIAYGrunnlag(InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
@@ -153,4 +154,11 @@ public class MapFraKalkulator {
         return Intervall.fraOgMedTilOgMed(periode.getFom(), periode.getTom());
     }
 
+    private static boolean erAAPPraksisendringAktiv() {
+        if (Environment.current().isProd()) {
+            return !LocalDate.now().isBefore(LocalDate.of(2025, 9, 1));
+        } else {
+            return true;
+        }
+    }
 }
