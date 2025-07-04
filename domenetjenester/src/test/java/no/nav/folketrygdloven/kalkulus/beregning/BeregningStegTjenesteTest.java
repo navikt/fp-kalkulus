@@ -16,6 +16,8 @@ import no.nav.folketrygdloven.kalkulus.dbstoette.JpaExtension;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
 
+import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -291,7 +293,7 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
 
         // Act 2
         avbrytAvklaringsBehov(kobling);
-        var bekreftetBG = lagBG(ORGNR, true).build(BeregningsgrunnlagTilstand.KOFAKBER_UT);
+        var bekreftetBG = lagBG(ORGNR, true, FaktaOmBeregningTilfelle.VURDER_LØNNSENDRING).build(BeregningsgrunnlagTilstand.KOFAKBER_UT);
         var faktaInput2 = new FaktaOmBeregningInput(new StegProsesseringInput(inputMedBG, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER)
                 .medForrigeGrunnlagFraSteg(BehandlingslagerTilKalkulusMapper.mapGrunnlag(nyttBG.get())).medForrigeGrunnlagFraStegUt(bekreftetBG))
                 .medGrunnbeløpInput(List.of(new GrunnbeløpInput(Tid.TIDENES_BEGYNNELSE, Tid.TIDENES_ENDE, 100000L, 100000L)));
@@ -380,10 +382,11 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
         return yaBuilder.build();
     }
 
-    private BeregningsgrunnlagGrunnlagDtoBuilder lagBG(String orgnr, boolean medFaktaAggregat) {
+    private BeregningsgrunnlagGrunnlagDtoBuilder lagBG(String orgnr, boolean medFaktaAggregat, FaktaOmBeregningTilfelle... tilfeller) {
         var bg = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(STP)
                 .medGrunnbeløp(Beløp.fra(99_000))
+                .leggTilFaktaOmBeregningTilfeller(List.of(tilfeller))
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
                 .build();
         var periode = BeregningsgrunnlagPeriodeDto.ny().medBeregningsgrunnlagPeriode(STP, null).build(bg);
