@@ -9,15 +9,9 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
-import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
-import no.nav.folketrygdloven.kalkulus.kodeverk.Kodeverdi;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
@@ -25,8 +19,7 @@ import no.nav.folketrygdloven.kalkulus.felles.diff.DiffEntity;
 import no.nav.folketrygdloven.kalkulus.felles.diff.DiffResult;
 import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseGraph;
 import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseJpaEntityGraphConfig;
-import no.nav.folketrygdloven.kalkulus.typer.AktørId;
-import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Kodeverdi;
 import no.nav.vedtak.felles.jpa.HibernateVerktøy;
 
 @ApplicationScoped
@@ -53,12 +46,6 @@ public class KoblingRepository {
     public Optional<KoblingEntitet> hentKoblingMedId(Long id) {
         TypedQuery<KoblingEntitet> query = entityManager.createQuery("FROM Kobling k WHERE id = :id", KoblingEntitet.class);
         query.setParameter("id", id);
-        return HibernateVerktøy.hentUniktResultat(query);
-    }
-
-    public Optional<KoblingEntitet> hentKoblingFor(KoblingReferanse referanse) {
-        TypedQuery<KoblingEntitet> query = entityManager.createQuery("FROM Kobling k WHERE k.koblingReferanse = :referanse", KoblingEntitet.class);
-        query.setParameter("referanse", referanse);
         return HibernateVerktøy.hentUniktResultat(query);
     }
 

@@ -7,15 +7,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import no.nav.folketrygdloven.kalkulus.dbstoette.JpaExtension;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovKontrollTjeneste;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
@@ -31,7 +29,6 @@ import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
 class AvklaringsbehovTjenesteTest extends EntityManagerAwareTest {
     private AvklaringsbehovRepository avklaringsbehovRepository;
     private KoblingRepository koblingRepository;
-    private AvklaringsbehovKontrollTjeneste avklaringsbehovKontrollTjeneste = new AvklaringsbehovKontrollTjeneste();
     private KoblingEntitet kobling;
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
 

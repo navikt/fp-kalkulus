@@ -20,7 +20,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.HåndtererApplikasjonTjeneste;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
-import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.response.v1.KalkulusRespons;
@@ -29,7 +28,6 @@ import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTj
 @ApplicationScoped
 public class OperereKalkulusOrkestrerer {
 
-    private KoblingTjeneste koblingTjeneste;
     private BeregningStegTjeneste beregningStegTjeneste;
     private StegProsessInputTjeneste stegInputTjeneste;
     private HåndteringInputTjeneste håndteringInputTjeneste;
@@ -41,13 +39,11 @@ public class OperereKalkulusOrkestrerer {
     }
 
     @Inject
-    public OperereKalkulusOrkestrerer(KoblingTjeneste koblingTjeneste,
-                                      BeregningStegTjeneste beregningStegTjeneste,
+    public OperereKalkulusOrkestrerer(BeregningStegTjeneste beregningStegTjeneste,
                                       StegProsessInputTjeneste stegInputTjeneste,
                                       HåndteringInputTjeneste håndteringInputTjeneste,
                                       HåndtererApplikasjonTjeneste håndtererApplikasjonTjeneste,
                                       RullTilbakeTjeneste rullTilbakeTjeneste) {
-        this.koblingTjeneste = koblingTjeneste;
         this.beregningStegTjeneste = beregningStegTjeneste;
         this.stegInputTjeneste = stegInputTjeneste;
         this.håndteringInputTjeneste = håndteringInputTjeneste;

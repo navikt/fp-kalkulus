@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulus.kopiering;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.Set;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -10,7 +9,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAkti
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
-import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 @ApplicationScoped
 class KanKopierBeregningsgrunnlag {
@@ -36,13 +34,6 @@ class KanKopierBeregningsgrunnlag {
                 nyttGrunnlag.getBeregningsgrunnlagHvisFinnes(),
                 forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlagHvisFinnes));
         return kanKopiereAktiviteter && kanKopiereBeregningsgrunnlag;
-    }
-
-    static Set<Intervall> finnPerioderSomKanKopieres(Optional<BeregningsgrunnlagDto> nyttBg, Optional<BeregningsgrunnlagDto> forrigeBeregningsgrunnlag) {
-        if (nyttBg.isEmpty() || forrigeBeregningsgrunnlag.isEmpty()) {
-            return Set.of();
-        }
-        return BeregningsgrunnlagDiffSjekker.finnPerioderUtenDiff(nyttBg.get(), forrigeBeregningsgrunnlag.get());
     }
 
     private static boolean kanKopiereAktiviteter(BeregningsgrunnlagGrunnlagDto nyttGrunnlag,

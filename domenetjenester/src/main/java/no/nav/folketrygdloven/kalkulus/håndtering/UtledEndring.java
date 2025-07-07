@@ -58,16 +58,17 @@ public class UtledEndring {
                         forrigeGrunnlag.map(BeregningsgrunnlagGrunnlagDto::getRegisterAktiviteter),
                         forrigeGrunnlag.map(BeregningsgrunnlagGrunnlagDto::getGjeldendeAktiviteter))
                 .ifPresent(endringBuilder::medBeregningAktiviteterEndring);
-        mapFaktaOmBeregningEndring(beregningsgrunnlagGrunnlagDto, forrigeGrunnlag, dto, endringBuilder)
+        mapFaktaOmBeregningEndring(beregningsgrunnlagGrunnlagDto, forrigeGrunnlag, dto)
                 .ifPresent(endringBuilder::medFaktaOmBeregningVurderinger);
-        mapVarigEndretNæringEndring(forrigeGrunnlag, dto, endringBuilder, beregningsgrunnlagDto, iayGrunnlag)
+        mapVarigEndretNæringEndring(forrigeGrunnlag, dto, beregningsgrunnlagDto, iayGrunnlag)
                 .ifPresent(endringBuilder::medVarigEndretNæringEndring);
-        mapVarigEndretArbeidssituasjonEndring(forrigeGrunnlag, dto, endringBuilder, beregningsgrunnlagDto, iayGrunnlag)
+        mapVarigEndretArbeidssituasjonEndring(forrigeGrunnlag, dto, beregningsgrunnlagDto)
                 .ifPresent(endringBuilder::medVarigEndretArbeidssituasjonEndring);
         return endringBuilder.build();
     }
 
-    private static Optional<VarigEndretEllerNyoppstartetNæringEndring> mapVarigEndretNæringEndring(Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag, HåndterBeregningDto dto, Endringer.Builder endringBuilder, BeregningsgrunnlagDto beregningsgrunnlagDto, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+    private static Optional<VarigEndretEllerNyoppstartetNæringEndring> mapVarigEndretNæringEndring(Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag, HåndterBeregningDto dto,
+                                                                                                   BeregningsgrunnlagDto beregningsgrunnlagDto, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         if (dto instanceof VurderVarigEndringEllerNyoppstartetSNHåndteringDto) {
             return Optional.of(UtledVarigEndringEllerNyoppstartetVurderinger.utledForVarigEndretEllerNyoppstartetNæring(
                     beregningsgrunnlagDto,
@@ -78,7 +79,8 @@ public class UtledEndring {
         return Optional.empty();
     }
 
-    private static Optional<VarigEndretArbeidssituasjonEndring> mapVarigEndretArbeidssituasjonEndring(Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag, HåndterBeregningDto dto, Endringer.Builder endringBuilder, BeregningsgrunnlagDto beregningsgrunnlagDto, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+    private static Optional<VarigEndretArbeidssituasjonEndring> mapVarigEndretArbeidssituasjonEndring(Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag, HåndterBeregningDto dto,
+                                                                                                      BeregningsgrunnlagDto beregningsgrunnlagDto) {
         if (dto instanceof VurderVarigEndretArbeidssituasjonHåndteringDto) {
             var endring = UtledVarigEndringEllerNyoppstartetVurderinger.utledEndring(
                     beregningsgrunnlagDto,
@@ -96,7 +98,7 @@ public class UtledEndring {
                 .orElseThrow(() -> new IllegalStateException("Forventet å finne brukersAndel"));
     }
 
-    private static Optional<FaktaOmBeregningVurderinger> mapFaktaOmBeregningEndring(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto, Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag, HåndterBeregningDto dto, Endringer.Builder endringBuilder) {
+    private static Optional<FaktaOmBeregningVurderinger> mapFaktaOmBeregningEndring(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto, Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag, HåndterBeregningDto dto) {
         if (dto instanceof FaktaOmBeregningHåndteringDto faktaOmBeregningHåndteringDto) {
             return Optional.ofNullable(UtledFaktaOmBeregningVurderinger.utled(
                     faktaOmBeregningHåndteringDto,

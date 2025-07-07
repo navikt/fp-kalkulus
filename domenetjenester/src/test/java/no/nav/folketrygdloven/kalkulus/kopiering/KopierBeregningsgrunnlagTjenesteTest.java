@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import no.nav.folketrygdloven.kalkulus.dbstoette.JpaExtension;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovKontrollTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.AndelArbeidsforholdEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.AktivitetAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
@@ -66,7 +65,6 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         koblingRepository = new KoblingRepository(getEntityManager());
         koblingRepository = new KoblingRepository(getEntityManager());
         avklaringsbehovRepository = new AvklaringsbehovRepository(getEntityManager());
-        AvklaringsbehovKontrollTjeneste avklaringsbehovKontrollTjeneste = new AvklaringsbehovKontrollTjeneste();
         avklaringsbehovTjeneste = new AvklaringsbehovTjeneste(avklaringsbehovRepository, koblingRepository);
         var koblingTjeneste = new KoblingTjeneste(koblingRepository);
         tjeneste = new KopierBeregningsgrunnlagTjeneste(koblingTjeneste, repository, avklaringsbehovTjeneste);
