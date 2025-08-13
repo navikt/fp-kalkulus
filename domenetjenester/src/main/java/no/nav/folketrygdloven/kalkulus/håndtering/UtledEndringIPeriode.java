@@ -7,7 +7,6 @@ import java.util.Optional;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
-import no.nav.folketrygdloven.kalkulus.håndtering.faktafordeling.UtledEndringINyeInntektsforhold;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningsgrunnlagPeriodeEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningsgrunnlagPrStatusOgAndelEndring;
 
@@ -24,7 +23,7 @@ class UtledEndringIPeriode {
         List<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndeler = forrigePeriode.map(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPrStatusOgAndelList).orElse(Collections.emptyList());
         BeregningsgrunnlagPeriodeEndring periodeEndring = new BeregningsgrunnlagPeriodeEndring(
                 utledAndelEndringer(andeler, andelerFraSteg, forrigeAndeler),
-                UtledEndringINyeInntektsforhold.utledEndringer(periode, forrigePeriode),
+                List.of(),
                 new Periode(periode.getBeregningsgrunnlagPeriodeFom(), periode.getBeregningsgrunnlagPeriodeTom())
                 );
         if (periodeEndring.getBeregningsgrunnlagPrStatusOgAndelEndringer().isEmpty() && periodeEndring.getNyttInntektsforholdEndringer().isEmpty()) {
