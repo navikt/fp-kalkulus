@@ -193,13 +193,16 @@ public class MapDetaljertBeregningsgrunnlag {
     }
 
     private static BeregningsgrunnlagPeriodeDto mapPeriode(BeregningsgrunnlagPeriodeEntitet beregningsgrunnlagPeriode) {
-        return new BeregningsgrunnlagPeriodeDto(mapAndeler(beregningsgrunnlagPeriode.getBeregningsgrunnlagAndelList()),
-            new Periode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom()),
-            mapBeløp(beregningsgrunnlagPeriode.getBruttoPrÅr()), mapBeløp(beregningsgrunnlagPeriode.getAvkortetPrÅr()),
-            mapBeløp(beregningsgrunnlagPeriode.getRedusertPrÅr()), beregningsgrunnlagPeriode.getDagsats(),
-            beregningsgrunnlagPeriode.getPeriodeÅrsaker(), beregningsgrunnlagPeriode.getTotalUtbetalingsgradFraUttak(),
-            null,
-            null); // Disse to feltene er ikke relevant for foreldrepenger eller svangerskapspenger
+        return new BeregningsgrunnlagPeriodeDto.Builder()
+            .medPeriode(new Periode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom()))
+            .medBeregningsgrunnlagPrStatusOgAndelList(mapAndeler(beregningsgrunnlagPeriode.getBeregningsgrunnlagAndelList()))
+            .medBruttoPrÅr(mapBeløp(beregningsgrunnlagPeriode.getBruttoPrÅr()))
+            .medAvkortetPrÅr(mapBeløp(beregningsgrunnlagPeriode.getAvkortetPrÅr()))
+            .medRedusertPrÅr(mapBeløp(beregningsgrunnlagPeriode.getRedusertPrÅr()))
+            .medDagsats(beregningsgrunnlagPeriode.getDagsats())
+            .medPeriodeÅrsaker(beregningsgrunnlagPeriode.getPeriodeÅrsaker())
+            .medTotalUtbetalingsgradFraUttak(beregningsgrunnlagPeriode.getTotalUtbetalingsgradFraUttak())
+            .build();
     }
 
     private static List<BeregningsgrunnlagPrStatusOgAndelDto> mapAndeler(List<BeregningsgrunnlagAndelEntitet> beregningsgrunnlagAndelList) {
