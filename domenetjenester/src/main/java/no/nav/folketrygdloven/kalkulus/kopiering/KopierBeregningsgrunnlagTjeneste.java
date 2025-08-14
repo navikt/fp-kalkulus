@@ -130,7 +130,7 @@ public class KopierBeregningsgrunnlagTjeneste {
         var skalGRegulere = gammeltGrunnbeløp != null && nyttGrunnbeløp.compareTo(gammeltGrunnbeløp.getVerdi()) > 0;
         if (skalGRegulere) {
             grunnlag.getBeregningsgrunnlag()
-                .map(bg -> kopi.medBeregningsgrunnlag(BeregningsgrunnlagEntitet.kopiere(bg).medGrunnbeløp(nyttGrunnbeløp).build()));
+                .ifPresent(bg -> kopi.medBeregningsgrunnlag(BeregningsgrunnlagEntitet.kopiere(bg).medGrunnbeløp(nyttGrunnbeløp).build()));
         }
         beregningsgrunnlagRepository.lagre(nyKoblingEntitet.getId(), kopi, tilstand);
     }
