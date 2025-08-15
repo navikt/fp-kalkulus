@@ -16,7 +16,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.migrering.MigrerBeregningsgrunnlagRequest;
 import no.nav.folketrygdloven.kalkulus.migrering.MigrerBeregningsgrunnlagResponse;
 import no.nav.folketrygdloven.kalkulus.request.v1.enkel.EnkelBeregnRequestDto;
@@ -113,15 +112,8 @@ public class OperereKalkulusRestTjeneste {
     @BeskyttetRessurs(actionType = ActionType.UPDATE, resourceType = ResourceType.FAGSAK, sporingslogg = true)
     public Response kopierBeregning(@TilpassetAbacAttributt(supplierClass = KopierBeregningsgrunnlagRequestAbacSupplier.class) @NotNull @Valid EnkelKopierBeregningsgrunnlagRequestDto request) {
         MDC.put("prosess_saksnummer", request.saksnummer().verdi());
-        // Saker som starter i foreslå er pga g-regulering og må spesialbehandles.
-        if (request.steg().equals(BeregningSteg.FORS_BERGRUNN)) {
-            Objects.requireNonNull(request.kalkulatorInput(), "kalkulatorInput");
-            kopierTjeneste.kopierGrunnlagForGregulering(new KoblingReferanse(request.behandlingUuid()),
-                new KoblingReferanse(request.originalBehandlingUuid()), new Saksnummer(request.saksnummer().verdi()), request.kalkulatorInput());
-        } else {
-            kopierTjeneste.kopierGrunnlagOgOpprettKoblinger(new KoblingReferanse(request.behandlingUuid()),
-                new KoblingReferanse(request.originalBehandlingUuid()), new Saksnummer(request.saksnummer().verdi()), request.steg());
-        }
+        kopierTjeneste.kopierGrunnlagOgOpprettKoblinger(new KoblingReferanse(request.behandlingUuid()),
+            new KoblingReferanse(request.originalBehandlingUuid()), new Saksnummer(request.saksnummer().verdi()), request.steg());
         return Response.ok().build();
     }
 
