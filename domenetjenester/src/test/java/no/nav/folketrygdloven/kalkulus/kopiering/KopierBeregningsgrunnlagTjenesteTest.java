@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.kopiering;
 
 import static no.nav.folketrygdloven.kalkulus.felles.jpa.AbstractIntervall.TIDENES_ENDE;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -124,7 +124,7 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         tjeneste.kopierGrunnlagForGregulering(nyReferanse, originalKoblingReferanse, SAK, input);
 
         var alleKoblinger = koblingRepository.hentAlleKoblingerForSaksnummer(SAK);
-        assertThat(alleKoblinger).hasSize(2);
+        assertThat(alleKoblinger.size()).isEqualTo(2);
         var nyKobling = alleKoblinger.stream().filter(k -> k.getKoblingReferanse().equals(nyReferanse)).findFirst();
         assertThat(nyKobling).isPresent();
 
@@ -153,7 +153,7 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         tjeneste.kopierGrunnlagOgOpprettKoblinger(nyReferanse, forrigeOriginalKoblingReferanse, SAK, BeregningSteg.FAST_BERGRUNN);
 
         var alleKoblinger = koblingRepository.hentAlleKoblingerForSaksnummer(SAK);
-        assertThat(alleKoblinger).hasSize(3);
+        assertThat(alleKoblinger.size()).isEqualTo(3);
         var nyKobling = alleKoblinger.stream().filter(k -> k.getKoblingReferanse().equals(nyReferanse)).findFirst();
         assertThat(nyKobling).isPresent();
 
