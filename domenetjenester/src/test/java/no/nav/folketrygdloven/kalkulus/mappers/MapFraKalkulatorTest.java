@@ -82,7 +82,7 @@ class MapFraKalkulatorTest {
         LocalDate skjæringstidspunkt = periode.getFom();
 
         KalkulatorInputDto kalkulatorInputDto = new KalkulatorInputDto(iayGrunnlag, opptjeningAktiviteter, skjæringstidspunkt);
-        kalkulatorInputDto.medYtelsespesifiktGrunnlag(new ForeldrepengerGrunnlag(BigDecimal.valueOf(100), false, aktivitetGraderingDto, Collections.emptyList(), skjæringstidspunkt));
+        kalkulatorInputDto.medYtelsespesifiktGrunnlag(new ForeldrepengerGrunnlag(BigDecimal.valueOf(100), false, aktivitetGraderingDto, Collections.emptyList()));
 
         return kalkulatorInputDto;
     }
