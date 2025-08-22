@@ -16,14 +16,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
-import no.nav.folketrygdloven.kalkulus.migrering.MigrerBeregningsgrunnlagRequest;
-import no.nav.folketrygdloven.kalkulus.migrering.MigrerBeregningsgrunnlagResponse;
-import no.nav.folketrygdloven.kalkulus.request.v1.enkel.EnkelBeregnRequestDto;
-import no.nav.folketrygdloven.kalkulus.request.v1.enkel.EnkelFpkalkulusRequestDto;
-import no.nav.folketrygdloven.kalkulus.request.v1.enkel.EnkelHåndterBeregningRequestDto;
-import no.nav.folketrygdloven.kalkulus.request.v1.enkel.EnkelKopierBeregningsgrunnlagRequestDto;
-
 import org.slf4j.MDC;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -32,17 +24,18 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import no.nav.folketrygdloven.kalkulus.beregning.MigreringTjeneste;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kopiering.KopierBeregningsgrunnlagTjeneste;
-import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapDetaljertBeregningsgrunnlag;
+import no.nav.folketrygdloven.kalkulus.request.v1.enkel.EnkelBeregnRequestDto;
+import no.nav.folketrygdloven.kalkulus.request.v1.enkel.EnkelFpkalkulusRequestDto;
+import no.nav.folketrygdloven.kalkulus.request.v1.enkel.EnkelHåndterBeregningRequestDto;
+import no.nav.folketrygdloven.kalkulus.request.v1.enkel.EnkelKopierBeregningsgrunnlagRequestDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.KalkulusRespons;
 import no.nav.folketrygdloven.kalkulus.response.v1.KopiResponse;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
@@ -68,7 +61,6 @@ public class OperereKalkulusRestTjeneste {
     private RullTilbakeTjeneste rullTilbakeTjeneste;
     private OperereKalkulusOrkestrerer orkestrerer;
     private KopierBeregningsgrunnlagTjeneste kopierTjeneste;
-    private MigreringTjeneste migreringTjeneste;
 
     public OperereKalkulusRestTjeneste() {
         // for CDI
@@ -78,13 +70,11 @@ public class OperereKalkulusRestTjeneste {
     public OperereKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste,
                                        RullTilbakeTjeneste rullTilbakeTjeneste,
                                        OperereKalkulusOrkestrerer orkestrerer,
-                                       KopierBeregningsgrunnlagTjeneste kopierTjeneste,
-                                       MigreringTjeneste migreringTjeneste) {
+                                       KopierBeregningsgrunnlagTjeneste kopierTjeneste) {
         this.koblingTjeneste = koblingTjeneste;
         this.rullTilbakeTjeneste = rullTilbakeTjeneste;
         this.orkestrerer = orkestrerer;
         this.kopierTjeneste = kopierTjeneste;
-        this.migreringTjeneste = migreringTjeneste;
     }
 
     @POST
@@ -187,66 +177,6 @@ public class OperereKalkulusRestTjeneste {
         return Response.ok().build();
     }
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/migrer")
-    @Operation(description = "Migrer et grunnlag på en kobling.", tags = "migrer", summary = ("Migrer et grunnlag på en kobling."))
-    @BeskyttetRessurs(actionType = ActionType.CREATE, resourceType = ResourceType.FAGSAK, sporingslogg = false)
-    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
-    public Response migrer(@TilpassetAbacAttributt(supplierClass = MigrerBeregningsgrunnlagRequestAbacSupplier.class) @NotNull @Valid MigrerBeregningsgrunnlagRequest request) {
-        validerYtelse(request.ytelseSomSkalBeregnes());
-        var saksnummer = new Saksnummer(request.saksnummer().verdi());
-        MDC.put("prosess_saksnummer", saksnummer.getVerdi());
-        var koblingReferanse = new KoblingReferanse(request.behandlingUuid());
-        MDC.put("prosess_koblingreferanse", koblingReferanse.getReferanse().toString());
-        if (!request.erAktivt()) {
-            // Vi har mulighet til å lagre inaktive grunlag på koblingen. I slike tilfeller sletter vi ingenting,
-            // og lagrer heller ikke regelsporinger / avklaringsbehov, da dette ligger på koblingsnivå
-            var kopt = koblingTjeneste.hentKobling(koblingReferanse);
-            var migreringsresultat = migreringTjeneste.mapOgLagreInaktivtGrunnlag(kopt, request.grunnlag());
-            var respons = mapMigreringRespons(migreringsresultat);
-            return Response.ok(respons).build();
-        }
-        var kopt = koblingTjeneste.hentKoblingOptional(koblingReferanse);
-
-        // Hvis koblingen finnes er den allerede migrert. Sletter lagret data for å kunne migrere på nytt
-        kopt.ifPresent(koblingEntitet -> migreringTjeneste.ryddGrunnlagAvklaringsbehovOgRegelsporing(koblingEntitet));
-
-        Optional<KoblingReferanse> originalKoblingRef =
-            request.originalBehandlingUuid() == null ? Optional.empty() : Optional.of(new KoblingReferanse(request.originalBehandlingUuid()));
-        var kobling = koblingTjeneste.finnEllerOpprett(new KoblingReferanse(request.behandlingUuid()),
-            request.ytelseSomSkalBeregnes(), new AktørId(request.aktør().getIdent()), saksnummer, originalKoblingRef);
-        koblingTjeneste.markerKoblingSomAvsluttet(kobling);
-        var migreringsresultat = migreringTjeneste.mapOgLagreGrunnlag(kobling, request.grunnlag());
-        var respons = mapMigreringRespons(migreringsresultat);
-        return Response.ok(respons).build();
-    }
-
-    private static MigrerBeregningsgrunnlagResponse mapMigreringRespons(MigreringTjeneste.Migreringsresultat migreringsresultat) {
-        var entitet = migreringsresultat.grunnlag();
-        var mappetGrunnlag = MapDetaljertBeregningsgrunnlag.map(entitet);
-        var bbGrunnlag = entitet.getBeregningsgrunnlag()
-            .flatMap(BeregningsgrunnlagEntitet::getBesteberegninggrunnlag)
-            .map(MapDetaljertBeregningsgrunnlag::mapBesteberegningsgrunlag);
-        var sporingerPeriode = migreringsresultat.periodeSporinger()
-            .stream()
-            .map(p -> new MigrerBeregningsgrunnlagResponse.RegelsporingPeriode(p.getRegelType(), p.getRegelEvaluering(), p.getRegelInput(),
-                p.getRegelVersjon(), new Periode(p.getPeriode().getFomDato(), p.getPeriode().getTomDato())))
-            .toList();
-        var sporingerGrunnlag= migreringsresultat.grunnlagSporinger()
-            .stream()
-            .map(p -> new MigrerBeregningsgrunnlagResponse.RegelsporingGrunnlag(p.getRegelType(), p.getRegelEvaluering(), p.getRegelInput(),
-                p.getRegelVersjon()))
-            .toList();
-        var migrerteAvklarigsbehov = migreringsresultat.avklaringsbehov().stream().map(a -> new MigrerBeregningsgrunnlagResponse.Avklaringsbehov(a.getDefinisjon(),
-                a.getStatus(),
-                a.getBegrunnelse(),
-                a.getVurdertAv(),
-                a.getVurdertTidspunkt()))
-            .toList();
-        return new MigrerBeregningsgrunnlagResponse(mappetGrunnlag, bbGrunnlag.orElse(null), sporingerPeriode, sporingerGrunnlag, migrerteAvklarigsbehov);
-    }
-
     private void validerYtelse(FagsakYtelseType fagsakYtelseType) {
         if (!fagsakYtelseType.equals(FagsakYtelseType.FORELDREPENGER) && !fagsakYtelseType.equals(FagsakYtelseType.SVANGERSKAPSPENGER)) {
             throw new TekniskException("FT-41000", String.format(
@@ -310,15 +240,4 @@ public class OperereKalkulusRestTjeneste {
                 .leggTil(StandardAbacAttributtType.SAKSNUMMER, req.saksnummer().verdi());
         }
     }
-
-    public static class MigrerBeregningsgrunnlagRequestAbacSupplier implements Function<Object, AbacDataAttributter> {
-        @Override
-        public AbacDataAttributter apply(Object o) {
-            var req = (MigrerBeregningsgrunnlagRequest) o;
-            return AbacDataAttributter.opprett()
-                .leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid())
-                .leggTil(StandardAbacAttributtType.SAKSNUMMER, req.saksnummer().verdi());
-        }
-    }
-
 }

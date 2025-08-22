@@ -296,12 +296,6 @@ public class BeregningsgrunnlagRepository {
         return lagreOgFlush(koblingId, grunnlagEntitet);
     }
 
-    public BeregningsgrunnlagGrunnlagEntitet lagreMigrering(Long koblingId, BeregningsgrunnlagGrunnlagEntitet entitet) {
-        Objects.requireNonNull(koblingId, KOBLING_ID);
-        Objects.requireNonNull(entitet, "Entitet");
-        return lagreOgFlush(koblingId, entitet);
-    }
-
     private BeregningsgrunnlagGrunnlagEntitet lagreOgFlush(Long koblingId, BeregningsgrunnlagGrunnlagEntitet nyttGrunnlag) {
         Objects.requireNonNull(koblingId, KOBLING_ID);
         Objects.requireNonNull(nyttGrunnlag.getBeregningsgrunnlagTilstand(), BEREGNINGSGRUNNLAG_TILSTAND);
@@ -487,18 +481,5 @@ public class BeregningsgrunnlagRepository {
                     null);
         }
         return sisteGrunnlagFraTilstand.get().getOpprettetTidspunkt();
-    }
-
-    public BeregningsgrunnlagGrunnlagEntitet lagreInaktivMigrering(Long koblingId, BeregningsgrunnlagGrunnlagEntitet entitet) {
-        Objects.requireNonNull(koblingId, KOBLING_ID);
-        Objects.requireNonNull(entitet, "Entitet");
-        if (entitet.getGrunnlagReferanse() == null) {
-            // lag ny referanse
-            entitet.setGrunnlagReferanse(new GrunnlagReferanse(UUID.randomUUID()));
-        }
-        entitet.setAktiv(false);
-        lagreGrunnlag(entitet);
-        entityManager.flush();
-        return entitet;
     }
 }
