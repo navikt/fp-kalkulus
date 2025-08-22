@@ -76,7 +76,7 @@ class RegelsporingRepositoryTest extends EntityManagerAwareTest {
         var regel1 = new RegelSporingPeriode("Evaluering1", "Input1",
             Intervall.fraOgMedTilOgMed(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 2, 1)), BeregningsgrunnlagPeriodeRegelType.FORESLÅ, "1.0.0");
         var regel2 = new RegelSporingPeriode("Evaluering2", "Input2",
-            Intervall.fraOgMedTilOgMed(LocalDate.of(2025, 3, 1), LocalDate.of(2025, 4, 1)), BeregningsgrunnlagPeriodeRegelType.FORESLÅ_2, "1.0.0");
+            Intervall.fraOgMedTilOgMed(LocalDate.of(2025, 3, 1), LocalDate.of(2025, 4, 1)), BeregningsgrunnlagPeriodeRegelType.FORESLÅ_2, "2.0.0");
         regelsporingRepository.lagreSporinger(Arrays.asList(regel1, regel2), kobling.getId());
 
         var resultat = regelsporingRepository.hentRegelSporingPeriodeMedGittType(kobling.getId(), List.of(BeregningsgrunnlagPeriodeRegelType.values()));
@@ -98,7 +98,7 @@ class RegelsporingRepositoryTest extends EntityManagerAwareTest {
             .orElseThrow();
         assertThat(s2Res.getRegelInput()).isEqualTo("Input2");
         assertThat(s2Res.getRegelEvaluering()).isEqualTo("Evaluering2");
-        assertThat(s2Res.getRegelVersjon()).isEqualTo("1.0.0");
+        assertThat(s2Res.getRegelVersjon()).isEqualTo("2.0.0");
         assertThat(s2Res.getPeriode().getFomDato()).isEqualTo(LocalDate.of(2025, 3, 1));
         assertThat(s2Res.getPeriode().getTomDato()).isEqualTo(LocalDate.of(2025, 4, 1));
 
