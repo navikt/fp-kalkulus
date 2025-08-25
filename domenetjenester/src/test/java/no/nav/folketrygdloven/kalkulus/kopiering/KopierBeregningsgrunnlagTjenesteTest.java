@@ -142,15 +142,17 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         var forrigeOriginalKoblingReferanse = new KoblingReferanse(UUID.randomUUID());
         var forrigeOriginalKobling = new KoblingEntitet(forrigeOriginalKoblingReferanse, FagsakYtelseType.FORELDREPENGER, SAK, AKTØR_ID);
         koblingRepository.lagre(forrigeOriginalKobling);
+        koblingRepository.markerKoblingSomAvsluttet(forrigeOriginalKobling);
         var originalKoblingReferanse = UUID.randomUUID();
         var originalKobling = new KoblingEntitet(new KoblingReferanse(originalKoblingReferanse), FagsakYtelseType.FORELDREPENGER, SAK,
             AKTØR_ID);
         koblingRepository.lagre(originalKobling);
+        koblingRepository.markerKoblingSomAvsluttet(originalKobling);
 
         var gr1 = repository.lagre(forrigeOriginalKobling.getId(), byggGrunnlag(200000, 100000), BeregningsgrunnlagTilstand.FASTSATT);
 
         var nyReferanse = new KoblingReferanse(UUID.randomUUID());
-        tjeneste.kopierGrunnlagOgOpprettKoblinger(nyReferanse, forrigeOriginalKoblingReferanse, SAK, BeregningSteg.FAST_BERGRUNN);
+        tjeneste.kopierFastsattBeregningsgrunnlag(nyReferanse, forrigeOriginalKoblingReferanse, SAK);
 
         var alleKoblinger = koblingRepository.hentAlleKoblingerForSaksnummer(SAK);
         assertThat(alleKoblinger).hasSize(3);

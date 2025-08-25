@@ -95,6 +95,38 @@ public class KopierBeregningsgrunnlagTjeneste {
         kopierAvklaringsbehov(nyKobling, eksisterendeKobling, BeregningSteg.FORS_BERGRUNN);
     }
 
+    public void kopierFastsattBeregningsgrunnlag(KoblingReferanse nyReferanse,
+                                                 KoblingReferanse originalReferanse,
+                                                 Saksnummer nyReferanseSaksnummer) {
+        var eksisterendeKobling = hentKoblingOgValiderTilstand(originalReferanse);
+        validerSaksnummer(nyReferanseSaksnummer, eksisterendeKobling);
+        var nyKobling = opprettNyKobling(eksisterendeKobling, nyReferanse);
+        var grunnlagSomSkalKopieres = validerOgHentGrunnlag(eksisterendeKobling, nyKobling.getSaksnummer(), BeregningsgrunnlagTilstand.FASTSATT);
+        kopierBeregningsgrunnlag(grunnlagSomSkalKopieres, nyKobling, BeregningSteg.FAST_BERGRUNN);
+        kopierAvklaringsbehov(nyKobling, eksisterendeKobling, BeregningSteg.FAST_BERGRUNN);
+    }
+
+    private void validerSaksnummer(Saksnummer nyReferanseSaksnummer, KoblingEntitet eksisterendeKobling) {
+        if (!nyReferanseSaksnummer.equals(eksisterendeKobling.getSaksnummer())) {
+            throw new TekniskException("FT-47035", String.format(
+                "Prøver å kopiere grunnlag fra en kobling uten matchende saksnummer. Saksnummer på ny kobling er %s mens saksnummer på eksisterende kobling var %S",
+                nyReferanseSaksnummer, eksisterendeKobling.getSaksnummer()));
+        }
+    }
+
+    private KoblingEntitet hentKoblingOgValiderTilstand(KoblingReferanse originalReferanse) {
+        var kobling = koblingTjeneste.hentKoblingOptional(originalReferanse)
+            .orElseThrow(() -> new TekniskException("FT-47037", String.format(
+                "Prøver å kopiere fra en referanse som ikke finnes. Kobling med referanse kobling %s finnes ikke.",
+                originalReferanse)));
+        if (!kobling.getErAvsluttet()) {
+            throw new TekniskException("FT-47038", String.format(
+                "Prøver å kopiere fra en referanse som ikke er avsluttet. Kobling med referanse kobling %s.",
+                originalReferanse));
+        }
+        return kobling;
+    }
+
     private LocalDate finnGrunnbeløpsbestemmendeDato(KalkulatorInputDto input) {
         if (input.getYtelsespesifiktGrunnlag() instanceof ForeldrepengerGrunnlag fg) {
             return fg.getFørsteUttaksdato();
