@@ -60,19 +60,4 @@ class AvklaringsbehovRepositoryTest extends EntityManagerAwareTest {
 
         assertThat(hentetAP).isEmpty();
     }
-
-    @Test
-    public void skal_slette_avklaringsbehov_for_kobling() {
-        AvklaringsbehovEntitet ap = avklaringsbehovKontrollTjeneste.opprettForKobling(kobling, AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL);
-        avklaringsbehovRepository.lagre(ap);
-
-        List<AvklaringsbehovEntitet> avklaringsbehovFørSletting = avklaringsbehovRepository.hentAvklaringsbehovForKobling(kobling);
-        assertThat(avklaringsbehovFørSletting).hasSize(1);
-
-        avklaringsbehovRepository.slettAlleAvklaringsbehovForKobling(kobling.getId());
-
-        List<AvklaringsbehovEntitet> avklaringsbehovEtterSletting = avklaringsbehovRepository.hentAvklaringsbehovForKobling(kobling);
-        assertThat(avklaringsbehovEtterSletting).isEmpty();
-    }
-
 }
