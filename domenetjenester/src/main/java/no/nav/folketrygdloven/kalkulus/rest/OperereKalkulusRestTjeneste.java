@@ -16,6 +16,8 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import no.nav.folketrygdloven.kalkulus.request.v1.enkel.KopierFastsattGrunnlagRequest;
+
 import org.slf4j.MDC;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -112,6 +114,19 @@ public class OperereKalkulusRestTjeneste {
             kopierTjeneste.kopierGrunnlagOgOpprettKoblinger(new KoblingReferanse(request.behandlingUuid()),
                 new KoblingReferanse(request.originalBehandlingUuid()), new Saksnummer(request.saksnummer().verdi()), request.steg());
         }
+        return Response.ok().build();
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/kopier-fastsatt")
+    @Operation(description = "Kopierer fastsatt beregningsgrunnlag fra eksisterende referanse til ny referanse. Forutsetter at originalBehandlingUuid har et fastsatt grunnlag og at koblingen er avsluttet.", tags = "beregn", summary = ("Kopierer en fastsatt beregning."))
+    @BeskyttetRessurs(actionType = ActionType.UPDATE, resourceType = ResourceType.FAGSAK, sporingslogg = true)
+    public Response kopierFastsattBeregning(@TilpassetAbacAttributt(supplierClass = KopierFastsattGrunnlagRequestAbacSupplier.class) @NotNull @Valid KopierFastsattGrunnlagRequest request) {
+        MDC.put("prosess_saksnummer", request.saksnummer().verdi());
+        kopierTjeneste.kopierFastsattBeregningsgrunnlag(new KoblingReferanse(request.behandlingUuid()),
+            new KoblingReferanse(request.originalBehandlingUuid()),
+            new Saksnummer(request.saksnummer().verdi()));
         return Response.ok().build();
     }
 
@@ -240,4 +255,15 @@ public class OperereKalkulusRestTjeneste {
                 .leggTil(StandardAbacAttributtType.SAKSNUMMER, req.saksnummer().verdi());
         }
     }
+
+    public static class KopierFastsattGrunnlagRequestAbacSupplier implements Function<Object, AbacDataAttributter> {
+        @Override
+        public AbacDataAttributter apply(Object o) {
+            var req = (KopierFastsattGrunnlagRequest) o;
+            return AbacDataAttributter.opprett()
+                .leggTil(StandardAbacAttributtType.BEHANDLING_UUID, req.behandlingUuid())
+                .leggTil(StandardAbacAttributtType.SAKSNUMMER, req.saksnummer().verdi());
+        }
+    }
+
 }
