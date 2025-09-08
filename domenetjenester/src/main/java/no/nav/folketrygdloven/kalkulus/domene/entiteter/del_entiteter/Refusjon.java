@@ -10,6 +10,7 @@ import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.HjemmelKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.RefusjonskravFristUtfallKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseValue;
@@ -37,6 +38,7 @@ public class Refusjon implements Serializable, IndexKey, TraverseValue, Comparab
     @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "manuelt_fordelt_refusjon_pr_aar")))
     private Beløp manueltFordeltRefusjonPrÅr;
 
+    @Convert(converter = HjemmelKodeverdiConverter.class)
     @Column(name = "hjemmel_for_refusjonskravfrist")
     private Hjemmel hjemmelForRefusjonskravfrist;
 
