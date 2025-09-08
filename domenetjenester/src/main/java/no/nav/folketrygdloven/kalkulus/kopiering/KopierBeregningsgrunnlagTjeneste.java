@@ -30,6 +30,7 @@ import no.nav.vedtak.exception.TekniskException;
 
 @ApplicationScoped
 public class KopierBeregningsgrunnlagTjeneste {
+    private static final Set<BeregningSteg> STØTTEDE_STARTPUNKT = Set.of(BeregningSteg.FORS_BERGRUNN);
 
     private KoblingTjeneste koblingTjeneste;
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
@@ -49,55 +50,40 @@ public class KopierBeregningsgrunnlagTjeneste {
 
 
     /**
-     * Oppretter ny kobling og kopierer data fra eksisterende kobling
+     * Oppretter ny kobling og kopierer data angitt av steget fra eksisterende kobling.
+     * Brukes når en ny referanse skal starte beregningen sin midt i prosessen.
+     * Da skal siste grunnlag før angitt steg kopieres fra originalReferanse
      *
-     * @param nyReferanse       Ny referanse som skal opprettes
-     * @param saksnummer        Saksnummer
-     * @param steg              Definerer steget som vi kopierer beregningsgrunnlag fra
-     * @param originalReferanse Referanse vi skal kopiere fra
+     * @param nyReferanse           Ny referanse som skal opprettes
+     * @param nyReferanseSaksnummer Saksnummer for ny referanse (Brukes til å validere at vi ikke går på tvers av saksnummer)
+     * @param steg                  Definerer steget som vi kopierer til. Siste grunnlag før dette steget skal kopieres,
+     *                              fordi ny beregning skal kjøres fra angitt steg
+     * @param originalReferanse     Referanse vi skal kopiere fra
+     * @param input                 BeregningsgrunnlagInput, trengs i enkelte tilfeller
      */
-    public void kopierGrunnlagOgOpprettKoblinger(KoblingReferanse nyReferanse,
-                                                 KoblingReferanse originalReferanse,
-                                                 Saksnummer saksnummer,
-                                                 BeregningSteg steg) {
-        var eksisterendeKobling = koblingTjeneste.hentKoblingOptional(originalReferanse)
-            .orElseThrow(() -> new TekniskException("FT-47034", String.format(
-                "Pøver å opprette ny kobling %s basert på data fra en referanse som ikke finnes. Kobling med referanse kobling %s finnes ikke.",
-                nyReferanse, originalReferanse)));
-        var grunnlagSomSkalKopieres = validerOgHentGrunnlag(eksisterendeKobling, saksnummer, MapStegTilTilstand.mapTilStegTilstand(steg));
+    public void kopierBeregningsgrunlagForStartISteg(KoblingReferanse nyReferanse,
+                                                     KoblingReferanse originalReferanse,
+                                                     Saksnummer nyReferanseSaksnummer,
+                                                     BeregningSteg steg,
+                                                     KalkulatorInputDto input) {
+        validerGyldigStartpunkt(steg, nyReferanse);
+        var eksisterendeKobling = hentKoblingOgValiderTilstand(originalReferanse);
+        validerSaksnummer(nyReferanseSaksnummer, eksisterendeKobling);
         var nyKobling = opprettNyKobling(eksisterendeKobling, nyReferanse);
-        kopierBeregningsgrunnlag(grunnlagSomSkalKopieres, nyKobling, steg);
-        kopierAvklaringsbehov(nyKobling, eksisterendeKobling, steg);
-    }
-
-    public void kopierGrunnlagForGregulering(KoblingReferanse nyReferanse,
-                                             KoblingReferanse originalReferanse,
-                                             Saksnummer saksnummer,
-                                             KalkulatorInputDto input) {
-        var eksisterendeKobling = koblingTjeneste.hentKoblingOptional(originalReferanse)
-            .orElseThrow(() -> new TekniskException("FT-47037", String.format(
-                "Prøver å kopiere og g-regulere %s basert på data fra en referanse som ikke finnes. Kobling med referanse kobling %s finnes ikke.",
-                nyReferanse, originalReferanse)));
-        var nyKobling = opprettNyKobling(eksisterendeKobling, nyReferanse);
-        if (!eksisterendeKobling.getSaksnummer().equals(saksnummer)) {
-            throw new TekniskException("FT-47035", String.format(
-                "Prøver å kopiere grunnlag fra en kobling uten matchende saksnummer. Saksnummer på ny kobling er %s mens saksnummer på eksisterende kobling var %S",
-                saksnummer, eksisterendeKobling.getSaksnummer()));
+        if (steg.equals(BeregningSteg.FORS_BERGRUNN)) {
+            kopierForGregulering(input, eksisterendeKobling, nyKobling);
         }
-        var grunnbeløpsbestemmendeDato = finnGrunnbeløpsbestemmendeDato(input);
-        var grunnbeløp = beregningsgrunnlagRepository.finnGrunnbeløp(grunnbeløpsbestemmendeDato);
-        Arrays.stream(BeregningsgrunnlagTilstand.values())
-            .filter(s -> s.erFør(BeregningsgrunnlagTilstand.FORESLÅTT))
-            .forEach(s -> {
-                var grunnlagSomSkalKopieres = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKobling(eksisterendeKobling.getId(), s, null);
-                grunnlagSomSkalKopieres.ifPresent(gr -> kopierBeregningsgrunnlagMedNyG(gr, nyKobling, s, BigDecimal.valueOf(grunnbeløp.getVerdi())));
-            });
-        kopierAvklaringsbehov(nyKobling, eksisterendeKobling, BeregningSteg.FORS_BERGRUNN);
     }
 
-    public void kopierFastsattBeregningsgrunnlag(KoblingReferanse nyReferanse,
-                                                 KoblingReferanse originalReferanse,
-                                                 Saksnummer nyReferanseSaksnummer) {
+    /**
+     * Oppretter ny kobling og kopierer fastsatt grunnlag fra eksisterende kobling.
+     * Brukes når behandlingen skal hoppe over beregning og kun skal kopiere grunnlag fra forrige beregning.
+     *
+     * @param nyReferanse           Ny referanse som skal opprettes
+     * @param nyReferanseSaksnummer Saksnummer for ny referanse (Brukes til å validere at vi ikke går på tvers av saksnummer)
+     * @param originalReferanse     Referanse vi skal kopiere fra
+     */
+    public void kopierFastsattBeregningsgrunnlag(KoblingReferanse nyReferanse, KoblingReferanse originalReferanse, Saksnummer nyReferanseSaksnummer) {
         var eksisterendeKobling = hentKoblingOgValiderTilstand(originalReferanse);
         validerSaksnummer(nyReferanseSaksnummer, eksisterendeKobling);
         var nyKobling = opprettNyKobling(eksisterendeKobling, nyReferanse);
@@ -105,6 +91,18 @@ public class KopierBeregningsgrunnlagTjeneste {
         kopierBeregningsgrunnlag(grunnlagSomSkalKopieres, nyKobling, BeregningSteg.FAST_BERGRUNN);
         kopierAvklaringsbehov(nyKobling, eksisterendeKobling, BeregningSteg.FAST_BERGRUNN);
     }
+
+    private void kopierForGregulering(KalkulatorInputDto input, KoblingEntitet eksisterendeKobling, KoblingEntitet nyKobling) {
+        var grunnbeløpsbestemmendeDato = finnGrunnbeløpsbestemmendeDato(input);
+        var grunnbeløp = beregningsgrunnlagRepository.finnGrunnbeløp(grunnbeløpsbestemmendeDato);
+        Arrays.stream(BeregningsgrunnlagTilstand.values()).filter(s -> s.erFør(BeregningsgrunnlagTilstand.FORESLÅTT)).forEach(s -> {
+            var grunnlagSomSkalKopieres = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKobling(
+                eksisterendeKobling.getId(), s, null);
+            grunnlagSomSkalKopieres.ifPresent(gr -> kopierBeregningsgrunnlagMedNyG(gr, nyKobling, s, BigDecimal.valueOf(grunnbeløp.getVerdi())));
+        });
+        kopierAvklaringsbehov(nyKobling, eksisterendeKobling, BeregningSteg.FORS_BERGRUNN);
+    }
+
 
     private void validerSaksnummer(Saksnummer nyReferanseSaksnummer, KoblingEntitet eksisterendeKobling) {
         if (!nyReferanseSaksnummer.equals(eksisterendeKobling.getSaksnummer())) {
@@ -116,15 +114,20 @@ public class KopierBeregningsgrunnlagTjeneste {
 
     private KoblingEntitet hentKoblingOgValiderTilstand(KoblingReferanse originalReferanse) {
         var kobling = koblingTjeneste.hentKoblingOptional(originalReferanse)
-            .orElseThrow(() -> new TekniskException("FT-47037", String.format(
-                "Prøver å kopiere fra en referanse som ikke finnes. Kobling med referanse kobling %s finnes ikke.",
-                originalReferanse)));
+            .orElseThrow(() -> new TekniskException("FT-47037",
+                String.format("Prøver å kopiere fra en referanse som ikke finnes. Kobling med referanse kobling %s finnes ikke.",
+                    originalReferanse)));
         if (!kobling.getErAvsluttet()) {
-            throw new TekniskException("FT-47038", String.format(
-                "Prøver å kopiere fra en referanse som ikke er avsluttet. Kobling med referanse kobling %s.",
-                originalReferanse));
+            throw new TekniskException("FT-47038",
+                String.format("Prøver å kopiere fra en referanse som ikke er avsluttet. Kobling med referanse kobling %s.", originalReferanse));
         }
         return kobling;
+    }
+
+    private void validerGyldigStartpunkt(BeregningSteg steg, KoblingReferanse nyReferanse) {
+        if (!STØTTEDE_STARTPUNKT.contains(steg)) {
+            throw new TekniskException("FT-47039", String.format("Ugyldig startpukt %s angitt for ny kobling %s.", steg, nyReferanse));
+        }
     }
 
     private LocalDate finnGrunnbeløpsbestemmendeDato(KalkulatorInputDto input) {
@@ -134,7 +137,9 @@ public class KopierBeregningsgrunnlagTjeneste {
         return input.getSkjæringstidspunkt();
     }
 
-    private BeregningsgrunnlagGrunnlagEntitet validerOgHentGrunnlag(KoblingEntitet eksisterendeKobling, Saksnummer saksnummer, BeregningsgrunnlagTilstand tilstand) {
+    private BeregningsgrunnlagGrunnlagEntitet validerOgHentGrunnlag(KoblingEntitet eksisterendeKobling,
+                                                                    Saksnummer saksnummer,
+                                                                    BeregningsgrunnlagTilstand tilstand) {
         if (!eksisterendeKobling.getSaksnummer().equals(saksnummer)) {
             throw new TekniskException("FT-47035", String.format(
                 "Prøver å kopiere grunnlag fra en kobling uten matchende saksnummer. Saksnummer på ny kobling er %s mens saksnummer på eksisterende kobling var %S",
@@ -156,7 +161,10 @@ public class KopierBeregningsgrunnlagTjeneste {
         beregningsgrunnlagRepository.lagre(nyKoblingEntitet.getId(), kopi, MapStegTilTilstand.mapTilStegTilstand(steg));
     }
 
-    private void kopierBeregningsgrunnlagMedNyG(BeregningsgrunnlagGrunnlagEntitet grunnlag, KoblingEntitet nyKoblingEntitet, BeregningsgrunnlagTilstand tilstand, BigDecimal nyttGrunnbeløp) {
+    private void kopierBeregningsgrunnlagMedNyG(BeregningsgrunnlagGrunnlagEntitet grunnlag,
+                                                KoblingEntitet nyKoblingEntitet,
+                                                BeregningsgrunnlagTilstand tilstand,
+                                                BigDecimal nyttGrunnbeløp) {
         var kopi = BeregningsgrunnlagGrunnlagBuilder.kopiere(grunnlag);
         var gammeltGrunnbeløp = grunnlag.getBeregningsgrunnlag().map(BeregningsgrunnlagEntitet::getGrunnbeløp).orElse(null);
         var skalGRegulere = gammeltGrunnbeløp != null && nyttGrunnbeløp.compareTo(gammeltGrunnbeløp.getVerdi()) > 0;

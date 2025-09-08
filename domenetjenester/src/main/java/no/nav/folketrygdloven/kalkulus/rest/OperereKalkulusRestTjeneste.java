@@ -16,8 +16,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import no.nav.folketrygdloven.kalkulus.request.v1.enkel.KopierFastsattGrunnlagRequest;
-
 import org.slf4j.MDC;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -31,15 +29,14 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingRef
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kopiering.KopierBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulus.request.v1.enkel.EnkelBeregnRequestDto;
 import no.nav.folketrygdloven.kalkulus.request.v1.enkel.EnkelFpkalkulusRequestDto;
 import no.nav.folketrygdloven.kalkulus.request.v1.enkel.EnkelHåndterBeregningRequestDto;
 import no.nav.folketrygdloven.kalkulus.request.v1.enkel.EnkelKopierBeregningsgrunnlagRequestDto;
+import no.nav.folketrygdloven.kalkulus.request.v1.enkel.KopierFastsattGrunnlagRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.KalkulusRespons;
-import no.nav.folketrygdloven.kalkulus.response.v1.KopiResponse;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringListeRespons;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
@@ -101,19 +98,12 @@ public class OperereKalkulusRestTjeneste {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/kopier")
-    @Operation(description = "Kopierer beregning fra eksisterende referanse til ny referanse. Kopien som opprettes er fra steget som defineres.", tags = "beregn", summary = ("Kopierer en beregning."), responses = {@ApiResponse(description = "Liste med kopierte referanser dersom alle koblinger er kopiert", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = KopiResponse.class)))})
+    @Operation(description = "Kopierer beregning fra eksisterende referanse til ny referanse for å kunne fortsette beregningen fra angitt steg.", tags = "beregn", summary = ("Kopierer en beregning."))
     @BeskyttetRessurs(actionType = ActionType.UPDATE, resourceType = ResourceType.FAGSAK, sporingslogg = true)
     public Response kopierBeregning(@TilpassetAbacAttributt(supplierClass = KopierBeregningsgrunnlagRequestAbacSupplier.class) @NotNull @Valid EnkelKopierBeregningsgrunnlagRequestDto request) {
         MDC.put("prosess_saksnummer", request.saksnummer().verdi());
-        // Saker som starter i foreslå er pga g-regulering og må spesialbehandles.
-        if (request.steg().equals(BeregningSteg.FORS_BERGRUNN)) {
-            Objects.requireNonNull(request.kalkulatorInput(), "kalkulatorInput");
-            kopierTjeneste.kopierGrunnlagForGregulering(new KoblingReferanse(request.behandlingUuid()),
-                new KoblingReferanse(request.originalBehandlingUuid()), new Saksnummer(request.saksnummer().verdi()), request.kalkulatorInput());
-        } else {
-            kopierTjeneste.kopierGrunnlagOgOpprettKoblinger(new KoblingReferanse(request.behandlingUuid()),
-                new KoblingReferanse(request.originalBehandlingUuid()), new Saksnummer(request.saksnummer().verdi()), request.steg());
-        }
+        kopierTjeneste.kopierBeregningsgrunlagForStartISteg(new KoblingReferanse(request.behandlingUuid()),
+            new KoblingReferanse(request.originalBehandlingUuid()), new Saksnummer(request.saksnummer().verdi()), request.steg(), request.kalkulatorInput());
         return Response.ok().build();
     }
 
