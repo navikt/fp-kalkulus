@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +37,6 @@ import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovStatus;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovRepository;
@@ -79,6 +80,7 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         var originalKoblingReferanse = new KoblingReferanse(UUID.randomUUID());
         var originalKobling = new KoblingEntitet(originalKoblingReferanse, FagsakYtelseType.FORELDREPENGER, SAK, AKTØR_ID);
         koblingRepository.lagre(originalKobling);
+        koblingRepository.markerKoblingSomAvsluttet(originalKobling);
 
         avklaringsbehovTjeneste.opprettEllerGjennopprettAvklaringsbehov(originalKobling.getId(), AvklaringsbehovDefinisjon.AVKLAR_AKTIVITETER);
         avklaringsbehovTjeneste.løsAvklaringsbehov(originalKobling.getId(), AvklaringsbehovDefinisjon.AVKLAR_AKTIVITETER, "ok");
@@ -87,7 +89,7 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
 
         LocalDateTime førKopiering = LocalDateTime.now();
         var nyReferanse = new KoblingReferanse(UUID.randomUUID());
-        tjeneste.kopierGrunnlagOgOpprettKoblinger(nyReferanse, originalKoblingReferanse, SAK, BeregningSteg.FAST_BERGRUNN);
+        tjeneste.kopierFastsattBeregningsgrunnlag(nyReferanse, originalKoblingReferanse, SAK);
 
         var alleKoblinger = koblingRepository.hentAlleKoblingerForSaksnummer(SAK);
         assertThat(alleKoblinger.size()).isEqualTo(2);
@@ -117,11 +119,12 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         repository.lagre(originalKobling.getId(), byggGrunnlag(200000, 124_028), BeregningsgrunnlagTilstand.OPPRETTET);
         repository.lagre(originalKobling.getId(), byggGrunnlag(200000, 124_028), BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
         repository.lagre(originalKobling.getId(), byggGrunnlag(200000, 124_028), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+        koblingRepository.markerKoblingSomAvsluttet(originalKobling);
 
         var nyReferanse = new KoblingReferanse(UUID.randomUUID());
         var input = new KalkulatorInputDto(null, null, LocalDate.of(2025, 6, 1));
         input.medYtelsespesifiktGrunnlag(new ForeldrepengerGrunnlag(BigDecimal.valueOf(100), false, null, List.of(), LocalDate.of(2025, 6, 1)));
-        tjeneste.kopierGrunnlagForGregulering(nyReferanse, originalKoblingReferanse, SAK, input);
+        tjeneste.kopierBeregningsgrunlagForStartISteg(nyReferanse, originalKoblingReferanse, SAK, BeregningSteg.FORS_BERGRUNN, input);
 
         var alleKoblinger = koblingRepository.hentAlleKoblingerForSaksnummer(SAK);
         assertThat(alleKoblinger).hasSize(2);
