@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov;
 
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -42,29 +41,13 @@ public class AvklaringsbehovRepository {
         return hentUniktResultat(query);
     }
 
-    public List<AvklaringsbehovEntitet> hentAvklaringsbehovforKoblinger(Collection<Long> koblingIder) {
-        TypedQuery<AvklaringsbehovEntitet> query = entityManager.createQuery("FROM AvklaringsbehovEntitet ab " +
-                "WHERE ab.kobling.id in :koblinger", AvklaringsbehovEntitet.class);
-        query.setParameter("koblinger", koblingIder);
-        return query.getResultList().stream()
-                .sorted(Comparator.naturalOrder())
-                .toList();
-    }
-    public List<AvklaringsbehovEntitet> hentAvklaringsbehovforKobling(Long koblingId) {
+    public List<AvklaringsbehovEntitet> hentAvklaringsbehovForKobling(Long koblingId) {
         TypedQuery<AvklaringsbehovEntitet> query = entityManager.createQuery("FROM AvklaringsbehovEntitet ab " +
             "WHERE ab.kobling.id = :kobling", AvklaringsbehovEntitet.class);
         query.setParameter("kobling", koblingId);
         return query.getResultList().stream()
             .sorted(Comparator.naturalOrder())
             .toList();
-    }
-
-    public List<AvklaringsbehovEntitet> hentAvklaringsbehovForKobling(KoblingEntitet kobling) {
-        TypedQuery<AvklaringsbehovEntitet> query = entityManager.createQuery("FROM AvklaringsbehovEntitet ab WHERE kobling = :kobling", AvklaringsbehovEntitet.class);
-        query.setParameter("kobling", kobling);
-        return query.getResultList().stream()
-                .sorted(Comparator.naturalOrder())
-                .toList();
     }
 
     public void lagre(AvklaringsbehovEntitet avklaringsbehov) {

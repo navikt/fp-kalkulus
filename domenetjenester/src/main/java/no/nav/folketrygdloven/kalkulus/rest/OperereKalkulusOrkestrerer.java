@@ -27,7 +27,7 @@ import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTj
 
 @ApplicationScoped
 public class OperereKalkulusOrkestrerer {
-
+    private static final String PROSESS_KOBLING_ID = "prosess_koblingId";
     private BeregningStegTjeneste beregningStegTjeneste;
     private StegProsessInputTjeneste stegInputTjeneste;
     private HåndteringInputTjeneste håndteringInputTjeneste;
@@ -148,10 +148,10 @@ public class OperereKalkulusOrkestrerer {
 
         @Override
         public KalkulusRespons utfør(BeregningsgrunnlagInput beregningsgrunnlagInput) {
-            MDC.put("prosess_koblingId", beregningsgrunnlagInput.getKoblingId().toString());
+            MDC.put(PROSESS_KOBLING_ID, beregningsgrunnlagInput.getKoblingId().toString());
             var response = håndtererApplikasjonTjeneste.håndter((HåndterBeregningsgrunnlagInput) beregningsgrunnlagInput,
                 håndteringDtoMap.getFirst());
-            MDC.remove("prosess_koblingId");
+            MDC.remove(PROSESS_KOBLING_ID);
             return response;
         }
     }
@@ -167,9 +167,9 @@ public class OperereKalkulusOrkestrerer {
         @Override
         public KalkulusRespons utfør(BeregningsgrunnlagInput beregningsgrunnlagInput) {
             KalkulusRespons response;
-            MDC.put("prosess_koblingId", beregningsgrunnlagInput.getKoblingId().toString());
+            MDC.put(PROSESS_KOBLING_ID, beregningsgrunnlagInput.getKoblingId().toString());
             response = beregningStegTjeneste.beregnFor(beregningSteg, (StegProsesseringInput) beregningsgrunnlagInput);
-            MDC.remove("prosess_koblingId");
+            MDC.remove(PROSESS_KOBLING_ID);
             return response;
         }
     }

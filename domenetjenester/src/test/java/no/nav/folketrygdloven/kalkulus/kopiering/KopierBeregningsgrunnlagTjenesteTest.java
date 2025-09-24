@@ -99,7 +99,7 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         var grNyKobling = repository.hentBeregningsgrunnlagGrunnlagEntitet(nyKobling.get().getId());
         assertThat(finnBrutto(grNyKobling.get())).isEqualTo(finnBrutto(gr1));
 
-        var nyeAvklaringsbehov = avklaringsbehovRepository.hentAvklaringsbehovForKobling(nyKobling.get());
+        var nyeAvklaringsbehov = avklaringsbehovRepository.hentAvklaringsbehovForKobling(nyKobling.get().getId());
         assertThat(nyeAvklaringsbehov.size()).isEqualTo(1);
         var nyAvklaringsbehov = nyeAvklaringsbehov.get(0);
         assertThat(nyAvklaringsbehov.getBegrunnelse()).isEqualTo("ok");
