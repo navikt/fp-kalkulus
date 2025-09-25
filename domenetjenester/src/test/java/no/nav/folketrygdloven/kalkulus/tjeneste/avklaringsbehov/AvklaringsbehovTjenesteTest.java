@@ -93,7 +93,7 @@ class AvklaringsbehovTjenesteTest extends EntityManagerAwareTest {
         // Rull tilbake fra og med avvikavklaringsbehov
         avklaringsbehovTjeneste.avbrytAlleAvklaringsbehovEtter(kobling.getId(), AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL);
 
-        List<AvklaringsbehovEntitet> avklaringsbehov = avklaringsbehovRepository.hentAvklaringsbehovForKobling(kobling);
+        List<AvklaringsbehovEntitet> avklaringsbehov = avklaringsbehovRepository.hentAvklaringsbehovForKobling(kobling.getId());
 
         assertThat(avklaringsbehov).hasSize(3);
         AvklaringsbehovEntitet faktaAP = avklaringsbehov.stream().filter(ap -> ap.getDefinisjon().equals(AvklaringsbehovDefinisjon.VURDER_FAKTA_ATFL_SN)).findFirst().orElse(null);

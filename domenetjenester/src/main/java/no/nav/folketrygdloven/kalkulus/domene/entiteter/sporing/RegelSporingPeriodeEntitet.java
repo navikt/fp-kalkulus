@@ -56,6 +56,7 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
     private boolean aktiv = true;
 
     public RegelSporingPeriodeEntitet() {
+        // Hibernate
     }
 
     public Long getId() {

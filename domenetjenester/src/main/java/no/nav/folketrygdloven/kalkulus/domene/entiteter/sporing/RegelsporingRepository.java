@@ -25,6 +25,7 @@ public class RegelsporingRepository {
     private static final Logger log = LoggerFactory.getLogger(RegelsporingRepository.class);
 
     private static final String KOBLING_ID = "koblingId";
+    private static final String AKTIV = "aktiv";
     private EntityManager entityManager;
 
     RegelsporingRepository() {
@@ -138,7 +139,7 @@ public class RegelsporingRepository {
         var grunnlagQuery = entityManager.createNativeQuery("delete from REGEL_SPORING_GRUNNLAG " +
                 "where kobling_id = :koblingId " +
                 "and aktiv = false")
-            .setParameter("koblingId", koblingId);
+            .setParameter(KOBLING_ID, koblingId);
 
         var oppdaterteRader = grunnlagQuery.executeUpdate();
         log.info("Slettet {} regelsporringsgrunnlag for koblingId={}", oppdaterteRader, koblingId);
@@ -148,7 +149,7 @@ public class RegelsporingRepository {
         var perioderQuery = entityManager.createNativeQuery("delete from REGEL_SPORING_PERIODE " +
                 "where kobling_id = :koblingId " +
                 "and aktiv = false")
-            .setParameter("koblingId", koblingId);
+            .setParameter(KOBLING_ID, koblingId);
 
         var perioderOppdaterteRader = perioderQuery.executeUpdate();
         log.info("Slettet {} regelsporringsperioder for koblingId={}", perioderOppdaterteRader, koblingId);
@@ -169,7 +170,7 @@ public class RegelsporingRepository {
                 "and sporing.aktiv = :aktiv " +
                 "and sporing.regelType in :regeltype", RegelSporingPeriodeEntitet.class);
         query.setParameter(KOBLING_ID, koblingId);
-        query.setParameter("aktiv", true);
+        query.setParameter(AKTIV, true);
         query.setParameter("regeltype", regelTyper);
         return query.getResultList();
     }
@@ -187,7 +188,7 @@ public class RegelsporingRepository {
                 "and sporing.aktiv = :aktiv " +
                 "and sporing.regelType in :regeltype", RegelSporingGrunnlagEntitet.class);
         query.setParameter(KOBLING_ID, koblingId);
-        query.setParameter("aktiv", true);
+        query.setParameter(AKTIV, true);
         query.setParameter("regeltype", regelTyper);
         return query.getResultList();
     }
@@ -197,7 +198,7 @@ public class RegelsporingRepository {
                 "where sporing.koblingId=:koblingId " +
                 "and sporing.aktiv = :aktiv ", RegelSporingGrunnlagEntitet.class);
         query.setParameter(KOBLING_ID, koblingId);
-        query.setParameter("aktiv", true);
+        query.setParameter(AKTIV, true);
         return query.getResultList();
     }
 }

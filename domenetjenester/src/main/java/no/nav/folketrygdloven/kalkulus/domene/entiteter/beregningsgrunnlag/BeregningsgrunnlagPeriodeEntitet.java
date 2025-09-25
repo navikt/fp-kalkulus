@@ -97,7 +97,7 @@ public class BeregningsgrunnlagPeriodeEntitet extends BaseEntitet {
         this.redusertPrÅr = beregningsgrunnlagPeriode.getRedusertPrÅr();
         this.inntektgraderingsprosentBrutto = beregningsgrunnlagPeriode.getInntektgraderingsprosentBrutto();
         this.totalUtbetalingsgradFraUttak = beregningsgrunnlagPeriode.getTotalUtbetalingsgradFraUttak();
-        beregningsgrunnlagPeriode.getPeriodeårsaker().stream().map(PeriodeÅrsakEntitet::new).forEach(this::addPeriodeÅrsak);
+        beregningsgrunnlagPeriode.getPeriodeÅrsakEntiteter().stream().map(PeriodeÅrsakEntitet::new).forEach(this::addPeriodeÅrsak);
         beregningsgrunnlagPeriode.getBeregningsgrunnlagAndelList()
             .stream()
             .map(BeregningsgrunnlagAndelEntitet::new)
@@ -167,12 +167,12 @@ public class BeregningsgrunnlagPeriodeEntitet extends BaseEntitet {
         return totalUtbetalingsgradFraUttak;
     }
 
-    public List<PeriodeÅrsakEntitet> getPeriodeårsaker() {
+    public List<PeriodeÅrsakEntitet> getPeriodeÅrsakEntiteter() {
         return periodeårsaker.stream().sorted(Comparator.comparing(PeriodeÅrsakEntitet::getPeriodeÅrsak)).toList();
     }
 
     public List<PeriodeÅrsak> getPeriodeÅrsaker() {
-        return getPeriodeårsaker().stream().map(PeriodeÅrsakEntitet::getPeriodeÅrsak).toList();
+        return getPeriodeÅrsakEntiteter().stream().map(PeriodeÅrsakEntitet::getPeriodeÅrsak).toList();
     }
 
     void addBeregningsgrunnlagAndel(BeregningsgrunnlagAndelEntitet andel) {

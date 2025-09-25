@@ -167,12 +167,11 @@ public class AvklaringsbehovTjeneste {
     }
 
     public List<AvklaringsbehovEntitet> hentAlleAvklaringsbehovForKobling(Long koblingId) {
-        KoblingEntitet koblingEntitet = koblingRepository.hentKoblingMedId(koblingId).orElseThrow();
-        return avklaringsbehovRepository.hentAvklaringsbehovForKobling(koblingEntitet);
+        return avklaringsbehovRepository.hentAvklaringsbehovForKobling(koblingId);
     }
 
     public void avbrytAlleAvklaringsbehovEtterEllerISteg(Long koblingId, BeregningSteg steg, boolean skalKjøreSteget) {
-        List<AvklaringsbehovEntitet> alleApPåKobling = avklaringsbehovRepository.hentAvklaringsbehovforKobling(koblingId);
+        List<AvklaringsbehovEntitet> alleApPåKobling = avklaringsbehovRepository.hentAvklaringsbehovForKobling(koblingId);
         alleApPåKobling.forEach(ap -> {
                     if (skalKjøreSteget && !ap.getStegFunnet().erFør(steg)) {
                         avbrytAvklaringsbehov(ap.getKoblingId(), ap);
@@ -184,8 +183,7 @@ public class AvklaringsbehovTjeneste {
     }
 
     public void avbrytAlleAvklaringsbehovEtter(Long koblingId, AvklaringsbehovDefinisjon avklaringsbehovDefinisjon) {
-        KoblingEntitet koblingEntitet = koblingRepository.hentKoblingMedId(koblingId).orElseThrow();
-        List<AvklaringsbehovEntitet> alleApPåKobling = avklaringsbehovRepository.hentAvklaringsbehovForKobling(koblingEntitet);
+        List<AvklaringsbehovEntitet> alleApPåKobling = avklaringsbehovRepository.hentAvklaringsbehovForKobling(koblingId);
         Optional<AvklaringsbehovEntitet> gjeldendeAP = alleApPåKobling.stream().filter(ap -> ap.getDefinisjon().equals(avklaringsbehovDefinisjon)).findFirst();
         if (gjeldendeAP.isEmpty()) {
             kastManglendeAvklaringsbehovFeil(koblingId, avklaringsbehovDefinisjon);
@@ -203,8 +201,7 @@ public class AvklaringsbehovTjeneste {
      * @param koblingId KoblingId
      */
     public void avbrytAlleAvklaringsbehov(Long koblingId) {
-        KoblingEntitet koblingEntitet = koblingRepository.hentKoblingMedId(koblingId).orElseThrow();
-        List<AvklaringsbehovEntitet> alleApPåKobling = avklaringsbehovRepository.hentAvklaringsbehovForKobling(koblingEntitet);
+        List<AvklaringsbehovEntitet> alleApPåKobling = avklaringsbehovRepository.hentAvklaringsbehovForKobling(koblingId);
         alleApPåKobling.forEach(ap -> avbrytAvklaringsbehov(koblingId, ap));
     }
 

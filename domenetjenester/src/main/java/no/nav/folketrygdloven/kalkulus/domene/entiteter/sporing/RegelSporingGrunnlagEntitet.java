@@ -47,6 +47,7 @@ public class RegelSporingGrunnlagEntitet extends BaseEntitet {
     private boolean aktiv = true;
 
     public RegelSporingGrunnlagEntitet() {
+        // Hibernate
     }
 
     public Long getId() {

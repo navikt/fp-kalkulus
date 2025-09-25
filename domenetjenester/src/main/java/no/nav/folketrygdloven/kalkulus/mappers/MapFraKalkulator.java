@@ -94,10 +94,10 @@ public class MapFraKalkulator {
             // For å kunne mappe kall for å hente gui-dto for gamle saker
             kravPrArbeidsforhold = LagKravperioder.lagKravperioderPrArbeidsforhold(refusjonskravDatoer, iayGrunnlag, stp);
         }
-        return kravPrArbeidsforhold.stream().map(MapFraKalkulator::mapKravPerioder).toList();
+        return kravPrArbeidsforhold.stream().map(MapFraKalkulator::mapKravPeriode).toList();
     }
 
-    private static KravperioderPrArbeidsforholdDto mapKravPerioder(KravperioderPrArbeidsforhold kravperioderPrArbeidsforhold) {
+    private static KravperioderPrArbeidsforholdDto mapKravPeriode(KravperioderPrArbeidsforhold kravperioderPrArbeidsforhold) {
         return new KravperioderPrArbeidsforholdDto(mapArbeidsgiver(kravperioderPrArbeidsforhold.getArbeidsgiver()),
             mapArbeidsforholdRef(kravperioderPrArbeidsforhold.getInternreferanse()),
             kravperioderPrArbeidsforhold.getAlleSøktePerioder().stream().map(MapFraKalkulator::mapSøktPeriode).toList(),

@@ -190,7 +190,7 @@ class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
         assertThat(aktiveRegelsporinger.isEmpty()).isTrue();
 
         Optional<AvklaringsbehovEntitet> avklaringsbehovEntitet = avklaringsbehovTjeneste.hentAvklaringsbehov(koblingId, avklaringsbehovDefinisjon);
-        assertThat(avklaringsbehovEntitet.isPresent());
+        assertThat(avklaringsbehovEntitet).isPresent();
         assertThat(avklaringsbehovEntitet.get().getStatus()).isEqualTo(AvklaringsbehovStatus.AVBRUTT);
     }
 
