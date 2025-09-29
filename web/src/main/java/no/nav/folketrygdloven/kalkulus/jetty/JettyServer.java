@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulus.jetty;
 
 import static org.eclipse.jetty.ee11.webapp.MetaInfConfiguration.CONTAINER_JAR_PATTERN;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,23 +58,6 @@ public class JettyServer {
         return new JettyServer(ENV.getProperty("server.port", Integer.class, 8080));
     }
 
-    private static void initTrustStore() {
-        final var trustStorePathProp = "javax.net.ssl.trustStore";
-        final var trustStorePasswordProp = "javax.net.ssl.trustStorePassword";
-
-        var defaultLocation = ENV.getProperty("user.home", ".") + "/.modig/truststore.jks";
-        var storePath = ENV.getProperty(trustStorePathProp, defaultLocation);
-        var storeFile = new File(storePath);
-        if (!storeFile.exists()) {
-            throw new IllegalStateException(
-                "Finner ikke truststore i " + storePath + "\n\tKonfrigurer enten som System property '" + trustStorePathProp
-                    + "' eller environment variabel '" + trustStorePathProp.toUpperCase().replace('.', '_') + "'");
-        }
-        var password = ENV.getProperty(trustStorePasswordProp, "changeit");
-        System.setProperty(trustStorePathProp, storeFile.getAbsolutePath());
-        System.setProperty(trustStorePasswordProp, password);
-    }
-
     private ContextHandler createContext() throws IOException {
         var ctx = new WebAppContext(CONTEXT_PATH, null, simpleConstraints(), null,
             new ErrorPageErrorHandler(), ServletContextHandler.NO_SESSIONS);
@@ -115,16 +97,9 @@ public class JettyServer {
     }
 
     void bootStrap() throws Exception {
-        konfigurerSikkerhet();
         konfigurerJndi();
         migrerDatabaser();
         start();
-    }
-
-    private void konfigurerSikkerhet() {
-        if (ENV.isLocal()) {
-            initTrustStore();
-        }
     }
 
     protected void konfigurerJndi() throws NamingException {
