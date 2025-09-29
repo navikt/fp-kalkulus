@@ -24,6 +24,7 @@ import no.nav.folketrygdloven.kalkulus.beregning.v1.KravperioderPrArbeidsforhold
 import no.nav.folketrygdloven.kalkulus.beregning.v1.PerioderForKrav;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.RefusjonskravDatoDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.Refusjonsperiode;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
@@ -68,8 +69,11 @@ public class MapFraKalkulator {
         var kravPrArbeidsforhold = input.getRefusjonskravPrArbeidsforhold();
 
         var iayGrunnlagMappet = mapIAYGrunnlag(iayGrunnlag);
+        var stp = beregningsgrunnlagGrunnlagEntitet.flatMap(BeregningsgrunnlagGrunnlagEntitet::getBeregningsgrunnlag)
+            .map(BeregningsgrunnlagEntitet::getSkjæringstidspunkt)
+            .orElse(input.getSkjæringstidspunkt());
         BeregningsgrunnlagInput utenGrunnbeløp = new BeregningsgrunnlagInput(ref, iayGrunnlagMappet, mapOpptjeningsaktiviteter(opptjeningAktiviteter),
-            mapKravperioder(kravPrArbeidsforhold, input.getRefusjonskravDatoer(), iayGrunnlag, input.getSkjæringstidspunkt()),
+            mapKravperioder(kravPrArbeidsforhold, iayGrunnlag, stp),
             mapYtelsespesifiktGrunnlag(kobling.getYtelseType(), input, beregningsgrunnlagGrunnlagEntitet));
 
         utenGrunnbeløp.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
@@ -87,14 +91,13 @@ public class MapFraKalkulator {
     }
 
     public static List<KravperioderPrArbeidsforholdDto> mapKravperioder(List<KravperioderPrArbeidsforhold> kravPrArbeidsforhold,
-                                                                        List<RefusjonskravDatoDto> refusjonskravDatoer,
                                                                         InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                         LocalDate stp) {
-        if (kravPrArbeidsforhold == null) {
-            // For å kunne mappe kall for å hente gui-dto for gamle saker
-            kravPrArbeidsforhold = LagKravperioder.lagKravperioderPrArbeidsforhold(refusjonskravDatoer, iayGrunnlag, stp);
+        if (iayGrunnlag.getAlleInntektsmeldingerPåSak() != null && !iayGrunnlag.getAlleInntektsmeldingerPåSak().isEmpty()) {
+            return MapInntektsmeldingerTilKravperioder.map(iayGrunnlag, stp);
+        } else {
+            return kravPrArbeidsforhold.stream().map(MapFraKalkulator::mapKravPeriode).toList();
         }
-        return kravPrArbeidsforhold.stream().map(MapFraKalkulator::mapKravPeriode).toList();
     }
 
     private static KravperioderPrArbeidsforholdDto mapKravPeriode(KravperioderPrArbeidsforhold kravperioderPrArbeidsforhold) {
