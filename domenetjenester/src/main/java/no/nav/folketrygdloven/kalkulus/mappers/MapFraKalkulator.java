@@ -95,7 +95,7 @@ public class MapFraKalkulator {
                                                                         InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                         LocalDate stp) {
 
-        var gammelListe = kravPrArbeidsforhold.stream().map(MapFraKalkulator::mapKravPeriode).toList();
+        List<KravperioderPrArbeidsforholdDto> gammelListe = kravPrArbeidsforhold == null ? List.of(): kravPrArbeidsforhold.stream().map(MapFraKalkulator::mapKravPeriode).toList();
         // Returnerer gammel liste til vi har validert at mapping fortsatt blir lik
         if (iayGrunnlag.getAlleInntektsmeldingerPåSak() != null && !iayGrunnlag.getAlleInntektsmeldingerPåSak().isEmpty()) {
             var nyListe = MapInntektsmeldingerTilKravperioder.map(iayGrunnlag, stp);
