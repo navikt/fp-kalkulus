@@ -108,7 +108,7 @@ public class MapFraKalkulator {
         if (nyListe.size() != gammelListe.size()) {
             loggFeil("Liste med krav pr arbeidsforhold har ulik størrelse");
         }
-        gammelListe.stream().forEach(k1 ->  {
+        gammelListe.forEach(k1 ->  {
             var matchetElement = nyListe.stream()
                 .filter(k2 -> k2.getArbeidsgiver().equals(k1.getArbeidsgiver()) && k2.getArbeidsforholdRef().equals(k1.getArbeidsforholdRef()))
                 .findFirst();
@@ -125,18 +125,20 @@ public class MapFraKalkulator {
     }
 
     private static void validerLikeListerMedAllePerioder(List<PerioderForKravDto> gammelListe, List<PerioderForKravDto> nyListe) {
-        gammelListe.stream().forEach(gammelKravPeriode -> {
-            var matchetKravPeriodeOpt = nyListe.stream().filter(nyKravPeriode -> nyKravPeriode.getInnsendingsdato().equals(gammelKravPeriode.getInnsendingsdato())).findFirst();
-            matchetKravPeriodeOpt.ifPresentOrElse(matchetKravPeriode -> {
-                var perioderSomIkkeMatcher = gammelKravPeriode.getPerioder()
-                    .stream()
-                    .filter(gammelPeriode -> matchetKravPeriode.getPerioder().stream().noneMatch(nyPeriode -> nyPeriode.periode().equals(gammelPeriode.periode()) && nyPeriode.beløp().compareTo(gammelPeriode.beløp()) == 0))
-                    .toList();
-                if (!perioderSomIkkeMatcher.isEmpty()) {
-                    loggFeil(String.format("Periode med innsendingsdato %s har ikke like elementer i periodeliste %s, ny liste var %s", gammelKravPeriode.getInnsendingsdato(), gammelKravPeriode.getPerioder(), matchetKravPeriode.getPerioder()));
-                }
-            }, () -> loggFeil(String.format("Periode med innsendingsdato %s finnes ikke i ny liste", gammelKravPeriode.getInnsendingsdato())));
+        gammelListe.forEach(gammelKravPeriode -> {
+            // OBS: Beggelister kan ha flere elementer med samme innsendingsdato men ulike perioder under hver dato,så her må vi sjekke mer
+            var matchetKravPeriodeOpt = nyListe.stream().filter(nyKravPeriode -> nyKravPeriode.getInnsendingsdato().equals(gammelKravPeriode.getInnsendingsdato()) && harLikePerioder(nyKravPeriode.getPerioder(), gammelKravPeriode.getPerioder())).findFirst();
+            if (matchetKravPeriodeOpt.isEmpty()) {
+                loggFeil(String.format("Periode med innsendingsdato %s finnes ikke i ny liste", gammelKravPeriode.getInnsendingsdato()));
+            }
         });
+    }
+
+    private static boolean harLikePerioder(List<RefusjonsperiodeDto> nyePerioder, List<RefusjonsperiodeDto> gamlePerioder) {
+        if (nyePerioder.size() != gamlePerioder.size()) {
+            return false;
+        }
+        return nyePerioder.stream().allMatch(p1 -> gamlePerioder.stream().anyMatch(p2 -> p2.periode().equals(p1.periode()) && p2.beløp().compareTo(p1.beløp()) == 0));
     }
 
     private static void loggFeil(String feilmelding) {
