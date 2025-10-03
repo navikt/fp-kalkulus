@@ -22,8 +22,8 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.KravperioderPrArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.PerioderForKrav;
+import no.nav.folketrygdloven.kalkulus.beregning.v1.RefusjonskravDatoDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.Refusjonsperiode;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
@@ -38,8 +38,6 @@ import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.foreldrepenger.konfig.Environment;
 
 public class MapFraKalkulator {
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(MapFraKalkulator.class);
-
     public static final String INNTEKT_RAPPORTERING_FRIST_DATO = "inntekt.rapportering.frist.dato";
 
     public static Arbeidsgiver mapArbeidsgiver(Aktør arbeidsgiver) {
@@ -70,11 +68,8 @@ public class MapFraKalkulator {
         var kravPrArbeidsforhold = input.getRefusjonskravPrArbeidsforhold();
 
         var iayGrunnlagMappet = mapIAYGrunnlag(iayGrunnlag);
-        var stp = beregningsgrunnlagGrunnlagEntitet.flatMap(BeregningsgrunnlagGrunnlagEntitet::getBeregningsgrunnlag)
-            .map(BeregningsgrunnlagEntitet::getSkjæringstidspunkt)
-            .orElse(input.getSkjæringstidspunkt());
         BeregningsgrunnlagInput utenGrunnbeløp = new BeregningsgrunnlagInput(ref, iayGrunnlagMappet, mapOpptjeningsaktiviteter(opptjeningAktiviteter),
-            mapKravperioder(kravPrArbeidsforhold, iayGrunnlag, stp),
+            mapKravperioder(kravPrArbeidsforhold, input.getRefusjonskravDatoer(), iayGrunnlag, input.getSkjæringstidspunkt()),
             mapYtelsespesifiktGrunnlag(kobling.getYtelseType(), input, beregningsgrunnlagGrunnlagEntitet));
 
         utenGrunnbeløp.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
@@ -92,57 +87,14 @@ public class MapFraKalkulator {
     }
 
     public static List<KravperioderPrArbeidsforholdDto> mapKravperioder(List<KravperioderPrArbeidsforhold> kravPrArbeidsforhold,
+                                                                        List<RefusjonskravDatoDto> refusjonskravDatoer,
                                                                         InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                         LocalDate stp) {
-
-        List<KravperioderPrArbeidsforholdDto> gammelListe = kravPrArbeidsforhold == null ? List.of(): kravPrArbeidsforhold.stream().map(MapFraKalkulator::mapKravPeriode).toList();
-        // Returnerer gammel liste til vi har validert at mapping fortsatt blir lik
-        if (iayGrunnlag.getAlleInntektsmeldingerPåSak() != null && !iayGrunnlag.getAlleInntektsmeldingerPåSak().isEmpty()) {
-            var nyListe = MapInntektsmeldingerTilKravperioder.map(iayGrunnlag, stp);
-            validerLikeLister(nyListe, gammelListe);
+        if (kravPrArbeidsforhold == null) {
+            // For å kunne mappe kall for å hente gui-dto for gamle saker
+            kravPrArbeidsforhold = LagKravperioder.lagKravperioderPrArbeidsforhold(refusjonskravDatoer, iayGrunnlag, stp);
         }
-        return gammelListe;
-    }
-
-    private static void validerLikeLister(List<KravperioderPrArbeidsforholdDto> nyListe, List<KravperioderPrArbeidsforholdDto> gammelListe) {
-        if (nyListe.size() != gammelListe.size()) {
-            loggFeil("Liste med krav pr arbeidsforhold har ulik størrelse");
-        }
-        gammelListe.forEach(k1 ->  {
-            var matchetElement = nyListe.stream()
-                .filter(k2 -> k2.getArbeidsgiver().equals(k1.getArbeidsgiver()) && k2.getArbeidsforholdRef().equals(k1.getArbeidsforholdRef()))
-                .findFirst();
-            matchetElement.ifPresentOrElse(match -> {
-                if (k1.getPerioder().size() != match.getPerioder().size()) {
-                    loggFeil("Liste med alle perioder har ulik størrelse");
-                }
-                if (k1.getSisteSøktePerioder().size() != match.getSisteSøktePerioder().size()) {
-                    loggFeil("Liste med siste perioder har ulik størrelse");
-                }
-                validerLikeListerMedAllePerioder(k1.getPerioder(), match.getPerioder());
-            }, () -> loggFeil(String.format("Andel med orgnr %s og ref %s finnes ikke i ny liste", k1.getArbeidsgiver(), k1.getArbeidsforholdRef())));
-        });
-    }
-
-    private static void validerLikeListerMedAllePerioder(List<PerioderForKravDto> gammelListe, List<PerioderForKravDto> nyListe) {
-        gammelListe.forEach(gammelKravPeriode -> {
-            // OBS: Beggelister kan ha flere elementer med samme innsendingsdato men ulike perioder under hver dato,så her må vi sjekke mer
-            var matchetKravPeriodeOpt = nyListe.stream().filter(nyKravPeriode -> nyKravPeriode.getInnsendingsdato().equals(gammelKravPeriode.getInnsendingsdato()) && harLikePerioder(nyKravPeriode.getPerioder(), gammelKravPeriode.getPerioder())).findFirst();
-            if (matchetKravPeriodeOpt.isEmpty()) {
-                loggFeil(String.format("Periode med innsendingsdato %s finnes ikke i ny liste", gammelKravPeriode.getInnsendingsdato()));
-            }
-        });
-    }
-
-    private static boolean harLikePerioder(List<RefusjonsperiodeDto> nyePerioder, List<RefusjonsperiodeDto> gamlePerioder) {
-        if (nyePerioder.size() != gamlePerioder.size()) {
-            return false;
-        }
-        return nyePerioder.stream().allMatch(p1 -> gamlePerioder.stream().anyMatch(p2 -> p2.periode().equals(p1.periode()) && p2.beløp().compareTo(p1.beløp()) == 0));
-    }
-
-    private static void loggFeil(String feilmelding) {
-        LOG.info("KRAVPERIODER_MISSMATCH: {}", feilmelding);
+        return kravPrArbeidsforhold.stream().map(MapFraKalkulator::mapKravPeriode).toList();
     }
 
     private static KravperioderPrArbeidsforholdDto mapKravPeriode(KravperioderPrArbeidsforhold kravperioderPrArbeidsforhold) {
