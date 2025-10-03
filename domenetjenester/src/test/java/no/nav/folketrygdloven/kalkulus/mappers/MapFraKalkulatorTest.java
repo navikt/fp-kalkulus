@@ -93,7 +93,6 @@ class MapFraKalkulatorTest {
         iayGrunnlag.medYtelserDto(new YtelserDto(List.of(new YtelseDto(Beløp.fra(BigDecimal.TEN), Set.of(), YtelseType.FORELDREPENGER, periode, null))));
         iayGrunnlag.medInntekterDto(new InntekterDto(List.of(new UtbetalingDto(InntektskildeType.INNTEKT_BEREGNING, List.of(new UtbetalingsPostDto(periode, InntektspostType.LØNN, Beløp.fra(1000)))))));
         iayGrunnlag.medInntektsmeldingerDto(new InntektsmeldingerDto(List.of(new InntektsmeldingDto(organisasjon, Beløp.fra(100), List.of(), List.of(), null, null, null, null, null))));
-        iayGrunnlag.medAlleInntektsmeldingerPåSak(List.of(new InntektsmeldingDto(organisasjon, Beløp.fra(100), List.of(), List.of(), null, null, null, null, null)));
         return iayGrunnlag;
     }
 }
