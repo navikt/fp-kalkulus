@@ -18,16 +18,22 @@ public class MapTilGUIInputFraKalkulator {
                                                                    KalkulatorInputDto input,
                                                                    BeregningsgrunnlagGrunnlagEntitet beregningsgrunnlagGrunnlagEntitet) {
         var skjæringstidspunkt = Skjæringstidspunkt.builder()
-            .medFørsteUttaksdato(input.getSkjæringstidspunkt())
-            .medSkjæringstidspunktOpptjening(input.getSkjæringstidspunkt())
-            .build();
-        var ref = KoblingReferanse.fra(kobling.getYtelseType(), new AktørId(kobling.getAktørId().getId()), kobling.getId(),
-            kobling.getKoblingReferanse().getReferanse(), Optional.empty(), skjæringstidspunkt);
+                .medFørsteUttaksdato(input.getSkjæringstidspunkt())
+                .medSkjæringstidspunktOpptjening(input.getSkjæringstidspunkt())
+                .build();
+        var ref = KoblingReferanse.fra(
+                kobling.getYtelseType(),
+                new AktørId(kobling.getAktørId().getId()),
+                kobling.getId(),
+                kobling.getKoblingReferanse().getReferanse(),
+                Optional.empty(),
+                skjæringstidspunkt);
         var iayGrunnlagMappet = MapIAYTilKalulator.mapGrunnlag(input.getIayGrunnlag());
-        var beregningsgrunnlagGuiInput = new BeregningsgrunnlagGUIInput(ref, iayGrunnlagMappet,
-            MapFraKalkulator.mapKravperioder(input.getRefusjonskravPrArbeidsforhold(), input.getRefusjonskravDatoer(), input.getIayGrunnlag(),
-                input.getSkjæringstidspunkt()),
-            MapFraKalkulator.mapYtelsespesifiktGrunnlag(kobling.getYtelseType(), input, Optional.ofNullable(beregningsgrunnlagGrunnlagEntitet)));
+        var beregningsgrunnlagGuiInput = new BeregningsgrunnlagGUIInput(
+                ref,
+                iayGrunnlagMappet,
+                MapFraKalkulator.mapKravperioder(input.getRefusjonskravPrArbeidsforhold(), input.getRefusjonskravDatoer(), input.getIayGrunnlag(), input.getSkjæringstidspunkt()),
+                MapFraKalkulator.mapYtelsespesifiktGrunnlag(kobling.getYtelseType(), input, Optional.ofNullable(beregningsgrunnlagGrunnlagEntitet)));
         beregningsgrunnlagGuiInput.leggTilToggle("refusjonsfrist.flytting", erIkkeProd());
         return beregningsgrunnlagGuiInput;
     }
