@@ -19,8 +19,7 @@ public class MapTilGUIInputFraKalkulator {
                                                                    BeregningsgrunnlagGrunnlagEntitet beregningsgrunnlagGrunnlagEntitet) {
         var skjæringstidspunkt = Skjæringstidspunkt.builder()
                 .medFørsteUttaksdato(input.getSkjæringstidspunkt())
-                .medSkjæringstidspunktOpptjening(input.getSkjæringstidspunkt())
-                .build();
+                .medSkjæringstidspunktOpptjening(input.getSkjæringstidspunkt()).build();
         var ref = KoblingReferanse.fra(
                 kobling.getYtelseType(),
                 new AktørId(kobling.getAktørId().getId()),
