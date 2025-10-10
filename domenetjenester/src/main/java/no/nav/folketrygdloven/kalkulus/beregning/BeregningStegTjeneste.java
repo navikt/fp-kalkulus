@@ -365,7 +365,7 @@ public class BeregningStegTjeneste {
 
     private void lagreAvklaringsbehov(StegProsesseringInput input, BeregningResultatAggregat
             beregningResultatAggregat) {
-        // Lagrer ikke ventepunkter i kalkulus da det ikke finnes en mekanisme i k9-sak som samspiller med dette
+        // Lagrer ikke ventepunkter i kalkulus da det er fpsak som styrer venting og gjennopptakelse av behandlinger
         var avklaringsbehovSomLagresIKalkulus = beregningResultatAggregat.getBeregningAvklaringsbehovResultater().stream()
                 .map(BeregningAvklaringsbehovResultat::getBeregningAvklaringsbehovDefinisjon)
                 .filter(ap -> !ap.erVentepunkt())
