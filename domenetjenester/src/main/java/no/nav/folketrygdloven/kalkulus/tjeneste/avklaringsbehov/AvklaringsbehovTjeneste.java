@@ -58,6 +58,7 @@ public class AvklaringsbehovTjeneste {
 
     public void kopierAvklaringsbehov(KoblingEntitet nyKobling, AvklaringsbehovEntitet avklaringsbehov) {
         Optional<AvklaringsbehovEntitet> eksisterendeAP = avklaringsbehovRepository.hentAvklaringsbehovForKobling(nyKobling, avklaringsbehov.getDefinisjon());
+        LOG.info("Kopierer avklaringsbehov {} til kobling {} ", avklaringsbehov, nyKobling.getId());
         AvklaringsbehovEntitet kopiert;
         if (eksisterendeAP.isEmpty()) {
             kopiert = avklaringsbehovKontrollTjeneste.opprettForKoblingLikEksisterende(nyKobling, avklaringsbehov);
@@ -141,11 +142,14 @@ public class AvklaringsbehovTjeneste {
 
 
     private void håndterUtledetAvklaringsbehov(KoblingEntitet kobling, AvklaringsbehovDefinisjon utledetAP) {
+        LOG.info("Utledet avklaringsbehov {} for kobling {}", utledetAP, kobling.getId());
         Optional<AvklaringsbehovEntitet> eksisterendeAP = avklaringsbehovRepository.hentAvklaringsbehovForKobling(kobling, utledetAP);
         if (eksisterendeAP.isEmpty()) {
+            LOG.info("Avklaringsbehov {} for kobling {} er ikke tidligere utredet, oppretter", utledetAP, kobling.getId());
             AvklaringsbehovEntitet avklaringsbehovEntitet = avklaringsbehovKontrollTjeneste.opprettForKobling(kobling, utledetAP);
             avklaringsbehovRepository.lagre(avklaringsbehovEntitet);
         } else if (AvklaringsbehovStatus.AVBRUTT.equals(eksisterendeAP.get().getStatus())) {
+            LOG.info("Avklaringsbehov {} for kobling {} er tidligere utredet og avbrutt, reaktiverer", utledetAP, kobling.getId());
             reaktiverAvklaringsbehov(eksisterendeAP.get());
         } else if (AvklaringsbehovStatus.OPPRETTET.equals(eksisterendeAP.get().getStatus()) && !eksisterendeAP.get().getDefinisjon().erOverstyring()) {
             throw new TekniskException("FT-406871",
@@ -173,13 +177,12 @@ public class AvklaringsbehovTjeneste {
     public void avbrytAlleAvklaringsbehovEtterEllerISteg(Long koblingId, BeregningSteg steg, boolean skalKjøreSteget) {
         List<AvklaringsbehovEntitet> alleApPåKobling = avklaringsbehovRepository.hentAvklaringsbehovForKobling(koblingId);
         alleApPåKobling.forEach(ap -> {
-                    if (skalKjøreSteget && !ap.getStegFunnet().erFør(steg)) {
-                        avbrytAvklaringsbehov(ap.getKoblingId(), ap);
-                    } else if (!skalKjøreSteget && ap.getStegFunnet().erEtter(steg)) {
-                        avbrytAvklaringsbehov(ap.getKoblingId(), ap);
-                    }
-
-                });
+            if (skalKjøreSteget && !ap.getStegFunnet().erFør(steg)) {
+                avbrytAvklaringsbehov(ap.getKoblingId(), ap);
+            } else if (!skalKjøreSteget && ap.getStegFunnet().erEtter(steg)) {
+                avbrytAvklaringsbehov(ap.getKoblingId(), ap);
+            }
+        });
     }
 
     public void avbrytAlleAvklaringsbehovEtter(Long koblingId, AvklaringsbehovDefinisjon avklaringsbehovDefinisjon) {
