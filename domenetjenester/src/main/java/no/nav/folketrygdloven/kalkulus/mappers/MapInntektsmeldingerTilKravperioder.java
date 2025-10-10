@@ -42,7 +42,10 @@ public class MapInntektsmeldingerTilKravperioder {
         if (grunnlagDto.getArbeidDto() != null) {
             yrkesaktiviteter.addAll(grunnlagDto.getArbeidDto().getYrkesaktiviteter());
         }
-        if (yrkesaktiviteter.isEmpty()) {
+        var arbeidsforhold = yrkesaktiviteter.stream()
+            .filter(ya -> !erFrilans(ya))
+            .toList();
+        if (arbeidsforhold.isEmpty()) {
             return Collections.emptyList();
         }
 
@@ -52,10 +55,14 @@ public class MapInntektsmeldingerTilKravperioder {
         return gruppertPrArbeidsforhold.entrySet()
             .stream()
             .filter(kravnøkkelOgInntektsmeldinger -> sisteIMPrArbeidsforhold.containsKey(kravnøkkelOgInntektsmeldinger.getKey()))
-            .map(kravnøkkelOgInntektsmeldinger -> mapTilKravPrArbeidsforhold(skjæringstidspunkt, yrkesaktiviteter, sisteIMPrArbeidsforhold,
+            .map(kravnøkkelOgInntektsmeldinger -> mapTilKravPrArbeidsforhold(skjæringstidspunkt, arbeidsforhold, sisteIMPrArbeidsforhold,
                 kravnøkkelOgInntektsmeldinger))
             .flatMap(Optional::stream)
             .toList();
+    }
+
+    private static boolean erFrilans(YrkesaktivitetDto ya) {
+        return ya.getArbeidType().equals(ArbeidType.FRILANSER) || ya.getArbeidType().equals(ArbeidType.FRILANSER_OPPDRAGSTAKER);
     }
 
     private static List<YrkesaktivitetDto> mapOverstyringerTilYrkesaktiviteter(ArbeidsforholdInformasjonDto arbeidsforholdInformasjon) {
