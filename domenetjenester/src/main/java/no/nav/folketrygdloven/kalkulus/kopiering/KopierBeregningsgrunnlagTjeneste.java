@@ -180,9 +180,7 @@ public class KopierBeregningsgrunnlagTjeneste {
 
         avklaringsbehovTjeneste.avbrytAlleAvklaringsbehov(nyKobling.getId());
         // Kopierer alle fra eksisterende koblinger til kopi-koblinger
-        avklaringsbehovSomMåKopieres.forEach(ab -> {
-            avklaringsbehovTjeneste.kopierAvklaringsbehov(nyKobling, ab);
-        });
+        avklaringsbehovSomMåKopieres.forEach(ab -> avklaringsbehovTjeneste.kopierAvklaringsbehov(nyKobling, ab));
     }
 
     private Set<AvklaringsbehovEntitet> finnAvklaringsbehovSomSkalKopieres(Long eksisterendeKoblingId, BeregningSteg steg) {
