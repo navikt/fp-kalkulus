@@ -32,6 +32,7 @@ import no.nav.folketrygdloven.kalkulator.steg.KalkulatorInterface;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningResultat;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AvklaringsbehovMedTilstandDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelsporingRepository;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
@@ -42,10 +43,8 @@ import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
 import no.nav.folketrygdloven.kalkulus.response.v1.VilkårResponse;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
-import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.VidereførOverstyringTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelSporingTjeneste;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelsporingRepository;
 import no.nav.foreldrepenger.konfig.Environment;
 
 @ApplicationScoped
@@ -55,7 +54,6 @@ public class BeregningStegTjeneste {
     private BeregningsgrunnlagRepository repository;
     private RegelsporingRepository regelsporingRepository;
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
-    private VidereførOverstyringTjeneste videreførOverstyring;
     private RegelSporingTjeneste regelSporingTjeneste;
 
 
@@ -67,12 +65,10 @@ public class BeregningStegTjeneste {
     public BeregningStegTjeneste(BeregningsgrunnlagRepository repository,
                                  RegelsporingRepository regelsporingRepository,
                                  AvklaringsbehovTjeneste avklaringsbehovTjeneste,
-                                 VidereførOverstyringTjeneste videreførOverstyring,
                                  RegelSporingTjeneste regelSporingTjeneste) {
         this.repository = repository;
         this.regelsporingRepository = regelsporingRepository;
         this.avklaringsbehovTjeneste = avklaringsbehovTjeneste;
-        this.videreførOverstyring = videreførOverstyring;
         this.regelSporingTjeneste = regelSporingTjeneste;
     }
 
@@ -111,7 +107,6 @@ public class BeregningStegTjeneste {
         validerIngenÅpneAvklaringsbehov(input.getKoblingId());
         var resultat = beregningsgrunnlagTjeneste.fastsettBeregningsaktiviteter(input);
         lagreOgKopier(input, resultat);
-        leggTilOverstyringHvisFinnes(BeregningSteg.FASTSETT_STP_BER, input.getKoblingId(), resultat);
         lagreAvklaringsbehov(input, resultat);
         return mapTilstandResponse(input.getKoblingReferanse(), resultat);
     }
@@ -126,7 +121,6 @@ public class BeregningStegTjeneste {
     private TilstandResponse kontrollerFaktaBeregningsgrunnlag(FaktaOmBeregningInput input) {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.kontrollerFaktaBeregningsgrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
-        leggTilOverstyringHvisFinnes(BeregningSteg.KOFAKBER, input.getKoblingId(), beregningResultatAggregat);
         lagreAvklaringsbehov(input, beregningResultatAggregat);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
@@ -379,11 +373,5 @@ public class BeregningStegTjeneste {
 
     private void validerIngenÅpneAvklaringsbehov(Long koblingId) {
         avklaringsbehovTjeneste.validerIngenÅpneAvklaringsbehovPåKobling(koblingId);
-    }
-
-    private void leggTilOverstyringHvisFinnes(BeregningSteg steg, Long koblingId, BeregningResultatAggregat beregningResultatAggregat) {
-        videreførOverstyring.videreførOverstyringForSteg(koblingId, steg)
-                .map(it -> BeregningAvklaringsbehovResultat.opprettFor(it.getDefinisjon()))
-                .ifPresent(beregningResultatAggregat::leggTilAvklaringsbehov);
     }
 }
