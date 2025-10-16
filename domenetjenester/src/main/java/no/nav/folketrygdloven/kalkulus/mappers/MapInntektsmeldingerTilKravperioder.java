@@ -45,7 +45,7 @@ public class MapInntektsmeldingerTilKravperioder {
         var arbeidsforhold = yrkesaktiviteter.stream()
             .filter(ya -> !erFrilans(ya))
             .toList();
-        if (arbeidsforhold.isEmpty()) {
+        if (arbeidsforhold.isEmpty() || grunnlagDto.getAlleInntektsmeldingerPåSak().isEmpty()) {
             return Collections.emptyList();
         }
 
