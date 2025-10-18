@@ -70,6 +70,7 @@ public class MapFraKalkulator {
 
         utenGrunnbeløp.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
         utenGrunnbeløp.leggTilToggle("aap.praksisendring", erAAPPraksisendringAktiv());
+        utenGrunnbeløp.leggTilToggle("refusjonsfrist.flytting", erIkkeProd());
         return beregningsgrunnlagGrunnlagEntitet.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag)
             .map(utenGrunnbeløp::medBeregningsgrunnlagGrunnlag)
             .orElse(utenGrunnbeløp);
@@ -130,5 +131,9 @@ public class MapFraKalkulator {
         } else {
             return true;
         }
+    }
+
+    private static boolean erIkkeProd() {
+        return !Environment.current().isProd();
     }
 }
