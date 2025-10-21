@@ -89,7 +89,7 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
 
     @BeforeEach
-    public void beforeEach() {
+    void beforeEach() {
         koblingRepository = new KoblingRepository(getEntityManager());
         beregningsgrunnlagRepository = new BeregningsgrunnlagRepository(getEntityManager());
         avklaringsbehovRepository = new AvklaringsbehovRepository(getEntityManager());
@@ -160,7 +160,7 @@ class BeregningStegTjenesteTest extends EntityManagerAwareTest {
     }
 
     @Test
-    public void skal_ikke_kopiere_når_vi_ikke_har_aksjonspunkt_fastsett_aktiviteter() {
+    void skal_ikke_kopiere_når_vi_ikke_har_aksjonspunkt_fastsett_aktiviteter() {
         // Arrange
         var kobling = lagKoblingRefEntitet();
         var ref = InternArbeidsforholdRefDto.nyRef();

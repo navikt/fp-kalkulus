@@ -33,7 +33,7 @@ class AvklaringsbehovTjenesteTest extends EntityManagerAwareTest {
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         AktørId aktørId = new AktørId("9999999999999");
         KoblingReferanse koblingReferanse = new KoblingReferanse(UUID.randomUUID());
         Saksnummer saksnummer = new Saksnummer("1234");
@@ -46,7 +46,7 @@ class AvklaringsbehovTjenesteTest extends EntityManagerAwareTest {
     }
 
     @Test
-    public void skal_opprette_lagre_og_hente_avklaringsbehov() {
+    void skal_opprette_lagre_og_hente_avklaringsbehov() {
         List<AvklaringsbehovDefinisjon> avklaringsbehov = Collections.singletonList(AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL);
 
         avklaringsbehovTjeneste.lagreAvklaringsresultater(kobling.getId(), avklaringsbehov);
@@ -61,7 +61,7 @@ class AvklaringsbehovTjenesteTest extends EntityManagerAwareTest {
     }
 
     @Test
-    public void skal_opprette_og_løse_avklaringsbehov() {
+    void skal_opprette_og_løse_avklaringsbehov() {
         List<AvklaringsbehovDefinisjon> avklaringsbehov = Collections.singletonList(AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL);
 
         // Opprett
@@ -79,7 +79,7 @@ class AvklaringsbehovTjenesteTest extends EntityManagerAwareTest {
     }
 
     @Test
-    public void skal_avbryte_avklaringsbehov_fra_og_med_oppgitt_avklaringsbehov_ved_tilbakerulling() {
+    void skal_avbryte_avklaringsbehov_fra_og_med_oppgitt_avklaringsbehov_ved_tilbakerulling() {
         // Opprett
         avklaringsbehovTjeneste.lagreAvklaringsresultater(kobling.getId(), Collections.singletonList(AvklaringsbehovDefinisjon.VURDER_FAKTA_ATFL_SN));
         avklaringsbehovTjeneste.lagreAvklaringsresultater(kobling.getId(), Collections.singletonList(AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL));
@@ -116,14 +116,14 @@ class AvklaringsbehovTjenesteTest extends EntityManagerAwareTest {
     }
 
     @Test
-    public void skal_kaste_feil_om_vi_prøver_å_løse_avklaringsbehov_som_ikke_er_utledet() {
+    void skal_kaste_feil_om_vi_prøver_å_løse_avklaringsbehov_som_ikke_er_utledet() {
         assertThatThrownBy(() ->
                 avklaringsbehovTjeneste.løsAvklaringsbehov(kobling.getId(), AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL, "Dette er en begrunnelse"))
                 .isInstanceOf(TekniskException.class);
     }
 
     @Test
-    public void skal_kaste_feil_hvis_vi_prøver_å_løse_allerede_løst_avklaringsbehov() {
+    void skal_kaste_feil_hvis_vi_prøver_å_løse_allerede_løst_avklaringsbehov() {
         List<AvklaringsbehovDefinisjon> avklaringsbehov = Collections.singletonList(AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL);
 
         // Opprett

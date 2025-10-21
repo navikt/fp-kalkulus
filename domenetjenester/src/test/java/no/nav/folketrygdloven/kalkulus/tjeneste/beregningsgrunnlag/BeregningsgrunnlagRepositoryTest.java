@@ -32,19 +32,19 @@ import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
 
 @ExtendWith(JpaExtension.class)
-public class BeregningsgrunnlagRepositoryTest extends EntityManagerAwareTest {
+class BeregningsgrunnlagRepositoryTest extends EntityManagerAwareTest {
 
     private BeregningsgrunnlagRepository repository;
     private KoblingRepository koblingRepository;
 
     @BeforeEach
-    public void beforeEach() {
+    void beforeEach() {
         repository = new BeregningsgrunnlagRepository(getEntityManager());
         koblingRepository = new KoblingRepository(getEntityManager());
     }
 
     @Test
-    public void skal_hente_beregningsgrunnlag_for_referanse() {
+    void skal_hente_beregningsgrunnlag_for_referanse() {
         AktørId aktørId = new AktørId("9999999999999");
         KoblingReferanse koblingReferanse = new KoblingReferanse(UUID.randomUUID());
         Saksnummer saksnummer = new Saksnummer("1234");

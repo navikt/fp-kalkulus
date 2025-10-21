@@ -19,7 +19,7 @@ class UtledErMottattYtelseEndringerTest {
     public static final String ARBEIDSGIVER_ORGNR = "89712449";
 
     @Test
-    public void skal_returnere_endring_i_mottatt_ytelse_for_frilans() {
+    void skal_returnere_endring_i_mottatt_ytelse_for_frilans() {
         // Arrange
         FaktaAggregatDto fakta = FaktaAggregatDto.builder().medFaktaAktør(FaktaAktørDto.builder()
                 .medHarFLMottattYtelseFastsattAvSaksbehandler(true)
@@ -37,7 +37,7 @@ class UtledErMottattYtelseEndringerTest {
     }
 
     @Test
-    public void skal_returnere_endring_i_mottatt_ytelse_for_frilans_med_forrige() {
+    void skal_returnere_endring_i_mottatt_ytelse_for_frilans_med_forrige() {
         // Arrange
         FaktaAggregatDto fakta = FaktaAggregatDto.builder().medFaktaAktør(FaktaAktørDto.builder()
                 .medHarFLMottattYtelseFastsattAvSaksbehandler(true)
@@ -60,7 +60,7 @@ class UtledErMottattYtelseEndringerTest {
     }
 
     @Test
-    public void skal_ikkje_returnere_endring_i_mottatt_ytelse_for_frilans_uten_endring() {
+    void skal_ikkje_returnere_endring_i_mottatt_ytelse_for_frilans_uten_endring() {
         // Arrange
         FaktaAggregatDto fakta = FaktaAggregatDto.builder().medFaktaAktør(FaktaAktørDto.builder()
                 .medHarFLMottattYtelseFastsattAvSaksbehandler(true)
@@ -79,7 +79,7 @@ class UtledErMottattYtelseEndringerTest {
     }
 
     @Test
-    public void skal_returnere_endring_i_mottatt_ytelse_for_arbeidstaker() {
+    void skal_returnere_endring_i_mottatt_ytelse_for_arbeidstaker() {
         // Arrange
         FaktaAggregatDto fakta = FaktaAggregatDto.builder().erstattEksisterendeEllerLeggTil(FaktaArbeidsforholdDto.builder(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR), InternArbeidsforholdRefDto.nullRef())
                 .medHarMottattYtelseFastsattAvSaksbehandler(true)
@@ -97,7 +97,7 @@ class UtledErMottattYtelseEndringerTest {
     }
 
     @Test
-    public void skal_returnere_endring_i_mottatt_ytelse_for_arbeidstaker_med_forrige() {
+    void skal_returnere_endring_i_mottatt_ytelse_for_arbeidstaker_med_forrige() {
         // Arrange
         FaktaAggregatDto fakta = FaktaAggregatDto.builder().erstattEksisterendeEllerLeggTil(FaktaArbeidsforholdDto.builder(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR), InternArbeidsforholdRefDto.nullRef())
                 .medHarMottattYtelseFastsattAvSaksbehandler(true)

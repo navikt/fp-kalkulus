@@ -63,7 +63,7 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
 
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         repository = new BeregningsgrunnlagRepository(getEntityManager());
         koblingRepository = new KoblingRepository(getEntityManager());
         koblingRepository = new KoblingRepository(getEntityManager());

@@ -32,7 +32,7 @@ class AvklaringsbehovRepositoryTest extends EntityManagerAwareTest {
     private KoblingEntitet kobling;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         AktørId aktørId = new AktørId("9999999999999");
         KoblingReferanse koblingReferanse = new KoblingReferanse(UUID.randomUUID());
         Saksnummer saksnummer = new Saksnummer("1234");
@@ -44,7 +44,7 @@ class AvklaringsbehovRepositoryTest extends EntityManagerAwareTest {
     }
 
     @Test
-    public void skal_lagre_og_hente_avklaringsbehov() {
+    void skal_lagre_og_hente_avklaringsbehov() {
         AvklaringsbehovEntitet ap = avklaringsbehovKontrollTjeneste.opprettForKobling(kobling, AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL);
         avklaringsbehovRepository.lagre(ap);
 
@@ -55,7 +55,7 @@ class AvklaringsbehovRepositoryTest extends EntityManagerAwareTest {
     }
 
     @Test
-    public void skal_hente_ap_som_ikke_finnes() {
+    void skal_hente_ap_som_ikke_finnes() {
         Optional<AvklaringsbehovEntitet> hentetAP = avklaringsbehovRepository.hentAvklaringsbehovForKobling(kobling, AvklaringsbehovDefinisjon.FASTSETT_BG_AT_FL);
 
         assertThat(hentetAP).isEmpty();

@@ -21,7 +21,7 @@ import no.nav.folketrygdloven.kalkulus.dbstoette.JpaExtension;
 import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
 
 @ExtendWith(JpaExtension.class)
-public class KoblingRepositoryTest extends EntityManagerAwareTest {
+class KoblingRepositoryTest extends EntityManagerAwareTest {
 
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("Europe/Oslo"));
@@ -30,12 +30,12 @@ public class KoblingRepositoryTest extends EntityManagerAwareTest {
     private KoblingRepository koblingRepository;
 
     @BeforeEach
-    public void beforeEach() {
+    void beforeEach() {
         koblingRepository = new KoblingRepository(getEntityManager());
     }
 
     @Test
-    public void skal_lagre_ned_beregningsgrunnlag() {
+    void skal_lagre_ned_beregningsgrunnlag() {
         AktørId aktørId = new AktørId("9999999999999");
         KoblingReferanse koblingReferanse = new KoblingReferanse(UUID.randomUUID());
         Saksnummer saksnummer = new Saksnummer("1234");

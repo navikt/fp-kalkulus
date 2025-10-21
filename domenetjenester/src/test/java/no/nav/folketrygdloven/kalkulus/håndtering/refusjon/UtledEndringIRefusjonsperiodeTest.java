@@ -27,7 +27,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.Refusjonoverstyri
 class UtledEndringIRefusjonsperiodeTest {
 
     @Test
-    public void skal_lage_endring_når_ingen_tidligere_vurdering_finnes() {
+    void skal_lage_endring_når_ingen_tidligere_vurdering_finnes() {
         // Arrange
         LocalDate refusjonFom = LocalDate.of(2020,1,1);
         var stp = refusjonFom.minusDays(10);
@@ -56,7 +56,7 @@ class UtledEndringIRefusjonsperiodeTest {
     }
 
     @Test
-    public void skal_lage_endring_når_ingen_matchende_ag_på_tidligere_vurdering_finnes() {
+    void skal_lage_endring_når_ingen_matchende_ag_på_tidligere_vurdering_finnes() {
         // Arrange
         LocalDate refusjonFom = LocalDate.of(2020,1,1);
         var stp = refusjonFom.minusDays(10);
@@ -91,7 +91,7 @@ class UtledEndringIRefusjonsperiodeTest {
     }
 
     @Test
-    public void skal_lage_endring_når_ingen_matchende_ref_på_tidligere_vurdering_finnes() {
+    void skal_lage_endring_når_ingen_matchende_ref_på_tidligere_vurdering_finnes() {
         // Arrange
         LocalDate refusjonFom = LocalDate.of(2020,1,1);
         var stp = refusjonFom.minusDays(10);
@@ -128,7 +128,7 @@ class UtledEndringIRefusjonsperiodeTest {
     }
 
     @Test
-    public void skal_lage_endring_når_tidligere_vurdering_finnes() {
+    void skal_lage_endring_når_tidligere_vurdering_finnes() {
         // Arrange
         LocalDate forrigeFom = LocalDate.of(2020,1,1);
         LocalDate nyFom = LocalDate.of(2020,2,1);

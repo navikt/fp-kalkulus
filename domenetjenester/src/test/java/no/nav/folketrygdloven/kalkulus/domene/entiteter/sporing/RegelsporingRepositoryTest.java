@@ -31,7 +31,7 @@ class RegelsporingRepositoryTest extends EntityManagerAwareTest {
     private KoblingEntitet kobling;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         AktørId aktørId = new AktørId("9999999999999");
         KoblingReferanse koblingReferanse = new KoblingReferanse(UUID.randomUUID());
         Saksnummer saksnummer = new Saksnummer("1234");

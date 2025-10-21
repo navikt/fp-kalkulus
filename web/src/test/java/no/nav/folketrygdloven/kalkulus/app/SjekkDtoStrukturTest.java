@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public class SjekkDtoStrukturTest {
+class SjekkDtoStrukturTest {
 
     private static final List<String> SKIPPED = Arrays.asList("class", "kode");
 

@@ -31,7 +31,7 @@ class GreguleringsstatusutlederTest {
     private static final BigDecimal NY_G = BigDecimal.valueOf(105000);
 
     @Test
-    public void skal_ikke_regulere_grunnbeløp_når_ikke_foreslått_grunnlag() {
+    void skal_ikke_regulere_grunnbeløp_når_ikke_foreslått_grunnlag() {
         var periode = BeregningsgrunnlagPeriodeEntitet.builder()
             .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
             .leggTilBeregningsgrunnlagAndel(BeregningsgrunnlagAndelEntitet.builder()
@@ -61,7 +61,7 @@ class GreguleringsstatusutlederTest {
     }
 
     @Test
-    public void skal_ikke_regulere_grunnbeløp_når_arbeidstaker_med_inntekt_under_grenseverdi() {
+    void skal_ikke_regulere_grunnbeløp_når_arbeidstaker_med_inntekt_under_grenseverdi() {
         var periode = BeregningsgrunnlagPeriodeEntitet.builder()
             .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
             .leggTilBeregningsgrunnlagAndel(BeregningsgrunnlagAndelEntitet.builder()
@@ -88,7 +88,7 @@ class GreguleringsstatusutlederTest {
     }
 
     @Test
-    public void skal_regulere_grunnbeløp_når_beregnet_som_næringsdrivende() {
+    void skal_regulere_grunnbeløp_når_beregnet_som_næringsdrivende() {
         var periode = BeregningsgrunnlagPeriodeEntitet.builder()
             .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
             .leggTilBeregningsgrunnlagAndel(BeregningsgrunnlagAndelEntitet.builder()
@@ -115,7 +115,7 @@ class GreguleringsstatusutlederTest {
     }
 
     @Test
-    public void skal_regulere_grunnbeløp_når_beregnet_som_militær_med_inntekt_under_minstegrense() {
+    void skal_regulere_grunnbeløp_når_beregnet_som_militær_med_inntekt_under_minstegrense() {
         var periode = BeregningsgrunnlagPeriodeEntitet.builder()
             .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
             .leggTilBeregningsgrunnlagAndel(BeregningsgrunnlagAndelEntitet.builder()
@@ -143,7 +143,7 @@ class GreguleringsstatusutlederTest {
     }
 
     @Test
-    public void skal_regulere_grunnbeløp_når_beregnet_som_arbeid_som_blir_avkortet() {
+    void skal_regulere_grunnbeløp_når_beregnet_som_arbeid_som_blir_avkortet() {
         var periode = BeregningsgrunnlagPeriodeEntitet.builder()
             .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
             .leggTilBeregningsgrunnlagAndel(BeregningsgrunnlagAndelEntitet.builder()
