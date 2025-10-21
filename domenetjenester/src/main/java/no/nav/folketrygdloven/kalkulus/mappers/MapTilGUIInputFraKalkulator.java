@@ -33,7 +33,8 @@ public class MapTilGUIInputFraKalkulator {
                 iayGrunnlagMappet,
                 MapFraKalkulator.mapKravperioder(input.getIayGrunnlag(), input.getSkjæringstidspunkt()),
                 MapFraKalkulator.mapYtelsespesifiktGrunnlag(kobling.getYtelseType(), input, Optional.ofNullable(beregningsgrunnlagGrunnlagEntitet)));
-        beregningsgrunnlagGuiInput.leggTilToggle("refusjonsfrist.flytting", erIkkeProd());
+        //Todo Denne må bruke erIkkeProd() når front end er klar
+        beregningsgrunnlagGuiInput.leggTilToggle("refusjonsfrist.flytting", false);
         return beregningsgrunnlagGuiInput;
     }
 
