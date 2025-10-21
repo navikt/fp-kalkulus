@@ -25,7 +25,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 class BeregningsgrunnlagDiffSjekkerTest {
 
     @Test
-    public void skalReturnereTrueOmUlikeArbeidsforholdsreferanser() {
+    void skalReturnereTrueOmUlikeArbeidsforholdsreferanser() {
         // Arrange
         var stp = LocalDate.now();
         BeregningsgrunnlagDto aktivt = BeregningsgrunnlagDto.builder()
@@ -66,7 +66,7 @@ class BeregningsgrunnlagDiffSjekkerTest {
     }
 
     @Test
-    public void skalReturnereTrueOmUlikeGrunnbeløp() {
+    void skalReturnereTrueOmUlikeGrunnbeløp() {
         // Arrange
         BeregningsgrunnlagDto aktivt = BeregningsgrunnlagDto.builder()
                 .medGrunnbeløp(Beløp.fra(10))
@@ -89,7 +89,7 @@ class BeregningsgrunnlagDiffSjekkerTest {
     }
 
     @Test
-    public void skalReturnereFalseNårSammenligningsgrunnlagPrStatusListeErLik(){
+    void skalReturnereFalseNårSammenligningsgrunnlagPrStatusListeErLik(){
         SammenligningsgrunnlagPrStatusDto.Builder sammenligningsgrunnlagPrStatusAt = new SammenligningsgrunnlagPrStatusDto.Builder();
         sammenligningsgrunnlagPrStatusAt.medRapportertPrÅr(Beløp.fra(100_000));
         sammenligningsgrunnlagPrStatusAt.medAvvikPromilleNy(BigDecimal.ZERO);
@@ -112,7 +112,7 @@ class BeregningsgrunnlagDiffSjekkerTest {
     }
 
     @Test
-    public void skalReturnereTrueNårSammenligningsgrunnlagPrStatusListeIkkeInneholderSammeTyper(){
+    void skalReturnereTrueNårSammenligningsgrunnlagPrStatusListeIkkeInneholderSammeTyper(){
         SammenligningsgrunnlagPrStatusDto.Builder sammenligningsgrunnlagPrStatusAt = new SammenligningsgrunnlagPrStatusDto.Builder();
         sammenligningsgrunnlagPrStatusAt.medRapportertPrÅr(Beløp.fra(100_000));
         sammenligningsgrunnlagPrStatusAt.medAvvikPromilleNy(BigDecimal.ZERO);
@@ -138,7 +138,7 @@ class BeregningsgrunnlagDiffSjekkerTest {
     }
 
     @Test
-    public void skalReturnereTrueNårSammenligningsgrunnlagPrStatusListeIkkeHarLikeVerdierForSammeType(){
+    void skalReturnereTrueNårSammenligningsgrunnlagPrStatusListeIkkeHarLikeVerdierForSammeType(){
         BigDecimal avvikPromilleAtAktivt = BigDecimal.ZERO;
         BigDecimal avvikPromilleAtForrige = BigDecimal.valueOf(10);
         SammenligningsgrunnlagPrStatusDto.Builder sammenligningsgrunnlagPrStatusAtAktivt = new SammenligningsgrunnlagPrStatusDto.Builder();
@@ -180,7 +180,7 @@ class BeregningsgrunnlagDiffSjekkerTest {
     }
 
     @Test
-    public void skalReturnereFalseNårSammenligningsgrunnlagPrStatusListeIkkeErSattForBeggeBeregningsgrunnlag(){
+    void skalReturnereFalseNårSammenligningsgrunnlagPrStatusListeIkkeErSattForBeggeBeregningsgrunnlag(){
         BeregningsgrunnlagDto beregningsgrunnlagDto = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(LocalDate.now())
                 .build();
@@ -189,7 +189,7 @@ class BeregningsgrunnlagDiffSjekkerTest {
     }
 
     @Test
-    public void skalReturnereTrueNårSammenligningsgrunnlagPrStatusListeIkkeErSattForDetEneBeregningsgrunnlaget(){
+    void skalReturnereTrueNårSammenligningsgrunnlagPrStatusListeIkkeErSattForDetEneBeregningsgrunnlaget(){
         SammenligningsgrunnlagPrStatusDto.Builder sammenligningsgrunnlagPrStatusAt = new SammenligningsgrunnlagPrStatusDto.Builder();
         sammenligningsgrunnlagPrStatusAt.medRapportertPrÅr(Beløp.fra(100_000));
         sammenligningsgrunnlagPrStatusAt.medAvvikPromilleNy(BigDecimal.ZERO);

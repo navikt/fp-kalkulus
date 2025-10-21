@@ -19,7 +19,7 @@ class UtledErTidsbegrensetArbeidsforholdEndringerTest {
 
 
     @Test
-    public void utled_for_arbeid_med_tidsbegrenset_med_avklart_forrige() {
+    void utled_for_arbeid_med_tidsbegrenset_med_avklart_forrige() {
         // Arrange
 
         FaktaAggregatDto fakta = FaktaAggregatDto.builder().erstattEksisterendeEllerLeggTil(FaktaArbeidsforholdDto.builder(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR), InternArbeidsforholdRefDto.nullRef())
@@ -40,7 +40,7 @@ class UtledErTidsbegrensetArbeidsforholdEndringerTest {
     }
 
     @Test
-    public void utled_for_arbeid_med_tidsbegrenset() {
+    void utled_for_arbeid_med_tidsbegrenset() {
         // Arrange
         FaktaAggregatDto fakta = FaktaAggregatDto.builder().erstattEksisterendeEllerLeggTil(FaktaArbeidsforholdDto.builder(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR), InternArbeidsforholdRefDto.nullRef())
                 .medErTidsbegrensetFastsattAvSaksbehandler(true).build())

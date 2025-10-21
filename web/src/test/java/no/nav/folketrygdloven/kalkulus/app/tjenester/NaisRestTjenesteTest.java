@@ -18,7 +18,7 @@ import no.nav.folketrygdloven.kalkulus.app.healthcheck.HealthCheckRestService;
 import no.nav.vedtak.server.LiveAndReadinessAware;
 
 @ExtendWith(MockitoExtension.class)
-public class NaisRestTjenesteTest {
+class NaisRestTjenesteTest {
 
 
     private HealthCheckRestService sjekk;

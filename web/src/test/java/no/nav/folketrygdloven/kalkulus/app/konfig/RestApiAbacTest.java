@@ -19,7 +19,7 @@ import no.nav.vedtak.sikkerhet.abac.beskyttet.ActionType;
 import no.nav.vedtak.sikkerhet.abac.beskyttet.ResourceType;
 
 
-public class RestApiAbacTest {
+class RestApiAbacTest {
 
     private static String PREV_LB_URL;
 

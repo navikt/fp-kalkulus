@@ -16,13 +16,13 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 
-public class UtledEndringIAndelTest {
+class UtledEndringIAndelTest {
 
     public static final String ARBEIDSGIVER_ORGNR = "12345678";
     public static final InternArbeidsforholdRefDto ARBEIDSFORHOLD_REF = InternArbeidsforholdRefDto.nyRef();
 
     @Test
-    public void skal_utlede_endring_for_arbeidstaker_uten_forrige_andel() {
+    void skal_utlede_endring_for_arbeidstaker_uten_forrige_andel() {
         // Arrange
         var inntekt = Beløp.fra(10);
         Inntektskategori inntektskategori = Inntektskategori.FRILANSER;
@@ -44,7 +44,7 @@ public class UtledEndringIAndelTest {
     }
 
     @Test
-    public void skal_utlede_endring_for_arbeidstaker_med_forrige_andel() {
+    void skal_utlede_endring_for_arbeidstaker_med_forrige_andel() {
         // Arrange
         var inntekt = Beløp.fra(10);
         Inntektskategori inntektskategori = Inntektskategori.FRILANSER;
@@ -68,7 +68,7 @@ public class UtledEndringIAndelTest {
     }
 
     @Test
-    public void skal_utlede_endring_for_frilans_med_forrige_andel() {
+    void skal_utlede_endring_for_frilans_med_forrige_andel() {
         // Arrange
         var inntekt = Beløp.fra(10);
         Inntektskategori inntektskategori = Inntektskategori.FISKER;

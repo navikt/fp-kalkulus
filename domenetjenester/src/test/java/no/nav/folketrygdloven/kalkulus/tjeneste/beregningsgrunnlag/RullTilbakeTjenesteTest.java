@@ -49,7 +49,7 @@ class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
     private Long koblingId;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         repository = new BeregningsgrunnlagRepository(getEntityManager());
         regelsporingRepository = new RegelsporingRepository(getEntityManager());
         regelSporingTjeneste = new RegelSporingTjeneste(regelsporingRepository);
@@ -60,7 +60,7 @@ class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
     }
 
     @Test
-    public void skal_rulle_tilbake_til_obligatorisk_tilstand_når_ny_tilstand_er_før_aktiv() {
+    void skal_rulle_tilbake_til_obligatorisk_tilstand_når_ny_tilstand_er_før_aktiv() {
         prepareTestData();
         // Arrange
         repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
@@ -86,7 +86,7 @@ class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
     }
 
     @Test
-    public void skal_rulle_tilbake_til_obligatorisk_tilstand_når_ny_tilstand_er_før_aktiv_og_ny_tilstand_er_obligatorisk_tilstand() {
+    void skal_rulle_tilbake_til_obligatorisk_tilstand_når_ny_tilstand_er_før_aktiv_og_ny_tilstand_er_obligatorisk_tilstand() {
         prepareTestData();
         // Arrange
         repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
@@ -116,7 +116,7 @@ class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
     }
 
     @Test
-    public void skal_rulle_tilbake_til_obligatorisk_tilstand_når_ny_tilstand_er_før_aktiv_og_kobling_ikke_har_grunnlag_fra_tilstand_tidligere() {
+    void skal_rulle_tilbake_til_obligatorisk_tilstand_når_ny_tilstand_er_før_aktiv_og_kobling_ikke_har_grunnlag_fra_tilstand_tidligere() {
         prepareTestData();
         // Arrange
         repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
@@ -145,7 +145,7 @@ class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
 
 
     @Test
-    public void skal_ikkje_rulle_tilbake_til_obligatorisk_tilstand_når_ny_tilstand_er_etter_aktiv() {
+    void skal_ikkje_rulle_tilbake_til_obligatorisk_tilstand_når_ny_tilstand_er_etter_aktiv() {
         prepareTestData();
         // Arrange
         repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
@@ -167,7 +167,7 @@ class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
     }
 
     @Test
-    public void skal_deaktivere_beregningsgrunnlag_og_input() {
+    void skal_deaktivere_beregningsgrunnlag_og_input() {
         prepareTestData();
         // Arrange
         AvklaringsbehovDefinisjon avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.VURDER_FAKTA_ATFL_SN;
@@ -195,7 +195,7 @@ class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
     }
 
     @Test
-    public void skal_avbryte_avklaringsbehov() {
+    void skal_avbryte_avklaringsbehov() {
         prepareTestData();
         // Arrange
         AvklaringsbehovDefinisjon avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.VURDER_FAKTA_ATFL_SN;

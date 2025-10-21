@@ -12,17 +12,17 @@ import org.junit.jupiter.api.Test;
 import no.nav.vedtak.exception.ManglerTilgangException;
 
 @SuppressWarnings("resource")
-public class GeneralRestExceptionMapperTest {
+class GeneralRestExceptionMapperTest {
 
     private GeneralRestExceptionMapper generalRestExceptionMapper;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         generalRestExceptionMapper = new GeneralRestExceptionMapper();
     }
 
     @Test
-    public void skalMappeManglerTilgangFeil() {
+    void skalMappeManglerTilgangFeil() {
         var manglerTilgangFeil = manglerTilgangFeil();
 
         Response response = generalRestExceptionMapper.toResponse(manglerTilgangFeil);
@@ -36,7 +36,7 @@ public class GeneralRestExceptionMapperTest {
     }
 
     @Test
-    public void skalMappeVLException() {
+    void skalMappeVLException() {
         var vlException = tekniskFeil();
 
         Response response = generalRestExceptionMapper.toResponse(vlException);
@@ -49,7 +49,7 @@ public class GeneralRestExceptionMapperTest {
     }
 
     @Test
-    public void skalMappeGenerellFeil() {
+    void skalMappeGenerellFeil() {
         String feilmelding = "en helt generell feil";
         var generellFeil = new RuntimeException(feilmelding);
 

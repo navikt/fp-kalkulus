@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 
-public class BeregningsgrunnlagTilstandTest {
+class BeregningsgrunnlagTilstandTest {
 
     @Test
-    public void skal_sjekke_at_alle_tilstander_har_definert_rekkefølge() {
+    void skal_sjekke_at_alle_tilstander_har_definert_rekkefølge() {
         BeregningsgrunnlagTilstand[] alleTilstander = BeregningsgrunnlagTilstand.values();
         List<BeregningsgrunnlagTilstand> tilstandRekkefølge = BeregningsgrunnlagTilstand.getTilstandRekkefølge();
         for (BeregningsgrunnlagTilstand tilstand : alleTilstander) {

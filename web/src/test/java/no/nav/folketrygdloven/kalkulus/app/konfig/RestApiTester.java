@@ -13,7 +13,7 @@ import jakarta.ws.rs.core.Application;
 
 import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
 
-public class RestApiTester {
+class RestApiTester {
 
     static final List<Class<?>> UNNTATT = Collections.singletonList(OpenApiResource.class);
 
