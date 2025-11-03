@@ -66,3 +66,4 @@ app.properties
 app-local.properties
 /lsp/
 .factorypath
+.java-version
