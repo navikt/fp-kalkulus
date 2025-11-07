@@ -44,6 +44,7 @@ import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.InntektPrAndelDto
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.overstyring.OverstyrBeregningsgrunnlagHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.refusjon.VurderRefusjonAndelBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.refusjon.VurderRefusjonBeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.RefusjonskravForSentDto;
 
 
 public class OppdatererDtoMapper {
@@ -70,18 +71,34 @@ public class OppdatererDtoMapper {
     }
 
     public static no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.VurderRefusjonBeregningsgrunnlagDto mapVurderRefusjonBeregningsgrunnlagDto(VurderRefusjonBeregningsgrunnlagDto dto) {
-        return new no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.VurderRefusjonBeregningsgrunnlagDto(mapTilFastsatteAndeler(dto.getFastsatteAndeler()));
+        return new no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.VurderRefusjonBeregningsgrunnlagDto(mapTilFastsatteAndeler(dto.getFastsatteAndeler(), dto.getRefusjonskravForSentListe()));
     }
 
-    private static List<no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.VurderRefusjonAndelBeregningsgrunnlagDto> mapTilFastsatteAndeler(List<VurderRefusjonAndelBeregningsgrunnlagDto> fastsatteAndeler) {
-        return fastsatteAndeler.stream()
-                .map(a -> new no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.VurderRefusjonAndelBeregningsgrunnlagDto(
-                        a.getArbeidsgiverOrgnr(),
-                        a.getArbeidsgiverAktørId(),
-                        a.getInternArbeidsforholdRef(),
-                        a.getFullRefusjonFom(),
-                        a.getDelvisRefusjonBeløpPrMnd()))
+    private static List<no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.VurderRefusjonAndelBeregningsgrunnlagDto> mapTilFastsatteAndeler(List<VurderRefusjonAndelBeregningsgrunnlagDto> fastsatteAndeler,
+                                                                                                                                               List<RefusjonskravForSentDto> refusjonskravForSentListe) {
+
+        // TODO: Skriv om dette til noe bedre
+        if (!fastsatteAndeler.isEmpty()) {
+            return fastsatteAndeler.stream()
+                .map(a -> new no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.VurderRefusjonAndelBeregningsgrunnlagDto(a.getArbeidsgiverOrgnr(),
+                    a.getArbeidsgiverAktørId(), a.getInternArbeidsforholdRef(), a.getFullRefusjonFom(), a.getDelvisRefusjonBeløpPrMnd(),
+                    finnErFristUtvidet(a, refusjonskravForSentListe)))
                 .toList();
+        } else {
+            return refusjonskravForSentListe.stream().map(refusjonskrav -> new no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.VurderRefusjonAndelBeregningsgrunnlagDto(
+                refusjonskrav.getArbeidsgiverIdent(), null, null, null, null, refusjonskrav.getErRefusjonskravGyldig()))
+                .toList();
+        }
+    }
+
+    public static Boolean finnErFristUtvidet(VurderRefusjonAndelBeregningsgrunnlagDto andel, List<RefusjonskravForSentDto> refusjonskravForSentListe) {
+        for (RefusjonskravForSentDto refusjonskrav : refusjonskravForSentListe) {
+            if ((andel.getArbeidsgiverOrgnr() != null && andel.getArbeidsgiverOrgnr().equals(refusjonskrav.getArbeidsgiverIdent())) ||
+                (andel.getArbeidsgiverAktørId() != null && andel.getArbeidsgiverAktørId().equals(refusjonskrav.getArbeidsgiverIdent()))) {
+                return refusjonskrav.getErRefusjonskravGyldig();
+            }
+        }
+        return null;
     }
 
     public static List<no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.BeregningsaktivitetLagreDto> mapOverstyrBeregningsaktiviteterDto(List<BeregningsaktivitetLagreDto> beregningsaktivitetLagreDtoList) {
