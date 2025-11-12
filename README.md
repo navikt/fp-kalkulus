@@ -29,11 +29,11 @@ Beregningsgrunnlaget er utgangspunktet for en maksimal dagsats som kan utbetales
 Beregningsgrunnlaget består av andeler per aktivitet (arbeidstype, selvstendig næringsdrivende, frilanser) og arbeidsgiver (både privatperson og virksomheter).
 
 ## Lokal utvikling
-Bruk Docker Compose oppsett i https://github.com/navikt/fp-autotest til å sette opp audit, vtp og postgres.
+Bruk Docker Compose oppsett i https://github.com/navikt/fp-autotest til å sette opp audit, vtp, fpcache, fptilgang og postgres.
 
 ### Spørsmål
-* Slack for oppsett og utvikling på laptop: \#fp-kalkulus
-* Hjelpeside med oppskrifter for utvikling på laptop på [Lokal utvikling autotest](https://github.com/navikt/fp-autotest/blob/master/docs/utvikleroppsett/README.md)
+* Slack for oppsett og utvikling: \#fp-teknisk
+* Hjelpeside med oppskrifter for utvikling på [Lokal utvikling autotest](https://github.com/navikt/fp-autotest/blob/master/docs/utvikleroppsett/README.md)
 
 
 ## How To
