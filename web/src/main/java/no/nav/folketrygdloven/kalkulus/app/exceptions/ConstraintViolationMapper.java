@@ -50,16 +50,8 @@ public class ConstraintViolationMapper implements ExceptionMapper<ConstraintViol
         return exception.getConstraintViolations()
             .stream()
             .map(cv -> cv.getRootBeanClass().getSimpleName() + "." + cv.getLeafBean().getClass().getSimpleName()
-                + "." + fieldName(cv))
+                + "." + cv.getPropertyPath().toString())
             .collect(Collectors.toSet());
-    }
-
-    private static String fieldName(ConstraintViolation<?> cv) {
-        String field = null;
-        for (var node : cv.getPropertyPath()) {
-            field = node.getName();
-        }
-        return field;
     }
 
     private static String getFeltNavn(Path propertyPath) {
