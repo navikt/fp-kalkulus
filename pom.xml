@@ -7,7 +7,7 @@
     <parent>
         <groupId>no.nav.foreldrepenger.felles</groupId>
         <artifactId>fp-parent-app</artifactId>
-        <version>5.0.3</version>
+        <version>5.0.2</version>
     </parent>
 
     <groupId>no.nav.foreldrepenger.kalkulus</groupId>
@@ -27,8 +27,8 @@
         <sonar.projectName>fp-kalkulus</sonar.projectName>
         <sonar.projectKey>navikt_fp-kalkulus</sonar.projectKey>
 
-        <ftberegning.version>6.3.4</ftberegning.version>
-        <felles.version>7.6.10</felles.version>
+        <ftberegning.version>6.3.3</ftberegning.version>
+        <felles.version>7.6.9</felles.version>
 
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
