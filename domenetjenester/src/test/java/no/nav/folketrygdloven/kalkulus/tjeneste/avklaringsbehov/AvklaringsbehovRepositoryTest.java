@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 

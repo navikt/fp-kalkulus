@@ -32,6 +32,10 @@ import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 class ForeldrepengerGrunnlagMapper {
 
+    private ForeldrepengerGrunnlagMapper() {
+        // Skjuler default
+    }
+
     static ForeldrepengerGrunnlag mapForeldrepengerGrunnlag(no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag fpKontraktGrunnlag,
                                                             Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
 
