@@ -20,6 +20,7 @@
         <module>web</module>
         <module>domenetjenester</module>
         <module>migreringer</module>
+        <module>kontrakt</module>
     </modules>
 
     <properties>
