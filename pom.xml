@@ -17,7 +17,6 @@
     <name>Kalkulus :: Root</name>
 
     <modules>
-        <module>web</module>
         <module>domenetjenester</module>
     </modules>
 
