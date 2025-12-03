@@ -49,7 +49,7 @@ public final class TestDatabaseInit {
     }
 
     private static String fileScriptLocation() {
-        var relativePath = "domenetjenester/src/main/resources" + DB_SCRIPT_LOCATION;
+        var relativePath = "src/main/resources" + DB_SCRIPT_LOCATION;
         var baseDir = new File(".").getAbsoluteFile();
         var location = new File(baseDir, relativePath);
         while (!location.exists()) {
