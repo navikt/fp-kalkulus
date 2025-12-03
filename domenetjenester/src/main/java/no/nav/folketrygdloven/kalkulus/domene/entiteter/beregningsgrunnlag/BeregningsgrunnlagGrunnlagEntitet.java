@@ -21,8 +21,8 @@ import org.hibernate.annotations.NaturalId;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.GrunnlagReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.BeregningsgrunnlagTilstandKodeverdiConverter;
-import no.nav.folketrygdloven.kalkulus.felles.diff.DiffIgnore;
-import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.felles.diff.DiffIgnore;
+import no.nav.folketrygdloven.kalkulus.domene.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 
 @Entity(name = "BeregningsgrunnlagGrunnlagEntitet")

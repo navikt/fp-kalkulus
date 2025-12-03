@@ -36,8 +36,8 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Årsgrunnl
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.AktivitetStatusKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.AndelKildeKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.OpptjeningAktivitetTypeKodeverdiConverter;
-import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.felles.jpa.BaseEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;

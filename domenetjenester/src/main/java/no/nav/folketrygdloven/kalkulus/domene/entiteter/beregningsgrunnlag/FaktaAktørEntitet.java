@@ -17,7 +17,7 @@ import jakarta.persistence.Version;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.FaktaVurdering;
-import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaVurderingKilde;
 
 @Entity(name = "FaktaAktørEntitet")

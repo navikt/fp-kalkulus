@@ -12,8 +12,8 @@ import jakarta.persistence.Embedded;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.HjemmelKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.RefusjonskravFristUtfallKodeverdiConverter;
-import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
-import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseValue;
+import no.nav.folketrygdloven.kalkulus.domene.felles.diff.IndexKey;
+import no.nav.folketrygdloven.kalkulus.domene.felles.diff.TraverseValue;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 

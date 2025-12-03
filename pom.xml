@@ -19,7 +19,6 @@
     <modules>
         <module>web</module>
         <module>domenetjenester</module>
-        <module>migreringer</module>
     </modules>
 
     <properties>
@@ -58,13 +57,6 @@
                 <groupId>no.nav.foreldrepenger.kalkulus</groupId>
                 <artifactId>domenetjenester</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>no.nav.foreldrepenger.kalkulus</groupId>
-                <artifactId>migreringer</artifactId>
-                <version>${project.version}</version>
-                <type>test-jar</type>
             </dependency>
 
             <!-- Avhengigheter til ft-beregning -->

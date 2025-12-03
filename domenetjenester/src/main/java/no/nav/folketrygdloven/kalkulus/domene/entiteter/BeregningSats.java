@@ -13,8 +13,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.BeregningSatsTypeKodeverdiConverter;
-import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.felles.jpa.BaseEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSatsType;
 
 @Entity(name = "BeregningSats")

@@ -19,9 +19,9 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiv
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.BeregingAktivitetHandlingTypeKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.OpptjeningAktivitetTypeKodeverdiConverter;
-import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
-import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.felles.diff.IndexKey;
+import no.nav.folketrygdloven.kalkulus.domene.felles.jpa.BaseEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAktivitetHandlingType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 

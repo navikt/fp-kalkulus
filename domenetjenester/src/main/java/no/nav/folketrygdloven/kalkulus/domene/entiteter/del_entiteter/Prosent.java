@@ -7,9 +7,9 @@ import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import no.nav.folketrygdloven.kalkulus.felles.diff.ChangeTracked;
-import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
-import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseValue;
+import no.nav.folketrygdloven.kalkulus.domene.felles.diff.ChangeTracked;
+import no.nav.folketrygdloven.kalkulus.domene.felles.diff.IndexKey;
+import no.nav.folketrygdloven.kalkulus.domene.felles.diff.TraverseValue;
 
 /**
  * Promille representerer en promillesats på standarisert format

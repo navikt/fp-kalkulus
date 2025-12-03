@@ -27,8 +27,8 @@ import jakarta.persistence.Version;
 import org.hibernate.annotations.BatchSize;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
-import no.nav.folketrygdloven.kalkulus.felles.diff.ChangeTracked;
-import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.felles.diff.ChangeTracked;
+import no.nav.folketrygdloven.kalkulus.domene.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 
 @SequenceGenerator(name = "GLOBAL_PK_SEQ_GENERATOR", sequenceName = "SEQ_GLOBAL_PK")

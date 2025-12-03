@@ -17,7 +17,7 @@ import jakarta.persistence.Version;
 
 import org.hibernate.annotations.BatchSize;
 
-import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.felles.jpa.BaseEntitet;
 
 
 @Entity(name = "AktivitetAggregatEntitet")

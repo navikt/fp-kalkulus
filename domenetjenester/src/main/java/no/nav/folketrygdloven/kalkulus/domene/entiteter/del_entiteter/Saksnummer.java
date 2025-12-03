@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
-import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
+import no.nav.folketrygdloven.kalkulus.domene.felles.diff.IndexKey;
 
 /**
  * Saksnummer refererer til saksnummer registret i GSAK.

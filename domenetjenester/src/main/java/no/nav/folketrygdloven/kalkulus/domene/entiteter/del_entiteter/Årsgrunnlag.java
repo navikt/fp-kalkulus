@@ -9,9 +9,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 
-import no.nav.folketrygdloven.kalkulus.felles.diff.ChangeTracked;
-import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
-import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseValue;
+import no.nav.folketrygdloven.kalkulus.domene.felles.diff.ChangeTracked;
+import no.nav.folketrygdloven.kalkulus.domene.felles.diff.IndexKey;
+import no.nav.folketrygdloven.kalkulus.domene.felles.diff.TraverseValue;
 
 /**
  * Årsgrunnlag representerer inntektsgrunnlaget for en andel

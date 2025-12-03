@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingPeriode;
-import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
@@ -161,7 +161,7 @@ public class RegelsporingRepository {
      * Henter aktiv RegelsporingPeriode med gitt type
      *
      * @param koblingId en koblingId
-     * @return Alle aktive {@link no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet}
+     * @return Alle aktive {@link RegelSporingPeriodeEntitet}
      */
     public List<RegelSporingPeriodeEntitet> hentRegelSporingPeriodeMedGittType(Long koblingId, List<BeregningsgrunnlagPeriodeRegelType> regelTyper) {
         TypedQuery<RegelSporingPeriodeEntitet> query = entityManager.createQuery(
@@ -179,7 +179,7 @@ public class RegelsporingRepository {
      * Henter aktiv RegelsporingPeriode med gitt type
      *
      * @param koblingId en koblingId
-     * @return Alle aktive {@link no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet}
+     * @return Alle aktive {@link RegelSporingPeriodeEntitet}
      */
     public List<RegelSporingGrunnlagEntitet> hentRegelSporingGrunnlagMedGittType(Long koblingId, List<BeregningsgrunnlagRegelType> regelTyper) {
         TypedQuery<RegelSporingGrunnlagEntitet> query = entityManager.createQuery(

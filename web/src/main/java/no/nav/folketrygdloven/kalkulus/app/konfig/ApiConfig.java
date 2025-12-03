@@ -27,9 +27,9 @@ import no.nav.folketrygdloven.kalkulus.app.exceptions.GeneralRestExceptionMapper
 import no.nav.folketrygdloven.kalkulus.app.exceptions.JsonMappingExceptionMapper;
 import no.nav.folketrygdloven.kalkulus.app.exceptions.JsonParseExceptionMapper;
 import no.nav.folketrygdloven.kalkulus.app.jackson.JacksonJsonConfig;
-import no.nav.folketrygdloven.kalkulus.rest.GrunnbeløpRestTjeneste;
-import no.nav.folketrygdloven.kalkulus.rest.HentKalkulusRestTjeneste;
-import no.nav.folketrygdloven.kalkulus.rest.OperereKalkulusRestTjeneste;
+import no.nav.folketrygdloven.kalkulus.domene.rest.GrunnbeløpRestTjeneste;
+import no.nav.folketrygdloven.kalkulus.domene.rest.HentKalkulusRestTjeneste;
+import no.nav.folketrygdloven.kalkulus.domene.rest.OperereKalkulusRestTjeneste;
 import no.nav.foreldrepenger.konfig.Environment;
 
 @ApplicationPath(ApiConfig.API_URI)

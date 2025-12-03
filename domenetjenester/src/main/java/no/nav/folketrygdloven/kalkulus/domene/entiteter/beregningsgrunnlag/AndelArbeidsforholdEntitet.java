@@ -26,7 +26,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiv
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Refusjon;
-import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 
 @Entity(name = "AndelArbeidsforholdEntitet")

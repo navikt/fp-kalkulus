@@ -165,12 +165,6 @@
         </dependency>
 
         <!-- Test avhengigheter -->
-        <dependency>
-            <groupId>no.nav.foreldrepenger.kalkulus</groupId>
-            <artifactId>migreringer</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>

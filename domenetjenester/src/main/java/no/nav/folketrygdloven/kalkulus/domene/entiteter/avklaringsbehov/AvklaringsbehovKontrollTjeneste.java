@@ -13,13 +13,13 @@ import no.nav.vedtak.sikkerhet.kontekst.KontekstHolder;
 public class AvklaringsbehovKontrollTjeneste {
 
     public AvklaringsbehovEntitet opprettForKobling(KoblingEntitet koblingId, AvklaringsbehovDefinisjon definisjon) {
-        no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet.Builder apBuilder = new no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet.Builder(definisjon);
+        AvklaringsbehovEntitet.Builder apBuilder = new AvklaringsbehovEntitet.Builder(definisjon);
         apBuilder.medStatus(AvklaringsbehovStatus.OPPRETTET);
         return apBuilder.buildFor(koblingId);
     }
 
     public AvklaringsbehovEntitet opprettForKoblingLikEksisterende(KoblingEntitet kobling, AvklaringsbehovEntitet kopierFra) {
-        no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet.Builder apBuilder = new no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet.Builder(kopierFra.getDefinisjon());
+        AvklaringsbehovEntitet.Builder apBuilder = new AvklaringsbehovEntitet.Builder(kopierFra.getDefinisjon());
         apBuilder.medStatus(kopierFra.getStatus());
         apBuilder.medBegrunnelse(kopierFra.getBegrunnelse());
         apBuilder.medVurdertAv(kopierFra.getVurdertAv());
@@ -47,12 +47,12 @@ public class AvklaringsbehovKontrollTjeneste {
         setVurdert(avklaringsbehovEntitet);
     }
 
-    public AvklaringsbehovEntitet avbryt(no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet avklaringsbehovEntitet) {
+    public AvklaringsbehovEntitet avbryt(AvklaringsbehovEntitet avklaringsbehovEntitet) {
         avklaringsbehovEntitet.setStatus(AvklaringsbehovStatus.AVBRUTT);
         return avklaringsbehovEntitet;
     }
 
-    public AvklaringsbehovEntitet trekkOverstyring(no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet avklaringsbehovEntitet) {
+    public AvklaringsbehovEntitet trekkOverstyring(AvklaringsbehovEntitet avklaringsbehovEntitet) {
         avklaringsbehovEntitet.setStatus(AvklaringsbehovStatus.UTFØRT);
         avklaringsbehovEntitet.setErTrukket(true);
         avklaringsbehovEntitet.setBegrunnelse(null);
