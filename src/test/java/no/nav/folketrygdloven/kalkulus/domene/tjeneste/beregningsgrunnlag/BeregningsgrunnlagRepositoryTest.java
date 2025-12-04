@@ -1,0 +1,90 @@
+package no.nav.folketrygdloven.kalkulus.domene.tjeneste.beregningsgrunnlag;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDate;
+import java.util.Optional;
+import java.util.UUID;
+
+import no.nav.folketrygdloven.kalkulus.migreringer.dbstoette.JpaExtension;
+
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.AktivitetAggregatEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.AktivitetEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.GrunnlagReferanse;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.felles.jpa.IntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.domene.tjeneste.kobling.KoblingRepository;
+
+import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
+
+@ExtendWith(JpaExtension.class)
+class BeregningsgrunnlagRepositoryTest extends EntityManagerAwareTest {
+
+    private BeregningsgrunnlagRepository repository;
+    private KoblingRepository koblingRepository;
+
+    @BeforeEach
+    void beforeEach() {
+        repository = new BeregningsgrunnlagRepository(getEntityManager());
+        koblingRepository = new KoblingRepository(getEntityManager());
+    }
+
+    @Test
+    void skal_hente_beregningsgrunnlag_for_referanse() {
+        AktørId aktørId = new AktørId("9999999999999");
+        KoblingReferanse koblingReferanse = new KoblingReferanse(UUID.randomUUID());
+        Saksnummer saksnummer = new Saksnummer("1234");
+
+        KoblingEntitet koblingEntitet = new KoblingEntitet(koblingReferanse,
+                FagsakYtelseType.PLEIEPENGER_NÆRSTÅENDE, saksnummer, aktørId);
+        koblingRepository.lagre(koblingEntitet);
+
+        Long koblingId = koblingEntitet.getId();
+
+        BeregningsgrunnlagEntitet build = BeregningsgrunnlagEntitet.builder()
+                .medSkjæringstidspunkt(LocalDate.now())
+                .build();
+        BeregningsgrunnlagGrunnlagBuilder builder = BeregningsgrunnlagGrunnlagBuilder
+                .kopiere(Optional.empty())
+                .medBeregningsgrunnlag(build)
+                .medRegisterAktiviteter(
+                        AktivitetAggregatEntitet.builder()
+                                .medSkjæringstidspunktOpptjening(LocalDate.now())
+                                .leggTilAktivitet(AktivitetEntitet.builder()
+                                        .medOpptjeningAktivitetType(
+                                                OpptjeningAktivitetType.FRILANS)
+                                        .medPeriode(IntervallEntitet
+                                                .fraOgMedTilOgMed(
+                                                        LocalDate.now(),
+                                                        LocalDate.now().plusMonths(
+                                                                1)))
+                                        .build())
+                                .build());
+
+        BeregningsgrunnlagGrunnlagEntitet lagretGrunnlag = repository.lagre(koblingId, builder,
+                BeregningsgrunnlagTilstand.OPPRETTET);
+
+        GrunnlagReferanse grunnlagReferanse = lagretGrunnlag.getGrunnlagReferanse();
+
+        Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagForReferanse = repository
+                .hentBeregningsgrunnlagGrunnlagEntitetForReferanse(koblingId,
+                        grunnlagReferanse.getReferanse());
+
+        assertThat(grunnlagForReferanse).isPresent();
+        assertThat(grunnlagForReferanse.get()).isEqualTo(lagretGrunnlag);
+    }
+}

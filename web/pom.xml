@@ -165,12 +165,6 @@
         </dependency>
 
         <!-- Test avhengigheter -->
-        <dependency>
-            <groupId>no.nav.foreldrepenger.kalkulus</groupId>
-            <artifactId>migreringer</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -186,7 +180,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>no.nav.folketrygdloven.kalkulus.jetty.JettyServer</mainClass>
+                            <mainClass>no.nav.folketrygdloven.kalkulus.web.jetty.JettyServer</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
