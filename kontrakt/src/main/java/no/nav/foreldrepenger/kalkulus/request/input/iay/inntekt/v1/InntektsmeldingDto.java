@@ -16,7 +16,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import no.nav.foreldrepenger.kalkulus.typer.Aktør;
 import no.nav.foreldrepenger.kalkulus.typer.Beløp;
 import no.nav.foreldrepenger.kalkulus.typer.InternArbeidsforholdRefDto;
-import no.nav.foreldrepenger.kalkulus.v1.JournalpostId;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.ALWAYS, content = Include.ALWAYS)
@@ -57,38 +56,12 @@ public class InntektsmeldingDto {
     @Valid
     private Beløp refusjonBeløpPerMnd;
 
-    /** JournalpostId - for sporing. */
-    @JsonProperty(value = "journalpostId")
-    @Valid
-    private JournalpostId journalpostId;
-
     @JsonProperty(value = "innsendingsdato")
     @Valid
     private LocalDate innsendingsdato;
 
     protected InntektsmeldingDto() {
         // default ctor
-    }
-
-    public InntektsmeldingDto(@Valid @NotNull Aktør arbeidsgiver,
-                              @Valid @NotNull Beløp inntektBeløp,
-                              List<@Valid NaturalYtelseDto> naturalYtelser,
-                              List<@Valid RefusjonDto> endringerRefusjon,
-                              @Valid InternArbeidsforholdRefDto arbeidsforholdRef,
-                              @Valid LocalDate startDatoPermisjon,
-                              @Valid LocalDate refusjonOpphører,
-                              @Valid Beløp refusjonBeløpPerMnd,
-                              @Valid JournalpostId journalpostId
-                              ) {
-        this.arbeidsgiver = arbeidsgiver;
-        this.inntektBeløp = inntektBeløp;
-        this.naturalYtelser = naturalYtelser;
-        this.endringerRefusjon = endringerRefusjon;
-        this.arbeidsforholdRef = arbeidsforholdRef;
-        this.startDatoPermisjon = startDatoPermisjon;
-        this.refusjonOpphører = refusjonOpphører;
-        this.refusjonBeløpPerMnd = refusjonBeløpPerMnd;
-        this.journalpostId = journalpostId;
     }
 
     public InntektsmeldingDto(Aktør arbeidsgiver,
@@ -99,7 +72,6 @@ public class InntektsmeldingDto {
                               LocalDate startDatoPermisjon,
                               LocalDate refusjonOpphører,
                               Beløp refusjonBeløpPerMnd,
-                              JournalpostId journalpostId,
                               LocalDate innsendingsdato) {
         this.arbeidsgiver = arbeidsgiver;
         this.inntektBeløp = inntektBeløp;
@@ -109,7 +81,6 @@ public class InntektsmeldingDto {
         this.startDatoPermisjon = startDatoPermisjon;
         this.refusjonOpphører = refusjonOpphører;
         this.refusjonBeløpPerMnd = refusjonBeløpPerMnd;
-        this.journalpostId = journalpostId;
         this.innsendingsdato = innsendingsdato;
     }
 
@@ -143,10 +114,6 @@ public class InntektsmeldingDto {
 
     public Beløp getRefusjonBeløpPerMnd() {
         return refusjonBeløpPerMnd;
-    }
-
-    public JournalpostId getJournalpostId() {
-        return journalpostId;
     }
 
     public LocalDate getInnsendingsdato() {

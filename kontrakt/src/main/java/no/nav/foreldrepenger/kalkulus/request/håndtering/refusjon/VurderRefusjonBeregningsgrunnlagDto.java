@@ -16,7 +16,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.foreldrepenger.kalkulus.request.håndtering.HåndterBeregningDto;
-import no.nav.foreldrepenger.kalkulus.response.beregningsgrunnlag.gui.RefusjonskravForSentDto;
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
