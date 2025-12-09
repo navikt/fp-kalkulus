@@ -5,7 +5,6 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -21,13 +20,6 @@ import no.nav.foreldrepenger.kalkulus.request.input.opptjening.OpptjeningAktivit
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class KalkulatorInputDto {
-
-    /**
-     * Informasjon vedrørende refusjonskrav pr arbeidsgiver
-     */
-    @JsonProperty(value = "refusjonskravPrArbeidsgiver")
-    @Size()
-    private List<@Valid KravperioderPrArbeidsforhold> refusjonskravPrArbeidsforhold;
 
     /**
      * Aggregat for inntekt, arbeid og ytelser
@@ -66,14 +58,12 @@ public class KalkulatorInputDto {
 
     public KalkulatorInputDto(@NotNull @Valid InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                               @NotNull @Valid OpptjeningAktiviteterDto opptjeningAktiviteter,
-                              @NotNull @Valid LocalDate skjæringstidspunkt) {
+                              @NotNull @Valid LocalDate skjæringstidspunkt,
+                              @NotNull @Valid YtelsespesifiktGrunnlagDto ytelsespesifiktGrunnlag) {
         this.iayGrunnlag = iayGrunnlag;
         this.opptjeningAktiviteter = opptjeningAktiviteter;
         this.skjæringstidspunkt = skjæringstidspunkt;
-    }
-
-    public List<KravperioderPrArbeidsforhold> getRefusjonskravPrArbeidsforhold() {
-        return refusjonskravPrArbeidsforhold;
+        this.ytelsespesifiktGrunnlag = ytelsespesifiktGrunnlag;
     }
 
     public InntektArbeidYtelseGrunnlagDto getIayGrunnlag() {
@@ -88,18 +78,7 @@ public class KalkulatorInputDto {
         return ytelsespesifiktGrunnlag;
     }
 
-    public KalkulatorInputDto medRefusjonsperioderPrInntektsmelding(List<KravperioderPrArbeidsforhold> refusjonsperioderPrInntektsmelding) {
-        this.refusjonskravPrArbeidsforhold = refusjonsperioderPrInntektsmelding;
-        return this;
-    }
-
-    public KalkulatorInputDto medYtelsespesifiktGrunnlag(YtelsespesifiktGrunnlagDto ytelsespesifiktGrunnlag) {
-        this.ytelsespesifiktGrunnlag = ytelsespesifiktGrunnlag;
-        return this;
-    }
-
     public LocalDate getSkjæringstidspunkt() {
         return skjæringstidspunkt;
     }
-
 }

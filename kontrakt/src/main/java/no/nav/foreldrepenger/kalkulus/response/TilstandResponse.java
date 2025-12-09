@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.UUID;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.AssertTrue;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -12,8 +11,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulus.kodeverk.KalkulusResultatKode;
-import no.nav.folketrygdloven.kalkulus.kodeverk.Vilkårsavslagsårsak;
+import no.nav.foreldrepenger.kalkulus.response.vilkår.VilkårResponse;
 
 /**
  * Beskriver hvilke avklaringsbehov som må løses av K9 eller FPSAK for at beregningen kan fortsette
@@ -28,20 +26,8 @@ public class TilstandResponse implements KalkulusRespons {
     @Valid
     private UUID eksternReferanse;
 
-    @JsonProperty(value = "resultatkode")
-    @Valid
-    private KalkulusResultatKode resultatkode;
-
     @JsonProperty(value = "avklaringsbehovMedTilstandDto")
     private List<@Valid AvklaringsbehovMedTilstandDto> avklaringsbehovMedTilstandDto;
-
-    @JsonProperty(value = "vilkarOppfylt")
-    @Valid
-    private Boolean vilkarOppfylt;
-
-    @JsonProperty("vilkårsavslagsårsak")
-    @Valid
-    private Vilkårsavslagsårsak vilkårsavslagsårsak;
 
 	@JsonProperty("vilkårResultat")
 	@Valid
@@ -51,70 +37,16 @@ public class TilstandResponse implements KalkulusRespons {
         // default ctor
     }
 
-    public TilstandResponse(@JsonProperty(value = "eksternReferanse") @Valid UUID eksternReferanse,
-                            @JsonProperty(value = "resultatkode") @Valid KalkulusResultatKode resultatkode,
-                            @JsonProperty(value = "avklaringsbehovMedTilstandDto") List<@Valid AvklaringsbehovMedTilstandDto> avklaringsbehovMedTilstandDto) {
-        this.eksternReferanse = eksternReferanse;
-        this.resultatkode = resultatkode;
-        this.avklaringsbehovMedTilstandDto = avklaringsbehovMedTilstandDto;
-    }
-
-    public TilstandResponse(UUID eksternReferanse, KalkulusResultatKode resultatkode) {
-        this.eksternReferanse = eksternReferanse;
-        this.resultatkode = resultatkode;
-    }
-
-    public TilstandResponse(@Valid UUID eksternReferanse,
-                            List<@Valid AvklaringsbehovMedTilstandDto> avklaringsbehovMedTilstandDto,
-                            KalkulusResultatKode resultatkode, @Valid Boolean vilkarOppfylt,
-                            @Valid Vilkårsavslagsårsak vilkårsavslagsårsak) {
-        this.eksternReferanse = eksternReferanse;
-        this.avklaringsbehovMedTilstandDto = avklaringsbehovMedTilstandDto;
-        this.vilkarOppfylt = vilkarOppfylt;
-        this.vilkårsavslagsårsak = vilkårsavslagsårsak;
-        this.resultatkode = resultatkode;
-    }
-
 	public TilstandResponse(@Valid UUID eksternReferanse,
 	                        List<@Valid AvklaringsbehovMedTilstandDto> avklaringsbehovMedTilstandDto,
-	                        KalkulusResultatKode resultatkode, @Valid Boolean vilkarOppfylt,
-	                        @Valid Vilkårsavslagsårsak vilkårsavslagsårsak, VilkårResponse vilkårResultat) {
+                            @Valid VilkårResponse vilkårResultat) {
 		this.eksternReferanse = eksternReferanse;
 		this.avklaringsbehovMedTilstandDto = avklaringsbehovMedTilstandDto;
-		this.vilkarOppfylt = vilkarOppfylt;
-		this.vilkårsavslagsårsak = vilkårsavslagsårsak;
-		this.resultatkode = resultatkode;
 		this.vilkårResultat = vilkårResultat;
 	}
 
-    public TilstandResponse medVilkårResultat(boolean resultat) {
-        vilkarOppfylt = resultat;
-        return this;
-    }
-
-    public TilstandResponse medVilkårsavslagsårsak(Vilkårsavslagsårsak vilkårsavslagsårsak) {
-        this.vilkårsavslagsårsak = vilkårsavslagsårsak;
-        return this;
-    }
-
-    @AssertTrue(message = "Krever vilkårsavslagsårsak når vilkåret ikke er oppfylt")
-    public boolean isSjekkOmHarAvslagsårsak() {
-        if (vilkarOppfylt != null && !vilkarOppfylt) {
-            return vilkårsavslagsårsak != null;
-        }
-        return true;
-    }
-
     public List<AvklaringsbehovMedTilstandDto> getAvklaringsbehovMedTilstandDto() {
         return avklaringsbehovMedTilstandDto;
-    }
-
-    public Boolean getVilkarOppfylt() {
-        return vilkarOppfylt;
-    }
-
-    public Vilkårsavslagsårsak getVilkårsavslagsårsak() {
-        return vilkårsavslagsårsak;
     }
 
     @Override
@@ -122,12 +54,7 @@ public class TilstandResponse implements KalkulusRespons {
         return eksternReferanse;
     }
 
-
-    public KalkulusResultatKode getResultatkode() {
-        return resultatkode;
-    }
-
-	public VilkårResponse getVilkårResultat() {
+    public VilkårResponse getVilkårResultat() {
 		return vilkårResultat;
 	}
 }
