@@ -214,7 +214,8 @@ public class MapIAYTilKalulator {
         return AktivitetsAvtaleDtoBuilder.ny()
                 .medPeriode(Intervall.fraOgMedTilOgMed(aktivitetsAvtale.getPeriode().getFom(), aktivitetsAvtale.getPeriode().getTom()))
                 .medSisteLønnsendringsdato(aktivitetsAvtale.getSisteLønnsendringsdato())
-                .medErAnsettelsesPeriode(aktivitetsAvtale.getStillingsprosent() == null);
+                .medErAnsettelsesPeriode(aktivitetsAvtale.getStillingsprosent() == null)
+                .medStillingsprosent(Stillingsprosent.fra(aktivitetsAvtale.getStillingsprosent()));
     }
 
     private static PermisjonDtoBuilder mapPermisjon(PermisjonDto permisjon) {
