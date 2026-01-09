@@ -24,7 +24,7 @@ public class BesteberegningFødendeKvinneAndelDto {
     @JsonProperty("andelsnr")
     @Valid
     @Min(1)
-    @Max(100)
+    @Max(80)
     private Long andelsnr;
 
     @JsonProperty("lagtTilAvSaksbehandler")
