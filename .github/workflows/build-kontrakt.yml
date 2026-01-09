@@ -8,10 +8,6 @@ on:
       - 'kontrakt/**'
   workflow_dispatch:
 
-defaults:
-  run:
-    working-directory: ./kontrakt # Sett working directory til kontrakt-mappen
-
 jobs:
   build:
     name: Kontrakt
@@ -23,6 +19,7 @@ jobs:
     uses: navikt/fp-gha-workflows/.github/workflows/build-feature.yml@main
     with:
       java-version: '25'
+      working-directory: ./kontrakt # Sett working directory til kontrakt-mappen
     secrets: inherit
 
   release-drafter:
