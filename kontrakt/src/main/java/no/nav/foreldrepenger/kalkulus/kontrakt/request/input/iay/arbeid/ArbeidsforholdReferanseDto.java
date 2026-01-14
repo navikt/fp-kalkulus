@@ -1,4 +1,4 @@
-package no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.arbeid.v1;
+package no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.arbeid;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.ALWAYS;
 

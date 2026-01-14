@@ -1,9 +1,7 @@
-package no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.inntekt.v1;
+package no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.inntekt;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
-
-import java.time.LocalDate;
 
 import jakarta.validation.Valid;
 
@@ -12,35 +10,46 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import no.nav.folketrygdloven.kalkulus.kodeverk.NaturalYtelseType;
 import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Beløp;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Periode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public class RefusjonDto {
+public class NaturalYtelseDto {
 
-    @JsonProperty(value = "refusjonsbeløpMnd")
+    @JsonProperty(value = "periode")
     @Valid
-    private Beløp refusjonsbeløpMnd;
+    private Periode periode;
 
-    @JsonProperty(value = "fom")
+    @JsonProperty(value = "beløp")
     @Valid
-    private LocalDate fom;
+    private Beløp beløp;
 
-    protected RefusjonDto() {
+    @JsonProperty(value = "type")
+    @Valid
+    private NaturalYtelseType type;
+
+    protected NaturalYtelseDto() {
         // default ctor
     }
 
-    public RefusjonDto(Beløp refusjonsbeløpMnd, LocalDate fom) {
-        this.refusjonsbeløpMnd = refusjonsbeløpMnd;
-        this.fom = fom;
+    public NaturalYtelseDto(Periode periode, Beløp beløp, NaturalYtelseType type) {
+        this.periode = periode;
+        this.beløp = beløp;
+        this.type = type;
     }
 
-    public Beløp getRefusjonsbeløpMnd() {
-        return refusjonsbeløpMnd;
+    public Periode getPeriode() {
+        return periode;
     }
 
-    public LocalDate getFom() {
-        return fom;
+    public Beløp getBeløp() {
+        return beløp;
+    }
+
+    public NaturalYtelseType getType() {
+        return type;
     }
 }

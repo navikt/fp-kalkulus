@@ -1,9 +1,8 @@
-package no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.arbeid.v1;
+package no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.inntekt;
 
 import java.util.List;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -13,23 +12,23 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(value = Include.NON_ABSENT, content = Include.ALWAYS)
+@JsonInclude(value = Include.ALWAYS, content = Include.ALWAYS)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public class ArbeidDto {
+public class InntektsmeldingerDto {
 
-    @JsonProperty("yrkesaktiviteter")
-    @Size()
-    private List<@Valid YrkesaktivitetDto> yrkesaktiviteter;
+    @JsonProperty(value = "inntektsmeldinger")
+    @Size(min = 1)
+    private List<@Valid InntektsmeldingDto> inntektsmeldinger;
 
-    protected ArbeidDto() {
+    public InntektsmeldingerDto() {
         // default ctor
     }
 
-    public ArbeidDto(@NotNull List<@Valid YrkesaktivitetDto> yrkesaktiviteter) {
-        this.yrkesaktiviteter = yrkesaktiviteter;
+    public InntektsmeldingerDto(List<InntektsmeldingDto> inntektsmeldinger) {
+        this.inntektsmeldinger = inntektsmeldinger;
     }
 
-    public List<YrkesaktivitetDto> getYrkesaktiviteter() {
-        return yrkesaktiviteter;
+    public List<InntektsmeldingDto> getInntektsmeldinger() {
+        return inntektsmeldinger;
     }
 }

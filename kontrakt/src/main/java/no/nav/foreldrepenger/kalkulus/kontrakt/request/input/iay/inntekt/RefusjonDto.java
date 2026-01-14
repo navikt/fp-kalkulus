@@ -1,37 +1,46 @@
-package no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.ytelse.v1;
+package no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.inntekt;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
-import java.util.List;
+import java.time.LocalDate;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Beløp;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public class YtelserDto {
+public class RefusjonDto {
 
-    @JsonProperty("ytelser")
-    @Size(min = 1)
-    private List<@Valid YtelseDto> ytelser;
+    @JsonProperty(value = "refusjonsbeløpMnd")
+    @Valid
+    private Beløp refusjonsbeløpMnd;
 
-    protected YtelserDto() {
+    @JsonProperty(value = "fom")
+    @Valid
+    private LocalDate fom;
+
+    protected RefusjonDto() {
         // default ctor
     }
 
-    public YtelserDto(@NotNull List<@Valid YtelseDto> ytelser) {
-        this.ytelser = ytelser;
+    public RefusjonDto(Beløp refusjonsbeløpMnd, LocalDate fom) {
+        this.refusjonsbeløpMnd = refusjonsbeløpMnd;
+        this.fom = fom;
     }
 
-    public List<YtelseDto> getYtelser() {
-        return ytelser;
+    public Beløp getRefusjonsbeløpMnd() {
+        return refusjonsbeløpMnd;
+    }
+
+    public LocalDate getFom() {
+        return fom;
     }
 }

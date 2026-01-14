@@ -1,4 +1,4 @@
-package no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.ytelse.v1;
+package no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.ytelse;
 
 import java.util.Set;
 

@@ -1,4 +1,4 @@
-package no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.inntekt.v1;
+package no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.inntekt;
 
 import java.time.LocalDate;
 import java.util.List;
