@@ -1,4 +1,4 @@
-package no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.v1;
+package no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay;
 
 import java.util.Collection;
 
@@ -11,12 +11,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.arbeid.v1.ArbeidDto;
-import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.arbeid.v1.ArbeidsforholdInformasjonDto;
-import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.inntekt.v1.InntekterDto;
-import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.inntekt.v1.InntektsmeldingDto;
-import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.inntekt.v1.InntektsmeldingerDto;
-import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.ytelse.v1.YtelserDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.arbeid.ArbeidDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.arbeid.ArbeidsforholdInformasjonDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.inntekt.InntekterDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.inntekt.InntektsmeldingDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.inntekt.InntektsmeldingerDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.ytelse.YtelserDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.oppgitt.OppgittOpptjeningDto;
 
 

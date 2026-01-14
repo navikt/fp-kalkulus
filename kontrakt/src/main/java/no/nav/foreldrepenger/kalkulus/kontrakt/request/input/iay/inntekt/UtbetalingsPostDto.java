@@ -1,4 +1,4 @@
-package no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.inntekt.v1;
+package no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.inntekt;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

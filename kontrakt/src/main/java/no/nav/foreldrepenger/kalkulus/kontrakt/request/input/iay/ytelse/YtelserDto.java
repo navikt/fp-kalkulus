@@ -1,12 +1,12 @@
-package no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.inntekt.v1;
+package no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.ytelse;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
 import java.util.List;
-import java.util.Objects;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -17,27 +17,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public class InntekterDto {
+public class YtelserDto {
 
-    @JsonProperty("utbetalinger")
-    @Size()
-    private List<@Valid UtbetalingDto> utbetalinger;
+    @JsonProperty("ytelser")
+    @Size(min = 1)
+    private List<@Valid YtelseDto> ytelser;
 
-    protected InntekterDto() {
+    protected YtelserDto() {
         // default ctor
     }
 
-    public InntekterDto(List<UtbetalingDto> utbetalinger) {
-        Objects.requireNonNull(utbetalinger, "utbetalinger");
-        this.utbetalinger = utbetalinger;
+    public YtelserDto(@NotNull List<@Valid YtelseDto> ytelser) {
+        this.ytelser = ytelser;
     }
 
-    public List<UtbetalingDto> getUtbetalinger() {
-        return utbetalinger;
+    public List<YtelseDto> getYtelser() {
+        return ytelser;
     }
-
-    public void setUtbetalinger(List<UtbetalingDto> utbetalinger) {
-        this.utbetalinger = utbetalinger;
-    }
-
 }
