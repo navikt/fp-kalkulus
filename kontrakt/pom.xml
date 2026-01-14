@@ -15,7 +15,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <ftberegning.version>6.3.5</ftberegning.version>
+        <ftberegning.version>6.3.7</ftberegning.version>
     </properties>
 
     <dependencies>
