@@ -44,8 +44,6 @@ spec:
     enabled: true
   envFrom:
     - secret: fpkalkulus
-  secureLogs:
-    enabled: false
   observability:
     autoInstrumentation:
       enabled: true
