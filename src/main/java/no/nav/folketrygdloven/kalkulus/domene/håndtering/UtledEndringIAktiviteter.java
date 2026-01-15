@@ -7,26 +7,26 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAkti
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
-import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
-import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.avklaraktiviteter.AvklarAktiviteterHåndteringDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.overstyring.OverstyrBeregningsaktiviteterDto;
-import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningAktivitetEndring;
-import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningAktivitetNøkkel;
-import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningAktiviteterEndring;
-import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.DatoEndring;
-import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.ToggleEndring;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.HåndterBeregningDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.avklaraktiviteter.AvklarAktiviteterHåndteringDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.overstyring.OverstyrBeregningsaktiviteterDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.BeregningAktivitetEndring;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.BeregningAktivitetNøkkel;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.BeregningAktiviteterEndring;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.DatoEndring;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.ToggleEndring;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Aktør;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.AktørIdPersonident;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.InternArbeidsforholdRefDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Organisasjon;
 
 class UtledEndringIAktiviteter {
 
     static Optional<BeregningAktiviteterEndring> utedEndring(
-            HåndterBeregningDto dto, BeregningAktivitetAggregatDto register,
-            BeregningAktivitetAggregatDto gjeldende,
-            Optional<BeregningAktivitetAggregatDto> forrigeRegister,
-            Optional<BeregningAktivitetAggregatDto> forrigeGjeldende) {
+        HåndterBeregningDto dto, BeregningAktivitetAggregatDto register,
+        BeregningAktivitetAggregatDto gjeldende,
+        Optional<BeregningAktivitetAggregatDto> forrigeRegister,
+        Optional<BeregningAktivitetAggregatDto> forrigeGjeldende) {
 
         if (dto instanceof AvklarAktiviteterHåndteringDto || dto instanceof OverstyrBeregningsaktiviteterDto) {
 

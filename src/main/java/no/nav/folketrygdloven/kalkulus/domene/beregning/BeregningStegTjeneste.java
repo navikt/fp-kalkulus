@@ -30,21 +30,20 @@ import no.nav.folketrygdloven.kalkulator.output.RegelSporingPeriode;
 import no.nav.folketrygdloven.kalkulator.steg.BeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.KalkulatorInterface;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningResultat;
-import no.nav.folketrygdloven.kalkulus.beregning.v1.AvklaringsbehovMedTilstandDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelsporingRepository;
+import no.nav.folketrygdloven.kalkulus.domene.kopiering.SpolFramoverTjeneste;
+import no.nav.folketrygdloven.kalkulus.domene.mapTilEntitet.KalkulatorTilEntitetMapper;
+import no.nav.folketrygdloven.kalkulus.domene.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
+import no.nav.folketrygdloven.kalkulus.domene.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
+import no.nav.folketrygdloven.kalkulus.domene.tjeneste.sporing.RegelSporingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.kodeverk.KalkulusResultatKode;
-import no.nav.folketrygdloven.kalkulus.domene.kopiering.SpolFramoverTjeneste;
-import no.nav.folketrygdloven.kalkulus.domene.mapTilEntitet.KalkulatorTilEntitetMapper;
-import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
-import no.nav.folketrygdloven.kalkulus.response.v1.VilkårResponse;
-import no.nav.folketrygdloven.kalkulus.domene.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
-import no.nav.folketrygdloven.kalkulus.domene.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
-import no.nav.folketrygdloven.kalkulus.domene.tjeneste.sporing.RegelSporingTjeneste;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.AvklaringsbehovMedTilstandDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.TilstandResponse;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.vilkår.VilkårResponse;
 import no.nav.foreldrepenger.konfig.Environment;
 
 @ApplicationScoped
@@ -174,7 +173,7 @@ public class BeregningStegTjeneste {
                 lagreRegelsporing(input.getKoblingId(), beregningResultatAggregat.getRegelSporingAggregat(), input.getStegTilstand());
                 return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
         }
-        return new TilstandResponse(input.getKoblingReferanse().getKoblingUuid(), KalkulusResultatKode.BEREGNET, List.of());
+        return new TilstandResponse(input.getKoblingReferanse().getKoblingUuid(), List.of(), null);
     }
 
     /**
@@ -203,7 +202,7 @@ public class BeregningStegTjeneste {
      */
     private TilstandResponse vurderTilkommetInntekt(StegProsesseringInput input) {
         if (!GRADERING_MOT_INNTEKT_ENABLED) {
-            return new TilstandResponse(input.getKoblingReferanse().getKoblingUuid(), KalkulusResultatKode.BEREGNET);
+            return new TilstandResponse(input.getKoblingReferanse().getKoblingUuid(), List.of(), null);
         }
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.vurderTilkommetInntekt(input);
         lagreOgKopier(input, beregningResultatAggregat);
@@ -287,12 +286,9 @@ public class BeregningStegTjeneste {
                 regelsporingVilkårsVurdering.regelEvaluering(), regelsporingVilkårsVurdering.regelInput(),
                 regelsporingVilkårsVurdering.regelVersjon(), avslagsårsak);
             return new TilstandResponse(koblingReferanse.getKoblingUuid(),
-                    avklaringsbehov,
-                    avklaringsbehov.isEmpty() ? KalkulusResultatKode.BEREGNET : KalkulusResultatKode.BEREGNET_MED_AVKLARINGSBEHOV,
-                    resultat.getBeregningVilkårResultat().getErVilkårOppfylt(),
-                    resultat.getBeregningVilkårResultat().getErVilkårOppfylt() ? null : resultat.getBeregningVilkårResultat().getVilkårsavslagsårsak(), vilkårRespons);
+                    avklaringsbehov, vilkårRespons);
         } else {
-            return new TilstandResponse(koblingReferanse.getKoblingUuid(), avklaringsbehov.isEmpty() ? KalkulusResultatKode.BEREGNET : KalkulusResultatKode.BEREGNET_MED_AVKLARINGSBEHOV, avklaringsbehov);
+            return new TilstandResponse(koblingReferanse.getKoblingUuid(), avklaringsbehov, null);
         }
     }
 

@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.Optional;
 
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.ErMottattYtelseEndring;
+
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
@@ -12,7 +14,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDt
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.ErMottattYtelseEndring;
 
 class UtledErMottattYtelseEndringerTest {
 

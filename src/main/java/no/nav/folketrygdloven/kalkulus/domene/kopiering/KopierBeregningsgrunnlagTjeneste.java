@@ -11,7 +11,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulus.domene.beregning.MapStegTilTilstand;
-import no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
@@ -19,13 +18,14 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.domene.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.domene.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.foreldrepenger.ForeldrepengerGrunnlag;
 import no.nav.vedtak.exception.TekniskException;
 
 @ApplicationScoped

@@ -10,7 +10,7 @@ import no.nav.folketrygdloven.kalkulus.domene.håndtering.BeregningHåndterer;
 import no.nav.folketrygdloven.kalkulus.domene.håndtering.DtoTilServiceAdapter;
 import no.nav.folketrygdloven.kalkulus.domene.håndtering.HåndteringResultat;
 import no.nav.folketrygdloven.kalkulus.domene.håndtering.UtledEndring;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.VurderVarigEndringEllerNyoppstartetSNHåndteringDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.foreslå.VurderVarigEndringEllerNyoppstartetSNHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
 @ApplicationScoped

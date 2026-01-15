@@ -7,14 +7,13 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Beløp;
 
 class UtledEndringIAndelTest {
 
@@ -94,7 +93,7 @@ class UtledEndringIAndelTest {
     private BeregningsgrunnlagPrStatusOgAndelDto lagArbeidstakerAndel(Beløp inntekt, Inntektskategori inntektskategori) {
         return BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
                 .medInntektskategori(inntektskategori)
-                .medBeregnetPrÅr(ModellTyperMapper.beløpFraDto(inntekt))
+                .medBeregnetPrÅr(beløpFraDto(inntekt))
                 .medAndelsnr(1L)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
@@ -106,10 +105,14 @@ class UtledEndringIAndelTest {
     private BeregningsgrunnlagPrStatusOgAndelDto lagFrilanserAndel(Beløp inntekt, Inntektskategori inntektskategori) {
         return BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
                 .medInntektskategori(inntektskategori)
-                .medBeregnetPrÅr(ModellTyperMapper.beløpFraDto(inntekt))
+                .medBeregnetPrÅr(beløpFraDto(inntekt))
                 .medAndelsnr(1L)
                 .medAktivitetStatus(AktivitetStatus.FRILANSER)
                 .build();
+    }
+
+    private static no.nav.folketrygdloven.kalkulator.modell.typer.Beløp beløpFraDto(Beløp beløp) {
+        return no.nav.folketrygdloven.kalkulator.modell.typer.Beløp.fra(beløp != null ? beløp.verdi() : null);
     }
 
 }

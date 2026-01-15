@@ -10,11 +10,11 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDt
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
-import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
-import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.ErMottattYtelseEndring;
-import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.ToggleEndring;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.ErMottattYtelseEndring;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.ToggleEndring;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Aktør;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.AktørIdPersonident;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Organisasjon;
 
 class UtledErMottattYtelseEndringer {
 
