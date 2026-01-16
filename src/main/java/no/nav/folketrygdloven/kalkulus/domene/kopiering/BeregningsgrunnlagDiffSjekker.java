@@ -76,7 +76,7 @@ public class BeregningsgrunnlagDiffSjekker {
         config.setOnlyCheckTrackedFields(true);
         config.setInclusionFilter(obj -> !(obj instanceof BeregningsgrunnlagPeriodeDto));
 
-        config.addLeafClasses(no.nav.folketrygdloven.kalkulus.felles.v1.Beløp.class);
+        config.addLeafClasses(no.nav.foreldrepenger.kalkulus.kontrakt.typer.Beløp.class);
         config.addLeafClasses(InternArbeidsforholdRefDto.class);
         config.addLeafClasses(Arbeidsgiver.class);
 
