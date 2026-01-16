@@ -4,46 +4,46 @@ import java.util.List;
 
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.DagpengeAndelLagtTilBesteberegningDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.OverstyrBeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.avklaraktiviteter.AvklarteAktiviteterDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.avklaraktiviteter.BeregningsaktivitetLagreDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.ArbeidstakerandelUtenIMMottarYtelseDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.BesteberegningFødendeKvinneAndelDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.BesteberegningFødendeKvinneDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FaktaBeregningLagreDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsattBrukersAndel;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsatteAndelerTidsbegrensetDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsattePerioderTidsbegrensetDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsatteVerdierDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsettBeregningsgrunnlagAndelDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsettBgKunYtelseDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsettEtterlønnSluttpakkeDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsettMånedsinntektFLDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsettMånedsinntektUtenInntektsmeldingAndelDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsettMånedsinntektUtenInntektsmeldingDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.MottarYtelseDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.RedigerbarAndelDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.RefusjonskravPrArbeidsgiverVurderingDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.VurderATogFLiSammeOrganisasjonAndelDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.VurderATogFLiSammeOrganisasjonDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.VurderEtterlønnSluttpakkeDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.VurderLønnsendringDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.VurderMilitærDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.VurderNyoppstartetFLDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.VurderSelvstendigNæringsdrivendeNyIArbeidslivetDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.VurderTidsbegrensetArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.VurderteArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.FordelBeregningsgrunnlagAndelDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.FordelBeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.FordelBeregningsgrunnlagPeriodeDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.FordelFastsatteVerdierDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.FordelRedigerbarAndelDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBGTidsbegrensetArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBeregningsgrunnlagATFLHåndteringDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.InntektPrAndelDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.overstyring.OverstyrBeregningsgrunnlagHåndteringDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.refusjon.VurderRefusjonAndelBeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.refusjon.VurderRefusjonBeregningsgrunnlagDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.avklaraktiviteter.AvklarteAktiviteterDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.avklaraktiviteter.BeregningsaktivitetLagreDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.ArbeidstakerandelUtenIMMottarYtelseDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.BesteberegningFødendeKvinneAndelDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.BesteberegningFødendeKvinneDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.FaktaBeregningLagreDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.FastsattBrukersAndel;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.FastsatteAndelerTidsbegrensetDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.FastsattePerioderTidsbegrensetDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.FastsatteVerdierDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.FastsettBeregningsgrunnlagAndelDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.FastsettBgKunYtelseDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.FastsettEtterlønnSluttpakkeDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.FastsettMånedsinntektFLDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.FastsettMånedsinntektUtenInntektsmeldingAndelDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.FastsettMånedsinntektUtenInntektsmeldingDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.MottarYtelseDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.RedigerbarAndelDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.RefusjonskravPrArbeidsgiverVurderingDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.VurderATogFLiSammeOrganisasjonAndelDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.VurderATogFLiSammeOrganisasjonDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.VurderEtterlønnSluttpakkeDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.VurderLønnsendringDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.VurderMilitærDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.VurderNyoppstartetFLDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.VurderSelvstendigNæringsdrivendeNyIArbeidslivetDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.VurderTidsbegrensetArbeidsforholdDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.VurderteArbeidsforholdDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fordeling.FordelBeregningsgrunnlagAndelDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fordeling.FordelBeregningsgrunnlagDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fordeling.FordelBeregningsgrunnlagPeriodeDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fordeling.FordelFastsatteVerdierDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fordeling.FordelRedigerbarAndelDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.foreslå.FastsettBGTidsbegrensetArbeidsforholdDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.foreslå.FastsettBeregningsgrunnlagATFLHåndteringDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.foreslå.FastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.foreslå.InntektPrAndelDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.overstyring.OverstyrBeregningsgrunnlagHåndteringDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.refusjon.VurderRefusjonAndelBeregningsgrunnlagDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.refusjon.VurderRefusjonBeregningsgrunnlagDto;
 
 
 public class OppdatererDtoMapper {
@@ -243,7 +243,7 @@ public class OppdatererDtoMapper {
         return new no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.BesteberegningFødendeKvinneDto(mapBesteberegningAndeler(besteberegningAndeler.getBesteberegningAndelListe()), mapNyDagpengeAndel(besteberegningAndeler.getNyDagpengeAndel()));
     }
 
-    private static DagpengeAndelLagtTilBesteberegningDto mapNyDagpengeAndel(no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.DagpengeAndelLagtTilBesteberegningDto nyDagpengeAndel) {
+    private static DagpengeAndelLagtTilBesteberegningDto mapNyDagpengeAndel(no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.DagpengeAndelLagtTilBesteberegningDto nyDagpengeAndel) {
         return nyDagpengeAndel == null ? null : new DagpengeAndelLagtTilBesteberegningDto(nyDagpengeAndel.getFastsatteVerdier().getFastsattBeløp(), nyDagpengeAndel.getFastsatteVerdier().getInntektskategori());
     }
 

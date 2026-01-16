@@ -6,9 +6,9 @@ import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
-import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningsgrunnlagPeriodeEndring;
-import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningsgrunnlagPrStatusOgAndelEndring;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.BeregningsgrunnlagPeriodeEndring;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.BeregningsgrunnlagPrStatusOgAndelEndring;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Periode;
 
 class UtledEndringIPeriode {
 
@@ -32,7 +32,7 @@ class UtledEndringIPeriode {
         return Optional.of(periodeEndring);
     }
 
-    private static List<BeregningsgrunnlagPrStatusOgAndelEndring> utledAndelEndringer(List<BeregningsgrunnlagPrStatusOgAndelDto> andeler,  List<BeregningsgrunnlagPrStatusOgAndelDto> andelerFraSteg, List<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndeler) {
+    private static List<BeregningsgrunnlagPrStatusOgAndelEndring> utledAndelEndringer(List<BeregningsgrunnlagPrStatusOgAndelDto> andeler, List<BeregningsgrunnlagPrStatusOgAndelDto> andelerFraSteg, List<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndeler) {
         return andeler.stream()
                 .map(a -> {
                     Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel = finnAndel(forrigeAndeler, a);

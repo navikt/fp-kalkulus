@@ -13,20 +13,20 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.modell.iay.KravperioderPrArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.PerioderForKravDto;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Beløp;
-import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
-import no.nav.folketrygdloven.kalkulus.iay.IayProsent;
-import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.AktivitetsAvtaleDto;
-import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidDto;
-import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsforholdInformasjonDto;
-import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsforholdOverstyringDto;
-import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.YrkesaktivitetDto;
-import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.InntektsmeldingDto;
-import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.InntektsmeldingerDto;
-import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Aktør;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Beløp;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.InternArbeidsforholdRefDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Organisasjon;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Periode;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.IayProsent;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.arbeid.AktivitetsAvtaleDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.arbeid.ArbeidDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.arbeid.ArbeidsforholdInformasjonDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.arbeid.ArbeidsforholdOverstyringDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.arbeid.YrkesaktivitetDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.inntekt.InntektsmeldingDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.inntekt.InntektsmeldingerDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidsforholdHandlingType;
 import no.nav.vedtak.konfig.Tid;
@@ -260,7 +260,7 @@ class MapInntektsmeldingerTilKravperioderTest {
     }
 
     private InntektsmeldingDto lagIM(Aktør ag, InternArbeidsforholdRefDto internRef, Integer inntekt, Integer refusjon, LocalDate startdatoPermisjon, LocalDate innsendingstidspunkt) {
-        return new InntektsmeldingDto(ag, Beløp.fra(inntekt), List.of(), List.of(), internRef, startdatoPermisjon, Tid.TIDENES_ENDE, Beløp.fra(refusjon), null, innsendingstidspunkt);
+        return new InntektsmeldingDto(ag, Beløp.fra(inntekt), List.of(), List.of(), internRef, startdatoPermisjon, Tid.TIDENES_ENDE, Beløp.fra(refusjon), innsendingstidspunkt);
     }
 
     private ArbeidsforholdOverstyringDto lagOverstyrtArbeid(Aktør ag, InternArbeidsforholdRefDto internRef, LocalDate fom, LocalDate tom) {

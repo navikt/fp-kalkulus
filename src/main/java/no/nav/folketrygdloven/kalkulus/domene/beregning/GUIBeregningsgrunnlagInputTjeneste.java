@@ -14,11 +14,11 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.domene.mapFraEntitet.BehandlingslagerTilKalkulusMapper;
 import no.nav.folketrygdloven.kalkulus.domene.mappers.MapTilGUIInputFraKalkulator;
 import no.nav.folketrygdloven.kalkulus.domene.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.KalkulatorInputDto;
 
 @Dependent
 public class GUIBeregningsgrunnlagInputTjeneste {
@@ -41,7 +41,7 @@ public class GUIBeregningsgrunnlagInputTjeneste {
      * @param avklaringsbehov            Avklaringsbehov for kobling
      * @param kalkulatorInput              KalkulatorInput for kobling
      * @param kobling                           Kobling
-     * @param originaltGrunnlag          Originalt grunnlag hvis det finnes
+     * @param originaltGrunnlagEntitet          Originalt grunnlag hvis det finnes
      * @return Liste med restinput
      */
     private static BeregningsgrunnlagGUIInput mapInputListe(KoblingEntitet kobling,

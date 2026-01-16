@@ -10,7 +10,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulus.domene.håndtering.BeregningHåndterer;
 import no.nav.folketrygdloven.kalkulus.domene.håndtering.DtoTilServiceAdapter;
 import no.nav.folketrygdloven.kalkulus.domene.håndtering.HåndteringResultat;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.refusjon.VurderRefusjonBeregningsgrunnlagDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.refusjon.VurderRefusjonBeregningsgrunnlagDto;
 
 @ApplicationScoped
 @DtoTilServiceAdapter(dto = VurderRefusjonBeregningsgrunnlagDto.class, adapter = BeregningHåndterer.class)

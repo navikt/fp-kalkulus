@@ -12,7 +12,7 @@ import no.nav.folketrygdloven.kalkulus.domene.håndtering.BeregningHåndterer;
 import no.nav.folketrygdloven.kalkulus.domene.håndtering.DtoTilServiceAdapter;
 import no.nav.folketrygdloven.kalkulus.domene.håndtering.HåndteringResultat;
 import no.nav.folketrygdloven.kalkulus.domene.håndtering.UtledEndring;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FaktaOmBeregningHåndteringDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.FaktaOmBeregningHåndteringDto;
 
 @ApplicationScoped
 @DtoTilServiceAdapter(dto = FaktaOmBeregningHåndteringDto.class, adapter = BeregningHåndterer.class)

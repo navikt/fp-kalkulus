@@ -21,12 +21,12 @@ import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningMåne
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningVurderingGrunnlag;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.Inntekt;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetGraderingDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BesteberegningMånedsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.foreldrepenger.gradering.AktivitetGraderingDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Dekningsgrad;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
@@ -36,7 +36,7 @@ class ForeldrepengerGrunnlagMapper {
         // Skjuler default
     }
 
-    static ForeldrepengerGrunnlag mapForeldrepengerGrunnlag(no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag fpKontraktGrunnlag,
+    static ForeldrepengerGrunnlag mapForeldrepengerGrunnlag(no.nav.foreldrepenger.kalkulus.kontrakt.request.input.foreldrepenger.ForeldrepengerGrunnlag fpKontraktGrunnlag,
                                                             Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
 
         ForeldrepengerGrunnlag foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(mapDekningsgrad(fpKontraktGrunnlag.getDekningsgrad().intValue()),
@@ -96,7 +96,7 @@ class ForeldrepengerGrunnlagMapper {
                     .forEach(grad -> builder.medGradering(grad.getPeriode().getFom(), grad.getPeriode().getTom(), Aktivitetsgrad.fra(grad.getArbeidstidProsent().verdi())));
             builder.medStatus(andel.getAktivitetStatus());
             builder.medArbeidsgiver(mapArbeidsgiver(andel.getArbeidsgiver()));
-            no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto arbeidsforholdRef = andel.getArbeidsforholdRef();
+            no.nav.foreldrepenger.kalkulus.kontrakt.typer.InternArbeidsforholdRefDto arbeidsforholdRef = andel.getArbeidsforholdRef();
             if (arbeidsforholdRef != null) {
                 builder.medArbeidsforholdRef(InternArbeidsforholdRefDto.ref(arbeidsforholdRef.getAbakusReferanse()));
             }
@@ -107,7 +107,7 @@ class ForeldrepengerGrunnlagMapper {
     }
 
 
-    private static List<Ytelsegrunnlag> mapYtelsegrunnlag(List<no.nav.folketrygdloven.kalkulus.beregning.v1.besteberegning.Ytelsegrunnlag> ytelsegrunnlagForBesteberegning) {
+    private static List<Ytelsegrunnlag> mapYtelsegrunnlag(List<no.nav.foreldrepenger.kalkulus.kontrakt.request.input.foreldrepenger.besteberegning.Ytelsegrunnlag> ytelsegrunnlagForBesteberegning) {
         if (ytelsegrunnlagForBesteberegning == null) {
             return Collections.emptyList();
         }
@@ -116,7 +116,7 @@ class ForeldrepengerGrunnlagMapper {
                 .toList();
     }
 
-    private static List<Ytelseperiode> mapYtelseperioder(List<no.nav.folketrygdloven.kalkulus.beregning.v1.besteberegning.Ytelseperiode> perioder) {
+    private static List<Ytelseperiode> mapYtelseperioder(List<no.nav.foreldrepenger.kalkulus.kontrakt.request.input.foreldrepenger.besteberegning.Ytelseperiode> perioder) {
         return perioder.stream()
                 .map(p -> new Ytelseperiode(mapPeriode(p.getPeriode()), mapYtelseandeler(p.getAndeler())))
                 .toList();
@@ -126,7 +126,7 @@ class ForeldrepengerGrunnlagMapper {
         return Intervall.fraOgMedTilOgMed(periode.getFom(), periode.getTom());
     }
 
-    private static List<Ytelseandel> mapYtelseandeler(List<no.nav.folketrygdloven.kalkulus.beregning.v1.besteberegning.Ytelseandel> andeler) {
+    private static List<Ytelseandel> mapYtelseandeler(List<no.nav.foreldrepenger.kalkulus.kontrakt.request.input.foreldrepenger.besteberegning.Ytelseandel> andeler) {
         return andeler.stream()
                 .map(a -> {
                     if (a.getAktivitetStatus() != null) {

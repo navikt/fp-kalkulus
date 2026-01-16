@@ -13,34 +13,37 @@ import java.util.UUID;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
 
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.foreldrepenger.ForeldrepengerGrunnlag;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.foreldrepenger.gradering.AktivitetGraderingDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.foreldrepenger.gradering.AndelGraderingDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.foreldrepenger.gradering.GraderingDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.arbeid.AktivitetsAvtaleDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.opptjening.OpptjeningAktiviteterDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.opptjening.OpptjeningPeriodeDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Periode;
+
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetGraderingDto;
-import no.nav.folketrygdloven.kalkulus.beregning.v1.AndelGraderingDto;
-import no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag;
-import no.nav.folketrygdloven.kalkulus.beregning.v1.GraderingDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Aktivitetsgrad;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Beløp;
-import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
-import no.nav.folketrygdloven.kalkulus.iay.IayProsent;
-import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.AktivitetsAvtaleDto;
-import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidDto;
-import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.YrkesaktivitetDto;
-import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.InntekterDto;
-import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.InntektsmeldingDto;
-import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.InntektsmeldingerDto;
-import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.UtbetalingDto;
-import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.UtbetalingsPostDto;
-import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
-import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseDto;
-import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelserDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Aktivitetsgrad;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Beløp;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.InternArbeidsforholdRefDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.KalkulatorInputDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Organisasjon;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.IayProsent;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.arbeid.ArbeidDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.arbeid.YrkesaktivitetDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.inntekt.InntekterDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.inntekt.InntektsmeldingDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.inntekt.InntektsmeldingerDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.inntekt.UtbetalingDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.inntekt.UtbetalingsPostDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.InntektArbeidYtelseGrunnlagDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.ytelse.YtelseDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.ytelse.YtelserDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
@@ -48,8 +51,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
-import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
-import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningPeriodeDto;
 
 class MapFraKalkulatorTest {
 
@@ -81,15 +82,15 @@ class MapFraKalkulatorTest {
         OpptjeningAktiviteterDto opptjeningAktiviteter = new OpptjeningAktiviteterDto(List.of(new OpptjeningPeriodeDto(OpptjeningAktivitetType.ARBEID, periode, organisasjon, null)));
         LocalDate skjæringstidspunkt = periode.getFom();
 
-        KalkulatorInputDto kalkulatorInputDto = new KalkulatorInputDto(iayGrunnlag, opptjeningAktiviteter, skjæringstidspunkt);
-        kalkulatorInputDto.medYtelsespesifiktGrunnlag(new ForeldrepengerGrunnlag(BigDecimal.valueOf(100), false, aktivitetGraderingDto, Collections.emptyList(), skjæringstidspunkt));
+        KalkulatorInputDto kalkulatorInputDto = new KalkulatorInputDto(iayGrunnlag, opptjeningAktiviteter, skjæringstidspunkt, new ForeldrepengerGrunnlag(BigDecimal.valueOf(100), false, aktivitetGraderingDto, Collections.emptyList(), skjæringstidspunkt));
 
         return kalkulatorInputDto;
     }
 
     private InntektArbeidYtelseGrunnlagDto byggIAY() {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = new InntektArbeidYtelseGrunnlagDto();
-        iayGrunnlag.medArbeidDto(new ArbeidDto(List.of(new YrkesaktivitetDto(organisasjon, ref, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD, List.of(new AktivitetsAvtaleDto(periode, null, IayProsent.fra(100)), new AktivitetsAvtaleDto(periode, null, null))))));
+        iayGrunnlag.medArbeidDto(new ArbeidDto(List.of(new YrkesaktivitetDto(organisasjon, ref, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD,
+            List.of(new AktivitetsAvtaleDto(periode, null, IayProsent.fra(100)), new AktivitetsAvtaleDto(periode, null, null))))));
         iayGrunnlag.medYtelserDto(new YtelserDto(List.of(new YtelseDto(Beløp.fra(BigDecimal.TEN), Set.of(), YtelseType.FORELDREPENGER, periode, null))));
         iayGrunnlag.medInntekterDto(new InntekterDto(List.of(new UtbetalingDto(InntektskildeType.INNTEKT_BEREGNING, List.of(new UtbetalingsPostDto(periode, InntektspostType.LØNN, Beløp.fra(1000)))))));
         iayGrunnlag.medInntektsmeldingerDto(new InntektsmeldingerDto(List.of(new InntektsmeldingDto(organisasjon, Beløp.fra(100), List.of(), List.of(), null, null, null, null, null))));

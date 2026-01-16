@@ -3,19 +3,18 @@ package no.nav.folketrygdloven.kalkulus.domene.håndtering;
 import java.util.Objects;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
-import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
-import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningsgrunnlagPrStatusOgAndelEndring;
-import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.InntektEndring;
-import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.InntektskategoriEndring;
-import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.RefusjonEndring;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.BeregningsgrunnlagPrStatusOgAndelEndring;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.InntektEndring;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.InntektskategoriEndring;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.RefusjonEndring;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Aktør;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.AktørIdPersonident;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Organisasjon;
 
 public class UtledEndringIAndel {
 
@@ -55,7 +54,7 @@ public class UtledEndringIAndel {
 
     private static InntektEndring lagInntektEndring(BeregningsgrunnlagPrStatusOgAndelDto andel, Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
         return Beløp.safeVerdi(andel.getBruttoPrÅr()) != null ?
-                new InntektEndring(forrigeAndel.map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoPrÅr).map(ModellTyperMapper::beløpTilDto).orElse(null), ModellTyperMapper.beløpTilDto(andel.getBruttoPrÅr())) : null;
+                new InntektEndring(forrigeAndel.map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoPrÅr).map(b -> beløpTilDto(b)).orElse(null), beløpTilDto(andel.getBruttoPrÅr())) : null;
     }
 
     private static InntektskategoriEndring utledInntektskategoriEndring(BeregningsgrunnlagPrStatusOgAndelDto andel, Optional<BeregningsgrunnlagPrStatusOgAndelDto> andelFraSteg, Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
@@ -84,7 +83,7 @@ public class UtledEndringIAndel {
     }
 
     private static RefusjonEndring initRefusjonEndring(BeregningsgrunnlagPrStatusOgAndelDto andel, Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
-        return new RefusjonEndring(ModellTyperMapper.beløpTilDto(finnRefusjon(forrigeAndel)), ModellTyperMapper.beløpTilDto(initRefusjon(andel)));
+        return new RefusjonEndring(beløpTilDto(finnRefusjon(forrigeAndel)), beløpTilDto(initRefusjon(andel)));
     }
 
     private static Beløp initRefusjon(BeregningsgrunnlagPrStatusOgAndelDto andel) {
@@ -108,6 +107,10 @@ public class UtledEndringIAndel {
                 .flatMap(BeregningsgrunnlagPrStatusOgAndelDto::getBgAndelArbeidsforhold)
                 .map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr)
                 .orElse(null);
+    }
+
+    private static no.nav.foreldrepenger.kalkulus.kontrakt.typer.Beløp beløpTilDto(Beløp beløp) {
+        return no.nav.foreldrepenger.kalkulus.kontrakt.typer.Beløp.fra(beløp != null ? beløp.verdi() : null);
     }
 
 }

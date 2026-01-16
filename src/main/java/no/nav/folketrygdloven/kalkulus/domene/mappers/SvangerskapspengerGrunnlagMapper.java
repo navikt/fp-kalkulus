@@ -8,7 +8,7 @@ class SvangerskapspengerGrunnlagMapper {
         // skjul konstruktor
     }
 
-    static SvangerskapspengerGrunnlag mapSvangerskapspengerGrunnlag(no.nav.folketrygdloven.kalkulus.beregning.v1.SvangerskapspengerGrunnlag svangerskapspengerGrunnlag) {
+    static SvangerskapspengerGrunnlag mapSvangerskapspengerGrunnlag(no.nav.foreldrepenger.kalkulus.kontrakt.request.input.svangerskapspenger.SvangerskapspengerGrunnlag svangerskapspengerGrunnlag) {
         return new SvangerskapspengerGrunnlag(
             UtbetalingsgradMapper.mapUtbetalingsgrad(svangerskapspengerGrunnlag.getUtbetalingsgradPrAktivitet()),
             svangerskapspengerGrunnlag.getTilkommetInntektHensyntasFom());
