@@ -108,7 +108,7 @@ public class MapIAYTilKalulator {
             ny.medHandling(arbeidsforholdOverstyringDto.getHandling());
             ny.medArbeidsgiver(MapFraKalkulator.mapArbeidsgiver(arbeidsforholdOverstyringDto.getArbeidsgiver()));
             ny.medArbeidsforholdRef(mapArbeidsforholdRef(arbeidsforholdOverstyringDto.getArbeidsforholdRefDto()));
-            ny.medAngittStillingsprosent(Stillingsprosent.fra(arbeidsforholdOverstyringDto.getStillingsprosent().verdi()));
+            ny.medAngittStillingsprosent(arbeidsforholdOverstyringDto.getStillingsprosent() == null ? null : Stillingsprosent.fra(arbeidsforholdOverstyringDto.getStillingsprosent().verdi()));
             if (arbeidsforholdOverstyringDto.getArbeidsforholdOverstyrtePerioder() != null) {
                 arbeidsforholdOverstyringDto.getArbeidsforholdOverstyrtePerioder().forEach(p -> ny.leggTilOverstyrtPeriode(p.getFom(), p.getTom()));
             }
@@ -220,7 +220,7 @@ public class MapIAYTilKalulator {
     private static PermisjonDtoBuilder mapPermisjon(PermisjonDto permisjon) {
         return PermisjonDtoBuilder.ny()
                 .medPeriode(Intervall.fraOgMedTilOgMed(permisjon.getPeriode().getFom(), permisjon.getPeriode().getTom()))
-                .medProsentsats(Stillingsprosent.fra(permisjon.getProsentsats().verdi()))
+                .medProsentsats(permisjon.getProsentsats() == null ? null : Stillingsprosent.fra(permisjon.getProsentsats().verdi()))
                 .medPermisjonsbeskrivelseType(permisjon.getPermisjonsbeskrivelseType());
     }
 
@@ -316,7 +316,7 @@ public class MapIAYTilKalulator {
         if (ytelseAnvist.getDagsats() != null) {
             builder.medDagsats(beløpFraDto(ytelseAnvist.getDagsats()));
         }
-        builder.medUtbetalingsgradProsent(Stillingsprosent.fra(ytelseAnvist.getUtbetalingsgradProsent().verdi()));
+        builder.medUtbetalingsgradProsent(ytelseAnvist.getUtbetalingsgradProsent() == null ? null : Stillingsprosent.fra(ytelseAnvist.getUtbetalingsgradProsent().verdi()));
         builder.medAnvisteAndeler(AnvistAndelMapper.mapAnvisteAndeler(ytelseAnvist));
         return builder.build();
     }
