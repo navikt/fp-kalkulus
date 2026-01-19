@@ -12,11 +12,12 @@ import java.util.UUID;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.foreldrepenger.ForeldrepengerGrunnlag;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulus.migreringer.dbstoette.JpaExtension;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.AktivitetAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.AndelArbeidsforholdEntitet;
@@ -32,7 +33,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingRef
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Årsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.domene.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
@@ -122,8 +123,8 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         koblingRepository.markerKoblingSomAvsluttet(originalKobling);
 
         var nyReferanse = new KoblingReferanse(UUID.randomUUID());
-        var input = new KalkulatorInputDto(null, null, LocalDate.of(2025, 6, 1));
-        input.medYtelsespesifiktGrunnlag(new ForeldrepengerGrunnlag(BigDecimal.valueOf(100), false, null, List.of(), LocalDate.of(2025, 6, 1)));
+        var input = new KalkulatorInputDto(null, null, LocalDate.of(2025, 6, 1),
+            new ForeldrepengerGrunnlag(BigDecimal.valueOf(100), false, null, List.of(), LocalDate.of(2025, 6, 1)));
         tjeneste.kopierBeregningsgrunlagForStartISteg(nyReferanse, originalKoblingReferanse, SAK, BeregningSteg.FORS_BERGRUNN, input);
 
         var alleKoblinger = koblingRepository.hentAlleKoblingerForSaksnummer(SAK);

@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.guitjenester.ModellTyperMapper;
 import no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Aktivitetsgrad;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Utbetalingsgrad;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.beregning.v1.UtbetalingsgradPrAktivitetDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.svangerskapspenger.UtbetalingsgradPrAktivitetDto;
 
 class UtbetalingsgradMapper {
 
@@ -24,7 +24,7 @@ class UtbetalingsgradMapper {
                 .toList();
     }
 
-    private static List<Map.Entry<no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetDto, List<no.nav.folketrygdloven.kalkulus.beregning.v1.PeriodeMedUtbetalingsgradDto>>> samleArbeidsforhold(List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet) {
+    private static List<Map.Entry<no.nav.foreldrepenger.kalkulus.kontrakt.request.input.svangerskapspenger.AktivitetDto, List<no.nav.foreldrepenger.kalkulus.kontrakt.request.input.svangerskapspenger.PeriodeMedUtbetalingsgradDto>>> samleArbeidsforhold(List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet) {
         return new ArrayList<>(utbetalingsgradPrAktivitet.stream()
                 .collect(Collectors.toMap(
                         UtbetalingsgradPrAktivitetDto::getUtbetalingsgradArbeidsforholdDto,
@@ -36,21 +36,25 @@ class UtbetalingsgradMapper {
                         LinkedHashMap::new))
                 .entrySet());
     }
-    private static List<PeriodeMedUtbetalingsgradDto> mapPerioderMedUtbetalingsgrad(List<no.nav.folketrygdloven.kalkulus.beregning.v1.PeriodeMedUtbetalingsgradDto> periodeMedUtbetalingsgrad) {
+    private static List<PeriodeMedUtbetalingsgradDto> mapPerioderMedUtbetalingsgrad(List<no.nav.foreldrepenger.kalkulus.kontrakt.request.input.svangerskapspenger.PeriodeMedUtbetalingsgradDto> periodeMedUtbetalingsgrad) {
         return periodeMedUtbetalingsgrad.stream().map(UtbetalingsgradMapper::mapPeriodeMedUtbetalingsgrad).toList();
     }
 
-    private static PeriodeMedUtbetalingsgradDto mapPeriodeMedUtbetalingsgrad(no.nav.folketrygdloven.kalkulus.beregning.v1.PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto) {
+    private static PeriodeMedUtbetalingsgradDto mapPeriodeMedUtbetalingsgrad(no.nav.foreldrepenger.kalkulus.kontrakt.request.input.svangerskapspenger.PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto) {
         var aktivitetsgradDomene = periodeMedUtbetalingsgradDto.getAktivitetsgrad() == null ? null : Aktivitetsgrad.fra(periodeMedUtbetalingsgradDto.getAktivitetsgrad().verdi());
         return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(periodeMedUtbetalingsgradDto.getPeriode().getFom(), periodeMedUtbetalingsgradDto.getPeriode().getTom()),
-                ModellTyperMapper.utbetalingsgradFraDto(periodeMedUtbetalingsgradDto.getUtbetalingsgrad()), aktivitetsgradDomene);
+            utbetalingsgradFraDto(periodeMedUtbetalingsgradDto.getUtbetalingsgrad()), aktivitetsgradDomene);
     }
 
-    public static AktivitetDto mapArbeidsforhold(no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetDto aktivitetDto) {
+    public static Utbetalingsgrad utbetalingsgradFraDto(no.nav.foreldrepenger.kalkulus.kontrakt.typer.Utbetalingsgrad utbetalingsgrad) {
+        return utbetalingsgrad != null && utbetalingsgrad.verdi() != null ? new Utbetalingsgrad(utbetalingsgrad.verdi()) : null;
+    }
+
+    public static AktivitetDto mapArbeidsforhold(no.nav.foreldrepenger.kalkulus.kontrakt.request.input.svangerskapspenger.AktivitetDto aktivitetDto) {
         return new AktivitetDto(MapFraKalkulator.mapArbeidsgiver(aktivitetDto.getArbeidsgiver()), mapReferanse(aktivitetDto), aktivitetDto.getUttakArbeidType());
     }
 
-    private static InternArbeidsforholdRefDto mapReferanse(no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetDto aktivitetDto) {
+    private static InternArbeidsforholdRefDto mapReferanse(no.nav.foreldrepenger.kalkulus.kontrakt.request.input.svangerskapspenger.AktivitetDto aktivitetDto) {
         return aktivitetDto.getInternArbeidsforholdRef() == null ? InternArbeidsforholdRefDto.nullRef() : InternArbeidsforholdRefDto.ref(aktivitetDto.getInternArbeidsforholdRef().getAbakusReferanse());
     }
 }

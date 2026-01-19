@@ -10,7 +10,7 @@ import no.nav.folketrygdloven.kalkulus.domene.håndtering.DtoTilServiceAdapter;
 import no.nav.folketrygdloven.kalkulus.domene.håndtering.HåndteringResultat;
 import no.nav.folketrygdloven.kalkulus.domene.håndtering.UtledEndring;
 import no.nav.folketrygdloven.kalkulus.domene.håndtering.mapping.OppdatererDtoMapper;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBGTidsbegrensetArbeidsforholdHåndteringDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.foreslå.FastsettBGTidsbegrensetArbeidsforholdHåndteringDto;
 
 @ApplicationScoped
 @DtoTilServiceAdapter(dto = FastsettBGTidsbegrensetArbeidsforholdHåndteringDto.class, adapter = BeregningHåndterer.class)

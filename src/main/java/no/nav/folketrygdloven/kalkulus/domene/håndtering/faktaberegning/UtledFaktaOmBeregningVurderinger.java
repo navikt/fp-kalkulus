@@ -5,14 +5,14 @@ import java.util.List;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
-import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FaktaOmBeregningHåndteringDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.RefusjonskravPrArbeidsgiverVurderingDto;
-import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.FaktaOmBeregningVurderinger;
-import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.RefusjonskravGyldighetEndring;
-import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.ToggleEndring;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.FaktaOmBeregningHåndteringDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.RefusjonskravPrArbeidsgiverVurderingDto;
 import no.nav.folketrygdloven.kalkulus.typer.OrganisasjonsNummerValidator;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.FaktaOmBeregningVurderinger;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.RefusjonskravGyldighetEndring;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.ToggleEndring;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.AktørIdPersonident;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Organisasjon;
 
 public class UtledFaktaOmBeregningVurderinger {
 

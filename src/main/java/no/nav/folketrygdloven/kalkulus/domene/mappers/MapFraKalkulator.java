@@ -15,19 +15,19 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.KravperioderPrArbeidsforhold
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
-import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
-import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
+import no.nav.folketrygdloven.kalkulus.domene.mapFraEntitet.BehandlingslagerTilKalkulusMapper;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.MidlertidigInaktivType;
-import no.nav.folketrygdloven.kalkulus.domene.mapFraEntitet.BehandlingslagerTilKalkulusMapper;
-import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.KalkulatorInputDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.foreldrepenger.ForeldrepengerGrunnlag;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.InntektArbeidYtelseGrunnlagDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.opptjening.OpptjeningAktiviteterDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Aktør;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Periode;
 import no.nav.foreldrepenger.konfig.Environment;
 
 public class MapFraKalkulator {
@@ -95,10 +95,10 @@ public class MapFraKalkulator {
         var ytelsespesifiktGrunnlag = input.getYtelsespesifiktGrunnlag();
         return switch (ytelseType) {
             case FORELDREPENGER ->
-                mapForeldrepengerGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag) ytelsespesifiktGrunnlag,
+                mapForeldrepengerGrunnlag((no.nav.foreldrepenger.kalkulus.kontrakt.request.input.foreldrepenger.ForeldrepengerGrunnlag) ytelsespesifiktGrunnlag,
                     beregningsgrunnlagGrunnlagEntitet);
             case SVANGERSKAPSPENGER ->
-                mapSvangerskapspengerGrunnlag((no.nav.folketrygdloven.kalkulus.beregning.v1.SvangerskapspengerGrunnlag) ytelsespesifiktGrunnlag);
+                mapSvangerskapspengerGrunnlag((no.nav.foreldrepenger.kalkulus.kontrakt.request.input.svangerskapspenger.SvangerskapspengerGrunnlag) ytelsespesifiktGrunnlag);
             default -> throw new IllegalStateException("Det er ikke definert ytelsespesifikt grunnlag for ytelse " + ytelseType);
         };
     }

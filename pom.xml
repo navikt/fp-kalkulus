@@ -20,6 +20,7 @@
         <sonar.projectKey>navikt_fp-kalkulus</sonar.projectKey>
 
         <ftberegning.version>6.4.2</ftberegning.version>
+        <fpkalkulus.kontrakt.version>1.0.1</fpkalkulus.kontrakt.version>
         <felles.version>7.6.12</felles.version>
 
         <maven.deploy.skip>true</maven.deploy.skip>
@@ -57,15 +58,23 @@
                 <artifactId>beregning-regler</artifactId>
                 <version>${ftberegning.version}</version>
             </dependency>
+            <dependency>
+                <groupId>no.nav.foreldrepenger.kalkulus</groupId>
+                <artifactId>kalkulus-kontrakt</artifactId>
+                <version>${fpkalkulus.kontrakt.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
         <dependency>
+            <groupId>no.nav.foreldrepenger.kalkulus</groupId>
+            <artifactId>kalkulus-kontrakt</artifactId>
+        </dependency>
+        <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
             <artifactId>beregning-kalkulator</artifactId>
         </dependency>
-
         <dependency>
             <groupId>no.nav.foreldrepenger.felles</groupId>
             <artifactId>felles-db</artifactId>

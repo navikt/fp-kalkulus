@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.domene.håndtering;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
-import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.Endringer;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.Endringer;
 
 public class HåndteringResultat {
 
