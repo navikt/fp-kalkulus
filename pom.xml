@@ -246,7 +246,7 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty.ee11</groupId>
-            <artifactId>jetty-ee11-webapp</artifactId>
+            <artifactId>jetty-ee11-servlet</artifactId>
         </dependency>
 
         <!-- Metrics, logging, helse- og selftest -->
