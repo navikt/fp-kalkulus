@@ -21,7 +21,7 @@
 
         <ftberegning.version>6.5.3</ftberegning.version>
         <fpkalkulus.kontrakt.version>1.0.2</fpkalkulus.kontrakt.version>
-        <felles.version>7.6.16</felles.version>
+        <felles.version>7.6.18</felles.version>
 
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
