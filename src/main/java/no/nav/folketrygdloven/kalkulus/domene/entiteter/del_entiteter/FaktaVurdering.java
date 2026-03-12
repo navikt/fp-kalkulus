@@ -6,6 +6,7 @@ import java.util.Objects;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
+
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.FaktaVurderingKildeKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.domene.felles.diff.ChangeTracked;
 import no.nav.folketrygdloven.kalkulus.domene.felles.diff.IndexKey;
@@ -25,7 +26,7 @@ public class FaktaVurdering implements Serializable, IndexKey, TraverseValue {
     private FaktaVurderingKilde kilde;
 
 
-    public FaktaVurdering() {
+    protected FaktaVurdering() {
         // hibernate
     }
 

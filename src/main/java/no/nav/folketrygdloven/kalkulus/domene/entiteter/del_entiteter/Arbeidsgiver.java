@@ -32,8 +32,7 @@ public class Arbeidsgiver implements Serializable, TraverseValue, IndexKey, Comp
     @AttributeOverrides(@AttributeOverride(name = "aktørId", column = @Column(name = "arbeidsgiver_aktoer_id", updatable = false)))
     private AktørId arbeidsgiverAktørId;
 
-    @SuppressWarnings("unused")
-    private Arbeidsgiver() {
+    protected Arbeidsgiver() {
         // for JPA
     }
 
