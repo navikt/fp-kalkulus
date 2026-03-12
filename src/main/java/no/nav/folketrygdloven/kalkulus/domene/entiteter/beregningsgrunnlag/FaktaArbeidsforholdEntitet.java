@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 import java.util.Objects;
 
 import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -49,15 +48,18 @@ public class FaktaArbeidsforholdEntitet extends BaseEntitet implements IndexKey 
     private InternArbeidsforholdRef arbeidsforholdRef;
 
     @Embedded
-    @AttributeOverrides({@AttributeOverride(name = "vurdering", column = @Column(name = "er_tidsbegrenset")), @AttributeOverride(name = "kilde", column = @Column(name = "er_tidsbegrenset_kilde"))})
+    @AttributeOverride(name = "vurdering", column = @Column(name = "er_tidsbegrenset"))
+    @AttributeOverride(name = "kilde", column = @Column(name = "er_tidsbegrenset_kilde"))
     private FaktaVurdering erTidsbegrenset;
 
     @Embedded
-    @AttributeOverrides({@AttributeOverride(name = "vurdering", column = @Column(name = "har_mottatt_ytelse")), @AttributeOverride(name = "kilde", column = @Column(name = "har_mottatt_ytelse_kilde"))})
+    @AttributeOverride(name = "vurdering", column = @Column(name = "har_mottatt_ytelse"))
+    @AttributeOverride(name = "kilde", column = @Column(name = "har_mottatt_ytelse_kilde"))
     private FaktaVurdering harMottattYtelse;
 
     @Embedded
-    @AttributeOverrides({@AttributeOverride(name = "vurdering", column = @Column(name = "har_loennsendring_i_beregningsperioden")), @AttributeOverride(name = "kilde", column = @Column(name = "har_loennsendring_i_beregningsperioden_kilde"))})
+    @AttributeOverride(name = "vurdering", column = @Column(name = "har_loennsendring_i_beregningsperioden"))
+    @AttributeOverride(name = "kilde", column = @Column(name = "har_loennsendring_i_beregningsperioden_kilde"))
     private FaktaVurdering harLønnsendringIBeregningsperioden;
 
 

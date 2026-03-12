@@ -12,7 +12,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -64,22 +63,22 @@ public class BeregningsgrunnlagPeriodeEntitet extends BaseEntitet {
     private IntervallEntitet periode;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "brutto_pr_aar")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "brutto_pr_aar"))
     private Beløp bruttoPrÅr;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "avkortet_pr_aar")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "avkortet_pr_aar"))
     private Beløp avkortetPrÅr;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "redusert_pr_aar")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "redusert_pr_aar"))
     private Beløp redusertPrÅr;
 
     @Column(name = "dagsats")
     private Long dagsats;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "inntekt_graderingsprosent_brutto")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "inntekt_graderingsprosent_brutto"))
     private Prosent inntektgraderingsprosentBrutto;
 
     @Column(name = "total_utbetalingsgrad_fra_uttak")

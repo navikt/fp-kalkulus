@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
@@ -29,7 +28,7 @@ public class Arbeidsgiver implements Serializable, TraverseValue, IndexKey, Comp
      */
     @ChangeTracked
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "aktørId", column = @Column(name = "arbeidsgiver_aktoer_id", updatable = false)))
+    @AttributeOverride(name = "aktørId", column = @Column(name = "arbeidsgiver_aktoer_id", updatable = false))
     private AktørId arbeidsgiverAktørId;
 
     @SuppressWarnings("unused")

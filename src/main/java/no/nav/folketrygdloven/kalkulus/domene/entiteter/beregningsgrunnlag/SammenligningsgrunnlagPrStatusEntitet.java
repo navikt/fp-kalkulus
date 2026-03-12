@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
@@ -39,7 +38,8 @@ public class SammenligningsgrunnlagPrStatusEntitet extends BaseEntitet {
     private int versjon;
 
     @Embedded
-    @AttributeOverrides({@AttributeOverride(name = "fomDato", column = @Column(name = "sammenligningsperiode_fom")), @AttributeOverride(name = "tomDato", column = @Column(name = "sammenligningsperiode_tom"))})
+    @AttributeOverride(name = "fomDato", column = @Column(name = "sammenligningsperiode_fom"))
+    @AttributeOverride(name = "tomDato", column = @Column(name = "sammenligningsperiode_tom"))
     private IntervallEntitet sammenligningsperiode;
 
     @Convert(converter = SammenligningsgrunnlagTypeKodeverdiConverter.class)
@@ -47,11 +47,11 @@ public class SammenligningsgrunnlagPrStatusEntitet extends BaseEntitet {
     private SammenligningsgrunnlagType sammenligningsgrunnlagType;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "rapportert_pr_aar", nullable = false)))
+    @AttributeOverride(name = "verdi", column = @Column(name = "rapportert_pr_aar", nullable = false))
     private Beløp rapportertPrÅr;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "avvik_promille", nullable = false)))
+    @AttributeOverride(name = "verdi", column = @Column(name = "avvik_promille", nullable = false))
     private Promille avvikPromille = Promille.ZERO;
 
     @JsonBackReference

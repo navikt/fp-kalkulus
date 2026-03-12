@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
 import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -38,27 +37,33 @@ public class FaktaAktørEntitet extends BaseEntitet {
     private FaktaAggregatEntitet faktaAggregat;
 
     @Embedded
-    @AttributeOverrides({@AttributeOverride(name = "vurdering", column = @Column(name = "er_ny_i_arbeidslivet_sn")), @AttributeOverride(name = "kilde", column = @Column(name = "er_ny_i_arbeidslivet_sn_kilde"))})
+    @AttributeOverride(name = "vurdering", column = @Column(name = "er_ny_i_arbeidslivet_sn"))
+    @AttributeOverride(name = "kilde", column = @Column(name = "er_ny_i_arbeidslivet_sn_kilde"))
     private FaktaVurdering erNyIArbeidslivetSN;
 
     @Embedded
-    @AttributeOverrides({@AttributeOverride(name = "vurdering", column = @Column(name = "er_nyoppstartet_fl")), @AttributeOverride(name = "kilde", column = @Column(name = "er_nyoppstartet_fl_kilde"))})
+    @AttributeOverride(name = "vurdering", column = @Column(name = "er_nyoppstartet_fl"))
+    @AttributeOverride(name = "kilde", column = @Column(name = "er_nyoppstartet_fl_kilde"))
     private FaktaVurdering erNyoppstartetFL;
 
     @Embedded
-    @AttributeOverrides({@AttributeOverride(name = "vurdering", column = @Column(name = "har_fl_mottatt_ytelse")), @AttributeOverride(name = "kilde", column = @Column(name = "har_fl_mottatt_ytelse_kilde"))})
+    @AttributeOverride(name = "vurdering", column = @Column(name = "har_fl_mottatt_ytelse"))
+    @AttributeOverride(name = "kilde", column = @Column(name = "har_fl_mottatt_ytelse_kilde"))
     private FaktaVurdering harFLMottattYtelse;
 
     @Embedded
-    @AttributeOverrides({@AttributeOverride(name = "vurdering", column = @Column(name = "skal_besteberegnes")), @AttributeOverride(name = "kilde", column = @Column(name = "skal_besteberegnes_kilde"))})
+    @AttributeOverride(name = "vurdering", column = @Column(name = "skal_besteberegnes"))
+    @AttributeOverride(name = "kilde", column = @Column(name = "skal_besteberegnes_kilde"))
     private FaktaVurdering skalBesteberegnes;
 
     @Embedded
-    @AttributeOverrides({@AttributeOverride(name = "vurdering", column = @Column(name = "mottar_etterloenn_sluttpakke")), @AttributeOverride(name = "kilde", column = @Column(name = "mottar_etterloenn_sluttpakke_kilde"))})
+    @AttributeOverride(name = "vurdering", column = @Column(name = "mottar_etterloenn_sluttpakke"))
+    @AttributeOverride(name = "kilde", column = @Column(name = "mottar_etterloenn_sluttpakke_kilde"))
     private FaktaVurdering mottarEtterlønnSluttpakke;
 
     @Embedded
-    @AttributeOverrides({@AttributeOverride(name = "vurdering", column = @Column(name = "skal_beregnes_som_militaer")), @AttributeOverride(name = "kilde", column = @Column(name = "skal_beregnes_som_militaer_kilde"))})
+    @AttributeOverride(name = "vurdering", column = @Column(name = "skal_beregnes_som_militaer"))
+    @AttributeOverride(name = "kilde", column = @Column(name = "skal_beregnes_som_militaer_kilde"))
     private FaktaVurdering skalBeregnesSomMilitær;
 
     public FaktaAktørEntitet() {

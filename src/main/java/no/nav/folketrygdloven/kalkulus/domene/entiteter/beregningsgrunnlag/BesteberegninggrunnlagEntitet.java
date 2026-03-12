@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -49,7 +48,7 @@ public class BesteberegninggrunnlagEntitet extends BaseEntitet {
     private Set<BesteberegningMånedsgrunnlagEntitet> seksBesteMåneder = new HashSet<>();
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "avvik_beloep")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "avvik_beloep"))
     private Beløp avvik;
 
     public BesteberegninggrunnlagEntitet(BesteberegninggrunnlagEntitet besteberegninggrunnlagEntitet) {
