@@ -59,7 +59,7 @@ public class SammenligningsgrunnlagPrStatusEntitet extends BaseEntitet {
     @JoinColumn(name = "beregningsgrunnlag_id", nullable = false, updatable = false, unique = true)
     private BeregningsgrunnlagEntitet beregningsgrunnlag;
 
-    public SammenligningsgrunnlagPrStatusEntitet() {
+    protected SammenligningsgrunnlagPrStatusEntitet() {
         // Hibernate
     }
 

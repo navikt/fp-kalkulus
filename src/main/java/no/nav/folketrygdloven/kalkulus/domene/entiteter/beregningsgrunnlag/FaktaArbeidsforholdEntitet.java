@@ -61,7 +61,7 @@ public class FaktaArbeidsforholdEntitet extends BaseEntitet implements IndexKey 
     private FaktaVurdering harLønnsendringIBeregningsperioden;
 
 
-    public FaktaArbeidsforholdEntitet() {
+    protected FaktaArbeidsforholdEntitet() {
         // hibernate
     }
 

@@ -21,7 +21,7 @@ public class Saksnummer implements SakId, IndexKey {
     @Column(name = "saksnummer")
     private String saksnummer; // NOSONAR
 
-    Saksnummer() {
+    protected Saksnummer() {
         // for hibernate
     }
 
