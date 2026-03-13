@@ -91,7 +91,7 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
         kopi.getBeregningsgrunnlagPerioder().stream().map(BeregningsgrunnlagPeriodeEntitet::new).forEach(this::leggTilBeregningsgrunnlagPeriode);
     }
 
-    public BeregningsgrunnlagEntitet() {
+    protected BeregningsgrunnlagEntitet() {
         // Hibernate
     }
 

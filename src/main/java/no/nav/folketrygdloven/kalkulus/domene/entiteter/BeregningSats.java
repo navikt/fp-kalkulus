@@ -38,8 +38,7 @@ public class BeregningSats extends BaseEntitet {
     @Column(name = "sats_type", nullable = false)
     private BeregningSatsType satsType = BeregningSatsType.UDEFINERT;
 
-    @SuppressWarnings("unused")
-    private BeregningSats() {
+    protected BeregningSats() {
         // For hibernate
     }
 

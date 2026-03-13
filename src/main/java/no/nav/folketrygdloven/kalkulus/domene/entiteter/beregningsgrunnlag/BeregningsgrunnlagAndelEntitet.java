@@ -184,7 +184,7 @@ public class BeregningsgrunnlagAndelEntitet extends BaseEntitet {
         beregningsgrunnlagAndel.getAndelArbeidsforhold().map(AndelArbeidsforholdEntitet::new).ifPresent(this::setAndelArbeidsforhold);
     }
 
-    public BeregningsgrunnlagAndelEntitet() {
+    protected BeregningsgrunnlagAndelEntitet() {
     }
 
 

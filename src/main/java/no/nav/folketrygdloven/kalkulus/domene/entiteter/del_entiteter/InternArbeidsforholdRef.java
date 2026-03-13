@@ -29,7 +29,7 @@ public class InternArbeidsforholdRef implements IndexKey, TraverseValue, Seriali
     @Column(name = "arbeidsforhold_intern_id")
     private UUID referanse;
 
-    InternArbeidsforholdRef() {
+    protected InternArbeidsforholdRef() {
     }
 
     private InternArbeidsforholdRef(UUID referanse) {
