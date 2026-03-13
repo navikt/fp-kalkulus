@@ -16,7 +16,7 @@ public class IntervallEntitet extends AbstractIntervall {
     private LocalDate tomDato;
 
 
-    public IntervallEntitet() {
+    protected IntervallEntitet() {
         //hibernate
     }
     private IntervallEntitet(LocalDate fomDato, LocalDate tomDato) {

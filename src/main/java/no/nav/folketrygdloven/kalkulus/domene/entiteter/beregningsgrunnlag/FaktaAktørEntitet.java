@@ -66,7 +66,7 @@ public class FaktaAktørEntitet extends BaseEntitet {
     @AttributeOverride(name = "kilde", column = @Column(name = "skal_beregnes_som_militaer_kilde"))
     private FaktaVurdering skalBeregnesSomMilitær;
 
-    public FaktaAktørEntitet() {
+    protected FaktaAktørEntitet() {
         // hibernate
     }
 

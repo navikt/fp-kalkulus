@@ -103,7 +103,7 @@ public class BeregningsgrunnlagPeriodeEntitet extends BaseEntitet {
             .forEach(this::addBeregningsgrunnlagAndel);
     }
 
-    public BeregningsgrunnlagPeriodeEntitet() {
+    protected BeregningsgrunnlagPeriodeEntitet() {
         // Hibernate
     }
 
