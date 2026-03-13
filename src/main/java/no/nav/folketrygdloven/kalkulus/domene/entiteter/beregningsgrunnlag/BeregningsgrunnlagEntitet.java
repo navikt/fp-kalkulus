@@ -9,7 +9,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -63,7 +62,7 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
     private final List<SammenligningsgrunnlagPrStatusEntitet> sammenligningsgrunnlagPrStatusListe = new ArrayList<>();
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "grunnbeloep")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "grunnbeloep"))
     @ChangeTracked
     private Beløp grunnbeløp;
 
