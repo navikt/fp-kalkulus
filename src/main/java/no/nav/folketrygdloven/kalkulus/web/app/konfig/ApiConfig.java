@@ -14,16 +14,17 @@ import org.glassfish.jersey.server.ServerProperties;
 import no.nav.folketrygdloven.kalkulus.domene.rest.GrunnbeløpRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.rest.HentKalkulusRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.rest.OperereKalkulusRestTjeneste;
-import no.nav.folketrygdloven.kalkulus.web.app.exceptions.ConstraintViolationMapper;
-import no.nav.folketrygdloven.kalkulus.web.app.exceptions.GeneralRestExceptionMapper;
-import no.nav.folketrygdloven.kalkulus.web.app.exceptions.JsonMappingExceptionMapper;
-import no.nav.folketrygdloven.kalkulus.web.app.exceptions.JsonParseExceptionMapper;
-import no.nav.folketrygdloven.kalkulus.web.app.jackson.JacksonJsonConfig;
+import no.nav.vedtak.server.rest.FpRestJackson2Feature;
+import no.nav.vedtak.server.rest.GeneralRestExceptionMapper;
 
 @ApplicationPath(ApiConfig.API_URI)
 public class ApiConfig extends Application {
 
     public static final String API_URI = "/api";
+
+    public ApiConfig() {
+        GeneralRestExceptionMapper.setBrukerRettetApplikasjon(false);
+    }
 
     @Override
     public Set<Class<?>> getClasses() {
@@ -34,13 +35,7 @@ public class ApiConfig extends Application {
         classes.add(HentKalkulusRestTjeneste.class);
         classes.add(GrunnbeløpRestTjeneste.class);
 
-        //andre tjenester
-        classes.add(AuthenticationFilter.class);
-        classes.add(ConstraintViolationMapper.class);
-        classes.add(JsonMappingExceptionMapper.class);
-        classes.add(JsonParseExceptionMapper.class);
-        classes.add(GeneralRestExceptionMapper.class);
-        classes.add(JacksonJsonConfig.class);
+        classes.add(FpRestJackson2Feature.class);
         return Collections.unmodifiableSet(classes);
     }
 
