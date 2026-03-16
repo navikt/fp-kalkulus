@@ -7,6 +7,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -15,29 +16,47 @@ import java.util.stream.Stream;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsforholdOverstyringDto;
+import no.nav.folketrygdloven.kalkulus.web.jetty.JettyServer;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.AvklaringsbehovMedTilstandDto;
+
 class SjekkDtoStrukturTest {
+
+    // Ta med kalkulus, kalkulus/kontrakt og beregning/kontrakt
+    private static final List<Class<?>> KONTRAKT_LOKASJONER = List.of(AvklaringsbehovMedTilstandDto.class,
+        JettyServer.class, ArbeidsforholdOverstyringDto.class);
 
     private static final List<String> SKIPPED = Arrays.asList("class", "kode");
 
-    public static Stream<Class<?>> parameters() throws URISyntaxException {
-        IndexClasses indexClasses;
-        indexClasses = IndexClasses.getIndexFor(IndexClasses.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-        List<Class<?>> classes = indexClasses.getClasses(
-                ci -> ci.name().toString().endsWith("Dto"),
-                c -> !c.isInterface());
+    public static Stream<Arguments> parameters() {
+        List<Arguments> params = new ArrayList<>();
 
-        return classes.stream();
+        // avled code location fra klassene
+        KONTRAKT_LOKASJONER.stream().map(c -> {
+            try {
+                return c.getProtectionDomain().getCodeSource().getLocation().toURI();
+            } catch (URISyntaxException e) {
+                throw new IllegalArgumentException("Ikke en URI for klasse: " + c, e);
+            }
+        }).distinct().forEach(uri -> {
+            IndexClasses.getIndexFor(uri)
+                .getClasses(ci -> ci.name().toString().endsWith("Dto"), c -> !c.isInterface())
+                .forEach(c -> params.add(Arguments.of(c.getName(), c)));
+
+        });
+        return params.stream();
     }
 
     @ParameterizedTest
     @MethodSource("parameters")
-    public void skal_ha_riktig_navn_på_properties_i_dto_eller_konfiguret_med_annotations(Class<?> classes) throws Exception {
+    void skal_ha_riktig_navn_på_properties_i_dto_eller_konfiguret_med_annotations(Class<?> classes) throws Exception {
         sjekkJsonProperties(classes);
     }
 
