@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
@@ -19,33 +18,33 @@ import no.nav.folketrygdloven.kalkulus.domene.felles.diff.TraverseValue;
 @Embeddable
 public class Årsgrunnlag implements Serializable, IndexKey, TraverseValue, Comparable<Årsgrunnlag> {
 
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "beregnet_pr_aar")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "beregnet_pr_aar"))
     @ChangeTracked
     @Embedded
     private Beløp beregnetPrÅr;
 
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "fordelt_pr_aar")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "fordelt_pr_aar"))
     @ChangeTracked
     @Embedded
     private Beløp fordeltPrÅr;
 
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "manuelt_fordelt_pr_aar")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "manuelt_fordelt_pr_aar"))
     @ChangeTracked
     @Embedded
     private Beløp manueltFordeltPrÅr;
 
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "overstyrt_pr_aar")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "overstyrt_pr_aar"))
     @ChangeTracked
     @Embedded
     private Beløp overstyrtPrÅr;
 
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "besteberegning_pr_aar")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "besteberegning_pr_aar"))
     @ChangeTracked
     @Embedded
     private Beløp besteberegningPrÅr;
 
 
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "brutto_pr_aar")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "brutto_pr_aar"))
     @ChangeTracked
     @Embedded
     private Beløp bruttoPrÅr;

@@ -5,7 +5,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -58,11 +57,11 @@ public class AndelArbeidsforholdEntitet extends BaseEntitet {
     private Refusjon refusjon;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "naturalytelse_bortfalt_pr_aar")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "naturalytelse_bortfalt_pr_aar"))
     private Beløp naturalytelseBortfaltPrÅr;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "naturalytelse_tilkommet_pr_aar")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "naturalytelse_tilkommet_pr_aar"))
     private Beløp naturalytelseTilkommetPrÅr;
 
     @Column(name = "arbeidsperiode_fom")

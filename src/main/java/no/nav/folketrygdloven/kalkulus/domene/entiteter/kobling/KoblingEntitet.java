@@ -4,7 +4,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
@@ -40,7 +39,7 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
      * Saksnummer (gruppererer alle koblinger under samme saksnummer - typisk generert av FPSAK, eller annet saksbehandlingsystem)
      */
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "saksnummer", column = @Column(name = "saksnummer")))
+    @AttributeOverride(name = "saksnummer", column = @Column(name = "saksnummer"))
     private Saksnummer saksnummer;
 
     /**
@@ -49,7 +48,7 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
      */
     @NaturalId
     @Embedded
-    @AttributeOverrides({@AttributeOverride(name = "referanse", column = @Column(name = "kobling_referanse", updatable = false, unique = true))})
+    @AttributeOverride(name = "referanse", column = @Column(name = "kobling_referanse", updatable = false, unique = true))
     private KoblingReferanse koblingReferanse;
 
     @Convert(converter = FagsakYtelseTypeKodeverdiConverter.class)
@@ -57,11 +56,11 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
     private FagsakYtelseType ytelseType;
 
     @Embedded
-    @AttributeOverrides({@AttributeOverride(name = "referanse", column = @Column(name = "original_kobling_referanse", updatable = false))})
+    @AttributeOverride(name = "referanse", column = @Column(name = "original_kobling_referanse", updatable = false))
     private KoblingReferanse originalKoblingReferanse;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "aktørId", column = @Column(name = "bruker_aktoer_id", nullable = false, updatable = false)))
+    @AttributeOverride(name = "aktørId", column = @Column(name = "bruker_aktoer_id", nullable = false, updatable = false))
     private AktørId aktørId;
 
     @Column(name = "er_avsluttet", nullable = false)

@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -83,31 +82,31 @@ public class BeregningsgrunnlagAndelEntitet extends BaseEntitet {
     private Årsgrunnlag grunnlagPrÅr = new Årsgrunnlag();
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "avkortet_pr_aar")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "avkortet_pr_aar"))
     private Beløp avkortetPrÅr;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "redusert_pr_aar")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "redusert_pr_aar"))
     private Beløp redusertPrÅr;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "maksimal_refusjon_pr_aar")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "maksimal_refusjon_pr_aar"))
     private Beløp maksimalRefusjonPrÅr;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "avkortet_refusjon_pr_aar")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "avkortet_refusjon_pr_aar"))
     private Beløp avkortetRefusjonPrÅr;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "redusert_refusjon_pr_aar")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "redusert_refusjon_pr_aar"))
     private Beløp redusertRefusjonPrÅr;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "avkortet_brukers_andel_pr_aar")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "avkortet_brukers_andel_pr_aar"))
     private Beløp avkortetBrukersAndelPrÅr;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "redusert_brukers_andel_pr_aar")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "redusert_brukers_andel_pr_aar"))
     private Beløp redusertBrukersAndelPrÅr;
 
     @Column(name = "dagsats_bruker")
@@ -117,27 +116,27 @@ public class BeregningsgrunnlagAndelEntitet extends BaseEntitet {
     private Long dagsatsArbeidsgiver;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "pgi_snitt")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "pgi_snitt"))
     private Beløp pgiSnitt;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "pgi1")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "pgi1"))
     private Beløp pgi1;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "pgi2")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "pgi2"))
     private Beløp pgi2;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "pgi3")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "pgi3"))
     private Beløp pgi3;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "avkortet_foer_gradering_pr_aar")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "avkortet_foer_gradering_pr_aar"))
     private Beløp avkortetFørGraderingPrÅr;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "aarsbeloep_tilstoetende_ytelse")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "aarsbeloep_tilstoetende_ytelse"))
     private Beløp årsbeløpFraTilstøtendeYtelse;
 
     @Column(name = "fastsatt_av_saksbehandler", nullable = false)

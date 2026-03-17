@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing;
 import java.util.Objects;
 
 import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
@@ -49,7 +48,8 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
     private String regelVersjon;
 
     @Embedded
-    @AttributeOverrides({@AttributeOverride(name = "fomDato", column = @Column(name = "fom")), @AttributeOverride(name = "tomDato", column = @Column(name = "tom"))})
+    @AttributeOverride(name = "fomDato", column = @Column(name = "fom"))
+    @AttributeOverride(name = "tomDato", column = @Column(name = "tom"))
     private IntervallEntitet periode;
 
     @Column(name = "aktiv", nullable = false)

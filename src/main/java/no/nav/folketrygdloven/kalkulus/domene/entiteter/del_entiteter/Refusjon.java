@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
@@ -23,19 +22,19 @@ public class Refusjon implements Serializable, IndexKey, TraverseValue, Comparab
 
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "refusjonskrav_pr_aar")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "refusjonskrav_pr_aar"))
     private Beløp refusjonskravPrÅr;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "saksbehandlet_refusjon_pr_aar")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "saksbehandlet_refusjon_pr_aar"))
     private Beløp saksbehandletRefusjonPrÅr;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "fordelt_refusjon_pr_aar")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "fordelt_refusjon_pr_aar"))
     private Beløp fordeltRefusjonPrÅr;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "manuelt_fordelt_refusjon_pr_aar")))
+    @AttributeOverride(name = "verdi", column = @Column(name = "manuelt_fordelt_refusjon_pr_aar"))
     private Beløp manueltFordeltRefusjonPrÅr;
 
     @Convert(converter = HjemmelKodeverdiConverter.class)
