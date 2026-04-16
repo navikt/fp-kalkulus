@@ -15,16 +15,11 @@ import no.nav.folketrygdloven.kalkulus.domene.rest.GrunnbeløpRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.rest.HentKalkulusRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.rest.OperereKalkulusRestTjeneste;
 import no.nav.vedtak.server.rest.FpRestJackson2Feature;
-import no.nav.vedtak.server.rest.GeneralRestExceptionMapper;
 
 @ApplicationPath(ApiConfig.API_URI)
 public class ApiConfig extends Application {
 
     public static final String API_URI = "/api";
-
-    public ApiConfig() {
-        GeneralRestExceptionMapper.setBrukerRettetApplikasjon(false);
-    }
 
     @Override
     public Set<Class<?>> getClasses() {
