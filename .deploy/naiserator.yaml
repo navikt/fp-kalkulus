@@ -24,6 +24,12 @@ spec:
     periodSeconds: 10
     failureThreshold: 20
     timeout: 3
+  startup:
+    path: /fpkalkulus/internal/health/isReady
+    initialDelay: 10
+    periodSeconds: 10
+    failureThreshold: 20
+    timeout: 3
   prometheus:
     enabled: true
     path: /fpkalkulus/internal/metrics/prometheus
@@ -32,8 +38,7 @@ spec:
     max: {{maxReplicas}}
     scalingStrategy:
       cpu:
-        thresholdPercentage: 80
-      scaleUpStabilizationWindowSeconds: 60
+        thresholdPercentage: 50
   resources:
     limits:
       memory: "{{limits.mem}}"
