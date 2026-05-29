@@ -51,7 +51,8 @@ class UtbetalingsgradMapper {
     }
 
     public static AktivitetDto mapArbeidsforhold(no.nav.foreldrepenger.kalkulus.kontrakt.request.input.svangerskapspenger.AktivitetDto aktivitetDto) {
-        return new AktivitetDto(MapFraKalkulator.mapArbeidsgiver(aktivitetDto.getArbeidsgiver()), mapReferanse(aktivitetDto), aktivitetDto.getUttakArbeidType());
+        return new AktivitetDto(MapFraKalkulator.mapArbeidsgiver(aktivitetDto.getArbeidsgiver()), mapReferanse(aktivitetDto), aktivitetDto.getUttakArbeidType(),
+            aktivitetDto.getArbeidsforholdErSplittet());
     }
 
     private static InternArbeidsforholdRefDto mapReferanse(no.nav.foreldrepenger.kalkulus.kontrakt.request.input.svangerskapspenger.AktivitetDto aktivitetDto) {
