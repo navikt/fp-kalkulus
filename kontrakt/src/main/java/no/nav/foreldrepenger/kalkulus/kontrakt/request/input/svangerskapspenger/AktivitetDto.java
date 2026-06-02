@@ -35,13 +35,18 @@ public final class AktivitetDto {
     @NotNull
     private UttakArbeidType uttakArbeidType;
 
+    @JsonProperty(value = "arbeidsforholdErSplittet", required = true)
+    @NotNull
+    private boolean arbeidsforholdErSplittet = false;
+
     public AktivitetDto() {
     }
 
-    public AktivitetDto(@Valid Aktør arbeidsgiver, @Valid InternArbeidsforholdRefDto internArbeidsforholdRef, @Valid @NotNull UttakArbeidType uttakArbeidType) {
+    public AktivitetDto(@Valid Aktør arbeidsgiver, @Valid InternArbeidsforholdRefDto internArbeidsforholdRef, @Valid @NotNull UttakArbeidType uttakArbeidType, @NotNull boolean arbeidsforholdErSplittet) {
         this.arbeidsgiver = arbeidsgiver;
         this.internArbeidsforholdRef = internArbeidsforholdRef;
         this.uttakArbeidType = uttakArbeidType;
+        this.arbeidsforholdErSplittet = arbeidsforholdErSplittet;
     }
 
     public Aktør getArbeidsgiver() {
@@ -56,12 +61,17 @@ public final class AktivitetDto {
         return uttakArbeidType;
     }
 
+    public boolean getArbeidsforholdErSplittet() {
+        return arbeidsforholdErSplittet;
+    }
+
     @Override
     public String toString() {
         return "UtbetalingsgradArbeidsforholdDto{" +
                 "arbeidsgiver=" + arbeidsgiver +
                 ", internArbeidsforholdRef=" + internArbeidsforholdRef +
                 ", uttakArbeidType=" + uttakArbeidType +
+                ", arbeidsforholdErSplittet=" + arbeidsforholdErSplittet +
                 '}';
     }
 
@@ -72,11 +82,12 @@ public final class AktivitetDto {
 	    var that = (AktivitetDto) o;
         return Objects.equals(arbeidsgiver, that.arbeidsgiver) &&
                 Objects.equals(internArbeidsforholdRef, that.internArbeidsforholdRef) &&
-                Objects.equals(uttakArbeidType, that.uttakArbeidType);
+                Objects.equals(uttakArbeidType, that.uttakArbeidType) &&
+                Objects.equals(arbeidsforholdErSplittet, that.arbeidsforholdErSplittet);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(arbeidsgiver, internArbeidsforholdRef, uttakArbeidType);
+        return Objects.hash(arbeidsgiver, internArbeidsforholdRef, uttakArbeidType, arbeidsforholdErSplittet);
     }
 }
