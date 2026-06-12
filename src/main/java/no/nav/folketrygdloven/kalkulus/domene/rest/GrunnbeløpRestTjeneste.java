@@ -1,11 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.domene.rest;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.function.Function;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -22,18 +16,11 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
-import no.nav.folketrygdloven.kalkulus.domene.forvaltning.GrunnbeløpreguleringTjeneste;
-import no.nav.folketrygdloven.kalkulus.kodeverk.GrunnbeløpReguleringStatus;
 import no.nav.folketrygdloven.kalkulus.domene.mapTilKontrakt.MapBeregningSats;
-import no.nav.folketrygdloven.kalkulus.request.v1.KontrollerGrunnbeløpRequest;
-import no.nav.folketrygdloven.kalkulus.response.v1.GrunnbeløpReguleringRespons;
 import no.nav.folketrygdloven.kalkulus.domene.sikkerhet.AbacAttributtEmptySupplier;
 import no.nav.folketrygdloven.kalkulus.domene.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.grunnbeløp.HentGrunnbeløpRequest;
-import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
 import no.nav.vedtak.sikkerhet.abac.BeskyttetRessurs;
-import no.nav.vedtak.sikkerhet.abac.StandardAbacAttributtType;
 import no.nav.vedtak.sikkerhet.abac.TilpassetAbacAttributt;
 import no.nav.vedtak.sikkerhet.abac.beskyttet.ActionType;
 import no.nav.vedtak.sikkerhet.abac.beskyttet.ResourceType;
@@ -46,17 +33,14 @@ import no.nav.vedtak.sikkerhet.abac.beskyttet.ResourceType;
 public class GrunnbeløpRestTjeneste {
 
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
-    private GrunnbeløpreguleringTjeneste grunnbeløpreguleringTjeneste;
 
     public GrunnbeløpRestTjeneste() {
         // for CDI
     }
 
     @Inject
-    public GrunnbeløpRestTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository,
-                                  GrunnbeløpreguleringTjeneste grunnbeløpreguleringTjeneste) {
+    public GrunnbeløpRestTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository) {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
-        this.grunnbeløpreguleringTjeneste = grunnbeløpreguleringTjeneste;
     }
 
     @POST
@@ -69,34 +53,4 @@ public class GrunnbeløpRestTjeneste {
         final Response response = Response.ok(MapBeregningSats.map(grunnbeløp)).build();
         return response;
     }
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(description = "Verifiserer grunnbeløpet på et grunnlag, og kontrollerer at grunnbeløpet som er brukt fortsatt er korrekt.",
-            summary = ("Returnerer en liste over koblinger og status for gregulering for hver kobling."), tags = "grunnbelop")
-    @BeskyttetRessurs(actionType = ActionType.READ, resourceType = ResourceType.FAGSAK, sporingslogg = false)
-    @Path("/kontrollerGregulering")
-    public Response hentGrunnbeløp(@TilpassetAbacAttributt(supplierClass = KontrollerGrunnbeløpRequestAbacSupplier.class) @NotNull @Valid KontrollerGrunnbeløpRequest spesifikasjon) {
-        List<UUID> referanser = spesifikasjon.getKoblinger();
-        Map<UUID, GrunnbeløpReguleringStatus> resultat = new HashMap<>();
-
-        for (UUID ref : referanser) {
-            if (ref != null) {
-                GrunnbeløpReguleringStatus status = grunnbeløpreguleringTjeneste.undersøkBehovForGregulering(new KoblingReferanse(ref), spesifikasjon.getSaksnummer().verdi());
-                resultat.put(ref, status);
-            }
-        }
-        GrunnbeløpReguleringRespons respons = new GrunnbeløpReguleringRespons(resultat);
-        return Response.ok(respons).build();
-    }
-
-    public static class KontrollerGrunnbeløpRequestAbacSupplier implements Function<Object, AbacDataAttributter> {
-        @Override
-        public AbacDataAttributter apply(Object o) {
-            var req = (KontrollerGrunnbeløpRequest) o;
-            return AbacDataAttributter.opprett()
-                .leggTil(StandardAbacAttributtType.SAKSNUMMER, req.getSaksnummer().verdi());
-        }
-    }
-
 }
