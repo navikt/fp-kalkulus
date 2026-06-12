@@ -159,7 +159,7 @@ public class HentKalkulusRestTjeneste {
         return Response.ok(new TilgjengeligeTilstanderDto(koblingDto, originalDto)).build();
     }
 
-    private no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(BeregningsgrunnlagGUIInput guiInput) {
+    private no.nav.folketrygdloven.kalkulus.response.beregningsgrunnlag.gui.BeregningsgrunnlagDto hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(BeregningsgrunnlagGUIInput guiInput) {
         return mapTilDto(guiInput);
     }
 
@@ -168,9 +168,9 @@ public class HentKalkulusRestTjeneste {
         return guiInputTjeneste.lagInputForKoblinger(kobling, originalKoblingEntitet, input);
     }
 
-    private no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto mapTilDto(BeregningsgrunnlagGUIInput input) {
+    private no.nav.folketrygdloven.kalkulus.response.beregningsgrunnlag.gui.BeregningsgrunnlagDto mapTilDto(BeregningsgrunnlagGUIInput input) {
         MDC.put("prosess_koblingId", input.getKoblingReferanse().getKoblingId().toString());
-        no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto beregningsgrunnlagDto = dtoTjeneste.lagBeregningsgrunnlagDto(input);
+        no.nav.folketrygdloven.kalkulus.response.beregningsgrunnlag.gui.BeregningsgrunnlagDto beregningsgrunnlagDto = dtoTjeneste.lagBeregningsgrunnlagDto(input);
         MDC.remove("prosess_koblingId");
         return beregningsgrunnlagDto;
     }
