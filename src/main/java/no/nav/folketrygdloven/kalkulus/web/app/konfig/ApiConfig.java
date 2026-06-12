@@ -11,7 +11,6 @@ import jakarta.ws.rs.core.Application;
 
 import org.glassfish.jersey.server.ServerProperties;
 
-import no.nav.folketrygdloven.kalkulus.domene.rest.GrunnbeløpRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.rest.HentKalkulusRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.rest.OperereKalkulusRestTjeneste;
 import no.nav.vedtak.server.rest.AuthenticationFilter;
@@ -29,7 +28,6 @@ public class ApiConfig extends Application {
         //kalkulus rest
         classes.add(OperereKalkulusRestTjeneste.class);
         classes.add(HentKalkulusRestTjeneste.class);
-        classes.add(GrunnbeløpRestTjeneste.class);
 
         classes.add(AuthenticationFilter.class);
 

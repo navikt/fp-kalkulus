@@ -23,7 +23,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsforholdOverstyringDto;
 import no.nav.folketrygdloven.kalkulus.web.jetty.JettyServer;
 import no.nav.foreldrepenger.kalkulus.kontrakt.response.AvklaringsbehovMedTilstandDto;
 
@@ -31,7 +30,7 @@ class SjekkDtoStrukturTest {
 
     // Ta med kalkulus, kalkulus/kontrakt og beregning/kontrakt
     private static final List<Class<?>> KONTRAKT_LOKASJONER = List.of(AvklaringsbehovMedTilstandDto.class,
-        JettyServer.class, ArbeidsforholdOverstyringDto.class);
+        JettyServer.class);
 
     private static final List<String> SKIPPED = Arrays.asList("class", "kode");
 
