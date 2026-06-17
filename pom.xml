@@ -7,7 +7,7 @@
     <parent>
         <groupId>no.nav.foreldrepenger.felles</groupId>
         <artifactId>fp-parent-app</artifactId>
-        <version>5.3.4</version>
+        <version>5.3.5</version>
     </parent>
 
     <groupId>no.nav.foreldrepenger.kalkulus</groupId>
@@ -21,7 +21,7 @@
 
         <ftberegning.version>7.0.1</ftberegning.version>
         <fpkalkulus.kontrakt.version>1.0.5</fpkalkulus.kontrakt.version>
-        <felles.version>7.8.3</felles.version>
+        <felles.version>7.8.4</felles.version>
 
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
@@ -232,10 +232,6 @@
         </dependency>
 
         <!-- Server -->
-        <dependency>
-            <groupId>org.eclipse.jetty.ee11</groupId>
-            <artifactId>jetty-ee11-plus</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.eclipse.jetty.ee11</groupId>
             <artifactId>jetty-ee11-cdi</artifactId>
