@@ -44,11 +44,9 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.foreldrepenger.kalkulus.kontrakt.response.AvklaringsbehovMedTilstandDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.response.TilstandResponse;
 import no.nav.foreldrepenger.kalkulus.kontrakt.response.vilkår.VilkårResponse;
-import no.nav.foreldrepenger.konfig.Environment;
 
 @ApplicationScoped
 public class BeregningStegTjeneste {
-    private static final boolean GRADERING_MOT_INNTEKT_ENABLED = Environment.current().getProperty("gradering.mot.inntekt", boolean.class, false);
     private final KalkulatorInterface beregningsgrunnlagTjeneste = new BeregningsgrunnlagTjeneste();
     private BeregningsgrunnlagRepository repository;
     private RegelsporingRepository regelsporingRepository;
@@ -87,11 +85,11 @@ public class BeregningStegTjeneste {
             case FORS_BERGRUNN -> foreslåBeregningsgrunnlag((ForeslåBeregningsgrunnlagInput) input);
             case FORS_BERGRUNN_2 -> fortsettForeslåBeregningsgrunnlag((FortsettForeslåBeregningsgrunnlagInput) input);
             case VURDER_VILKAR_BERGRUNN -> vurderBeregningsgrunnlagsvilkår((VurderBeregningsgrunnlagvilkårInput) input);
-            case VURDER_TILKOMMET_INNTEKT -> vurderTilkommetInntekt(input);
             case VURDER_REF_BERGRUNN ->
                     vurderRefusjonForBeregningsgrunnlaget((VurderRefusjonBeregningsgrunnlagInput) input);
             case FORDEL_BERGRUNN -> fordelBeregningsgrunnlag((FordelBeregningsgrunnlagInput) input);
             case FAST_BERGRUNN -> fastsettBeregningsgrunnlag(input);
+            case VURDER_TILKOMMET_INNTEKT, FASTSETT_INNTEKTSGRADERING -> throw new IllegalStateException("Kall på ukjent beregningssteg fra fpsak " + stegType);
         };
     }
 
@@ -189,23 +187,6 @@ public class BeregningStegTjeneste {
         if (beregningResultatAggregat.getBeregningVilkårResultat() == null) {
             throw new IllegalStateException("Hadde ikke vilkårsresultat for input med ref " + input.getKoblingReferanse());
         }
-        lagreAvklaringsbehov(input, beregningResultatAggregat);
-        return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
-    }
-
-    /**
-     * Vurder tilkommet inntekt (ikke påkrevd steg)
-     * Steg 6. VURDER_TILKOMMET_INNTEKT
-     *
-     * @param input {@link BeregningsgrunnlagInput}
-     * @return {@link BeregningAvklaringsbehovResultat}
-     */
-    private TilstandResponse vurderTilkommetInntekt(StegProsesseringInput input) {
-        if (!GRADERING_MOT_INNTEKT_ENABLED) {
-            return new TilstandResponse(input.getKoblingReferanse().getKoblingUuid(), List.of(), null);
-        }
-        var beregningResultatAggregat = beregningsgrunnlagTjeneste.vurderTilkommetInntekt(input);
-        lagreOgKopier(input, beregningResultatAggregat);
         lagreAvklaringsbehov(input, beregningResultatAggregat);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
