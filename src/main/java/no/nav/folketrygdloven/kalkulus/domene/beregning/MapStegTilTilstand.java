@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.domene.beregning;
 
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FASTSETT_INNTEKTSGRADERING;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FASTSETT_STP_BER;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FAST_BERGRUNN;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FORDEL_BERGRUNN;
@@ -14,6 +15,7 @@ import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstan
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FASTSATT;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FASTSATT_INN;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FASTSATT_INNTEKTSGRADERING;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FORESLÅTT;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FORESLÅTT_DEL_2;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FORESLÅTT_DEL_2_UT;
@@ -40,17 +42,18 @@ public class MapStegTilTilstand {
         // Skjuler default konstruktør
     }
 
-    private static final Map<BeregningSteg, BeregningsgrunnlagTilstand> MAP_STEG_TILSTAND = Map.of(
-            FASTSETT_STP_BER, OPPRETTET,
-            KOFAKBER, OPPDATERT_MED_ANDELER,
-            FORS_BESTEBEREGNING, BESTEBEREGNET,
-            FORS_BERGRUNN, FORESLÅTT,
-            FORS_BERGRUNN_2, FORESLÅTT_DEL_2,
-            VURDER_VILKAR_BERGRUNN, VURDERT_VILKÅR,
-            VURDER_TILKOMMET_INNTEKT, VURDERT_TILKOMMET_INNTEKT,
-            VURDER_REF_BERGRUNN, VURDERT_REFUSJON,
-            FORDEL_BERGRUNN, OPPDATERT_MED_REFUSJON_OG_GRADERING,
-            FAST_BERGRUNN, FASTSATT);
+    private static final Map<BeregningSteg, BeregningsgrunnlagTilstand> MAP_STEG_TILSTAND = Map.ofEntries(
+            Map.entry(FASTSETT_STP_BER, OPPRETTET),
+            Map.entry(KOFAKBER, OPPDATERT_MED_ANDELER),
+            Map.entry(FORS_BESTEBEREGNING, BESTEBEREGNET),
+            Map.entry(FORS_BERGRUNN, FORESLÅTT),
+            Map.entry(FORS_BERGRUNN_2, FORESLÅTT_DEL_2),
+            Map.entry(VURDER_VILKAR_BERGRUNN, VURDERT_VILKÅR),
+            Map.entry(VURDER_TILKOMMET_INNTEKT, VURDERT_TILKOMMET_INNTEKT),
+            Map.entry(FASTSETT_INNTEKTSGRADERING, FASTSATT_INNTEKTSGRADERING),
+            Map.entry(VURDER_REF_BERGRUNN, VURDERT_REFUSJON),
+            Map.entry(FORDEL_BERGRUNN, OPPDATERT_MED_REFUSJON_OG_GRADERING),
+            Map.entry(FAST_BERGRUNN, FASTSATT));
 
     private static final Map<BeregningSteg, BeregningsgrunnlagTilstand> MAP_STEG_UT_TILSTAND = Map.of(
             FASTSETT_STP_BER, FASTSATT_BEREGNINGSAKTIVITETER,
