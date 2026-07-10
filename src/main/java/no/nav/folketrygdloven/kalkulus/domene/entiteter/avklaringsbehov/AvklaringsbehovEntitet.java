@@ -169,8 +169,11 @@ public class AvklaringsbehovEntitet extends BaseEntitet implements Comparable<Av
 
     @Override
     public String toString() {
-        return "AvklaringsbehovEntitet{" + "koblingId=" + kobling + ", definisjon=" + definisjon + ", status=" + status + ", begrunnelse='"
-            + begrunnelse + '\'' + '}';
+        return "AvklaringsbehovEntitet{" +
+            "koblingId=" + kobling +
+            ", definisjon=" + definisjon +
+            ", status=" + status +
+            '}';
     }
 
     public BeregningSteg getStegFunnet() {
