@@ -21,7 +21,7 @@
 
         <ftberegning.version>7.1.6</ftberegning.version>
         <fpkalkulus.kontrakt.version>1.0.5</fpkalkulus.kontrakt.version>
-        <felles.version>7.8.6</felles.version>
+        <felles.version>7.9.0</felles.version>
 
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
@@ -78,6 +78,10 @@
         <dependency>
             <groupId>no.nav.foreldrepenger.felles</groupId>
             <artifactId>felles-db</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.foreldrepenger.felles</groupId>
+            <artifactId>felles-mapper</artifactId>
         </dependency>
         <dependency>
             <groupId>no.nav.foreldrepenger.felles</groupId>
@@ -221,14 +225,6 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
         </dependency>
 
         <!-- Server -->

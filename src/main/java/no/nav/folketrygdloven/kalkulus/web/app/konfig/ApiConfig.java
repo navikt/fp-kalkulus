@@ -14,7 +14,7 @@ import org.glassfish.jersey.server.ServerProperties;
 import no.nav.folketrygdloven.kalkulus.domene.rest.HentKalkulusRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.rest.OperereKalkulusRestTjeneste;
 import no.nav.vedtak.server.rest.AuthenticationFilter;
-import no.nav.vedtak.server.rest.FpRestJackson2Feature;
+import no.nav.vedtak.server.rest.FpRestJacksonFeature;
 
 @ApplicationPath(ApiConfig.API_URI)
 public class ApiConfig extends Application {
@@ -31,7 +31,7 @@ public class ApiConfig extends Application {
 
         classes.add(AuthenticationFilter.class);
 
-        classes.add(FpRestJackson2Feature.class);
+        classes.add(FpRestJacksonFeature.class);
         return Collections.unmodifiableSet(classes);
     }
 
