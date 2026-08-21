@@ -11,6 +11,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.constraints.NotNull;
+
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.HåndterBeregningDto;
 
@@ -21,12 +23,8 @@ public class VurderVarigEndringEllerNyoppstartetSNHåndteringDto extends Håndte
 
     @JsonProperty("vurderVarigEndringEllerNyoppstartetSNDto")
     @Valid
+    @NotNull
     private VurderVarigEndringEllerNyoppstartetDto vurderVarigEndringEllerNyoppstartetSNDto;
-
-    // TODO: begynn å sende vurderVarigEndringEllerNyoppstartetDto i frontend
-    @JsonProperty("vurderVarigEndringEllerNyoppstartetDto")
-    @Valid
-    private VurderVarigEndringEllerNyoppstartetDto vurderVarigEndringEllerNyoppstartetDto;
 
     public VurderVarigEndringEllerNyoppstartetSNHåndteringDto() {
         super(AvklaringsbehovDefinisjon.VURDER_VARIG_ENDRT_NYOPPSTR_NAERNG_SN);
@@ -35,7 +33,6 @@ public class VurderVarigEndringEllerNyoppstartetSNHåndteringDto extends Håndte
     public VurderVarigEndringEllerNyoppstartetSNHåndteringDto(@Valid VurderVarigEndringEllerNyoppstartetDto vurderVarigEndringEllerNyoppstartetDto) {
         super(AvklaringsbehovDefinisjon.VURDER_VARIG_ENDRT_NYOPPSTR_NAERNG_SN);
         this.vurderVarigEndringEllerNyoppstartetSNDto = vurderVarigEndringEllerNyoppstartetDto;
-        this.vurderVarigEndringEllerNyoppstartetDto = vurderVarigEndringEllerNyoppstartetDto;
     }
 
     public VurderVarigEndringEllerNyoppstartetDto getVurderVarigEndringEllerNyoppstartetSNDto() {
@@ -44,15 +41,7 @@ public class VurderVarigEndringEllerNyoppstartetSNHåndteringDto extends Håndte
 
     @Override
     public Integer getBruttoBeregningsgrunnlag() {
-        if (vurderVarigEndringEllerNyoppstartetDto != null) {
-            return vurderVarigEndringEllerNyoppstartetDto.getBruttoBeregningsgrunnlag();
-        }
         return vurderVarigEndringEllerNyoppstartetSNDto.getBruttoBeregningsgrunnlag();
-    }
-
-    @AssertTrue
-    public boolean isSkalHaVurderVarigEndringEllerNyoppstartetSatt() {
-        return vurderVarigEndringEllerNyoppstartetSNDto != null || vurderVarigEndringEllerNyoppstartetDto != null;
     }
 
 }

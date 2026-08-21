@@ -20,11 +20,9 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.KodeKonstanter;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.avklaraktiviteter.AvklarAktiviteterHåndteringDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.FaktaOmBeregningHåndteringDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fordeling.FaktaOmFordelingHåndteringDto;
-import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fordeling.VurderTilkommetInntektHåndteringDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.foreslå.FastsettBGTidsbegrensetArbeidsforholdHåndteringDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.foreslå.FastsettBeregningsgrunnlagATFLHåndteringDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.foreslå.FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto;
-import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.foreslå.VurderVarigEndretArbeidssituasjonHåndteringDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.foreslå.VurderVarigEndringEllerNyoppstartetSNHåndteringDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.overstyring.OverstyrBeregningsaktiviteterDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.overstyring.OverstyrBeregningsgrunnlagHåndteringDto;
@@ -44,8 +42,6 @@ import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.refusjon.Vurd
         @JsonSubTypes.Type(value = FastsettBGTidsbegrensetArbeidsforholdHåndteringDto.class, name = KodeKonstanter.AB_FASTSETT_BG_TB_ARB),
         @JsonSubTypes.Type(value = VurderRefusjonBeregningsgrunnlagDto.class, name = KodeKonstanter.AB_VURDER_REFUSJONSKRAV),
         @JsonSubTypes.Type(value = VurderVarigEndringEllerNyoppstartetSNHåndteringDto.class, name = KodeKonstanter.AB_VURDER_VARIG_ENDRT_NYOPPSTR_NAERNG_SN),
-        @JsonSubTypes.Type(value = VurderVarigEndretArbeidssituasjonHåndteringDto.class, name = KodeKonstanter.AB_VURDER_VARIG_ENDRT_ARB_SITSJN_MDL_INAKTV),
-        @JsonSubTypes.Type(value = VurderTilkommetInntektHåndteringDto.class, name = KodeKonstanter.AB_VURDER_NYTT_INNTKTSFRHLD),
 })
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)

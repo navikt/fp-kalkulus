@@ -48,13 +48,6 @@ public class ArbeidsforholdOverstyringDto {
         // default ctor
     }
 
-	@Deprecated
-    public ArbeidsforholdOverstyringDto(@Valid @NotNull Aktør arbeidsgiver, @Valid InternArbeidsforholdRefDto arbeidsforholdRefDto, @Valid ArbeidsforholdHandlingType handling) {
-        this.arbeidsgiver = arbeidsgiver;
-        this.arbeidsforholdRefDto = arbeidsforholdRefDto;
-        this.handling = handling;
-    }
-
 	public ArbeidsforholdOverstyringDto(@Valid @NotNull Aktør arbeidsgiver, @Valid InternArbeidsforholdRefDto arbeidsforholdRefDto, @Valid ArbeidsforholdHandlingType handling,
 	                                    IayProsent stillingsprosent, List<Periode> arbeidsforholdOverstyrtePerioder) {
 		this.arbeidsgiver = arbeidsgiver;

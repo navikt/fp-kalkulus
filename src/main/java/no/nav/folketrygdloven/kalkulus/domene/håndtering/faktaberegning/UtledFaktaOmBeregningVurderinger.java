@@ -27,12 +27,20 @@ public class UtledFaktaOmBeregningVurderinger {
         faktaOmBeregningVurderinger.setHarLønnsendringIBeregningsperiodenEndring(utledVurderLønnsendringEndring(dto));
         faktaOmBeregningVurderinger.setHarMilitærSiviltjenesteEndring(utledVurderMilitærEllerSiviltjenesteEndring(dto));
         faktaOmBeregningVurderinger.setErSelvstendingNyIArbeidslivetEndring(utledErSelvstendigNyIArbeidslivetEndring(dto));
+        faktaOmBeregningVurderinger.setHarBesteBeregningEndring(utledErBesteberegningEndret(dto));
         faktaOmBeregningVurderinger.setErNyoppstartetFLEndring(utledErNyoppstartetFLEndring(dto));
         faktaOmBeregningVurderinger.setVurderRefusjonskravGyldighetEndringer(utledUtvidRefusjonskravGyldighetEndringer(dto));
         fakta.ifPresent(fa -> faktaOmBeregningVurderinger.setErMottattYtelseEndringer(UtledErMottattYtelseEndringer.utled(fa, forrigeFakta)));
         fakta.ifPresent(fa -> faktaOmBeregningVurderinger.setErTidsbegrensetArbeidsforholdEndringer(UtledErTidsbegrensetArbeidsforholdEndringer.utled(fa, forrigeFakta)));
         if (harEndringer(faktaOmBeregningVurderinger)) {
             return faktaOmBeregningVurderinger;
+        }
+        return null;
+    }
+
+    private static ToggleEndring utledErBesteberegningEndret(FaktaOmBeregningHåndteringDto dto) {
+        if (dto.getFakta().getKunYtelseFordeling() != null && dto.getFakta().getKunYtelseFordeling().getSkalBrukeBesteberegning() != null) {
+            return new ToggleEndring(null, dto.getFakta().getKunYtelseFordeling().getSkalBrukeBesteberegning());
         }
         return null;
     }

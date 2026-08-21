@@ -16,8 +16,6 @@ public class Endringer {
     @Valid
     private VarigEndretEllerNyoppstartetNæringEndring varigEndretEllerNyoppstartetNæringEndring;
     @Valid
-    private VarigEndretArbeidssituasjonEndring varigEndretArbeidssituasjonEndring;
-    @Valid
     private RefusjonoverstyringEndring refusjonoverstyringEndring;
 
     private Endringer() {
@@ -45,10 +43,6 @@ public class Endringer {
 
     public VarigEndretEllerNyoppstartetNæringEndring getVarigEndretNæringEndring() {
         return varigEndretEllerNyoppstartetNæringEndring;
-    }
-
-    public VarigEndretArbeidssituasjonEndring getVarigEndretArbeidssituasjonEndring() {
-        return varigEndretArbeidssituasjonEndring;
     }
 
     public static Builder ny() {
@@ -82,13 +76,6 @@ public class Endringer {
             this.kladd.varigEndretEllerNyoppstartetNæringEndring = varigEndretEllerNyoppstartetNæringEndring;
             return this;
         }
-
-
-        public Builder medVarigEndretArbeidssituasjonEndring(VarigEndretArbeidssituasjonEndring varigEndretArbeidssituasjonEndring) {
-            this.kladd.varigEndretArbeidssituasjonEndring = varigEndretArbeidssituasjonEndring;
-            return this;
-        }
-
 
         public Endringer build() {
             return kladd;
