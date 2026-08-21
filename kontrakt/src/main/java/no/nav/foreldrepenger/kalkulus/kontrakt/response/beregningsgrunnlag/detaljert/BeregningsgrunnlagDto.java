@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Beløp;
 
@@ -31,12 +30,6 @@ public class BeregningsgrunnlagDto {
     @NotNull
     @Valid
     private LocalDate skjæringstidspunkt;
-
-	@Deprecated // Gå over til å bruke aktivitetStatuserMedHjemmel liste
-	@JsonProperty(value = "aktivitetStatuser")
-    @NotNull
-    @Size(min = 1, max = 20)
-    private List<@Valid AktivitetStatus> aktivitetStatuser;
 
 	@JsonProperty(value = "aktivitetStatuserMedHjemmel")
 	@NotNull
@@ -67,7 +60,6 @@ public class BeregningsgrunnlagDto {
     }
 
     public BeregningsgrunnlagDto(@NotNull @Valid LocalDate skjæringstidspunkt,
-                                 @NotNull @Size(min = 1, max = 20) List<@Valid AktivitetStatus> aktivitetStatuser,
                                  @NotNull @Size(min = 1, max = 100) List<@Valid BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPerioder,
                                  @Size(max = 10) List<@Valid SammenligningsgrunnlagPrStatusDto> sammenligningsgrunnlagPrStatusListe,
                                  @Size(max = 50) List<@Valid FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller,
@@ -75,7 +67,6 @@ public class BeregningsgrunnlagDto {
                                  @Valid Beløp grunnbeløp,
                                  @NotNull @Size(min = 1, max = 20) List<@Valid BeregningsgrunnlagAktivitetStatusDto> aktivitetStatuserMedHjemmel) {
         this.skjæringstidspunkt = skjæringstidspunkt;
-        this.aktivitetStatuser = aktivitetStatuser;
         this.beregningsgrunnlagPerioder = beregningsgrunnlagPerioder;
         this.sammenligningsgrunnlagPrStatusListe = sammenligningsgrunnlagPrStatusListe;
         this.faktaOmBeregningTilfeller = faktaOmBeregningTilfeller;
@@ -87,14 +78,12 @@ public class BeregningsgrunnlagDto {
 	// Kan fjernes når alle aktører sender med status med hjemmel
 	@Deprecated
 	public BeregningsgrunnlagDto(@NotNull @Valid LocalDate skjæringstidspunkt,
-	                             @NotNull @Size(min = 1, max = 20) List<@Valid AktivitetStatus> aktivitetStatuser,
 	                             @NotNull @Size(min = 1, max = 100) List<@Valid BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPerioder,
 	                             @Size(max = 10) List<@Valid SammenligningsgrunnlagPrStatusDto> sammenligningsgrunnlagPrStatusListe,
 	                             @Size(max = 50) List<@Valid FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller,
 	                             boolean overstyrt,
 	                             @Valid Beløp grunnbeløp) {
 		this.skjæringstidspunkt = skjæringstidspunkt;
-		this.aktivitetStatuser = aktivitetStatuser;
 		this.beregningsgrunnlagPerioder = beregningsgrunnlagPerioder;
 		this.sammenligningsgrunnlagPrStatusListe = sammenligningsgrunnlagPrStatusListe;
 		this.faktaOmBeregningTilfeller = faktaOmBeregningTilfeller;
@@ -109,13 +98,6 @@ public class BeregningsgrunnlagDto {
 	public List<BeregningsgrunnlagAktivitetStatusDto> getAktivitetStatuserMedHjemmel() {
 		return Collections.unmodifiableList(aktivitetStatuserMedHjemmel);
 	}
-
-	public List<AktivitetStatus> getAktivitetStatuser() {
-		if (aktivitetStatuserMedHjemmel != null && !aktivitetStatuserMedHjemmel.isEmpty()) {
-			return aktivitetStatuserMedHjemmel.stream().map(BeregningsgrunnlagAktivitetStatusDto::getAktivitetStatus).toList();
-		}
-        return Collections.unmodifiableList(aktivitetStatuser);
-    }
 
     public List<BeregningsgrunnlagPeriodeDto> getBeregningsgrunnlagPerioder() {
         return beregningsgrunnlagPerioder

@@ -23,11 +23,6 @@ public class AvklaringsbehovMedTilstandDto {
     @NotNull
     private AvklaringsbehovDefinisjon beregningAvklaringsbehovDefinisjon;
 
-    @JsonProperty(value = "beregningAksjonspunktDefinisjon")
-    @Valid
-    @NotNull
-    private AvklaringsbehovDefinisjon beregningAksjonspunktDefinisjon;
-
     @JsonProperty(value = "venteårsak")
     @Valid
     @NotNull
@@ -44,17 +39,12 @@ public class AvklaringsbehovMedTilstandDto {
 
     public AvklaringsbehovMedTilstandDto(@Valid @NotNull AvklaringsbehovDefinisjon beregningAvklaringsbehovDefinisjon, @Valid @NotNull BeregningVenteårsak venteårsak, @Valid @NotNull LocalDateTime ventefrist) {
         this.beregningAvklaringsbehovDefinisjon = beregningAvklaringsbehovDefinisjon;
-        this.beregningAksjonspunktDefinisjon = beregningAvklaringsbehovDefinisjon;
         this.venteårsak = venteårsak;
         this.ventefrist = ventefrist;
     }
 
     public AvklaringsbehovDefinisjon getBeregningAvklaringsbehovDefinisjon() {
         return beregningAvklaringsbehovDefinisjon;
-    }
-
-    public AvklaringsbehovDefinisjon getBeregningAksjonspunktDefinisjon() {
-        return beregningAksjonspunktDefinisjon;
     }
 
     public BeregningVenteårsak getVenteårsak() {
