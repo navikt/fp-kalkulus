@@ -25,11 +25,6 @@ public class BeregningsgrunnlagPeriodeEndring {
     private List<@Valid BeregningsgrunnlagPrStatusOgAndelEndring> beregningsgrunnlagPrStatusOgAndelEndringer;
 
 
-    @JsonProperty(value = "nyttInntektsforholdEndringer")
-    @Size(max = 100)
-    private List<@Valid NyttInntektsforholdEndring> nyttInntektsforholdEndringer;
-
-
     @JsonProperty(value = "periode")
     @NotNull
     @Valid
@@ -40,19 +35,13 @@ public class BeregningsgrunnlagPeriodeEndring {
     }
 
     public BeregningsgrunnlagPeriodeEndring(List<@Valid BeregningsgrunnlagPrStatusOgAndelEndring> beregningsgrunnlagPrStatusOgAndelEndringer,
-                                            List<@Valid NyttInntektsforholdEndring> nyttInntektsforholdEndringer,
                                             @NotNull @Valid Periode periode) {
         this.beregningsgrunnlagPrStatusOgAndelEndringer = beregningsgrunnlagPrStatusOgAndelEndringer;
-        this.nyttInntektsforholdEndringer = nyttInntektsforholdEndringer;
         this.periode = periode;
     }
 
     public List<BeregningsgrunnlagPrStatusOgAndelEndring> getBeregningsgrunnlagPrStatusOgAndelEndringer() {
         return beregningsgrunnlagPrStatusOgAndelEndringer;
-    }
-
-    public List<NyttInntektsforholdEndring> getNyttInntektsforholdEndringer() {
-        return nyttInntektsforholdEndringer;
     }
 
     public Periode getPeriode() {
