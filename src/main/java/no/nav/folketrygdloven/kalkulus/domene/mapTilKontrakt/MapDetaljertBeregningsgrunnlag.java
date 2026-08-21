@@ -160,10 +160,13 @@ public class MapDetaljertBeregningsgrunnlag {
     }
 
     private static BeregningsgrunnlagDto mapGrunnlag(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
-        return new BeregningsgrunnlagDto(beregningsgrunnlagEntitet.getSkjæringstidspunkt(), null,
-            mapBeregningsgrunnlagPerioder(beregningsgrunnlagEntitet), mapSammenligningsgrunnlagPrStatusListe(beregningsgrunnlagEntitet),
-            beregningsgrunnlagEntitet.getFaktaOmBeregningTilfeller(), beregningsgrunnlagEntitet.isOverstyrt(),
-            beregningsgrunnlagEntitet.getGrunnbeløp() == null ? null : mapBeløp(beregningsgrunnlagEntitet.getGrunnbeløp()), mapAktivitetstatuserMedHjemler(beregningsgrunnlagEntitet));
+        return new BeregningsgrunnlagDto(beregningsgrunnlagEntitet.getSkjæringstidspunkt(),
+            mapBeregningsgrunnlagPerioder(beregningsgrunnlagEntitet),
+            mapSammenligningsgrunnlagPrStatusListe(beregningsgrunnlagEntitet),
+            beregningsgrunnlagEntitet.getFaktaOmBeregningTilfeller(),
+            beregningsgrunnlagEntitet.isOverstyrt(),
+            beregningsgrunnlagEntitet.getGrunnbeløp() == null ? null : mapBeløp(beregningsgrunnlagEntitet.getGrunnbeløp()),
+            mapAktivitetstatuserMedHjemler(beregningsgrunnlagEntitet));
     }
 
     private static List<SammenligningsgrunnlagPrStatusDto> mapSammenligningsgrunnlagPrStatusListe(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {

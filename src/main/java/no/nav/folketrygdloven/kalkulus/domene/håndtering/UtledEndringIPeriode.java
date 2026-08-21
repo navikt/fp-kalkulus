@@ -23,10 +23,9 @@ class UtledEndringIPeriode {
         List<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndeler = forrigePeriode.map(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPrStatusOgAndelList).orElse(Collections.emptyList());
         BeregningsgrunnlagPeriodeEndring periodeEndring = new BeregningsgrunnlagPeriodeEndring(
                 utledAndelEndringer(andeler, andelerFraSteg, forrigeAndeler),
-                List.of(),
                 new Periode(periode.getBeregningsgrunnlagPeriodeFom(), periode.getBeregningsgrunnlagPeriodeTom())
                 );
-        if (periodeEndring.getBeregningsgrunnlagPrStatusOgAndelEndringer().isEmpty() && periodeEndring.getNyttInntektsforholdEndringer().isEmpty()) {
+        if (periodeEndring.getBeregningsgrunnlagPrStatusOgAndelEndringer().isEmpty()) {
             return Optional.empty();
         }
         return Optional.of(periodeEndring);
