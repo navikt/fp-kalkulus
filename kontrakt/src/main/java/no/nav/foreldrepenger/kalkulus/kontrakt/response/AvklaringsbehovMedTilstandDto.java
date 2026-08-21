@@ -25,19 +25,17 @@ public class AvklaringsbehovMedTilstandDto {
 
     @JsonProperty(value = "venteårsak")
     @Valid
-    @NotNull
     private BeregningVenteårsak venteårsak;
 
     @JsonProperty(value = "ventefrist")
     @Valid
-    @NotNull
     private LocalDateTime ventefrist;
 
     public AvklaringsbehovMedTilstandDto() {
         // default ctor
     }
 
-    public AvklaringsbehovMedTilstandDto(@Valid @NotNull AvklaringsbehovDefinisjon beregningAvklaringsbehovDefinisjon, @Valid @NotNull BeregningVenteårsak venteårsak, @Valid @NotNull LocalDateTime ventefrist) {
+    public AvklaringsbehovMedTilstandDto(@Valid @NotNull AvklaringsbehovDefinisjon beregningAvklaringsbehovDefinisjon, @Valid BeregningVenteårsak venteårsak, @Valid LocalDateTime ventefrist) {
         this.beregningAvklaringsbehovDefinisjon = beregningAvklaringsbehovDefinisjon;
         this.venteårsak = venteårsak;
         this.ventefrist = ventefrist;

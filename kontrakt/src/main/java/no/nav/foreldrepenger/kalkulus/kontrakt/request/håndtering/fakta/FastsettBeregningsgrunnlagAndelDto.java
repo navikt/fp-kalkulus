@@ -19,7 +19,17 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public class FastsettBeregningsgrunnlagAndelDto extends RedigerbarAndelDto {
+public class FastsettBeregningsgrunnlagAndelDto {
+
+    @JsonProperty("andelsnr")
+    @Valid
+    @Min(1)
+    @Max(100)
+    private Long andelsnr;
+
+    @JsonProperty("lagtTilAvSaksbehandler")
+    @Valid
+    private Boolean lagtTilAvSaksbehandler;
 
     @JsonProperty("fastsatteVerdier")
     @Valid
@@ -47,16 +57,26 @@ public class FastsettBeregningsgrunnlagAndelDto extends RedigerbarAndelDto {
     }
 
 
-    public FastsettBeregningsgrunnlagAndelDto(@NotNull @Valid RedigerbarAndelDto andelDto,
+    public FastsettBeregningsgrunnlagAndelDto(@Valid @Min(1) @Max(100) Long andelsnr,
+                                              @Valid Boolean lagtTilAvSaksbehandler,
                                               @NotNull @Valid FastsatteVerdierDto fastsatteVerdier,
                                               @Valid Inntektskategori forrigeInntektskategori,
                                               @Valid Integer forrigeRefusjonPrÅr,
                                               @Valid Integer forrigeArbeidsinntektPrÅr) {
-        super(andelDto.getAndelsnr(), andelDto.getLagtTilAvSaksbehandler());
+        this.andelsnr = andelsnr;
+        this.lagtTilAvSaksbehandler = lagtTilAvSaksbehandler;
         this.fastsatteVerdier = fastsatteVerdier;
         this.forrigeArbeidsinntektPrÅr = forrigeArbeidsinntektPrÅr;
         this.forrigeInntektskategori = forrigeInntektskategori;
         this.forrigeRefusjonPrÅr = forrigeRefusjonPrÅr;
+    }
+
+    public Long getAndelsnr() {
+        return andelsnr;
+    }
+
+    public Boolean getLagtTilAvSaksbehandler() {
+        return lagtTilAvSaksbehandler;
     }
 
     public FastsatteVerdierDto getFastsatteVerdier() {
