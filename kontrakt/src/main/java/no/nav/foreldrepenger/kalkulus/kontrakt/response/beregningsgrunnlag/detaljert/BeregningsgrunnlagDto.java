@@ -75,22 +75,6 @@ public class BeregningsgrunnlagDto {
 		this.aktivitetStatuserMedHjemmel = aktivitetStatuserMedHjemmel;
     }
 
-	// Kan fjernes når alle aktører sender med status med hjemmel
-	@Deprecated
-	public BeregningsgrunnlagDto(@NotNull @Valid LocalDate skjæringstidspunkt,
-	                             @NotNull @Size(min = 1, max = 100) List<@Valid BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPerioder,
-	                             @Size(max = 10) List<@Valid SammenligningsgrunnlagPrStatusDto> sammenligningsgrunnlagPrStatusListe,
-	                             @Size(max = 50) List<@Valid FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller,
-	                             boolean overstyrt,
-	                             @Valid Beløp grunnbeløp) {
-		this.skjæringstidspunkt = skjæringstidspunkt;
-		this.beregningsgrunnlagPerioder = beregningsgrunnlagPerioder;
-		this.sammenligningsgrunnlagPrStatusListe = sammenligningsgrunnlagPrStatusListe;
-		this.faktaOmBeregningTilfeller = faktaOmBeregningTilfeller;
-		this.overstyrt = overstyrt;
-		this.grunnbeløp = grunnbeløp;
-	}
-
     public LocalDate getSkjæringstidspunkt() {
         return skjæringstidspunkt;
     }

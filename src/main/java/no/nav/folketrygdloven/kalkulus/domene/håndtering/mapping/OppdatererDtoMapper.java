@@ -21,7 +21,6 @@ import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.Fastset
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.FastsettMånedsinntektUtenInntektsmeldingAndelDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.FastsettMånedsinntektUtenInntektsmeldingDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.MottarYtelseDto;
-import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.RedigerbarAndelDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.RefusjonskravPrArbeidsgiverVurderingDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.VurderATogFLiSammeOrganisasjonAndelDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.VurderATogFLiSammeOrganisasjonDto;
@@ -326,7 +325,10 @@ public class OppdatererDtoMapper {
 
     private static no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FastsettBeregningsgrunnlagAndelDto mapFastsettBeregningsgrunnlagPeriodeAndelDto(FastsettBeregningsgrunnlagAndelDto fastsettBeregningsgrunnlagAndelDto) {
         return new no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FastsettBeregningsgrunnlagAndelDto(
-            mapTilRedigerbarAndelDto(fastsettBeregningsgrunnlagAndelDto),
+            new no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.RedigerbarAndelFaktaOmBeregningDto(
+                false,
+                fastsettBeregningsgrunnlagAndelDto.getAndelsnr(),
+                fastsettBeregningsgrunnlagAndelDto.getLagtTilAvSaksbehandler()),
             mapTilFastsatteVerdier(fastsettBeregningsgrunnlagAndelDto.getFastsatteVerdier()),
             fastsettBeregningsgrunnlagAndelDto.getForrigeInntektskategori(),
             fastsettBeregningsgrunnlagAndelDto.getForrigeRefusjonPrÅr(),
@@ -359,10 +361,4 @@ public class OppdatererDtoMapper {
                 redigerbarAndel.getKilde());
     }
 
-    private static no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.RedigerbarAndelFaktaOmBeregningDto mapTilRedigerbarAndelDto(RedigerbarAndelDto redigerbarAndel) {
-        return new no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.RedigerbarAndelFaktaOmBeregningDto(
-            false,
-            redigerbarAndel.getAndelsnr(),
-            redigerbarAndel.getLagtTilAvSaksbehandler());
-    }
 }
