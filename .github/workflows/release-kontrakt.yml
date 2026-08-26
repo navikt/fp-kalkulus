@@ -14,4 +14,3 @@ jobs:
       java-version: '25'
       working-directory: ./kontrakt # Sett working directory til kontrakt-mappen
       release-version: ${{ github.event.release.tag_name }}
-    secrets: inherit
