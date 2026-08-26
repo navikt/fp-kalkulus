@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.domene.rest;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -20,9 +21,8 @@ import no.nav.foreldrepenger.kalkulus.kontrakt.request.EnkelFpkalkulusRequestDto
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.EnkelHåndterBeregningRequestDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.EnkelKopierBeregningsgrunnlagRequestDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.KopierFastsattGrunnlagRequest;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.KalkulusRespons;
 import no.nav.foreldrepenger.kalkulus.kontrakt.response.TilstandResponse;
-
-import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.OppdateringListeRespons;
 
 import org.slf4j.MDC;
 
@@ -80,7 +80,7 @@ public class OperereKalkulusRestTjeneste {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/beregn")
-    @Operation(description = "Utfører beregning basert på reqest", tags = "beregn", summary = ("Starter en beregning basert på gitt input."), responses = {@ApiResponse(description = "Liste med avklaringsbehov som har oppstått per angitt eksternReferanse", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = TilstandResponse.class)))})
+    @Operation(description = "Utfører beregning basert på request", tags = "beregn", summary = ("Starter eller fortsetter en beregning basert på gitt input."), responses = {@ApiResponse(description = "Liste med avklaringsbehov som har oppstått samt vilkårsresultat om relevant", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = TilstandResponse.class)))})
     @BeskyttetRessurs(actionType = ActionType.CREATE, resourceType = ResourceType.FAGSAK, sporingslogg = true)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response beregn(@TilpassetAbacAttributt(supplierClass = BeregnRequestAbacSupplier.class) @NotNull @Valid EnkelBeregnRequestDto request) {
@@ -124,7 +124,7 @@ public class OperereKalkulusRestTjeneste {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/avklaringsbehov")
-    @Operation(description = "Oppdaterer beregningsgrunnlag for oppgitt liste", tags = "beregn", summary = ("Oppdaterer beregningsgrunnlag basert på løsning av avklaringsbehov for oppgitt liste."), responses = {@ApiResponse(description = "Liste med endringer som ble gjort under oppdatering", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = OppdateringListeRespons.class)))})
+    @Operation(description = "Oppdaterer oppgitt beregningsgrunnlag", tags = "beregn", summary = ("Oppdaterer beregningsgrunnlag basert på løsning av oppgitt avklaringsbehov."), responses = {@ApiResponse(description = "Liste med endringer som ble gjort under oppdatering", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = KalkulusRespons.class)))})
     @BeskyttetRessurs(actionType = ActionType.UPDATE, resourceType = ResourceType.FAGSAK, sporingslogg = true)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response oppdaterListe(@TilpassetAbacAttributt(supplierClass = HåndterBeregningRequestAbacSupplier.class) @NotNull @Valid EnkelHåndterBeregningRequestDto request) {
@@ -133,12 +133,9 @@ public class OperereKalkulusRestTjeneste {
                 "Kan ikke løse avklaringsbehov i beregning uten en eksisterende kobling. Gjelder behandlingUuid " + request.behandlingUuid()));
         MDC.put(PROSESS_SAKSNUMMER, kobling.getSaksnummer().getVerdi());
         validerIkkeAvsluttet(kobling);
-        try {
-            var respons = orkestrerer.håndter(kobling, request.kalkulatorInput(), request.håndterBeregningDtoList());
-            return Response.ok(respons).build();
-        } catch (UgyldigInputException e) {
-            return Response.ok(new OppdateringListeRespons(true)).build();
-        }
+        var liste = request.håndterBeregningDto() != null ? Collections.singletonList(request.håndterBeregningDto()) : request.håndterBeregningDtoList();
+        var respons = orkestrerer.håndter(kobling, request.kalkulatorInput(), liste);
+        return Response.ok(respons).build();
     }
 
     @POST
