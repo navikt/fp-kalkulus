@@ -62,6 +62,7 @@ public class UtledFaktaOmBeregningVurderinger {
         return faktaOmBeregningVurderinger.getErNyoppstartetFLEndring() != null ||
                 faktaOmBeregningVurderinger.getErSelvstendingNyIArbeidslivetEndring() != null ||
                 faktaOmBeregningVurderinger.getHarEtterlønnSluttpakkeEndring() != null ||
+                faktaOmBeregningVurderinger.getHarBesteBeregningEndring() != null ||
                 faktaOmBeregningVurderinger.getHarLønnsendringIBeregningsperiodenEndring() != null ||
                 faktaOmBeregningVurderinger.getHarMilitærSiviltjenesteEndring() != null ||
                 !faktaOmBeregningVurderinger.getErMottattYtelseEndringer().isEmpty() ||
