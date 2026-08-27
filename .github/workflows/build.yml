@@ -85,7 +85,7 @@ jobs:
       contents: read
       id-token: write
     if: github.ref_name == 'master'
-    needs: [build-app, kalkulus-tester, verdikjede-tester]
+    needs: [build-app, kalkulus-tester, fpsak-tester, verdikjede-tester]
     uses: navikt/fp-gha-workflows/.github/workflows/deploy.yml@main
     with:
       gar: true
@@ -98,7 +98,7 @@ jobs:
       contents: read
       id-token: write
     if: github.ref_name == 'master'
-    needs: [build-app, kalkulus-tester, verdikjede-tester, deploy-dev]
+    needs: [build-app, kalkulus-tester, fpsak-tester, verdikjede-tester, deploy-dev]
     uses: navikt/fp-gha-workflows/.github/workflows/deploy.yml@main
     with:
       gar: true
