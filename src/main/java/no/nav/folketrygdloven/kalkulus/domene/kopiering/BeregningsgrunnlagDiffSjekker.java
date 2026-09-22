@@ -91,7 +91,7 @@ public class BeregningsgrunnlagDiffSjekker {
 
         var ïkkeDiffTidslinje = finnTidslinjeUtenDiff(aktivtidslinje, forrigeTidslinje);
 
-        return ïkkeDiffTidslinje.toSegments()
+        return ïkkeDiffTidslinje.segmenter()
                 .stream()
                 .filter(LocalDateSegment::getValue)
                 .map(s -> Intervall.fraOgMedTilOgMed(s.getFom(), s.getTom()))
