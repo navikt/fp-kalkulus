@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.domene.rest;
 
-import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -133,8 +132,7 @@ public class OperereKalkulusRestTjeneste {
                 "Kan ikke løse avklaringsbehov i beregning uten en eksisterende kobling. Gjelder behandlingUuid " + request.behandlingUuid()));
         MDC.put(PROSESS_SAKSNUMMER, kobling.getSaksnummer().getVerdi());
         validerIkkeAvsluttet(kobling);
-        var liste = request.håndterBeregningDto() != null ? Collections.singletonList(request.håndterBeregningDto()) : request.håndterBeregningDtoList();
-        var respons = orkestrerer.håndter(kobling, request.kalkulatorInput(), liste);
+        var respons = orkestrerer.håndter(kobling, request.kalkulatorInput(), request.håndterBeregningDto());
         return Response.ok(respons).build();
     }
 
