@@ -15,16 +15,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import no.nav.foreldrepenger.kalkulus.kontrakt.request.EnkelBeregnRequestDto;
-import no.nav.foreldrepenger.kalkulus.kontrakt.request.EnkelFpkalkulusRequestDto;
-import no.nav.foreldrepenger.kalkulus.kontrakt.request.EnkelHåndterBeregningRequestDto;
-import no.nav.foreldrepenger.kalkulus.kontrakt.request.EnkelKopierBeregningsgrunnlagRequestDto;
-import no.nav.foreldrepenger.kalkulus.kontrakt.request.KopierFastsattGrunnlagRequest;
-import no.nav.foreldrepenger.kalkulus.kontrakt.response.KalkulusRespons;
-import no.nav.foreldrepenger.kalkulus.kontrakt.response.TilstandResponse;
-
-import org.slf4j.MDC;
-
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -36,9 +26,16 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingRef
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.kobling.KoblingTjeneste;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.domene.kopiering.KopierBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.EnkelBeregnRequestDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.EnkelFpkalkulusRequestDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.EnkelHåndterBeregningRequestDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.EnkelKopierBeregningsgrunnlagRequestDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.KopierFastsattGrunnlagRequest;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.KalkulusRespons;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.TilstandResponse;
 import no.nav.vedtak.exception.TekniskException;
 import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
 import no.nav.vedtak.sikkerhet.abac.BeskyttetRessurs;
@@ -53,8 +50,6 @@ import no.nav.vedtak.sikkerhet.abac.beskyttet.ResourceType;
 @ApplicationScoped
 @Transactional
 public class OperereKalkulusRestTjeneste {
-    private static final String PROSESS_SAKSNUMMER = "prosess_saksnummer";
-    private static final String PROSESS_KOBLING_REF = "prosess_koblingreferanse";
 
     private KoblingTjeneste koblingTjeneste;
     private RullTilbakeTjeneste rullTilbakeTjeneste;
@@ -85,7 +80,6 @@ public class OperereKalkulusRestTjeneste {
     public Response beregn(@TilpassetAbacAttributt(supplierClass = BeregnRequestAbacSupplier.class) @NotNull @Valid EnkelBeregnRequestDto request) {
         validerYtelse(request.ytelseSomSkalBeregnes());
         var saksnummer = new Saksnummer(request.saksnummer().verdi());
-        MDC.put(PROSESS_SAKSNUMMER, saksnummer.getVerdi());
         Optional<KoblingReferanse> originalKoblingRef =
             request.originalBehandlingUuid() == null ? Optional.empty() : Optional.of(new KoblingReferanse(request.originalBehandlingUuid()));
         var kobling = koblingTjeneste.finnEllerOpprett(new KoblingReferanse(request.behandlingUuid()),
@@ -101,7 +95,6 @@ public class OperereKalkulusRestTjeneste {
     @Operation(description = "Kopierer beregning fra eksisterende referanse til ny referanse for å kunne fortsette beregningen fra angitt steg.", tags = "beregn", summary = ("Kopierer en beregning."))
     @BeskyttetRessurs(actionType = ActionType.UPDATE, resourceType = ResourceType.FAGSAK, sporingslogg = true)
     public Response kopierBeregning(@TilpassetAbacAttributt(supplierClass = KopierBeregningsgrunnlagRequestAbacSupplier.class) @NotNull @Valid EnkelKopierBeregningsgrunnlagRequestDto request) {
-        MDC.put(PROSESS_SAKSNUMMER, request.saksnummer().verdi());
         kopierTjeneste.kopierBeregningsgrunlagForStartISteg(new KoblingReferanse(request.behandlingUuid()),
             new KoblingReferanse(request.originalBehandlingUuid()), new Saksnummer(request.saksnummer().verdi()), request.steg(), request.kalkulatorInput());
         return Response.ok().build();
@@ -113,7 +106,6 @@ public class OperereKalkulusRestTjeneste {
     @Operation(description = "Kopierer fastsatt beregningsgrunnlag fra eksisterende referanse til ny referanse. Forutsetter at originalBehandlingUuid har et fastsatt grunnlag og at koblingen er avsluttet.", tags = "beregn", summary = ("Kopierer en fastsatt beregning."))
     @BeskyttetRessurs(actionType = ActionType.UPDATE, resourceType = ResourceType.FAGSAK, sporingslogg = true)
     public Response kopierFastsattBeregning(@TilpassetAbacAttributt(supplierClass = KopierFastsattGrunnlagRequestAbacSupplier.class) @NotNull @Valid KopierFastsattGrunnlagRequest request) {
-        MDC.put(PROSESS_SAKSNUMMER, request.saksnummer().verdi());
         kopierTjeneste.kopierFastsattBeregningsgrunnlag(new KoblingReferanse(request.behandlingUuid()),
             new KoblingReferanse(request.originalBehandlingUuid()),
             new Saksnummer(request.saksnummer().verdi()));
@@ -130,7 +122,6 @@ public class OperereKalkulusRestTjeneste {
         var kobling = koblingTjeneste.hentKoblingOptional(new KoblingReferanse(request.behandlingUuid()))
             .orElseThrow(() -> new IllegalStateException(
                 "Kan ikke løse avklaringsbehov i beregning uten en eksisterende kobling. Gjelder behandlingUuid " + request.behandlingUuid()));
-        MDC.put(PROSESS_SAKSNUMMER, kobling.getSaksnummer().getVerdi());
         validerIkkeAvsluttet(kobling);
         var respons = orkestrerer.håndter(kobling, request.kalkulatorInput(), request.håndterBeregningDto());
         return Response.ok(respons).build();
@@ -144,9 +135,7 @@ public class OperereKalkulusRestTjeneste {
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response deaktiverBeregningsgrunnlag(@TilpassetAbacAttributt(supplierClass = EnkelFpkalkulusRequestAbacSupplier.class) @NotNull @Valid EnkelFpkalkulusRequestDto request) {
         var saksnummer = new Saksnummer(request.saksnummer().verdi());
-        MDC.put(PROSESS_SAKSNUMMER, saksnummer.getVerdi());
         var koblingReferanse = new KoblingReferanse(request.behandlingUuid());
-        MDC.put(PROSESS_KOBLING_REF, koblingReferanse.getReferanse().toString());
         var kopt = koblingTjeneste.hentKoblingOptional(koblingReferanse)
             .orElseThrow(() -> new TekniskException("FT-47197",
                 String.format("Pøver å deaktivere data på en kobling som ikke finnes, koblingRef %s", koblingReferanse)));
@@ -164,9 +153,7 @@ public class OperereKalkulusRestTjeneste {
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response avslutt(@TilpassetAbacAttributt(supplierClass = EnkelFpkalkulusRequestAbacSupplier.class) @NotNull @Valid EnkelFpkalkulusRequestDto request) {
         var saksnummer = new Saksnummer(request.saksnummer().verdi());
-        MDC.put(PROSESS_SAKSNUMMER, saksnummer.getVerdi());
         var koblingReferanse = new KoblingReferanse(request.behandlingUuid());
-        MDC.put(PROSESS_KOBLING_REF, koblingReferanse.getReferanse().toString());
         var kopt = koblingTjeneste.hentKoblingOptional(koblingReferanse)
             .orElseThrow(() -> new TekniskException("FT-47197",
                 String.format("Prøver å markere en kobling som ikke finnes som avsluttet, koblingRef %s", koblingReferanse)));

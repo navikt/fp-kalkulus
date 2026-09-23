@@ -15,7 +15,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.tjeneste.kobling.KoblingRepository;
 import no.nav.foreldrepenger.konfig.Environment;
-import no.nav.vedtak.log.mdc.MdcExtendedLogContext;
 import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
 import no.nav.vedtak.sikkerhet.abac.PdpRequestBuilder;
 import no.nav.vedtak.sikkerhet.abac.StandardAbacAttributtType;
@@ -30,7 +29,6 @@ import no.nav.vedtak.sikkerhet.abac.pipdata.PipFagsakStatus;
 @Dependent
 public class PdpRequestBuilderImpl implements PdpRequestBuilder {
 
-    private static final MdcExtendedLogContext LOG_CONTEXT = MdcExtendedLogContext.getContext("prosess");
     private static final boolean LOCAL = Environment.current().isLocal();
 
     private final KoblingRepository koblingRepository;
@@ -44,19 +42,20 @@ public class PdpRequestBuilderImpl implements PdpRequestBuilder {
     public AppRessursData lagAppRessursData(AbacDataAttributter dataAttributter) {
         Set<String> saksnumre = dataAttributter.getVerdier(StandardAbacAttributtType.SAKSNUMMER);
         Set<UUID> behandlinger = dataAttributter.getVerdier(StandardAbacAttributtType.BEHANDLING_UUID);
-        setLogContext(saksnumre, behandlinger);
 
-        // Tester kjører uten FPSAK, kun mot VTP
+        // Kalkulus-tester kjører uten FPSAK, kun mot VTP
         if (LOCAL) {
-            return minimalbuilder()
+            return minimalbuilder(saksnumre, behandlinger)
                 .leggTilIdenter(identerFraFagsak(saksnumre))
                 .leggTilIdenter(identerFraBehandlinger(behandlinger))
                 .build();
         } else if (saksnumre.stream().findFirst().isPresent()) {
-            return minimalbuilder().medSaksnummer(saksnumre.stream().findFirst().orElseThrow()).build();
+            return minimalbuilder(saksnumre, behandlinger).medSaksnummer(saksnumre.stream().findFirst().orElseThrow()).build();
+        } else if (behandlinger.stream().findFirst().isPresent()) {
+            return minimalbuilder(saksnumre, behandlinger).medBehandling(behandlinger.stream().findFirst().orElseThrow()).build();
         } else {
             // Bør ikke være nødvendig
-            return minimalbuilder().leggTilIdenter(identerFraBehandlinger(behandlinger)).build();
+            return minimalbuilder(saksnumre, behandlinger).leggTilIdenter(identerFraBehandlinger(behandlinger)).build();
         }
     }
 
@@ -64,20 +63,17 @@ public class PdpRequestBuilderImpl implements PdpRequestBuilder {
     public AppRessursData lagAppRessursDataForSystembruker(AbacDataAttributter dataAttributter) {
         Set<String> saksnumre = dataAttributter.getVerdier(StandardAbacAttributtType.SAKSNUMMER);
         Set<UUID> behandlinger = dataAttributter.getVerdier(StandardAbacAttributtType.BEHANDLING_UUID);
-        setLogContext(saksnumre, behandlinger);
-        return minimalbuilder().build();
+
+        return minimalbuilder(saksnumre, behandlinger).build();
     }
 
-    private void setLogContext(Set<String> saksnumre, Set<UUID> behandlinger) {
-        saksnumre.stream().findFirst().ifPresent(s -> LOG_CONTEXT.add("fagsak", s));
-        behandlinger.stream().findFirst().map(UUID::toString).ifPresent(b -> LOG_CONTEXT.add("behandling", b));
-    }
-
-
-    private AppRessursData.Builder minimalbuilder() {
-        return AppRessursData.builder()
+    private AppRessursData.Builder minimalbuilder(Set<String> saksnumre, Set<UUID> behandlinger) {
+        var builder = AppRessursData.builder()
             .medFagsakStatus(PipFagsakStatus.UNDER_BEHANDLING)
             .medBehandlingStatus(PipBehandlingStatus.UTREDES);
+        saksnumre.stream().findFirst().ifPresent(builder::medLoggSaksnummer);
+        behandlinger.stream().findFirst().ifPresent(builder::medLoggBehandling);
+        return builder;
     }
 
     private Set<String> identerFraFagsak(Set<String> saksnumre) {

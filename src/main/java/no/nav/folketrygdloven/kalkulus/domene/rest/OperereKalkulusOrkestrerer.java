@@ -6,10 +6,6 @@ import static no.nav.folketrygdloven.kalkulus.domene.beregning.MapStegTilTilstan
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
-import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.HåndterBeregningDto;
-
-import no.nav.foreldrepenger.kalkulus.kontrakt.response.KalkulusRespons;
-
 import org.slf4j.MDC;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
@@ -19,12 +15,13 @@ import no.nav.folketrygdloven.kalkulus.domene.beregning.BeregningStegTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.beregning.input.HåndteringInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.beregning.input.StegProsessInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.domene.håndtering.HåndtererApplikasjonTjeneste;
-
+import no.nav.folketrygdloven.kalkulus.domene.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.domene.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.HåndterBeregningDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.KalkulatorInputDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.KalkulusRespons;
 
 @ApplicationScoped
 public class OperereKalkulusOrkestrerer {
