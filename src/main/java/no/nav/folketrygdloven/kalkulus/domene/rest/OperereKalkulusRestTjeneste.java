@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.domene.rest;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -35,7 +34,6 @@ import no.nav.foreldrepenger.kalkulus.kontrakt.request.EnkelFpkalkulusRequestDto
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.EnkelHåndterBeregningRequestDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.EnkelKopierBeregningsgrunnlagRequestDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.KopierFastsattGrunnlagRequest;
-import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.HåndterBeregningDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.response.KalkulusRespons;
 import no.nav.foreldrepenger.kalkulus.kontrakt.response.TilstandResponse;
 import no.nav.vedtak.exception.TekniskException;
@@ -125,8 +123,7 @@ public class OperereKalkulusRestTjeneste {
             .orElseThrow(() -> new IllegalStateException(
                 "Kan ikke løse avklaringsbehov i beregning uten en eksisterende kobling. Gjelder behandlingUuid " + request.behandlingUuid()));
         validerIkkeAvsluttet(kobling);
-        List<HåndterBeregningDto> liste = request.håndterBeregningDto() != null ? List.of(request.håndterBeregningDto()) : List.of();
-        var respons = orkestrerer.håndter(kobling, request.kalkulatorInput(), liste);
+        var respons = orkestrerer.håndter(kobling, request.kalkulatorInput(), request.håndterBeregningDto());
         return Response.ok(respons).build();
     }
 

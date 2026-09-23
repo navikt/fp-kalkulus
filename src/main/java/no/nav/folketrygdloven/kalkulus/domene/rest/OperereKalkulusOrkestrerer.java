@@ -3,14 +3,8 @@ package no.nav.folketrygdloven.kalkulus.domene.rest;
 import static no.nav.folketrygdloven.kalkulus.domene.beregning.MapStegTilTilstand.mapTilStegTilstand;
 import static no.nav.folketrygdloven.kalkulus.domene.beregning.MapStegTilTilstand.mapTilStegUtTilstand;
 
-import java.util.List;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
-import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.HåndterBeregningDto;
-
-import no.nav.foreldrepenger.kalkulus.kontrakt.response.KalkulusRespons;
 
 import org.slf4j.MDC;
 
@@ -21,12 +15,13 @@ import no.nav.folketrygdloven.kalkulus.domene.beregning.BeregningStegTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.beregning.input.HåndteringInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.beregning.input.StegProsessInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.domene.håndtering.HåndtererApplikasjonTjeneste;
-
+import no.nav.folketrygdloven.kalkulus.domene.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.domene.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.HåndterBeregningDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.KalkulatorInputDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.KalkulusRespons;
 
 @ApplicationScoped
 public class OperereKalkulusOrkestrerer {
@@ -63,11 +58,11 @@ public class OperereKalkulusOrkestrerer {
 
     public KalkulusRespons håndter(KoblingEntitet koblingEntitet,
                                    KalkulatorInputDto inputDto,
-                                   List<HåndterBeregningDto> håndterBeregningDtoList) {
-        var håndterInputPrKobling = (HåndterBeregningsgrunnlagInput) lagInputOgRullTilbakeVedBehov(koblingEntitet.getId(), inputDto, new InputForHåndtering(håndterBeregningDtoList),
+                                   HåndterBeregningDto håndterBeregningDto) {
+        var håndterInputPrKobling = (HåndterBeregningsgrunnlagInput) lagInputOgRullTilbakeVedBehov(koblingEntitet.getId(), inputDto, new InputForHåndtering(håndterBeregningDto),
             false);
         // Operer
-        return opererAlle(håndterInputPrKobling, new Håndterer(håndterBeregningDtoList));
+        return opererAlle(håndterInputPrKobling, new Håndterer(håndterBeregningDto));
     }
 
     private KalkulusRespons opererAlle(BeregningsgrunnlagInput input, Opererer opererer) {
@@ -115,7 +110,7 @@ public class OperereKalkulusOrkestrerer {
 
         private final BeregningsgrunnlagTilstand tilstand;
 
-        private InputForHåndtering(List<HåndterBeregningDto> håndterBeregningDto) {
+        private InputForHåndtering(HåndterBeregningDto håndterBeregningDto) {
             this.tilstand = finnTilstandFraDto(håndterBeregningDto);
         }
 
@@ -130,9 +125,8 @@ public class OperereKalkulusOrkestrerer {
         }
 
 
-        private BeregningsgrunnlagTilstand finnTilstandFraDto(List<HåndterBeregningDto> håndterBeregningDto) {
-            var avklaringsbehov = håndterBeregningDto.getFirst();
-            return mapTilStegUtTilstand(avklaringsbehov.getAvklaringsbehovDefinisjon().getStegFunnet()).orElseThrow();
+        private BeregningsgrunnlagTilstand finnTilstandFraDto(HåndterBeregningDto håndterBeregningDto) {
+            return mapTilStegUtTilstand(håndterBeregningDto.getAvklaringsbehovDefinisjon().getStegFunnet()).orElseThrow();
         }
     }
 
@@ -143,17 +137,17 @@ public class OperereKalkulusOrkestrerer {
 
     private class Håndterer implements Opererer {
 
-        private final List<HåndterBeregningDto> håndteringDtoMap;
+        private final HåndterBeregningDto håndteringDto;
 
-        public Håndterer(List<HåndterBeregningDto> håndteringDtoMap) {
-            this.håndteringDtoMap = håndteringDtoMap;
+        public Håndterer(HåndterBeregningDto håndteringDto) {
+            this.håndteringDto = håndteringDto;
         }
 
         @Override
         public KalkulusRespons utfør(BeregningsgrunnlagInput beregningsgrunnlagInput) {
             MDC.put(PROSESS_KOBLING_ID, beregningsgrunnlagInput.getKoblingId().toString());
             var response = håndtererApplikasjonTjeneste.håndter((HåndterBeregningsgrunnlagInput) beregningsgrunnlagInput,
-                håndteringDtoMap.getFirst());
+                håndteringDto);
             MDC.remove(PROSESS_KOBLING_ID);
             return response;
         }
