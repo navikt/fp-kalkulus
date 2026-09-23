@@ -137,17 +137,17 @@ public class OperereKalkulusOrkestrerer {
 
     private class Håndterer implements Opererer {
 
-        private final HåndterBeregningDto håndteringDto;
+        private final HåndterBeregningDto håndterBeregningDto;
 
-        public Håndterer(HåndterBeregningDto håndteringDto) {
-            this.håndteringDto = håndteringDto;
+        public Håndterer(HåndterBeregningDto håndterBeregningDto) {
+            this.håndterBeregningDto = håndterBeregningDto;
         }
 
         @Override
         public KalkulusRespons utfør(BeregningsgrunnlagInput beregningsgrunnlagInput) {
             MDC.put(PROSESS_KOBLING_ID, beregningsgrunnlagInput.getKoblingId().toString());
             var response = håndtererApplikasjonTjeneste.håndter((HåndterBeregningsgrunnlagInput) beregningsgrunnlagInput,
-                håndteringDto);
+                håndterBeregningDto);
             MDC.remove(PROSESS_KOBLING_ID);
             return response;
         }
