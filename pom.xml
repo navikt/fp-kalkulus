@@ -19,7 +19,7 @@
         <sonar.projectName>fp-kalkulus</sonar.projectName>
         <sonar.projectKey>navikt_fp-kalkulus</sonar.projectKey>
 
-        <ftberegning.version>7.2.0</ftberegning.version>
+        <ftberegning.version>7.2.2</ftberegning.version>
         <fpkalkulus.kontrakt.version>1.2.2</fpkalkulus.kontrakt.version>
         <felles.version>7.9.3</felles.version>
 
