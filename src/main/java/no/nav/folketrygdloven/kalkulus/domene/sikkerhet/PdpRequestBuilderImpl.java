@@ -68,12 +68,11 @@ public class PdpRequestBuilderImpl implements PdpRequestBuilder {
     }
 
     private AppRessursData.Builder minimalbuilder(Set<String> saksnumre, Set<UUID> behandlinger) {
-        var builder = AppRessursData.builder()
+        return AppRessursData.builder()
             .medFagsakStatus(PipFagsakStatus.UNDER_BEHANDLING)
-            .medBehandlingStatus(PipBehandlingStatus.UTREDES);
-        saksnumre.stream().findFirst().ifPresent(builder::medLoggSaksnummer);
-        behandlinger.stream().findFirst().ifPresent(builder::medLoggBehandling);
-        return builder;
+            .medBehandlingStatus(PipBehandlingStatus.UTREDES)
+            .medLoggSaksnummer(saksnumre.stream().findFirst().orElse(null))
+            .medLoggBehandling(behandlinger.stream().findFirst().orElse(null));
     }
 
     private Set<String> identerFraFagsak(Set<String> saksnumre) {
