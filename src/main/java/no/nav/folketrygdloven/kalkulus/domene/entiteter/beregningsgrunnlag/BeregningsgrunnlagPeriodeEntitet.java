@@ -55,7 +55,7 @@ public class BeregningsgrunnlagPeriodeEntitet extends BaseEntitet {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlagPeriode", cascade = CascadeType.PERSIST, orphanRemoval = true)
     @BatchSize(size = 20)
-    private final List<BeregningsgrunnlagAndelEntitet> beregningsgrunnlagAndelList = new ArrayList<>();
+    private List<BeregningsgrunnlagAndelEntitet> beregningsgrunnlagAndelList = new ArrayList<>();
 
     @Embedded
     @AttributeOverride(name = "fomDato", column = @Column(name = "periode_fom", nullable = false))
@@ -86,7 +86,7 @@ public class BeregningsgrunnlagPeriodeEntitet extends BaseEntitet {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlagPeriode", cascade = CascadeType.PERSIST, orphanRemoval = true)
     @BatchSize(size = 20)
-    private final List<PeriodeÅrsakEntitet> periodeårsaker = new ArrayList<>();
+    private List<PeriodeÅrsakEntitet> periodeårsaker = new ArrayList<>();
 
     public BeregningsgrunnlagPeriodeEntitet(BeregningsgrunnlagPeriodeEntitet beregningsgrunnlagPeriode) {
         this.avkortetPrÅr = beregningsgrunnlagPeriode.getAvkortetPrÅr();
