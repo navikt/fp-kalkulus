@@ -48,18 +48,18 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlag", cascade = CascadeType.PERSIST)
     @BatchSize(size = 20)
-    private final List<BeregningsgrunnlagAktivitetStatusEntitet> aktivitetStatuser = new ArrayList<>();
+    private List<BeregningsgrunnlagAktivitetStatusEntitet> aktivitetStatuser = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlag", cascade = CascadeType.PERSIST)
     @BatchSize(size = 20)
-    private final List<BeregningsgrunnlagPeriodeEntitet> beregningsgrunnlagPerioder = new ArrayList<>();
+    private List<BeregningsgrunnlagPeriodeEntitet> beregningsgrunnlagPerioder = new ArrayList<>();
 
     @OneToOne(mappedBy = "beregningsgrunnlag", cascade = CascadeType.PERSIST)
     private BesteberegninggrunnlagEntitet besteberegninggrunnlag;
 
     @OneToMany(mappedBy = "beregningsgrunnlag")
     @BatchSize(size = 20)
-    private final List<SammenligningsgrunnlagPrStatusEntitet> sammenligningsgrunnlagPrStatusListe = new ArrayList<>();
+    private List<SammenligningsgrunnlagPrStatusEntitet> sammenligningsgrunnlagPrStatusListe = new ArrayList<>();
 
     @Embedded
     @AttributeOverride(name = "verdi", column = @Column(name = "grunnbeloep"))
@@ -68,7 +68,7 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlag", cascade = CascadeType.PERSIST)
     @BatchSize(size = 20)
-    private final List<FaktaOmBeregningTilfelleEntitet> faktaOmBeregningTilfeller = new ArrayList<>();
+    private List<FaktaOmBeregningTilfelleEntitet> faktaOmBeregningTilfeller = new ArrayList<>();
 
     @Column(name = "overstyrt", nullable = false)
     private boolean overstyrt = false;
