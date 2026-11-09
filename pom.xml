@@ -7,7 +7,7 @@
     <parent>
         <groupId>no.nav.foreldrepenger.felles</groupId>
         <artifactId>fp-parent-app</artifactId>
-        <version>5.4.2</version>
+        <version>5.5.0</version>
     </parent>
 
     <groupId>no.nav.foreldrepenger.kalkulus</groupId>
@@ -21,7 +21,7 @@
 
         <ftberegning.version>7.2.2</ftberegning.version>
         <fpkalkulus.kontrakt.version>1.2.2</fpkalkulus.kontrakt.version>
-        <felles.version>7.9.5</felles.version>
+        <felles.version>7.10.1</felles.version>
 
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
@@ -117,7 +117,7 @@
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations-jakarta</artifactId>
+            <artifactId>swagger-annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>jakarta.persistence</groupId>
