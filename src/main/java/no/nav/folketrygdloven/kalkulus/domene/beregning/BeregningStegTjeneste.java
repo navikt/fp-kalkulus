@@ -34,8 +34,10 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrun
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelsporingRepository;
 import no.nav.folketrygdloven.kalkulus.domene.kopiering.SpolFramoverTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.mapTilEntitet.KalkulatorTilEntitetMapper;
+import no.nav.folketrygdloven.kalkulus.domene.mapTilEntitet.FordelingsgrunnlagMapper;
 import no.nav.folketrygdloven.kalkulus.domene.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
+import no.nav.folketrygdloven.kalkulus.domene.tjeneste.fordeling.FordelingsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.domene.tjeneste.sporing.RegelSporingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
@@ -49,6 +51,7 @@ import no.nav.foreldrepenger.kalkulus.kontrakt.response.vilkår.VilkårResponse;
 public class BeregningStegTjeneste {
     private final KalkulatorInterface beregningsgrunnlagTjeneste = new BeregningsgrunnlagTjeneste();
     private BeregningsgrunnlagRepository repository;
+    private FordelingsgrunnlagRepository fordelingsgrunnlagRepository;
     private RegelsporingRepository regelsporingRepository;
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
     private RegelSporingTjeneste regelSporingTjeneste;
@@ -60,10 +63,12 @@ public class BeregningStegTjeneste {
 
     @Inject
     public BeregningStegTjeneste(BeregningsgrunnlagRepository repository,
+                                 FordelingsgrunnlagRepository fordelingsgrunnlagRepository,
                                  RegelsporingRepository regelsporingRepository,
                                  AvklaringsbehovTjeneste avklaringsbehovTjeneste,
                                  RegelSporingTjeneste regelSporingTjeneste) {
         this.repository = repository;
+        this.fordelingsgrunnlagRepository = fordelingsgrunnlagRepository;
         this.regelsporingRepository = regelsporingRepository;
         this.avklaringsbehovTjeneste = avklaringsbehovTjeneste;
         this.regelSporingTjeneste = regelSporingTjeneste;
@@ -238,6 +243,9 @@ public class BeregningStegTjeneste {
                                BeregningResultatAggregat resultat) {
         // Lagring av grunnlag fra steg
         repository.lagre(input.getKoblingId(), mapGrunnlag(resultat.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
+        resultat.getFordelingGrunnlag()
+            .map(FordelingsgrunnlagMapper::map)
+            .ifPresent(builder -> fordelingsgrunnlagRepository.lagre(input.getKoblingId(), builder));
         lagreRegelsporing(input.getKoblingReferanse().getKoblingId(), resultat.getRegelSporingAggregat(), input.getStegTilstand());
         // Kopiering av data og spoling fram til neste tilstand
         SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(resultat.getBeregningAvklaringsbehovResultater(),
