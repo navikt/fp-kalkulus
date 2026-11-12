@@ -10,9 +10,6 @@ import jakarta.persistence.PersistenceException;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
@@ -116,11 +113,18 @@ class FordelingGrunnlagEntitetTest extends EntityManagerAwareTest {
         assertThat(grunnlag.getRefusjonsandeler()).hasSize(1);
     }
 
-    @ParameterizedTest
-    @EnumSource(RefusjonKilde.class)
-    void skal_kunne_lagre_journalpost_uavhengig_av_kilde(RefusjonKilde kilde) {
+    @Test
+    void skal_kunne_lagre_inntektsmelding_uten_journalpost() {
+        verifiserJournalpostUavhengigAvKilde(RefusjonKilde.INNTEKTSMELDING, null);
+    }
+
+    @Test
+    void skal_kunne_lagre_saksbehandlerandel_med_journalpost() {
+        verifiserJournalpostUavhengigAvKilde(RefusjonKilde.SAKSBEHANDLER, "123");
+    }
+
+    private void verifiserJournalpostUavhengigAvKilde(RefusjonKilde kilde, String journalpost) {
         var grunnlag = new FordelingGrunnlagEntitet(lagKobling());
-        var journalpost = kilde == RefusjonKilde.INNTEKTSMELDING ? null : "123";
         grunnlag.leggTilRefusjonsandel(new RefusjonsandelEntitet(Arbeidsgiver.virksomhet("999999999"), null, kilde, journalpost));
         getEntityManager().persist(grunnlag);
 
