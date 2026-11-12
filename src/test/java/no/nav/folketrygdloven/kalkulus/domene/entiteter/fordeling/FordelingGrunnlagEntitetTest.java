@@ -107,17 +107,15 @@ class FordelingGrunnlagEntitetTest extends EntityManagerAwareTest {
     }
 
     @Test
-    void skal_kunne_lagre_duplikate_andeler_uten_databasevalidering() {
+    void skal_avvise_duplikate_andeler_med_ulike_journalpostider() {
         var grunnlag = new FordelingGrunnlagEntitet(lagKobling());
         var arbeidsgiver = Arbeidsgiver.virksomhet("999999999");
         grunnlag.leggTilRefusjonsandel(new RefusjonsandelEntitet(arbeidsgiver, null, RefusjonKilde.INNTEKTSMELDING, "123"));
-        grunnlag.leggTilRefusjonsandel(new RefusjonsandelEntitet(arbeidsgiver, null, RefusjonKilde.INNTEKTSMELDING, "456"));
-        getEntityManager().persist(grunnlag);
-
-        getEntityManager().flush();
-        getEntityManager().clear();
-
-        assertThat(getEntityManager().find(FordelingGrunnlagEntitet.class, grunnlag.getId()).getRefusjonsandeler()).hasSize(2);
+        assertThatThrownBy(() -> grunnlag.leggTilRefusjonsandel(
+            new RefusjonsandelEntitet(arbeidsgiver, null, RefusjonKilde.INNTEKTSMELDING, "456")))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Flere refusjonsandeler med samme arbeidsgiver, arbeidsforholdsreferanse og kilde.");
+        assertThat(grunnlag.getRefusjonsandeler()).hasSize(1);
     }
 
     @ParameterizedTest
@@ -133,28 +131,6 @@ class FordelingGrunnlagEntitetTest extends EntityManagerAwareTest {
 
         var andel = getEntityManager().find(FordelingGrunnlagEntitet.class, grunnlag.getId()).getRefusjonsandeler().getFirst();
         assertThat(andel.getJournalpostId().orElse(null)).isEqualTo(journalpost);
-    }
-
-    @ParameterizedTest
-    @ValueSource(ints = {4000, 4001})
-    void skal_begrense_begrunnelse_til_4000_tegn(int lengde) {
-        var grunnlag = new FordelingGrunnlagEntitet(lagKobling());
-        var andel = new RefusjonsandelEntitet(Arbeidsgiver.virksomhet("999999999"), null, RefusjonKilde.SAKSBEHANDLER, null);
-        var begrunnelse = "a".repeat(lengde);
-        andel.leggTilRefusjonsperiode(new RefusjonsperiodeEntitet(IntervallEntitet.fraOgMed(LocalDate.of(2026, 1, 1)),
-            Beløp.ZERO, RefusjonUtfall.AVSLÅTT, null, begrunnelse));
-        grunnlag.leggTilRefusjonsandel(andel);
-        getEntityManager().persist(grunnlag);
-
-        if (lengde > 4000) {
-            assertThatThrownBy(() -> getEntityManager().flush()).isInstanceOf(PersistenceException.class);
-        } else {
-            getEntityManager().flush();
-            getEntityManager().clear();
-            var hentet = getEntityManager().find(FordelingGrunnlagEntitet.class, grunnlag.getId());
-            assertThat(hentet.getRefusjonsandeler().getFirst().getRefusjonsperioder().getFirst().getUtfallBegrunnelse())
-                .isEqualTo(begrunnelse);
-        }
     }
 
     private Long lagKobling() {

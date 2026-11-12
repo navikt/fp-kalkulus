@@ -66,6 +66,13 @@ public class FordelingGrunnlagEntitet extends BaseEntitet {
     }
 
     public void leggTilRefusjonsandel(RefusjonsandelEntitet refusjonsandel) {
+        var finnesFraFør = refusjonsandeler.stream().anyMatch(andel ->
+            andel.getArbeidsgiver().equals(refusjonsandel.getArbeidsgiver())
+                && andel.getArbeidsforholdRef().equals(refusjonsandel.getArbeidsforholdRef())
+                && andel.getKilde() == refusjonsandel.getKilde());
+        if (finnesFraFør) {
+            throw new IllegalArgumentException("Flere refusjonsandeler med samme arbeidsgiver, arbeidsforholdsreferanse og kilde.");
+        }
         refusjonsandel.setFordelingGrunnlag(this);
         refusjonsandeler.add(refusjonsandel);
     }
