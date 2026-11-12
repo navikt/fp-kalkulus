@@ -52,20 +52,16 @@ public class RefusjonsperiodeEntitet extends BaseEntitet {
     @Column(name = "utfall_aarsak", length = 50)
     private RefusjonUtfallÅrsak utfallÅrsak;
 
-    @Column(name = "utfall_begrunnelse", length = 4000)
-    private String utfallBegrunnelse;
-
     protected RefusjonsperiodeEntitet() {
         // Hibernate
     }
 
     public RefusjonsperiodeEntitet(IntervallEntitet periode, Beløp refusjonPrMnd, RefusjonUtfall utfall,
-                                  RefusjonUtfallÅrsak utfallÅrsak, String utfallBegrunnelse) {
+                                  RefusjonUtfallÅrsak utfallÅrsak) {
         this.periode = periode;
         this.refusjonPrMnd = refusjonPrMnd;
         this.utfall = utfall;
         this.utfallÅrsak = utfallÅrsak;
-        this.utfallBegrunnelse = utfallBegrunnelse;
     }
 
     void setRefusjonsandel(RefusjonsandelEntitet refusjonsandel) {
@@ -86,10 +82,6 @@ public class RefusjonsperiodeEntitet extends BaseEntitet {
 
     public RefusjonUtfallÅrsak getUtfallÅrsak() {
         return utfallÅrsak;
-    }
-
-    public String getUtfallBegrunnelse() {
-        return utfallBegrunnelse;
     }
 
     public static Builder builder() {
@@ -119,11 +111,6 @@ public class RefusjonsperiodeEntitet extends BaseEntitet {
 
         public Builder medUtfallÅrsak(RefusjonUtfallÅrsak utfallÅrsak) {
             kladd.utfallÅrsak = utfallÅrsak;
-            return this;
-        }
-
-        public Builder medUtfallBegrunnelse(String utfallBegrunnelse) {
-            kladd.utfallBegrunnelse = utfallBegrunnelse;
             return this;
         }
 

@@ -37,7 +37,6 @@ public final class FordelingsgrunnlagMapper {
             .medRefusjonPrMnd(beløpTilDao(periode.refusjonPrMnd()))
             .medUtfall(periode.utfall())
             .medUtfallÅrsak(periode.utfallÅrsak())
-            .medUtfallBegrunnelse(periode.utfallBegrunnelse())
             .build();
     }
 }

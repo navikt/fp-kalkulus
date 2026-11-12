@@ -40,10 +40,10 @@ class FordelingGrunnlagEntitetTest extends EntityManagerAwareTest {
         var ref = InternArbeidsforholdRef.nyRef();
         var andel = new RefusjonsandelEntitet(arbeidsgiver, ref, RefusjonKilde.INNTEKTSMELDING, "123456789");
         var januar = IntervallEntitet.fraOgMedTilOgMed(LocalDate.of(2026, 1, 1), LocalDate.of(2026, 1, 31));
-        andel.leggTilRefusjonsperiode(new RefusjonsperiodeEntitet(januar, new Beløp("12345.67"), RefusjonUtfall.INNVILGET, null, null));
+        andel.leggTilRefusjonsperiode(new RefusjonsperiodeEntitet(januar, new Beløp("12345.67"), RefusjonUtfall.INNVILGET, null));
         var fraFebruar = IntervallEntitet.fraOgMed(LocalDate.of(2026, 2, 1));
         andel.leggTilRefusjonsperiode(new RefusjonsperiodeEntitet(fraFebruar, Beløp.ZERO, RefusjonUtfall.AVSLÅTT,
-            RefusjonUtfallÅrsak.IKKE_INNENFOR_FRIST, "Kravet er fremsatt etter fristen."));
+            RefusjonUtfallÅrsak.IKKE_INNENFOR_FRIST));
         grunnlag.leggTilRefusjonsandel(andel);
         grunnlag.leggTilRefusjonsandel(new RefusjonsandelEntitet(arbeidsgiver, ref, RefusjonKilde.SAKSBEHANDLER, null));
         var personligArbeidsgiver = Arbeidsgiver.person(new AktørId("9999999999998"));
@@ -67,12 +67,10 @@ class FordelingGrunnlagEntitetTest extends EntityManagerAwareTest {
         assertThat(innvilget.getPeriode()).isEqualTo(januar);
         assertThat(innvilget.getRefusjonPrMnd()).isEqualTo(new Beløp("12345.67"));
         assertThat(innvilget.getUtfallÅrsak()).isNull();
-        assertThat(innvilget.getUtfallBegrunnelse()).isNull();
         var avslått = hentetAndel.getRefusjonsperioder().stream().filter(p -> p.getUtfall() == RefusjonUtfall.AVSLÅTT).findFirst().orElseThrow();
         assertThat(avslått.getPeriode()).isEqualTo(fraFebruar);
         assertThat(avslått.getRefusjonPrMnd()).isEqualTo(Beløp.ZERO);
         assertThat(avslått.getUtfallÅrsak()).isEqualTo(RefusjonUtfallÅrsak.IKKE_INNENFOR_FRIST);
-        assertThat(avslått.getUtfallBegrunnelse()).isEqualTo("Kravet er fremsatt etter fristen.");
         var personligAndel = hentet.getRefusjonsandeler().stream().filter(a -> a.getArbeidsgiver().erAktørId()).findFirst().orElseThrow();
         assertThat(personligAndel.getArbeidsgiver()).isEqualTo(personligArbeidsgiver);
         assertThat(personligAndel.getArbeidsforholdRef().gjelderForSpesifiktArbeidsforhold()).isFalse();

@@ -53,7 +53,6 @@ class FordelingsgrunnlagMapperTest {
         assertThat(mappetPeriode.getRefusjonPrMnd().getVerdi()).isEqualByComparingTo(beløp);
         assertThat(mappetPeriode.getUtfall()).isEqualTo(utfall);
         assertThat(mappetPeriode.getUtfallÅrsak()).isEqualTo(RefusjonUtfallÅrsak.IKKE_INNENFOR_FRIST);
-        assertThat(mappetPeriode.getUtfallBegrunnelse()).isEqualTo("Vurdering av refusjonskravet.");
     }
 
     @Test
@@ -75,7 +74,6 @@ class FordelingsgrunnlagMapperTest {
         assertThat(mappetPeriode.getPeriode().getTomDato()).isEqualTo(periode.periode().getTomDato());
         assertThat(mappetPeriode.getRefusjonPrMnd().getVerdi()).isZero();
         assertThat(mappetPeriode.getUtfallÅrsak()).isNull();
-        assertThat(mappetPeriode.getUtfallBegrunnelse()).isNull();
     }
 
     @Test

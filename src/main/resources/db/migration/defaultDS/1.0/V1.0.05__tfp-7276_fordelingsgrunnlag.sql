@@ -54,7 +54,6 @@ create table refusjon_andel_periode
     refusjon_pr_mnd     numeric(19, 2) not null,
     utfall             varchar(50) not null,
     utfall_aarsak       varchar(50),
-    utfall_begrunnelse  varchar(4000),
     versjon            int default 0 not null,
     opprettet_av       varchar(20) default 'VL' not null,
     opprettet_tid      timestamp(3) default CURRENT_TIMESTAMP not null,
@@ -70,6 +69,5 @@ comment on column refusjon_andel_periode.tom is 'Siste dato i refusjonsperioden,
 comment on column refusjon_andel_periode.refusjon_pr_mnd is 'Refusjonskrav per måned i kroner';
 comment on column refusjon_andel_periode.utfall is 'Utfallet for refusjonskravet i perioden';
 comment on column refusjon_andel_periode.utfall_aarsak is 'Årsak til utfallet for refusjonskravet';
-comment on column refusjon_andel_periode.utfall_begrunnelse is 'Fritekstbegrunnelse for utfallet for refusjonskravet';
 
 create index idx_refusjon_andel_periode_andel on refusjon_andel_periode (refusjon_andel_id);
