@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import no.nav.folketrygdloven.kalkulus.felles.JournalpostId;
 import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Aktør;
 import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Beløp;
 import no.nav.foreldrepenger.kalkulus.kontrakt.typer.InternArbeidsforholdRefDto;
@@ -60,6 +61,10 @@ public class InntektsmeldingDto {
     @Valid
     private LocalDate innsendingsdato;
 
+    @JsonProperty(value = "journalpostId")
+    @Valid
+    private JournalpostId journalpostId;
+
     protected InntektsmeldingDto() {
         // default ctor
     }
@@ -72,7 +77,7 @@ public class InntektsmeldingDto {
                               LocalDate startDatoPermisjon,
                               LocalDate refusjonOpphører,
                               Beløp refusjonBeløpPerMnd,
-                              LocalDate innsendingsdato) {
+                              LocalDate innsendingsdato, JournalpostId journalpostId) {
         this.arbeidsgiver = arbeidsgiver;
         this.inntektBeløp = inntektBeløp;
         this.naturalYtelser = naturalYtelser;
@@ -82,10 +87,15 @@ public class InntektsmeldingDto {
         this.refusjonOpphører = refusjonOpphører;
         this.refusjonBeløpPerMnd = refusjonBeløpPerMnd;
         this.innsendingsdato = innsendingsdato;
+        this.journalpostId = journalpostId;
     }
 
     public Aktør getArbeidsgiver() {
         return arbeidsgiver;
+    }
+
+    public JournalpostId getJournalpostId() {
+        return journalpostId;
     }
 
     public Beløp getInntektBeløp() {
