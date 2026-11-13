@@ -66,10 +66,11 @@ public class HentKalkulusRestTjeneste {
     @Inject
     public HentKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste,
                                     BeregningsgrunnlagRepository beregningsgrunnlagRepository,
-                                    GUIBeregningsgrunnlagInputTjeneste guiInputTjeneste) {
+                                    GUIBeregningsgrunnlagInputTjeneste guiInputTjeneste, FordelingsgrunnlagTjeneste fordelingsgrunnlagTjeneste) {
         this.koblingTjeneste = koblingTjeneste;
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.guiInputTjeneste = guiInputTjeneste;
+        this.fordelingsgrunnlagTjeneste = fordelingsgrunnlagTjeneste;
     }
 
 
