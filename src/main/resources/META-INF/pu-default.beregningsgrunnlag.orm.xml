@@ -25,5 +25,8 @@
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.RefusjonOverstyringEntitet" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.RefusjonPeriodeEntitet" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatusEntitet" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.fordeling.FordelingGrunnlagEntitet" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.fordeling.RefusjonsandelEntitet" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.fordeling.RefusjonsperiodeEntitet" />
 
 </entity-mappings>
