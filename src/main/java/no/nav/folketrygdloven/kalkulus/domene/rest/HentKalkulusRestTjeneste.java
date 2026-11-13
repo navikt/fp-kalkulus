@@ -56,6 +56,7 @@ public class HentKalkulusRestTjeneste {
     private KoblingTjeneste koblingTjeneste;
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private GUIBeregningsgrunnlagInputTjeneste guiInputTjeneste;
+    private FordelingsgrunnlagTjeneste fordelingsgrunnlagTjeneste;
     private final KalkulatorGuiInterface dtoTjeneste = new BeregningsgrunnlagGuiTjeneste();
 
     public HentKalkulusRestTjeneste() {
@@ -65,10 +66,11 @@ public class HentKalkulusRestTjeneste {
     @Inject
     public HentKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste,
                                     BeregningsgrunnlagRepository beregningsgrunnlagRepository,
-                                    GUIBeregningsgrunnlagInputTjeneste guiInputTjeneste) {
+                                    GUIBeregningsgrunnlagInputTjeneste guiInputTjeneste, FordelingsgrunnlagTjeneste fordelingsgrunnlagTjeneste) {
         this.koblingTjeneste = koblingTjeneste;
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.guiInputTjeneste = guiInputTjeneste;
+        this.fordelingsgrunnlagTjeneste = fordelingsgrunnlagTjeneste;
     }
 
 
@@ -100,6 +102,34 @@ public class HentKalkulusRestTjeneste {
         }
         var guiDto = hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(guiInput.get());
         return Response.ok(guiDto).build();
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(description = "Hent beregningsgrunnlagDto for angitt behandling som brukes av frontend", summary = ("Returnerer beregningsgrunnlagDto for behandling."), tags = "beregningsgrunnlag")
+    @BeskyttetRessurs(actionType = ActionType.READ, resourceType = ResourceType.FAGSAK, sporingslogg = false)
+    @Path("/grunnlag/gui/beregningsgrunnlag")
+    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
+    public Response hentBeregningsgrunnlagDtoV2(@TilpassetAbacAttributt(supplierClass = HentBeregningsgrunnlagGUIRequestAbacSupplier.class) @NotNull @Valid EnkelHentBeregningsgrunnlagGUIRequest request) {
+        var koblingEntitet = koblingTjeneste.hentKoblingOptional(new KoblingReferanse(request.behandlingUuid()));
+        var guiInput = koblingEntitet.flatMap(k -> finnInputForGenereringAvDtoTilGUI(k, request.kalkulatorInput()));
+        if (guiInput.isEmpty()) {
+            return Response.noContent().build();
+        }
+        var guiDto = hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(guiInput.get());
+        return Response.ok(guiDto).build();
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(description = "Hent fordelingsgrunnlag for angitt behandling som brukes av frontend", summary = ("Returnerer fordelingsgrunnlagDto for behandling."), tags = "beregningsgrunnlag")
+    @BeskyttetRessurs(actionType = ActionType.READ, resourceType = ResourceType.FAGSAK, sporingslogg = false)
+    @Path("/grunnlag/gui/fordelingsgrunnlag")
+    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
+    public Response hentFordelingsgrunlagDto(@TilpassetAbacAttributt(supplierClass = HentBeregningsgrunnlagGUIRequestAbacSupplier.class) @NotNull @Valid EnkelHentBeregningsgrunnlagGUIRequest request) {
+        var koblingEntitet = koblingTjeneste.hentKoblingOptional(new KoblingReferanse(request.behandlingUuid()));
+        var fordelingsgrunnlagDto = koblingEntitet.flatMap(fordelingsgrunnlagTjeneste::lagDto);
+        return fordelingsgrunnlagDto.map(Response::ok).orElseGet(Response::noContent).build();
     }
 
     @POST

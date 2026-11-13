@@ -11,9 +11,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import no.nav.folketrygdloven.kalkulator.modell.refusjon.FordelingGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.refusjon.RefusjonsandelDto;
-import no.nav.folketrygdloven.kalkulator.modell.refusjon.RefusjonsperiodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.refusjon.FordelingGrunnlag;
+import no.nav.folketrygdloven.kalkulator.modell.refusjon.Refusjonsandel;
+import no.nav.folketrygdloven.kalkulator.modell.refusjon.Refusjonsperiode;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -90,12 +90,12 @@ class FordelingsgrunnlagRepositoryTest extends EntityManagerAwareTest {
         assertThat(hentetAnnetGrunnlag.getRefusjonsandeler()).hasSize(1);
     }
 
-    private FordelingGrunnlagDto lagGrunnlag(int beløp) {
-        var periode = new RefusjonsperiodeDto(Intervall.fraOgMed(LocalDate.of(2026, 1, 1)),
-            Beløp.fra(BigDecimal.valueOf(beløp)), RefusjonUtfall.INNVILGET, null, null);
-        var andel = new RefusjonsandelDto(Arbeidsgiver.virksomhet("999999999"), null, RefusjonKilde.INNTEKTSMELDING,
+    private FordelingGrunnlag lagGrunnlag(int beløp) {
+        var periode = new Refusjonsperiode(Intervall.fraOgMed(LocalDate.of(2026, 1, 1)),
+            Beløp.fra(BigDecimal.valueOf(beløp)), RefusjonUtfall.INNVILGET, null);
+        var andel = new Refusjonsandel(Arbeidsgiver.virksomhet("999999999"), null, RefusjonKilde.INNTEKTSMELDING,
             new JournalpostId("123456789"), List.of(periode));
-        return new FordelingGrunnlagDto(List.of(andel));
+        return new FordelingGrunnlag(List.of(andel));
     }
 
     private Long lagKobling() {

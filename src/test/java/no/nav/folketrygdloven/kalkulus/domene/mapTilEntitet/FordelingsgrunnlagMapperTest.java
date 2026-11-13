@@ -10,9 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-import no.nav.folketrygdloven.kalkulator.modell.refusjon.FordelingGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.refusjon.RefusjonsandelDto;
-import no.nav.folketrygdloven.kalkulator.modell.refusjon.RefusjonsperiodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.refusjon.FordelingGrunnlag;
+import no.nav.folketrygdloven.kalkulator.modell.refusjon.Refusjonsandel;
+import no.nav.folketrygdloven.kalkulator.modell.refusjon.Refusjonsperiode;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
@@ -32,12 +32,12 @@ class FordelingsgrunnlagMapperTest {
         var fom = LocalDate.of(2026, 1, 1);
         var tom = LocalDate.of(2026, 1, 31);
         var beløp = new BigDecimal("12345.67");
-        var periode = new RefusjonsperiodeDto(Intervall.fraOgMedTilOgMed(fom, tom), Beløp.fra(beløp), utfall,
-            RefusjonUtfallÅrsak.IKKE_INNENFOR_FRIST, "Vurdering av refusjonskravet.");
-        var andel = new RefusjonsandelDto(Arbeidsgiver.virksomhet("999999999"), ref, RefusjonKilde.INNTEKTSMELDING,
+        var periode = new Refusjonsperiode(Intervall.fraOgMedTilOgMed(fom, tom), Beløp.fra(beløp), utfall,
+            RefusjonUtfallÅrsak.IKKE_INNENFOR_FRIST);
+        var andel = new Refusjonsandel(Arbeidsgiver.virksomhet("999999999"), ref, RefusjonKilde.INNTEKTSMELDING,
             new JournalpostId("123456789"), List.of(periode));
 
-        var entitet = FordelingsgrunnlagMapper.map(new FordelingGrunnlagDto(List.of(andel))).build(42L);
+        var entitet = FordelingsgrunnlagMapper.map(new FordelingGrunnlag(List.of(andel))).build(42L);
 
         assertThat(entitet.getKoblingId()).isEqualTo(42L);
         assertThat(entitet.getRefusjonsandeler()).hasSize(1);
@@ -57,12 +57,12 @@ class FordelingsgrunnlagMapperTest {
 
     @Test
     void skal_mappe_personlig_arbeidsgiver_og_valgfrie_felter() {
-        var periode = new RefusjonsperiodeDto(Intervall.fraOgMed(LocalDate.of(2026, 1, 1)), Beløp.ZERO,
-            RefusjonUtfall.INNVILGET, null, null);
-        var andel = new RefusjonsandelDto(Arbeidsgiver.person(new AktørId("9999999999999")), null,
+        var periode = new Refusjonsperiode(Intervall.fraOgMed(LocalDate.of(2026, 1, 1)), Beløp.ZERO,
+            RefusjonUtfall.INNVILGET, null);
+        var andel = new Refusjonsandel(Arbeidsgiver.person(new AktørId("9999999999999")), null,
             RefusjonKilde.SAKSBEHANDLER, null, List.of(periode));
 
-        var entitet = FordelingsgrunnlagMapper.map(new FordelingGrunnlagDto(List.of(andel))).build(42L);
+        var entitet = FordelingsgrunnlagMapper.map(new FordelingGrunnlag(List.of(andel))).build(42L);
 
         var mappetAndel = entitet.getRefusjonsandeler().getFirst();
         assertThat(mappetAndel.getArbeidsgiver().getAktørId().getId()).isEqualTo("9999999999999");
@@ -78,7 +78,7 @@ class FordelingsgrunnlagMapperTest {
 
     @Test
     void skal_mappe_tomt_fordelingsgrunnlag() {
-        var entitet = FordelingsgrunnlagMapper.map(new FordelingGrunnlagDto(List.of())).build(42L);
+        var entitet = FordelingsgrunnlagMapper.map(new FordelingGrunnlag(List.of())).build(42L);
 
         assertThat(entitet.getRefusjonsandeler()).isEmpty();
     }
