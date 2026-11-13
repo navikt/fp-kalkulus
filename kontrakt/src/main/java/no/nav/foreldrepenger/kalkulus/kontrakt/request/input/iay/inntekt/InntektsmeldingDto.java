@@ -13,10 +13,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulus.felles.JournalpostId;
 import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Aktør;
 import no.nav.foreldrepenger.kalkulus.kontrakt.typer.Beløp;
 import no.nav.foreldrepenger.kalkulus.kontrakt.typer.InternArbeidsforholdRefDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.JournalpostId;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.ALWAYS, content = Include.ALWAYS)
