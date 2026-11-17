@@ -20,7 +20,7 @@
         <sonar.projectKey>navikt_fp-kalkulus</sonar.projectKey>
 
         <ftberegning.version>7.2.7</ftberegning.version>
-        <fpkalkulus.kontrakt.version>1.2.2</fpkalkulus.kontrakt.version>
+        <fpkalkulus.kontrakt.version>1.2.3</fpkalkulus.kontrakt.version>
         <felles.version>7.10.1</felles.version>
 
         <maven.deploy.skip>true</maven.deploy.skip>

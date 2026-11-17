@@ -126,7 +126,7 @@ public class HentKalkulusRestTjeneste {
     @BeskyttetRessurs(actionType = ActionType.READ, resourceType = ResourceType.FAGSAK, sporingslogg = false)
     @Path("/grunnlag/gui/fordelingsgrunnlag")
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
-    public Response hentFordelingsgrunlagDto(@TilpassetAbacAttributt(supplierClass = HentBeregningsgrunnlagGUIRequestAbacSupplier.class) @NotNull @Valid EnkelHentBeregningsgrunnlagGUIRequest request) {
+    public Response hentFordelingsgrunlagDto(@TilpassetAbacAttributt(supplierClass = EnkelFpkalkulusRequestAbacSupplier.class) @NotNull @Valid EnkelFpkalkulusRequestDto request) {
         var koblingEntitet = koblingTjeneste.hentKoblingOptional(new KoblingReferanse(request.behandlingUuid()));
         var fordelingsgrunnlagDto = koblingEntitet.flatMap(fordelingsgrunnlagTjeneste::lagDto);
         return fordelingsgrunnlagDto.map(Response::ok).orElseGet(Response::noContent).build();
