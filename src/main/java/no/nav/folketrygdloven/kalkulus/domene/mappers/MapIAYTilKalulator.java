@@ -184,7 +184,7 @@ public class MapIAYTilKalulator {
     private static InntektsmeldingDto mapInntektsmeldingDto(no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.inntekt.InntektsmeldingDto inntektsmelding) {
         InntektsmeldingDtoBuilder builder = InntektsmeldingDtoBuilder.builder();
         builder.medArbeidsgiver(MapFraKalkulator.mapArbeidsgiver(inntektsmelding.getArbeidsgiver()));
-        builder.medJournalpostId(new JournalpostId(inntektsmelding.getJournalpostId().journalpostId()));
+        builder.medJournalpostId(inntektsmelding.getJournalpostId() == null ? null : new JournalpostId(inntektsmelding.getJournalpostId().journalpostId()));
         builder.medArbeidsforholdId(mapArbeidsforholdRef(inntektsmelding.getArbeidsforholdRef()));
         builder.medRefusjon(Optional.ofNullable(inntektsmelding.getRefusjonBeløpPerMnd()).map(MapIAYTilKalulator::beløpFraDto).orElse(null), inntektsmelding.getRefusjonOpphører());
         builder.medBeløp(beløpFraDto(inntektsmelding.getInntektBeløp()));
