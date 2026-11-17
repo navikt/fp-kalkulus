@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import no.nav.foreldrepenger.kalkulus.kontrakt.typer.JournalpostId;
+
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.modell.iay.KravperioderPrArbeidsforholdDto;
@@ -260,7 +262,7 @@ class MapInntektsmeldingerTilKravperioderTest {
     }
 
     private InntektsmeldingDto lagIM(Aktør ag, InternArbeidsforholdRefDto internRef, Integer inntekt, Integer refusjon, LocalDate startdatoPermisjon, LocalDate innsendingstidspunkt) {
-        return new InntektsmeldingDto(ag, Beløp.fra(inntekt), List.of(), List.of(), internRef, startdatoPermisjon, Tid.TIDENES_ENDE, Beløp.fra(refusjon), innsendingstidspunkt);
+        return new InntektsmeldingDto(ag, Beløp.fra(inntekt), List.of(), List.of(), internRef, startdatoPermisjon, Tid.TIDENES_ENDE, Beløp.fra(refusjon), innsendingstidspunkt, new JournalpostId("1"));
     }
 
     private ArbeidsforholdOverstyringDto lagOverstyrtArbeid(Aktør ag, InternArbeidsforholdRefDto internRef, LocalDate fom, LocalDate tom) {

@@ -36,6 +36,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.felles.JournalpostId;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.arbeid.AktivitetsAvtaleDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.arbeid.ArbeidDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.arbeid.ArbeidsforholdInformasjonDto;
@@ -183,6 +184,7 @@ public class MapIAYTilKalulator {
     private static InntektsmeldingDto mapInntektsmeldingDto(no.nav.foreldrepenger.kalkulus.kontrakt.request.input.iay.inntekt.InntektsmeldingDto inntektsmelding) {
         InntektsmeldingDtoBuilder builder = InntektsmeldingDtoBuilder.builder();
         builder.medArbeidsgiver(MapFraKalkulator.mapArbeidsgiver(inntektsmelding.getArbeidsgiver()));
+        builder.medJournalpostId(new JournalpostId(inntektsmelding.getJournalpostId().journalpostId()));
         builder.medArbeidsforholdId(mapArbeidsforholdRef(inntektsmelding.getArbeidsforholdRef()));
         builder.medRefusjon(Optional.ofNullable(inntektsmelding.getRefusjonBeløpPerMnd()).map(MapIAYTilKalulator::beløpFraDto).orElse(null), inntektsmelding.getRefusjonOpphører());
         builder.medBeløp(beløpFraDto(inntektsmelding.getInntektBeløp()));
