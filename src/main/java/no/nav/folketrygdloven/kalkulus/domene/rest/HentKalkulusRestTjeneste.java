@@ -90,27 +90,11 @@ public class HentKalkulusRestTjeneste {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(description = "Hent beregningsgrunnlagDto for angitt behandling som brukes frontend", summary = ("Returnerer beregningsgrunnlagDto for behandling."), tags = "beregningsgrunnlag")
-    @BeskyttetRessurs(actionType = ActionType.READ, resourceType = ResourceType.FAGSAK, sporingslogg = false)
-    @Path("/grunnlag/gui")
-    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
-    public Response hentBeregningsgrunnlagDto(@TilpassetAbacAttributt(supplierClass = HentBeregningsgrunnlagGUIRequestAbacSupplier.class) @NotNull @Valid EnkelHentBeregningsgrunnlagGUIRequest request) {
-        var koblingEntitet = koblingTjeneste.hentKoblingOptional(new KoblingReferanse(request.behandlingUuid()));
-        var guiInput = koblingEntitet.flatMap(k -> finnInputForGenereringAvDtoTilGUI(k, request.kalkulatorInput()));
-        if (guiInput.isEmpty()) {
-            return Response.noContent().build();
-        }
-        var guiDto = hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(guiInput.get());
-        return Response.ok(guiDto).build();
-    }
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent beregningsgrunnlagDto for angitt behandling som brukes av frontend", summary = ("Returnerer beregningsgrunnlagDto for behandling."), tags = "beregningsgrunnlag")
     @BeskyttetRessurs(actionType = ActionType.READ, resourceType = ResourceType.FAGSAK, sporingslogg = false)
     @Path("/grunnlag/gui/beregningsgrunnlag")
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
-    public Response hentBeregningsgrunnlagDtoV2(@TilpassetAbacAttributt(supplierClass = HentBeregningsgrunnlagGUIRequestAbacSupplier.class) @NotNull @Valid EnkelHentBeregningsgrunnlagGUIRequest request) {
+    public Response hentBeregningsgrunnlagDto(@TilpassetAbacAttributt(supplierClass = HentBeregningsgrunnlagGUIRequestAbacSupplier.class) @NotNull @Valid EnkelHentBeregningsgrunnlagGUIRequest request) {
         var koblingEntitet = koblingTjeneste.hentKoblingOptional(new KoblingReferanse(request.behandlingUuid()));
         var guiInput = koblingEntitet.flatMap(k -> finnInputForGenereringAvDtoTilGUI(k, request.kalkulatorInput()));
         if (guiInput.isEmpty()) {
