@@ -107,7 +107,7 @@ public class RegelSporingGrunnlagEntitet extends BaseEntitet {
         }
 
         public Builder medRegelVersjon(String regelVersjon) {
-            kladd.regelVersjon = regelVersjon;
+            kladd.regelVersjon = "1";
             return this;
         }
 

@@ -1,34 +1,20 @@
 package no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
-
 import java.util.List;
-
 import jakarta.validation.Valid;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
-@JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
-// TODO: Endre navnet på denne når gammelt slettes
 public class OverstyrtRefusjonEndringDto {
 
-    @JsonProperty(value = "beregningsgrunnlagPeriodeEndringer")
-    private List<@Valid BeregningsgrunnlagPeriodeEndring> beregningsgrunnlagPeriodeEndringer;
-
+    private List<@Valid RefusjonOverstyrtAndelEndringDto> refusjonOverstyrtAndelEndringer;
 
     public OverstyrtRefusjonEndringDto() {
     }
 
-    public OverstyrtRefusjonEndringDto(List<@Valid BeregningsgrunnlagPeriodeEndring> beregningsgrunnlagPeriodeEndringer) {
-        this.beregningsgrunnlagPeriodeEndringer = beregningsgrunnlagPeriodeEndringer;
+    public OverstyrtRefusjonEndringDto(List<@Valid RefusjonOverstyrtAndelEndringDto> refusjonOverstyrtAndelEndringer) {
+        this.refusjonOverstyrtAndelEndringer = refusjonOverstyrtAndelEndringer;
     }
 
-    public List<BeregningsgrunnlagPeriodeEndring> getBeregningsgrunnlagPeriodeEndringer() {
-        return beregningsgrunnlagPeriodeEndringer;
+    public List<RefusjonOverstyrtAndelEndringDto> getRefusjonOverstyrtAndelEndringer() {
+        return refusjonOverstyrtAndelEndringer;
     }
 }
