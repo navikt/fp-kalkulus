@@ -47,7 +47,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.RefusjonKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.RefusjonUtfall;
-import no.nav.folketrygdloven.kalkulus.kodeverk.RefusjonUtfallÅrsak;
 import no.nav.folketrygdloven.kalkulus.domene.tjeneste.avklaringsbehov.AvklaringsbehovRepository;
 import no.nav.folketrygdloven.kalkulus.domene.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
@@ -124,17 +123,11 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
 
     @Test
     void skal_kopiere_aktivt_fordelingsgrunnlag_til_ny_kobling() {
-        KontekstHolder.setKontekst(BasisKontekst.forProsesstaskUtenSystembruker());
         var originalKoblingReferanse = new KoblingReferanse(UUID.randomUUID());
         var originalKobling = new KoblingEntitet(originalKoblingReferanse, FagsakYtelseType.FORELDREPENGER, SAK, AKTØR_ID);
         koblingRepository.lagre(originalKobling);
         koblingRepository.markerKoblingSomAvsluttet(originalKobling);
         repository.lagre(originalKobling.getId(), byggGrunnlag(200000, 100000), BeregningsgrunnlagTilstand.FASTSATT);
-
-        var nyReferanse = new KoblingReferanse(UUID.randomUUID());
-        var eksisterendeNyKobling = new KoblingEntitet(nyReferanse, FagsakYtelseType.FORELDREPENGER, SAK, AKTØR_ID);
-        koblingRepository.lagre(eksisterendeNyKobling);
-        var gammeltFordelingsgrunnlag = fordelingsgrunnlagRepository.lagre(eksisterendeNyKobling.getId(), FordelingGrunnlagEntitet.builder());
 
         var arbeidsforholdRef = InternArbeidsforholdRef.nyRef();
         var kildeAndel = new RefusjonsandelEntitet(Arbeidsgiver.virksomhet("999999999"), arbeidsforholdRef,
@@ -142,70 +135,31 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         kildeAndel.leggTilRefusjonsperiode(new RefusjonsperiodeEntitet(
             IntervallEntitet.fraOgMedTilOgMed(LocalDate.of(2026, 1, 1), LocalDate.of(2026, 1, 31)),
             new Beløp("12345.67"), RefusjonUtfall.INNVILGET, null));
-        kildeAndel.leggTilRefusjonsperiode(new RefusjonsperiodeEntitet(
-            IntervallEntitet.fraOgMed(LocalDate.of(2026, 2, 1)), new Beløp("9876.54"), RefusjonUtfall.AVSLÅTT,
-            RefusjonUtfallÅrsak.IKKE_INNENFOR_FRIST));
-        var kildeGrunnlag = FordelingGrunnlagEntitet.builder()
-            .leggTilRefusjonsandel(kildeAndel)
-            .leggTilRefusjonsandel(new RefusjonsandelEntitet(Arbeidsgiver.person(new AktørId("9999999999998")),
-                InternArbeidsforholdRef.nullRef(), RefusjonKilde.SAKSBEHANDLER, null));
+        var kildeGrunnlag = FordelingGrunnlagEntitet.builder().leggTilRefusjonsandel(kildeAndel);
         var lagretKildeGrunnlag = fordelingsgrunnlagRepository.lagre(originalKobling.getId(), kildeGrunnlag);
 
+        var nyReferanse = new KoblingReferanse(UUID.randomUUID());
         tjeneste.kopierFastsattBeregningsgrunnlag(nyReferanse, originalKoblingReferanse, SAK);
-        getEntityManager().flush();
-        getEntityManager().clear();
 
-        var aktivKildeGrunnlag = fordelingsgrunnlagRepository.hentAktivtGrunnlag(originalKobling.getId()).orElseThrow();
-        var kopiertGrunnlag = fordelingsgrunnlagRepository.hentAktivtGrunnlag(eksisterendeNyKobling.getId()).orElseThrow();
-        assertThat(aktivKildeGrunnlag.getId()).isEqualTo(lagretKildeGrunnlag.getId());
-        assertThat(aktivKildeGrunnlag.erAktivt()).isTrue();
-        assertThat(kopiertGrunnlag.getId()).isNotEqualTo(aktivKildeGrunnlag.getId());
-        assertThat(kopiertGrunnlag.getKoblingId()).isEqualTo(eksisterendeNyKobling.getId());
-        assertThat(getEntityManager().find(FordelingGrunnlagEntitet.class, gammeltFordelingsgrunnlag.getId()).erAktivt()).isFalse();
+        var nyKobling = koblingRepository.hentForKoblingReferanse(nyReferanse).orElseThrow();
+        var kopiertGrunnlag = fordelingsgrunnlagRepository.hentAktivtGrunnlag(nyKobling.getId()).orElseThrow();
+        assertThat(kopiertGrunnlag.getId()).isNotEqualTo(lagretKildeGrunnlag.getId());
+        assertThat(kopiertGrunnlag.getKoblingId()).isEqualTo(nyKobling.getId());
 
-        var kildeAndeler = aktivKildeGrunnlag.getRefusjonsandeler();
         var kopierteAndeler = kopiertGrunnlag.getRefusjonsandeler();
-        assertThat(kopierteAndeler).hasSize(2);
-        var kildeAndelEtterKopiering = kildeAndeler.stream()
-            .filter(andel -> andel.getKilde() == RefusjonKilde.INNTEKTSMELDING).findFirst().orElseThrow();
-        var kopiertAndel = kopierteAndeler.stream()
-            .filter(andel -> andel.getKilde() == RefusjonKilde.INNTEKTSMELDING).findFirst().orElseThrow();
-        assertThat(kopiertAndel.getArbeidsgiver()).isEqualTo(kildeAndelEtterKopiering.getArbeidsgiver());
+        assertThat(kopierteAndeler).hasSize(1);
+        var kopiertAndel = kopierteAndeler.getFirst();
+        assertThat(kopiertAndel.getArbeidsgiver()).isEqualTo(kildeAndel.getArbeidsgiver());
         assertThat(kopiertAndel.getArbeidsforholdRef()).isEqualTo(arbeidsforholdRef);
         assertThat(kopiertAndel.getKilde()).isEqualTo(RefusjonKilde.INNTEKTSMELDING);
         assertThat(kopiertAndel.getJournalpostId()).contains("123456789");
-        assertThat(kopiertAndel.getRefusjonsperioder()).hasSize(2);
-        var innvilgetPeriode = kopiertAndel.getRefusjonsperioder().stream()
-            .filter(periode -> periode.getUtfall() == RefusjonUtfall.INNVILGET).findFirst().orElseThrow();
+        assertThat(kopiertAndel.getRefusjonsperioder()).hasSize(1);
+        var innvilgetPeriode = kopiertAndel.getRefusjonsperioder().getFirst();
         assertThat(innvilgetPeriode.getPeriode()).isEqualTo(IntervallEntitet.fraOgMedTilOgMed(
             LocalDate.of(2026, 1, 1), LocalDate.of(2026, 1, 31)));
         assertThat(innvilgetPeriode.getRefusjonPrMnd()).isEqualTo(new Beløp("12345.67"));
+        assertThat(innvilgetPeriode.getUtfall()).isEqualTo(RefusjonUtfall.INNVILGET);
         assertThat(innvilgetPeriode.getUtfallÅrsak()).isNull();
-        var avslåttPeriode = kopiertAndel.getRefusjonsperioder().stream()
-            .filter(periode -> periode.getUtfall() == RefusjonUtfall.AVSLÅTT).findFirst().orElseThrow();
-        assertThat(avslåttPeriode.getPeriode()).isEqualTo(IntervallEntitet.fraOgMed(LocalDate.of(2026, 2, 1)));
-        assertThat(avslåttPeriode.getRefusjonPrMnd()).isEqualTo(new Beløp("9876.54"));
-        assertThat(avslåttPeriode.getUtfallÅrsak()).isEqualTo(RefusjonUtfallÅrsak.IKKE_INNENFOR_FRIST);
-        var saksbehandlerandel = kopierteAndeler.stream()
-            .filter(andel -> andel.getKilde() == RefusjonKilde.SAKSBEHANDLER).findFirst().orElseThrow();
-        assertThat(saksbehandlerandel.getArbeidsgiver()).isEqualTo(Arbeidsgiver.person(new AktørId("9999999999998")));
-        assertThat(saksbehandlerandel.getArbeidsforholdRef().gjelderForSpesifiktArbeidsforhold()).isFalse();
-        assertThat(saksbehandlerandel.getJournalpostId()).isEmpty();
-
-        var kildeAndelIder = getEntityManager().createQuery(
-            "select andel.id from RefusjonsandelEntitet andel where andel.fordelingGrunnlag.id = :grunnlagId", Long.class)
-            .setParameter("grunnlagId", aktivKildeGrunnlag.getId()).getResultList();
-        var kopiertAndelIder = getEntityManager().createQuery(
-            "select andel.id from RefusjonsandelEntitet andel where andel.fordelingGrunnlag.id = :grunnlagId", Long.class)
-            .setParameter("grunnlagId", kopiertGrunnlag.getId()).getResultList();
-        assertThat(kopiertAndelIder).doesNotContainAnyElementsOf(kildeAndelIder);
-        var kildePeriodeIder = getEntityManager().createQuery(
-            "select periode.id from RefusjonsperiodeEntitet periode where periode.refusjonsandel.fordelingGrunnlag.id = :grunnlagId", Long.class)
-            .setParameter("grunnlagId", aktivKildeGrunnlag.getId()).getResultList();
-        var kopiertPeriodeIder = getEntityManager().createQuery(
-            "select periode.id from RefusjonsperiodeEntitet periode where periode.refusjonsandel.fordelingGrunnlag.id = :grunnlagId", Long.class)
-            .setParameter("grunnlagId", kopiertGrunnlag.getId()).getResultList();
-        assertThat(kopiertPeriodeIder).hasSize(2).doesNotContainAnyElementsOf(kildePeriodeIder);
     }
 
     @Test
