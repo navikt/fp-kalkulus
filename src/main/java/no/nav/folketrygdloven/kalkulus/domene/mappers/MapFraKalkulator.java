@@ -71,7 +71,9 @@ public class MapFraKalkulator {
         utenGrunnbeløp.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
         utenGrunnbeløp.leggTilToggle("aap.praksisendring", erAAPPraksisendringAktiv());
         //Todo Denne må bruke erIkkeProd() når front end er klar
+        var refusjonTogglePå = Environment.current().isDev();
         utenGrunnbeløp.leggTilToggle("refusjonsfrist.flytting", false);
+        utenGrunnbeløp.leggTilToggle(BeregningsgrunnlagInput.REFUSJON_TOGGLE, refusjonTogglePå);
         return beregningsgrunnlagGrunnlagEntitet.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag)
             .map(utenGrunnbeløp::medBeregningsgrunnlagGrunnlag)
             .orElse(utenGrunnbeløp);
