@@ -17,6 +17,8 @@ public class Endringer {
     private VarigEndretEllerNyoppstartetNæringEndring varigEndretEllerNyoppstartetNæringEndring;
     @Valid
     private RefusjonoverstyringEndring refusjonoverstyringEndring;
+    @Valid
+    private OverstyrtRefusjonEndringDto overstyrtRefusjonEndringDto;
 
     private Endringer() {
     }
@@ -43,6 +45,10 @@ public class Endringer {
 
     public VarigEndretEllerNyoppstartetNæringEndring getVarigEndretNæringEndring() {
         return varigEndretEllerNyoppstartetNæringEndring;
+    }
+
+    public OverstyrtRefusjonEndringDto getOverstyrtRefusjonEndringDto() {
+        return overstyrtRefusjonEndringDto;
     }
 
     public static Builder ny() {
@@ -74,6 +80,11 @@ public class Endringer {
 
         public Builder medVarigEndretNæringEndring(VarigEndretEllerNyoppstartetNæringEndring varigEndretEllerNyoppstartetNæringEndring) {
             this.kladd.varigEndretEllerNyoppstartetNæringEndring = varigEndretEllerNyoppstartetNæringEndring;
+            return this;
+        }
+
+        public Builder medOverstyrtRefusjonEndringDto(OverstyrtRefusjonEndringDto overstyrtRefusjonEndringDto) {
+            this.kladd.overstyrtRefusjonEndringDto = overstyrtRefusjonEndringDto;
             return this;
         }
 

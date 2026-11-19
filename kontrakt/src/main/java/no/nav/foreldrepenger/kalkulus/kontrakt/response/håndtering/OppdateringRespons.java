@@ -47,6 +47,10 @@ public class OppdateringRespons implements KalkulusRespons {
     @Valid
     private VarigEndretEllerNyoppstartetNæringEndring varigEndretEllerNyoppstartetNæringEndring;
 
+    @JsonProperty(value = "overstyrtRefusjonEndringDto")
+    @Valid
+    private OverstyrtRefusjonEndringDto overstyrtRefusjonEndringDto;
+
     public OppdateringRespons() {
     }
 
@@ -56,6 +60,7 @@ public class OppdateringRespons implements KalkulusRespons {
         this.faktaOmBeregningVurderinger = endringer.getFaktaOmBeregningVurderinger();
         this.refusjonoverstyringEndring = endringer.getRefusjonoverstyringEndring();
         this.varigEndretEllerNyoppstartetNæringEndring = endringer.getVarigEndretNæringEndring();
+        this.overstyrtRefusjonEndringDto = endringer.getOverstyrtRefusjonEndringDto();
         this.eksternReferanse = eksternReferanse;
     }
 
@@ -81,6 +86,10 @@ public class OppdateringRespons implements KalkulusRespons {
 
     public VarigEndretEllerNyoppstartetNæringEndring getVarigEndretNæringEndring() {
         return varigEndretEllerNyoppstartetNæringEndring;
+    }
+
+    public OverstyrtRefusjonEndringDto getOverstyrtRefusjonEndringDto() {
+        return overstyrtRefusjonEndringDto;
     }
 
     @Override

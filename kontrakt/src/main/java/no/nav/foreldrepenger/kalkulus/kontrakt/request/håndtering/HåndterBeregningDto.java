@@ -26,6 +26,7 @@ import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.foreslå.Fast
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.foreslå.VurderVarigEndringEllerNyoppstartetSNHåndteringDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.overstyring.OverstyrBeregningsaktiviteterDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.overstyring.OverstyrBeregningsgrunnlagHåndteringDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.overstyring.OverstyrRefusjonHåndteringDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.refusjon.VurderRefusjonBeregningsgrunnlagDto;
 
 
@@ -36,6 +37,7 @@ import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.refusjon.Vurd
         @JsonSubTypes.Type(value = FaktaOmBeregningHåndteringDto.class, name = KodeKonstanter.AB_VURDER_FAKTA_ATFL_SN),
         @JsonSubTypes.Type(value = OverstyrBeregningsaktiviteterDto.class, name =  KodeKonstanter.OVST_BEREGNINGSAKTIVITETER),
         @JsonSubTypes.Type(value = OverstyrBeregningsgrunnlagHåndteringDto.class, name = KodeKonstanter.OVST_INNTEKT),
+        @JsonSubTypes.Type(value = OverstyrRefusjonHåndteringDto.class, name = KodeKonstanter.OVST_REFUSJON),
         @JsonSubTypes.Type(value = FaktaOmFordelingHåndteringDto.class, name = KodeKonstanter.AB_FORDEL_BG),
         @JsonSubTypes.Type(value = FastsettBeregningsgrunnlagATFLHåndteringDto.class, name = KodeKonstanter.AB_FASTSETT_BG_AT_FL),
         @JsonSubTypes.Type(value = FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto.class, name = KodeKonstanter.AB_FASTSETT_BG_SN_NY_I_ARB_LIVT),

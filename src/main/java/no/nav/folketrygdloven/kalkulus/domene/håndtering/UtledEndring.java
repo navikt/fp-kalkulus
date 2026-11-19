@@ -18,6 +18,7 @@ import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.Beregningsgr
 import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.BeregningsgrunnlagPeriodeEndring;
 import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.Endringer;
 import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.FaktaOmBeregningVurderinger;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.OverstyrtRefusjonEndringDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.VarigEndretEllerNyoppstartetNæringEndring;
 
 public class UtledEndring {
@@ -58,6 +59,7 @@ public class UtledEndring {
                 .ifPresent(endringBuilder::medFaktaOmBeregningVurderinger);
         mapVarigEndretNæringEndring(forrigeGrunnlag, dto, beregningsgrunnlagDto, iayGrunnlag)
                 .ifPresent(endringBuilder::medVarigEndretNæringEndring);
+        // TODO: Legg inn medOverstyrtRefusjonEndringDto
         return endringBuilder.build();
     }
 
@@ -81,6 +83,10 @@ public class UtledEndring {
                     forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getFaktaAggregat)));
         }
         return Optional.empty();
+    }
+
+    private static Optional<OverstyrtRefusjonEndringDto> mapOverstyrtRefusjonEndringDto() {
+
     }
 
     private BeregningsgrunnlagEndring utledBeregningsgrunnlagEndring(BeregningsgrunnlagDto beregningsgrunnlagEntitet, BeregningsgrunnlagDto bgFraSteg, Optional<BeregningsgrunnlagDto> forrigeBeregningsgrunnlagOpt) {
