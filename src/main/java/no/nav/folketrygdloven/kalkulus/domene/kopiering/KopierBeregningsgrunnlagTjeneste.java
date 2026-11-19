@@ -17,6 +17,9 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.fordeling.FordelingGrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.fordeling.RefusjonsandelEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.fordeling.RefusjonsperiodeEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.domene.kobling.KoblingTjeneste;
@@ -25,6 +28,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.domene.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
+import no.nav.folketrygdloven.kalkulus.domene.tjeneste.fordeling.FordelingsgrunnlagRepository;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.foreldrepenger.ForeldrepengerGrunnlag;
 import no.nav.vedtak.exception.TekniskException;
 
@@ -35,6 +39,7 @@ public class KopierBeregningsgrunnlagTjeneste {
     private KoblingTjeneste koblingTjeneste;
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
+    private FordelingsgrunnlagRepository fordelingsgrunnlagRepository;
 
     public KopierBeregningsgrunnlagTjeneste() {
     }
@@ -42,10 +47,12 @@ public class KopierBeregningsgrunnlagTjeneste {
     @Inject
     public KopierBeregningsgrunnlagTjeneste(KoblingTjeneste koblingTjeneste,
                                             BeregningsgrunnlagRepository beregningsgrunnlagRepository,
-                                            AvklaringsbehovTjeneste avklaringsbehovTjeneste) {
+                                            AvklaringsbehovTjeneste avklaringsbehovTjeneste,
+                                            FordelingsgrunnlagRepository fordelingsgrunnlagRepository) {
         this.koblingTjeneste = koblingTjeneste;
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.avklaringsbehovTjeneste = avklaringsbehovTjeneste;
+        this.fordelingsgrunnlagRepository = fordelingsgrunnlagRepository;
     }
 
 
@@ -90,6 +97,21 @@ public class KopierBeregningsgrunnlagTjeneste {
         var grunnlagSomSkalKopieres = validerOgHentGrunnlag(eksisterendeKobling, nyKobling.getSaksnummer(), BeregningsgrunnlagTilstand.FASTSATT);
         kopierBeregningsgrunnlag(grunnlagSomSkalKopieres, nyKobling, BeregningSteg.FAST_BERGRUNN);
         kopierAvklaringsbehov(nyKobling, eksisterendeKobling, BeregningSteg.FAST_BERGRUNN);
+        kopierFordelingsgrunnlag(eksisterendeKobling, nyKobling);
+    }
+
+    private void kopierFordelingsgrunnlag(KoblingEntitet eksisterendeKobling, KoblingEntitet nyKobling) {
+        fordelingsgrunnlagRepository.hentAktivtGrunnlag(eksisterendeKobling.getId()).ifPresent(grunnlag -> {
+            var builder = FordelingGrunnlagEntitet.builder();
+            grunnlag.getRefusjonsandeler().forEach(andel -> {
+                var nyAndel = new RefusjonsandelEntitet(andel.getArbeidsgiver(), andel.getArbeidsforholdRef(), andel.getKilde(),
+                    andel.getJournalpostId().orElse(null));
+                andel.getRefusjonsperioder().forEach(periode -> nyAndel.leggTilRefusjonsperiode(
+                    new RefusjonsperiodeEntitet(periode.getPeriode(), periode.getRefusjonPrMnd(), periode.getUtfall(), periode.getUtfallÅrsak())));
+                builder.leggTilRefusjonsandel(nyAndel);
+            });
+            fordelingsgrunnlagRepository.lagre(nyKobling.getId(), builder);
+        });
     }
 
     private void kopierForGregulering(KalkulatorInputDto input, KoblingEntitet eksisterendeKobling, KoblingEntitet nyKobling) {

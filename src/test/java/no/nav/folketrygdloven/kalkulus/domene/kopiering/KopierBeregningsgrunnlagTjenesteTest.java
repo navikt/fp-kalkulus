@@ -29,10 +29,15 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Årsgrunnlag;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.fordeling.FordelingGrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.fordeling.RefusjonsandelEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.fordeling.RefusjonsperiodeEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.felles.jpa.IntervallEntitet;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.input.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.domene.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
@@ -40,9 +45,12 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.RefusjonKilde;
+import no.nav.folketrygdloven.kalkulus.kodeverk.RefusjonUtfall;
 import no.nav.folketrygdloven.kalkulus.domene.tjeneste.avklaringsbehov.AvklaringsbehovRepository;
 import no.nav.folketrygdloven.kalkulus.domene.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
+import no.nav.folketrygdloven.kalkulus.domene.tjeneste.fordeling.FordelingsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.domene.tjeneste.kobling.KoblingRepository;
 import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
 import no.nav.vedtak.sikkerhet.kontekst.BasisKontekst;
@@ -59,6 +67,7 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
     private KoblingRepository koblingRepository;
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
     private AvklaringsbehovRepository avklaringsbehovRepository;
+    private FordelingsgrunnlagRepository fordelingsgrunnlagRepository;
 
     private KopierBeregningsgrunnlagTjeneste tjeneste;
 
@@ -70,8 +79,9 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         koblingRepository = new KoblingRepository(getEntityManager());
         avklaringsbehovRepository = new AvklaringsbehovRepository(getEntityManager());
         avklaringsbehovTjeneste = new AvklaringsbehovTjeneste(avklaringsbehovRepository, koblingRepository);
+        fordelingsgrunnlagRepository = new FordelingsgrunnlagRepository(getEntityManager());
         var koblingTjeneste = new KoblingTjeneste(koblingRepository);
-        tjeneste = new KopierBeregningsgrunnlagTjeneste(koblingTjeneste, repository, avklaringsbehovTjeneste);
+        tjeneste = new KopierBeregningsgrunnlagTjeneste(koblingTjeneste, repository, avklaringsbehovTjeneste, fordelingsgrunnlagRepository);
     }
 
 
@@ -82,6 +92,7 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         var originalKobling = new KoblingEntitet(originalKoblingReferanse, FagsakYtelseType.FORELDREPENGER, SAK, AKTØR_ID);
         koblingRepository.lagre(originalKobling);
         koblingRepository.markerKoblingSomAvsluttet(originalKobling);
+        assertThat(fordelingsgrunnlagRepository.hentAktivtGrunnlag(originalKobling.getId())).isEmpty();
 
         avklaringsbehovTjeneste.opprettEllerGjennopprettAvklaringsbehov(originalKobling.getId(), AvklaringsbehovDefinisjon.AVKLAR_AKTIVITETER);
         avklaringsbehovTjeneste.løsAvklaringsbehov(originalKobling.getId(), AvklaringsbehovDefinisjon.AVKLAR_AKTIVITETER, "ok");
@@ -108,6 +119,47 @@ class KopierBeregningsgrunnlagTjenesteTest extends EntityManagerAwareTest {
         assertThat(nyAvklaringsbehov.getStatus()).isEqualTo(AvklaringsbehovStatus.UTFØRT);
         assertThat(nyAvklaringsbehov.getVurdertAv()).isEqualTo("srvvtp");
         assertThat(nyAvklaringsbehov.getVurdertTidspunkt()).isBefore(førKopiering);
+    }
+
+    @Test
+    void skal_kopiere_aktivt_fordelingsgrunnlag_til_ny_kobling() {
+        var originalKoblingReferanse = new KoblingReferanse(UUID.randomUUID());
+        var originalKobling = new KoblingEntitet(originalKoblingReferanse, FagsakYtelseType.FORELDREPENGER, SAK, AKTØR_ID);
+        koblingRepository.lagre(originalKobling);
+        koblingRepository.markerKoblingSomAvsluttet(originalKobling);
+        repository.lagre(originalKobling.getId(), byggGrunnlag(200000, 100000), BeregningsgrunnlagTilstand.FASTSATT);
+
+        var arbeidsforholdRef = InternArbeidsforholdRef.nyRef();
+        var kildeAndel = new RefusjonsandelEntitet(Arbeidsgiver.virksomhet("999999999"), arbeidsforholdRef,
+            RefusjonKilde.INNTEKTSMELDING, "123456789");
+        kildeAndel.leggTilRefusjonsperiode(new RefusjonsperiodeEntitet(
+            IntervallEntitet.fraOgMedTilOgMed(LocalDate.of(2026, 1, 1), LocalDate.of(2026, 1, 31)),
+            new Beløp("12345.67"), RefusjonUtfall.INNVILGET, null));
+        var kildeGrunnlag = FordelingGrunnlagEntitet.builder().leggTilRefusjonsandel(kildeAndel);
+        var lagretKildeGrunnlag = fordelingsgrunnlagRepository.lagre(originalKobling.getId(), kildeGrunnlag);
+
+        var nyReferanse = new KoblingReferanse(UUID.randomUUID());
+        tjeneste.kopierFastsattBeregningsgrunnlag(nyReferanse, originalKoblingReferanse, SAK);
+
+        var nyKobling = koblingRepository.hentForKoblingReferanse(nyReferanse).orElseThrow();
+        var kopiertGrunnlag = fordelingsgrunnlagRepository.hentAktivtGrunnlag(nyKobling.getId()).orElseThrow();
+        assertThat(kopiertGrunnlag.getId()).isNotEqualTo(lagretKildeGrunnlag.getId());
+        assertThat(kopiertGrunnlag.getKoblingId()).isEqualTo(nyKobling.getId());
+
+        var kopierteAndeler = kopiertGrunnlag.getRefusjonsandeler();
+        assertThat(kopierteAndeler).hasSize(1);
+        var kopiertAndel = kopierteAndeler.getFirst();
+        assertThat(kopiertAndel.getArbeidsgiver()).isEqualTo(kildeAndel.getArbeidsgiver());
+        assertThat(kopiertAndel.getArbeidsforholdRef()).isEqualTo(arbeidsforholdRef);
+        assertThat(kopiertAndel.getKilde()).isEqualTo(RefusjonKilde.INNTEKTSMELDING);
+        assertThat(kopiertAndel.getJournalpostId()).contains("123456789");
+        assertThat(kopiertAndel.getRefusjonsperioder()).hasSize(1);
+        var innvilgetPeriode = kopiertAndel.getRefusjonsperioder().getFirst();
+        assertThat(innvilgetPeriode.getPeriode()).isEqualTo(IntervallEntitet.fraOgMedTilOgMed(
+            LocalDate.of(2026, 1, 1), LocalDate.of(2026, 1, 31)));
+        assertThat(innvilgetPeriode.getRefusjonPrMnd()).isEqualTo(new Beløp("12345.67"));
+        assertThat(innvilgetPeriode.getUtfall()).isEqualTo(RefusjonUtfall.INNVILGET);
+        assertThat(innvilgetPeriode.getUtfallÅrsak()).isNull();
     }
 
     @Test
