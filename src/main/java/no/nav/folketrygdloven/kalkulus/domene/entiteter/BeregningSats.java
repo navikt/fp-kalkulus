@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.BeregningSatsTypeKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.domene.felles.jpa.BaseEntitet;
@@ -31,9 +32,11 @@ public class BeregningSats extends BaseEntitet {
     @Column(name = "verdi", nullable = false)
     private long verdi;
 
+    @NotNull
     @Embedded
     IntervallEntitet periode;
 
+    @NotNull
     @Convert(converter = BeregningSatsTypeKodeverdiConverter.class)
     @Column(name = "sats_type", nullable = false)
     private BeregningSatsType satsType = BeregningSatsType.UDEFINERT;

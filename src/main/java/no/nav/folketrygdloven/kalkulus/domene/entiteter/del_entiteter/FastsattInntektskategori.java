@@ -6,6 +6,7 @@ import java.util.Objects;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.NotNull;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.InntektskategoriKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.domene.felles.diff.IndexKey;
@@ -18,6 +19,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 @Embeddable
 public class FastsattInntektskategori implements Serializable, IndexKey, TraverseValue, Comparable<FastsattInntektskategori> {
 
+    @NotNull
     @Convert(converter= InntektskategoriKodeverdiConverter.class)
     @Column(name="inntektskategori", nullable = false)
     private Inntektskategori inntektskategori = Inntektskategori.UDEFINERT;

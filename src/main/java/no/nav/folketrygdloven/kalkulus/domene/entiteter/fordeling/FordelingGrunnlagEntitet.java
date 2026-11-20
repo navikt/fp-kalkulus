@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import no.nav.folketrygdloven.kalkulus.domene.felles.jpa.BaseEntitet;
 
@@ -28,6 +29,7 @@ public class FordelingGrunnlagEntitet extends BaseEntitet {
     @Column(name = "versjon", nullable = false)
     private int versjon;
 
+    @NotNull
     @Column(name = "kobling_id", nullable = false, updatable = false)
     private Long koblingId;
 

@@ -14,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
@@ -37,9 +38,10 @@ public class AktivitetEntitet extends BaseEntitet implements IndexKey, Comparabl
     @Column(name = "versjon", nullable = false)
     private int versjon;
 
+    @NotNull
     @Embedded
-    @AttributeOverride(name = "fomDato", column = @Column(name = "fom"))
-    @AttributeOverride(name = "tomDato", column = @Column(name = "tom"))
+    @AttributeOverride(name = "fomDato", column = @Column(name = "fom", nullable = false))
+    @AttributeOverride(name = "tomDato", column = @Column(name = "tom", nullable = false))
     private IntervallEntitet periode;
 
     @Embedded
@@ -48,6 +50,7 @@ public class AktivitetEntitet extends BaseEntitet implements IndexKey, Comparabl
     @Embedded
     private InternArbeidsforholdRef arbeidsforholdRef;
 
+    @NotNull
     @Convert(converter = OpptjeningAktivitetTypeKodeverdiConverter.class)
     @Column(name = "opptjening_aktivitet_type", nullable = false)
     private OpptjeningAktivitetType opptjeningAktivitetType = OpptjeningAktivitetType.UDEFINERT;

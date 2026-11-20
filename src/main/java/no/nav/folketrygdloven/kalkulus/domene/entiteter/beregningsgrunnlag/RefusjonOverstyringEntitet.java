@@ -18,6 +18,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -45,6 +46,7 @@ public class RefusjonOverstyringEntitet extends BaseEntitet {
     @Column(name = "er_frist_utvidet")
     private Boolean erFristUtvidet;
 
+    @NotNull
     @JsonBackReference
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "refusjon_overstyringer_id", nullable = false, updatable = false)

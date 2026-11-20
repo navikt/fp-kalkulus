@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -34,15 +35,18 @@ public class BeregningsgrunnlagAktivitetStatusEntitet extends BaseEntitet {
     @Column(name = "versjon", nullable = false)
     private int versjon;
 
+    @NotNull
     @JsonBackReference
     @ManyToOne(cascade = {CascadeType.PERSIST}, optional = false)
     @JoinColumn(name = "beregningsgrunnlag_id", nullable = false, updatable = false)
     private BeregningsgrunnlagEntitet beregningsgrunnlag;
 
+    @NotNull
     @Convert(converter = AktivitetStatusKodeverdiConverter.class)
     @Column(name = "aktivitet_status", nullable = false)
     private AktivitetStatus aktivitetStatus;
 
+    @NotNull
     @Convert(converter = HjemmelKodeverdiConverter.class)
     @Column(name = "hjemmel", nullable = false)
     private Hjemmel hjemmel;

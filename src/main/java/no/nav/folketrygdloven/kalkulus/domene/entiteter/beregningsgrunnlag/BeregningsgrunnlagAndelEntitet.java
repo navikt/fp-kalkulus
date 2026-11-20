@@ -20,6 +20,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -53,6 +54,7 @@ public class BeregningsgrunnlagAndelEntitet extends BaseEntitet {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "GLOBAL_PK_SEQ_GENERATOR")
     private Long id;
 
+    @NotNull
     @Column(name = "andelsnr", nullable = false)
     private Long andelsnr;
 
@@ -60,11 +62,13 @@ public class BeregningsgrunnlagAndelEntitet extends BaseEntitet {
     @Column(name = "versjon", nullable = false)
     private int versjon;
 
+    @NotNull
     @JsonBackReference
     @ManyToOne(optional = false)
     @JoinColumn(name = "beregningsgrunnlag_periode_id", nullable = false, updatable = false)
     private BeregningsgrunnlagPeriodeEntitet beregningsgrunnlagPeriode;
 
+    @NotNull
     @Convert(converter = AktivitetStatusKodeverdiConverter.class)
     @Column(name = "aktivitet_status", nullable = false)
     private AktivitetStatus aktivitetStatus;
@@ -74,6 +78,7 @@ public class BeregningsgrunnlagAndelEntitet extends BaseEntitet {
     @AttributeOverride(name = "tomDato", column = @Column(name = "beregningsperiode_tom"))
     private IntervallEntitet beregningsperiode;
 
+    @NotNull
     @Convert(converter = OpptjeningAktivitetTypeKodeverdiConverter.class)
     @Column(name = "arbeidsforhold_type", nullable = false)
     private OpptjeningAktivitetType arbeidsforholdType;
@@ -139,12 +144,14 @@ public class BeregningsgrunnlagAndelEntitet extends BaseEntitet {
     @AttributeOverride(name = "verdi", column = @Column(name = "aarsbeloep_tilstoetende_ytelse"))
     private Beløp årsbeløpFraTilstøtendeYtelse;
 
-    @Column(name = "fastsatt_av_saksbehandler", nullable = false)
+    @Column(name = "fastsatt_av_saksbehandler")
     private Boolean fastsattAvSaksbehandler = false;
 
+    @NotNull
     @Embedded
     private FastsattInntektskategori fastsattInntektskategori = new FastsattInntektskategori();
 
+    @NotNull
     @Convert(converter = AndelKildeKodeverdiConverter.class)
     @Column(name = "kilde", nullable = false)
     private AndelKilde kilde = AndelKilde.PROSESS_START;

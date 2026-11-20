@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -31,6 +32,7 @@ public class FaktaAktørEntitet extends BaseEntitet {
     @Column(name = "versjon", nullable = false)
     private int versjon;
 
+    @NotNull
     @JsonBackReference
     @OneToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "FAKTA_AGGREGAT_ID", nullable = false, updatable = false)

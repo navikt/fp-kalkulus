@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -35,9 +36,11 @@ public class RefusjonPeriodeEntitet extends BaseEntitet {
     @Embedded
     private InternArbeidsforholdRef arbeidsforholdRef;
 
+    @NotNull
     @Column(name = "fom", nullable = false)
     private LocalDate startdatoRefusjon;
 
+    @NotNull
     @JsonBackReference
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "refusjon_overstyring_id", nullable = false, updatable = false)

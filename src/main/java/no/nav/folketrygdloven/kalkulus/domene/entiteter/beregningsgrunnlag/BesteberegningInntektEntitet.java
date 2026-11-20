@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
@@ -35,6 +36,7 @@ public class BesteberegningInntektEntitet extends BaseEntitet {
     @Column(name = "versjon", nullable = false)
     private long versjon;
 
+    @NotNull
     @Convert(converter = OpptjeningAktivitetTypeKodeverdiConverter.class)
     @Column(name = "opptjening_aktivitet_type", nullable = false)
     private OpptjeningAktivitetType opptjeningAktivitetType;
@@ -45,12 +47,14 @@ public class BesteberegningInntektEntitet extends BaseEntitet {
     @Embedded
     private InternArbeidsforholdRef arbeidsforholdRef;
 
+    @NotNull
     @Embedded
-    @AttributeOverride(name = "verdi", column = @Column(name = "inntekt"))
+    @AttributeOverride(name = "verdi", column = @Column(name = "inntekt", nullable = false))
     private Beløp inntekt;
 
+    @NotNull
     @ManyToOne
-    @JoinColumn(name = "besteberegning_maaned_id", updatable = false, unique = true)
+    @JoinColumn(name = "besteberegning_maaned_id", nullable = false, updatable = false)
     private BesteberegningMånedsgrunnlagEntitet besteberegningMåned;
 
 

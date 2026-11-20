@@ -13,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import org.hibernate.annotations.NaturalId;
 
@@ -38,19 +39,22 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
     /**
      * Saksnummer (gruppererer alle koblinger under samme saksnummer - typisk generert av FPSAK, eller annet saksbehandlingsystem)
      */
+    @NotNull
     @Embedded
-    @AttributeOverride(name = "saksnummer", column = @Column(name = "saksnummer"))
+    @AttributeOverride(name = "saksnummer", column = @Column(name = "saksnummer", nullable = false))
     private Saksnummer saksnummer;
 
     /**
      * Ekstern Referanse - caller's angitte identitet for dette behandlingsgrunnlaget. Kan f.eks. være knyttet til en behandling
      * (behandlingUuid), men også mer finkornet dersom det fins flere grunnlag per behandling (eks. Omsorgspenger i K9)
      */
+    @NotNull
     @NaturalId
     @Embedded
-    @AttributeOverride(name = "referanse", column = @Column(name = "kobling_referanse", updatable = false, unique = true))
+    @AttributeOverride(name = "referanse", column = @Column(name = "kobling_referanse", nullable = false, updatable = false, unique = true))
     private KoblingReferanse koblingReferanse;
 
+    @NotNull
     @Convert(converter = FagsakYtelseTypeKodeverdiConverter.class)
     @Column(name = "ytelse_type", nullable = false)
     private FagsakYtelseType ytelseType;
@@ -59,6 +63,7 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
     @AttributeOverride(name = "referanse", column = @Column(name = "original_kobling_referanse", updatable = false))
     private KoblingReferanse originalKoblingReferanse;
 
+    @NotNull
     @Embedded
     @AttributeOverride(name = "aktørId", column = @Column(name = "bruker_aktoer_id", nullable = false, updatable = false))
     private AktørId aktørId;

@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -32,11 +33,13 @@ public class PeriodeÅrsakEntitet extends BaseEntitet {
     @Column(name = "versjon", nullable = false)
     private int versjon;
 
+    @NotNull
     @JsonBackReference
     @ManyToOne(optional = false)
     @JoinColumn(name = "beregningsgrunnlag_periode_id", nullable = false, updatable = false)
     private BeregningsgrunnlagPeriodeEntitet beregningsgrunnlagPeriode;
 
+    @NotNull
     @Convert(converter = PeriodeÅrsakKodeverdiConverter.class)
     @Column(name = "periode_aarsak", nullable = false)
     private PeriodeÅrsak periodeÅrsak = PeriodeÅrsak.UDEFINERT;
