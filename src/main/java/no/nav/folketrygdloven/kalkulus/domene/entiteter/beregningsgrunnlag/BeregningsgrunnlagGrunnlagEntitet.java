@@ -16,6 +16,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import org.hibernate.annotations.NaturalId;
 
@@ -37,42 +38,46 @@ public class BeregningsgrunnlagGrunnlagEntitet extends BaseEntitet {
     @Column(name = "versjon", nullable = false)
     private int versjon;
 
-    @Column(name = "kobling_id", nullable = false, updatable = false, unique = true)
+    @NotNull
+    @Column(name = "kobling_id", nullable = false, updatable = false)
     private Long koblingId;
 
+    @NotNull
     @NaturalId
     @DiffIgnore
     @Embedded
-    @AttributeOverride(name = "referanse", column = @Column(name = "grunnlag_referanse", updatable = false, unique = true))
+    @AttributeOverride(name = "referanse", column = @Column(name = "grunnlag_referanse", nullable = false, updatable = false))
     private GrunnlagReferanse grunnlagReferanse;
 
     @OneToOne
-    @JoinColumn(name = "beregningsgrunnlag_id", updatable = false, unique = true)
+    @JoinColumn(name = "beregningsgrunnlag_id", updatable = false)
     private BeregningsgrunnlagEntitet beregningsgrunnlag;
 
+    @NotNull
     @ManyToOne
-    @JoinColumn(name = "register_aktiviteter_id", updatable = false, unique = true, nullable = false)
+    @JoinColumn(name = "register_aktiviteter_id", updatable = false, nullable = false)
     private AktivitetAggregatEntitet registerAktiviteter;
 
     @ManyToOne
-    @JoinColumn(name = "saksbehandlet_aktiviteter_id", updatable = false, unique = true)
+    @JoinColumn(name = "saksbehandlet_aktiviteter_id", updatable = false)
     private AktivitetAggregatEntitet saksbehandletAktiviteter;
 
     @ManyToOne
-    @JoinColumn(name = "overstyrte_aktiviteter_id", updatable = false, unique = true)
+    @JoinColumn(name = "overstyrte_aktiviteter_id", updatable = false)
     private AktivitetAggregatEntitet overstyringer;
 
     @ManyToOne
-    @JoinColumn(name = "refusjon_overstyringer_id", updatable = false, unique = true)
+    @JoinColumn(name = "refusjon_overstyringer_id", updatable = false)
     private RefusjonOverstyringerEntitet refusjonOverstyringer;
 
     @ManyToOne
-    @JoinColumn(name = "fakta_aggregat_id", updatable = false, unique = true)
+    @JoinColumn(name = "fakta_aggregat_id", updatable = false)
     private FaktaAggregatEntitet faktaAggregat;
 
     @Column(name = "aktiv", nullable = false)
     private boolean aktiv = true;
 
+    @NotNull
     @Convert(converter = BeregningsgrunnlagTilstandKodeverdiConverter.class)
     @Column(name = "steg_opprettet", nullable = false)
     private BeregningsgrunnlagTilstand beregningsgrunnlagTilstand;

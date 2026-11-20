@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.NotNull;
 
 import no.nav.folketrygdloven.kalkulus.domene.felles.diff.IndexKey;
 
@@ -18,7 +19,8 @@ public class Saksnummer implements SakId, IndexKey {
     private static final Pattern VALID = Pattern.compile("^(-?[1-9]|[a-z0])[" + CHARS + "]*$", Pattern.CASE_INSENSITIVE);
     private static final Pattern INVALID = Pattern.compile("[^" + CHARS + "]+", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 
-    @Column(name = "saksnummer")
+    @NotNull
+    @Column(name = "saksnummer", nullable = false)
     private String saksnummer; // NOSONAR
 
     protected Saksnummer() {

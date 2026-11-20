@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import org.hibernate.annotations.BatchSize;
 
@@ -38,6 +39,7 @@ public class AktivitetAggregatEntitet extends BaseEntitet {
     @BatchSize(size = 20)
     private List<AktivitetEntitet> aktiviteter = new ArrayList<>();
 
+    @NotNull
     @Column(name = "skjaeringstidspunkt_opptjening", nullable = false)
     private LocalDate skjæringstidspunktOpptjening;
 

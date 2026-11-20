@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.BeregningsgrunnlagRegelTypeKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.domene.felles.jpa.BaseEntitet;
@@ -27,6 +28,7 @@ public class RegelSporingGrunnlagEntitet extends BaseEntitet {
     @Column(name = "versjon", nullable = false)
     private int versjon;
 
+    @NotNull
     @Column(name = "kobling_id", nullable = false, updatable = false)
     private Long koblingId;
 
@@ -36,6 +38,7 @@ public class RegelSporingGrunnlagEntitet extends BaseEntitet {
     @Column(name = "regel_input_json", columnDefinition = "TEXT")
     private String regelInput;
 
+    @NotNull
     @Convert(converter = BeregningsgrunnlagRegelTypeKodeverdiConverter.class)
     @Column(name = "regel_type", nullable = false)
     private BeregningsgrunnlagRegelType regelType;

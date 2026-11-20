@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.BeregningsgrunnlagPeriodeRegelTypeKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.domene.felles.jpa.BaseEntitet;
@@ -30,6 +31,7 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
     @Column(name = "versjon", nullable = false)
     private int versjon;
 
+    @NotNull
     @Column(name = "kobling_id", nullable = false, updatable = false)
     private Long koblingId;
 
@@ -40,6 +42,7 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
     @Deprecated(forRemoval = true)
     private String regelInput;
 
+    @NotNull
     @Convert(converter = BeregningsgrunnlagPeriodeRegelTypeKodeverdiConverter.class)
     @Column(name = "regel_type", nullable = false)
     private BeregningsgrunnlagPeriodeRegelType regelType;
@@ -47,9 +50,10 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
     @Column(name = "regel_versjon")
     private String regelVersjon;
 
+    @NotNull
     @Embedded
-    @AttributeOverride(name = "fomDato", column = @Column(name = "fom"))
-    @AttributeOverride(name = "tomDato", column = @Column(name = "tom"))
+    @AttributeOverride(name = "fomDato", column = @Column(name = "fom", nullable = false))
+    @AttributeOverride(name = "tomDato", column = @Column(name = "tom", nullable = false))
     private IntervallEntitet periode;
 
     @Column(name = "aktiv", nullable = false)

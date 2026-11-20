@@ -25,6 +25,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import org.hibernate.annotations.BatchSize;
 
@@ -48,6 +49,7 @@ public class BeregningsgrunnlagPeriodeEntitet extends BaseEntitet {
     @Column(name = "versjon", nullable = false)
     private int versjon;
 
+    @NotNull
     @JsonBackReference
     @ManyToOne(optional = false)
     @JoinColumn(name = "beregningsgrunnlag_id", nullable = false, updatable = false)
@@ -57,6 +59,7 @@ public class BeregningsgrunnlagPeriodeEntitet extends BaseEntitet {
     @BatchSize(size = 20)
     private List<BeregningsgrunnlagAndelEntitet> beregningsgrunnlagAndelList = new ArrayList<>();
 
+    @NotNull
     @Embedded
     @AttributeOverride(name = "fomDato", column = @Column(name = "periode_fom", nullable = false))
     @AttributeOverride(name = "tomDato", column = @Column(name = "periode_tom", nullable = false))

@@ -22,6 +22,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import org.hibernate.annotations.BatchSize;
 
@@ -43,6 +44,7 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
     @Column(name = "versjon", nullable = false)
     private int versjon;
 
+    @NotNull
     @Column(name = "skjaeringstidspunkt", nullable = false)
     private LocalDate skjæringstidspunkt;
 

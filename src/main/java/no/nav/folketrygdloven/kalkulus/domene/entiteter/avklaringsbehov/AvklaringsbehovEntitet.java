@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -33,15 +34,18 @@ public class AvklaringsbehovEntitet extends BaseEntitet implements Comparable<Av
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "GLOBAL_PK_SEQ_GENERATOR")
     private Long id;
 
+    @NotNull
     @JsonBackReference
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "kobling_id", nullable = false, updatable = false)
     private KoblingEntitet kobling;
 
+    @NotNull
     @Convert(converter = AvklaringsbehovDefinisjonKodeverdiConverter.class)
     @Column(name = "avklaringsbehov_def", nullable = false)
     private AvklaringsbehovDefinisjon definisjon;
 
+    @NotNull
     @Convert(converter = AvklaringsbehovStatusDefinisjonKodeverdiConverter.class)
     @Column(name = "avklaringsbehov_status", nullable = false)
     private AvklaringsbehovStatus status;

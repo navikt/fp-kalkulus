@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.felles.jpa.BaseEntitet;
@@ -33,17 +34,21 @@ public class RefusjonsperiodeEntitet extends BaseEntitet {
     @Column(name = "versjon", nullable = false)
     private int versjon;
 
+    @NotNull
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "refusjon_andel_id", nullable = false, updatable = false)
     private RefusjonsandelEntitet refusjonsandel;
 
+    @NotNull
     @Embedded
     private IntervallEntitet periode;
 
+    @NotNull
     @Embedded
     @AttributeOverride(name = "verdi", column = @Column(name = "refusjon_pr_mnd", nullable = false, precision = 19, scale = 2))
     private Beløp refusjonPrMnd;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "utfall", nullable = false, length = 50)
     private RefusjonUtfall utfall;

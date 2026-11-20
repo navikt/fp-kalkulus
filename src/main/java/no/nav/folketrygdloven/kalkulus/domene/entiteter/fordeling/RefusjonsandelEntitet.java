@@ -20,6 +20,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
@@ -38,6 +39,7 @@ public class RefusjonsandelEntitet extends BaseEntitet {
     @Column(name = "versjon", nullable = false)
     private int versjon;
 
+    @NotNull
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "fordeling_grunnlag_id", nullable = false, updatable = false)
     private FordelingGrunnlagEntitet fordelingGrunnlag;
@@ -48,6 +50,7 @@ public class RefusjonsandelEntitet extends BaseEntitet {
     @Embedded
     private InternArbeidsforholdRef arbeidsforholdRef;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "kilde", nullable = false, length = 50)
     private RefusjonKilde kilde;

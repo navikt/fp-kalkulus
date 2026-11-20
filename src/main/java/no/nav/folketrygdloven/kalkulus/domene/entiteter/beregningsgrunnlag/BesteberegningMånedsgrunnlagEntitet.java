@@ -18,6 +18,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import no.nav.folketrygdloven.kalkulus.domene.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.felles.jpa.IntervallEntitet;
@@ -35,13 +36,15 @@ public class BesteberegningMånedsgrunnlagEntitet extends BaseEntitet {
     @Column(name = "versjon", nullable = false)
     private long versjon;
 
+    @NotNull
     @ManyToOne
-    @JoinColumn(name = "besteberegninggrunnlag_id", updatable = false, unique = true)
+    @JoinColumn(name = "besteberegninggrunnlag_id", nullable = false, updatable = false)
     private BesteberegninggrunnlagEntitet besteberegninggrunnlag;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "besteberegningMåned", cascade = CascadeType.PERSIST)
     private List<BesteberegningInntektEntitet> inntekter = new ArrayList<>();
 
+    @NotNull
     @Embedded
     private IntervallEntitet periode;
 
