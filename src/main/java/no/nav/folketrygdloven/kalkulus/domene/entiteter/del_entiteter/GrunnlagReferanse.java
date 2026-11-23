@@ -5,14 +5,16 @@ import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
 @Embeddable
 public class GrunnlagReferanse {
 
+    @NotNull
     @JsonValue
-    @Column(name = "grunnlag_referanse", updatable = false)
+    @Column(name = "grunnlag_referanse", nullable = false, updatable = false)
     private UUID referanse;
 
     protected GrunnlagReferanse() {

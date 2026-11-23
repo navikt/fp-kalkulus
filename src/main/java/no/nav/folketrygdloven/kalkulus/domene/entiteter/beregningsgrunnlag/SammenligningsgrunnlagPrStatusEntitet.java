@@ -15,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -37,26 +38,31 @@ public class SammenligningsgrunnlagPrStatusEntitet extends BaseEntitet {
     @Column(name = "versjon", nullable = false)
     private int versjon;
 
+    @NotNull
     @Embedded
-    @AttributeOverride(name = "fomDato", column = @Column(name = "sammenligningsperiode_fom"))
-    @AttributeOverride(name = "tomDato", column = @Column(name = "sammenligningsperiode_tom"))
+    @AttributeOverride(name = "fomDato", column = @Column(name = "sammenligningsperiode_fom", nullable = false))
+    @AttributeOverride(name = "tomDato", column = @Column(name = "sammenligningsperiode_tom", nullable = false))
     private IntervallEntitet sammenligningsperiode;
 
+    @NotNull
     @Convert(converter = SammenligningsgrunnlagTypeKodeverdiConverter.class)
     @Column(name = "sammenligningsgrunnlag_type", nullable = false)
     private SammenligningsgrunnlagType sammenligningsgrunnlagType;
 
+    @NotNull
     @Embedded
     @AttributeOverride(name = "verdi", column = @Column(name = "rapportert_pr_aar", nullable = false))
     private Beløp rapportertPrÅr;
 
+    @NotNull
     @Embedded
     @AttributeOverride(name = "verdi", column = @Column(name = "avvik_promille", nullable = false))
     private Promille avvikPromille = Promille.ZERO;
 
+    @NotNull
     @JsonBackReference
     @ManyToOne(optional = false)
-    @JoinColumn(name = "beregningsgrunnlag_id", nullable = false, updatable = false, unique = true)
+    @JoinColumn(name = "beregningsgrunnlag_id", nullable = false, updatable = false)
     private BeregningsgrunnlagEntitet beregningsgrunnlag;
 
     protected SammenligningsgrunnlagPrStatusEntitet() {

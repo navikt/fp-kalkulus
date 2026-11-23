@@ -19,6 +19,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -39,9 +40,10 @@ public class BesteberegninggrunnlagEntitet extends BaseEntitet {
     @Column(name = "versjon", nullable = false)
     private long versjon;
 
+    @NotNull
     @JsonBackReference
     @OneToOne(optional = false)
-    @JoinColumn(name = "beregningsgrunnlag_id", nullable = false, updatable = false, unique = true)
+    @JoinColumn(name = "beregningsgrunnlag_id", nullable = false, updatable = false)
     private BeregningsgrunnlagEntitet beregningsgrunnlag;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "besteberegninggrunnlag", cascade = CascadeType.PERSIST)
