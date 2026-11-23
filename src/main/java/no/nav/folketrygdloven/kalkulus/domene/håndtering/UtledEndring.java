@@ -29,22 +29,13 @@ import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.Beregningsgr
 import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.Endringer;
 import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.FaktaOmBeregningVurderinger;
 import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.OverstyrtRefusjonEndringDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.RefusjonOverstyrtAndelEndringDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.response.håndtering.VarigEndretEllerNyoppstartetNæringEndring;
 
 public class UtledEndring {
 
-    private boolean tillatSplittPeriode;
-
-    private UtledEndring(boolean tillatSplittPeriode) {
-        this.tillatSplittPeriode = tillatSplittPeriode;
-    }
-
     public static UtledEndring standard() {
-        return new UtledEndring(false);
-    }
-
-    public static UtledEndring forTilkommetInntekt() {
-        return new UtledEndring(true);
+        return new UtledEndring();
     }
 
     public Endringer utled(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto,
@@ -69,14 +60,12 @@ public class UtledEndring {
                 .ifPresent(endringBuilder::medFaktaOmBeregningVurderinger);
         mapVarigEndretNæringEndring(forrigeGrunnlag, dto, beregningsgrunnlagDto, iayGrunnlag)
                 .ifPresent(endringBuilder::medVarigEndretNæringEndring);
-        // TODO: Legg inn medOverstyrtRefusjonEndringDto
         return endringBuilder.build();
     }
 
-    public Endringer utled(FordelingGrunnlag nyttGrunnlag, FordelingGrunnlag forrigeGrunnlag, HåndterBeregningDto dto) {
+    public Endringer utled(FordelingGrunnlag forrigeGrunnlag, HåndterBeregningDto dto) {
         var endringBuilder = Endringer.ny();
-        mapOverstyrtRefusjonEndringDto(nyttGrunnlag, forrigeGrunnlag, dto);
-        // TODO: Legg inn medOverstyrtRefusjonEndringDto
+        mapOverstyrtRefusjonEndringDto(forrigeGrunnlag, dto).ifPresent(endringBuilder::medOverstyrtRefusjonEndringDto);
         return endringBuilder.build();
     }
 
@@ -104,16 +93,31 @@ public class UtledEndring {
         return Optional.empty();
     }
 
-    private static Optional<OverstyrtRefusjonEndringDto> mapOverstyrtRefusjonEndringDto(FordelingGrunnlag nyttGrunnlag,
-                                                                                        FordelingGrunnlag forrigeGrunnlag,
+    private static Optional<OverstyrtRefusjonEndringDto> mapOverstyrtRefusjonEndringDto(FordelingGrunnlag forrigeGrunnlag,
                                                                                         HåndterBeregningDto dto) {
         if (dto instanceof OverstyrRefusjonHåndteringDto overstyrRefusjonHåndteringDto) {
-            overstyrRefusjonHåndteringDto.getOverstyrteAndeler().stream()
+           var endredeAndeler = overstyrRefusjonHåndteringDto.getOverstyrteAndeler().stream()
                 .filter(o -> o.kilde().equals(RefusjonKilde.SAKSBEHANDLER))
-                .filter(o -> erRefusjonsAndelEndret(o, forrigeGrunnlag));
-
+                .filter(o -> erRefusjonsAndelEndret(o, forrigeGrunnlag))
+               .map(o -> new RefusjonOverstyrtAndelEndringDto(o.arbeidsgiverIdent(), o.arbeidsforholdId(),
+                   mapPerioder(o.refusjonsperioder())))
+               .toList();
+            if (!endredeAndeler.isEmpty()) {
+                return Optional.of(new OverstyrtRefusjonEndringDto(endredeAndeler));
+            }
+            return Optional.empty();
         }
         throw new IllegalStateException("Ukjent HåndterBeregningDto type: " + dto.getClass());
+    }
+
+    private static List<RefusjonOverstyrtAndelEndringDto.RefusjonOverstyrtPeriodeDto> mapPerioder(List<RefusjonOverstyringPeriode> perioder) {
+        return perioder.stream()
+                .map(p -> new RefusjonOverstyrtAndelEndringDto.RefusjonOverstyrtPeriodeDto(
+                        p.fom(),
+                        p.tom(),
+                        p.refusjonPrMnd(),
+                        p.utfallÅrsak()))
+                .toList();
     }
 
     private static boolean erRefusjonsAndelEndret(RefusjonOverstyringAndel o, FordelingGrunnlag forrigeGrunnlag) {
@@ -147,13 +151,11 @@ public class UtledEndring {
         List<BeregningsgrunnlagPeriodeDto> perioder = beregningsgrunnlagEntitet.getBeregningsgrunnlagPerioder();
         List<BeregningsgrunnlagPeriodeDto> perioderFraSteg = bgFraSteg.getBeregningsgrunnlagPerioder();
         List<BeregningsgrunnlagPeriodeDto> forrigePerioder = forrigeBeregningsgrunnlagOpt.map(BeregningsgrunnlagDto::getBeregningsgrunnlagPerioder).orElse(Collections.emptyList());
-        List<BeregningsgrunnlagPeriodeEndring> beregningsgrunnlagPeriodeEndringer = tillatSplittPeriode
-                ? utledPeriodeEndringerMedSplittingTillatt(perioder, perioderFraSteg, forrigePerioder)
-                : utledPeriodeEndringerUtenSplittingTillatt(perioder, perioderFraSteg, forrigePerioder);
+        List<BeregningsgrunnlagPeriodeEndring> beregningsgrunnlagPeriodeEndringer = utledPeriodeEndringer(perioder, perioderFraSteg, forrigePerioder);
         return beregningsgrunnlagPeriodeEndringer.isEmpty() ? null : new BeregningsgrunnlagEndring(beregningsgrunnlagPeriodeEndringer);
     }
 
-    private List<BeregningsgrunnlagPeriodeEndring> utledPeriodeEndringerUtenSplittingTillatt(List<BeregningsgrunnlagPeriodeDto> perioder, List<BeregningsgrunnlagPeriodeDto> perioderFraSteg, List<BeregningsgrunnlagPeriodeDto> forrigePerioder) {
+    private List<BeregningsgrunnlagPeriodeEndring> utledPeriodeEndringer(List<BeregningsgrunnlagPeriodeDto> perioder, List<BeregningsgrunnlagPeriodeDto> perioderFraSteg, List<BeregningsgrunnlagPeriodeDto> forrigePerioder) {
         return perioder.stream()
                 .map(p -> {
                     BeregningsgrunnlagPeriodeDto periodeFraSteg = finnPeriodeEksaktMatchMotFom(perioderFraSteg, p.getBeregningsgrunnlagPeriodeFom())

@@ -4,6 +4,7 @@ import java.util.List;
 
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.DagpengeAndelLagtTilBesteberegningDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.OverstyrBeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.OverstyrRefusjonDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.avklaraktiviteter.AvklarteAktiviteterDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.avklaraktiviteter.BeregningsaktivitetLagreDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.fakta.ArbeidstakerandelUtenIMMottarYtelseDto;
@@ -41,6 +42,8 @@ import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.foreslå.Fast
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.foreslå.FastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.foreslå.InntektPrAndelDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.overstyring.OverstyrBeregningsgrunnlagHåndteringDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.overstyring.OverstyrRefusjonHåndteringDto;
+import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.refusjon.RefusjonOverstyringAndel;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.refusjon.VurderRefusjonAndelBeregningsgrunnlagDto;
 import no.nav.foreldrepenger.kalkulus.kontrakt.request.håndtering.refusjon.VurderRefusjonBeregningsgrunnlagDto;
 
@@ -89,6 +92,26 @@ public class OppdatererDtoMapper {
 
     public static OverstyrBeregningsgrunnlagDto mapOverstyrBeregningsgrunnlagDto(OverstyrBeregningsgrunnlagHåndteringDto dto) {
         return new OverstyrBeregningsgrunnlagDto(mapFastsettBeregningsgrunnlagPeriodeAndeler(dto.getOverstyrteAndeler()), dto.getFakta() == null ? null : mapTilFaktaOmBeregningLagreDto(dto.getFakta()));
+    }
+
+    public static OverstyrRefusjonDto mapOverstyrRefusjonDto(OverstyrRefusjonHåndteringDto dto) {
+        return new OverstyrRefusjonDto(dto.getOverstyrteAndeler().stream()
+            .map(OppdatererDtoMapper::mapRefusjonOverstyringAndel)
+            .toList());
+    }
+
+    private static no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.RefusjonOverstyringAndel mapRefusjonOverstyringAndel(RefusjonOverstyringAndel andel) {
+        return new no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.RefusjonOverstyringAndel(
+            andel.arbeidsgiverIdent(),
+            andel.arbeidsforholdId(),
+            andel.kilde(),
+            andel.refusjonsperioder().stream()
+                .map(periode -> new no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.RefusjonOverstyringAndel.RefusjonOverstyringPeriode(
+                    periode.fom(),
+                    periode.tom(),
+                    periode.refusjonPrMnd(),
+                    periode.utfallÅrsak()))
+                .toList());
     }
 
     public static no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FaktaBeregningLagreDto mapTilFaktaOmBeregningLagreDto(FaktaBeregningLagreDto fakta) {
