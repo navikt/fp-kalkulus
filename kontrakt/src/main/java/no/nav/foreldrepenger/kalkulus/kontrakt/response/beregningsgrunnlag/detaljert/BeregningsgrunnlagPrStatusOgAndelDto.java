@@ -160,17 +160,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 	@Valid
 	private AndelKilde kilde;
 
-    // TODO Fjern dette feltet når det er laget en egen brevtjeneste
-    @JsonProperty(value = "avkortetMotInntektstak")
-    @Valid
-    private Beløp avkortetMotInntektstak;
-
-    // TODO Fjern dette feltet når det er laget en egen brevtjeneste
-    @JsonProperty(value = "avkortetFørGraderingPrÅr")
-    @Valid
-    private Beløp avkortetFørGraderingPrÅr;
-
-
     public static class Builder {
         private BeregningsgrunnlagPrStatusOgAndelDto kladd = new BeregningsgrunnlagPrStatusOgAndelDto();
 
@@ -319,17 +308,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
             return this;
         }
 
-        public Builder medAvkortetMotInntektstak(Beløp avkortetMotInntektstak) {
-            kladd.avkortetMotInntektstak = avkortetMotInntektstak;
-            return this;
-        }
-
-        public Builder medAvkortetFørGraderingPrÅr(Beløp avkortetFørGraderingPrÅr) {
-            kladd.avkortetFørGraderingPrÅr = avkortetFørGraderingPrÅr;
-            return this;
-        }
-
-	    public Builder medAndelKilde(AndelKilde kilde) {
+        public Builder medAndelKilde(AndelKilde kilde) {
 		    kladd.kilde = kilde;
 		    return this;
 	    }
@@ -478,21 +457,5 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
     public Beløp getBesteberegningPrÅr() {
         return besteberegningPrÅr;
-    }
-
-    public void setAvkortetMotInntektstak(Beløp avkortetMotInntektstak) {
-        this.avkortetMotInntektstak = avkortetMotInntektstak;
-    }
-
-    public Beløp getAvkortetMotInntektstak() {
-        return avkortetMotInntektstak;
-    }
-
-    public Beløp getAvkortetFørGraderingPrÅr() {
-        return avkortetFørGraderingPrÅr;
-    }
-
-    public void setAvkortetFørGraderingPrÅr(Beløp avkortetFørGraderingPrÅr) {
-        this.avkortetFørGraderingPrÅr = avkortetFørGraderingPrÅr;
     }
 }
