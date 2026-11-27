@@ -15,15 +15,19 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.fordeling.FordelingGrunn
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.fordeling.RefusjonsandelEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.fordeling.RefusjonsperiodeEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.mapFraEntitet.BehandlingslagerTilKalkulusMapper;
 import no.nav.folketrygdloven.kalkulus.domene.mapFraEntitet.IAYMapperTilKalkulus;
 import no.nav.folketrygdloven.kalkulus.domene.mappers.VerdityperMapper;
 import no.nav.folketrygdloven.kalkulus.domene.tjeneste.fordeling.FordelingsgrunnlagRepository;
+import no.nav.folketrygdloven.kalkulus.domene.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.felles.JournalpostId;
 import no.nav.folketrygdloven.kalkulus.response.fordelingsgrunnlag.gui.FordelingGrunnlagDto;
 
 @ApplicationScoped
 public class FordelingsgrunnlagTjeneste {
     private FordelingsgrunnlagRepository fordelingsgrunnlagRepository;
+    private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private final KalkulatorGuiInterface dtoTjeneste = new BeregningsgrunnlagGuiTjeneste();
 
     FordelingsgrunnlagTjeneste() {
@@ -31,14 +35,21 @@ public class FordelingsgrunnlagTjeneste {
     }
 
     @Inject
-    public FordelingsgrunnlagTjeneste(FordelingsgrunnlagRepository fordelingsgrunnlagRepository) {
+    public FordelingsgrunnlagTjeneste(FordelingsgrunnlagRepository fordelingsgrunnlagRepository,
+                                     BeregningsgrunnlagRepository beregningsgrunnlagRepository) {
         this.fordelingsgrunnlagRepository = fordelingsgrunnlagRepository;
+        this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
     }
 
     public Optional<FordelingGrunnlagDto> lagDto(KoblingEntitet kobling) {
         return fordelingsgrunnlagRepository.hentAktivtGrunnlag(kobling.getId())
             .map(FordelingsgrunnlagTjeneste::mapEntitetTilDomenemodell)
-            .map(dtoTjeneste::lagFordelingsgrunnlagDto);
+            .map(fordelingsgrunnlag -> {
+                var beregningsgrunnlag = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(kobling.getId())
+                    .flatMap(BeregningsgrunnlagGrunnlagEntitet::getBeregningsgrunnlag)
+                    .map(BehandlingslagerTilKalkulusMapper::mapBeregningsgrunnlag);
+                return dtoTjeneste.lagFordelingsgrunnlagDto(fordelingsgrunnlag, beregningsgrunnlag);
+            });
     }
 
     private static FordelingGrunnlag mapEntitetTilDomenemodell(FordelingGrunnlagEntitet entitet) {
